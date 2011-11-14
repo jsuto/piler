@@ -1,0 +1,324 @@
+AC_INIT
+AC_CONFIG_SRCDIR([src/piler.c])
+AC_CONFIG_HEADER(piler-config.h)
+
+CONFIGURE_PARAMS_FILE=params.h
+rm -f $CONFIGURE_PARAMS_FILE; echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\nConfigure command: ./configure $@\"" > $CONFIGURE_PARAMS_FILE
+
+dnl Checks for programs.
+AC_PROG_CC
+dnl AM_PROG_CC_STDC
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(sys/socket.h sys/time.h syslog.h signal.h ctype.h unistd.h)
+
+
+AC_SUBST(defs)
+AC_SUBST(INCDIR)
+AC_SUBST(LIBDIR)
+AC_SUBST(OBJS)
+AC_SUBST(RUNNING_USER)
+AC_SUBST(SUBDIRS)
+AC_SUBST(mysql_includes)
+AC_SUBST(mysql_libs)
+AC_SUBST(mysql_obj)
+AC_SUBST(libclamav_extra_libs)
+AC_SUBST(sqlite3_batch)
+AC_SUBST(id_bin)
+
+have_libclamav="no"
+have_libtool="no"
+have_clamd="no"
+
+have_antivirus="no"
+have_mysql="no"
+have_sqlite3="no"
+have_zlib="no"
+have_whitelist="no"
+have_blacklist="no"
+
+
+have_static_build="no"
+
+antispam_libs="-lz -lm -ldl -lcrypto"
+defs=""
+objs=""
+user_obj=""
+mysql_obj=""
+sqlite3_batch=""
+os=`uname -s`
+
+id_bin="id"
+
+dnl SUBDIRS="src etc util perl init.d templates history contrib/stat"
+SUBDIRS="src"
+
+
+dnl static build
+
+AC_ARG_ENABLE(static-build,
+          [  --enable-static-build   build statically linked executables (default: dynamically linked)], have_static_build=$enableval, have_static_build="no")
+
+
+dnl clamd
+
+
+AC_ARG_ENABLE(clamd,
+	[  --enable-clamd          build clamd antivirus support], want_clamd=$enableval, want_clamd="no")
+   if test "$want_clamd" = "yes"; then
+      have_clamd="yes"
+      have_antivirus="yes"
+   fi
+
+
+dnl use whitelist
+
+AC_ARG_ENABLE(whitelist,
+	[  --enable-whitelist      use whitelist], want_whitelist=$enableval, want_whitelist="no")
+
+   if test "$want_whitelist" = "yes"; then
+      have_whitelist="yes"
+   fi
+
+
+dnl use blacklist
+
+AC_ARG_ENABLE(blacklist,
+        [  --enable-blacklist      use blacklist (this is _NOT_ RBL)], want_blacklist=$enableval, want_blacklist="no")
+
+   if test "$want_blacklist" = "yes"; then
+      have_blacklist="yes"
+   fi
+
+
+
+dnl math library
+
+AC_CHECK_HEADERS(math.h, have_math=yes, have_math=no)
+AC_CHECK_LIB([m],[fabs],[AC_CHECK_LIB(m, fabs)],[have_math=yes],[""; exit])ac_cv_lib_m=ac_cv_lib_m_main
+
+dnl openssl library
+
+AC_CHECK_HEADERS(openssl/sha.h, have_crypto=yes, have_crypto=no)
+AC_CHECK_LIB([crypto],[SHA256_Init],[AC_CHECK_LIB(crypto, SHA256_Init, have_crypto=yes, echo "libcrypto is not found"; have_crypto=no)],[],[])ac_cv_lib_crypto=ac_cv_lib_crypto_main
+
+if test "$have_crypto" = "no"; then
+   echo "please install openssl developer package"
+   exit 1
+fi
+
+dnl TRE library
+
+AC_CHECK_HEADERS(tre/tre.h, have_tre=yes, echo "tre.h is not found")
+AC_CHECK_LIB([tre],[main],[AC_CHECK_LIB(tre, regcomp, have_tre=yes, echo "libtre.so is not found"; have_tre=no)],[],[])ac_cv_lib_tre=ac_cv_lib_tre_main
+
+
+dnl zlib
+
+AC_CHECK_HEADERS(zlib.h, have_zlib=yes, echo "zlib.h is not found")
+AC_CHECK_LIB([z],[main],[AC_CHECK_LIB(z, compress, have_zlib=yes, echo "libz.so is not found"; have_zlib=no)],[],[])ac_cv_lib_z=ac_cv_lib_z_main
+
+if test "$have_zlib" = "no"; then
+   echo "please install the zlib development packages"
+   exit 1;
+fi
+
+
+AC_CHECK_PROG(MYSQL_CONFIG, mysql_config, yes)
+
+if test x$MYSQL_CONFIG = xyes; then
+   have_mysql="yes"
+fi
+
+if test "$have_mysql" = "yes"; then
+
+   mysql_includes=`mysql_config --cflags`
+   mysql_libs=`mysql_config --libs_r`
+
+   AC_CHECK_LIB([guide],[main],[AC_CHECK_LIB(guide, _intel_fast_memset, have_icc_guide=yes, have_icc_guide=no)],[],[])ac_cv_lib_guide=ac_cv_lib_guide_main
+
+else
+   echo "MySQL support is not found"
+   exit 1;
+fi
+
+
+AC_CHECK_HEADERS(sqlite3.h, have_sqlite3=yes, echo "sqlite3.h is not found")
+AC_CHECK_LIB([sqlite3],[main],[AC_CHECK_LIB(sqlite3, sqlite3_open, have_sqlite3=yes, have_sqlite3=no)],[],[])ac_cv_lib_sqlite3=ac_cv_lib_sqlite3_main
+
+
+if test "$have_sqlite3" = "no"; then
+   echo "sqlite3 not found";
+   dnl exit 1;
+fi
+
+
+
+if test `sqlite3 -help 2>&1| grep -c -- -batch` -gt 0; then sqlite3_batch="-batch"; fi
+
+
+dnl user running piler
+
+AC_ARG_WITH(piler-user,
+    [  --with-piler-user=username      what user the piler daemon shall be run as],
+    [ RUNNING_USER=$withval ],
+    [ RUNNING_USER=piler ]
+    )
+
+
+
+dnl configure config directory
+
+cfg_dir=`echo $sysconfdir | grep prefix`
+
+if test -n "$cfg_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        cfg_dir="$ac_default_prefix/etc"
+        my_prefix=$ac_default_prefix
+    else
+        cfg_dir="$prefix/etc"
+        my_prefix=$prefix
+    fi
+else
+    cfg_dir="$sysconfdir"
+fi
+
+CFGDIR=$cfg_dir
+AC_SUBST(CFGDIR)
+AC_DEFINE_UNQUOTED(CONFDIR,"$cfg_dir",[where to look for the config file])
+
+
+dnl configure data directory
+
+data_dir=`echo $localstatedir | grep prefix`
+
+if test -n "$data_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        data_dir="$ac_default_prefix/var"
+    else
+        data_dir="$prefix/var"
+    fi
+else
+    data_dir="$localstatedir"
+fi
+
+DATADIR=$data_dir
+AC_SUBST(DATADIR)
+AC_DEFINE_UNQUOTED(DATADIR,"$data_dir",[where to look for the data files])
+
+AC_DEFINE_UNQUOTED(VIRUS_TEMPLATE, "$my_prefix/share/clapf/template.virus", [where the virus template is])
+AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "$my_prefix/share/clapf/zombienets.regex", [where the virus template is])
+
+
+
+
+dnl let us know if we are building on FreeBSD
+
+if test "$os" = "FreeBSD"; then
+   defs="$defs -DFREEBSD"
+fi
+
+if test "$os" = "Linux"; then
+   defs="$defs -D_GNU_SOURCE"
+fi
+
+if test "$os" = "SunOS"; then
+   AC_DEFINE(HAVE_DAEMON, 0, [daemon() support])
+   sunos_libs="-lnsl -lsocket"
+
+   if test -x /usr/xpg4/bin/id; then id_bin="/usr/xpg4/bin/id"; fi
+fi
+
+if test `echo $os | grep -c CYGWIN` -eq 1; then
+   defs="$defs -DCYGWIN"
+   AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "zombienets.regex", [where the virus template is])
+fi
+
+dnl whether we have antivirus support
+
+if test "$have_clamd" = "yes" ; then
+   defs="$defs -DHAVE_ANTIVIRUS"
+   objs="$objs avir.o"
+fi
+
+echo; echo
+
+if test "$have_clamd" = "yes"; then
+   echo "clamd support: yes"
+   objs="$objs clamd.o"
+   defs="$defs -DHAVE_CLAMD"
+fi
+
+if test "$have_whitelist" = "yes"; then
+   echo "whitelist: yes"
+   defs="$defs -DHAVE_WHITELIST"
+else
+   echo "whitelist: no"
+fi
+
+if test "$have_blacklist" = "yes"; then
+   echo "blacklist: yes"
+   defs="$defs -DHAVE_BLACKLIST"
+else
+   echo "blacklist: no"
+fi
+
+if test "$want_memcached" = "yes"; then
+   echo "memcached support: yes"
+   objs="$objs memc.o memcached.o"
+   defs="$defs -DHAVE_MEMCACHED"
+fi
+
+echo "run as user: $RUNNING_USER"
+
+if test "$have_static_build" = "yes"; then
+   echo "link mode: static"
+   static="-static"
+else
+   echo "link mode: dynamic"
+fi
+
+if test "$have_tre" = "yes"; then
+   echo "tre library: yes"
+   defs="$defs -DHAVE_TRE"
+   antispam_libs="$antispam_libs -ltre"
+fi
+
+if test "$have_mysql" = "yes"; then
+   defs="$defs -DNEED_MYSQL"
+fi
+
+if test "$have_sqlite3" = "yes"; then
+   defs="$defs -DNEED_SQLITE3"
+   sqlite3_libs="-lsqlite3 -lpthread"
+fi
+
+
+if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
+   mysql_libs="$mysql_libs -lguide"
+fi
+
+
+id -u $RUNNING_USER 2>/dev/null 1>/dev/null
+if test $? -eq 1; then echo "the user \"$RUNNING_USER\" does not exists, please create it, first with adduser..."; exit 1; fi
+
+if test "$have_clamd" = "no" ; then
+   echo; echo
+   echo "You have not selected any antivirus support."
+   echo "piler will not protect you from hostile code coming in e-mail"
+fi
+
+echo; echo
+
+CFLAGS="$static -O2 -Wall -g"
+LIBS="$antispam_libs $sunos_libs $sqlite3_libs"
+OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o boundary.o parser.o parser_utils.o session.o message.o digest.o store.o tai.o $objs"
+
+AC_CONFIG_FILES([Makefile src/Makefile])
+AC_OUTPUT
+

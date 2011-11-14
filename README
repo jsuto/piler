@@ -1,0 +1,16 @@
+piler is an open source email archival application.
+
+Features:
+
+- ...
+
+
+locales debian alatt: dpkg-reconfigure locales
+
+
+
+
+indexer delta1 --rotate
+indexer --merge main1 delta1 --rotate
+
+

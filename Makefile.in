@@ -1,0 +1,106 @@
+SHELL = @SHELL@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+includedir = @includedir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+mandir = @mandir@
+datarootdir = @datarootdir@
+localstatedir = @localstatedir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@ @CPPFLAGS@
+DEFS = @defs@
+INCDIR = -I. @INCDIR@ @mysql_includes@
+LIBDIR = -L. @LIBDIR@ @LDFLAGS@
+LIBS = @LIBS@ @mysql_libs@
+RUNNING_USER = @RUNNING_USER@
+RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
+
+SUBDIRS = @SUBDIRS@
+
+RECURSIVE_TARGETS = all-recursive install-recursive clean-recursive distclean-recursive
+
+MAKE = `which make`
+
+INSTALL = @INSTALL@
+
+am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+	piler-config.h stamp.h stamp-h1 params.h
+
+all: all-recursive
+install: installdirs install-recursive
+
+
+$(RECURSIVE_TARGETS):
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+
+
+installdirs: mkinstalldirs
+	$(srcdir)/mkinstalldirs \
+		$(DESTDIR)$(bindir) $(DESTDIR)$(sbindir) $(DESTDIR)$(libdir) $(DESTDIR)$(libexecdir)/piler $(DESTDIR)$(sysconfdir) \
+		$(DESTDIR)$(datarootdir)/piler $(DESTDIR)$(includedir)/piler $(DESTDIR)$(localstatedir)/lib/piler/data \
+		$(DESTDIR)$(localstatedir)/spool
+
+	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/run/piler
+	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/lib/piler/stat
+
+
+install-am:
+
+
+uninstall:
+	rm -f \
+		$(DESTDIR)$(sbindir)/piler $(DESTDIR)$(sbindir)/pilerconf $(DESTDIR)$(libdir)/libpiler.* \
+		$(DESTDIR)$(sysconfdir)/piler.conf
+
+	rm -rf $(DESTDIR)$(libexecdir)/piler $(DESTDIR)$(includedir)/piler $(DESTDIR)$(datarootdir)/piler
+	@echo "I left the $(DESTDIR)$(localstatedir)/lib/piler directory, remove it for yourself"
+
+
+all-am: Makefile
+
+clean: clean-recursive
+	rm -f piler.key
+
+clean-am: clean-generic
+
+clean-generic:
+
+distclean: distclean-recursive
+	rm -f $(am__CONFIG_DISTCLEAN_FILES)
+	rm -f Makefile piler.key
+
+distclean-am: clean-am
+
+key:
+	dd if=/dev/urandom bs=56 count=1 of=piler.key
+
