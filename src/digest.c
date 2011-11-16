@@ -14,13 +14,16 @@
 #include <openssl/evp.h>
 
 
-int make_body_digest(struct session_data *sdata){
+int make_body_digest(struct session_data *sdata, struct __config *cfg){
    int i=0, n, fd;
    char *p, *body=NULL;
-   unsigned char buf[MAXBUFSIZE];
+   unsigned char buf[MAXBUFSIZE], md[DIGEST_LENGTH];
+   SHA256_CTX context;
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: digesting", sdata->ttmpfile);
 
    memset(sdata->bodydigest, 0, 2*DIGEST_LENGTH+1);
-   SHA256_Init(&(sdata->context));
+   SHA256_Init(&context);
 
    fd = open(sdata->ttmpfile, O_RDONLY);
    if(fd == -1) return -1;
@@ -43,16 +46,16 @@ int make_body_digest(struct session_data *sdata){
          }
       }
 
-      SHA256_Update(&(sdata->context), body, n);
+      SHA256_Update(&context, body, n);
 
    }
 
    close(fd);
 
-   SHA256_Final(sdata->md, &(sdata->context));
+   SHA256_Final(md, &context);
 
    for(i=0;i<DIGEST_LENGTH;i++)
-      snprintf(sdata->bodydigest + i*2, 2*DIGEST_LENGTH, "%02x", sdata->md[i]);
+      snprintf(sdata->bodydigest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
 
    return 0;
 }

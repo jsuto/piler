@@ -7,10 +7,11 @@
 
 #include "defs.h"
 
-int append_list(struct url **urls, char *p);
-struct url *createListItem(char *s);
-int isOnList(struct url *u, char *item);
-void freeList(struct url *u);
+int append_list(struct list **list, char *p);
+struct list *create_list_item(char *s);
+int is_string_on_list(struct list *list, char *s);
+int is_item_on_string(struct list *list, char *s);
+void free_list(struct list *list);
 
 #endif /* _LIST_H */
 

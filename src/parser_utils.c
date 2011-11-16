@@ -1,5 +1,5 @@
 /*
- * parser_utils.c, SJ
+ * parser_utils.c
  */
 
 #include <stdio.h>
@@ -16,23 +16,21 @@
 #include <time.h>
 #include <piler.h>
 #include "trans.h"
-#include "ijc.h"
 #include "html.h"
 
 
-void initState(struct _state *state){
+void init_state(struct _state *state){
    int i;
 
    state->message_state = MSG_UNDEF;
 
+   state->line_num = 0;
+
    state->is_header = 1;
 
-   /* by default we are a text/plain message */
-
-   state->textplain = 1;
+   state->textplain = 1; /* by default we are a text/plain message */
    state->texthtml = 0;
    state->message_rfc822 = 0;
-   state->octetstream = 0;
 
    state->base64 = 0;
    state->utf8 = 0;
@@ -44,36 +42,15 @@ void initState(struct _state *state){
 
    state->skip_html = 0;
 
-   state->n_token = 0;
-   state->n_body_token = 0;
-   state->n_chain_token = 0;
-   state->n_subject_token = 0;
-
    state->content_type_is_set = 0;
 
-   state->c_shit = 0;
-   state->l_shit = 0;
-
-   state->line_num = 0;
-
-   state->ipcnt = 0;
-
-   memset(state->ip, 0, SMALLBUFSIZE);
-   memset(state->hostname, 0, SMALLBUFSIZE);
-   memset(state->miscbuf, 0, MAX_TOKEN_LEN);
-   memset(state->qpbuf, 0, MAX_TOKEN_LEN);
-   memset(state->from, 0, SMALLBUFSIZE);
    memset(state->message_id, 0, SMALLBUFSIZE);
-
-   state->urls = NULL;
-
-   state->found_our_signo = 0;
+   memset(state->miscbuf, 0, MAX_TOKEN_LEN);
 
    state->has_to_dump = 0;
    state->fd = -1;
-   state->num_of_images = 0;
-   state->num_of_msword = 0;
    state->realbinary = 0;
+   state->octetstream = 0;
 
    state->boundaries = NULL;
 
@@ -82,8 +59,8 @@ void initState(struct _state *state){
 
    for(i=0; i<MAX_ATTACHMENTS; i++){
       state->attachments[i].size = 0;
-      memset(state->attachments[i].type, 0, SMALLBUFSIZE);
-      memset(state->attachments[i].filename, 0, SMALLBUFSIZE);
+      memset(state->attachments[i].type, 0, TINYBUFSIZE);
+      memset(state->attachments[i].filename, 0, TINYBUFSIZE);
    }
 
    memset(state->b_from, 0, SMALLBUFSIZE);
@@ -93,26 +70,78 @@ void initState(struct _state *state){
 }
 
 
-void freeState(struct _state *state){
-   freeList(state->urls);
+unsigned long parse_date_header(char *s){
+   char *p;
+   unsigned long ts=0;
+   struct tm tm;
+
+   s += 5;
+   p = s;
+
+   if(*p == ' '){ p++; s++; }
+
+   p = strchr(s, ',');
+   if(!p) goto ENDE;
+
+   *p = '\0';
+   if(strcmp(s, "Mon") == 0) tm.tm_wday = 1;
+   else if(strcmp(s, "Tue") == 0) tm.tm_wday = 2;
+   else if(strcmp(s, "Wed") == 0) tm.tm_wday = 3;
+   else if(strcmp(s, "Thu") == 0) tm.tm_wday = 4;
+   else if(strcmp(s, "Fri") == 0) tm.tm_wday = 5;
+   else if(strcmp(s, "Sat") == 0) tm.tm_wday = 6;
+   else if(strcmp(s, "Sun") == 0) tm.tm_wday = 0;
+   s += 5;
+
+   p = strchr(s, ' '); if(!p) goto ENDE;
+   *p = '\0'; tm.tm_mday = atoi(s); s += 3;
+
+   p = strchr(s, ' '); if(!p) goto ENDE;
+   *p = '\0';
+   if(strcmp(s, "Jan") == 0) tm.tm_mon = 0;
+   else if(strcmp(s, "Feb") == 0) tm.tm_mon = 1;
+   else if(strcmp(s, "Mar") == 0) tm.tm_mon = 2;
+   else if(strcmp(s, "Apr") == 0) tm.tm_mon = 3;
+   else if(strcmp(s, "May") == 0) tm.tm_mon = 4;
+   else if(strcmp(s, "Jun") == 0) tm.tm_mon = 5;
+   else if(strcmp(s, "Jul") == 0) tm.tm_mon = 6;
+   else if(strcmp(s, "Aug") == 0) tm.tm_mon = 7;
+   else if(strcmp(s, "Sep") == 0) tm.tm_mon = 8;
+   else if(strcmp(s, "Oct") == 0) tm.tm_mon = 9;
+   else if(strcmp(s, "Nov") == 0) tm.tm_mon = 10;
+   else if(strcmp(s, "Dec") == 0) tm.tm_mon = 11;
+   s = p+1;
+
+   p = strchr(s, ' '); if(!p) goto ENDE;
+   tm.tm_year = atoi(s) - 1900; s = p+1;
+
+   p = strchr(s, ':'); if(!p) goto ENDE;
+   *p = '\0'; tm.tm_hour = atoi(s); s = p+1;
+
+   p = strchr(s, ':'); if(!p) goto ENDE;
+   *p = '\0'; tm.tm_min = atoi(s); s = p+1;
+
+   p = strchr(s, ' '); if(!p) goto ENDE;
+   *p = '\0'; tm.tm_sec = atoi(s); s = p+1;
+
+   tm.tm_isdst = -1;
+
+   ts = mktime(&tm);
+
+ENDE:
+   return ts;
 }
 
 
-int attachment_by_type(struct _state *state, char *type){
-   int i;
-
-   for(i=0; i<MAX_ATTACHMENTS; i++){
-      if(strstr(state->attachments[i].type, type))
-         return 1;
+int isHexNumber(char *p){
+   for(; *p; p++){
+      if(!(*p == '-' || (*p >= 0x30 && *p <= 0x39) || (*p >= 0x41 && *p <= 0x46) || (*p >= 0x61 && *p <= 0x66)) )
+         return 0;
    }
 
-   return 0;
+   return 1;
 }
 
-
-/*
- * extract bondary
- */
 
 int extract_boundary(char *p, struct _state *state){
    char *q;
@@ -150,7 +179,7 @@ int extract_boundary(char *p, struct _state *state){
       q = strrchr(p, '\n');
       if(q) *q = '\0';
 
-      append_boundary(&(state->boundaries), p);
+      append_list(&(state->boundaries), p);
 
       return 1;
    }
@@ -159,41 +188,9 @@ int extract_boundary(char *p, struct _state *state){
 }
 
 
-int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
-   int rc=0;
-   char buf[SMALLBUFSIZE], *p, *q;
-
-   snprintf(buf, SMALLBUFSIZE-1, "%s", s);
-
-   p = strstr(buf, name);
-   if(p){
-      p += strlen(name);
-      p = strchr(p, '=');
-      if(p){
-         p++;
-         q = strrchr(p, ';');
-         if(q) *q = '\0';
-         q = strrchr(p, '"');
-         if(q){
-            *q = '\0';
-            p = strchr(p, '"');
-            if(p){
-               p++;
-            }
-         }
-         snprintf(resultbuf, SMALLBUFSIZE-1, "%s", p);
-         rc = 1;
-      }
-   }
-
-   return rc;
-}
-
-
 void fixupEncodedHeaderLine(char *buf){
    char *p, *q, *r, *s, u[SMALLBUFSIZE], puf[MAXBUFSIZE];
    char *start, *end;
-
 
    memset(puf, 0, MAXBUFSIZE);
 
@@ -228,12 +225,6 @@ void fixupEncodedHeaderLine(char *buf){
                }
                else if((s = strcasestr(start+2, "?Q?"))){
                   *s = '\0';
-
-                  r = s + 3;
-                  for(; *r; r++){
-                     if(*r == '_') *r = ' ';
-                  }
-
                   decodeQP(s+3);
                }
 
@@ -262,47 +253,13 @@ void fixupEncodedHeaderLine(char *buf){
 }
 
 
-void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
-   int i=0;
-   char *p, puf[MAXBUFSIZE];
-
-   if(strlen(state->qpbuf) > 0){
-      memset(puf, 0, MAXBUFSIZE);
-      strncpy(puf, state->qpbuf, MAXBUFSIZE-1);
-      strncat(puf, buf, MAXBUFSIZE-1);
-
-      memset(buf, 0, MAXBUFSIZE);
-      memcpy(buf, puf, MAXBUFSIZE);
-
-      memset(state->qpbuf, 0, MAX_TOKEN_LEN);
-   }
-
-   if(buf[strlen(buf)-1] == '='){
-      buf[strlen(buf)-1] = '\0';
-      i = 1;
-   }
-
-   if(i == 1){
-      p = strrchr(buf, ' ');
-      if(p){
-         memset(state->qpbuf, 0, MAX_TOKEN_LEN);
-         if(strlen(p) < MAX_TOKEN_LEN-1){
-            snprintf(state->qpbuf, MAXBUFSIZE-1, "%s", p);
-            *p = '\0';
-         }
-
-      }
-   }
-}
-
-
 void fixupBase64EncodedLine(char *buf, struct _state *state){
    char *p, puf[MAXBUFSIZE];
 
    if(strlen(state->miscbuf) > 0){
-      memset(puf, 0, MAXBUFSIZE);
-      strncpy(puf, state->miscbuf, MAXBUFSIZE-1);
-      strncat(puf, buf, MAXBUFSIZE-1);
+      memset(puf, 0, sizeof(puf));
+      strncpy(puf, state->miscbuf, sizeof(puf)-1);
+      strncat(puf, buf, sizeof(puf)-1);
 
       memset(buf, 0, MAXBUFSIZE);
       memcpy(buf, puf, MAXBUFSIZE);
@@ -313,7 +270,9 @@ void fixupBase64EncodedLine(char *buf, struct _state *state){
    if(buf[strlen(buf)-1] != '\n'){
       p = strrchr(buf, ' ');
       if(p){
-         strncpy(state->miscbuf, p+1, MAX_TOKEN_LEN-1);
+         //strncpy(state->miscbuf, p+1, MAX_TOKEN_LEN-1);
+         memcpy(&(state->miscbuf[0]), p+1, MAX_TOKEN_LEN-1);
+
          *p = '\0';
       }
    }
@@ -404,6 +363,8 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
    if(pos == 0 && strncmp(htmlbuf, "style ", 6) == 0) state->style = 1;
    if(pos == 0 && strncmp(htmlbuf, "/style ", 7) == 0) state->style = 0;
 
+   return 0;
+
    //printf("appendHTML: pos:%d, +%s+\n", pos, htmlbuf);
 
    if(state->style == 1) return 0;
@@ -412,8 +373,6 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 
    snprintf(html, SMALLBUFSIZE-1, "HTML*%s", htmlbuf);
    len = strlen(html);
-
-   if(isSkipHTMLTag(html) == 1) return 0;
 
    if(len > 8 && strchr(html, '=')){
       p = strstr(html, "cid:");
@@ -435,18 +394,6 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 }
 
 
-int isSkipHTMLTag(char *s){
-   int i=0;
-
-   for(i=0; i<NUM_OF_SKIP_TAGS; i++){
-      //printf("matching *%s* on *%s*\n", s+5, skip_html_tags[i].entity);
-      if(strncmp(s+5, skip_html_tags[i].entity, skip_html_tags[i].length) == 0) return 1;
-   }
-
-   return 0;
-}
-
-
 void translateLine(unsigned char *p, struct _state *state){
    int url=0;
    unsigned char *q=NULL, *P=p;
@@ -461,11 +408,11 @@ void translateLine(unsigned char *p, struct _state *state){
 
       if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC) && *p == '@'){ continue; }
 
-      if(state->message_state == MSG_SUBJECT && *p == '%'){ continue; }
+      if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_') ){ continue; }
 
       if(state->message_state == MSG_CONTENT_TYPE && *p == '_' ){ continue; }
 
-      if(state->message_state != MSG_BODY && (*p == '.' || *p == '-') ){ continue; }
+      if(*p == '.' || *p == '-'){ continue; }
 
       if(strncasecmp((char *)p, "http://", 7) == 0){ p += 7; url = 1; continue; }
       if(strncasecmp((char *)p, "https://", 8) == 0){ p += 8; url = 1; continue; }
@@ -488,7 +435,7 @@ void translateLine(unsigned char *p, struct _state *state){
 
    }
 
-   /* restore the soft break in quoted-printable parts, 2006.01.05, SJ */
+   /* restore the soft break in quoted-printable parts */
 
    if(state->qp == 1 && q && (q > P + strlen((char*)P) - 3))
      *q = '=';
@@ -522,11 +469,6 @@ void reassembleToken(char *p){
 }
 
 
-/*
- * degenerate a token
- */
-
-
 void degenerateToken(unsigned char *p){
    int i=1, d=0, dp=0;
    unsigned char *s;
@@ -557,280 +499,54 @@ void degenerateToken(unsigned char *p){
 }
 
 
-/*
- * count the invalid characters (ie. garbage on your display) in the buffer
- */
-
-int countInvalidJunkCharacters(char *p, int replace_junk){
-   int i=0;
-
-   for(; *p; p++){
-      if(invalid_junk_characters[(unsigned char)*p] == *p){
-         i++;
-         if(replace_junk == 1) *p = JUNK_REPLACEMENT_CHAR;
-      }
-   }
-
-   return i;
-}
-
-
-/*
- * detect Chinese, Japan, Korean, ... lines
- */
-
-int countInvalidJunkLines(char *p){
-   int i=0;
-
-   if(*p == '' && *(p+1) == '$' && *(p+2) == 'B'){
-      for(; *p; p++){
-         if(*p == '' && *(p+1) == '(' && *(p+2) == 'B')
-            i++;
-      }
-   }
-
-   return i;
-}
-
-
-int countNonPrintableCharacters(char *p){
-   int n = 0;
-
-   for(; *p; p++){
-      if(!isprint(*p) && !isspace(*p)) n++;
-   }
-
-   return n;
-}
-
-
-/*
- * is this a hexadecimal numeric string?
- */
-
-int isHexNumber(char *p){
-   for(; *p; p++){
-      if(!(*p == '-' || (*p >= 0x30 && *p <= 0x39) || (*p >= 0x41 && *p <= 0x46) || (*p >= 0x61 && *p <= 0x66)) )
-         return 0;
-   }
-
-   return 1;
-}
-
-
 void fixURL(char *url){
-   char *p, *q, m[MAX_TOKEN_LEN], fixed_url[MAXBUFSIZE];
-   int i, dots=0;
-   struct in_addr addr;
+   char *p, *q, fixed_url[SMALLBUFSIZE];
 
-   /* chop trailing dot */
+   memset(fixed_url, 0, sizeof(fixed_url));
 
-   if(url[strlen(url)-1] == '.')
-      url[strlen(url)-1] = '\0';
+   p = url;
 
-   memset(fixed_url, 0, MAXBUFSIZE);
+   if(strncasecmp(url, "http://", 7) == 0) p += 7;
+   if(strncasecmp(url, "https://", 8) == 0) p += 8;
 
-   if((strncasecmp(url, "http://", 7) == 0 || strncasecmp(url, "https://", 8) == 0) ){
-      p = url;
+   q = strchr(p, '/');
+   if(q) *q = '\0';
 
-      if(strncasecmp(p, "http://", 7) == 0) p += 7;
-      if(strncasecmp(p, "https://", 8) == 0) p += 8;
+   snprintf(fixed_url, sizeof(fixed_url)-1, "URL*%s ", p);
 
-      /* skip anything after the host part, 2006.12.11, SJ */
-      q = strchr(p, '/');
-      if(q)
-         *q = '\0';
-
-      /*
-         http://www.ajandekkaracsonyra.hu/email.php?page=email&cmd=unsubscribe&email=yy@xxxx.kom is
-         chopped to www.ajandekkaracsonyra.hu at this point, 2006.12.15, SJ
-       */
-
-      dots = countCharacterInBuffer(p, '.');
-      if(dots < 1)
-         return;
-
-      strncpy(fixed_url, "URL*", MAXBUFSIZE-1);
-
-      /* is it a numeric IP-address? */
-
-      if(inet_aton(p, &addr)){
-         addr.s_addr = ntohl(addr.s_addr);
-         strncat(fixed_url, inet_ntoa(addr), MAXBUFSIZE-1);
-         strcpy(url, fixed_url);
-      }
-      else {
-         for(i=0; i<=dots; i++){
-            q = split(p, '.', m, MAX_TOKEN_LEN-1);
-            if(i>dots-2){
-               strncat(fixed_url, m, MAXBUFSIZE-1);
-               if(i < dots)
-                  strncat(fixed_url, ".", MAXBUFSIZE-1);
-            }
-            p = q;
-         }
-
-         /* if it does not contain a single dot, the rest of the URL may be
-            in the next line or it is a fake one, anyway skip, 2006.04.06, SJ
-          */
-
-         if(countCharacterInBuffer(fixed_url, '.') != 1)
-            memset(url, 0, MAXBUFSIZE);
-         else {
-            for(i=4; i<strlen(fixed_url); i++)
-               fixed_url[i] = tolower(fixed_url[i]);
-
-            strcpy(url, fixed_url);
-         }
-      }
-   }
-
+   strcpy(url, fixed_url);   
 }
 
 
-/*
- * fix a long FQDN
- */
+int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
+   int rc=0;
+   char buf[TINYBUFSIZE], *p, *q;
 
-void fixFQDN(char *fqdn){
-   char *p, *q, m[MAX_TOKEN_LEN], fixed_fqdn[MAXBUFSIZE];
-   int i, dots=0;
+   snprintf(buf, sizeof(buf)-1, "%s", s);
 
-   /* chop trailing dot */
-
-   if(fqdn[strlen(fqdn)-1] == '.')
-      fqdn[strlen(fqdn)-1] = '\0';
-
-   memset(fixed_fqdn, 0, MAXBUFSIZE);
-
-   p = fqdn;
-
-   dots = countCharacterInBuffer(p, '.');
-   if(dots < 1)
-      return;
-
-   for(i=0; i<=dots; i++){
-      q = split(p, '.', m, MAX_TOKEN_LEN-1);
-      if(i>dots-2){
-         strncat(fixed_fqdn, m, MAXBUFSIZE-1);
-         if(i < dots)
-             strncat(fixed_fqdn, ".", MAXBUFSIZE-1);
-      }
-      p = q;
-   }
-
-   strcpy(fqdn, fixed_fqdn);
-}
-
-
-/*
- *  extract the .tld from a name (URL, FQDN, ...)
- */
-
-void getTLDFromName(char *name){
-   char *p, fixed_name[SMALLBUFSIZE];;
-
-   p = strrchr(name, '.');
-
+   p = strstr(buf, name);
    if(p){
-      snprintf(fixed_name, SMALLBUFSIZE-1, "URL*%s", p+1);
-      strcpy(name, fixed_name);
+      p += strlen(name);
+      p = strchr(p, '=');
+      if(p){
+         p++;
+         q = strrchr(p, ';');
+         if(q) *q = '\0';
+         q = strrchr(p, '"');
+         if(q){
+            *q = '\0';
+            p = strchr(p, '"');
+            if(p){
+               p++;
+            }
+         }
+         snprintf(resultbuf, TINYBUFSIZE-1, "%s", p);
+         rc = 1;
+      }
    }
 
+   return rc;
 }
 
 
-int isItemOnList(char *item, char *list, char *extralist){
-   char *p, *q, w[SMALLBUFSIZE], my_list[SMALLBUFSIZE];
-
-   if(!item) return 0;
-
-   snprintf(my_list, SMALLBUFSIZE-1, "%s,%s", extralist, list);
-
-   p = my_list;
-
-   do {
-      p = split(p, ',', w, SMALLBUFSIZE-1);
-
-      trimBuffer(w);
-
-      if(strlen(w) > 2){
-
-         if(w[strlen(w)-1] == '$'){
-            q = item + strlen(item) - strlen(w) + 1;
-            if(strncasecmp(q, w, strlen(w)-1) == 0)
-               return 1;
-         }
-         else if(strcasestr(item, w))
-            return 1;
-
-      }
-
-   } while(p);
-
-   return 0;
-}
-
-
-unsigned long parse_date_header(char *s){
-   char *p;
-   unsigned long ts=0;
-   struct tm tm;
-
-   s += 5;
-   p = s;
-
-   if(*p == ' '){ p++; s++; }
-
-   p = strchr(s, ',');
-   if(!p) goto ENDE;
-
-   *p = '\0';
-   if(strcmp(s, "Mon") == 0) tm.tm_wday = 1;
-   else if(strcmp(s, "Tue") == 0) tm.tm_wday = 2;
-   else if(strcmp(s, "Wed") == 0) tm.tm_wday = 3;
-   else if(strcmp(s, "Thu") == 0) tm.tm_wday = 4;
-   else if(strcmp(s, "Fri") == 0) tm.tm_wday = 5;
-   else if(strcmp(s, "Sat") == 0) tm.tm_wday = 6;
-   else if(strcmp(s, "Sun") == 0) tm.tm_wday = 0;
-   s += 5;
-
-   p = strchr(s, ' '); if(!p) goto ENDE;
-   *p = '\0'; tm.tm_mday = atoi(s); s += 3;
-
-   p = strchr(s, ' '); if(!p) goto ENDE;
-   *p = '\0';
-   if(strcmp(s, "Jan") == 0) tm.tm_mon = 0;
-   else if(strcmp(s, "Feb") == 0) tm.tm_mon = 1;
-   else if(strcmp(s, "Mar") == 0) tm.tm_mon = 2;
-   else if(strcmp(s, "Apr") == 0) tm.tm_mon = 3;
-   else if(strcmp(s, "May") == 0) tm.tm_mon = 4;
-   else if(strcmp(s, "Jun") == 0) tm.tm_mon = 5;
-   else if(strcmp(s, "Jul") == 0) tm.tm_mon = 6;
-   else if(strcmp(s, "Aug") == 0) tm.tm_mon = 7;
-   else if(strcmp(s, "Sep") == 0) tm.tm_mon = 8;
-   else if(strcmp(s, "Oct") == 0) tm.tm_mon = 9;
-   else if(strcmp(s, "Nov") == 0) tm.tm_mon = 10;
-   else if(strcmp(s, "Dec") == 0) tm.tm_mon = 11;
-   s = p+1;
-
-   p = strchr(s, ' '); if(!p) goto ENDE;
-   tm.tm_year = atoi(s) - 1900; s = p+1;
-
-   p = strchr(s, ':'); if(!p) goto ENDE;
-   *p = '\0'; tm.tm_hour = atoi(s); s = p+1;
-
-   p = strchr(s, ':'); if(!p) goto ENDE;
-   *p = '\0'; tm.tm_min = atoi(s); s = p+1;
-
-   p = strchr(s, ' '); if(!p) goto ENDE;
-   *p = '\0'; tm.tm_sec = atoi(s); s = p+1;
-
-   tm.tm_isdst = -1;
-
-   ts = mktime(&tm);
-
-ENDE:
-   return ts;
-}
 

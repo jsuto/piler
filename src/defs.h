@@ -52,26 +52,22 @@
 
 struct attachment {
    int size;
-   char type[SMALLBUFSIZE];
-   char filename[SMALLBUFSIZE];
+   char type[TINYBUFSIZE];
+   char filename[TINYBUFSIZE];
 };
 
-struct url {
-   char url_str[URL_LEN];
-   struct url *r;
+struct list {
+   char s[SMALLBUFSIZE];
+   struct list *r;
 };
 
-struct boundary {
-   char boundary_str[BOUNDARY_LEN];
-   struct boundary *r;
-};
 
 struct _state {
+   int line_num;
    int message_state;
    int is_header;
    int textplain;
    int texthtml;
-   int octetstream;
    int message_rfc822;
    int base64;
    int has_base64;
@@ -80,33 +76,20 @@ struct _state {
    int htmltag;
    int style;
    int skip_html;
-   int ipcnt;
    int has_to_dump;
    int fd;
-   int num_of_msword;
-   int num_of_images;
+   int octetstream;
    int realbinary;
    int content_type_is_set;
-   int train_mode;
-   unsigned long c_shit;
-   unsigned long l_shit;
-   unsigned long line_num;
-   char ip[SMALLBUFSIZE];
-   char hostname[SMALLBUFSIZE];
-   char miscbuf[MAX_TOKEN_LEN];
-   char qpbuf[MAX_TOKEN_LEN];
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
-   char from[SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
+   char miscbuf[MAX_TOKEN_LEN];
    unsigned long n_token;
    unsigned long n_subject_token;
    unsigned long n_body_token;
    unsigned long n_chain_token;
-   struct url *urls;
 
-   int found_our_signo;
-
-   struct boundary *boundaries;
+   struct list *boundaries;
 
    int n_attachments;
    struct attachment attachments[MAX_ATTACHMENTS];
@@ -123,8 +106,6 @@ struct session_data {
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
-   SHA256_CTX context;
-   unsigned char md[DIGEST_LENGTH];
    char bodydigest[2*DIGEST_LENGTH+1];
    time_t now, sent;
 #ifdef NEED_MYSQL

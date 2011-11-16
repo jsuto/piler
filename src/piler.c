@@ -38,8 +38,6 @@ struct passwd *pwd;
 void clean_exit(){
    if(sd != -1) close(sd);
 
-   freeList(data.blackhole);
-
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
    unlink(cfg.pidfile);
@@ -86,7 +84,6 @@ void initialiseConfiguration(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
-   freeList(data.blackhole);
    data.blackhole = NULL;
 
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);

@@ -133,7 +133,7 @@ int hand_to_sphinx(struct session_data *sdata, struct _state *state, struct __co
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int i=0, rc, ret=ERR;
    char *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE];
-   struct url *list = NULL;
+   struct list *list = NULL;
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
@@ -168,7 +168,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
       if(strlen(s2) > 5){
 LABEL1:
 
-         if(isOnList(list, s2) == 1) continue;
+         if(is_string_on_list(list, s2) == 1) continue;
 
          append_list(&list, s2);
          i++;
@@ -222,7 +222,7 @@ LABEL1:
 
 
 ENDE_META:
-   freeList(list);
+   free_list(list);
 
    return ret;
 }

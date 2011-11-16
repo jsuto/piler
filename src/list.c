@@ -10,23 +10,23 @@
 #include "config.h"
 
 
-int append_list(struct url **urls, char *p){
-   struct url *q, *t, *u=NULL;
+int append_list(struct list **list, char *p){
+   struct list *q, *t, *u=NULL;
 
-   q = *urls;
+   q = *list;
 
    while(q){
-      if(strcmp(q->url_str, p) == 0)
+      if(strcmp(q->s, p) == 0)
          return 0;
 
       u = q;
       q = q->r;
    }
 
-   t = createListItem(p);
+   t = create_list_item(p);
    if(t){
-      if(*urls == NULL)
-         *urls = t;
+      if(*list == NULL)
+         *list = t;
       else if(u)
          u->r = t;
 
@@ -37,42 +37,51 @@ int append_list(struct url **urls, char *p){
 }
 
 
-struct url *createListItem(char *s){
-   struct url *h=NULL;
+struct list *create_list_item(char *s){
+   struct list *h=NULL;
 
-   if((h = malloc(sizeof(struct url))) == NULL)
+   if((h = malloc(sizeof(struct list))) == NULL)
       return NULL;
 
-   strncpy(h->url_str, s, URL_LEN-1);
+   snprintf(h->s, SMALLBUFSIZE-1, "%s", s);
    h->r = NULL;
 
    return h;
 }
 
 
-int isOnList(struct url *u, char *item){
-   struct url *p, *q;
+int is_string_on_list(struct list *list, char *s){
+   struct list *p;
 
-   p = u;
+   p = list;
 
    while(p != NULL){
-      q = p->r;
-
-      if(p){
-         if(strcmp(p->url_str, item) == 0) return 1;
-      }
-
-      p = q;
+      if(strcmp(p->s, s) == 0) return 1;
+      p = p->r;
    }
 
    return 0;
 }
 
 
-void freeList(struct url *u){
-   struct url *p, *q;
+int is_item_on_string(struct list *list, char *s){
+   struct list *p;
 
-   p = u;
+   p = list;
+
+   while(p != NULL){
+      if(strstr(s, p->s)) return 1;
+      p = p->r;
+   }
+
+   return 0;
+}
+
+
+void free_list(struct list *list){
+   struct list *p, *q;
+
+   p = list;
 
    while(p != NULL){
       q = p->r;

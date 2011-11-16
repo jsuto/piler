@@ -137,15 +137,15 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
 
                gettimeofday(&tv1, &tz);
-               sstate = parseMessage(&sdata, cfg);
+               sstate = parse_message(&sdata, cfg);
                gettimeofday(&tv2, &tz);
                sdata.__parsed = tvdiff(tv2, tv1);
 
                if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata.ttmpfile);
 
-
                sdata.need_scan = 1;
 
+               make_body_digest(&sdata, cfg);
 
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){
@@ -221,7 +221,6 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #endif
 
                unlink(sdata.ttmpfile);
-               freeState(&sstate);
 
 
                alarm(cfg->session_timeout);
@@ -430,7 +429,7 @@ AFTER_PERIOD:
     * ie. we have timed out than send back 421 error message
     */
 
-   if(state < SMTP_STATE_QUIT && inj != OK){
+   if(state < SMTP_STATE_QUIT && inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
       send(new_sd, buf, strlen(buf), 0);
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);

@@ -192,10 +192,6 @@ void trimBuffer(char *s){
 }
 
 
-/*
- * extract email
- */
-
 int extractEmail(char *rawmail, char *email){
    char *p;
 
@@ -212,10 +208,6 @@ int extractEmail(char *rawmail, char *email){
    return 0;
 }
 
-
-/*
- * create an ID
- */
 
 void create_id(char *id){
    int i;
@@ -307,28 +299,6 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 
 
 /*
- * check if it's a valid ID
- */
-
-int isValidClapfID(char *p){
-
-   if(strlen(p) != 30 && strlen(p) != 31)
-      return 0;
-
-   for(; *p; p++){
-      /* 0-9: 0x30-0x39, a-f: 0x61-0x66 */
-
-      if(! ((*p >= 0x30 && *p <= 0x39) || (*p >= 0x61 && *p <= 0x66) || *p == 0x0d) ){
-         //printf("%c*\n", *p);
-         return 0;
-      }
-   }
-
-   return 1;
-}
-
-
-/*
  * is it a valid dotted IPv4 address
  */
 
@@ -338,44 +308,6 @@ int isDottedIPv4Address(char *s){
    if(inet_aton(s, &addr) == 0) return 0;
 
    return 1;
-}
-
-
-/*
- * whitelist check
- */
-
-int isEmailAddressOnList(char *list, char *tmpfile, char *email, struct __config *cfg){
-   char *p, *q, w[SMALLBUFSIZE];
-
-   if(email == NULL) return 0;
-
-   p = list;
-
-   if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "%s: list: %s", tmpfile, list);
-
-   do {
-      p = split(p, '\n', w, SMALLBUFSIZE-1);
-
-      trimBuffer(w);
-
-      if(strlen(w) > 2){
-
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: matching '%s' on '%s'", tmpfile, w, email);
-
-         if(w[strlen(w)-1] == '$'){
-            q = email + strlen(email) - strlen(w) + 1;
-            if(strncasecmp(q, w, strlen(w)-1) == 0)
-               return 1;
-         }
-         else if(strcasestr(email, w))
-            return 1;
-
-      }
-
-   } while(p);
-
-   return 0;
 }
 
 

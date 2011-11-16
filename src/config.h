@@ -11,7 +11,7 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n\nSend bugs/issues to https://jira.acts.hu:8443/\n"
 
@@ -19,7 +19,7 @@
 
 #define CONFIG_FILE CONFDIR "/piler.conf"
 #define WORK_DIR DATADIR "/spool/piler/tmp"
-#define QUEUE_DIR DATADIR "/spool/piler/new"
+#define QUEUE_DIR DATADIR "/piler/new"
 #define DEFER_DIR DATADIR "/spool/piler/deferred"
 
 #define CLAMD_SOCKET "/tmp/clamd"
@@ -32,6 +32,7 @@
 #define MAXBUFSIZE 8192
 #define SMALLBUFSIZE 512
 #define BIGBUFSIZE 65535
+#define TINYBUFSIZE 128
 #define MAXVAL 256
 #define RANDOM_POOL "/dev/urandom"
 #define RND_STR_LEN 36
@@ -61,22 +62,12 @@
 
 #define MAX_RCPT_TO 128
 
-#ifdef HAVE_SQLITE3
-   #define MAX_KEY_VAL  9223372036854775807ULL
-#else
-   #define MAX_KEY_VAL 18446744073709551615ULL
-#endif
-
-
 #define MIN_WORD_LEN 3
 #define MAX_WORD_LEN 25
 #define MAX_TOKEN_LEN 4*MAX_WORD_LEN
-#define URL_LEN 48
 #define DELIMITER ' '
-#define SPAMINESS_HEADER_FIELD "X-Clapf-spamicity: "
 #define BOUNDARY_LEN 255
-#define JUNK_REPLACEMENT_CHAR 'j'
-#define MAX_ATTACHMENTS 8
+#define MAX_ATTACHMENTS 16
 
 /* SQL stuff */
 
