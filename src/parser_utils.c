@@ -49,8 +49,11 @@ void init_state(struct _state *state){
 
    state->has_to_dump = 0;
    state->fd = -1;
+   state->mfd = -1;
    state->realbinary = 0;
    state->octetstream = 0;
+   state->pushed_pointer = 1;
+   state->saved_size = 0;
 
    state->boundaries = NULL;
 
@@ -61,6 +64,8 @@ void init_state(struct _state *state){
       state->attachments[i].size = 0;
       memset(state->attachments[i].type, 0, TINYBUFSIZE);
       memset(state->attachments[i].filename, 0, TINYBUFSIZE);
+      memset(state->attachments[i].internalname, 0, TINYBUFSIZE);
+      memset(state->attachments[i].digest, 0, 2*DIGEST_LENGTH+1);
    }
 
    memset(state->b_from, 0, SMALLBUFSIZE);

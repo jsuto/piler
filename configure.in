@@ -317,7 +317,7 @@ echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs $sqlite3_libs"
-OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o session.o message.o digest.o store.o tai.o $objs"
+OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o tai.o $objs"
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

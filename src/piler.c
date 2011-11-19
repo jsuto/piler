@@ -38,6 +38,8 @@ struct passwd *pwd;
 void clean_exit(){
    if(sd != -1) close(sd);
 
+   free_rule(data.rules);
+
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
    unlink(cfg.pidfile);
@@ -61,7 +63,8 @@ void sigchld(){
 }
 
 
-void initialiseConfiguration(){
+void initialise_configuration(){
+   struct session_data sdata;
 
    cfg = read_config(configfile);
 
@@ -84,7 +87,21 @@ void initialiseConfiguration(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
-   data.blackhole = NULL;
+
+   free_rule(data.rules);
+   data.rules = NULL;
+
+   mysql_init(&(sdata.mysql));
+   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
+   if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
+      syslog(LOG_PRIORITY, "cannot connect to mysql server");
+      return;
+   }
+
+   load_archiving_rules(&sdata, &(data.rules));
+
+   mysql_close(&(sdata.mysql));
+
 
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);
 
@@ -147,17 +164,17 @@ int main(int argc, char **argv){
    sig_catch(SIGQUIT, clean_exit);
    sig_catch(SIGKILL, clean_exit);
    sig_catch(SIGTERM, clean_exit);
-   sig_catch(SIGHUP, initialiseConfiguration);
+   sig_catch(SIGHUP, initialise_configuration);
 
 
-   data.blackhole = NULL;
+   data.rules = NULL;
 
 
    sig_block(SIGCHLD);
    sig_catch(SIGCHLD, sigchld);
 
 
-   initialiseConfiguration();
+   initialise_configuration();
 
 
    if(read_key(&cfg)) fatal(ERR_READING_KEY);

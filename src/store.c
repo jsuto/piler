@@ -19,9 +19,9 @@
 #include <openssl/evp.h>
 
 
-int store_message(struct session_data *sdata, struct _state *state, int stored, struct __config *cfg){
-   int ret=0, rc, fd, n, len=sdata->tot_len;
-   char *addr, *p0, *p1, *p2, s[SMALLBUFSIZE];
+int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg){
+   int ret=0, rc, fd, n;
+   char *addr, *p, *p0, *p1, *p2, s[SMALLBUFSIZE];
    struct stat st;
    Bytef *z=NULL;
    uLongf dstlen;
@@ -34,18 +34,17 @@ int store_message(struct session_data *sdata, struct _state *state, int stored, 
    struct timeval tv1, tv2;
 
 
-   /* fix data length to store */
-
-   /*if(stored == 1 && sdata->hdr_len > 100){
-      len = sdata->hdr_len;
-   }*/
-
-   fd = open(sdata->ttmpfile, O_RDONLY);
+   fd = open(filename, O_RDONLY);
    if(fd == -1) return ret;
+
+   if(len == 0){
+      if(fstat(fd, &st)) return ret;
+      len = st.st_size;
+   }
 
    gettimeofday(&tv1, &tz);
 
-   addr = mmap(NULL, sdata->tot_len, PROT_READ, MAP_PRIVATE, fd, 0);
+   addr = mmap(NULL, len, PROT_READ, MAP_PRIVATE, fd, 0);
    close(fd);
 
    if(addr == MAP_FAILED) return ret;
@@ -55,7 +54,7 @@ int store_message(struct session_data *sdata, struct _state *state, int stored, 
    z = malloc(dstlen);
 
    if(z == NULL){
-      munmap(addr, sdata->tot_len);
+      munmap(addr, len);
       return ret;
    }
 
@@ -63,7 +62,7 @@ int store_message(struct session_data *sdata, struct _state *state, int stored, 
    gettimeofday(&tv2, &tz);
    sdata->__compress += tvdiff(tv2, tv1);
 
-   munmap(addr, sdata->tot_len);
+   munmap(addr, len);
 
    if(rc != Z_OK) goto ENDE;
 
@@ -84,9 +83,19 @@ int store_message(struct session_data *sdata, struct _state *state, int stored, 
    sdata->__encrypt += tvdiff(tv2, tv1);
 
 
-   /* create a filename according to piler_id */
+   /* create a filename in the store based on piler_id */
 
-   snprintf(s, sizeof(s)-1, "%s/%c%c/%c%c/%c%c/%s", cfg->queuedir, sdata->ttmpfile[RND_STR_LEN-6], sdata->ttmpfile[RND_STR_LEN-5], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile);
+   p = strchr(filename, '.');
+   if(p) *p = '\0';
+
+   snprintf(s, sizeof(s)-1, "%s/%c%c/%c%c/%c%c/%s", cfg->queuedir, filename[RND_STR_LEN-6], filename[RND_STR_LEN-5], filename[RND_STR_LEN-4], filename[RND_STR_LEN-3], filename[RND_STR_LEN-2], filename[RND_STR_LEN-1], filename);
+
+   if(p){
+      *p = '.';
+      strncat(s, p, sizeof(s)-1);
+   }
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to store %d bytes for %s", sdata->ttmpfile, len, filename);
 
    p0 = strrchr(s, '/'); if(!p0) goto ENDE;
    *p0 = '\0';
@@ -97,16 +106,16 @@ int store_message(struct session_data *sdata, struct _state *state, int stored, 
       p2 = strrchr(s, '/'); if(!p2) goto ENDE;
       *p2 = '\0';
 
-      mkdir(s, 0755);
+      mkdir(s, 0750);
       *p2 = '/';
-      mkdir(s, 0755);
+      mkdir(s, 0750);
       *p1 = '/';
-      mkdir(s, 0755);
+      mkdir(s, 0770);
    }
 
    *p0 = '/';
 
-   fd = open(s, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+   fd = open(s, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
    if(fd == -1) goto ENDE;
 
    n = write(fd, outbuf, outlen);

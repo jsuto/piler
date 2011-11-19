@@ -54,11 +54,28 @@ struct attachment {
    int size;
    char type[TINYBUFSIZE];
    char filename[TINYBUFSIZE];
+   char internalname[TINYBUFSIZE];
+   char digest[2*DIGEST_LENGTH+1];
 };
+
 
 struct list {
    char s[SMALLBUFSIZE];
    struct list *r;
+};
+
+
+struct rule {
+#ifdef HAVE_TRE
+   regex_t from;
+   regex_t to;
+   regex_t subject;
+#endif
+   int size;
+   char _size[4];
+   char *rulestr;
+   char compiled;
+   struct rule *r;
 };
 
 
@@ -78,9 +95,12 @@ struct _state {
    int skip_html;
    int has_to_dump;
    int fd;
+   int mfd;
    int octetstream;
    int realbinary;
    int content_type_is_set;
+   int pushed_pointer;
+   int saved_size;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char miscbuf[MAX_TOKEN_LEN];
@@ -99,7 +119,7 @@ struct _state {
 
 
 struct session_data {
-   char ttmpfile[SMALLBUFSIZE], tre;
+   char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre;
    char mailfrom[SMALLBUFSIZE], rcptto[MAX_RCPT_TO][SMALLBUFSIZE], client_addr[SMALLBUFSIZE];
    char acceptbuf[SMALLBUFSIZE];
    char whitelist[MAXBUFSIZE], blacklist[MAXBUFSIZE];
@@ -158,15 +178,8 @@ struct memcached_server {
 
 
 struct __data {
-   struct url *blackhole;
-
-#ifdef HAVE_LIBCLAMAV
-   struct cl_engine *engine;
-#endif
-
 #ifdef HAVE_TRE
-   regex_t pregs[NUM_OF_REGEXES];
-   int n_regex;
+   struct rule *rules;
 #endif
 
 #ifdef HAVE_MEMCACHED

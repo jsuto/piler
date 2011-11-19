@@ -42,6 +42,30 @@ create index metadata_idx on metadata(`piler_id`);
 create index metadata_idx2 on metadata(`message_id`); 
 create index metadata_idx3 on metadata(`bodydigest`); 
 
+drop table if exists `attachment`;
+create table `attachment` (
+   `id` bigint unsigned not null auto_increment,
+   `piler_id` char(36) not null,
+   `attachment_id` int not null,
+   `sig` char(64) not null,
+   `ptr` int default 0,
+   primary key (`id`)
+) Engine=InnoDB;
+
+create index `attachment_idx` on `attachment`(`piler_id`);
+create index `attachment_idx2` on `attachment`(`sig`);
+
+drop table if exists `archiving_rule`;
+create table `archiving_rule` (
+   `id` bigint unsigned not null auto_increment,
+   `from` char(128) default null,
+   `to` char(255) default null,
+   `_size` char(2) default null,
+   `size` int default 0,
+   primary key (`id`)
+);
+
+
 drop table if exists `counter`;
 create table if not exists `counter` (
    `rcvd` bigint unsigned default 0,

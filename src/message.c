@@ -229,7 +229,7 @@ ENDE_META:
 
 
 int processMessage(struct session_data *sdata, struct _state *state, struct __config *cfg){
-   int rc;
+   int i, rc;
 
    /* discard if existing message_id */
 
@@ -242,7 +242,25 @@ int processMessage(struct session_data *sdata, struct _state *state, struct __co
 
    rc = is_body_digest_already_stored(sdata, state, cfg);
 
-   rc = store_message(sdata, state, rc, cfg);
+   /*
+    * TODO: check if the bodydigest were stored, then we should
+    *       only store the header and append a 'bodypointer'
+    */
+
+
+
+   if(store_attachments(sdata, state, cfg)) return ERR;
+
+   for(i=0; i<state->n_attachments; i++){
+      unlink(state->attachments[i].internalname);
+   }
+
+
+   rc = store_file(sdata, sdata->tmpframe, 0, 0, cfg);
+   if(rc == 0){
+      syslog(LOG_PRIORITY, "%s: error storing message: %s", sdata->ttmpfile, sdata->tmpframe);
+      return ERR;
+   }
 
 
    rc = store_meta_data(sdata, state, cfg);

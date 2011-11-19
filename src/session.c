@@ -20,6 +20,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    char rctptoemail[SMALLBUFSIZE], fromemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], reason[SMALLBUFSIZE];
+   char *arule = NULL;
    struct session_data sdata;
    struct _state sstate;
    int db_conn=0;
@@ -184,7 +185,19 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         inj = ERR;
                      } else {
                         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata.ttmpfile);
-                        inj = processMessage(&sdata, &sstate, cfg);
+
+                        /* check message against archiving rules */
+
+                        arule = check_againt_ruleset(data->rules, sstate.b_from, sstate.b_to, sstate.b_subject, sdata.tot_len);
+
+                        if(arule){
+                           syslog(LOG_PRIORITY, "%s: discard message by policy: *%s*", sdata.ttmpfile, arule);
+                           inj = OK;
+                        }
+                        else {
+                           inj = processMessage(&sdata, &sstate, cfg);
+                        }
+
                      }
 
                   }
@@ -221,6 +234,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #endif
 
                unlink(sdata.ttmpfile);
+               unlink(sdata.tmpframe);
 
 
                alarm(cfg->session_timeout);
@@ -381,6 +395,7 @@ AFTER_PERIOD:
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
             unlink(sdata.ttmpfile);
+            unlink(sdata.tmpframe);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sdata.ttmpfile);
 
             goto QUITTING;
@@ -399,6 +414,7 @@ AFTER_PERIOD:
 
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sdata.ttmpfile);
             unlink(sdata.ttmpfile);
+            unlink(sdata.tmpframe);
 
             initSessionData(&sdata);
 
@@ -471,6 +487,9 @@ void initSessionData(struct session_data *sdata){
 
    create_id(&(sdata->ttmpfile[0]));
    unlink(sdata->ttmpfile);
+
+   snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", sdata->ttmpfile);
+   unlink(sdata->tmpframe);
 
    memset(sdata->mailfrom, 0, SMALLBUFSIZE);
    snprintf(sdata->client_addr, SMALLBUFSIZE-1, "null");

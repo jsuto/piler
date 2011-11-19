@@ -11,7 +11,7 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.3"
+#define VERSION "0.1.5"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n\nSend bugs/issues to https://jira.acts.hu:8443/\n"
 
@@ -19,7 +19,7 @@
 
 #define CONFIG_FILE CONFDIR "/piler.conf"
 #define WORK_DIR DATADIR "/spool/piler/tmp"
-#define QUEUE_DIR DATADIR "/piler/new"
+#define QUEUE_DIR DATADIR "/piler/store"
 #define DEFER_DIR DATADIR "/spool/piler/deferred"
 
 #define CLAMD_SOCKET "/tmp/clamd"
@@ -73,8 +73,8 @@
 
 #define SQL_SPHINX_TABLE "sph_index"
 #define SQL_METADATA_TABLE "metadata"
-#define SQL_HEADER_TABLE "header"
-#define SQL_BODY_TABLE "body"
+#define SQL_ATTACHMENT_TABLE "attachment"
+#define SQL_ARCHIVING_RULE_TABLE "archiving_rule"
 #define SQL_COUNTER_TABLE "counter"
 
 

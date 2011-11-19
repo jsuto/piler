@@ -61,3 +61,29 @@ int make_body_digest(struct session_data *sdata, struct __config *cfg){
 }
 
 
+void digest_file(char *filename, char *digest){
+   int fd, i, n;
+   unsigned char buf[MAXBUFSIZE], md[DIGEST_LENGTH];
+   SHA256_CTX context;
+
+   memset(digest, 0, 2*DIGEST_LENGTH+1);
+
+   fd = open(filename, O_RDONLY);
+   if(fd == -1) return;
+
+   SHA256_Init(&context);
+
+   while((n = read(fd, buf, MAXBUFSIZE)) > 0){
+      SHA256_Update(&context, buf, n);
+   }
+
+   close(fd);
+
+   SHA256_Final(md, &context);
+
+   for(i=0;i<DIGEST_LENGTH;i++)
+      snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
+
+}
+
+

@@ -16,11 +16,14 @@
 
 
 int main(int argc, char **argv){
-   int i, rc;
+   int rc;
    struct stat st;
    struct session_data sdata;
    struct _state state;
    struct __config cfg;
+   struct __data data;
+   char *rule;
+
 
    if(argc < 2){
       fprintf(stderr, "usage: %s <message>\n", argv[0]);
@@ -34,8 +37,20 @@ int main(int argc, char **argv){
 
    cfg = read_config(CONFIG_FILE);
 
+   mysql_init(&(sdata.mysql));
+   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
+   if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
+      printf("cant connect to mysql server\n");
+      return 0;
+   }
+
    printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
+
+   data.rules = NULL;
+
+
+   load_archiving_rules(&sdata, &(data.rules));
 
    rc = 0;
  
@@ -45,6 +60,7 @@ int main(int argc, char **argv){
    sdata.tot_len = st.st_size;
    memset(sdata.rcptto[0], 0, SMALLBUFSIZE);
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
+   snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
    state = parse_message(&sdata, &cfg);
 
@@ -52,15 +68,18 @@ int main(int argc, char **argv){
    printf("from: *%s*\n", state.b_from);
    printf("to: *%s*\n", state.b_to);
    printf("subject: *%s*\n", state.b_subject);
-   printf("body: *%s*\n", state.b_body);
+   //printf("body: *%s*\n", state.b_body);
 
    make_body_digest(&sdata, &cfg);
-
+   rule = check_againt_ruleset(data.rules, state.b_from, state.b_to, state.b_subject, st.st_size);
+ 
    printf("body digest: %s\n", sdata.bodydigest);
 
-   for(i=0; i<state.n_attachments; i++){
-      printf("i:%d, name=*%s*, type: *%s*, size: %d\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size);
-   }
+   printf("rules check: %s\n", rule);
+
+   mysql_close(&(sdata.mysql));
+
+   free_rule(data.rules);
 
    printf("\n\n");
 

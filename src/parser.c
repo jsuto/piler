@@ -20,7 +20,7 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    FILE *f;
    char buf[MAXBUFSIZE];
    struct _state state;
-   int len;
+   int i, len;
 
    init_state(&state);
 
@@ -30,14 +30,30 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
       return state;
    }
 
-   while(fgets(buf, MAXBUFSIZE-1, f)){
-      parse_line(buf, &state, sdata, cfg);
+
+   state.mfd = open(sdata->tmpframe, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+   if(state.mfd == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open frame file: %s", sdata->ttmpfile, sdata->tmpframe);
+      return state;
    }
 
 
+   while(fgets(buf, sizeof(buf)-1, f)){
+      parse_line(buf, &state, sdata, cfg);
+   }
+
+   close(state.mfd); state.mfd = 0;
    fclose(f);
 
+
    free_list(state.boundaries);
+
+
+   for(i=0; i<state.n_attachments; i++){
+      digest_file(state.attachments[i].internalname, &(state.attachments[i].digest[0]));
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+   }
+
 
    if(state.message_id[0] == 0) snprintf(state.message_id, SMALLBUFSIZE-1, "null");
 
@@ -59,6 +75,26 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
 
    state->line_num++;
+   len = strlen(buf);
+
+   if(state->message_state == MSG_BODY && state->has_to_dump == 1 && state->pushed_pointer == 0){
+      snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.%d\n", sdata->ttmpfile, state->n_attachments);
+      write(state->mfd, puf, strlen(puf));
+      state->pushed_pointer = 1;
+   }
+
+   if(state->message_state == MSG_BODY && state->has_to_dump == 1 && is_item_on_string(state->boundaries, buf) == 0){
+      //printf("dumping: %s", buf);
+      write(state->fd, buf, len);
+      state->attachments[state->n_attachments].size += len;
+   }
+   else {
+      state->saved_size += len;
+      //printf("%s", buf);
+      write(state->mfd, buf, len);
+   }
+
+
 
    if(*buf == '.' && *(buf+1) == '.') buf++;
 
@@ -138,8 +174,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
          if(p) *p = '\0';
       }
 
-      extractNameFromHeaderLine(buf, "name", state->attachments[state->n_attachments].filename);
-
 
       if(strcasestr(buf, "text/plain") ||
          strcasestr(buf, "multipart/mixed") ||
@@ -165,14 +199,19 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
 
       if(strcasestr(buf, "charset") && strcasestr(buf, "UTF-8")) state->utf8 = 1;
+   }
 
 
-      if(strlen(state->attachments[state->n_attachments].filename) > 4){
+   if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
+      if(strlen(state->attachments[state->n_attachments].filename) < 5){
+         extractNameFromHeaderLine(buf, "name", state->attachments[state->n_attachments].filename);
+         snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
+      }
+
+      if(strlen(state->attachments[state->n_attachments].filename) > 4 && state->has_to_dump == 0){
          state->has_to_dump = 1;
-         snprintf(puf, sizeof(puf)-1, "%s.%d", sdata->ttmpfile, state->n_attachments);
-         printf("dump file: %s\n", puf);
-
-         //state->fd = open(u, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+         //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
+         state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
       }
 
    }
@@ -205,7 +244,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       if(state->n_attachments < MAX_ATTACHMENTS-1) state->n_attachments++;
 
-      /* use the previous attachment slot if it was not an attached file */
+      /*
+         Use the previous attachment slot if there was not an attached file.
+         This is also the case if the filename field is empty.
+      */
       if(state->n_attachments > 0 && strlen(state->attachments[state->n_attachments-1].filename) < 5){
          state->n_attachments--;
       }
@@ -218,6 +260,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       state->qp = 0;
 
       state->realbinary = 0;
+
+      state->pushed_pointer = 0;
 
       return 0;      
    }
@@ -237,16 +281,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    }
 
 
-   if(state->message_state == MSG_BODY){
-
-      if(state->has_to_dump == 1){
-         //printf("dumping: %s *%s*\n", state->attachments[state->n_attachments].filename, buf);
-         state->attachments[state->n_attachments].size += strlen(buf);
-      }
-
-      /* don't process body if it's not a text or html part */
-      if(state->textplain == 0 && state->texthtml == 0) return 0;
-   }
+   /* don't process body if it's not a text or html part */
+   if(state->message_state == MSG_BODY && state->textplain == 0 && state->texthtml == 0) return 0;
 
 
    if(state->base64 == 1 && state->message_state == MSG_BODY){
