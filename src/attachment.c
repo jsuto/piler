@@ -23,7 +23,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    MYSQL_RES *res;
    MYSQL_ROW row;
 
-   for(i=0; i<state->n_attachments; i++){
+   for(i=1; i<=state->n_attachments; i++){
       found = 0;
       id = 0;
 

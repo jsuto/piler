@@ -62,6 +62,7 @@ create table `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
    `from` char(128) default null,
    `to` char(255) default null,
+   `subject` char(255) default null,
    `_size` char(2) default null,
    `size` int default 0,
    primary key (`id`)
