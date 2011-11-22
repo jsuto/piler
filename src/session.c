@@ -85,10 +85,10 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             memcpy(last2buf+prevlen, puf, MAXBUFSIZE);
 
 
-            if(sdata.hdr_len == 0){
+            /*if(sdata.hdr_len == 0){
                sdata.hdr_len = searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, "\n\r\n", 3);
                if(sdata.hdr_len == 0) searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, "\n\n", 2);
-            }
+            }*/
 
             pos = searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, SMTP_CMD_PERIOD, 5);
             if(pos > 0){
@@ -106,7 +106,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                /* fix posistion! */
                pos += strlen(SMTP_CMD_PERIOD);
 
-               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.), header length=%d", sdata.ttmpfile, sdata.hdr_len);
+               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sdata.ttmpfile);
 
 
                state = SMTP_STATE_PERIOD;
@@ -146,6 +146,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                sdata.need_scan = 1;
 
+               digest_file(sdata.ttmpfile, sdata.digest);
                make_body_digest(&sdata, cfg);
 
             #ifdef HAVE_ANTIVIRUS
@@ -191,7 +192,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         arule = check_againt_ruleset(data->rules, sstate.b_from, sstate.b_to, sstate.b_subject, sdata.tot_len);
 
                         if(arule){
-                           syslog(LOG_PRIORITY, "%s: discard message by policy: *%s*", sdata.ttmpfile, arule);
+                           syslog(LOG_PRIORITY, "%s: discarding message by policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
                         }
                         else {

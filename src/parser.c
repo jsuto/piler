@@ -49,9 +49,10 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    free_list(state.boundaries);
 
 
-   for(i=0; i<state.n_attachments; i++){
+   for(i=1; i<=state.n_attachments; i++){
       digest_file(state.attachments[i].internalname, &(state.attachments[i].digest[0]));
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+      //printf("attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
    }
 
 
@@ -73,17 +74,20 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    char *p, *r, puf[SMALLBUFSIZE];
    int x, len, b64_len, boundary_line=0;
 
-
    state->line_num++;
    len = strlen(buf);
 
-   if(state->message_state == MSG_BODY && state->has_to_dump == 1 && state->pushed_pointer == 0){
-      snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.%d\n", sdata->ttmpfile, state->n_attachments);
-      write(state->mfd, puf, strlen(puf));
-      state->pushed_pointer = 1;
+   //printf("buf: %s", buf);
+
+   if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){
+      state->message_state = MSG_BODY;
+
+      if(state->is_header == 1) state->is_header = 0;
+      state->is_1st_header = 0;
    }
 
-   if(state->message_state == MSG_BODY && state->has_to_dump == 1 && is_item_on_string(state->boundaries, buf) == 0){
+
+   if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
       //printf("dumping: %s", buf);
       write(state->fd, buf, len);
       state->attachments[state->n_attachments].size += len;
@@ -92,6 +96,34 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       state->saved_size += len;
       //printf("%s", buf);
       write(state->mfd, buf, len);
+   }
+
+
+   if(state->message_state == MSG_BODY && state->has_to_dump == 1 &&  state->pushed_pointer == 0){
+      //printf("####name: %s, type: %s, base64: %d\n", state->filename, state->type, state->base64);
+
+      state->pushed_pointer = 1;
+
+
+      // this is a real attachment to dump
+      if(state->base64 == 1 && strlen(state->filename) > 5 && strlen(state->type) > 3 && state->n_attachments < MAX_ATTACHMENTS-1){
+         state->n_attachments++;
+
+         snprintf(state->attachments[state->n_attachments].filename, TINYBUFSIZE-1, "%s", state->filename);
+         snprintf(state->attachments[state->n_attachments].type, TINYBUFSIZE-1, "%s", state->type);
+         snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
+
+         //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
+         state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+
+         snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d", sdata->ttmpfile, state->n_attachments);
+         write(state->mfd, puf, strlen(puf));
+         //printf("%s", puf);
+      }
+      else {
+         state->has_to_dump = 0;
+      }
+
    }
 
 
@@ -104,10 +136,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    /* skip empty lines */
 
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){
-      state->message_state = MSG_BODY;
-
-      if(state->is_header == 1) state->is_header = 0;
-
       return 0;
    }
 
@@ -168,9 +196,9 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       if(p){
          p++;
          if(*p == ' ' || *p == '\t') p++;
-         snprintf(state->attachments[state->n_attachments].type, TINYBUFSIZE-1, "%s", p);
+         snprintf(state->type, TINYBUFSIZE-1, "%s", p);
          state->content_type_is_set = 1;
-         p = strchr(state->attachments[state->n_attachments].type, ';');
+         p = strchr(state->type, ';');
          if(p) *p = '\0';
       }
 
@@ -202,34 +230,19 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    }
 
 
-   if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
-      if(strlen(state->attachments[state->n_attachments].filename) < 5){
-         extractNameFromHeaderLine(buf, "name", state->attachments[state->n_attachments].filename);
-         snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
-      }
-
-      if(strlen(state->attachments[state->n_attachments].filename) > 4 && state->has_to_dump == 0){
-         state->has_to_dump = 1;
-         //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
-         state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
-      }
-
+   if((state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION) && strlen(state->filename) < 5){
+      extractNameFromHeaderLine(buf, "name", state->filename);
    }
 
 
    if(state->message_state == MSG_CONTENT_TRANSFER_ENCODING){
-
-      if(strcasestr(buf, "base64")){
-         state->base64 = 1;
-         state->has_base64 = 1;
-      }
-
+      if(strcasestr(buf, "base64")) state->base64 = 1;
       if(strcasestr(buf, "quoted-printable")) state->qp = 1;
    }
 
 
 
-   /* skip the boundary itself */
+   /* boundary check, and reset variables */
 
    boundary_line = is_item_on_string(state->boundaries, buf);
 
@@ -242,17 +255,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       }
 
 
-      if(state->n_attachments < MAX_ATTACHMENTS-1) state->n_attachments++;
-
-      /*
-         Use the previous attachment slot if there was not an attached file.
-         This is also the case if the filename field is empty.
-      */
-      if(state->n_attachments > 0 && strlen(state->attachments[state->n_attachments-1].filename) < 5){
-         state->n_attachments--;
-      }
-
-      state->has_to_dump = 0;
+      state->has_to_dump = 1;
 
       state->base64 = 0; state->textplain = 0; state->texthtml = state->octetstream = 0;
       state->skip_html = 0;
@@ -262,6 +265,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       state->realbinary = 0;
 
       state->pushed_pointer = 0;
+
+      memset(state->filename, 0, TINYBUFSIZE);
+      memset(state->type, 0, TINYBUFSIZE);
+
+      state->message_state = MSG_UNDEF;
 
       return 0;      
    }
@@ -339,13 +347,13 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       len = strlen(puf);
 
-      if(state->message_state == MSG_SUBJECT && strlen(state->b_subject) < MAXBUFSIZE-len-1)
+      if(state->message_state == MSG_SUBJECT && state->is_1st_header == 1 && strlen(state->b_subject) < MAXBUFSIZE-len-1)
          memcpy(&(state->b_subject[strlen(state->b_subject)]), puf, len);
 
-      else if(state->message_state == MSG_FROM && strchr(puf, '@') && strlen(state->b_from) < SMALLBUFSIZE-len-1)
+      else if(state->message_state == MSG_FROM && strchr(puf, '@') && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && strchr(puf, '@') && strlen(state->b_to) < SMALLBUFSIZE-len-1)
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(state->b_to) < SMALLBUFSIZE-len-1)
          memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
 
       else if(state->message_state == MSG_BODY && strlen(state->b_body) < BIGBUFSIZE-len-1)

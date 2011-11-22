@@ -111,25 +111,6 @@ void initialise_configuration(){
 }
 
 
-int read_key(struct __config *cfg){
-   int fd, n;
-
-   fd = open(KEYFILE, O_RDONLY);
-   if(fd == -1){
-      syslog(LOG_PRIORITY, "cannot read keyfile: %s", KEYFILE);
-      return -1;
-   }
-
-   n = read(fd, cfg->key, KEYLEN);
-
-   close(fd);
-
-   if(n > 5) return 0;
-
-   return 1;
-}
-
-
 int main(int argc, char **argv){
    int i, new_sd, yes=1, pid, daemonise=0;
    unsigned int clen;

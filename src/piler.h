@@ -26,6 +26,8 @@
    #include "memc.h"
 #endif
 
+int read_key(struct __config *cfg);
+
 int do_av_check(struct session_data *sdata, char *rcpttoemail, char *fromemail, char *virusinfo, struct __data *data, struct __config *cfg);
 
 int make_body_digest(struct session_data *sdata, struct __config *cfg);

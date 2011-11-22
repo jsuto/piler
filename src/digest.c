@@ -15,12 +15,12 @@
 
 
 int make_body_digest(struct session_data *sdata, struct __config *cfg){
-   int i=0, n, fd;
-   char *p, *body=NULL;
+   int i=0, n, fd, hdr_len=0, offset=3;
+   char *body=NULL;
    unsigned char buf[MAXBUFSIZE], md[DIGEST_LENGTH];
    SHA256_CTX context;
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: digesting", sdata->ttmpfile);
+   //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: digesting", sdata->ttmpfile);
 
    memset(sdata->bodydigest, 0, 2*DIGEST_LENGTH+1);
    SHA256_Init(&context);
@@ -31,23 +31,30 @@ int make_body_digest(struct session_data *sdata, struct __config *cfg){
    while((n = read(fd, buf, MAXBUFSIZE)) > 0){
       body = (char *)&buf[0];
 
-      i++;
-      if(i == 1){
-         p = strstr((char*)buf, "\n\n");
-         if(p){
-            body = p+2;
-            n = strlen(body);
-         } else {
-            p = strstr((char*)buf, "\n\r\n");
-            if(p){
-               body = p+3;
-               n = strlen(body);
-            }
+      if(i == 0){
+
+         hdr_len = searchStringInBuffer(body, MAXBUFSIZE, "\n\r\n", 3);
+         if(hdr_len == 0){
+            searchStringInBuffer(body, 2*MAXBUFSIZE+1, "\n\n", 2);
+            offset = 2;
+         }
+
+         if(hdr_len > 0){
+            hdr_len += offset;
+
+            sdata->hdr_len = hdr_len;
+
+            body += hdr_len;
+            n -= hdr_len;
+
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: hdr_len: %d, offset: %d", sdata->ttmpfile, hdr_len, offset);
          }
       }
 
+
       SHA256_Update(&context, body, n);
 
+      i++;
    }
 
    close(fd);

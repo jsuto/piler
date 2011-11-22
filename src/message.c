@@ -145,7 +145,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
       goto ENDE_META;
    }
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`to`,`subject`,`arrived`,`sent`,`size`,`hlen`,`piler_id`,`message_id`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,'%s',?,'%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->ttmpfile, sdata->bodydigest);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`to`,`subject`,`arrived`,`sent`,`size`,`hlen`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
@@ -203,7 +203,6 @@ LABEL1:
 
 
          rc = mysql_stmt_execute(stmt);
-         //rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
 
          if(rc){
             syslog(LOG_PRIORITY, "%s: meta sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
@@ -249,12 +248,13 @@ int processMessage(struct session_data *sdata, struct _state *state, struct __co
 
 
 
-   if(store_attachments(sdata, state, cfg)) return ERR;
+   rc = store_attachments(sdata, state, cfg);
 
-   for(i=0; i<state->n_attachments; i++){
+   for(i=1; i<=state->n_attachments; i++){
       unlink(state->attachments[i].internalname);
    }
 
+   if(rc) return ERR;
 
    rc = store_file(sdata, sdata->tmpframe, 0, 0, cfg);
    if(rc == 0){

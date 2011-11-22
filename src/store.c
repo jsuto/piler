@@ -19,6 +19,25 @@
 #include <openssl/evp.h>
 
 
+int read_key(struct __config *cfg){
+   int fd, n;
+
+   fd = open(KEYFILE, O_RDONLY);
+   if(fd == -1){
+      syslog(LOG_PRIORITY, "cannot read keyfile: %s", KEYFILE);
+      return -1;
+   }
+
+   n = read(fd, cfg->key, KEYLEN);
+
+   close(fd);
+
+   if(n > 5) return 0;
+
+   return 1;
+}
+
+
 int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg){
    int ret=0, rc, fd, n;
    char *addr, *p, *p0, *p1, *p2, s[SMALLBUFSIZE];
@@ -35,11 +54,15 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
 
    fd = open(filename, O_RDONLY);
-   if(fd == -1) return ret;
+   if(fd == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open: %s", sdata->ttmpfile, filename);
+      return ret;
+   }
 
    if(len == 0){
       if(fstat(fd, &st)) return ret;
       len = st.st_size;
+      if(len == 0) return 1;
    }
 
    gettimeofday(&tv1, &tz);
@@ -55,6 +78,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    if(z == NULL){
       munmap(addr, len);
+      syslog(LOG_PRIORITY, "%s: cannot malloc for z buffer", sdata->ttmpfile);
       return ret;
    }
 
@@ -116,12 +140,19 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
    *p0 = '/';
 
    fd = open(s, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
-   if(fd == -1) goto ENDE;
+   if(fd == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open: %s", sdata->ttmpfile, s);
+      goto ENDE;
+   }
+
 
    n = write(fd, outbuf, outlen);
 
    if(n == outlen){
       ret = 1;
+   }
+   else {
+      syslog(LOG_PRIORITY, "%s: cannot write %d bytes (only %d)", sdata->ttmpfile, outlen, n);
    }
 
    fsync(fd);

@@ -27,7 +27,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
       found = 0;
       id = 0;
 
-      if(strlen(state->attachments[i].filename) > 4){
+      if(strlen(state->attachments[i].filename) > 4 && state->attachments[i].size > 10){
 
          snprintf(s, sizeof(s)-1, "SELECT `id` FROM `%s` WHERE `sig`='%s'", SQL_ATTACHMENT_TABLE, state->attachments[i].digest);
 
@@ -57,11 +57,6 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
 
          if(mysql_real_query(&(sdata->mysql), s, strlen(s))){
             syslog(LOG_PRIORITY, "%s attachment sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-
-            if(found == 0){
-               /* TODO: remove the previously stored attachment */
-            }
-
             return 1;
          }
 

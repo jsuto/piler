@@ -83,11 +83,11 @@ struct _state {
    int line_num;
    int message_state;
    int is_header;
+   int is_1st_header;
    int textplain;
    int texthtml;
    int message_rfc822;
    int base64;
-   int has_base64;
    int utf8;
    int qp;
    int htmltag;
@@ -109,6 +109,9 @@ struct _state {
    unsigned long n_body_token;
    unsigned long n_chain_token;
 
+   char filename[TINYBUFSIZE];
+   char type[TINYBUFSIZE];
+
    struct list *boundaries;
 
    int n_attachments;
@@ -127,6 +130,7 @@ struct session_data {
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
    char bodydigest[2*DIGEST_LENGTH+1];
+   char digest[2*DIGEST_LENGTH+1];
    time_t now, sent;
 #ifdef NEED_MYSQL
    MYSQL mysql;

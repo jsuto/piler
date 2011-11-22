@@ -27,6 +27,7 @@ void init_state(struct _state *state){
    state->line_num = 0;
 
    state->is_header = 1;
+   state->is_1st_header = 1;
 
    state->textplain = 1; /* by default we are a text/plain message */
    state->texthtml = 0;
@@ -47,18 +48,20 @@ void init_state(struct _state *state){
    memset(state->message_id, 0, SMALLBUFSIZE);
    memset(state->miscbuf, 0, MAX_TOKEN_LEN);
 
+   memset(state->filename, 0, TINYBUFSIZE);
+   memset(state->type, 0, TINYBUFSIZE);
+
    state->has_to_dump = 0;
    state->fd = -1;
    state->mfd = -1;
    state->realbinary = 0;
    state->octetstream = 0;
-   state->pushed_pointer = 1;
+   state->pushed_pointer = 0;
    state->saved_size = 0;
 
    state->boundaries = NULL;
 
    state->n_attachments = 0;
-   state->has_base64 = 0;
 
    for(i=0; i<MAX_ATTACHMENTS; i++){
       state->attachments[i].size = 0;

@@ -32,8 +32,10 @@ create table `metadata` (
   `deleted` int default 0,
   `size` int default 0,
   `hlen` int default 0,
+  `attachments` int default 0,
   `piler_id` char(36) not null,
   `message_id` char(128) character set 'latin1' not null,
+  `digest` char(64) not null,
   `bodydigest` char(64) not null,
   primary key (`id`), unique(`to`,`message_id`)
 ) Engine=InnoDB;

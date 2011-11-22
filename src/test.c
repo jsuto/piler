@@ -16,7 +16,7 @@
 
 
 int main(int argc, char **argv){
-   int rc;
+   int i, rc;
    struct stat st;
    struct session_data sdata;
    struct _state state;
@@ -49,7 +49,6 @@ int main(int argc, char **argv){
 
    data.rules = NULL;
 
-
    load_archiving_rules(&sdata, &(data.rules));
 
    rc = 0;
@@ -62,6 +61,7 @@ int main(int argc, char **argv){
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
+
    state = parse_message(&sdata, &cfg);
 
    printf("message-id: %s\n", state.message_id);
@@ -73,13 +73,17 @@ int main(int argc, char **argv){
    make_body_digest(&sdata, &cfg);
    rule = check_againt_ruleset(data.rules, state.b_from, state.b_to, state.b_subject, st.st_size);
  
-   printf("body digest: %s\n", sdata.bodydigest);
+   //printf("body digest: %s\n", sdata.bodydigest);
 
-   printf("rules check: %s\n", rule);
+   //printf("rules check: %s\n", rule);
 
    mysql_close(&(sdata.mysql));
 
    free_rule(data.rules);
+
+   for(i=1; i<=state.n_attachments; i++){
+      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+   }
 
    printf("\n\n");
 
