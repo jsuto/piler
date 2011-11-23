@@ -189,10 +189,10 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                         /* check message against archiving rules */
 
-                        arule = check_againt_ruleset(data->rules, sstate.b_from, sstate.b_to, sstate.b_subject, sdata.tot_len);
+                        arule = check_againt_ruleset(data->rules, &sstate, sdata.tot_len);
 
                         if(arule){
-                           syslog(LOG_PRIORITY, "%s: discarding message by policy: *%s*", sdata.ttmpfile, arule);
+                           syslog(LOG_PRIORITY, "%s: discarding message by archiving policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
                         }
                         else {

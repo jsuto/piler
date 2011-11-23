@@ -247,14 +247,18 @@ int processMessage(struct session_data *sdata, struct _state *state, struct __co
     */
 
 
+   /* store base64 encoded file attachments */
 
-   rc = store_attachments(sdata, state, cfg);
+   if(state->n_attachments > 0){
+      rc = store_attachments(sdata, state, cfg);
 
-   for(i=1; i<=state->n_attachments; i++){
-      unlink(state->attachments[i].internalname);
+      for(i=1; i<=state->n_attachments; i++){
+         unlink(state->attachments[i].internalname);
+      }
+
+      if(rc) return ERR;
    }
 
-   if(rc) return ERR;
 
    rc = store_file(sdata, sdata->tmpframe, 0, 0, cfg);
    if(rc == 0){

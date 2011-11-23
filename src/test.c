@@ -71,11 +71,11 @@ int main(int argc, char **argv){
    //printf("body: *%s*\n", state.b_body);
 
    make_body_digest(&sdata, &cfg);
-   rule = check_againt_ruleset(data.rules, state.b_from, state.b_to, state.b_subject, st.st_size);
+   rule = check_againt_ruleset(data.rules, &state, st.st_size);
  
    //printf("body digest: %s\n", sdata.bodydigest);
 
-   //printf("rules check: %s\n", rule);
+   printf("rules check: %s\n", rule);
 
    mysql_close(&(sdata.mysql));
 

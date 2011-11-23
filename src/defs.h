@@ -70,9 +70,13 @@ struct rule {
    regex_t from;
    regex_t to;
    regex_t subject;
+   regex_t attachment_type;
 #endif
    int size;
    char _size[4];
+   int attachment_size;
+   char _attachment_size[4];
+
    char *rulestr;
    char compiled;
    struct rule *r;

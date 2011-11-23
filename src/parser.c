@@ -115,10 +115,25 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
          //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
          state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+         if(state->fd == -1){
 
-         snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d", sdata->ttmpfile, state->n_attachments);
-         write(state->mfd, puf, strlen(puf));
-         //printf("%s", puf);
+            state->attachments[state->n_attachments].size = 0;
+            memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
+            memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
+            memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
+            memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
+
+            syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
+
+            state->n_attachments--;
+            state->has_to_dump = 0;
+
+         }
+         else {
+            snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d", sdata->ttmpfile, state->n_attachments);
+            write(state->mfd, puf, strlen(puf));
+            //printf("%s", puf);
+         }
       }
       else {
          state->has_to_dump = 0;

@@ -49,7 +49,9 @@ create table `attachment` (
    `id` bigint unsigned not null auto_increment,
    `piler_id` char(36) not null,
    `attachment_id` int not null,
+   `type` char(64) default null,
    `sig` char(64) not null,
+   `size` int default 0,
    `ptr` int default 0,
    primary key (`id`)
 ) Engine=InnoDB;
@@ -65,9 +67,11 @@ create table `archiving_rule` (
    `subject` char(255) default null,
    `_size` char(2) default null,
    `size` int default 0,
+   `attachment_type` char(128) default null,
+   `_attachment_size` char(2) default null,
+   `attachment_size` int default 0,
    primary key (`id`)
-);
-
+) ENGINE=InnoDB;
 
 drop table if exists `counter`;
 create table if not exists `counter` (
