@@ -18,7 +18,7 @@
 
 int store_attachments(struct session_data *sdata, struct _state *state, struct __config *cfg){
    uint64 id=0;
-   int i, found;
+   int i, found, affected_rows;
    char s[SMALLBUFSIZE];
    MYSQL_RES *res;
    MYSQL_ROW row;
@@ -114,6 +114,12 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
 
          if(mysql_stmt_execute(stmt)){
             syslog(LOG_PRIORITY, "%s attachment sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
+            return 1;
+         }
+
+         affected_rows = mysql_stmt_affected_rows(stmt);
+         if(affected_rows != 1){
+            syslog(LOG_PRIORITY, "%s attachment sql error: affected rows: %d", sdata->ttmpfile, affected_rows);
             return 1;
          }
 
