@@ -17,7 +17,7 @@
 int make_body_digest(struct session_data *sdata, struct __config *cfg){
    int i=0, n, fd, hdr_len=0, offset=3;
    char *body=NULL;
-   unsigned char buf[MAXBUFSIZE], md[DIGEST_LENGTH];
+   unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH];
    SHA256_CTX context;
 
    //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: digesting", sdata->ttmpfile);
@@ -28,14 +28,14 @@ int make_body_digest(struct session_data *sdata, struct __config *cfg){
    fd = open(sdata->ttmpfile, O_RDONLY);
    if(fd == -1) return -1;
 
-   while((n = read(fd, buf, MAXBUFSIZE)) > 0){
+   while((n = read(fd, buf, sizeof(buf))) > 0){
       body = (char *)&buf[0];
 
       if(i == 0){
 
-         hdr_len = searchStringInBuffer(body, MAXBUFSIZE, "\n\r\n", 3);
+         hdr_len = searchStringInBuffer(body, sizeof(buf), "\n\r\n", 3);
          if(hdr_len == 0){
-            searchStringInBuffer(body, 2*MAXBUFSIZE+1, "\n\n", 2);
+            searchStringInBuffer(body, sizeof(buf), "\n\n", 2);
             offset = 2;
          }
 
@@ -80,7 +80,7 @@ void digest_file(char *filename, char *digest){
 
    SHA256_Init(&context);
 
-   while((n = read(fd, buf, MAXBUFSIZE)) > 0){
+   while((n = read(fd, buf, sizeof(buf))) > 0){
       SHA256_Update(&context, buf, n);
    }
 

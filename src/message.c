@@ -116,9 +116,12 @@ int is_body_digest_already_stored(struct session_data *sdata, struct _state *sta
 
 int hand_to_sphinx(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int rc;
-   char s[BIGBUFSIZE+2*MAXBUFSIZE];
+   char *subj, s[BIGBUFSIZE+2*MAXBUFSIZE];
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `piler_id`) values('%s','%s','%s','%s',%ld,%ld,%d,'%s')", SQL_SPHINX_TABLE, state->b_from, state->b_to, state->b_subject, state->b_body, sdata->now, sdata->sent, sdata->tot_len, sdata->ttmpfile);
+   subj = state->b_subject;
+   if(*subj == ' ') subj++;
+
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`, `piler_id`) values('%s','%s','%s','%s',%ld,%ld,%d,%d,'%s')", SQL_SPHINX_TABLE, state->b_from, state->b_to, subj, state->b_body, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments, sdata->ttmpfile);
 
    rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
 
@@ -132,8 +135,7 @@ int hand_to_sphinx(struct session_data *sdata, struct _state *state, struct __co
 
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int i=0, rc, ret=ERR;
-   char *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE];
-   struct list *list = NULL;
+   char *p, *subj, s[MAXBUFSIZE], s2[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
@@ -144,6 +146,9 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_METADATA_TABLE);
       goto ENDE_META;
    }
+
+   subj = state->b_subject;
+   if(*subj == ' ') subj++;
 
    snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`to`,`subject`,`arrived`,`sent`,`size`,`hlen`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
@@ -168,11 +173,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
       if(strlen(s2) > 5){
 LABEL1:
 
-         if(is_string_on_list(list, s2) == 1) continue;
-
-         append_list(&list, s2);
          i++;
-
 
          memset(bind, 0, sizeof(bind));
 
@@ -187,9 +188,9 @@ LABEL1:
          len[1] = strlen(s2); bind[1].length = &len[1];
 
          bind[2].buffer_type = MYSQL_TYPE_STRING;
-         bind[2].buffer = state->b_subject;
+         bind[2].buffer = subj;
          bind[2].is_null = 0;
-         len[2] = strlen(state->b_subject); bind[2].length = &len[2];
+         len[2] = strlen(subj); bind[2].length = &len[2];
 
          bind[3].buffer_type = MYSQL_TYPE_STRING;
          bind[3].buffer = state->message_id;
@@ -221,7 +222,6 @@ LABEL1:
 
 
 ENDE_META:
-   free_list(list);
 
    return ret;
 }

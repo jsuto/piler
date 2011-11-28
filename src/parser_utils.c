@@ -60,6 +60,7 @@ void init_state(struct _state *state){
    state->saved_size = 0;
 
    state->boundaries = NULL;
+   state->rcpt = NULL;
 
    state->n_attachments = 0;
 
@@ -197,65 +198,77 @@ int extract_boundary(char *p, struct _state *state){
 
 
 void fixupEncodedHeaderLine(char *buf){
-   char *p, *q, *r, *s, u[SMALLBUFSIZE], puf[MAXBUFSIZE];
+   char *sb, *sq, *p, *q, *r, *s, v[SMALLBUFSIZE], puf[MAXBUFSIZE];
    char *start, *end;
 
-   memset(puf, 0, MAXBUFSIZE);
+   memset(puf, 0, sizeof(puf));
+
+   //printf("hdr: *%s*\n", buf);
 
    q = buf;
 
    do {
-      q = split_str(q, " ", u, SMALLBUFSIZE-1);
+      q = split_str(q, " ", v, sizeof(v)-1);
 
-      p = u;
+      //printf("v: %s\n", v);
+
+      p = v;
+
       do {
          start = strstr(p, "=?");
          if(start){
-            if(start != p){
-               *start = '\0';
-               strncat(puf, p, MAXBUFSIZE-1);
-               *start = '=';
+            *start = '\0';
+            if(strlen(p) > 0){
+               //printf("flushed, no decode: *%s*\n", p);
+               strncat(puf, p, sizeof(puf)-1);
             }
 
-            /* find the trailing '?=' sequence */
+            start++;
 
-            end = strrchr(p, '?'); r = strrchr(p, '=');
+            s = NULL;
+            sb = strcasestr(start, "?B?"); if(sb) s = sb;
+            sq = strcasestr(start, "?Q?"); if(sq) s = sq;
 
-            if(end && r && r == end+1){
-               *end = '\0';
-               p = end + 2;
+            if(s){
+               end = strstr(s+3, "?=");
+               if(end){
+                  *end = '\0';
+                  //printf("ez az: *%s*\n", s+3);
+                  if(sb){ decodeBase64(s+3); }
+                  if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
 
-               s = NULL;
 
-               if((s = strcasestr(start+2, "?B?"))){
-                  *s = '\0';
-                  decodeBase64(s+3);
+                  //printf("dekodolva: *%s*\n", s+3);
+
+                  //printf("start: %s\n", start+1);
+                  if(strncasecmp(start+1, "utf-8", 5) == 0) decodeUTF8(s+3);
+
+                  strncat(puf, s+3, sizeof(puf)-1);
+
+                  p = end + 2;
+                  //printf("maradek: +%s+\n", p);
                }
-               else if((s = strcasestr(start+2, "?Q?"))){
-                  *s = '\0';
-                  decodeQP(s+3);
-               }
-
-               if(s && strncasecmp(start, "=?utf-8", 5) == 0){
-                  decodeUTF8(s+3);
-               }
-
-               if(s) strncat(puf, s+3, MAXBUFSIZE-1);               
             }
             else {
-               start = NULL;
+               //printf("aaaa: *%s*\n", start);
+               strncat(puf, start, sizeof(puf)-1);
+
+               break;
             }
          }
-
-         if(!start){
-            strncat(puf, p, MAXBUFSIZE-1);
+         else {
+            //printf("keiene dekod: +%s+\n", p);
+            strncat(puf, p, sizeof(puf)-1);
+            break;
          }
 
-      } while(start);
+      } while(p);
 
-      strncat(puf, " ", MAXBUFSIZE-1);
+      if(q) strncat(puf, " ", sizeof(puf)-1);
 
    } while(q);
+
+   //printf("=> *%s*\n", puf);
 
    snprintf(buf, MAXBUFSIZE-1, "%s", puf);
 }
@@ -416,7 +429,7 @@ void translateLine(unsigned char *p, struct _state *state){
 
       if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC) && *p == '@'){ continue; }
 
-      if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_') ){ continue; }
+      if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_' || *p == '&') ){ continue; }
 
       if(state->message_state == MSG_CONTENT_TYPE && *p == '_' ){ continue; }
 

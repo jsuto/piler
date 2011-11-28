@@ -47,12 +47,18 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
 
 
    free_list(state.boundaries);
+   free_list(state.rcpt);
+
+   trimBuffer(state.b_subject);
+   fixupEncodedHeaderLine(state.b_subject);
+   translateLine((unsigned char*)&state.b_subject, &state);
 
 
    for(i=1; i<=state.n_attachments; i++){
       digest_file(state.attachments[i].internalname, &(state.attachments[i].digest[0]));
+      fixupEncodedHeaderLine(state.attachments[i].filename);
+
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
-      //printf("attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
    }
 
 
@@ -71,7 +77,7 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
 
 
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, struct __config *cfg){
-   char *p, *r, puf[SMALLBUFSIZE];
+   char *p, puf[SMALLBUFSIZE];
    int x, len, b64_len, boundary_line=0;
 
    state->line_num++;
@@ -199,6 +205,23 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    }
 
 
+   if(state->is_1st_header == 1 && state->message_state == MSG_SUBJECT && strlen(state->b_subject) + strlen(buf) < MAXBUFSIZE-1){
+
+      if(state->b_subject[0] == '\0'){
+         strncat(state->b_subject, buf+strlen("Subject:"), MAXBUFSIZE-1);
+      }
+      else {
+
+         p = strrchr(state->b_subject, ' ');
+         if(p && ( strcasestr(p+1, "?Q?") || strcasestr(p+1, "?B?") ) ){
+            strncat(state->b_subject, buf+1, MAXBUFSIZE-1);
+         }
+         else strncat(state->b_subject, buf, MAXBUFSIZE-1);
+
+      }
+
+   }
+
 
    /* Content-type: checking */
 
@@ -295,13 +318,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    /* end of boundary check */
 
 
-
-   if(state->is_header == 1){
-      /* skip irrelevant headers */
-      if(state->message_state != MSG_SUBJECT && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC) return 0;
-
-      if(state->message_state == MSG_SUBJECT) fixupEncodedHeaderLine(buf);
-   }
+   /* skip irrelevant headers */
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC) return 0;
 
 
    /* don't process body if it's not a text or html part */
@@ -334,6 +352,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    if(state->is_header == 1) p = strchr(buf, ' ');
    else p = buf;
 
+   //printf("a: *%s*\n", buf);
+
    do {
       memset(puf, 0, sizeof(puf));
       p = split(p, ' ', puf, sizeof(puf)-1);
@@ -344,16 +364,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       if(puf[0] == '\0') continue;
 
-      if(state->message_state == MSG_SUBJECT){
-         r = &puf[0]; for(; *r; r++){ if(*r == '_') *r = ' '; }
-      }
-
-      if(state->qp == 1 && puf[strlen(puf)-1] == '='){
-         puf[strlen(puf)-1] = '\0';
-      }
-      else if(state->message_state != MSG_SUBJECT || (p && strchr(p, ' ')) ){
-         strncat(puf, " ", sizeof(puf)-1);
-      }
+      strncat(puf, " ", sizeof(puf)-1);
 
       if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0) fixURL(puf);
 
@@ -362,15 +373,16 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       len = strlen(puf);
 
-      if(state->message_state == MSG_SUBJECT && state->is_1st_header == 1 && strlen(state->b_subject) < MAXBUFSIZE-len-1)
-         memcpy(&(state->b_subject[strlen(state->b_subject)]), puf, len);
-
-      else if(state->message_state == MSG_FROM && strchr(puf, '@') && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
+      if(state->message_state == MSG_FROM && strchr(puf, '@') && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(state->b_to) < SMALLBUFSIZE-len-1)
-         memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(state->b_to) < SMALLBUFSIZE-len-1){
 
+         if(is_string_on_list(state->rcpt, puf) == 0){
+            append_list(&(state->rcpt), puf);
+            memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+         }
+      }
       else if(state->message_state == MSG_BODY && strlen(state->b_body) < BIGBUFSIZE-len-1)
          memcpy(&(state->b_body[strlen(state->b_body)]), puf, len);
 

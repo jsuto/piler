@@ -24,8 +24,8 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    MYSQL_ROW row;
 
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[6];
-   unsigned long len[6];
+   MYSQL_BIND bind[7];
+   unsigned long len[7];
 
 
    stmt = mysql_stmt_init(&(sdata->mysql));
@@ -34,7 +34,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
       return 1;
    }
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`piler_id`,`attachment_id`,`sig`,`type`,`size`,`ptr`) VALUES(?,?,?,?,?,?)", SQL_ATTACHMENT_TABLE);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`piler_id`,`attachment_id`,`sig`,`name`,`type`,`size`,`ptr`) VALUES(?,?,?,?,?,?,?)", SQL_ATTACHMENT_TABLE);
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(stmt));
@@ -91,19 +91,24 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
          len[2] = strlen(state->attachments[i].digest); bind[2].length = &len[2];
 
          bind[3].buffer_type = MYSQL_TYPE_STRING;
-         bind[3].buffer = state->attachments[i].type;
+         bind[3].buffer = state->attachments[i].filename;
          bind[3].is_null = 0;
-         len[3] = strlen(state->attachments[i].digest); bind[3].length = &len[3];
+         len[3] = strlen(state->attachments[i].filename); bind[3].length = &len[3];
 
-         bind[4].buffer_type = MYSQL_TYPE_LONG;
-         bind[4].buffer = (char *)&(state->attachments[i].size);
+         bind[4].buffer_type = MYSQL_TYPE_STRING;
+         bind[4].buffer = state->attachments[i].type;
          bind[4].is_null = 0;
-         bind[4].length = 0;
+         len[4] = strlen(state->attachments[i].digest); bind[4].length = &len[4];
 
-         bind[5].buffer_type = MYSQL_TYPE_LONGLONG;
-         bind[5].buffer = (char *)&id;
+         bind[5].buffer_type = MYSQL_TYPE_LONG;
+         bind[5].buffer = (char *)&(state->attachments[i].size);
          bind[5].is_null = 0;
          bind[5].length = 0;
+
+         bind[6].buffer_type = MYSQL_TYPE_LONGLONG;
+         bind[6].buffer = (char *)&id;
+         bind[6].is_null = 0;
+         bind[6].length = 0;
 
 
          if(mysql_stmt_bind_param(stmt, bind)){

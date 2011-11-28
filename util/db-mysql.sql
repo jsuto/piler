@@ -15,11 +15,11 @@ create table `sph_index` (
   `sent` int not null,
   `body` text,
   `size` int default '0',
+  `attachments` int default 0,
   `piler_id` char(36) not null,
-  `header_id` char(16) default null,
-  `body_id` char(16) default null,
   primary key (`id`)
 ) Engine=InnoDB;
+
 
 drop table if exists `metadata`;
 create table `metadata` (
@@ -49,7 +49,8 @@ create table `attachment` (
    `id` bigint unsigned not null auto_increment,
    `piler_id` char(36) not null,
    `attachment_id` int not null,
-   `type` char(64) default null,
+   `name` char(64) default null,
+   `type` char(72) default null,
    `sig` char(64) not null,
    `size` int default 0,
    `ptr` int default 0,

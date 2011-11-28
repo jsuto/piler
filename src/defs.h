@@ -117,6 +117,7 @@ struct _state {
    char type[TINYBUFSIZE];
 
    struct list *boundaries;
+   struct list *rcpt;
 
    int n_attachments;
    struct attachment attachments[MAX_ATTACHMENTS];
