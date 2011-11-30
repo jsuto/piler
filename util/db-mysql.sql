@@ -25,7 +25,7 @@ drop table if exists `metadata`;
 create table `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` char(255) not null,
-  `to` char(255) default null,
+  `to` text(2048) character set 'latin1' not null,
   `subject` text(512) default null,
   `arrived` int not null,
   `sent` int not null,
@@ -37,7 +37,7 @@ create table `metadata` (
   `message_id` char(128) character set 'latin1' not null,
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
-  primary key (`id`), unique(`to`,`message_id`)
+  primary key (`id`), unique(`message_id`)
 ) Engine=InnoDB;
 
 create index metadata_idx on metadata(`piler_id`);
@@ -82,4 +82,14 @@ create table if not exists `counter` (
 ) Engine=InnoDB;
 
 insert into `counter` values(0, 0, 0);
+
+drop table if exists `search`;
+create table `search` (
+   `email` char(128) not null,
+   `ts` int default 0,
+   `term` text(512) not null
+) Engine=InnoDB;
+
+create index `search_idx` on `search`(`email`);
+
 

@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerdecrypt test
+all: libpiler.a piler pilerconf pilerget test
 install: install-piler
 
 
@@ -48,7 +48,7 @@ libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
 
-pilerdecrypt: pilerdecrypt.c cfg.o misc.o tai.o store.o
+pilerget: pilerget.c cfg.o misc.o tai.o store.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lcrypto -lz $(LIBDIR)
 
 pilerconf: pilerconf.c cfg.o misc.o tai.o
@@ -78,7 +78,7 @@ install-piler:
 	$(INSTALL) -m 0755 pilerconf $(DESTDIR)$(sbindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilertest
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilertest
 
 distclean: clean
 	rm -f Makefile

@@ -31,7 +31,7 @@
 #define SESSION_TIMEOUT 420
 #define MAXBUFSIZE 8192
 #define SMALLBUFSIZE 512
-#define BIGBUFSIZE 65535
+#define BIGBUFSIZE 65536
 #define TINYBUFSIZE 128
 #define MAXVAL 256
 #define RANDOM_POOL "/dev/urandom"
