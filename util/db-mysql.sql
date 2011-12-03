@@ -7,7 +7,7 @@ create table `sph_counter` (
 
 drop table if exists `sph_index`;
 create table `sph_index` (
-  `id` int not null auto_increment,
+  `id` bigint not null,
   `from` char(255) default null,
   `to` text(512) default null,
   `subject` text(512) default null,
@@ -16,7 +16,6 @@ create table `sph_index` (
   `body` text,
   `size` int default '0',
   `attachments` int default 0,
-  `piler_id` char(36) not null,
   primary key (`id`)
 ) Engine=InnoDB;
 
@@ -25,7 +24,6 @@ drop table if exists `metadata`;
 create table `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` char(255) not null,
-  `to` text(2048) character set 'latin1' not null,
   `subject` text(512) default null,
   `arrived` int not null,
   `sent` int not null,
@@ -44,6 +42,18 @@ create index metadata_idx on metadata(`piler_id`);
 create index metadata_idx2 on metadata(`message_id`); 
 create index metadata_idx3 on metadata(`bodydigest`); 
 
+
+drop table if exists `rcpt`;
+create table `rcpt` (
+   `id` bigint unsigned not null,
+   `to` char(64) not null,
+   unique(`id`,`to`)
+) Engine=InnoDB;
+
+create index `rcpt_idx` on `rcpt`(`id`);
+create index `rcpt_idx2` on `rcpt`(`to`);
+
+
 drop table if exists `attachment`;
 create table `attachment` (
    `id` bigint unsigned not null auto_increment,
@@ -59,6 +69,7 @@ create table `attachment` (
 
 create index `attachment_idx` on `attachment`(`piler_id`);
 create index `attachment_idx2` on `attachment`(`sig`);
+
 
 drop table if exists `archiving_rule`;
 create table `archiving_rule` (

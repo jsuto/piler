@@ -99,8 +99,6 @@ int is_body_digest_already_stored(struct session_data *sdata, struct _state *sta
 
    snprintf(s, SMALLBUFSIZE-1, "SELECT `bodydigest` FROM `%s` WHERE `bodydigest`='%s'", SQL_METADATA_TABLE, sdata->bodydigest);
 
-   //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: check for body digest sql: *%s*", sdata->ttmpfile, s);
-
    if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
       res = mysql_store_result(&(sdata->mysql));
       if(res != NULL){
@@ -114,114 +112,210 @@ int is_body_digest_already_stored(struct session_data *sdata, struct _state *sta
 }
 
 
-int hand_to_sphinx(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int store_index_data(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg){
    int rc;
-   char *subj, s[BIGBUFSIZE+2*MAXBUFSIZE];
-
-   subj = state->b_subject;
-   if(*subj == ' ') subj++;
-
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`, `piler_id`) values('%s','%s','%s','%s',%ld,%ld,%d,%d,'%s')", SQL_SPHINX_TABLE, state->b_from, state->b_to, subj, state->b_body, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments, sdata->ttmpfile);
-
-   rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
-
-   if(rc == 0) return OK;
-
-   syslog(LOG_PRIORITY, "%s: sphinx sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-
-   return ERR;
-}
-
-
-int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
-   int i=0, rc, ret=ERR;
-   char *p, *subj, s[MAXBUFSIZE], s2[SMALLBUFSIZE];
+   char *subj, s[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
    unsigned long len[4];
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_METADATA_TABLE);
-      goto ENDE_META;
-   }
-
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`to`,`subject`,`arrived`,`sent`,`size`,`hlen`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_SPHINX_TABLE);
+      return ERR;
+   }
+
+
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`) values(%llu,?,?,?,?,%ld,%ld,%d,%d)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments);
+
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE_META;
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(stmt));
+      return ERR;
    }
 
 
 
-   if(strlen(state->b_to) < 5){
-      snprintf(s2, sizeof(s2)-1, "undisclosed-recipients");
-      p = NULL;
-      goto LABEL1;
-   }
-   else p = state->b_to;
+   memset(bind, 0, sizeof(bind));
 
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = state->b_from;
+   bind[0].is_null = 0;
+   len[0] = strlen(state->b_from); bind[0].length = &len[0];
+
+   bind[1].buffer_type = MYSQL_TYPE_STRING;
+   bind[1].buffer = state->b_to;
+   bind[1].is_null = 0;
+   len[1] = strlen(state->b_to); bind[1].length = &len[1];
+
+   bind[2].buffer_type = MYSQL_TYPE_STRING;
+   bind[2].buffer = subj;
+   bind[2].is_null = 0;
+   len[2] = strlen(subj); bind[2].length = &len[2];
+
+   bind[3].buffer_type = MYSQL_TYPE_STRING;
+   bind[3].buffer = state->b_body;
+   bind[3].is_null = 0;
+   len[3] = strlen(state->b_body); bind[3].length = &len[3];
+
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(stmt));
+      return ERR;
+   }
+
+
+   rc = mysql_stmt_execute(stmt);
+
+   if(rc){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_error(&(sdata->mysql)));
+      return ERR;
+   }
+
+
+   return OK;
+}
+
+
+int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __config *cfg){
+   int rc, ret=OK;
+   char *p, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
+
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[1];
+   unsigned long len[1];
+
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_RECIPIENT_TABLE);
+      return ERR;
+   }
+
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`,`to`) VALUES('%llu',?)", SQL_RECIPIENT_TABLE, id);
+
+   if(mysql_stmt_prepare(stmt, s, strlen(s))){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
+      return ERR;
+   }
+
+   p = to;
    do {
-      p = split_str(p, " ", s2, sizeof(s2)-1);
-      if(strlen(s2) > 5){
-LABEL1:
+      p = split_str(p, " ", puf, sizeof(puf)-1);
 
-         i++;
+      if(strlen(puf) > 5){
 
          memset(bind, 0, sizeof(bind));
 
          bind[0].buffer_type = MYSQL_TYPE_STRING;
-         bind[0].buffer = state->b_from;
+         bind[0].buffer = &puf[0];
          bind[0].is_null = 0;
-         len[0] = strlen(state->b_from); bind[0].length = &len[0];
-
-         bind[1].buffer_type = MYSQL_TYPE_STRING;
-         bind[1].buffer = s2;
-         bind[1].is_null = 0;
-         len[1] = strlen(s2); bind[1].length = &len[1];
-
-         bind[2].buffer_type = MYSQL_TYPE_STRING;
-         bind[2].buffer = subj;
-         bind[2].is_null = 0;
-         len[2] = strlen(subj); bind[2].length = &len[2];
-
-         bind[3].buffer_type = MYSQL_TYPE_STRING;
-         bind[3].buffer = state->message_id;
-         bind[3].is_null = 0;
-         len[3] = strlen(state->message_id); bind[3].length = &len[3];
+         len[0] = strlen(puf); bind[0].length = &len[0];
 
          if(mysql_stmt_bind_param(stmt, bind)){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-            goto ENDE_META;
+            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
+            return ERR;
          }
 
 
          rc = mysql_stmt_execute(stmt);
 
          if(rc){
-            syslog(LOG_PRIORITY, "%s: meta sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-
-            ret = ERR_EXISTS;
-            goto ENDE_META;
+            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
+            ret = ERR;
          }
 
       }
 
    } while(p);
 
+   return ret;
+}
 
-   if(i == 0) ret = ERR_EXISTS;
-   else ret = OK;
+
+int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
+   int rc, ret=ERR;
+   char *subj, s[MAXBUFSIZE];
+
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[4];
+   unsigned long len[4];
+
+   my_ulonglong id=0;
 
 
-ENDE_META:
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_METADATA_TABLE);
+      return ERR;
+   }
+
+   subj = state->b_subject;
+   if(*subj == ' ') subj++;
+
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`subject`,`arrived`,`sent`,`size`,`hlen`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,%ld,%ld,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
+
+   if(mysql_stmt_prepare(stmt, s, strlen(s))){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
+      return ERR;
+   }
+
+
+
+   if(strlen(state->b_to) < 5){
+      snprintf(state->b_to, SMALLBUFSIZE-1, "undisclosed-recipients");
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = state->b_from;
+   bind[0].is_null = 0;
+   len[0] = strlen(state->b_from); bind[0].length = &len[0];
+
+   bind[1].buffer_type = MYSQL_TYPE_STRING;
+   bind[1].buffer = subj;
+   bind[1].is_null = 0;
+   len[1] = strlen(subj); bind[1].length = &len[1];
+
+   bind[2].buffer_type = MYSQL_TYPE_STRING;
+   bind[2].buffer = state->message_id;
+   bind[2].is_null = 0;
+   len[2] = strlen(state->message_id); bind[2].length = &len[2];
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
+      return ERR;
+   }
+
+
+   rc = mysql_stmt_execute(stmt);
+
+   if(rc){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute() error: *%s*", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_error(&(sdata->mysql)));
+      ret = ERR_EXISTS;
+   }
+   else {
+      id = mysql_stmt_insert_id(stmt);
+      rc = store_recipients(sdata, state->b_to, id, cfg);
+
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
+
+      if(rc == OK){
+         rc = store_index_data(sdata, state, id, cfg);
+
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
+
+         if(rc == OK)
+            ret = OK;
+      }
+   }
 
    return ret;
 }
@@ -270,9 +364,6 @@ int processMessage(struct session_data *sdata, struct _state *state, struct __co
    rc = store_meta_data(sdata, state, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
    if(rc == ERR_EXISTS) return ERR_EXISTS;
-
-   rc = hand_to_sphinx(sdata, state, cfg);
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
 
    return OK;
 }

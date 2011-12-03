@@ -11,7 +11,7 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.8"
+#define VERSION "0.1.9"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n\nSend bugs/issues to https://jira.acts.hu:8443/\n"
 
@@ -74,6 +74,7 @@
 #define SQL_SPHINX_TABLE "sph_index"
 #define SQL_METADATA_TABLE "metadata"
 #define SQL_ATTACHMENT_TABLE "attachment"
+#define SQL_RECIPIENT_TABLE "rcpt"
 #define SQL_ARCHIVING_RULE_TABLE "archiving_rule"
 #define SQL_COUNTER_TABLE "counter"
 

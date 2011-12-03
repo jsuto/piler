@@ -8,6 +8,9 @@ Features:
 locales debian alatt: dpkg-reconfigure locales
 
 
+init:
+   indexer --all
+   searchd inditasa
 
 
 indexer delta1 --rotate

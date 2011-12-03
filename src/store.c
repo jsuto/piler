@@ -119,7 +119,6 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
       strncat(s, p, sizeof(s)-1);
    }
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to store %d bytes for %s", sdata->ttmpfile, len, filename);
 
    p0 = strrchr(s, '/'); if(!p0) goto ENDE;
    *p0 = '\0';
@@ -150,6 +149,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    if(n == outlen){
       ret = 1;
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored '%s' %d/%d bytes", sdata->ttmpfile, filename, len, outlen);
    }
    else {
       syslog(LOG_PRIORITY, "%s: cannot write %d bytes (only %d)", sdata->ttmpfile, outlen, n);
