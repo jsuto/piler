@@ -22,6 +22,7 @@ void fixupBase64EncodedLine(char *buf, struct _state *state);
 void markHTML(char *buf, struct _state *state);
 int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state);
 void translateLine(unsigned char *p, struct _state *state);
+void fix_email_address_for_sphinx(char *s);
 void reassembleToken(char *p);
 void degenerateToken(unsigned char *p);
 void fixURL(char *url);

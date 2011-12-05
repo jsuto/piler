@@ -203,14 +203,10 @@ void fixupEncodedHeaderLine(char *buf){
 
    memset(puf, 0, sizeof(puf));
 
-   //printf("hdr: *%s*\n", buf);
-
    q = buf;
 
    do {
       q = split_str(q, " ", v, sizeof(v)-1);
-
-      //printf("v: %s\n", v);
 
       p = v;
 
@@ -219,7 +215,6 @@ void fixupEncodedHeaderLine(char *buf){
          if(start){
             *start = '\0';
             if(strlen(p) > 0){
-               //printf("flushed, no decode: *%s*\n", p);
                strncat(puf, p, sizeof(puf)-1);
             }
 
@@ -233,31 +228,24 @@ void fixupEncodedHeaderLine(char *buf){
                end = strstr(s+3, "?=");
                if(end){
                   *end = '\0';
-                  //printf("ez az: *%s*\n", s+3);
+
                   if(sb){ decodeBase64(s+3); }
                   if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
 
-
-                  //printf("dekodolva: *%s*\n", s+3);
-
-                  //printf("start: %s\n", start+1);
                   if(strncasecmp(start+1, "utf-8", 5) == 0) decodeUTF8(s+3);
 
                   strncat(puf, s+3, sizeof(puf)-1);
 
                   p = end + 2;
-                  //printf("maradek: +%s+\n", p);
                }
             }
             else {
-               //printf("aaaa: *%s*\n", start);
                strncat(puf, start, sizeof(puf)-1);
 
                break;
             }
          }
          else {
-            //printf("keiene dekod: +%s+\n", p);
             strncat(puf, p, sizeof(puf)-1);
             break;
          }
@@ -267,8 +255,6 @@ void fixupEncodedHeaderLine(char *buf){
       if(q) strncat(puf, " ", sizeof(puf)-1);
 
    } while(q);
-
-   //printf("=> *%s*\n", puf);
 
    snprintf(buf, MAXBUFSIZE-1, "%s", puf);
 }
@@ -461,6 +447,13 @@ void translateLine(unsigned char *p, struct _state *state){
    if(state->qp == 1 && q && (q > P + strlen((char*)P) - 3))
      *q = '=';
 
+}
+
+
+void fix_email_address_for_sphinx(char *s){
+   for(; *s; s++){
+      if(*s == '@' || *s == '.' || *s == '+') *s = 'X';
+   }
 }
 
 

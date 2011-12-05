@@ -1,12 +1,12 @@
 drop table if exists `sph_counter`;
-create table `sph_counter` (
+create table if not exists `sph_counter` (
   `counter_id` int not null,
   `max_doc_id` int not null,
   primary key (`counter_id`)
 );
 
 drop table if exists `sph_index`;
-create table `sph_index` (
+create table if not exists `sph_index` (
   `id` bigint not null,
   `from` char(255) default null,
   `to` text(512) default null,
@@ -21,7 +21,7 @@ create table `sph_index` (
 
 
 drop table if exists `metadata`;
-create table `metadata` (
+create table if not exists `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` char(255) not null,
   `subject` text(512) default null,
@@ -44,7 +44,7 @@ create index metadata_idx3 on metadata(`bodydigest`);
 
 
 drop table if exists `rcpt`;
-create table `rcpt` (
+create table if not exists `rcpt` (
    `id` bigint unsigned not null,
    `to` char(64) not null,
    unique(`id`,`to`)
@@ -54,8 +54,11 @@ create index `rcpt_idx` on `rcpt`(`id`);
 create index `rcpt_idx2` on `rcpt`(`to`);
 
 
+drop view if exists `messages`;
+create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+
 drop table if exists `attachment`;
-create table `attachment` (
+create table if not exists `attachment` (
    `id` bigint unsigned not null auto_increment,
    `piler_id` char(36) not null,
    `attachment_id` int not null,
@@ -71,8 +74,15 @@ create index `attachment_idx` on `attachment`(`piler_id`);
 create index `attachment_idx2` on `attachment`(`sig`);
 
 
+drop table if exists `tag`;
+create table if not exists `tag` (
+   `id` bigint not null unique,
+   `tag` char(255) default null
+);
+
+
 drop table if exists `archiving_rule`;
-create table `archiving_rule` (
+create table if not exists `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
    `from` char(128) default null,
    `to` char(255) default null,
@@ -95,7 +105,7 @@ create table if not exists `counter` (
 insert into `counter` values(0, 0, 0);
 
 drop table if exists `search`;
-create table `search` (
+create table if not exists `search` (
    `email` char(128) not null,
    `ts` int default 0,
    `term` text(512) not null

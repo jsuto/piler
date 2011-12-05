@@ -51,8 +51,6 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
 
    trimBuffer(state.b_subject);
    fixupEncodedHeaderLine(state.b_subject);
-   state.message_state = MSG_SUBJECT;
-   translateLine((unsigned char*)&state.b_subject, &state);
 
 
    for(i=1; i<=state.n_attachments; i++){

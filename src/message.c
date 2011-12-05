@@ -140,6 +140,9 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    }
 
 
+   fix_email_address_for_sphinx(state->b_from);
+   fix_email_address_for_sphinx(state->b_to);
+
 
    memset(bind, 0, sizeof(bind));
 
