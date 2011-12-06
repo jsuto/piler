@@ -77,8 +77,9 @@ create index `attachment_idx2` on `attachment`(`sig`);
 drop table if exists `tag`;
 create table if not exists `tag` (
    `id` bigint not null unique,
+   `uid` int not null,
    `tag` char(255) default null
-);
+) ENGINE=InnoDB;
 
 
 drop table if exists `archiving_rule`;
@@ -95,6 +96,20 @@ create table if not exists `archiving_rule` (
    primary key (`id`)
 ) ENGINE=InnoDB;
 
+
+drop table if exists `retention_rule`;
+create table if not exists `retention_rule` (
+   `id` bigint unsigned not null auto_increment,
+
+   `subject` char(255) default null,
+
+   `days` int not null,
+
+   primary key (`id`)
+
+) ENGINE=InnoDB;
+
+
 drop table if exists `counter`;
 create table if not exists `counter` (
    `rcvd` bigint unsigned default 0,
@@ -103,6 +118,7 @@ create table if not exists `counter` (
 ) Engine=InnoDB;
 
 insert into `counter` values(0, 0, 0);
+
 
 drop table if exists `search`;
 create table if not exists `search` (

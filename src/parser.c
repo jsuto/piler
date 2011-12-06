@@ -135,7 +135,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
          }
          else {
-            snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d", sdata->ttmpfile, state->n_attachments);
+            snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
             write(state->mfd, puf, strlen(puf));
             //printf("%s", puf);
          }
