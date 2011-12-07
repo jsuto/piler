@@ -1,0 +1,8 @@
+
+
+sphinx cronjob:
+
+*/2 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --rotate
+
+*/5 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
+

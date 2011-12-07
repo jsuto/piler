@@ -47,6 +47,7 @@ void init_state(struct _state *state){
 
    memset(state->message_id, 0, SMALLBUFSIZE);
    memset(state->miscbuf, 0, MAX_TOKEN_LEN);
+   memset(state->qpbuf, 0, MAX_TOKEN_LEN);
 
    memset(state->filename, 0, TINYBUFSIZE);
    memset(state->type, 0, TINYBUFSIZE);
@@ -232,7 +233,8 @@ void fixupEncodedHeaderLine(char *buf){
                   if(sb){ decodeBase64(s+3); }
                   if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
 
-                  if(strncasecmp(start+1, "utf-8", 5) == 0) decodeUTF8(s+3);
+                  /* encode everything if it's not utf-8 encoded */
+                  if(strncasecmp(start+1, "utf-8", 5)) utf8_encode((unsigned char*)s+3);
 
                   strncat(puf, s+3, sizeof(puf)-1);
 
@@ -257,6 +259,42 @@ void fixupEncodedHeaderLine(char *buf){
    } while(q);
 
    snprintf(buf, MAXBUFSIZE-1, "%s", puf);
+}
+
+
+void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
+   int i=0;
+   char *p, puf[MAXBUFSIZE];
+
+   if(strlen(state->qpbuf) > 0){
+      memset(puf, 0, MAXBUFSIZE);
+      strncpy(puf, state->qpbuf, MAXBUFSIZE-1);
+      strncat(puf, buf, MAXBUFSIZE-1);
+
+      memset(buf, 0, MAXBUFSIZE);
+      memcpy(buf, puf, MAXBUFSIZE);
+
+      memset(state->qpbuf, 0, MAX_TOKEN_LEN);
+   }
+
+   if(buf[strlen(buf)-1] == '='){
+      buf[strlen(buf)-1] = '\0';
+      i = 1;
+   }
+
+   if(i == 1){
+      p = strrchr(buf, ' ');
+      if(p){
+         memset(state->qpbuf, 0, MAX_TOKEN_LEN);
+         if(strlen(p) < MAX_TOKEN_LEN-1){
+            //snprintf(state->qpbuf, MAX_TOKEN_LEN-1, "%s", p);
+            memcpy(&(state->qpbuf[0]), p, MAX_TOKEN_LEN-1);
+
+            *p = '\0';
+         }
+
+      }
+   }
 }
 
 
@@ -403,15 +441,8 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 
 void translateLine(unsigned char *p, struct _state *state){
    int url=0;
-   unsigned char *q=NULL, *P=p;
 
    for(; *p; p++){
-
-      /* save position of '=', 2006.01.05, SJ */
-
-      if(state->qp == 1 && *p == '='){
-         q = p;
-      }
 
       if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC) && *p == '@'){ continue; }
 
@@ -434,18 +465,13 @@ void translateLine(unsigned char *p, struct _state *state){
          }
       }
 
-      if(delimiter_characters[(unsigned int)*p] != ' ' || isalnum(*p) == 0)
+      if(delimiter_characters[(unsigned int)*p] != ' ')
          *p = ' ';
       else {
          *p = tolower(*p);
       }
 
    }
-
-   /* restore the soft break in quoted-printable parts */
-
-   if(state->qp == 1 && q && (q > P + strlen((char*)P) - 3))
-     *q = '=';
 
 }
 
@@ -526,7 +552,8 @@ void fixURL(char *url){
    q = strchr(p, '/');
    if(q) *q = '\0';
 
-   snprintf(fixed_url, sizeof(fixed_url)-1, "URL*%s ", p);
+   snprintf(fixed_url, sizeof(fixed_url)-1, "__URL__%s ", p);
+   fix_email_address_for_sphinx(fixed_url);
 
    strcpy(url, fixed_url);   
 }

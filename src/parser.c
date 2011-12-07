@@ -333,14 +333,17 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
    if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
 
-   if(state->message_state == MSG_BODY){
-      if(state->qp == 1)   decodeQP(buf);
-      if(state->utf8 == 1) decodeUTF8(buf);
+   if(state->message_state == MSG_BODY && state->qp == 1){
+      fixupSoftBreakInQuotedPritableLine(buf, state); // 2011.12.07
+      decodeQP(buf);
    }
 
    decodeURL(buf);
 
    if(state->texthtml == 1) decodeHTML(buf);
+
+   /* encode the body if it's not utf-8 encoded */
+   if(state->message_state == MSG_BODY && state->utf8 != 1) utf8_encode((unsigned char*)buf);
 
 
    translateLine((unsigned char*)buf, state);

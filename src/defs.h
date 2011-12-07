@@ -108,6 +108,7 @@ struct _state {
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char miscbuf[MAX_TOKEN_LEN];
+   char qpbuf[MAX_TOKEN_LEN];
    unsigned long n_token;
    unsigned long n_subject_token;
    unsigned long n_body_token;

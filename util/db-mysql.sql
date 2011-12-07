@@ -1,9 +1,14 @@
+create database `piler` character set 'utf8';
+use `piler`;
+
+
 drop table if exists `sph_counter`;
 create table if not exists `sph_counter` (
   `counter_id` int not null,
   `max_doc_id` int not null,
   primary key (`counter_id`)
 );
+
 
 drop table if exists `sph_index`;
 create table if not exists `sph_index` (
