@@ -54,6 +54,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    if(mysql_real_connect(&(sdata.mysql), cfg->mysqlhost, cfg->mysqluser, cfg->mysqlpwd, cfg->mysqldb, cfg->mysqlport, cfg->mysqlsocket, 0)){
       db_conn = 1;
       mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
+      mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
    }
    else
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);

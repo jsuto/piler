@@ -15,8 +15,8 @@
 
 
 int make_body_digest(struct session_data *sdata, struct __config *cfg){
-   int i=0, n, fd, hdr_len=0, offset=3;
-   char *body=NULL;
+   int i=0, n, fd, offset=3;
+   char *p, *body=NULL;
    unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH];
    SHA256_CTX context;
 
@@ -29,25 +29,27 @@ int make_body_digest(struct session_data *sdata, struct __config *cfg){
    if(fd == -1) return -1;
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
+
       body = (char *)&buf[0];
 
       if(i == 0){
 
-         hdr_len = searchStringInBuffer(body, sizeof(buf), "\n\r\n", 3);
-         if(hdr_len == 0){
-            searchStringInBuffer(body, sizeof(buf), "\n\n", 2);
-            offset = 2;
+         p = strstr(body, "\n\r\n");
+         if(!p){
+            p = strstr(body, "\n\n");
+            if(p){
+               offset = 2;
+
+            }
          }
 
-         if(hdr_len > 0){
-            hdr_len += offset;
+         if(p){
+            sdata->hdr_len = p - body + offset;
+            body += sdata->hdr_len;
 
-            sdata->hdr_len = hdr_len;
+            n -= sdata->hdr_len;
 
-            body += hdr_len;
-            n -= hdr_len;
-
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: hdr_len: %d, offset: %d", sdata->ttmpfile, hdr_len, offset);
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: hdr_len: %d, offset: %d", sdata->ttmpfile, sdata->hdr_len, offset);
          }
       }
 

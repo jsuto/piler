@@ -468,7 +468,8 @@ void translateLine(unsigned char *p, struct _state *state){
       if(delimiter_characters[(unsigned int)*p] != ' ')
          *p = ' ';
       else {
-         *p = tolower(*p);
+         // commented out because it breaks utf-8 encoding, 2011.12.07.
+         //*p = tolower(*p);
       }
 
    }
