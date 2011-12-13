@@ -82,6 +82,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    state->line_num++;
    len = strlen(buf);
 
+   if(state->is_1st_header == 1 && (strncmp(buf, "Received: by piler", strlen("Received: by piler")) == 0 || strncmp(buf, "X-piler-id: ", strlen("X-piler-id: ")) == 0) ){
+      sdata->restored_copy = 1;
+   }
+
    //printf("buf: %s", buf);
 
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){

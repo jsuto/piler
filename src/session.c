@@ -180,7 +180,11 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   if(db_conn == 1){
 
-                     if(AVIR_VIRUS == sdata.rav){
+                     if(sdata.restored_copy == 1){
+                        syslog(LOG_PRIORITY, "%s: discarding restored copy", sdata.ttmpfile);
+                        inj = OK;
+                     }
+                     else if(AVIR_VIRUS == sdata.rav){
                         syslog(LOG_PRIORITY, "%s: found virus: %s", sdata.ttmpfile, virusinfo);
                         counters.c_virus++;
                         inj = OK;
@@ -501,6 +505,7 @@ void initSessionData(struct session_data *sdata){
    memset(sdata->whitelist, 0, MAXBUFSIZE);
    memset(sdata->blacklist, 0, MAXBUFSIZE);
 
+   sdata->restored_copy = 0;
 
    sdata->hdr_len = 0;
    sdata->tot_len = 0;

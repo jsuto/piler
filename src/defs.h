@@ -128,7 +128,7 @@ struct _state {
 
 
 struct session_data {
-   char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre;
+   char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre, restored_copy;
    char mailfrom[SMALLBUFSIZE], rcptto[MAX_RCPT_TO][SMALLBUFSIZE], client_addr[SMALLBUFSIZE];
    char acceptbuf[SMALLBUFSIZE];
    char whitelist[MAXBUFSIZE], blacklist[MAXBUFSIZE];

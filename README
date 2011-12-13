@@ -14,6 +14,5 @@ init:
 
 
 indexer delta1 --rotate
-indexer --merge main1 delta1 --rotate
-
+indexer --merge main1 delta1 --rotate --merge-dst-range deleted 0 0
 

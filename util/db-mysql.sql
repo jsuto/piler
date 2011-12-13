@@ -32,7 +32,7 @@ create table if not exists `metadata` (
   `subject` text(512) default null,
   `arrived` int not null,
   `sent` int not null,
-  `deleted` int default 0,
+  `deleted` tinyint(1) default 0,
   `size` int default 0,
   `hlen` int default 0,
   `attachments` int default 0,
@@ -46,6 +46,7 @@ create table if not exists `metadata` (
 create index metadata_idx on metadata(`piler_id`);
 create index metadata_idx2 on metadata(`message_id`); 
 create index metadata_idx3 on metadata(`bodydigest`); 
+create index metadata_idx4 on metadata(`deleted`); 
 
 
 drop table if exists `rcpt`;

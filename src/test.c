@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
+#include <syslog.h>
 #include <piler.h>
 
 
@@ -44,6 +45,9 @@ int main(int argc, char **argv){
       return 0;
    }
 
+   mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
+   mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
+
    printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
 
@@ -71,13 +75,14 @@ int main(int argc, char **argv){
    //printf("body: *%s*\n", state.b_body);
 
    make_body_digest(&sdata, &cfg);
+
+   printf("hdr len: %d\n", sdata.hdr_len);
+
    rule = check_againt_ruleset(data.rules, &state, st.st_size);
  
-   //printf("body digest: %s\n", sdata.bodydigest);
+   printf("body digest: %s\n", sdata.bodydigest);
 
    printf("rules check: %s\n", rule);
-
-   mysql_close(&(sdata.mysql));
 
    free_rule(data.rules);
 
@@ -85,7 +90,12 @@ int main(int argc, char **argv){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
    }
 
+
    printf("\n\n");
+
+   mysql_close(&(sdata.mysql));
 
    return 0;
 }
+
+
