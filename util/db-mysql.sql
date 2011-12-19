@@ -61,7 +61,7 @@ create index `rcpt_idx2` on `rcpt`(`to`);
 
 
 drop view if exists `messages`;
-create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 drop table if exists `attachment`;
 create table if not exists `attachment` (
@@ -73,6 +73,7 @@ create table if not exists `attachment` (
    `sig` char(64) not null,
    `size` int default 0,
    `ptr` int default 0,
+   `deleted` tinyint(1) default 0,
    primary key (`id`)
 ) Engine=InnoDB;
 
@@ -135,4 +136,14 @@ create table if not exists `search` (
 
 create index `search_idx` on `search`(`email`);
 
+
+drop table if exists `user_settings`;
+create table if not exists `user_settings` (
+   `username` char(64) not null unique,
+   `pagelen` int default 20,
+   `theme` char(8) default 'default',
+   `lang` char(2) default 'en'
+);
+
+create index `user_settings_idx` on `user_settings`(`username`);
 
