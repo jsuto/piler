@@ -63,7 +63,6 @@ struct _parse_rule config_parse_rules[] =
    { "clamd_addr", "string", (void*) string_parser, offsetof(struct __config, clamd_addr), "", MAXVAL-1},
    { "clamd_port", "integer", (void*) int_parser, offsetof(struct __config, clamd_port), "0", sizeof(int)},
    { "clamd_socket", "string", (void*) string_parser, offsetof(struct __config, clamd_socket), CLAMD_SOCKET, MAXVAL-1},
-   { "deferdir", "string", (void*) string_parser, offsetof(struct __config, deferdir), DEFER_DIR, MAXVAL-1},
    { "hostid", "string", (void*) string_parser, offsetof(struct __config, hostid), HOSTID, MAXVAL-1},
    { "iv", "string", (void*) string_parser, offsetof(struct __config, iv), "", MAXVAL-1},
    { "listen_addr", "string", (void*) string_parser, offsetof(struct __config, listen_addr), "127.0.0.1", MAXVAL-1},

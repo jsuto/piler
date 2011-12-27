@@ -76,6 +76,7 @@ install-piler:
 
 	$(INSTALL) -m 0755 piler $(DESTDIR)$(sbindir)
 	$(INSTALL) -m 0755 pilerconf $(DESTDIR)$(sbindir)
+	$(INSTALL) -m 0755 pilerget $(DESTDIR)$(bindir)
 
 clean:
 	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilertest

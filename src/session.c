@@ -201,6 +201,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         if(arule){
                            syslog(LOG_PRIORITY, "%s: discarding message by archiving policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
+                           counters.c_ignore++;
                         }
                         else {
                            inj = processMessage(&sdata, &sstate, cfg);

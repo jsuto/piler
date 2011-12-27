@@ -203,6 +203,7 @@ struct __counters {
    unsigned long long c_rcvd;
    unsigned long long c_virus;
    unsigned long long c_duplicate;
+   unsigned long long c_ignore;
 };
 
 #endif /* _DEFS_H */

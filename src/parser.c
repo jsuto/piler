@@ -379,10 +379,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       len = strlen(puf);
 
-      if(state->message_state == MSG_FROM && strchr(puf, '@') && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
+      if(state->message_state == MSG_FROM && strchr(puf, '@') && strlen(puf) > 5 && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(state->b_to) < SMALLBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(puf) > 5 && strlen(state->b_to) < SMALLBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);

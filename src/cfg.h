@@ -33,7 +33,6 @@ struct __config {
 
    char workdir[MAXVAL];
    char queuedir[MAXVAL];
-   char deferdir[MAXVAL];
 
    int verbosity;
    char locale[MAXVAL];

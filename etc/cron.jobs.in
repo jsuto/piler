@@ -1,8 +1,29 @@
+#########################################################
+###     all the cron jobs you may need for piler      ###
+### be sure to review it and adjust it for your needs ###
+#########################################################
+
+root's crontab:
+
+### optional: query postfix queue statistics
+*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape > LOCALSTATEDIR/piler/stat/active+incoming
+*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape -s > LOCALSTATEDIR/piler/stat/active+incoming-sender
+*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape deferred > LOCALSTATEDIR/piler/stat/deferred
+*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape -s deferred > LOCALSTATEDIR/piler/stat/deferred-sender
 
 
-sphinx cronjob:
+piler's crontab:
 
-*/2 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
+### optional: show cpu usage
+*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
 
+### optional: regular AD sync
+0 8 * * * /usr/bin/php LIBEXECDIR/piler/ldap_sync.php /srv/www/webui.yourdomain.com > LOCALSTATEDIR/piler/stat/adsync.stat
+
+
+
+sphinx's cronjob:
+
+*/5 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
 */5 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 

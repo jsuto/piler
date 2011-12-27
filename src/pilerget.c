@@ -113,30 +113,18 @@ int inf(unsigned char *in, int len, FILE *dest){
 }
 
 
-int main(int argc, char **argv){
+int retrieve_file_from_archive(char *filename, struct __config *cfg){
    int rc, n, olen, tlen, len;
    unsigned char inbuf[BIGBUFSIZE];
-   struct __config cfg;
    struct stat st;
 
 
-   cfg = read_config(configfile);
-
-   if(read_key(&cfg)){
-      printf("%s\n", ERR_READING_KEY);
-      return 1;
-   }
+   if(filename == NULL) return 1;
 
 
-   if(argc != 2){
-      printf("usage: $0 <encrypted file>\n");
-      return 1;
-   }
-
-
-   fd = open(argv[1], O_RDONLY);
+   fd = open(filename, O_RDONLY);
    if(fd == -1){
-      printf("error reading file: %s\n", argv[1]);
+      printf("error reading file: %s\n", filename);
       return 1;
    }
 
@@ -149,7 +137,7 @@ int main(int argc, char **argv){
 
 
    EVP_CIPHER_CTX_init(&ctx);
-   EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg.key, cfg.iv);
+   EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
 
    len = st.st_size+EVP_MAX_BLOCK_LENGTH;
 
@@ -189,6 +177,30 @@ int main(int argc, char **argv){
 
 
    if(s) free(s);
+
+   return 0;
+}
+
+
+int main(int argc, char **argv){
+   struct __config cfg;
+
+
+   cfg = read_config(configfile);
+
+   if(read_key(&cfg)){
+      printf("%s\n", ERR_READING_KEY);
+      return 1;
+   }
+
+
+   if(argc != 2){
+      printf("usage: %s <encrypted file>\n", argv[0]);
+      return 1;
+   }
+
+
+   retrieve_file_from_archive(argv[1], &cfg);
 
    return 0;
 }

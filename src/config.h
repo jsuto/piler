@@ -11,16 +11,15 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.10"
+#define VERSION "0.1.11"
 
-#define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n\nSend bugs/issues to https://jira.acts.hu:8443/\n"
+#define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n"
 
 #define HOSTID "mailarchiver"
 
 #define CONFIG_FILE CONFDIR "/piler.conf"
 #define WORK_DIR DATADIR "/spool/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
-#define DEFER_DIR DATADIR "/spool/piler/deferred"
 
 #define CLAMD_SOCKET "/tmp/clamd"
 
@@ -53,6 +52,7 @@
 #define MEMCACHED_MSGS_RCVD MEMCACHED_CLAPF_PREFIX ":rcvd"
 #define MEMCACHED_MSGS_VIRUS MEMCACHED_CLAPF_PREFIX ":virus"
 #define MEMCACHED_MSGS_DUPLICATE MEMCACHED_CLAPF_PREFIX ":duplicate"
+#define MEMCACHED_MSGS_IGNORE MEMCACHED_CLAPF_PREFIX ":ignore"
 
 
 #define LOG_PRIORITY LOG_INFO
