@@ -24,6 +24,7 @@
 #endif
 
 #include <openssl/sha.h>
+#include "tai.h"
 #include "config.h"
 
 #define MSG_UNDEF -1
@@ -47,7 +48,19 @@
 #define UNDEF 0
 #define READY 1
 #define BUSY 2
-#define PROCESSED 3
+
+
+#define MAXCHILDREN 64
+
+
+typedef void signal_func (int);
+
+
+struct child {
+   pid_t pid;
+   int messages;
+   int status;
+};
 
 
 struct attachment {
@@ -56,6 +69,13 @@ struct attachment {
    char filename[TINYBUFSIZE];
    char internalname[TINYBUFSIZE];
    char digest[2*DIGEST_LENGTH+1];
+};
+
+
+struct ptr_array {
+   uint64 ptr;
+   char piler_id[RND_STR_LEN+2];
+   int attachment_id;
 };
 
 

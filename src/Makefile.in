@@ -38,24 +38,24 @@ install: install-piler
 
 
 piler: piler.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ piler.c -lpiler $(LIBS) $(LDAP_LIBS) $(LIBDIR) @LDFLAGS@ @libclamav_extra_libs@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ piler.c -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@ @libclamav_extra_libs@
 
 libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(MYSQL_OBJS)
 	ranlib libpiler.a
-	$(CC) -shared -Wl -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS) $(LIBS) $(LDAP_LIBS) @LDFLAGS@
+	$(CC) -shared -Wl -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS) $(LIBS) @LDFLAGS@
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
 
-pilerget: pilerget.c cfg.o misc.o tai.o store.o
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lcrypto -lz $(LIBDIR)
+pilerget: pilerget.c cfg.o misc.o tai.o store.o attachment.o
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBS) $(LIBDIR)
 
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
 
 test:
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $(srcdir)/test.c -lpiler $(LIBS) $(LDAP_LIBS) $(LIBDIR) @LDFLAGS@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $(srcdir)/test.c -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
 %.o: $(srcdir)/%.c
 	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@

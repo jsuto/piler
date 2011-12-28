@@ -36,6 +36,7 @@ void digest_file(char *filename, char *digest);
 int processMessage(struct session_data *sdata, struct _state *sstate, struct __config *cfg);
 int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg);
 int store_attachments(struct session_data *sdata, struct _state *state, struct __config *cfg);
+int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, struct __config *cfg);
 
 struct __config read_config(char *configfile);
 

@@ -138,3 +138,176 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    return 0;
 }
 
+
+int query_attachment_pointers(struct session_data *sdata, uint64 ptr, char *piler_id, int *id, struct __config *cfg){
+   int rc=0;
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[2];
+   my_bool is_null[2];
+   unsigned long len=0;
+
+
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      goto ENDE;
+   }
+
+   snprintf(s, SMALLBUFSIZE-1, "SELECT `piler_id`, `attachment_id` FROM %s WHERE id=?", SQL_ATTACHMENT_TABLE);
+
+
+   if(mysql_stmt_prepare(stmt, s, strlen(s))){
+      goto ENDE;
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
+   bind[0].buffer = (char *)&ptr;
+   bind[0].is_null = 0;
+   len = sizeof(uint64); bind[0].length = &len;
+
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_execute(stmt)){
+      goto ENDE;
+   }
+
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = piler_id;
+   bind[0].buffer_length = RND_STR_LEN;
+   bind[0].is_null = &is_null[0];
+   bind[0].length = &len;
+
+   bind[1].buffer_type = MYSQL_TYPE_LONG;
+   bind[1].buffer = (char *)id;
+   bind[1].is_null = 0;
+   bind[1].length = 0;
+
+
+   if(mysql_stmt_bind_result(stmt, bind)){
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_store_result(stmt)){
+      goto ENDE;
+   }
+
+   if(!mysql_stmt_fetch(stmt)){
+      if(is_null[0] == 0){
+         //printf("piler id: *%s*, id: %d\n", piler_id, *id);
+         rc = 1;
+      }
+   }
+
+   mysql_stmt_close(stmt);
+
+ENDE:
+
+   return rc;
+}
+
+
+int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, struct __config *cfg){
+   int i, rc, id, attachments=0;
+   uint64 ptr;
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[2];
+   my_bool is_null[2];
+   unsigned long len=0;
+
+
+   for(i=0; i<MAX_ATTACHMENTS; i++) memset((char*)&ptr_arr[i], 0, sizeof(struct ptr_array));
+
+
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      goto ENDE;
+   }
+
+   snprintf(s, SMALLBUFSIZE-1, "SELECT `attachment_id`, `ptr` FROM %s WHERE piler_id=? ORDER BY attachment_id ASC", SQL_ATTACHMENT_TABLE);
+
+
+   if(mysql_stmt_prepare(stmt, s, strlen(s))){
+      goto ENDE;
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = sdata->ttmpfile;
+   bind[0].is_null = 0;
+   len = strlen(sdata->ttmpfile); bind[0].length = &len;
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_execute(stmt)){
+      goto ENDE;
+   }
+
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_LONG;
+   bind[0].buffer = (char *)&id;
+   bind[0].is_null = &is_null[0];
+   bind[0].length = 0;
+
+   bind[1].buffer_type = MYSQL_TYPE_LONGLONG;
+   bind[1].buffer = (char *)&ptr;
+   bind[1].is_null = &is_null[1];
+   bind[1].length = 0;
+
+
+
+   if(mysql_stmt_bind_result(stmt, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_store_result(stmt)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_store_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
+      goto ENDE;
+   }
+
+   while(!mysql_stmt_fetch(stmt)){
+
+      if(id > 0 && id < MAX_ATTACHMENTS){
+         if(ptr > 0){
+            ptr_arr[id].ptr = ptr;
+            rc = query_attachment_pointers(sdata, ptr, &(ptr_arr[id].piler_id[0]), &(ptr_arr[id].attachment_id), cfg);
+            if(!rc){
+               attachments = -1;
+               goto ENDE;
+            }
+         }
+         else {
+            snprintf(ptr_arr[id].piler_id, sizeof(ptr_arr[id].piler_id)-1, "%s", sdata->ttmpfile);
+            ptr_arr[id].attachment_id = id;
+         }
+
+         attachments++;
+      }
+   }
+
+   mysql_stmt_close(stmt);
+
+ENDE:
+
+   return attachments;
+}
+
+
