@@ -14,9 +14,27 @@
 #include <openssl/evp.h>
 
 
+#define MAX(m,n) m <= n ? m : n
+
+
+int search_header_end(char *p, int n){
+   int hdr_len=0;
+
+   if(strlen(p) < 5) return hdr_len;
+
+   for(; *p; p++){
+      if(hdr_len < n-2 && *p == '\n' && *(p+1) == '\r' && *(p+2) == '\n'){ hdr_len += 3; return MAX(hdr_len, n); }
+      if(hdr_len < n-1 && *p == '\n' && *(p+1) == '\n'){ hdr_len += 2; return MAX(hdr_len, n); }
+      hdr_len++;
+   }
+
+   return 0;
+}
+
+
 int make_digests(struct session_data *sdata, struct __config *cfg){
-   int i=0, n, fd, offset=3;
-   char *p, *body=NULL;
+   int i=0, n, fd, offset=3, hdr_len=0;
+   char *body=NULL;
    unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];
    SHA256_CTX context, context2;
 
@@ -24,6 +42,7 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
    memset(sdata->digest, 0, 2*DIGEST_LENGTH+1);
    SHA256_Init(&context);
    SHA256_Init(&context2);
+
 
    fd = open(sdata->ttmpfile, O_RDONLY);
    if(fd == -1) return -1;
@@ -36,22 +55,13 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
 
       if(i == 0){
 
-         p = strstr(body, "\n\r\n");
-         if(!p){
-            p = strstr(body, "\n\n");
-            if(p){
-               offset = 2;
+         hdr_len = search_header_end(body, n);
 
-            }
-         }
+         if(hdr_len > 0){
+            body += hdr_len;
+            n -= hdr_len;
 
-         if(p){
-            sdata->hdr_len = p - body + offset;
-            body += sdata->hdr_len;
-
-            n -= sdata->hdr_len;
-
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: hdr_len: %d, offset: %d", sdata->ttmpfile, sdata->hdr_len, offset);
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: hdr_len: %d, offset: %d", sdata->ttmpfile, hdr_len, offset);
          }
       }
 
@@ -62,6 +72,8 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
    }
 
    close(fd);
+
+   sdata->hdr_len = hdr_len;
 
    SHA256_Final(md, &context);
    SHA256_Final(md2, &context2);

@@ -29,7 +29,6 @@ EVP_CIPHER_CTX ctx;
 unsigned char *s=NULL;
 
 
-
 void clean_exit(){
    if(s) free(s);
 
@@ -184,7 +183,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    while((n = read(fd, inbuf, sizeof(inbuf)))){
 
       if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
-         fprintf(stderr, "EVP_DecryptUpdate()\n");
+         printf("EVP_DecryptUpdate()\n");
          clean_exit();
       }
 
@@ -194,7 +193,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    close(fd);
 
    if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
-      fprintf(stderr, "EVP_DecryptFinal()\n");
+      printf("EVP_DecryptFinal()\n");
       clean_exit();
    }
 
@@ -219,14 +218,14 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
 
    if(strlen(sdata->ttmpfile) != RND_STR_LEN){
-      fprintf(stderr, "invalid piler-id: %s\n", sdata->ttmpfile);
+      printf("invalid piler-id: %s\n", sdata->ttmpfile);
       return 1;
    }
 
    attachments = query_attachments(sdata, &ptr_arr[0], cfg);
 
    if(attachments == -1){
-      fprintf(stderr, "problem querying the attachment of %s\n", sdata->ttmpfile);
+      printf("problem querying the attachment of %s\n", sdata->ttmpfile);
       return 1;
    }
 
@@ -247,7 +246,6 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
             p = strstr(buffer, pointer);
             if(p){
                *p = '\0';
-               //printf("%s", buffer);
                fwrite(buffer, 1, p - buffer, dest);
                buffer = p + strlen(pointer);
 
@@ -261,7 +259,6 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
          }
 
          if(buffer){
-            //printf("%s", buffer);
             fwrite(buffer, 1, strlen(buffer), dest);
          }
 
@@ -362,7 +359,7 @@ int main(int argc, char **argv){
 
 
    if(argc < 2){
-      fprintf(stderr, "usage: %s <piler-id>\n", argv[0]);
+      printf("usage: %s <piler-id>\n", argv[0]);
       exit(1);
    }
 
@@ -389,6 +386,8 @@ int main(int argc, char **argv){
 
    if(argv[1][0] == '-'){
 
+      memset(sdata.ttmpfile, 0, sizeof(sdata.ttmpfile));
+
       while((rc = read(0, sdata.ttmpfile, RND_STR_LEN+1)) > 0){
          trimBuffer(sdata.ttmpfile);
 
@@ -401,17 +400,20 @@ int main(int argc, char **argv){
                rc = retrieve_email_from_archive(&sdata, f, &cfg);
                fclose(f);
 
-               snprintf(sdata.ttmpfile, sizeof(sdata.ttmpfile)-1, "%s", filename);
+               snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", filename);
                make_digests(&sdata, &cfg);
 
                if(strcmp(digest, sdata.digest) == 0 && strcmp(bodydigest, sdata.bodydigest) == 0)
                   printf("exported %s, verification: OK\n", sdata.ttmpfile);
                else
                   printf("exported %s, verification: FAILED\n", sdata.ttmpfile);
+
             }
             else printf("cannot open: %s\n", filename);
          }
          else printf("%s was not found in archive\n", sdata.ttmpfile);
+
+         memset(sdata.ttmpfile, 0, sizeof(sdata.ttmpfile));
 
       }
 
