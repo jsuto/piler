@@ -274,9 +274,88 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
 }
 
 
+uint64 get_id_by_piler_id(struct session_data *sdata, char *digest, char *bodydigest, struct __config *cfg){
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[3];
+   unsigned long len=0;
+   uint64 id=0;
+
+   memset(digest, 0, 2*DIGEST_LENGTH+1);
+   memset(bodydigest, 0, 2*DIGEST_LENGTH+1);
+
+   stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!stmt){
+      goto ENDE;
+   }
+
+   snprintf(s, SMALLBUFSIZE-1, "SELECT `id`,`digest`,`bodydigest` FROM %s WHERE piler_id=?", SQL_METADATA_TABLE);
+
+
+   if(mysql_stmt_prepare(stmt, s, strlen(s))){
+      goto ENDE;
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = sdata->ttmpfile;
+   bind[0].is_null = 0;
+   len = strlen(sdata->ttmpfile); bind[0].length = &len;
+
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_execute(stmt)){
+      goto ENDE;
+   }
+
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
+   bind[0].buffer = (char *)&id;
+   bind[0].is_null = 0;
+   bind[0].length = 0;
+
+   bind[1].buffer_type = MYSQL_TYPE_STRING;
+   bind[1].buffer = digest;
+   bind[1].buffer_length = 2*DIGEST_LENGTH+1;
+   bind[1].is_null = 0;
+   bind[1].length = &len;
+
+   bind[2].buffer_type = MYSQL_TYPE_STRING;
+   bind[2].buffer = bodydigest;
+   bind[2].buffer_length = 2*DIGEST_LENGTH+1;
+   bind[2].is_null = 0;
+   bind[2].length = &len;
+
+   if(mysql_stmt_bind_result(stmt, bind)){
+      goto ENDE;
+   }
+
+
+   if(mysql_stmt_store_result(stmt)){
+      goto ENDE;
+   }
+
+   mysql_stmt_fetch(stmt);
+
+   mysql_stmt_close(stmt);
+
+ENDE:
+
+   return id;
+}
+
+
 int main(int argc, char **argv){
    int rc;
-   char filename[SMALLBUFSIZE];
+   uint64 id;
+   char filename[SMALLBUFSIZE], digest[2*DIGEST_LENGTH+1], bodydigest[2*DIGEST_LENGTH+1];
    FILE *f;
    struct session_data sdata;
    struct __config cfg;
@@ -312,13 +391,28 @@ int main(int argc, char **argv){
 
       while((rc = read(0, sdata.ttmpfile, RND_STR_LEN+1)) > 0){
          trimBuffer(sdata.ttmpfile);
-         snprintf(filename, sizeof(filename)-1, "%s.eml", sdata.ttmpfile);
-         f = fopen(filename, "w");
-         if(f){
-            rc = retrieve_email_from_archive(&sdata, f, &cfg);
-            fclose(f);
+
+         id = get_id_by_piler_id(&sdata, &digest[0], &bodydigest[0], &cfg);
+
+         if(id > 0){
+            snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
+            f = fopen(filename, "w");
+            if(f){
+               rc = retrieve_email_from_archive(&sdata, f, &cfg);
+               fclose(f);
+
+               snprintf(sdata.ttmpfile, sizeof(sdata.ttmpfile)-1, "%s", filename);
+               make_digests(&sdata, &cfg);
+
+               if(strcmp(digest, sdata.digest) == 0 && strcmp(bodydigest, sdata.bodydigest) == 0)
+                  printf("exported %s, verification: OK\n", sdata.ttmpfile);
+               else
+                  printf("exported %s, verification: FAILED\n", sdata.ttmpfile);
+            }
+            else printf("cannot open: %s\n", filename);
          }
-         else printf("cannot open: %s\n", filename);
+         else printf("%s was not found in archive\n", sdata.ttmpfile);
+
       }
 
    }

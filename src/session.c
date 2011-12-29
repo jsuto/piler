@@ -149,8 +149,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                sdata.need_scan = 1;
 
-               digest_file(sdata.ttmpfile, sdata.digest);
-               make_body_digest(&sdata, cfg);
+               make_digests(&sdata, cfg);
 
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){

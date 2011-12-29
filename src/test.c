@@ -74,7 +74,7 @@ int main(int argc, char **argv){
    printf("subject: *%s*\n", state.b_subject);
    //printf("body: *%s*\n", state.b_body);
 
-   make_body_digest(&sdata, &cfg);
+   make_digests(&sdata, &cfg);
 
    printf("hdr len: %d\n", sdata.hdr_len);
 

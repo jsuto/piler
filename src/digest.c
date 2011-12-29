@@ -14,21 +14,23 @@
 #include <openssl/evp.h>
 
 
-int make_body_digest(struct session_data *sdata, struct __config *cfg){
+int make_digests(struct session_data *sdata, struct __config *cfg){
    int i=0, n, fd, offset=3;
    char *p, *body=NULL;
-   unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH];
-   SHA256_CTX context;
-
-   //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: digesting", sdata->ttmpfile);
+   unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];
+   SHA256_CTX context, context2;
 
    memset(sdata->bodydigest, 0, 2*DIGEST_LENGTH+1);
+   memset(sdata->digest, 0, 2*DIGEST_LENGTH+1);
    SHA256_Init(&context);
+   SHA256_Init(&context2);
 
    fd = open(sdata->ttmpfile, O_RDONLY);
    if(fd == -1) return -1;
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
+
+      SHA256_Update(&context2, buf, n);
 
       body = (char *)&buf[0];
 
@@ -62,9 +64,12 @@ int make_body_digest(struct session_data *sdata, struct __config *cfg){
    close(fd);
 
    SHA256_Final(md, &context);
+   SHA256_Final(md2, &context2);
 
-   for(i=0;i<DIGEST_LENGTH;i++)
+   for(i=0;i<DIGEST_LENGTH;i++){
       snprintf(sdata->bodydigest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
+      snprintf(sdata->digest + i*2, 2*DIGEST_LENGTH, "%02x", md2[i]);
+   }
 
    return 0;
 }
