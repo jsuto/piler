@@ -502,8 +502,7 @@ void initSessionData(struct session_data *sdata){
    memset(sdata->mailfrom, 0, SMALLBUFSIZE);
    snprintf(sdata->client_addr, SMALLBUFSIZE-1, "null");
 
-   memset(sdata->whitelist, 0, MAXBUFSIZE);
-   memset(sdata->blacklist, 0, MAXBUFSIZE);
+   memset(sdata->attachments, 0, SMALLBUFSIZE);
 
    sdata->restored_copy = 0;
 

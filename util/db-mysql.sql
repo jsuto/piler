@@ -1,4 +1,4 @@
-create database `piler` character set 'utf8';
+create database if not exists `piler` character set 'utf8';
 use `piler`;
 
 
@@ -21,6 +21,7 @@ create table if not exists `sph_index` (
   `body` text,
   `size` int default '0',
   `attachments` int default 0,
+  `attachment_types` text(512) default null,
   primary key (`id`)
 ) Engine=InnoDB;
 
@@ -121,11 +122,11 @@ drop table if exists `counter`;
 create table if not exists `counter` (
    `rcvd` bigint unsigned default 0,
    `virus` bigint unsigned default 0,
-   `duplicate` bigint unsigned default 0
+   `duplicate` bigint unsigned default 0,
    `ignore` bigint unsigned default 0
 ) Engine=InnoDB;
 
-insert into `counter` values(0, 0, 0);
+insert into `counter` values(0, 0, 0, 0);
 
 
 drop table if exists `search`;

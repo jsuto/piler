@@ -98,7 +98,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
          bind[4].buffer_type = MYSQL_TYPE_STRING;
          bind[4].buffer = state->attachments[i].type;
          bind[4].is_null = 0;
-         len[4] = strlen(state->attachments[i].digest); bind[4].length = &len[4];
+         len[4] = strlen(state->attachments[i].type); bind[4].length = &len[4];
 
          bind[5].buffer_type = MYSQL_TYPE_LONG;
          bind[5].buffer = (char *)&(state->attachments[i].size);

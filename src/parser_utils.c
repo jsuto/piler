@@ -591,4 +591,49 @@ int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
 }
 
 
+char *determine_attachment_type(char *filename, char *type){
+   char *p;
+
+   if(strncasecmp(type, "text/", strlen("text/")) == 0) return "text,";
+   if(strncasecmp(type, "image/", strlen("image/")) == 0) return "image,";
+   if(strncasecmp(type, "audio/", strlen("audio/")) == 0) return "audio,";
+   if(strncasecmp(type, "video/", strlen("video/")) == 0) return "video,";
+   if(strncasecmp(type, "text/x-card", strlen("text/x-card")) == 0) return "vcard,";
+
+   if(strncasecmp(type, "application/pdf", strlen("application/pdf")) == 0) return "pdf,";
+
+   if(strncasecmp(type, "application/msword", strlen("application/msword")) == 0) return "word,";
+   if(strncasecmp(type, "application/vnd.ms-excel", strlen("application/vnd.ms-excel")) == 0) return "excel,";
+   if(strncasecmp(type, "application/vnd.ms-powerpoint", strlen("application/vnd.ms-powerpoint")) == 0) return "powerpoint,";
+
+   if(strncasecmp(type, "application/x-shockwave-flash", strlen("application/x-shockwave-flash")) == 0) return "flash,";
+
+   if(strcasestr(type, "opendocument")) return "odf,";
+
+   if(strcasecmp(type, "application/octet-stream") == 0){
+
+      p = strrchr(type, '.');
+      if(p){
+         p++;
+
+         if(strncasecmp(p, "zip", 3) == 0) return "compressed,";
+         if(strncasecmp(p, "rar", 3) == 0) return "compressed,";
+
+         if(strncasecmp(p, "doc", 3) == 0) return "word,";
+         if(strncasecmp(p, "docx", 4) == 0) return "word,";
+         if(strncasecmp(p, "xls", 3) == 0) return "excel,";
+         if(strncasecmp(p, "xlsx", 4) == 0) return "excel,";
+         if(strncasecmp(p, "ppt", 3) == 0) return "powerpoint,";
+         if(strncasecmp(p, "pptx", 4) == 0) return "powerpoint,";
+
+         if(strncasecmp(p, "png", 3) == 0) return "image,";
+         if(strncasecmp(p, "gif", 3) == 0) return "image,";
+         if(strncasecmp(p, "jpg", 3) == 0) return "image,";
+         if(strncasecmp(p, "jpeg", 4) == 0) return "image,";
+         if(strncasecmp(p, "tiff", 4) == 0) return "image,";
+      } 
+   }
+
+   return "other,";
+}
 

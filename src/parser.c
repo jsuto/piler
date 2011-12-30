@@ -18,7 +18,7 @@
 
 struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    FILE *f;
-   char buf[MAXBUFSIZE];
+   char *p, buf[MAXBUFSIZE];
    struct _state state;
    int i, len;
 
@@ -58,6 +58,11 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
       fixupEncodedHeaderLine(state.attachments[i].filename);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+
+      p = determine_attachment_type(state.attachments[i].filename, state.attachments[i].type);
+      len = strlen(p);
+
+      if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
    }
 
 

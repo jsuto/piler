@@ -27,5 +27,6 @@ void reassembleToken(char *p);
 void degenerateToken(unsigned char *p);
 void fixURL(char *url);
 int extractNameFromHeaderLine(char *s, char *name, char *resultbuf);
+char *determine_attachment_type(char *filename, char *type);
 
 #endif /* _PARSER_H */

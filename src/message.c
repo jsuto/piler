@@ -117,8 +117,8 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    char *subj, s[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[4];
-   unsigned long len[4];
+   MYSQL_BIND bind[5];
+   unsigned long len[5];
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
@@ -131,7 +131,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    }
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`) values(%llu,?,?,?,?,%ld,%ld,%d,%d)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,%ld,%ld,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments);
 
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
@@ -165,6 +165,11 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    bind[3].buffer = state->b_body;
    bind[3].is_null = 0;
    len[3] = strlen(state->b_body); bind[3].length = &len[3];
+
+   bind[4].buffer_type = MYSQL_TYPE_STRING;
+   bind[4].buffer = sdata->attachments;
+   bind[4].is_null = 0;
+   len[4] = strlen(sdata->attachments); bind[4].length = &len[3];
 
 
    if(mysql_stmt_bind_param(stmt, bind)){

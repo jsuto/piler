@@ -62,6 +62,7 @@ int main(int argc, char **argv){
    sdata.sent = 0;
    sdata.tot_len = st.st_size;
    memset(sdata.rcptto[0], 0, SMALLBUFSIZE);
+   memset(sdata.attachments, 0, SMALLBUFSIZE);
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
@@ -90,6 +91,7 @@ int main(int argc, char **argv){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
    }
 
+   printf("attachments:%s\n", sdata.attachments);
 
    printf("\n\n");
 

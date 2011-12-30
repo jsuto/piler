@@ -151,7 +151,7 @@ struct session_data {
    char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre, restored_copy;
    char mailfrom[SMALLBUFSIZE], rcptto[MAX_RCPT_TO][SMALLBUFSIZE], client_addr[SMALLBUFSIZE];
    char acceptbuf[SMALLBUFSIZE];
-   char whitelist[MAXBUFSIZE], blacklist[MAXBUFSIZE];
+   char attachments[SMALLBUFSIZE];
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;

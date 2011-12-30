@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget test
+all: libpiler.a piler pilerconf pilerget pilerimport test
 install: install-piler
 
 
@@ -50,6 +50,9 @@ libpiler.a: $(OBJS) $(MYSQL_OBJS)
 
 pilerget: pilerget.c cfg.o misc.o tai.o store.o attachment.o digest.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBS) $(LIBDIR)
+
+pilerimport: pilerimport.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
@@ -79,7 +82,7 @@ install-piler:
 	$(INSTALL) -m 0755 pilerget $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilertest
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilertest
 
 distclean: clean
 	rm -f Makefile
