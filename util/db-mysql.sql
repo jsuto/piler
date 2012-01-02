@@ -20,6 +20,7 @@ create table if not exists `sph_index` (
   `sent` int not null,
   `body` text,
   `size` int default '0',
+  `direction` int default 0,
   `attachments` int default 0,
   `attachment_types` text(512) default null,
   primary key (`id`)
@@ -36,6 +37,7 @@ create table if not exists `metadata` (
   `deleted` tinyint(1) default 0,
   `size` int default 0,
   `hlen` int default 0,
+  `direction` int default 0,
   `attachments` int default 0,
   `piler_id` char(36) not null,
   `message_id` char(128) character set 'latin1' not null,
@@ -62,7 +64,7 @@ create index `rcpt_idx2` on `rcpt`(`to`);
 
 
 drop view if exists `messages`;
-create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`arrived` AS `arrived` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`arrived` AS `arrived` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 drop table if exists `attachment`;
 create table if not exists `attachment` (
@@ -150,7 +152,7 @@ create table if not exists `user_settings` (
 create index `user_settings_idx` on `user_settings`(`username`);
 
 
-
+drop table if exists `user`;
 create table if not exists `user` (
    `uid` int unsigned not null primary key,
    `gid` int unsigned not null,
@@ -165,6 +167,7 @@ create table if not exists `user` (
 
 insert into `user` (`uid`, `gid`, `username`, `realname`, `password`, `policy_group`, `isadmin`, `domain`) values (0, 0, 'admin', 'built-in piler admin', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 0, 1, 'local');
 
+drop table if exists `email`;
 create table if not exists `email` (
    `uid` int unsigned not null,
    `email` char(128) not null primary key
@@ -190,6 +193,7 @@ create table if not exists `remote` (
 ) ENGINE=InnoDB;
 
 
+drop table if exists `domain`;
 create table if not exists `domain` (
    `domain` char(64) not null primary key,
    `mapped` char(64) not null

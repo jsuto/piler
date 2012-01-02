@@ -389,6 +389,8 @@ int main(int argc, char **argv){
       memset(sdata.ttmpfile, 0, sizeof(sdata.ttmpfile));
 
       while((rc = read(0, sdata.ttmpfile, RND_STR_LEN+1)) > 0){
+         snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
+
          trimBuffer(sdata.ttmpfile);
 
          id = get_id_by_piler_id(&sdata, &digest[0], &bodydigest[0], &cfg);
@@ -420,6 +422,7 @@ int main(int argc, char **argv){
    }
    else {
       snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
+      snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
       rc = retrieve_email_from_archive(&sdata, stdout, &cfg);
    }
 

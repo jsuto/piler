@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
@@ -16,8 +16,12 @@
 #include <piler.h>
 
 
+extern char *optarg;
+extern int optind;
+
+
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int i, rc=ERR;
+   int rc=ERR;
    char *rule;
    struct stat st;
    struct _state state;
@@ -27,25 +31,32 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
       return rc;
    }
 
+   if(S_ISREG(st.st_mode) == 0){
+      printf("%s is not a file\n", filename);
+      return rc;
+   }
 
-   create_id(&(sdata->ttmpfile[0]));
 
-   printf("a: %s\n", sdata->ttmpfile);
-
-   link(filename, sdata->ttmpfile);
- 
-   sdata->num_of_rcpt_to = -1;
-   memset(sdata->rcptto[0], 0, SMALLBUFSIZE);
-
-   time(&(sdata->now));
+   init_session_data(sdata);
+   snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+   
    sdata->sent = 0;
-   sdata->hdr_len = 0;
    sdata->tot_len = st.st_size;
-   memset(sdata->attachments, 0, SMALLBUFSIZE);
-
-   snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", sdata->ttmpfile);
 
    state = parse_message(sdata, cfg);
+   post_parse(sdata, &state, cfg);
+
+   if(sdata->sent > sdata->now) sdata->sent = sdata->now;
+
+   /*printf("message-id: %s\n", state.message_id);
+   printf("from: *%s*\n", state.b_from);
+   printf("to: *%s*\n", state.b_to);
+   printf("subject: *%s*\n", state.b_subject);
+   printf("attachments:%s\n", sdata->attachments);
+   printf("direction: %d\n", sdata->direction);*/
+
+
+
 
    rule = check_againt_ruleset(data->rules, &state, st.st_size);
 
@@ -55,54 +66,157 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
       goto ENDE;
    }
 
-
-   printf("message-id: %s\n", state.message_id);
-   printf("from: *%s*\n", state.b_from);
-   printf("to: *%s*\n", state.b_to);
-   printf("subject: *%s*\n", state.b_subject);
-
    make_digests(sdata, cfg);
-
-   printf("hdr len: %d\n", sdata->hdr_len);
-
-   printf("body digest: %s\n", sdata->bodydigest);
-
-   for(i=1; i<=state.n_attachments; i++){
-      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
-   }
-
-   printf("attachments:%s\n", sdata->attachments);
-
-   printf("\n\n");
 
    rc = processMessage(sdata, &state, cfg);
 
 ENDE:
-   unlink(sdata->ttmpfile);
    unlink(sdata->tmpframe);
 
-   if(rc == ERR) return rc;
+   switch(rc) {
+      case OK:
+                        printf("imported: %s\n", filename);
+                        break;
 
-   if(rc == ERR_EXISTS) printf("discarding duplicate message: %s\n", sdata->ttmpfile);
+      case ERR_EXISTS:
+                        printf("discarding duplicate message: %s\n", filename);
+                        break;
 
-   
-   return OK;
+      default:
+                        printf("failed to import: %s\n", filename);
+                        break;
+   } 
+
+   printf("\n\n");
+
+   return rc;
+}
+
+
+int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   FILE *F, *f=NULL;
+   int rc=ERR, tot_msgs=0;
+   char buf[MAXBUFSIZE], fname[SMALLBUFSIZE];
+   time_t t;
+
+
+   F = fopen(mailbox, "r");
+   if(!F){
+      printf("cannot open mailbox: %s\n", mailbox);
+      return rc;
+   }
+
+   t = time(NULL);
+
+   while(fgets(buf, sizeof(buf)-1, F)){
+
+      if(buf[0] == 'F' && buf[1] == 'r' && buf[2] == 'o' && buf[3] == 'm' && buf[4] == ' '){
+         tot_msgs++;
+         if(f){
+            fclose(f);
+            rc = import_message(fname, sdata, data, cfg);
+            unlink(fname);
+         }
+
+         snprintf(fname, sizeof(fname)-1, "%ld-%d", t, tot_msgs);
+         f = fopen(fname, "w+");
+         continue;
+      }
+
+      if(f) fprintf(f, "%s", buf);
+   }
+
+   if(f){
+      fclose(f);
+      rc = import_message(fname, sdata, data, cfg);
+      unlink(fname);
+   }
+
+   fclose(F);
+
+
+   return rc;
+}
+
+
+int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   DIR *dir;
+   struct dirent *de;
+   int rc=ERR, tot_msgs=0;
+   char fname[SMALLBUFSIZE];
+
+   dir = opendir(directory);
+   if(!dir){
+      printf("cannot open directory: %s\n", directory);
+      return rc;
+   }
+
+   while((de = readdir(dir))){
+      if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
+
+      snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
+
+      rc = import_message(fname, sdata, data, cfg);
+
+      if(rc != ERR) tot_msgs++;
+
+   }
+   closedir(dir);
+
+   return rc;
+}
+
+
+void usage(){
+   printf("usage: pilerimport -e <eml file> -m <mailbox file> -d <directory>\n");
+   exit(0);
 }
 
 
 int main(int argc, char **argv){
-   int rc;
+   int i, rc;
+   char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
 
 
-   if(argc < 2){
-      printf("usage: %s <message>\n", argv[0]);
-      exit(1);
+   while((i = getopt(argc, argv, "c:m:e:d:h?")) > 0){
+       switch(i){
+
+         case 'c' :
+                    configfile = optarg;
+                    break;
+
+         case 'e' :
+                    emlfile = optarg;
+                    break;
+
+         case 'd' :
+                    directory = optarg;
+                    break;
+
+         case 'm' :
+                    mailbox = optarg;
+                    break;
+
+         case 'h' :
+         case '?' :
+                    usage();
+                    break;
+
+
+         default  : 
+                    break;
+       }
    }
 
-   cfg = read_config(CONFIG_FILE);
+
+
+   if(!mailbox && !emlfile && !directory) usage();
+
+
+   cfg = read_config(configfile);
 
    if(read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);
@@ -119,7 +233,6 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
-   printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
 
    data.rules = NULL;
@@ -128,7 +241,9 @@ int main(int argc, char **argv){
 
 
 
-   rc = import_message(argv[1], &sdata, &data, &cfg);
+   if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
+   if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
+   if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
 
 
 

@@ -56,18 +56,18 @@ int main(int argc, char **argv){
    load_archiving_rules(&sdata, &(data.rules));
 
    rc = 0;
+
+   init_session_data(&sdata);
  
-   sdata.num_of_rcpt_to = -1;
-   time(&(sdata.now));
    sdata.sent = 0;
    sdata.tot_len = st.st_size;
-   memset(sdata.rcptto[0], 0, SMALLBUFSIZE);
-   memset(sdata.attachments, 0, SMALLBUFSIZE);
+
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
+   snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
-
    state = parse_message(&sdata, &cfg);
+   post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);
    printf("from: *%s*\n", state.b_from);
@@ -92,6 +92,8 @@ int main(int argc, char **argv){
    }
 
    printf("attachments:%s\n", sdata.attachments);
+
+   printf("direction: %d\n", sdata.direction);
 
    printf("\n\n");
 

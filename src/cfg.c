@@ -72,6 +72,7 @@ struct _parse_rule config_parse_rules[] =
    { "max_requests_per_child", "integer", (void*) int_parser, offsetof(struct __config, max_requests_per_child), "200", sizeof(int)},
    { "memcached_servers", "string", (void*) string_parser, offsetof(struct __config, memcached_servers), "127.0.0.1", MAXVAL-1},
    { "memcached_ttl", "integer", (void*) int_parser, offsetof(struct __config, memcached_ttl), "86400", sizeof(int)},
+   { "mydomains", "string", (void*) string_parser, offsetof(struct __config, mydomains), "", MAXVAL-1},
    { "mysqlhost", "string", (void*) string_parser, offsetof(struct __config, mysqlhost), "", MAXVAL-1},
    { "mysqlport", "integer", (void*) int_parser, offsetof(struct __config, mysqlport), "", sizeof(int)},
    { "mysqlsocket", "string", (void*) string_parser, offsetof(struct __config, mysqlsocket), "/tmp/mysql.sock", MAXVAL-1},

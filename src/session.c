@@ -36,7 +36,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
    state = SMTP_STATE_INIT;
 
-   initSessionData(&sdata);
+   init_session_data(&sdata);
 
    bzero(&counters, sizeof(counters));
 
@@ -141,7 +141,10 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
 
                gettimeofday(&tv1, &tz);
+
                sstate = parse_message(&sdata, cfg);
+               post_parse(&sdata, &sstate, cfg);
+
                gettimeofday(&tv2, &tz);
                sdata.__parsed = tvdiff(tv2, tv1);
 
@@ -378,7 +381,7 @@ AFTER_PERIOD:
                strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
             }
             else {
-               sdata.fd = open(sdata.ttmpfile, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
+               sdata.fd = open(sdata.filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
                if(sdata.fd == -1){
                   syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sdata.ttmpfile);
                   strncat(resp, SMTP_RESP_451_ERR, MAXBUFSIZE-1);
@@ -424,7 +427,7 @@ AFTER_PERIOD:
             unlink(sdata.ttmpfile);
             unlink(sdata.tmpframe);
 
-            initSessionData(&sdata);
+            init_session_data(&sdata);
 
             state = SMTP_STATE_HELO;
 
@@ -486,40 +489,4 @@ void killChild(){
    exit(0);
 }
 
-
-void initSessionData(struct session_data *sdata){
-   int i;
-
-
-   sdata->fd = -1;
-
-   create_id(&(sdata->ttmpfile[0]));
-   unlink(sdata->ttmpfile);
-
-   snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", sdata->ttmpfile);
-   unlink(sdata->tmpframe);
-
-   memset(sdata->mailfrom, 0, SMALLBUFSIZE);
-   snprintf(sdata->client_addr, SMALLBUFSIZE-1, "null");
-
-   memset(sdata->attachments, 0, SMALLBUFSIZE);
-
-   sdata->restored_copy = 0;
-
-   sdata->hdr_len = 0;
-   sdata->tot_len = 0;
-   sdata->num_of_rcpt_to = 0;
-
-   sdata->tre = '-';
-
-   sdata->rav = AVIR_OK;
-
-   sdata->__acquire = sdata->__parsed = sdata->__av = sdata->__store = sdata->__compress = sdata->__encrypt = 0;
-
-
-   for(i=0; i<MAX_RCPT_TO; i++) memset(sdata->rcptto[i], 0, SMALLBUFSIZE);
-
-   time(&(sdata->now));
-   sdata->sent = sdata->now;
-}
 

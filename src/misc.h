@@ -23,14 +23,12 @@ void create_id(char *id);
 int get_random_bytes(unsigned char *buf, int len);
 int readFromEntropyPool(int fd, void *_s, size_t n);
 int recvtimeout(int s, char *buf, int len, int timeout);
-int isValidClapfID(char *p);
-
-int isDottedIPv4Address(char *s);
-int isEmailAddressOnList(char *list, char *tmpfile, char *email, struct __config *cfg);
 
 void write_pid_file(char *pidfile);
 int drop_privileges(struct passwd *pwd);
 
+int is_email_address_on_my_domains(char *email, struct __config *cfg);
+void init_session_data(struct session_data *sdata);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);

@@ -44,6 +44,8 @@ struct __config {
    unsigned char key[KEYLEN];
    unsigned char iv[MAXVAL];
 
+   char mydomains[MAXVAL];
+
    // mysql stuff
 
    char mysqlhost[MAXVAL];

@@ -10,6 +10,7 @@
 #include "defs.h"
 
 struct _state parse_message(struct session_data *sdata, struct __config *cfg);
+void post_parse(struct session_data *sdata, struct _state *state, struct __config *cfg);
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, struct __config *cfg);
 
 void init_state(struct _state *state);

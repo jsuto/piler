@@ -341,6 +341,72 @@ int drop_privileges(struct passwd *pwd){
 }
 
 
+int is_email_address_on_my_domains(char *email, struct __config *cfg){
+   int rc=0;
+   char *p, *q=NULL;
+
+   if(email == NULL || cfg->mydomains == NULL) return rc;
+
+   p = strchr(email, '@');
+
+   if(!p) return rc;
+
+   if(strlen(p) < 3) return rc;
+
+   q = strrchr(p+1, ' ');
+
+   if(q) *q = '\0';
+
+   if(strcasestr(cfg->mydomains, p+1)) rc = 1;
+
+   if(q) *q = ' ';
+
+   return rc;
+}
+
+
+void init_session_data(struct session_data *sdata){
+   int i;
+
+
+   sdata->fd = -1;
+
+   create_id(&(sdata->ttmpfile[0]));
+   unlink(sdata->ttmpfile);
+
+   snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);
+
+   snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", sdata->ttmpfile);
+   unlink(sdata->tmpframe);
+
+   memset(sdata->mailfrom, 0, SMALLBUFSIZE);
+   snprintf(sdata->client_addr, SMALLBUFSIZE-1, "null");
+
+   memset(sdata->attachments, 0, SMALLBUFSIZE);
+
+   sdata->restored_copy = 0;
+
+   sdata->internal_sender = sdata->internal_recipient = sdata->external_recipient = 0;
+   sdata->direction = 0;
+
+   sdata->hdr_len = 0;
+   sdata->tot_len = 0;
+   sdata->num_of_rcpt_to = 0;
+
+   sdata->tre = '-';
+
+   sdata->rav = AVIR_OK;
+
+   sdata->__acquire = sdata->__parsed = sdata->__av = sdata->__store = sdata->__compress = sdata->__encrypt = 0;
+
+
+   for(i=0; i<MAX_RCPT_TO; i++) memset(sdata->rcptto[i], 0, SMALLBUFSIZE);
+
+   time(&(sdata->now));
+   sdata->sent = sdata->now;
+}
+
+
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;

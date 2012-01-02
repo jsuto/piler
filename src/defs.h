@@ -148,10 +148,13 @@ struct _state {
 
 
 struct session_data {
+   char filename[SMALLBUFSIZE];
    char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre, restored_copy;
    char mailfrom[SMALLBUFSIZE], rcptto[MAX_RCPT_TO][SMALLBUFSIZE], client_addr[SMALLBUFSIZE];
    char acceptbuf[SMALLBUFSIZE];
    char attachments[SMALLBUFSIZE];
+   char internal_sender, internal_recipient, external_recipient;
+   int direction;
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;

@@ -131,7 +131,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    }
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,%ld,%ld,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, state->n_attachments);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,%ld,%ld,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, state->n_attachments);
 
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
@@ -169,7 +169,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    bind[4].buffer_type = MYSQL_TYPE_STRING;
    bind[4].buffer = sdata->attachments;
    bind[4].is_null = 0;
-   len[4] = strlen(sdata->attachments); bind[4].length = &len[3];
+   len[4] = strlen(sdata->attachments); bind[4].length = &len[4];
 
 
    if(mysql_stmt_bind_param(stmt, bind)){
@@ -265,7 +265,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`subject`,`arrived`,`sent`,`size`,`hlen`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,%ld,%ld,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 

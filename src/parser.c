@@ -18,13 +18,12 @@
 
 struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    FILE *f;
-   char *p, buf[MAXBUFSIZE];
+   char buf[MAXBUFSIZE];
    struct _state state;
-   int i, len;
 
    init_state(&state);
 
-   f = fopen(sdata->ttmpfile, "r");
+   f = fopen(sdata->filename, "r");
    if(!f){
       syslog(LOG_PRIORITY, "%s: cannot open", sdata->ttmpfile);
       return state;
@@ -34,6 +33,7 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    state.mfd = open(sdata->tmpframe, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
    if(state.mfd == -1){
       syslog(LOG_PRIORITY, "%s: cannot open frame file: %s", sdata->ttmpfile, sdata->tmpframe);
+      fclose(f);
       return state;
    }
 
@@ -45,38 +45,52 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    close(state.mfd); state.mfd = 0;
    fclose(f);
 
-
-   free_list(state.boundaries);
-   free_list(state.rcpt);
-
-   trimBuffer(state.b_subject);
-   fixupEncodedHeaderLine(state.b_subject);
+   return state;
+}
 
 
-   for(i=1; i<=state.n_attachments; i++){
-      digest_file(state.attachments[i].internalname, &(state.attachments[i].digest[0]));
-      fixupEncodedHeaderLine(state.attachments[i].filename);
+void post_parse(struct session_data *sdata, struct _state *state, struct __config *cfg){
+   int i, len;
+   char *p;
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+   free_list(state->boundaries);
+   free_list(state->rcpt);
 
-      p = determine_attachment_type(state.attachments[i].filename, state.attachments[i].type);
-      len = strlen(p);
+   trimBuffer(state->b_subject);
+   fixupEncodedHeaderLine(state->b_subject);
 
-      if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
+
+   if(sdata->internal_sender == 0) sdata->direction = DIRECTION_INCOMING;
+   else {
+      if(sdata->internal_recipient == 1) sdata->direction = DIRECTION_INTERNAL;
+      if(sdata->external_recipient == 1) sdata->direction = DIRECTION_OUTGOING;
+      if(sdata->internal_recipient == 1 && sdata->external_recipient == 1) sdata->direction = DIRECTION_INTERNAL_AND_OUTGOING;
    }
 
 
-   if(state.message_id[0] == 0) snprintf(state.message_id, SMALLBUFSIZE-1, "null");
+   for(i=1; i<=state->n_attachments; i++){
+      digest_file(state->attachments[i].internalname, &(state->attachments[i].digest[0]));
+      fixupEncodedHeaderLine(state->attachments[i].filename);
 
-   len = strlen(state.b_from);
-   if(state.b_from[len-1] == ' ') state.b_from[len-1] = '\0';
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
 
-   len = strlen(state.b_to);
-   if(state.b_to[len-1] == ' ') state.b_to[len-1] = '\0';
+      p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
+      len = strlen(p);
 
-   syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s", sdata->ttmpfile, state.b_from, state.b_to, state.b_subject, state.message_id);
+      if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1 && !strstr(sdata->attachments, p)) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
+   }
 
-   return state;
+
+   if(state->message_id[0] == 0) snprintf(state->message_id, SMALLBUFSIZE-1, "null");
+
+   len = strlen(state->b_from);
+   if(state->b_from[len-1] == ' ') state->b_from[len-1] = '\0';
+
+   len = strlen(state->b_to);
+   if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
+
+   syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id);
+
 }
 
 
@@ -384,14 +398,20 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       len = strlen(puf);
 
-      if(state->message_state == MSG_FROM && strchr(puf, '@') && strlen(puf) > 5 && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1)
+      if(state->message_state == MSG_FROM && strchr(puf, '@') && strlen(puf) > 5 && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
+         if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
+      }
       else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strchr(puf, '@') && strlen(puf) > 5 && strlen(state->b_to) < SMALLBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);
             memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+
+            if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_recipient = 1;
+            else sdata->external_recipient = 1;
+
          }
       }
       else if(state->message_state == MSG_BODY && strlen(state->b_body) < BIGBUFSIZE-len-1)

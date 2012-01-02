@@ -44,7 +44,7 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
    SHA256_Init(&context2);
 
 
-   fd = open(sdata->ttmpfile, O_RDONLY);
+   fd = open(sdata->filename, O_RDONLY);
    if(fd == -1) return -1;
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
