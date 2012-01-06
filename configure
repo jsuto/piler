@@ -605,7 +605,6 @@ DATADIR
 CFGDIR
 MYSQL_CONFIG
 id_bin
-sqlite3_batch
 libclamav_extra_libs
 mysql_obj
 mysql_libs
@@ -673,8 +672,7 @@ ac_user_opts='
 enable_option_checking
 enable_static_build
 enable_clamd
-enable_whitelist
-enable_blacklist
+enable_memcached
 with_piler_user
 '
       ac_precious_vars='build_alias
@@ -1297,8 +1295,7 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-static-build   build statically linked executables (default: dynamically linked)
   --enable-clamd          build clamd antivirus support
-  --enable-whitelist      use whitelist
-  --enable-blacklist      use blacklist (this is _NOT_ RBL)
+  --enable-memcached      build memcached support
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3403,17 +3400,14 @@ done
 
 
 
-
 have_libclamav="no"
 have_libtool="no"
 have_clamd="no"
 
 have_antivirus="no"
 have_mysql="no"
-have_sqlite3="no"
+have_tre="no"
 have_zlib="no"
-have_whitelist="no"
-have_blacklist="no"
 
 
 have_static_build="no"
@@ -3423,7 +3417,6 @@ defs=""
 objs=""
 user_obj=""
 mysql_obj=""
-sqlite3_batch=""
 os=`uname -s`
 
 id_bin="id"
@@ -3456,32 +3449,12 @@ fi
    fi
 
 
-
-# Check whether --enable-whitelist was given.
-if test "${enable_whitelist+set}" = set; then :
-  enableval=$enable_whitelist; want_whitelist=$enableval
+# Check whether --enable-memcached was given.
+if test "${enable_memcached+set}" = set; then :
+  enableval=$enable_memcached; want_memcached=$enableval
 else
-  want_whitelist="no"
+  want_memcached="no"
 fi
-
-
-   if test "$want_whitelist" = "yes"; then
-      have_whitelist="yes"
-   fi
-
-
-
-# Check whether --enable-blacklist was given.
-if test "${enable_blacklist+set}" = set; then :
-  enableval=$enable_blacklist; want_blacklist=$enableval
-else
-  want_blacklist="no"
-fi
-
-
-   if test "$want_blacklist" = "yes"; then
-      have_blacklist="yes"
-   fi
 
 
 
@@ -3780,6 +3753,12 @@ fi
 fi
 ac_cv_lib_tre=ac_cv_lib_tre_main
 
+if test "$have_tre" = "no"; then
+   echo "please install the tre development packages"
+   exit 1;
+fi
+
+
 
 
 for ac_header in zlib.h
@@ -4007,105 +3986,6 @@ else
 fi
 
 
-for ac_header in sqlite3.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sqlite3.h" "ac_cv_header_sqlite3_h" "$ac_includes_default"
-if test "x$ac_cv_header_sqlite3_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SQLITE3_H 1
-_ACEOF
- have_sqlite3=yes
-else
-  echo "sqlite3.h is not found"
-fi
-
-done
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lsqlite3" >&5
-$as_echo_n "checking for main in -lsqlite3... " >&6; }
-if ${ac_cv_lib_sqlite3_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsqlite3  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_sqlite3_main=yes
-else
-  ac_cv_lib_sqlite3_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sqlite3_main" >&5
-$as_echo "$ac_cv_lib_sqlite3_main" >&6; }
-if test "x$ac_cv_lib_sqlite3_main" = xyes; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sqlite3_open in -lsqlite3" >&5
-$as_echo_n "checking for sqlite3_open in -lsqlite3... " >&6; }
-if ${ac_cv_lib_sqlite3_sqlite3_open+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsqlite3  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char sqlite3_open ();
-int
-main ()
-{
-return sqlite3_open ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_sqlite3_sqlite3_open=yes
-else
-  ac_cv_lib_sqlite3_sqlite3_open=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sqlite3_sqlite3_open" >&5
-$as_echo "$ac_cv_lib_sqlite3_sqlite3_open" >&6; }
-if test "x$ac_cv_lib_sqlite3_sqlite3_open" = xyes; then :
-  have_sqlite3=yes
-else
-  have_sqlite3=no
-fi
-
-fi
-ac_cv_lib_sqlite3=ac_cv_lib_sqlite3_main
-
-
-if test "$have_sqlite3" = "no"; then
-   echo "sqlite3 not found";
-   fi
-
-
-
-if test `sqlite3 -help 2>&1| grep -c -- -batch` -gt 0; then sqlite3_batch="-batch"; fi
-
 
 
 
@@ -4222,23 +4102,9 @@ if test "$have_clamd" = "yes"; then
    defs="$defs -DHAVE_CLAMD"
 fi
 
-if test "$have_whitelist" = "yes"; then
-   echo "whitelist: yes"
-   defs="$defs -DHAVE_WHITELIST"
-else
-   echo "whitelist: no"
-fi
-
-if test "$have_blacklist" = "yes"; then
-   echo "blacklist: yes"
-   defs="$defs -DHAVE_BLACKLIST"
-else
-   echo "blacklist: no"
-fi
-
 if test "$want_memcached" = "yes"; then
    echo "memcached support: yes"
-   objs="$objs memc.o memcached.o"
+   objs="$objs memc.o"
    defs="$defs -DHAVE_MEMCACHED"
 fi
 
@@ -4261,12 +4127,6 @@ if test "$have_mysql" = "yes"; then
    defs="$defs -DNEED_MYSQL"
 fi
 
-if test "$have_sqlite3" = "yes"; then
-   defs="$defs -DNEED_SQLITE3"
-   sqlite3_libs="-lsqlite3 -lpthread"
-fi
-
-
 if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
    mysql_libs="$mysql_libs -lguide"
 fi
@@ -4281,13 +4141,15 @@ if test "$have_clamd" = "no" ; then
    echo "piler will not protect you from hostile code coming in e-mail"
 fi
 
+echo "piler data directory: $data_dir/piler"
+
 echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
-LIBS="$antispam_libs $sunos_libs $sqlite3_libs"
+LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o tai.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4994,6 +4856,7 @@ do
     "piler-config.h") CONFIG_HEADERS="$CONFIG_HEADERS piler-config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

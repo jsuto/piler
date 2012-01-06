@@ -329,7 +329,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 }
 
 
-int processMessage(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int process_message(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int i, rc;
 
    /* discard if existing message_id */

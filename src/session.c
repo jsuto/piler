@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
+int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    char rctptoemail[SMALLBUFSIZE], fromemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], reason[SMALLBUFSIZE];
@@ -30,9 +30,6 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    struct timezone tz;
    struct timeval tv1, tv2;
 
-
-   alarm(cfg->session_timeout);
-   sig_catch(SIGALRM, killChild);
 
    state = SMTP_STATE_INIT;
 
@@ -59,8 +56,6 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    else
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);
 #endif
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: fork()", sdata.ttmpfile);
 
 
    gettimeofday(&tv1, &tz);
@@ -206,7 +201,7 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                            counters.c_ignore++;
                         }
                         else {
-                           inj = processMessage(&sdata, &sstate, cfg);
+                           inj = process_message(&sdata, &sstate, cfg);
                         }
 
                      }
@@ -247,8 +242,6 @@ void handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                unlink(sdata.ttmpfile);
                unlink(sdata.tmpframe);
 
-
-               alarm(cfg->session_timeout);
 
                /* if we have nothing after the trailing (.), we can read
                   the next command from the network */
@@ -467,26 +460,15 @@ AFTER_PERIOD:
 
 QUITTING:
 
-   updateCounters(&sdata, data, &counters, cfg);
+   update_counters(&sdata, data, &counters, cfg);
 
 #ifdef NEED_MYSQL
    mysql_close(&(sdata.mysql));
 #endif
 
-#ifdef HAVE_MEMCACHED
-   memcached_shutdown(&(data->memc));
-#endif
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child has finished");
-
    if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", counters.c_rcvd);
 
-}
-
-
-void killChild(){
-   syslog(LOG_PRIORITY, "child is killed by force");
-   exit(0);
+   return (int)counters.c_rcvd;
 }
 
 

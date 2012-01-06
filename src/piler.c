@@ -28,15 +28,215 @@ extern char *optarg;
 extern int optind;
 
 int sd;
-int nconn = 0;
+int quit = 0;
+int received_sighup = 0;
 char *configfile = CONFIG_FILE;
 struct __config cfg;
 struct __data data;
 struct passwd *pwd;
 
+struct child children[MAXCHILDREN];
+
+
+signal_func *set_signal_handler(int signo, signal_func * func);
+static void takesig(int sig);
+static void child_sighup_handler(int sig);
+static void child_main(struct child *ptr);
+static pid_t child_make(struct child *ptr);
+int search_slot_by_pid(pid_t pid);
+void kill_children(int sig);
+void clean_exit();
+void initialise_configuration();
+
+
+
+
+/*
+ * most of the preforking code was taken from the tinyproxy project
+ */
+
+signal_func *set_signal_handler(int signo, signal_func * func){
+   struct sigaction act, oact;
+
+   act.sa_handler = func;
+   sigemptyset (&act.sa_mask);
+   act.sa_flags = 0;
+
+   if(sigaction(signo, &act, &oact) < 0) return SIG_ERR;
+
+   return oact.sa_handler;
+}
+
+
+static void takesig(int sig){
+   int i, status;
+   pid_t pid;
+
+   switch(sig){
+        case SIGHUP:
+                initialise_configuration();
+                kill_children(SIGHUP);
+                break;
+
+        case SIGTERM:
+        case SIGKILL:
+                quit = 1;
+                clean_exit();
+                break;
+
+        case SIGCHLD:
+                while((pid = waitpid (-1, &status, WNOHANG)) > 0){
+
+                   //syslog(LOG_PRIORITY, "child (pid: %d) has died", pid);
+
+                   if(quit == 0){
+                      i = search_slot_by_pid(pid);
+                      if(i >= 0){
+                         children[i].status = READY;
+                         children[i].pid = child_make(&children[i]);
+                      }
+                      else syslog(LOG_PRIORITY, "error: couldn't find slot for pid %d", pid);
+
+                   }
+                }
+                break;
+   }
+
+   return;
+}
+
+
+static void child_sighup_handler(int sig){
+   if(sig == SIGHUP){
+      received_sighup = 1;
+   }
+}
+
+
+static void child_main(struct child *ptr){
+   int new_sd;
+   unsigned int clen;
+   struct sockaddr_in client_addr;
+
+   ptr->messages = 0;
+
+   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d) started main()", getpid());
+
+   while(1){
+      if(received_sighup == 1){
+         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d) caught HUP signal", getpid());
+         break;
+      }
+
+      ptr->status = READY;
+
+      clen = sizeof(client_addr);
+
+      new_sd = accept(sd, (struct sockaddr *)&client_addr, &clen);
+
+      if(new_sd == -1) continue;
+
+      ptr->status = BUSY;
+
+      syslog(LOG_PRIORITY, "child (pid: %d) connection from %s", getpid(), inet_ntoa(client_addr.sin_addr));
+
+      sig_block(SIGHUP);
+      ptr->messages += handle_smtp_session(new_sd, &data, &cfg);
+      sig_unblock(SIGHUP);
+
+      close(new_sd);
+
+      if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
+         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d) served enough: %d", getpid(), ptr->messages);
+         break;
+      }
+
+   }
+
+   ptr->status = UNDEF;
+
+#ifdef HAVE_MEMCACHED
+   memcached_shutdown(&(data.memc));
+#endif
+
+   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child decides to exit (pid: %d)", getpid());
+
+   exit(0);
+}
+
+
+static pid_t child_make(struct child *ptr){
+   pid_t pid;
+
+   if((pid = fork()) > 0) return pid;
+
+   if(pid == -1) return -1;
+
+   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "forked a child (pid: %d)", getpid());
+
+   /* reset signals */
+
+   set_signal_handler(SIGCHLD, SIG_DFL);
+   set_signal_handler(SIGTERM, SIG_DFL);
+   set_signal_handler(SIGHUP, child_sighup_handler);
+
+   child_main(ptr);
+
+   return -1;
+}
+
+
+
+int child_pool_create(){
+   int i;
+
+   for(i=0; i<MAXCHILDREN; i++){
+      children[i].pid = 0;
+      children[i].messages = 0;
+      children[i].status = UNDEF;
+   }
+
+   for(i=0; i<cfg.number_of_worker_processes; i++){
+      children[i].status = READY;
+      children[i].pid = child_make(&children[i]);
+
+      if(children[i].pid == -1){
+         syslog(LOG_PRIORITY, "error: failed to fork a child");
+         clean_exit();
+      }
+   }
+
+   return 0;
+}
+
+
+int search_slot_by_pid(pid_t pid){
+   int i;
+
+   for(i=0; i<MAXCHILDREN; i++){
+      if(children[i].pid == pid) return i;
+   }
+
+   return -1;
+}
+
+
+void kill_children(int sig){
+   int i;
+
+   for(i=0; i<MAXCHILDREN; i++){
+      if(children[i].status != UNDEF && children[i].pid > 1){
+         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sending signal to child (pid: %d)", children[i].pid);
+         kill(children[i].pid, sig);
+      }
+   }
+}
+
 
 void clean_exit(){
    if(sd != -1) close(sd);
+
+   kill_children(SIGTERM);
 
    free_rule(data.rules);
 
@@ -54,19 +254,13 @@ void fatal(char *s){
 }
 
 
-void sigchld(){
-   int pid, wstat;
-
-   while((pid = wait_nohang(&wstat)) > 0){
-      if(nconn > 0) nconn--;
-   }
-}
-
-
 void initialise_configuration(){
    struct session_data sdata;
 
    cfg = read_config(configfile);
+
+   if(cfg.number_of_worker_processes < 5) cfg.number_of_worker_processes = 5;
+   if(cfg.number_of_worker_processes > MAXCHILDREN) cfg.number_of_worker_processes = MAXCHILDREN;
 
    if(strlen(cfg.username) > 1){
       pwd = getpwnam(cfg.username);
@@ -112,9 +306,8 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int i, new_sd, yes=1, pid, daemonise=0;
-   unsigned int clen;
-   struct sockaddr_in client_addr, serv_addr;
+   int i, yes=1, daemonise=0;
+   struct sockaddr_in serv_addr;
    struct in_addr addr;
 
    while((i = getopt(argc, argv, "c:dvVh")) > 0){
@@ -141,21 +334,12 @@ int main(int argc, char **argv){
 
    (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
-   sig_catch(SIGINT, clean_exit);
-   sig_catch(SIGQUIT, clean_exit);
-   sig_catch(SIGKILL, clean_exit);
-   sig_catch(SIGTERM, clean_exit);
-   sig_catch(SIGHUP, initialise_configuration);
-
-
    data.rules = NULL;
 
 
-   sig_block(SIGCHLD);
-   sig_catch(SIGCHLD, sigchld);
-
-
    initialise_configuration();
+
+   set_signal_handler (SIGPIPE, SIG_IGN);
 
 
    if(read_key(&cfg)) fatal(ERR_READING_KEY);
@@ -193,51 +377,17 @@ int main(int argc, char **argv){
    write_pid_file(cfg.pidfile);
 
 
-   /* main accept loop */
+   child_pool_create();
 
-   for(;;){
+   set_signal_handler(SIGCHLD, takesig);
+   set_signal_handler(SIGTERM, takesig);
+   set_signal_handler(SIGKILL, takesig);
+   set_signal_handler(SIGHUP, takesig);
 
-      /* let new connections wait if we are too busy now */
 
-      if(nconn >= cfg.max_connections) sig_pause();
+   for(;;){ sleep(1); }
 
-      clen = sizeof(client_addr);
-
-      sig_unblock(SIGCHLD);
-      new_sd = accept(sd, (struct sockaddr *)&client_addr, &clen);
-      sig_block(SIGCHLD);
-
-      if(new_sd == -1) continue;
-
-      pid = fork();
-
-      if(pid == 0){
-          sig_uncatch(SIGCHLD);
-          sig_unblock(SIGCHLD);
-
-          sig_uncatch(SIGINT);
-          sig_uncatch(SIGQUIT);
-          sig_uncatch(SIGKILL);
-          sig_uncatch(SIGTERM);
-          sig_block(SIGHUP);
-
-          syslog(LOG_PRIORITY, "connection from client: %s", inet_ntoa(client_addr.sin_addr));
-
-          handle_smtp_session(new_sd, &data, &cfg);
-
-          _exit(0);
-      }
-
-      else if(pid > 0){
-         nconn++;
-      }
-
-      else {
-         syslog(LOG_PRIORITY, "%s", ERR_FORK_FAILED);
-      }
-
-      close(new_sd);
-   }
+   clean_exit();
 
    return 0;
 }

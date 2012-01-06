@@ -26,7 +26,6 @@ AC_SUBST(mysql_includes)
 AC_SUBST(mysql_libs)
 AC_SUBST(mysql_obj)
 AC_SUBST(libclamav_extra_libs)
-AC_SUBST(sqlite3_batch)
 AC_SUBST(id_bin)
 
 have_libclamav="no"
@@ -35,10 +34,8 @@ have_clamd="no"
 
 have_antivirus="no"
 have_mysql="no"
-have_sqlite3="no"
+have_tre="no"
 have_zlib="no"
-have_whitelist="no"
-have_blacklist="no"
 
 
 have_static_build="no"
@@ -48,7 +45,6 @@ defs=""
 objs=""
 user_obj=""
 mysql_obj=""
-sqlite3_batch=""
 os=`uname -s`
 
 id_bin="id"
@@ -74,25 +70,8 @@ AC_ARG_ENABLE(clamd,
    fi
 
 
-dnl use whitelist
-
-AC_ARG_ENABLE(whitelist,
-	[  --enable-whitelist      use whitelist], want_whitelist=$enableval, want_whitelist="no")
-
-   if test "$want_whitelist" = "yes"; then
-      have_whitelist="yes"
-   fi
-
-
-dnl use blacklist
-
-AC_ARG_ENABLE(blacklist,
-        [  --enable-blacklist      use blacklist (this is _NOT_ RBL)], want_blacklist=$enableval, want_blacklist="no")
-
-   if test "$want_blacklist" = "yes"; then
-      have_blacklist="yes"
-   fi
-
+AC_ARG_ENABLE(memcached,
+        [  --enable-memcached      build memcached support], want_memcached=$enableval, want_memcached="no")
 
 
 dnl math library
@@ -114,6 +93,12 @@ dnl TRE library
 
 AC_CHECK_HEADERS(tre/tre.h, have_tre=yes, echo "tre.h is not found")
 AC_CHECK_LIB([tre],[main],[AC_CHECK_LIB(tre, regcomp, have_tre=yes, echo "libtre.so is not found"; have_tre=no)],[],[])ac_cv_lib_tre=ac_cv_lib_tre_main
+
+if test "$have_tre" = "no"; then
+   echo "please install the tre development packages"
+   exit 1;
+fi
+
 
 
 dnl zlib
@@ -145,19 +130,6 @@ else
    exit 1;
 fi
 
-
-AC_CHECK_HEADERS(sqlite3.h, have_sqlite3=yes, echo "sqlite3.h is not found")
-AC_CHECK_LIB([sqlite3],[main],[AC_CHECK_LIB(sqlite3, sqlite3_open, have_sqlite3=yes, have_sqlite3=no)],[],[])ac_cv_lib_sqlite3=ac_cv_lib_sqlite3_main
-
-
-if test "$have_sqlite3" = "no"; then
-   echo "sqlite3 not found";
-   dnl exit 1;
-fi
-
-
-
-if test `sqlite3 -help 2>&1| grep -c -- -batch` -gt 0; then sqlite3_batch="-batch"; fi
 
 
 dnl user running piler
@@ -254,23 +226,9 @@ if test "$have_clamd" = "yes"; then
    defs="$defs -DHAVE_CLAMD"
 fi
 
-if test "$have_whitelist" = "yes"; then
-   echo "whitelist: yes"
-   defs="$defs -DHAVE_WHITELIST"
-else
-   echo "whitelist: no"
-fi
-
-if test "$have_blacklist" = "yes"; then
-   echo "blacklist: yes"
-   defs="$defs -DHAVE_BLACKLIST"
-else
-   echo "blacklist: no"
-fi
-
 if test "$want_memcached" = "yes"; then
    echo "memcached support: yes"
-   objs="$objs memc.o memcached.o"
+   objs="$objs memc.o"
    defs="$defs -DHAVE_MEMCACHED"
 fi
 
@@ -293,12 +251,6 @@ if test "$have_mysql" = "yes"; then
    defs="$defs -DNEED_MYSQL"
 fi
 
-if test "$have_sqlite3" = "yes"; then
-   defs="$defs -DNEED_SQLITE3"
-   sqlite3_libs="-lsqlite3 -lpthread"
-fi
-
-
 if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
    mysql_libs="$mysql_libs -lguide"
 fi
@@ -313,12 +265,14 @@ if test "$have_clamd" = "no" ; then
    echo "piler will not protect you from hostile code coming in e-mail"
 fi
 
+echo "piler data directory: $data_dir/piler"
+
 echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
-LIBS="$antispam_libs $sunos_libs $sqlite3_libs"
+LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o tai.o $objs"
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile])
 AC_OUTPUT
 

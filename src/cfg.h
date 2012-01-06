@@ -27,7 +27,6 @@ struct __config {
 
    int number_of_worker_processes;
    int max_requests_per_child;
-   int max_connections;
 
    int backlog;
 
@@ -60,6 +59,9 @@ struct __config {
 
    char sqlite3[MAXVAL];
    char sqlite3_pragma[MAXVAL];
+
+   int update_counters_to_memcached;
+   int memcached_to_db_interval;
 
 };
 

@@ -48,15 +48,6 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
 
-   /*printf("message-id: %s\n", state.message_id);
-   printf("from: *%s*\n", state.b_from);
-   printf("to: *%s*\n", state.b_to);
-   printf("subject: *%s*\n", state.b_subject);
-   printf("attachments:%s\n", sdata->attachments);
-   printf("direction: %d\n", sdata->direction);*/
-
-
-
 
    rule = check_againt_ruleset(data->rules, &state, st.st_size);
 
@@ -68,7 +59,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    make_digests(sdata, cfg);
 
-   rc = processMessage(sdata, &state, cfg);
+   rc = process_message(sdata, &state, cfg);
 
 ENDE:
    unlink(sdata->tmpframe);
@@ -86,8 +77,6 @@ ENDE:
                         printf("failed to import: %s\n", filename);
                         break;
    } 
-
-   printf("\n\n");
 
    return rc;
 }

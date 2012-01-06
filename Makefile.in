@@ -68,11 +68,12 @@ installdirs: mkinstalldirs
 	$(srcdir)/mkinstalldirs \
 		$(DESTDIR)$(bindir) $(DESTDIR)$(sbindir) $(DESTDIR)$(libdir) $(DESTDIR)$(libexecdir)/piler $(DESTDIR)$(sysconfdir) \
 		$(DESTDIR)$(datarootdir)/piler $(DESTDIR)$(includedir)/piler $(DESTDIR)$(localstatedir)/piler/store \
-		$(DESTDIR)$(localstatedir)/piler/stat $(DESTDIR)$(localstatedir)/spool
+		$(DESTDIR)$(localstatedir)/piler/stat $(DESTDIR)$(localstatedir)/piler/tmp
 
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/run/piler
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/store
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/stat
+	$(INSTALL) -d -m 0711 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/tmp
 
 
 install-am:

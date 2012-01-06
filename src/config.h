@@ -11,14 +11,14 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.11"
+#define VERSION "0.1.12"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n"
 
 #define HOSTID "mailarchiver"
 
 #define CONFIG_FILE CONFDIR "/piler.conf"
-#define WORK_DIR DATADIR "/spool/piler/tmp"
+#define WORK_DIR DATADIR "/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
 
 #define CLAMD_SOCKET "/tmp/clamd"
