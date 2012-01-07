@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pilerimport test
+all: libpiler.a piler pilerconf pilerget pilerimport pilerexport test
 install: install-piler
 
 
@@ -52,6 +52,9 @@ pilerget: pilerget.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
 pilerimport: pilerimport.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+
+pilerexport: pilerexport.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
 pilerconf: pilerconf.c cfg.o misc.o tai.o

@@ -97,9 +97,6 @@ ENDE:
 
 int main(int argc, char **argv){
    int rc;
-   uint64 id;
-   char filename[SMALLBUFSIZE], digest[2*DIGEST_LENGTH+1], bodydigest[2*DIGEST_LENGTH+1];
-   FILE *f;
    struct session_data sdata;
    struct __config cfg;
 
@@ -130,47 +127,9 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
 
-   if(argv[1][0] == '-'){
-
-      memset(sdata.ttmpfile, 0, sizeof(sdata.ttmpfile));
-
-      while((rc = read(0, sdata.ttmpfile, RND_STR_LEN+1)) > 0){
-         snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
-
-         trimBuffer(sdata.ttmpfile);
-
-         id = get_id_by_piler_id(&sdata, &digest[0], &bodydigest[0], &cfg);
-
-         if(id > 0){
-            snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
-            f = fopen(filename, "w");
-            if(f){
-               rc = retrieve_email_from_archive(&sdata, f, &cfg);
-               fclose(f);
-
-               snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", filename);
-               make_digests(&sdata, &cfg);
-
-               if(strcmp(digest, sdata.digest) == 0 && strcmp(bodydigest, sdata.bodydigest) == 0)
-                  printf("exported %s, verification: OK\n", sdata.ttmpfile);
-               else
-                  printf("exported %s, verification: FAILED\n", sdata.ttmpfile);
-
-            }
-            else printf("cannot open: %s\n", filename);
-         }
-         else printf("%s was not found in archive\n", sdata.ttmpfile);
-
-         memset(sdata.ttmpfile, 0, sizeof(sdata.ttmpfile));
-
-      }
-
-   }
-   else {
-      snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
-      snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
-      rc = retrieve_email_from_archive(&sdata, stdout, &cfg);
-   }
+   snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
+   snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
+   rc = retrieve_email_from_archive(&sdata, stdout, &cfg);
 
 
    mysql_close(&(sdata.mysql));
