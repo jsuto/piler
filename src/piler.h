@@ -45,5 +45,8 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid);
 
 void update_counters(struct session_data *sdata, struct __data *data, struct __counters *counters, struct __config *cfg);
 
+int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct __config *cfg);
+
+
 #endif /* _PILER_H */
 

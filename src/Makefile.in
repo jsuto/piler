@@ -48,8 +48,8 @@ libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
 
-pilerget: pilerget.c cfg.o misc.o tai.o store.o attachment.o digest.o
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBS) $(LIBDIR)
+pilerget: pilerget.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
 pilerimport: pilerimport.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
