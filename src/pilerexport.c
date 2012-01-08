@@ -343,6 +343,8 @@ int main(int argc, char **argv){
       if(where_condition) rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` >= %d", minsize);
       rc += append_string_to_buffer(&query, s);
+
+      where_condition++;
    }
 
 
@@ -350,6 +352,8 @@ int main(int argc, char **argv){
       if(where_condition) rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` <= %d", maxsize);
       rc += append_string_to_buffer(&query, s);
+
+      where_condition++;
    }
 
 
@@ -357,6 +361,8 @@ int main(int argc, char **argv){
       if(where_condition) rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `sent` >= %ld", startdate);
       rc += append_string_to_buffer(&query, s);
+
+      where_condition++;
    }
 
 
@@ -364,6 +370,8 @@ int main(int argc, char **argv){
       if(where_condition) rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `sent` <= %ld", stopdate);
       rc += append_string_to_buffer(&query, s);
+
+      where_condition++;
    }
 
 
