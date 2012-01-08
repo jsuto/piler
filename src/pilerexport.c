@@ -13,19 +13,30 @@
 #include <time.h>
 #include <locale.h>
 #include <syslog.h>
+#include <getopt.h>
 #include <piler.h>
 
 
 extern char *optarg;
 extern int optind;
 
+int dryrun = 0;
 char *query=NULL;
 regex_t regexp;
 
 
 
 void usage(){
-   printf("usage: .... \n");
+   printf("\nusage: pilerexport \n\n");
+   printf("    [-c|--config <config file>] \n");
+   printf("    -a|--start-date <YYYY.MM.DD> -b|--stop-date <YYYY.MM.DD> \n");
+   printf("    -f|--from <email@address> -r|--to <email@address>\n");
+   printf("    -s|--minsize <number> -S|--maxsize <number>\n");
+   printf("    -A|--all  -d|--dryrun \n");
+   printf("\n    use -A if you don't want to specify the start/stop time nor any from/to address\n\n");
+
+   regfree(&regexp);
+
    exit(0);
 }
 
@@ -36,6 +47,34 @@ void clean_exit(char *msg, int rc){
    if(query) free(query);
 
    exit(rc);
+}
+
+
+unsigned long convert_time(char *yyyymmdd, int h, int m, int s){
+   char *p;
+   struct tm tm;
+
+   if(yyyymmdd == NULL) return 0;
+
+   memset((char*)&tm, 0, sizeof(tm));
+   tm.tm_isdst = -1;
+
+   tm.tm_hour = h;
+   tm.tm_min = m;
+   tm.tm_sec = s;
+
+   p = strchr(yyyymmdd, '.'); if(!p) return 0;
+   *p = '\0'; tm.tm_year = atoi(yyyymmdd) - 1900; yyyymmdd = p+1;
+
+   p = strchr(yyyymmdd, '.'); if(!p) return 0;
+   *p = '\0'; tm.tm_mon = atoi(yyyymmdd) - 1; yyyymmdd = p+1;
+
+   tm.tm_mday = atoi(yyyymmdd);
+
+
+   tm.tm_isdst = -1;
+
+   return mktime(&tm);
 }
 
 
@@ -119,25 +158,30 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                digest = (char*)row[2];
                bodydigest = (char*)row[3];
 
+               if(dryrun == 0){
 
-               snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
+                  snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
 
-               f = fopen(filename, "w");
-               if(f){
-                  rc = retrieve_email_from_archive(sdata, f, cfg);
-                  fclose(f);
+                  f = fopen(filename, "w");
+                  if(f){
+                     rc = retrieve_email_from_archive(sdata, f, cfg);
+                     fclose(f);
 
-                  snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+                     snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
-                  make_digests(sdata, cfg);
+                     make_digests(sdata, cfg);
 
-                  if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0)
-                     printf("exported %s, verification: OK\n", filename);
-                  else
-                     printf("exported %s, verification: FAILED\n", filename);
+                     if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0)
+                        printf("exported %s, verification: OK\n", filename);
+                     else
+                        printf("exported %s, verification: FAILED\n", filename);
 
+                  }
+                  else printf("cannot open: %s\n", filename);
                }
-               else printf("cannot open: %s\n", filename);
+               else {
+                  printf("id:%llu\n", id);
+               }
 
             }
          }
@@ -151,10 +195,10 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
 
 int main(int argc, char **argv){
-   int i, rc, exportall=0, minsize=0, maxsize=0;
+   int c, rc, exportall=0, minsize=0, maxsize=0;
    int where_condition=0;
    size_t nmatch=0;
-   //unsigned long startdate=0, stopdate=0;
+   unsigned long startdate=0, stopdate=0;
    char *configfile=CONFIG_FILE;
    char *to=NULL, *from=NULL;
    char s[SMALLBUFSIZE];
@@ -167,24 +211,51 @@ int main(int argc, char **argv){
    }
 
 
-   while((i = getopt(argc, argv, "c:s:S:f:r:ah?")) > 0){
+   while(1){
 
-       switch(i){
+#ifdef _GNU_SOURCE
+      static struct option long_options[] =
+         {
+            {"config",       required_argument,  0,  'c' },
+            {"minsize",      required_argument,  0,  's' },
+            {"maxsize",      required_argument,  0,  'S' },
+            {"all",          no_argument,        0,  'A' },
+            {"dry-run",      no_argument,        0,  'd' },
+            {"dryrun",       no_argument,        0,  'd' },
+            {"help",         no_argument,        0,  'h' },
+            {"version",      no_argument,        0,  'v' },
+            {"from",         required_argument,  0,  'f' },
+            {"to",           required_argument,  0,  'r' },
+            {"start-date",   required_argument,  0,  'a' },
+            {"stop-date",    required_argument,  0,  'b' },
+            {0,0,0,0}
+         };
+
+      int option_index = 0;
+
+      c = getopt_long(argc, argv, "c:s:S:f:r:a:b:Adhv?", long_options, &option_index);
+#else
+      c = getopt(argc, argv, "c:s:S:f:r:a:b:Adhv?");
+#endif
+
+      if(c == -1) break;
+
+      switch(c){
 
          case 'c' :
                     configfile = optarg;
                     break;
 
          case 's' :
-                    maxsize = atoi(optarg);
-                    break;
-
-         case 'S' :
                     minsize = atoi(optarg);
                     break;
 
+         case 'S' :
+                    maxsize = atoi(optarg);
+                    break;
 
-         case 'a' :
+
+         case 'A' :
                     exportall = 1;
                     break;
 
@@ -211,17 +282,30 @@ int main(int argc, char **argv){
                     break;
 
 
+         case 'a' :
+                    startdate = convert_time(optarg, 0, 0, 0);
+                    break;
 
-         case 'h' :
-         case '?' :
+
+         case 'b' :
+                    stopdate = convert_time(optarg, 23, 59, 59);
+                    break;
+
+
+         case 'd' :
+                    dryrun = 1;
+                    break;
+
+
+         default  :
                     usage();
                     break;
+      }
 
-
-         default  : 
-                    break;
-       }
    }
+
+
+   if(from == NULL && to == NULL && startdate == 0 && stopdate == 0 && exportall == 0) usage();
 
 
    regfree(&regexp);
@@ -268,11 +352,24 @@ int main(int argc, char **argv){
       rc += append_string_to_buffer(&query, s);
    }
 
+
+   if(startdate > 0){
+      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      snprintf(s, sizeof(s)-1, " `sent` >= %ld", startdate);
+      rc += append_string_to_buffer(&query, s);
+   }
+
+
+   if(stopdate > 0){
+      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      snprintf(s, sizeof(s)-1, " `sent` <= %ld", stopdate);
+      rc += append_string_to_buffer(&query, s);
+   }
+
+
    rc += append_string_to_buffer(&query, " ORDER BY id ASC");
 
    if(rc) clean_exit("malloc problem building query", 1);
-
-   printf("query: *%s*\n", query);
 
 
 

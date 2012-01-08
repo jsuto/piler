@@ -60,8 +60,8 @@ pilerexport: pilerexport.c libpiler.a
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
 
-test:
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $(srcdir)/test.c -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
+test: test.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $^ -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
 %.o: $(srcdir)/%.c
 	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@

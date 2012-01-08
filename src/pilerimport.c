@@ -157,7 +157,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 
 void usage(){
-   printf("usage: pilerimport -e <eml file> -m <mailbox file> -d <directory>\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory>\n");
    exit(0);
 }
 
