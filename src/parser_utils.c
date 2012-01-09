@@ -498,6 +498,24 @@ void fix_email_address_for_sphinx(char *s){
 }
 
 
+int does_it_seem_like_an_email_address(char *email){
+   char *p;
+
+   if(email == NULL) return 0;
+
+   if(strlen(email) < 5) return 0;
+
+   p = strchr(email, '@');
+   if(!p) return 0;
+
+   if(strlen(p+1) < 3) return 0;
+
+   if(!strchr(p+1, '.')) return 0;
+
+   return 1;
+}
+
+
 /*
  * reassemble 'V i a g r a' to 'Viagra'
  */

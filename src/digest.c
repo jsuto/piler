@@ -113,3 +113,21 @@ void digest_file(char *filename, char *digest){
 }
 
 
+void digest_string(char *s, char *digest){
+   int i;
+   unsigned char md[DIGEST_LENGTH];
+   SHA256_CTX context;
+
+   memset(digest, 0, 2*DIGEST_LENGTH+1);
+
+   SHA256_Init(&context);
+
+   SHA256_Update(&context, s, strlen(s));
+
+   SHA256_Final(md, &context);
+
+   for(i=0;i<DIGEST_LENGTH;i++)
+      snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
+
+}
+

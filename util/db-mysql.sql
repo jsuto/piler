@@ -31,6 +31,7 @@ drop table if exists `metadata`;
 create table if not exists `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` char(255) not null,
+  `fromdomain` char(48) not null,
   `subject` text(512) default null,
   `arrived` int not null,
   `sent` int not null,
@@ -43,6 +44,7 @@ create table if not exists `metadata` (
   `message_id` char(128) character set 'latin1' not null,
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
+  `vcode` char(64) default null,
   primary key (`id`), unique(`message_id`)
 ) Engine=InnoDB;
 
@@ -56,6 +58,7 @@ drop table if exists `rcpt`;
 create table if not exists `rcpt` (
    `id` bigint unsigned not null,
    `to` char(64) not null,
+   `todomain` char(48) not null,
    unique(`id`,`to`)
 ) Engine=InnoDB;
 
@@ -64,7 +67,7 @@ create index `rcpt_idx2` on `rcpt`(`to`);
 
 
 drop view if exists `messages`;
-create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`rcpt`.`to` AS `to`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 
 drop table if exists `attachment`;

@@ -31,6 +31,7 @@ int do_av_check(struct session_data *sdata, char *rcpttoemail, char *fromemail, 
 
 int make_digests(struct session_data *sdata, struct __config *cfg);
 void digest_file(char *filename, char *digest);
+void digest_string(char *s, char *digest);
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg);
 

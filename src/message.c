@@ -192,11 +192,11 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
 
 int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __config *cfg){
    int rc, ret=OK;
-   char *p, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
+   char *p, *q, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[1];
-   unsigned long len[1];
+   MYSQL_BIND bind[2];
+   unsigned long len[2];
 
    stmt = mysql_stmt_init(&(sdata->mysql));
    if(!stmt){
@@ -204,7 +204,7 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
       return ERR;
    }
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`,`to`) VALUES('%llu',?)", SQL_RECIPIENT_TABLE, id);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`,`to`,`todomain`) VALUES('%llu',?,?)", SQL_RECIPIENT_TABLE, id);
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
@@ -215,7 +215,10 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
    do {
       p = split_str(p, " ", puf, sizeof(puf)-1);
 
-      if(strlen(puf) > 5){
+      q = strchr(puf, '@');
+
+      if(q && strlen(q) > 3 && does_it_seem_like_an_email_address(puf) == 1){
+         q++;
 
          memset(bind, 0, sizeof(bind));
 
@@ -223,6 +226,11 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
          bind[0].buffer = &puf[0];
          bind[0].is_null = 0;
          len[0] = strlen(puf); bind[0].length = &len[0];
+
+         bind[1].buffer_type = MYSQL_TYPE_STRING;
+         bind[1].buffer = q;
+         bind[1].is_null = 0;
+         len[1] = strlen(q); bind[1].length = &len[1];
 
          if(mysql_stmt_bind_param(stmt, bind)){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
@@ -237,6 +245,9 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
             ret = ERR;
          }
 
+      } else {
+         syslog(LOG_PRIORITY, "%s: invalid email address: %s", sdata->ttmpfile, puf);
+         continue;
       }
 
    } while(p);
@@ -245,9 +256,42 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
 }
 
 
+int update_verification_code(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg){
+   char s[SMALLBUFSIZE], vcode[MAXBUFSIZE], digest[2*DIGEST_LENGTH+1];
+   MYSQL_RES *res;
+   MYSQL_ROW row;
+
+   snprintf(vcode, sizeof(vcode)-1, "%llu+%s%s%ld%ld%d%d%d%d%s%s%s+", id, state->b_from, state->message_id, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+
+   if(id > 2){
+      snprintf(s, SMALLBUFSIZE-1, "SELECT `vcode` FROM `%s` WHERE `id`=%llu OR `id`=%llu ORDER BY `id` ASC", SQL_METADATA_TABLE, id-1, id-2);
+
+      if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
+         res = mysql_store_result(&(sdata->mysql));
+         if(res != NULL){
+            while((row = mysql_fetch_row(res))){
+               if(row){
+                  if((char*)row[0]) strncat(vcode, (char*)row[0], sizeof(vcode)-1);
+               }
+            }
+            mysql_free_result(res);
+         }
+      }
+   }
+
+   digest_string(vcode, &digest[0]);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: verification data: %s, digest: %s", sdata->ttmpfile, vcode, digest);
+
+   snprintf(s, SMALLBUFSIZE-1, "UPDATE %s SET `vcode`='%s' WHERE id=%llu", SQL_METADATA_TABLE, digest, id);
+
+   return mysql_real_query(&(sdata->mysql), s, strlen(s));
+}
+
+
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int rc, ret=ERR;
-   char *subj, s[MAXBUFSIZE];
+   char *subj, *p, s[MAXBUFSIZE];
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
@@ -265,7 +309,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
@@ -277,7 +321,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
 
    if(strlen(state->b_to) < 5){
-      snprintf(state->b_to, SMALLBUFSIZE-1, "undisclosed-recipients");
+      snprintf(state->b_to, SMALLBUFSIZE-1, "undisclosed-recipients@no.domain");
    }
 
    memset(bind, 0, sizeof(bind));
@@ -287,15 +331,24 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    bind[0].is_null = 0;
    len[0] = strlen(state->b_from); bind[0].length = &len[0];
 
-   bind[1].buffer_type = MYSQL_TYPE_STRING;
-   bind[1].buffer = subj;
-   bind[1].is_null = 0;
-   len[1] = strlen(subj); bind[1].length = &len[1];
+   p = strchr(state->b_from, '@');
+   if(p && strlen(p) > 3){
+      p++;
+      bind[1].buffer_type = MYSQL_TYPE_STRING;
+      bind[1].buffer = p;
+      bind[1].is_null = 0;
+      len[1] = strlen(p); bind[1].length = &len[1];
+   }
 
    bind[2].buffer_type = MYSQL_TYPE_STRING;
-   bind[2].buffer = state->message_id;
+   bind[2].buffer = subj;
    bind[2].is_null = 0;
-   len[2] = strlen(state->message_id); bind[2].length = &len[2];
+   len[2] = strlen(subj); bind[2].length = &len[2];
+
+   bind[3].buffer_type = MYSQL_TYPE_STRING;
+   bind[3].buffer = state->message_id;
+   bind[3].is_null = 0;
+   len[3] = strlen(state->message_id); bind[3].length = &len[3];
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
@@ -311,11 +364,17 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    }
    else {
       id = mysql_stmt_insert_id(stmt);
+
       rc = store_recipients(sdata, state->b_to, id, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
 
       if(rc == OK){
+
+         rc = update_verification_code(sdata, state, id, cfg);
+
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated verification code, rc=%d", sdata->ttmpfile, rc);
+
          rc = store_index_data(sdata, state, id, cfg);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
