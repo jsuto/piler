@@ -70,8 +70,8 @@ int main(int argc, char **argv){
    post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);
-   printf("from: *%s*\n", state.b_from);
-   printf("to: *%s*\n", state.b_to);
+   printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
+   printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
    printf("subject: *%s*\n", state.b_subject);
    //printf("body: *%s*\n", state.b_body);
 

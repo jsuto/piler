@@ -117,8 +117,8 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    char *subj, s[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[5];
-   unsigned long len[5];
+   MYSQL_BIND bind[7];
+   unsigned long len[7];
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
@@ -131,7 +131,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    }
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,%ld,%ld,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, state->n_attachments);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,?,?,%ld,%ld,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, state->n_attachments);
 
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
@@ -142,6 +142,8 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
 
    fix_email_address_for_sphinx(state->b_from);
    fix_email_address_for_sphinx(state->b_to);
+   fix_email_address_for_sphinx(state->b_from_domain);
+   fix_email_address_for_sphinx(state->b_to_domain);
 
 
    memset(bind, 0, sizeof(bind));
@@ -157,19 +159,30 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    len[1] = strlen(state->b_to); bind[1].length = &len[1];
 
    bind[2].buffer_type = MYSQL_TYPE_STRING;
-   bind[2].buffer = subj;
+   bind[2].buffer = state->b_from_domain;
    bind[2].is_null = 0;
-   len[2] = strlen(subj); bind[2].length = &len[2];
+   len[2] = strlen(state->b_from_domain); bind[2].length = &len[2];
 
    bind[3].buffer_type = MYSQL_TYPE_STRING;
-   bind[3].buffer = state->b_body;
+   bind[3].buffer = state->b_to_domain;
    bind[3].is_null = 0;
-   len[3] = strlen(state->b_body); bind[3].length = &len[3];
+   len[3] = strlen(state->b_to_domain); bind[3].length = &len[3];
+
 
    bind[4].buffer_type = MYSQL_TYPE_STRING;
-   bind[4].buffer = sdata->attachments;
+   bind[4].buffer = subj;
    bind[4].is_null = 0;
-   len[4] = strlen(sdata->attachments); bind[4].length = &len[4];
+   len[4] = strlen(subj); bind[4].length = &len[4];
+
+   bind[5].buffer_type = MYSQL_TYPE_STRING;
+   bind[5].buffer = state->b_body;
+   bind[5].is_null = 0;
+   len[5] = strlen(state->b_body); bind[5].length = &len[5];
+
+   bind[6].buffer_type = MYSQL_TYPE_STRING;
+   bind[6].buffer = sdata->attachments;
+   bind[6].is_null = 0;
+   len[6] = strlen(sdata->attachments); bind[6].length = &len[6];
 
 
    if(mysql_stmt_bind_param(stmt, bind)){
@@ -256,42 +269,9 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
 }
 
 
-int update_verification_code(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg){
-   char s[SMALLBUFSIZE], vcode[MAXBUFSIZE], digest[2*DIGEST_LENGTH+1];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
-
-   snprintf(vcode, sizeof(vcode)-1, "%llu+%s%s%ld%ld%d%d%d%d%s%s%s+", id, state->b_from, state->message_id, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
-
-   if(id > 2){
-      snprintf(s, SMALLBUFSIZE-1, "SELECT `vcode` FROM `%s` WHERE `id`=%llu OR `id`=%llu ORDER BY `id` ASC", SQL_METADATA_TABLE, id-1, id-2);
-
-      if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-         res = mysql_store_result(&(sdata->mysql));
-         if(res != NULL){
-            while((row = mysql_fetch_row(res))){
-               if(row){
-                  if((char*)row[0]) strncat(vcode, (char*)row[0], sizeof(vcode)-1);
-               }
-            }
-            mysql_free_result(res);
-         }
-      }
-   }
-
-   digest_string(vcode, &digest[0]);
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: verification data: %s, digest: %s", sdata->ttmpfile, vcode, digest);
-
-   snprintf(s, SMALLBUFSIZE-1, "UPDATE %s SET `vcode`='%s' WHERE id=%llu", SQL_METADATA_TABLE, digest, id);
-
-   return mysql_real_query(&(sdata->mysql), s, strlen(s));
-}
-
-
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int rc, ret=ERR;
-   char *subj, *p, s[MAXBUFSIZE];
+   char *subj, *p, s[MAXBUFSIZE], vcode[2*DIGEST_LENGTH+1];
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
@@ -309,7 +289,11 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%d%d%d%d%s%s%s", id, subj, state->b_from, state->message_id, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   digest_string(s, &vcode[0]);
+
+
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest, vcode);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
@@ -370,8 +354,6 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
 
       if(rc == OK){
-
-         rc = update_verification_code(sdata, state, id, cfg);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated verification code, rc=%d", sdata->ttmpfile, rc);
 

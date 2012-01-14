@@ -15,6 +15,8 @@ create table if not exists `sph_index` (
   `id` bigint not null,
   `from` char(255) default null,
   `to` text(512) default null,
+  `fromdomain` char(255) default null,
+  `todomain` text(512) default null,
   `subject` text(512) default null,
   `arrived` int not null,
   `sent` int not null,
@@ -204,4 +206,18 @@ create table if not exists `domain` (
 ) ENGINE=InnoDB;
 
 insert into `domain` (`domain`, `mapped`) values('local', 'local');
+
+
+drop table if exists `audit`;
+create table if not exists `audit` (
+   `id` bigint unsigned not null auto_increment,
+   `ts` int not null,
+   `email` char(128) not null,
+   `action` int not null,
+   `ipaddr` char(15) not null,
+   `meta_id` bigint unsigned not null,
+   `description` char(255) default null,
+   `vcode` char(64) default null,
+   primary key (`id`)
+) ENGINE=InnoDB;
 
