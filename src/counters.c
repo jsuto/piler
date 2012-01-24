@@ -16,7 +16,7 @@ struct __counters loadCounters(struct session_data *sdata, struct __config *cfg)
 
    bzero(&counters, sizeof(counters));
 
-   snprintf(buf, SMALLBUFSIZE-1, "SELECT rcvd, virus, duplicate, ignore FROM %s", SQL_COUNTER_TABLE);
+   snprintf(buf, SMALLBUFSIZE-1, "SELECT `rcvd`, `virus`, `duplicate`, `ignore` FROM `%s`", SQL_COUNTER_TABLE);
 
 #ifdef NEED_MYSQL
    MYSQL_RES *res;
@@ -79,8 +79,8 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
             if(sdata->now - mc > cfg->memcached_to_db_interval && c.c_rcvd > 0 && c.c_rcvd >= rcvd){
                snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_set(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
 
-               snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET rcvd=%llu, virus=%llu, duplicate=%llu, ignore=%llu", SQL_COUNTER_TABLE, c.c_rcvd, c.c_virus, c.c_duplicate, c.c_ignore);
-
+               snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=%llu, `virus`=%llu, `duplicate`=%llu, `ignore`=%llu", SQL_COUNTER_TABLE, c.c_rcvd, c.c_virus, c.c_duplicate, c.c_ignore);
+ 
                //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
 
                goto EXEC_SQL;
@@ -103,7 +103,7 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
    }
    else {
 #endif
-      snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET rcvd=rcvd+%llu, virus=virus+%llu, duplicate=duplicate+%llu, ignore=ignore+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore);
+      snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=`rcvd`+%llu, `virus`=`virus`+%llu, `duplicate`=`duplicate`+%llu, `ignore`=`ignore`+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore);
 
       //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
 
