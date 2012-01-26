@@ -397,6 +397,8 @@ void init_session_data(struct session_data *sdata){
 
    sdata->rav = AVIR_OK;
 
+   sdata->spam_message = 0;
+
    sdata->__acquire = sdata->__parsed = sdata->__av = sdata->__store = sdata->__compress = sdata->__encrypt = 0;
 
 

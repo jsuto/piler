@@ -97,6 +97,8 @@ int main(int argc, char **argv){
 
    printf("direction: %d\n", sdata.direction);
 
+   printf("spam: %d\n", sdata.spam_message);
+
    printf("\n\n");
 
    mysql_close(&(sdata.mysql));

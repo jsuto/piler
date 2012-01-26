@@ -45,6 +45,8 @@ struct __config {
 
    char mydomains[MAXVAL];
 
+   char spam_header_line[MAXVAL];
+
    // mysql stuff
 
    char mysqlhost[MAXVAL];

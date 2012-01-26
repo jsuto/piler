@@ -85,6 +85,7 @@ struct _parse_rule config_parse_rules[] =
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "", MAXVAL-1},
    { "queuedir", "string", (void*) string_parser, offsetof(struct __config, queuedir), QUEUE_DIR, MAXVAL-1},
    { "session_timeout", "integer", (void*) int_parser, offsetof(struct __config, session_timeout), "420", sizeof(int)},
+   { "spam_header_line", "string", (void*) string_parser, offsetof(struct __config, spam_header_line), "", MAXVAL-1},
    { "sqlite3_pragma", "string", (void*) string_parser, offsetof(struct __config, sqlite3_pragma), "", MAXVAL-1},
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct __config, update_counters_to_memcached), "0", sizeof(int)},
    { "username", "string", (void*) string_parser, offsetof(struct __config, username), "piler", MAXVAL-1},

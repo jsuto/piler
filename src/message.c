@@ -293,7 +293,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    digest_string(s, &vcode[0]);
 
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s')", SQL_METADATA_TABLE, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest, vcode);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%d,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s')", SQL_METADATA_TABLE, sdata->spam_message, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest, vcode);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 

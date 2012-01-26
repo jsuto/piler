@@ -106,6 +106,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       sdata->restored_copy = 1;
    }
 
+   if(state->is_1st_header == 1 && *(cfg->spam_header_line) != '\0' && strncmp(buf, cfg->spam_header_line, strlen(cfg->spam_header_line)) == 0){
+      sdata->spam_message = 1;
+   }
+
    //printf("buf: %s", buf);
 
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){

@@ -35,6 +35,7 @@ create table if not exists `metadata` (
   `from` char(255) not null,
   `fromdomain` char(48) not null,
   `subject` text(512) default null,
+  `spam` tinyint(1) default 0,
   `arrived` int not null,
   `sent` int not null,
   `deleted` tinyint(1) default 0,
@@ -220,4 +221,9 @@ create table if not exists `audit` (
    `vcode` char(64) default null,
    primary key (`id`)
 ) ENGINE=InnoDB;
+
+create index `audit_idx` on `audit`(`email`);
+create index `audit_idx2` on `audit`(`action`);
+create index `audit_idx3` on `audit`(`ipaddr`);
+create index `audit_idx4` on `audit`(`ts`);
 

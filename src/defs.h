@@ -156,6 +156,7 @@ struct session_data {
    char attachments[SMALLBUFSIZE];
    char internal_sender, internal_recipient, external_recipient;
    int direction;
+   int spam_message;
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
