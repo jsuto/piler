@@ -147,6 +147,8 @@ int check_attachment_rule(struct _state *state, struct rule *rule){
    int i;
    size_t nmatch=0;
 
+   if(state->n_attachments == 0) return 1;
+
    for(i=1; i<=state->n_attachments; i++){
       if(
          regexec(&(rule->attachment_type), state->attachments[i].type, nmatch, NULL, 0) == 0 &&

@@ -110,7 +110,8 @@ create table if not exists `archiving_rule` (
    `attachment_type` char(128) default null,
    `_attachment_size` char(2) default null,
    `attachment_size` int default 0,
-   primary key (`id`)
+   primary key (`id`),
+   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`) 
 ) ENGINE=InnoDB;
 
 

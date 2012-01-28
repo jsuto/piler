@@ -496,7 +496,7 @@ void translateLine(unsigned char *p, struct _state *state){
 
 void fix_email_address_for_sphinx(char *s){
    for(; *s; s++){
-      if(*s == '@' || *s == '.' || *s == '+') *s = 'X';
+      if(*s == '@' || *s == '.' || *s == '+' || *s == '-' || *s == '_') *s = 'X';
    }
 }
 
@@ -589,7 +589,7 @@ void fixURL(char *url){
    if(q) *q = '\0';
 
    snprintf(fixed_url, sizeof(fixed_url)-1, "__URL__%s ", p);
-   fix_email_address_for_sphinx(fixed_url);
+   fix_email_address_for_sphinx(fixed_url+7);
 
    strcpy(url, fixed_url);   
 }

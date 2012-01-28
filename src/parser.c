@@ -398,7 +398,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0) fixURL(puf);
 
-      if(state->is_header == 0 && strncmp(puf, "URL*", 4) && (puf[0] == ' ' || strlen(puf) > MAX_WORD_LEN || isHexNumber(puf)) ) continue;
+      if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || strlen(puf) > MAX_WORD_LEN || isHexNumber(puf)) ) continue;
 
 
       len = strlen(puf);
