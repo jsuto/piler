@@ -144,7 +144,7 @@ struct _state {
    int n_attachments;
    struct attachment attachments[MAX_ATTACHMENTS];
 
-   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[SMALLBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
+   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
 };
 
 

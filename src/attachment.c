@@ -18,7 +18,7 @@
 
 int store_attachments(struct session_data *sdata, struct _state *state, struct __config *cfg){
    uint64 id=0;
-   int i, found, affected_rows;
+   int i, rc=1, found, affected_rows;
    char s[SMALLBUFSIZE];
    MYSQL_RES *res;
    MYSQL_ROW row;
@@ -31,14 +31,14 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    stmt = mysql_stmt_init(&(sdata->mysql));
    if(!stmt){
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_ATTACHMENT_TABLE);
-      return 1;
+      return rc;
    }
 
    snprintf(s, sizeof(s)-1, "INSERT INTO %s (`piler_id`,`attachment_id`,`sig`,`name`,`type`,`size`,`ptr`) VALUES(?,?,?,?,?,?,?)", SQL_ATTACHMENT_TABLE);
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(stmt));
-      return 1;
+      return rc;
    }
 
 
@@ -68,7 +68,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
          if(found == 0){
             if(store_file(sdata, state->attachments[i].internalname, 0, 0, cfg) == 0){
                syslog(LOG_PRIORITY, "%s: error storing attachment: %s", sdata->ttmpfile, state->attachments[i].internalname);
-               return 1;
+               goto CLOSE;
             }
          }
 
@@ -113,19 +113,19 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
 
          if(mysql_stmt_bind_param(stmt, bind)){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(stmt));
-            return 1;
+            goto CLOSE;
          }
 
 
          if(mysql_stmt_execute(stmt)){
             syslog(LOG_PRIORITY, "%s attachment sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-            return 1;
+            goto CLOSE;
          }
 
          affected_rows = mysql_stmt_affected_rows(stmt);
          if(affected_rows != 1){
             syslog(LOG_PRIORITY, "%s attachment sql error: affected rows: %d", sdata->ttmpfile, affected_rows);
-            return 1;
+            goto CLOSE;
          }
 
       }
@@ -135,7 +135,12 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
 
    }
 
-   return 0;
+   rc = 0;
+
+CLOSE:
+   mysql_stmt_close(stmt);
+
+   return rc;
 }
 
 
@@ -169,12 +174,12 @@ int query_attachment_pointers(struct session_data *sdata, uint64 ptr, char *pile
 
 
    if(mysql_stmt_bind_param(stmt, bind)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_execute(stmt)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
@@ -193,21 +198,21 @@ int query_attachment_pointers(struct session_data *sdata, uint64 ptr, char *pile
 
 
    if(mysql_stmt_bind_result(stmt, bind)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_store_result(stmt)){
-      goto ENDE;
+      goto CLOSE;
    }
 
    if(!mysql_stmt_fetch(stmt)){
       if(is_null[0] == 0){
-         //printf("piler id: *%s*, id: %d\n", piler_id, *id);
          rc = 1;
       }
    }
 
+CLOSE:
    mysql_stmt_close(stmt);
 
 ENDE:
@@ -249,12 +254,12 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, str
    len = strlen(sdata->ttmpfile); bind[0].length = &len;
 
    if(mysql_stmt_bind_param(stmt, bind)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_execute(stmt)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
@@ -274,13 +279,13 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, str
 
    if(mysql_stmt_bind_result(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_store_result(stmt)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_store_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
    while(!mysql_stmt_fetch(stmt)){
@@ -291,7 +296,7 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, str
             rc = query_attachment_pointers(sdata, ptr, &(ptr_arr[id].piler_id[0]), &(ptr_arr[id].attachment_id), cfg);
             if(!rc){
                attachments = -1;
-               goto ENDE;
+               goto CLOSE;
             }
          }
          else {
@@ -303,6 +308,7 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, str
       }
    }
 
+CLOSE:
    mysql_stmt_close(stmt);
 
 ENDE:

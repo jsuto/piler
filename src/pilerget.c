@@ -48,12 +48,12 @@ uint64 get_id_by_piler_id(struct session_data *sdata, char *digest, char *bodydi
 
 
    if(mysql_stmt_bind_param(stmt, bind)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_execute(stmt)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
@@ -77,16 +77,18 @@ uint64 get_id_by_piler_id(struct session_data *sdata, char *digest, char *bodydi
    bind[2].length = &len;
 
    if(mysql_stmt_bind_result(stmt, bind)){
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_store_result(stmt)){
-      goto ENDE;
+      goto CLOSE;
    }
 
    mysql_stmt_fetch(stmt);
 
+
+CLOSE:
    mysql_stmt_close(stmt);
 
 ENDE:

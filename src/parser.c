@@ -411,7 +411,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
          if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
       }
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && does_it_seem_like_an_email_address(puf) == 1 && strlen(state->b_to) < SMALLBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && does_it_seem_like_an_email_address(puf) == 1 && strlen(state->b_to) < MAXBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);

@@ -76,7 +76,7 @@ void init_state(struct _state *state){
 
    memset(state->b_from, 0, SMALLBUFSIZE);
    memset(state->b_from_domain, 0, SMALLBUFSIZE);
-   memset(state->b_to, 0, SMALLBUFSIZE);
+   memset(state->b_to, 0, MAXBUFSIZE);
    memset(state->b_to_domain, 0, SMALLBUFSIZE);
    memset(state->b_subject, 0, MAXBUFSIZE);
    memset(state->b_body, 0, BIGBUFSIZE);

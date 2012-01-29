@@ -48,13 +48,13 @@ int is_existing_message_id(struct session_data *sdata, struct _state *state, str
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_execute(stmt)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
 
@@ -69,13 +69,13 @@ int is_existing_message_id(struct session_data *sdata, struct _state *state, str
 
    if(mysql_stmt_bind_result(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
 
    if(mysql_stmt_store_result(stmt)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_store_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
+      goto CLOSE;
    }
 
    if(!mysql_stmt_fetch(stmt)){
@@ -83,6 +83,7 @@ int is_existing_message_id(struct session_data *sdata, struct _state *state, str
       if(is_null[0] == 0) rc = 1;
    }
 
+CLOSE:
    mysql_stmt_close(stmt);
 
 ENDE:
@@ -113,7 +114,7 @@ int is_body_digest_already_stored(struct session_data *sdata, struct _state *sta
 
 
 int store_index_data(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg){
-   int rc;
+   int rc=ERR;
    char *subj, s[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
@@ -127,7 +128,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    stmt = mysql_stmt_init(&(sdata->mysql));
    if(!stmt){
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_SPHINX_TABLE);
-      return ERR;
+      return rc;
    }
 
 
@@ -136,7 +137,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
 
    if(mysql_stmt_prepare(stmt, s, strlen(s))){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(stmt));
-      return ERR;
+      return rc;
    }
 
 
@@ -187,24 +188,27 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(stmt));
-      return ERR;
+      goto CLOSE;
    }
 
 
-   rc = mysql_stmt_execute(stmt);
-
-   if(rc){
+   if(mysql_stmt_execute(stmt)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_error(&(sdata->mysql)));
-      return ERR;
+      goto CLOSE;
    }
 
+   rc = OK;
 
-   return OK;
+CLOSE:
+   mysql_stmt_close(stmt);
+
+
+   return rc;
 }
 
 
 int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __config *cfg){
-   int rc, ret=OK;
+   int ret=OK;
    char *p, *q, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
@@ -247,13 +251,12 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
 
          if(mysql_stmt_bind_param(stmt, bind)){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
-            return ERR;
+            ret = ERR;
+            goto CLOSE;
          }
 
 
-         rc = mysql_stmt_execute(stmt);
-
-         if(rc){
+         if(mysql_stmt_execute(stmt)){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
             ret = ERR;
          }
@@ -264,6 +267,10 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
       }
 
    } while(p);
+
+
+CLOSE:
+   mysql_stmt_close(stmt);
 
    return ret;
 }
@@ -336,7 +343,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      return ERR;
+      goto CLOSE;
    }
 
 
@@ -365,6 +372,9 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
             ret = OK;
       }
    }
+
+CLOSE:
+   mysql_stmt_close(stmt);
 
    return ret;
 }
