@@ -14,7 +14,7 @@ drop table if exists `sph_index`;
 create table if not exists `sph_index` (
   `id` bigint not null,
   `from` char(255) default null,
-  `to` text(512) default null,
+  `to` text(8192) default null,
   `fromdomain` char(255) default null,
   `todomain` text(512) default null,
   `subject` text(512) default null,
@@ -55,6 +55,7 @@ create index metadata_idx on metadata(`piler_id`);
 create index metadata_idx2 on metadata(`message_id`); 
 create index metadata_idx3 on metadata(`bodydigest`); 
 create index metadata_idx4 on metadata(`deleted`); 
+create index metadata_idx5 on metadata(`arrived`); 
 
 
 drop table if exists `rcpt`;

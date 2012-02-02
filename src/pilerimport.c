@@ -47,7 +47,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    post_parse(sdata, &state, cfg);
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
-
+   if(sdata->sent == -1) sdata->sent = 0;
 
    rule = check_againt_ruleset(data->rules, &state, st.st_size);
 
