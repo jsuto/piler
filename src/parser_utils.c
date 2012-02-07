@@ -501,6 +501,13 @@ void fix_email_address_for_sphinx(char *s){
 }
 
 
+void split_email_address(char *s){
+   for(; *s; s++){
+      if(*s == '@' || *s == '.' || *s == '+' || *s == '-' || *s == '_') *s = ' ';
+   }
+}
+
+
 int does_it_seem_like_an_email_address(char *email){
    char *p;
 

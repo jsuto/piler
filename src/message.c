@@ -17,7 +17,24 @@
 #include <zlib.h>
 
 
-int is_existing_message_id(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s){
+
+   *stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!*stmt){
+      syslog(LOG_PRIORITY, "%s: mysql_stmt_init() error", sdata->ttmpfile);
+      return ERR;
+   }
+
+   if(mysql_stmt_prepare(*stmt, s, strlen(s))){
+      syslog(LOG_PRIORITY, "%s: mysql_stmt_prepare() error: %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(*stmt), s);
+      return ERR;
+   }
+
+   return OK; 
+}
+
+
+int is_existing_message_id(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int rc=0;
    char s[SMALLBUFSIZE];
    MYSQL_STMT *stmt;
@@ -26,18 +43,10 @@ int is_existing_message_id(struct session_data *sdata, struct _state *state, str
    unsigned long len=0;
 
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_METADATA_TABLE);
-      goto ENDE;
-   }
-
    snprintf(s, SMALLBUFSIZE-1, "SELECT message_id FROM %s WHERE message_id=?", SQL_METADATA_TABLE);
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      goto ENDE;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
+
 
    memset(bind, 0, sizeof(bind));
 
@@ -125,20 +134,10 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    if(*subj == ' ') subj++;
 
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_SPHINX_TABLE);
-      return rc;
-   }
-
-
    snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,?,?,%ld,%ld,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, state->n_attachments);
 
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return rc;
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(stmt));
-      return rc;
-   }
 
 
    fix_email_address_for_sphinx(state->b_from);
@@ -215,18 +214,11 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
    MYSQL_BIND bind[2];
    unsigned long len[2];
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_RECIPIENT_TABLE);
-      return ERR;
-   }
 
    snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`,`to`,`todomain`) VALUES('%llu',?,?)", SQL_RECIPIENT_TABLE, id);
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(stmt));
-      return ERR;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return ERR;
+
 
    p = to;
    do {
@@ -278,7 +270,7 @@ CLOSE:
 
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
    int rc, ret=ERR;
-   char *subj, *p, s[MAXBUFSIZE], vcode[2*DIGEST_LENGTH+1];
+   char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1];
 
    MYSQL_STMT *stmt;
    MYSQL_BIND bind[4];
@@ -286,12 +278,6 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
    my_ulonglong id=0;
 
-
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_METADATA_TABLE);
-      return ERR;
-   }
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
@@ -304,11 +290,19 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));
-      return ERR;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return ERR;
 
+   memset(s2, 0, sizeof(s2));
+
+   p = state->b_from;
+   do {
+      memset(s2, 0, sizeof(s2));
+      p = split(p, ' ', s2, sizeof(s2)-1);
+
+      if(s2[0] == '\0') continue;
+
+      if(does_it_seem_like_an_email_address(s2) == 1){ break; }
+   } while(p);
 
 
    if(strlen(state->b_to) < 5){
@@ -318,9 +312,9 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    memset(bind, 0, sizeof(bind));
 
    bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = state->b_from;
+   bind[0].buffer = &s2[0];
    bind[0].is_null = 0;
-   len[0] = strlen(state->b_from); bind[0].length = &len[0];
+   len[0] = strlen(s2); bind[0].length = &len[0];
 
    p = strchr(state->b_from, '@');
    if(p && strlen(p) > 3){
@@ -362,8 +356,6 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
       if(rc == OK){
 
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated verification code, rc=%d", sdata->ttmpfile, rc);
-
          rc = store_index_data(sdata, state, id, cfg);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
@@ -380,12 +372,12 @@ CLOSE:
 }
 
 
-int process_message(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int i, rc;
 
    /* discard if existing message_id */
 
-   if(is_existing_message_id(sdata, state, cfg) == 1){
+   if(is_existing_message_id(sdata, state, data, cfg) == 1){
       return ERR_EXISTS;
    }
 

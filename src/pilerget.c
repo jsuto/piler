@@ -27,17 +27,9 @@ uint64 get_id_by_piler_id(struct session_data *sdata, char *digest, char *bodydi
    memset(digest, 0, 2*DIGEST_LENGTH+1);
    memset(bodydigest, 0, 2*DIGEST_LENGTH+1);
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      goto ENDE;
-   }
-
    snprintf(s, SMALLBUFSIZE-1, "SELECT `id`,`digest`,`bodydigest` FROM %s WHERE piler_id=?", SQL_METADATA_TABLE);
 
-
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      goto ENDE;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
 
    memset(bind, 0, sizeof(bind));
 

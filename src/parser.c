@@ -91,7 +91,6 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
 
    syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id);
-
 }
 
 
@@ -249,6 +248,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
    }
 
+   if(state->is_1st_header == 1){
+      fixupEncodedHeaderLine(buf);
+   }
+
 
    /* Content-type: checking */
 
@@ -403,31 +406,46 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
       len = strlen(puf);
 
-      if(state->message_state == MSG_FROM && does_it_seem_like_an_email_address(puf) == 1 && state->is_1st_header == 1 && state->b_from[0] == '\0' && strlen(state->b_from) < SMALLBUFSIZE-len-1){
+
+      if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-         q = strchr(puf, '@');
-         if(q) memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
+         if(does_it_seem_like_an_email_address(puf) == 1){
+            q = strchr(puf, '@');
+            if(q) memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
 
-         if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
+            if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
+
+            if(strlen(state->b_from) < SMALLBUFSIZE-len-1){
+               split_email_address(puf);
+               memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
+            }
+         }
       }
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && does_it_seem_like_an_email_address(puf) == 1 && strlen(state->b_to) < MAXBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strlen(state->b_to) < MAXBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);
             memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
 
-            if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_recipient = 1;
-            else sdata->external_recipient = 1;
+            if(does_it_seem_like_an_email_address(puf) == 1){
+               if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_recipient = 1;
+               else sdata->external_recipient = 1;
 
-            q = strchr(puf, '@');
-            if(q){
-               if(is_string_on_list(state->rcpt_domain, q+1) == 0){
-                  append_list(&(state->rcpt_domain), q+1);
-                  memcpy(&(state->b_to_domain[strlen(state->b_to_domain)]), q+1, strlen(q+1));
+               q = strchr(puf, '@');
+               if(q){
+                  if(is_string_on_list(state->rcpt_domain, q+1) == 0){
+                     append_list(&(state->rcpt_domain), q+1);
+                     memcpy(&(state->b_to_domain[strlen(state->b_to_domain)]), q+1, strlen(q+1));
+                  }
                }
-            }
 
+               if(strlen(state->b_to) < MAXBUFSIZE-len-1){
+                  split_email_address(puf);
+                  memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+               }
+
+            }
          }
       }
       else if(state->message_state == MSG_BODY && strlen(state->b_body) < BIGBUFSIZE-len-1)

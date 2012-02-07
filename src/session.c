@@ -201,7 +201,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                            counters.c_ignore++;
                         }
                         else {
-                           inj = process_message(&sdata, &sstate, cfg);
+                           inj = process_message(&sdata, &sstate, data, cfg);
                         }
 
                      }

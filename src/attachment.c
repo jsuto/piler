@@ -28,18 +28,9 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    unsigned long len[7];
 
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_init() error", sdata->ttmpfile, SQL_ATTACHMENT_TABLE);
-      return rc;
-   }
-
    snprintf(s, sizeof(s)-1, "INSERT INTO %s (`piler_id`,`attachment_id`,`sig`,`name`,`type`,`size`,`ptr`) VALUES(?,?,?,?,?,?,?)", SQL_ATTACHMENT_TABLE);
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_prepare() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(stmt));
-      return rc;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return rc;
 
 
    for(i=1; i<=state->n_attachments; i++){
@@ -153,17 +144,9 @@ int query_attachment_pointers(struct session_data *sdata, uint64 ptr, char *pile
    unsigned long len=0;
 
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      goto ENDE;
-   }
-
    snprintf(s, SMALLBUFSIZE-1, "SELECT `piler_id`, `attachment_id` FROM %s WHERE id=?", SQL_ATTACHMENT_TABLE);
 
-
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      goto ENDE;
-   }
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
 
    memset(bind, 0, sizeof(bind));
 
@@ -234,17 +217,10 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, str
    for(i=0; i<MAX_ATTACHMENTS; i++) memset((char*)&ptr_arr[i], 0, sizeof(struct ptr_array));
 
 
-   stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!stmt){
-      goto ENDE;
-   }
-
    snprintf(s, SMALLBUFSIZE-1, "SELECT `attachment_id`, `ptr` FROM %s WHERE piler_id=? ORDER BY attachment_id ASC", SQL_ATTACHMENT_TABLE);
 
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
 
-   if(mysql_stmt_prepare(stmt, s, strlen(s))){
-      goto ENDE;
-   }
 
    memset(bind, 0, sizeof(bind));
 

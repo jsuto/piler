@@ -24,6 +24,7 @@ void markHTML(char *buf, struct _state *state);
 int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state);
 void translateLine(unsigned char *p, struct _state *state);
 void fix_email_address_for_sphinx(char *s);
+void split_email_address(char *s);
 int does_it_seem_like_an_email_address(char *email);
 void reassembleToken(char *p);
 void degenerateToken(unsigned char *p);

@@ -59,7 +59,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    make_digests(sdata, cfg);
 
-   rc = process_message(sdata, &state, cfg);
+   rc = process_message(sdata, &state, data, cfg);
 
 ENDE:
    unlink(sdata->tmpframe);
