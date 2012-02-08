@@ -1,0 +1,183 @@
+
+@media screen {
+
+        a { color: #850505; text-decoration: none; }
+
+        p { margin: 0 0 10px 0; }
+
+	.loginfailed { color: red; font: normal 19px Arial, sans-serif; }
+
+
+	body { background-color: #6D6D6D; margin: 0 auto; padding: 15px 0; text-align: center; font: normal 12px Arial, sans-serif; color: #3d3d3d; }
+
+	#wrap { margin: 0 auto; padding: 0; width: 1070px; background-color: white; border: 3px solid black; text-align: left; }
+
+	#menu { display: table; margin: 0px 40px 15px 40px; padding: 10px 0 0px 0px; width: 990px; border-bottom: 1px solid gray; }
+	#menu .leftcell { display: table-cell; width: 490px; text-align: justify; }
+	#menu .rightcell { display: table-cell; width: 490px; text-align: right; font: normal 12px Arial, sans-serif; margin: 0; padding: 0; }
+	#menu .logout22 { float: right; text-align: right; }
+	#menu a:link.logout, a:visited.logout { color: #222; }
+	#menu a:hover.logout { background: #F3D673; }
+
+        #menu ul { list-style: none; margin: 0; padding: 0; }
+        #menu li { background-image: none; font: normal 12px Arial, sans-serif; }
+        #menu a:hover, #menu a:active { color: #850505; }
+        #menu #active { color: #850505; font-weight: bold; }
+
+
+	#main { margin: 0px 40px 20px 40px; width: 990px; float: left; clear: both; }
+
+	#footer { clear: both; text-align: left; margin: 0; padding: 0 36px; }
+
+	#A1 { text-align: right; }
+
+        h3 { margin: 0; padding: 10px 0 10px 0; font: bold 19px Arial, sans-serif; color: #850505; }
+        h4 { margin: 0; padding: 0px 0 0px 0; font: bold 12px Arial, sans-serif; color: #000000; }
+
+	form { padding-top: 0px; margin: 0px; }
+
+        input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:200px;cursor:pointer;height:15px;}
+
+        input#savedsearch{background-image:url(../images/search.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:400px;height:15px; }
+
+
+	#search { float: left; width: 990px; margin-top: 5px; margin-bottom: 20px; }
+
+	#search1 { float: left; width: 490px; margin: 0; border: 0px solid green; }
+
+	#search2 { float: right; width: 490px; margin: 0; text-align: right; border: 0px solid green; }
+
+	#ss1 { display: table; border-collapse: collapse; margin: 0; padding: 0;}
+
+	#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; }
+	#resultscontainer.empty { border-bottom: 0px solid black; height: 580px;  }
+
+	/*#results { float: left; width: 990px; height: 580px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }*/
+	#results { float: left; width: 990px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
+
+
+	#auditresultscontainer { float: left; width: 990px; padding: 0; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; }
+	#auditresultscontainer.empty { border-bottom: 0px solid black; height: 580px; }
+
+	#spinner { margin-left: 480px; margin-top: 275px; }
+
+	.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
+	.ruletext { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 365px; }
+	.advtext { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
+	.textregular { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; }
+
+	.row { display: table-row; }
+	.row.savedsearch { display: table-row; text-align: right; }
+	.resultrow { display: table-row; height: 25px; }
+	.resultrow.odd { background: #f5f5f5; }
+	.resultrow.spam { color: #aaa; }
+
+	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }
+	.cell1s { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 85px; }
+	.cell3 { display: table-cell; height: 25px; text-align: left; padding: 0px; padding-top: 3px; font: bold 19px Arial, sans-serif; }
+
+	.cell3.title { color: black; text-align: left; }
+	.cell3.date { color: black; text-align: left; }
+	.cell3.error { color: black; }
+
+	.cell2 { display: table-cell; width: 410px; height: 15px; }
+
+	.cell4 { display: table-cell; width: 490px; height: 15px; margin: 0; padding: 0; }
+
+	.cell5 { display: table-cell; height: 25px; text-align: left; padding-bottom: 0px; padding-right: 3px; vertical-align: middle; }
+
+	.cell5.id { text-align: center; }
+	.cell5.date { text-align: left; }
+	.cell5.size { text-align: left; padding-right: 20px; }
+	.cell5.verification { text-align: right; padding-right: 0px; }
+
+	.cell5 img { margin: 3px 0 -5px 0; border: 0px solid black; height: 16px; }
+
+	.cellaudit { display: table-cell; height: 14px; text-align: left; font: normal 12px Arial, sans-serif; padding: 0; margin: 0; vertical-align: middle;}
+	.cellaudit.date { width: 120px; }
+	.cellaudit.title { font: bold 12px Arial, sans-serif;}
+
+        #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
+        #health2 { display: table-cell; text-align: right; }
+
+	.cellhealthleft { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; }
+	.cellhealthright { display: table-cell; height: 25px; text-align: left; padding: 3px; font: normal 12px Arial, sans-serif; }
+
+	#health1 .ok { color: green; font-weight: bold; }
+	#health1 .error { color: red; font-weight: bold; }
+
+	#pagenav { float: left; margin-top: 0px; margin-bottom: 0px; text-align: left; width: 990px; border: 0px solid red; }
+	.navrow { display: table-row; width: 282px; border: 1px solid red; }
+	.navlink { color: #bbb; font: bold 12px Arial, sans-serif; }
+	#pagenav a.navlink { color: #850505; font: bold 12px Arial, sans-serif; }
+
+        #pagingleft { display: table-cell; float: left; text-align: left; width: 60px;  border: 0px solid red; }
+        #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
+        #pagingright { display: table-cell; float: right; text-align: right; width: 60px; border: 0px solid red; }
+
+	.messagelink { border-bottom: 1px solid gray; color: #850505; }
+	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
+	#results a:hover { border-bottom: 1px solid gray; color: black; }
+
+	.select1 { width: 450px; font: bold 12px Arial, sans-serif; }
+	.advselect { width: 80px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
+	.advselect2 { width: 205px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
+	.ruleselect { width: 40px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
+
+	/*button { margin-left: 0px; background-color:gray; border-top:1px solid gray; border-left:1px solid gray; font: bold 12px Arial, sans-serif; border-left: yellow; border-right: black; width:50%;}*/
+	button { margin: 0; background-color:gray; font: bold 12px Arial, sans-serif; width:40%; height: 40px; margin-left: 5%; margin-right: 5%; }
+	button.active { background-color: #850505; color:white; }
+
+	.advbutton { margin: 0; background-color: #850505; color: white; font: bold 12px Arial, sans-serif; height: 40px; }
+
+	input[type=button].secondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 24%;}
+	input[type=button].advsecondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 15%;}
+	input[type=button].load { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; width: 16%;}
+
+	input[type=button].short { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 50px;}
+	input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
+
+	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
+
+	.domainrow { display: table-row; border: 2px solid gray; padding: 10px; }
+	.domaincell { display: table-cell; font: bold 12px Arial, sans-serif; border: 1px solid gray; padding: 5px; vertical-align: top; }
+	.fcell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
+	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
+
+
+	#dhtmltooltip { position: absolute; width: 150px; border: 2px solid black; padding: 2px; background-color: yellow; color: #ffffff; visibility: hidden; z-index: 100; }
+
+
+	/*
+         * dropdown menu
+         */
+
+	ul.dropdown                         { position: relative; }
+	ul.dropdown li                      { font-weight: bold; float: left; background: #ffffff; text-align: center; padding-right: 40px; padding-left: 40px; border: 0px solid red; }
+	ul.dropdown li.first_li             { font-weight: bold; float: left; background: #ffffff; text-align: left; padding-left:80px; }
+	ul.dropdown li.center_li             { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; width: 190px; }
+	ul.dropdown li.last_li              { font-weight: bold; float: left; background: #ffffff; text-align: right; padding-right: 0; margin-left: 10px; }
+
+	ul.dropdown li.admin                { font-weight: bold; float: left; background: #ffffff; padding-right: 5px; padding-left: 2px; }
+	ul.dropdown li.first_li_admin       { background: #ffffff; text-align: left; margin-left: 80px; padding-left: 0px; padding-right: 5px; }
+	ul.dropdown li.last_li_admin        { background: #ffffff; text-align: right; padding: 0; }
+
+	ul.dropdown li.logout               { font-weight: bold; float: right; background: #ffffff; width: 100px; text-align: right; }
+
+	ul.dropdown a:hover                 { color: #000; }
+	ul.dropdown a:active                { color: #ffa500; }
+	ul.dropdown li a                    { padding: 0; color: #222; border-bottom: none; }
+	ul.dropdown li.hover,
+	ul.dropdown li:hover                { background: #F3D673; color: black; position: relative; }
+	ul.dropdown li.hover a              { color: black; }
+
+	ul.dropdown ul                      { width: 150px; text-align: left; visibility: hidden; position: absolute; top: 100%; left: 0; }
+	ul.dropdown ul li                   { text-align: left; font-weight: normal; background: #f6f6f6; color: #000; border-bottom: 1px solid #ccc; float: none; paddin-left: 3px; }
+
+	ul.sub_menu li                      { padding-left: 10px; padding-right: 10px; width: 140px; }
+
+	ul.dropdown ul li a                 { border-right: none; width: 100%; display: inline-block; text-align: left; }
+
+}
+
+

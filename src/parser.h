@@ -31,5 +31,6 @@ void degenerateToken(unsigned char *p);
 void fixURL(char *url);
 int extractNameFromHeaderLine(char *s, char *name, char *resultbuf);
 char *determine_attachment_type(char *filename, char *type);
+void parse_reference(struct _state *state, char *s);
 
 #endif /* _PARSER_H */

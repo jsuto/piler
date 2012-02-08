@@ -72,6 +72,7 @@ int main(int argc, char **argv){
    printf("message-id: %s\n", state.message_id);
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
+   printf("reference: *%s*\n", state.reference);
    printf("subject: *%s*\n", state.b_subject);
    //printf("body: *%s*\n", state.b_body);
 

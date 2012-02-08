@@ -45,6 +45,7 @@ create table if not exists `metadata` (
   `attachments` int default 0,
   `piler_id` char(36) not null,
   `message_id` char(128) character set 'latin1' not null,
+  `reference` char(128) character set 'latin1' not null,
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
   `vcode` char(64) default null,
@@ -53,9 +54,10 @@ create table if not exists `metadata` (
 
 create index metadata_idx on metadata(`piler_id`);
 create index metadata_idx2 on metadata(`message_id`); 
-create index metadata_idx3 on metadata(`bodydigest`); 
-create index metadata_idx4 on metadata(`deleted`); 
-create index metadata_idx5 on metadata(`arrived`); 
+create index metadata_idx3 on metadata(`reference`); 
+create index metadata_idx4 on metadata(`bodydigest`); 
+create index metadata_idx5 on metadata(`deleted`); 
+create index metadata_idx6 on metadata(`arrived`); 
 
 
 drop table if exists `rcpt`;

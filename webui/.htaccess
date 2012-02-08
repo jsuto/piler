@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteRule ^search.php /index.php?route=search/search&type=simple [L]
+RewriteRule ^advanced.php /index.php?route=search/search&type=advanced [L]
+RewriteRule ^expert.php /index.php?route=search/search&type=expert [L]
+RewriteRule ^search-helper.php /index.php?route=search/helper [L]
+RewriteRule ^audit-helper.php /index.php?route=audit/helper [L]
+RewriteRule ^message.php /index.php?route=message/view [L]
+RewriteRule ^settings.php /index.php?route=user/settings [L]
+

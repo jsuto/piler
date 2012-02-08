@@ -74,6 +74,8 @@ void init_state(struct _state *state){
       memset(state->attachments[i].digest, 0, 2*DIGEST_LENGTH+1);
    }
 
+   memset(state->reference, 0, SMALLBUFSIZE);
+
    memset(state->b_from, 0, SMALLBUFSIZE);
    memset(state->b_from_domain, 0, SMALLBUFSIZE);
    memset(state->b_to, 0, MAXBUFSIZE);
@@ -677,5 +679,24 @@ char *determine_attachment_type(char *filename, char *type){
    }
 
    return "other,";
+}
+
+
+void parse_reference(struct _state *state, char *s){
+   int len;
+   char puf[SMALLBUFSIZE];
+
+   if(strlen(state->reference) > 10) return;
+
+   do {
+      s = split_str(s, " ", puf, sizeof(puf)-1);
+      len = strlen(puf);
+
+      if(len > 10 && len < SMALLBUFSIZE-1){
+         memcpy(&(state->reference[strlen(state->reference)]), puf, len);
+         return;
+      }
+   } while(s);
+
 }
 

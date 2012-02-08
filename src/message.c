@@ -252,10 +252,6 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
             ret = ERR;
          }
-
-      } else {
-         syslog(LOG_PRIORITY, "%s: invalid email address: %s", sdata->ttmpfile, puf);
-         continue;
       }
 
    } while(p);
@@ -273,8 +269,8 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1];
 
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[4];
-   unsigned long len[4];
+   MYSQL_BIND bind[5];
+   unsigned long len[5];
 
    my_ulonglong id=0;
 
@@ -286,7 +282,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    digest_string(s, &vcode[0]);
 
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%d,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s')", SQL_METADATA_TABLE, sdata->spam_message, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest, vcode);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%d,%ld,%ld,%d,%d,%d,%d,'%s',?,?,'%s','%s','%s')", SQL_METADATA_TABLE, sdata->spam_message, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest, vcode);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
@@ -334,6 +330,11 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    bind[3].buffer = state->message_id;
    bind[3].is_null = 0;
    len[3] = strlen(state->message_id); bind[3].length = &len[3];
+
+   bind[4].buffer_type = MYSQL_TYPE_STRING;
+   bind[4].buffer = state->reference;
+   bind[4].is_null = 0;
+   len[4] = strlen(state->reference); bind[4].length = &len[4];
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(stmt));

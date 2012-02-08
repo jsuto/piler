@@ -90,7 +90,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    len = strlen(state->b_to);
    if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
 
-   syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id);
+   syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s, reference=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id, state->reference);
 }
 
 
@@ -210,6 +210,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       else if(strncasecmp(buf, "To:", 3) == 0) state->message_state = MSG_TO;
       else if(strncasecmp(buf, "Cc:", 3) == 0) state->message_state = MSG_CC;
       else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
+      else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
       else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf);
 
@@ -228,6 +229,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
    if((p = strcasestr(buf, "boundary"))){
       x = extract_boundary(p, state);
+   }
+
+
+   if(state->is_1st_header == 1 && state->message_state == MSG_REFERENCES){
+      if(strncasecmp(buf, "References:", 11) == 0) parse_reference(state, buf+11);
+      else parse_reference(state, buf);
    }
 
 
