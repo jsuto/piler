@@ -45,7 +45,7 @@ create table if not exists `metadata` (
   `attachments` int default 0,
   `piler_id` char(36) not null,
   `message_id` char(128) character set 'latin1' not null,
-  `reference` char(128) character set 'latin1' not null,
+  `reference` char(64) character set 'latin1' not null,
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
   `vcode` char(64) default null,
@@ -137,9 +137,10 @@ create table if not exists `counter` (
    `virus` bigint unsigned default 0,
    `duplicate` bigint unsigned default 0,
    `ignore` bigint unsigned default 0
+   `size` bigint unsigned default 0
 ) Engine=InnoDB;
 
-insert into `counter` values(0, 0, 0, 0);
+insert into `counter` values(0, 0, 0, 0, 0);
 
 
 drop table if exists `search`;

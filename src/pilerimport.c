@@ -25,6 +25,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    char *rule;
    struct stat st;
    struct _state state;
+   struct __counters counters;
 
    if(stat(filename, &st) != 0){
       printf("cannot read: %s\n", filename);
@@ -67,6 +68,11 @@ ENDE:
    switch(rc) {
       case OK:
                         printf("imported: %s\n", filename);
+
+                        bzero(&counters, sizeof(counters));
+                        counters.c_size += sdata->tot_len;
+                        update_counters(sdata, data, &counters, cfg);
+
                         break;
 
       case ERR_EXISTS:

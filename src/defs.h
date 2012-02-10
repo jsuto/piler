@@ -232,6 +232,7 @@ struct __counters {
    unsigned long long c_virus;
    unsigned long long c_duplicate;
    unsigned long long c_ignore;
+   unsigned long long c_size;
 };
 
 #endif /* _DEFS_H */
