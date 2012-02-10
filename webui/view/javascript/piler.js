@@ -127,6 +127,12 @@ function send_ajax_post_request(url, params, id) {
 }
 
 
+function add_message_reference_to_form(s) {
+   e = document.getElementById('ref');
+   if(e) e.value = s;
+}
+
+
 function assemble_search_term(n) {
    var data = '';
    var attachment_type = '';
@@ -146,7 +152,6 @@ function assemble_search_term(n) {
 
    e = document.getElementById('subject');
    if(e && e.value) { data = data + "&subject=" + e.value; }
-
 
    for(i=0; i<=n; i++) {
       var a = 'key' + i;
@@ -180,6 +185,9 @@ function assemble_search_term(n) {
    }
 
    if(attachment_type) { data = data + "&attachment_type=" + attachment_type.substring(1,attachment_type.length); }
+
+   e = document.getElementById('ref');
+   if(e && e.value) { data = data + "&ref=" + e.value; }
 
    e = document.getElementById('sort');
    if(e && e.value) { data = data + "&sort=" + e.value; }
@@ -228,6 +236,9 @@ function reset_simple_form() {
    a = document.getElementById('from'); a.value = '';
    a = document.getElementById('to'); a.value = '';
    a = document.getElementById('subject'); a.value = '';
+
+   a = document.getElementById('ref');
+   if(a) { a.value = ''; }
 }
 
 
@@ -251,6 +262,9 @@ function reset_adv_form(n) {
    if(a) { a[0].selected = 1; }
 
    a = document.getElementById('val0');
+   if(a) { a.value = ''; }
+
+   a = document.getElementById('ref');
    if(a) { a.value = ''; }
 
 }

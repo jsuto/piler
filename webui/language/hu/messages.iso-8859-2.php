@@ -34,6 +34,7 @@ $_['text_close'] = "Bezár";
 $_['text_compressed'] = "tömörített";
 $_['text_confirm_to_reset_counters'] = "Számlálók nullázásának megerõsítése";
 $_['text_content_filter'] = "Tartalomszûrõ";
+$_['text_conversation_available'] = "Levélváltás elérhetõ";
 $_['text_counters'] = "Számlálók";
 $_['text_cpu_load'] = "CPU terhelés";
 $_['text_cpu_usage'] = "CPU használat";

@@ -19,7 +19,8 @@ class ControllerSearchHelper extends Controller {
                     'direction'       => '',
                     'size'            => '',
                     'attachment_type' => '',
-                    'tag'             => ''
+                    'tag'             => '',
+                    'ref'             => '' 
                      );
 
 
@@ -89,6 +90,8 @@ class ControllerSearchHelper extends Controller {
          if($this->a[$k]) { $this->a[$k] = substr($this->a[$k], 1, strlen($this->a[$k])); }
       }
 
+      $this->a['ref'] = $this->request->post['ref'];
+
       $this->a['sort'] = $this->request->post['sort'];
       $this->a['order'] = $this->request->post['order'];
    }
@@ -116,23 +119,28 @@ class ControllerSearchHelper extends Controller {
          else if($v == 'attachment:' || $v == 'a:') { $token = 'attachment_type'; continue; }
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
+         else if($v == 'ref:') { $token = 'ref'; continue; }
 
          if($token == 'from') {
             $v = fix_email_address($v);
 
-            if(!strstr($v, '@')) { $this->a['from_domain'] .= "|$v"; }
-            else {
-               $this->a['from'] .= "|$v";
+            if(substr($v, 0, 1) == '@') { $this->a['from_domain'] .= "|$v"; }
+            else if(strstr($v, '@')) {
                if(in_array($v, $_SESSION['emails'])) { $this->a['o_from'] .= "|$v"; } else { $this->a['f_from'] .= "|$v"; }
+            }
+            else {
+               $this->a['from'] .= " $v";
             }
          }
          else if($token == 'to') {
             $v = fix_email_address($v);
 
-            if(!strstr($v, '@')) { $this->a['to_domain'] .= "|$v"; }
-            else {
-               $this->a['to'] .= "|$v";
+            if(substr($v, 0, 1) == '@') { $this->a['to_domain'] .= "|$v"; }
+            else if(strstr($v, '@')) {
                if(in_array($v, $_SESSION['emails'])) { $this->a['o_to'] .= "|$v"; } else { $this->a['f_to'] .= "|$v"; }
+            }
+            else {
+               $this->a['to'] .= " $v";
             }
          }
          else if($token == 'subject') { $this->a['subject'] .= ' ' . $v; }
@@ -143,6 +151,7 @@ class ControllerSearchHelper extends Controller {
          else if($token == 'size') { $this->a['size'] .= ' ' . $v; }
          else if($token == 'attachment_type') { $this->a['attachment_type'] .= ' ' . $v; }
          else if($token == 'tag') { $this->a['tag'] .= ' ' . $v; }
+         else if($token == 'ref') { $this->a['ref'] = $v; }
       }
 
    }
@@ -159,20 +168,24 @@ class ControllerSearchHelper extends Controller {
             if($f == 'from') {
                $v = fix_email_address($v);
 
-               if(!strstr($v, '@')) { $this->a['from_domain'] .= "|$v"; }
+               if(substr($v, 0, 1) == '@') { $this->a['from_domain'] .= "|$v"; }
+               else if(strstr($v, '@')) {
+                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_from'] .= "|$v"; } else { $this->a['f_from'] .= "|$v"; }
+               }
                else {
                   $this->a['from'] .= "|$v";
-                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_from'] .= "|$v"; } else { $this->a['f_from'] .= "|$v"; }
                }
             }
 
             if($f == 'to') {
                $v = fix_email_address($v);
 
-               if(!strstr($v, '@')) { $this->a['to_domain'] .= "|$v"; }
+               if(substr($v, 0, 1) == '@') { $this->a['to_domain'] .= "|$v"; }
+               else if(strstr($v, '@')) {
+                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_to'] .= "|$v"; } else { $this->a['f_to'] .= "|$v"; }
+               }
                else {
                   $this->a['to'] .= "|$v";
-                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_to'] .= "|$v"; } else { $this->a['f_to'] .= "|$v"; }
                }
             }
 

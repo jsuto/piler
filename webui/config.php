@@ -17,8 +17,6 @@ define('ENABLE_LDAP_IMPORT_FEATURE', 0);
 
 define('HOLD_EMAIL', 0);
 
-define('DEMO', 0);
-
 define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
 define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');
 define('ICON_ARROW_DOWN', '/view/theme/default/images/arrowdown.gif');

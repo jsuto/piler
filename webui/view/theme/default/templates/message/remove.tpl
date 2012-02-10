@@ -1,6 +1,6 @@
 <html>
 <head>
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style.css" />
+   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
 </head>
 
 <body style="background: white;">

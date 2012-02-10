@@ -34,6 +34,7 @@ $_['text_close'] = "Close";
 $_['text_compressed'] = "compressed";
 $_['text_confirm_to_reset_counters'] = "Confirm to reset counters";
 $_['text_content_filter'] = "Content filter";
+$_['text_conversation_available'] = "Conversation available";
 $_['text_counters'] = "Counters";
 $_['text_cpu_load'] = "CPU load";
 $_['text_cpu_usage'] = "CPU usage";

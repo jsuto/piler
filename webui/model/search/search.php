@@ -43,14 +43,19 @@ class ModelSearchSearch extends Model {
          $all_ids = $m['ids'];
       } else {
 
-         if($search_type == SIMPLE_SEARCH) {
-            $conditions = $this->assemble_simple_query_conditions($data);
+         if($data['ref']){
+            $all_ids = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
          }
          else {
-            $conditions = $this->assemble_advanced_query_conditions($data);
-         }
+            if($search_type == SIMPLE_SEARCH) {
+               $conditions = $this->assemble_simple_query_conditions($data);
+            }
+            else {
+               $conditions = $this->assemble_advanced_query_conditions($data);
+            }
 
-         $all_ids = $this->query_all_possible_IDs($data, $conditions, $sort, $order, $sortorder, $cache_key);
+            $all_ids = $this->query_all_possible_IDs($data, $conditions, $sort, $order, $sortorder, $cache_key);
+         }
       }
 
 
@@ -85,7 +90,6 @@ class ModelSearchSearch extends Model {
       $email = $match = '';
       $n_fc = $n_tc = 0;
 
-
       $data['f_from'] = $this->fix_email_address_for_sphinx($data['f_from']);
       $data['o_from'] = $this->fix_email_address_for_sphinx($data['o_from']);
       $data['f_to'] = $this->fix_email_address_for_sphinx($data['f_to']);
@@ -100,11 +104,13 @@ class ModelSearchSearch extends Model {
       if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
          if($data['f_from']) { $f1 .= "|" . $data['f_from']; $n_fc++; }
          if($data['o_from']) { $f1 .= "|" . $data['o_from']; $n_fc++; }
-         if($data['from_domain']) { $fd .= "(@fromdomain " . $data['from_domain'] . ")"; $n_fc++; }
+         if($data['from_domain']) { $fd .= "(@fromdomain " . substr($data['from_domain'], 1, strlen($data['from_domain'])) . ")"; $n_fc++; }
+         if($data['from']) { $f1 .= "|" . $this->fixup_sphinx_operators($data['from']); $n_fc++; }
 
          if($data['f_to']) { $t1 .= "|" . $data['f_to']; $n_tc++; }
          if($data['o_to']) { $t1 .= "|" . $data['o_to']; $n_tc++; }
-         if($data['to_domain']) { $td .= "(@todomain " . $data['to_domain'] . ")"; $n_tc++; }
+         if($data['to_domain']) { $td .= "(@todomain " . substr($data['to_domain'], 1, strlen($data['to_domain'])) . ")"; $n_tc++; }
+         if($data['to']) { $f2 .= "|" . $this->fixup_sphinx_operators($data['to']); $n_tc++; }
 
          if($f1) { $f1 = "(@from " . substr($f1, 1, strlen($f1)) . ")"; }
          if($t1) { $t1 = "(@to " . substr($t1, 1, strlen($t1)) . ")"; }
@@ -115,11 +121,13 @@ class ModelSearchSearch extends Model {
 
          if($data['f_from']) { $f1 = "(@from " . $data['f_from'] . " @to $all_your_addresses)"; $n_fc++; }
          if($data['o_from']) { $f2 = "(@from " . $data['o_from'] . ")"; $n_fc++; }
-         if($data['from_domain']) { $fd = "(@fromdomain " . $data['from_domain'] . " @to $all_your_addresses)"; $n_fc++; }
+         if($data['from_domain']) { $fd = "(@fromdomain " . substr($data['from_domain'], 1, strlen($data['from_domain'])) . " @to $all_your_addresses)"; $n_fc++; }
+         if($data['from']) { $fd = "(@from " . $this->fixup_sphinx_operators($data['from']) . " @to $all_your_addresses)"; $n_fc++; }
 
          if($data['f_to']) { $t1 = "(@to " . $data['f_to'] . " @from $all_your_addresses)"; $n_tc++; }
          if($data['o_to']) { $t2 = "(@to " . $data['o_to'] . ")"; $n_tc++; }
-         if($data['to_domain']) { $td = "(@todomain " . $data['to_domain'] . " @from $all_your_addresses)"; $n_tc++; }
+         if($data['to_domain']) { $td = "(@todomain " . substr($data['to_domain'], 1, strlen($data['to_domain'])) . " @from $all_your_addresses)"; $n_tc++; }
+         if($data['to']) { $fd = "(@to " . $this->fixup_sphinx_operators($data['to']) . " @from $all_your_addresses)"; $n_tc++; }
 
          if($n_fc == 0 && $n_tc == 0 && $data['from_domain'] == '' && $data['to_domain'] == '') {
             if($data['direction'] == 2) {
@@ -170,21 +178,27 @@ class ModelSearchSearch extends Model {
          if(isset($data['from'])) { $data['from'] = fix_email_address($data['from']); }
          if(isset($data['to'])) { $data['to'] = fix_email_address($data['to']); }
 
-         // missing from address
+         // missing From: address
 
          if(!isset($data['from'])) {
 
-            if(isset($data['to']) && !strstr($data['to'], '@')) { $email = "@from $all_your_addresses @todomain " . $this->fix_email_address_for_sphinx($data['to']); }
+            if(isset($data['to']) && substr($data['to'], 0, 1) == '@') {
+               $email = "@from $all_your_addresses @todomain " . $this->fix_email_address_for_sphinx(substr($data['to'], 1, strlen($data['to'])));
+            }
+            else if(isset($data['to']) && !strstr($data['to'], '@')) { $email = "@from $all_your_addresses @to " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['to'])); }
             else if(!isset($data['to'])) { $email = "@to $all_your_addresses"; }
             else if(!in_array($data['to'], $_SESSION['emails'])) { $email = "@from $all_your_addresses @to " . $this->fix_email_address_for_sphinx($data['to']); }
             else { $email = "@to " . $this->fix_email_address_for_sphinx($data['to']); }
 
          }
 
-         // missing to address
+         // missing To: address
 
          else if(!isset($data['to'])) {
-            if(isset($data['from']) && !strstr($data['from'], '@')) { $email = "@to $all_your_addresses @fromdomain " . $this->fix_email_address_for_sphinx($data['from']); }
+            if(isset($data['from']) && substr($data['from'], 0, 1) == '@') {
+               $email = "@to $all_your_addresses @fromdomain " . $this->fix_email_address_for_sphinx(substr($data['from'], 1, strlen($data['from'])));
+            }
+            else if(isset($data['from']) && !strstr($data['from'], '@')) { $email = "@to $all_your_addresses @from " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['from'])); }
             else if(!in_array($data['from'], $_SESSION['emails'])) { $email = "@to $all_your_addresses @from " . $this->fix_email_address_for_sphinx($data['from']); }
             else { $email = "@from " . $this->fix_email_address_for_sphinx($data['from']); }
          }
@@ -206,13 +220,13 @@ class ModelSearchSearch extends Model {
       }
       else {
          if(isset($data['from'])) {
-            if(strstr($data['from'], '@')) { $match .= " @from " . $this->fix_email_address_for_sphinx($data['from']); }
-            else { $match .= " @fromdomain " . $this->fix_email_address_for_sphinx($data['from']); }
+            if(substr($data['from'], 0, 1) == '@') { $match .= " @fromdomain " . $this->fix_email_address_for_sphinx(substr($data['from'], 1, strlen($data['from']))); }
+            else { $match .= " @from " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['from'])); }
          }
 
          if(isset($data['to'])) {
-            if(strstr($data['to'], '@')) { $match .= " @to " . $this->fix_email_address_for_sphinx($data['to']); }
-            else { $match .= " @todomain " . $this->fix_email_address_for_sphinx($data['to']); }
+            if(substr($data['to'], 0, 1) == '@') { $match .= " @todomain " . $this->fix_email_address_for_sphinx(substr($data['to'], 1, strlen($data['to']))); }
+            else { $match .= " @to " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['to'])); }
          }
 
       }
@@ -252,8 +266,6 @@ class ModelSearchSearch extends Model {
 
 
       if($data['tag']) {
-         $tag_id_list = " AND id IN (0";
-
          $data['tag'] = $this->fixup_sphinx_operators($data['tag']);
 
          $aa = $this->sphx->query("SELECT id FROM " . SPHINX_TAG_INDEX . " WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@tag " . $data['tag'] . " ') ");
@@ -262,12 +274,11 @@ class ModelSearchSearch extends Model {
             $tag_id_list .= "," . $a['id'];
          }
 
-         $tag_id_list .= ") ";
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . substr($tag_id_list, 1, strlen($tag_id_list)) . ") $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
-
-
-
-      $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $date $direction $size MATCH('$conditions') $tag_id_list $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+      else {
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $date $direction $size MATCH('$conditions') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+      }
 
 //print $query->query; print "<p>" . $query->exec_time . "</p>\n";
 
@@ -294,7 +305,6 @@ class ModelSearchSearch extends Model {
       if($data['sort'] == 'from' || $data['sort'] == 'subj') {
 
          $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE id IN ($q) ORDER BY `$sort` $order", $ids);
-         //print $query->query . ", exec: " . $query->exec_time . "<p/>\n";
 
          $ids = array();
 
@@ -310,6 +320,26 @@ class ModelSearchSearch extends Model {
          $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
       }
 
+
+      return $ids;
+   }
+
+
+   private function query_all_possible_IDs_by_reference($reference = '', $cache_key = '') {
+      $ids = array();
+
+      if($reference == '') { return $ids; }
+
+      $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id=? OR reference=? ORDER BY id DESC", array($reference, $reference));
+
+      foreach($query->rows as $q) {
+         array_push($ids, $q['id']);
+      }
+
+      if(MEMCACHED_ENABLED && $cache_key) {
+         $memcache = Registry::get('memcache');
+         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
+      }
 
       return $ids;
    }
@@ -345,7 +375,6 @@ class ModelSearchSearch extends Model {
 
             $m['date'] = date(SEARCH_HIT_DATE_FORMAT, $m['sent']);
             $m['size'] = nice_size($m['size']);
-
 
             /*
              * verifying 20 messages takes some time, still it's useful
@@ -473,6 +502,7 @@ class ModelSearchSearch extends Model {
       if($s == '') { return $s; }
 
       $s = preg_replace("/ OR /", "|", $s);
+      $s = preg_replace("/(\-)/", " ", $s);
       $a = explode(" ", $s);
       $s = '';
 

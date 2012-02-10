@@ -7,6 +7,7 @@
 
             <input type="hidden" name="sort" id="sort" value="date" />
             <input type="hidden" name="order" id="order" value="0" />
+            <input type="hidden" name="ref" id="ref" value="" />
 
         <div id="ss1">
          <div class="row">
