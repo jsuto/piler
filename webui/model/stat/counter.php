@@ -37,7 +37,10 @@ class ModelStatCounter extends Model {
       if(MEMCACHED_ENABLED) {
          $memcache = Registry::get('memcache');
 
-         foreach (Registry::get('counters') as $counter) {
+         $c = Registry::get('counters');
+         unset($c[MEMCACHED_PREFIX . 'size']);
+
+         foreach ($c as $counter) {
             $memcache->set($counter, 0);
          }
       }
