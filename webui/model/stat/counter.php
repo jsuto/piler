@@ -4,22 +4,31 @@ class ModelStatCounter extends Model {
 
    public function getCounters(){
       $counter = array();
+      $asize = 0;
 
       if(MEMCACHED_ENABLED) {
          $memcache = Registry::get('memcache');
 
          $counter = $memcache->get(Registry::get('counters'));
 
-         if(isset($counter['_c:counters_last_update'])) { return $counter; }
+         if(isset($counter[MEMCACHED_PREFIX . 'counters_last_update'])) {
+            $asize = nice_size($counter[MEMCACHED_PREFIX . 'size'], ' ');
+            unset($counter[MEMCACHED_PREFIX . 'size']);
+
+            return array ($asize, $counter);
+         }
       }
 
       $query = $this->db->query("SELECT * FROM " . TABLE_COUNTER);
 
       if($query->num_rows == 1) {
+         $asize = nice_size($query->row['size'], ' ');
+         unset($query->row['size']);
+
          $counter = $query->row;
       }
 
-      return $counter;
+      return array ($asize, $counter);
    }
 
 

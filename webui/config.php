@@ -143,14 +143,14 @@ define('MIN_PASSWORD_LENGTH', 6);
 define('CGI_INPUT_FIELD_WIDTH', 50);
 define('CGI_INPUT_FIELD_HEIGHT', 7);
 
-define('MEMCACHED_PREFIX', '_piler_webui:');
+define('MEMCACHED_PREFIX', '_piler:');
 define('MEMCACHED_TTL', 3600);
 
 $memcached_servers = array(
       array('127.0.0.1', 11211)
                           );
 
-$counters = array('_piler:rcvd', '_piler:virus', '_piler:duplicate', '_piler:ignore', '_piler:counters_last_update');
+$counters = array(MEMCACHED_PREFIX . 'rcvd', MEMCACHED_PREFIX . 'virus', MEMCACHED_PREFIX . 'duplicate', MEMCACHED_PREFIX . 'ignore', MEMCACHED_PREFIX . 'counters_last_update');
 
 $health_smtp_servers = array( array(PILER_HOST, PILER_PORT, "piler"), array(SMARTHOST, SMARTHOST_PORT, "smarthost") );
 

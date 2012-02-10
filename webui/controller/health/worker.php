@@ -31,31 +31,16 @@ class ControllerHealthWorker extends Controller {
       }
 
 
-      /*$this->data['queues'][] = format_qshape($lang->data['text_active_incoming_queue'], QSHAPE_ACTIVE_INCOMING);
-      $this->data['queues'][] = format_qshape($lang->data['text_deferred_queue'], QSHAPE_DEFERRED);*/
-
-      /*if(file_exists(QSHAPE_ACTIVE_INCOMING_OUT)) {
-         $this->data['queues_out'][] = format_qshape($lang->data['text_active_incoming_queue'], QSHAPE_ACTIVE_INCOMING_OUT);
-         $this->data['queues_out'][] = format_qshape($lang->data['text_deferred_queue'], QSHAPE_DEFERRED_OUT);
-      }*/
-
       $this->data['processed_emails'] = $this->model_health_health->count_processed_emails();
 
       list ($this->data['uptime'], $this->data['cpuload']) = $this->model_health_health->uptime();
 
       $this->data['cpuinfo'] = 100 - (int)file_get_contents(CPUSTAT);
-      $this->data['archive_size'] = (int)file_get_contents(ARCHIVE_SIZE);
 
       $this->data['quarantinereportinfo'] = @file_get_contents(DAILY_QUARANTINE_REPORT_STAT);
 
       list($this->data['totalmem'], $this->data['meminfo'], $this->data['totalswap'], $this->data['swapinfo']) = $this->model_health_health->meminfo();
       $this->data['shortdiskinfo'] = $this->model_health_health->diskinfo();
-
-      /*if(file_exists(MAILLOG_PID_FILE)) {
-         $this->data['maillog_status'] = $lang->data['text_running'];
-      } else {
-         $this->data['maillog_status'] = $lang->data['text_not_running'];
-      }*/
 
 
       if(ENABLE_LDAP_IMPORT_FEATURE == 1) {
@@ -86,9 +71,10 @@ class ControllerHealthWorker extends Controller {
       }
 
 
-      $this->data['counters'] = $this->model_stat_counter->getCounters();
+      list($this->data['archive_size'], $this->data['counters']) = $this->model_stat_counter->getCounters();
+
       $this->data['prefix'] = '';
-      if(isset($this->data['counters']['_c:rcvd'])) { $this->data['prefix'] = '_c:'; }
+      if(isset($this->data['counters'][MEMCACHED_PREFIX . 'rcvd'])) { $this->data['prefix'] = MEMCACHED_PREFIX; }
 
       $this->data['sysinfo'] = $this->model_health_health->sysinfo();
 

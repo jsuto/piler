@@ -297,7 +297,7 @@ class ModelUserUser extends Model {
 
          if(MEMCACHED_ENABLED) {
             $memcache = Registry::get('memcache');
-            $memcache->delete("_c:" . $email);
+            $memcache->delete(MEMCACHED_PREFIX . $email);
          }
 
          if($query->row['count'] > 0) {
@@ -394,7 +394,7 @@ class ModelUserUser extends Model {
 
          if(MEMCACHED_ENABLED) {
             $memcache = Registry::get('memcache');
-            $memcache->delete("_c:" . $email);
+            $memcache->delete(MEMCACHED_PREFIX . $email);
          }
 
       }
