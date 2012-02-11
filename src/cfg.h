@@ -57,11 +57,6 @@ struct __config {
    char mysqldb[MAXVAL];
    int mysql_connect_timeout;
 
-   // sqlite3 stuff
-
-   char sqlite3[MAXVAL];
-   char sqlite3_pragma[MAXVAL];
-
    int update_counters_to_memcached;
    int memcached_to_db_interval;
 

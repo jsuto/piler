@@ -25,5 +25,5 @@ piler's crontab:
 sphinx's cronjob:
 
 */5 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
-*/5 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
+*/15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 

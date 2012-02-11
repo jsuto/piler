@@ -27,6 +27,7 @@ AC_SUBST(mysql_libs)
 AC_SUBST(mysql_obj)
 AC_SUBST(libclamav_extra_libs)
 AC_SUBST(id_bin)
+AC_SUBST(iv)
 
 have_libclamav="no"
 have_libtool="no"
@@ -50,7 +51,7 @@ os=`uname -s`
 id_bin="id"
 
 dnl SUBDIRS="src etc util perl init.d templates history contrib/stat"
-SUBDIRS="src"
+SUBDIRS="src etc util"
 
 
 dnl static build
@@ -267,12 +268,14 @@ fi
 
 echo "piler data directory: $data_dir/piler"
 
+iv=`util/gen-iv.pl`
+
 echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o $objs"
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile])
 AC_OUTPUT
 

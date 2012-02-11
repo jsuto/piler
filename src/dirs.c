@@ -35,13 +35,6 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
    }
    createdir(cfg->queuedir, uid, gid, 0700);
 
-   p = strrchr(cfg->sqlite3, '/');
-   if(p){
-      *p = '\0';
-      createdir(cfg->sqlite3, uid, gid, 0755);
-      *p = '/';
-   }
-
    p = strrchr(cfg->pidfile, '/');
    if(p){
       *p = '\0';

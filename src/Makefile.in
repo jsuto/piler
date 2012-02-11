@@ -68,30 +68,18 @@ test: test.c libpiler.a
 
 
 install-piler:
-	$(INSTALL) -d $(DESTDIR)$(bindir)
-	$(INSTALL) -d $(DESTDIR)$(sbindir)
-	$(INSTALL) -d $(DESTDIR)$(libdir)
 	$(INSTALL) -m 0644 libpiler.a $(DESTDIR)$(libdir)
 	$(INSTALL) -m 0755 libpiler.so.$(LIBPILER_VERSION) $(DESTDIR)$(libdir)
 	(cd $(DESTDIR)$(libdir) && ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so)
 	(cd $(DESTDIR)$(libdir) && ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION))
 
-	$(INSTALL) -d $(DESTDIR)$(libexecdir)/piler
-
-	$(INSTALL) -d $(DESTDIR)$(datarootdir)/piler
-
 	$(INSTALL) -m 0755 piler $(DESTDIR)$(sbindir)
 	$(INSTALL) -m 0755 pilerconf $(DESTDIR)$(sbindir)
-	$(INSTALL) -m 0755 pilerget $(DESTDIR)$(bindir)
-	$(INSTALL) -m 0755 pilerimport $(DESTDIR)$(bindir)
-
-	chown $(RUNNING_USER):$(RUNNING_GROUP) $(DESTDIR)$(bindir)/pilerget
-	chown $(RUNNING_USER):$(RUNNING_GROUP) $(DESTDIR)$(bindir)/pilerimport
-	chmod +s $(DESTDIR)$(bindir)/pilerget
-	chmod +s $(DESTDIR)$(bindir)/pilerimport
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerget $(DESTDIR)$(bindir)
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerimport $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilertest
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilertest
 
 distclean: clean
 	rm -f Makefile

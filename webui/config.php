@@ -75,7 +75,7 @@ define('DB_DRIVER', 'mysql');
 define('DB_PREFIX', '');
 define('DB_HOSTNAME', 'localhost');
 define('DB_USERNAME', 'piler');
-define('DB_PASSWORD', 'q57tPYem');
+define('DB_PASSWORD', 'piler');
 define('DB_DATABASE', 'piler');
 
 define('TABLE_USER', 'user');

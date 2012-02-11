@@ -25,15 +25,12 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 INSTALL = @INSTALL@
 
 all:
-	sed -e 's%pidfile=.*%pidfile=$(localstatedir)/run/piler/piler.pid%g' \
-	-e 's%iv=.*%iv=@iv@%g' \
-	-e 's%workdir=.*%workdir=$(localstatedir)/piler/tmp%g' < $(srcdir)/example.conf > $(srcdir)/piler.conf
 
 install:
-	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf; fi
+	$(INSTALL) -m 0755 $(srcdir)/ldap_sync.php $(DESTDIR)$(libexecdir)/piler
 
 clean:
-	rm -f piler.conf cron.jobs
+
 
 distclean: clean
 	rm -f Makefile

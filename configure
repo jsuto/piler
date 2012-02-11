@@ -604,6 +604,7 @@ LIBOBJS
 DATADIR
 CFGDIR
 MYSQL_CONFIG
+iv
 id_bin
 libclamav_extra_libs
 mysql_obj
@@ -3400,6 +3401,7 @@ done
 
 
 
+
 have_libclamav="no"
 have_libtool="no"
 have_clamd="no"
@@ -3421,7 +3423,7 @@ os=`uname -s`
 
 id_bin="id"
 
-SUBDIRS="src"
+SUBDIRS="src etc util"
 
 
 
@@ -4143,13 +4145,15 @@ fi
 
 echo "piler data directory: $data_dir/piler"
 
+iv=`util/gen-iv.pl`
+
 echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4857,6 +4861,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
+    "util/Makefile") CONFIG_FILES="$CONFIG_FILES util/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
