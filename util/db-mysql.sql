@@ -105,29 +105,16 @@ create table if not exists `tag` (
 drop table if exists `archiving_rule`;
 create table if not exists `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
-   `from` char(128) default null,
-   `to` char(255) default null,
-   `subject` char(255) default null,
+   `from` char(128) character set 'latin1' default null,
+   `to` char(255) character set 'latin1' default null,
+   `subject` char(255) character set 'latin1' default null,
    `_size` char(2) default null,
    `size` int default 0,
-   `attachment_type` char(128) default null,
+   `attachment_type` char(128) character set 'latin1' default null,
    `_attachment_size` char(2) default null,
    `attachment_size` int default 0,
    primary key (`id`),
    unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`) 
-) ENGINE=InnoDB;
-
-
-drop table if exists `retention_rule`;
-create table if not exists `retention_rule` (
-   `id` bigint unsigned not null auto_increment,
-
-   `subject` char(255) default null,
-
-   `days` int not null,
-
-   primary key (`id`)
-
 ) ENGINE=InnoDB;
 
 
@@ -136,7 +123,7 @@ create table if not exists `counter` (
    `rcvd` bigint unsigned default 0,
    `virus` bigint unsigned default 0,
    `duplicate` bigint unsigned default 0,
-   `ignore` bigint unsigned default 0
+   `ignore` bigint unsigned default 0,
    `size` bigint unsigned default 0
 ) Engine=InnoDB;
 
