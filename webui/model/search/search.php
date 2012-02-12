@@ -162,7 +162,7 @@ class ModelSearchSearch extends Model {
 
       if($data['body']) { if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") "; }
       if($data['subject']) { if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") "; }
-      if($data['attachment_type']) { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
+      if($data['attachment_type'] && $data['attachment_type'] != "any") { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
 
       return $match;
    }
@@ -249,7 +249,7 @@ class ModelSearchSearch extends Model {
       $ids = array();
       $direction = $size = '';
       $tag_id_list = '';
-
+      $a = "";
 
       if($data['sort'] == 'from' || $data['sort'] == 'subj') { $sortorder = ''; }
 
@@ -264,6 +264,7 @@ class ModelSearchSearch extends Model {
          if(preg_match("/^(\>|\<)\={0,}\d{1,}$/", $data['size'])) { $size = "size " . $data['size'] . " AND "; }
       }
 
+      if(isset($data['attachment_type']) && $data['attachment_type'] == 'any') { $a = "attachments > 0 AND "; }
 
       if($data['tag']) {
          $data['tag'] = $this->fixup_sphinx_operators($data['tag']);
@@ -277,7 +278,7 @@ class ModelSearchSearch extends Model {
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . substr($tag_id_list, 1, strlen($tag_id_list)) . ") $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $date $direction $size MATCH('$conditions') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $direction $size MATCH('$conditions') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
 
 //print $query->query; print "<p>" . $query->exec_time . "</p>\n";

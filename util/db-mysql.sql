@@ -154,17 +154,15 @@ create index `user_settings_idx` on `user_settings`(`username`);
 drop table if exists `user`;
 create table if not exists `user` (
    `uid` int unsigned not null primary key,
-   `gid` int unsigned not null,
    `username` char(64) not null unique,
    `realname` char(64) default null,
    `password` char(48) default null,
    `domain` char(64) default null,
    `dn` char(255) default '*',
-   `policy_group` int(4) default 0,
    `isadmin` tinyint default 0
 ) Engine=InnoDB;
 
-insert into `user` (`uid`, `gid`, `username`, `realname`, `password`, `policy_group`, `isadmin`, `domain`) values (0, 0, 'admin', 'built-in piler admin', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 0, 1, 'local');
+insert into `user` (`uid`, `username`, `realname`, `password`, `isadmin`, `domain`) values (0, 'admin', 'built-in piler admin', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 1, 'local');
 
 drop table if exists `email`;
 create table if not exists `email` (

@@ -265,11 +265,11 @@ function format_qshape($desc = '', $filename = '') {
 }
 
 
-function nice_size($size = 0) {
+function nice_size($size = 0, $space = '') {
    if($size < 1000) return "1k";
-   if($size < 100000) return round($size/1000) . "k";
+   if($size < 100000) return round($size/1000) . $space . "k";
 
-   return sprintf("%.1f", $size/1000000) . "M";
+   return sprintf("%.1f", $size/1000000) . $space . "M";
 }
 
 

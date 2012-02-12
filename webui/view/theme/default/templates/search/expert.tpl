@@ -20,12 +20,6 @@
          </div>
       </div>
 
-      <div id="ss1" style="border: 0px solid blue;">
-         <div class="row">
-            <div class="fcell">eg. from: enron.com, subject: lunch, body: invite, date1: 2001-01-01, date2: 2001-12-31</div>
-         </div>
-      </div>
-
       <div class="row">
          <div class="cell1s">&nbsp;</div>
          <div class="cell2">
