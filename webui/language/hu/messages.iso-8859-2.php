@@ -74,6 +74,7 @@ $_['text_email_aliases'] = "Email álcímek";
 $_['text_email_in_unknown_domain'] = "Az email cím ismeretlen domainben van";
 $_['text_empty_search_criteria'] = "'Üres feltétel'";
 $_['text_empty_search_result'] = "Nincs találat a keresésre";
+$_['text_enter_search_terms'] = "Írja be a keresési feltételeket";
 $_['text_error'] = "Hiba";
 $_['text_exact_domain_name_or_email_address'] = "pontos domainnév vagy email cím";
 $_['text_exclude'] = "Kihagy";
