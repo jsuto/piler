@@ -1,0 +1,50 @@
+#!/bin/sh
+##
+##
+
+NAME=piler
+PID_FILE=`SBINDIR/pilerconf -q pidfile | cut -f2 -d=`
+PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
+
+start() {
+	echo "starting piler . . ."
+	SBINDIR/piler -d
+}
+
+stop() {
+	echo "stopping piler"
+	killall ${NAME}
+}
+
+check_status(){
+        test -f /proc/${PID_NUMBER}/status
+}
+
+case "$1" in
+	start)
+		start;
+   	;;
+
+	stop)
+		stop;
+   	;;
+
+        status)
+                if check_status;
+                 then
+                echo "${NAME} is running."
+                 else
+                echo "${NAME} is not running."
+                fi
+        ;;
+
+	restart)
+		stop;
+		sleep 1;
+		start;
+   	;;
+
+	*)
+		echo "Usage: $0 start|stop|restart|status"
+esac
+

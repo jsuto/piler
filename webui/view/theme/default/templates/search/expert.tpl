@@ -2,7 +2,7 @@
 <div id="search">
    <div id="search1">
 
-      <div id="ss1" style="border: 0px solid red;">
+      <div id="ss1">
 
          <input type="hidden" name="searchtype" id="searchtype" value="expert" />
 
@@ -13,9 +13,9 @@
       </div>
 
 
-      <div id="ss1" style="border: 0px solid blue;">
+      <div id="ss1">
          <div class="row">
-            <div class="cell1s"><?php print $text_search_terms; ?>: </div>
+            <div class="cell1s" style="width: 75px;"><?php print $text_search; ?>: </div>
             <div class="cell2"><input type="text" id="_search" name="_search" class="advtext" style="width: 100%;" value="<?php if(isset($_search)) { print $_search; } ?>" /></div>
          </div>
       </div>

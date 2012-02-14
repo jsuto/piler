@@ -101,7 +101,7 @@
    </div>
 
    <div id="search2">
-      <div id="A1"></div>
+      <div id="A1"><a href="expert.php"><?php print $text_expert_search; ?></a></div>
    </div>
 
 </div>

@@ -132,7 +132,7 @@
 
 	input[type=button].secondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 24%;}
 	input[type=button].advsecondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 15%;}
-	input[type=button].load { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; width: 16%;}
+	input[type=button].load { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; width: 17%;}
 
 	input[type=button].short { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 50px;}
 	input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
@@ -152,14 +152,18 @@
          * dropdown menu
          */
 
+	.mcell { display: table-cell; font: normal 12px Arial, sans-serif; vertical-align: top; }
+
 	ul.dropdown                         { position: relative; }
 	ul.dropdown li                      { font-weight: bold; float: left; background: #ffffff; text-align: center; padding-right: 40px; padding-left: 40px; border: 0px solid red; }
-	ul.dropdown li.first_li             { font-weight: bold; float: left; background: #ffffff; text-align: left; padding-left:80px; }
-	ul.dropdown li.center_li             { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; width: 190px; }
-	ul.dropdown li.last_li              { font-weight: bold; float: left; background: #ffffff; text-align: right; padding-right: 0; margin-left: 10px; }
+	ul.dropdown li.first_li             { font-weight: bold; float: left; background: #ffffff; text-align: left; padding-left:80px; padding-right: 5px; }
+	ul.dropdown li.search_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 5px; }
+	ul.dropdown li.no_search_li         { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 5px; }
+	ul.dropdown li.center_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; width: 190px; }
+	ul.dropdown li.last_li              { font-weight: bold; float: left; background: #ffffff; text-align: right; padding: 0; }
 
 	ul.dropdown li.admin                { font-weight: bold; float: left; background: #ffffff; padding-right: 5px; padding-left: 2px; }
-	ul.dropdown li.first_li_admin       { background: #ffffff; text-align: left; margin-left: 80px; padding-left: 0px; padding-right: 5px; }
+	ul.dropdown li.first_li_admin       { background: #ffffff; text-align: left; margin-left: 90px; padding-left: 0px; padding-right: 5px; }
 	ul.dropdown li.last_li_admin        { background: #ffffff; text-align: right; padding: 0; }
 
 	ul.dropdown li.logout               { font-weight: bold; float: right; background: #ffffff; width: 100px; text-align: right; }
@@ -169,6 +173,7 @@
 	ul.dropdown li a                    { padding: 0; color: #222; border-bottom: none; }
 	ul.dropdown li.hover,
 	ul.dropdown li:hover                { background: #F3D673; color: black; position: relative; }
+	ul.dropdown li.no_search_li:hover   { background: #ffffff; color: black; position: relative; }
 	ul.dropdown li.hover a              { color: black; }
 
 	ul.dropdown ul                      { width: 150px; text-align: left; visibility: hidden; position: absolute; top: 100%; left: 0; }

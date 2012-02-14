@@ -1,7 +1,7 @@
 
 <?php if(!isset($_SESSION['username'])){ ?>
-<form name="login" action="index.php?route=login/login" method="post">
-   <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { print $_SERVER['QUERY_STRING']; } ?>" />
+<form name="login" action="login.php" method="post">
+   <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
 
    <div id="search">

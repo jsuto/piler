@@ -14,17 +14,21 @@ class ControllerSearchSearch extends Controller {
 
       $this->load->model('search/search');
 
+      $this->document->title = $this->data['text_simple_search'];
+
       $this->data['searchtype'] = 'simple';
 
       if(isset($this->request->get['type'])) {
          if($this->request->get['type'] == 'advanced') {
             $this->template = "search/advanced.tpl";
             $this->data['searchtype'] = 'advanced';
+            $this->document->title = $this->data['text_advanced_search'];
          }
 
          if($this->request->get['type'] == 'expert') {
             $this->template = "search/expert.tpl";
             $this->data['searchtype'] = 'expert';
+            $this->document->title = $this->data['text_expert_search'];
          }
 
       }

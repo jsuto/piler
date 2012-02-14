@@ -29,13 +29,13 @@ class ControllerLoginLogin extends Controller {
 
             LOGGER('logged in');
 
-            /*if(isset($_POST['relocation']) && $_POST['relocation']) {
-               header("Location: " . SITE_URL . "index.php?" . $_POST['relocation']);
+            if(isset($_POST['relocation']) && $_POST['relocation']) {
+               header("Location: " . SITE_URL . $_POST['relocation']);
             } else {
                header("Location: " . SITE_URL . "search.php");
-            }*/
+            }
 
-            header("Location: " . SITE_URL . "search.php");
+            //header("Location: " . SITE_URL . "search.php");
 
             exit;
          }

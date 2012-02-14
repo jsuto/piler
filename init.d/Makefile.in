@@ -1,0 +1,35 @@
+SHELL = @SHELL@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+includedir = @includedir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+mandir = @mandir@
+datarootdir = @datarootdir@
+localstatedir = @localstatedir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@ @CPPFLAGS@
+DEFS = @defs@
+INCDIR = -I. -I../.. -I../../src @INCDIR@ @sql_includes@
+LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../../src
+LIBS = @LIBS@ @sql_libs@
+
+INSTALL = @INSTALL@
+
+all:
+	sed -e "s%SBINDIR%$(sbindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.piler.in > $(srcdir)/rc.piler
+
+
+install:
+
+clean:
+	rm -f rc.piler
+
+distclean: clean
+	rm -f Makefile
