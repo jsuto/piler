@@ -24,12 +24,13 @@ INSTALL = @INSTALL@
 
 all:
 	sed -e "s%SBINDIR%$(sbindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.piler.in > $(srcdir)/rc.piler
+	sed -e "s%BINDIR%$(bindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.searchd.in > $(srcdir)/rc.searchd
 
 
 install:
 
 clean:
-	rm -f rc.piler
+	rm -f rc.piler rc.searchd
 
 distclean: clean
 	rm -f Makefile

@@ -13,7 +13,7 @@ Features:
 - digital fingerprinting and verification
 
 - full text search
-- simple and advanced search
+- simple, advanced and expert search
 - save search criteria
 - tagging emails
 - view, export, restore emails
@@ -33,25 +33,4 @@ Features:
 - online status info
 
 - recognised formats: PST, EML, Maildir, mailbox
-
-
-
-
-
-
-locales under debian: dpkg-reconfigure locales
-
-
-init:
-   indexer --all
-   searchd inditasa
-
-
-indexer delta1 --rotate
-indexer --merge main1 delta1 --rotate --merge-dst-range deleted 0 0
-
-
-
-Enron dataset: http://www.cs.cmu.edu/~enron/
-
 
