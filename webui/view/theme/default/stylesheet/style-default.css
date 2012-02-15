@@ -64,6 +64,7 @@
 	.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
 	.ruletext { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 365px; }
 	.advtext { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
+	.advtextgrey { font: bold 12px Arial, sans-serif; color: #999; font-weight: bold; text-align:left; width: 280px; }
 	.textregular { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; }
 
 	.row { display: table-row; }

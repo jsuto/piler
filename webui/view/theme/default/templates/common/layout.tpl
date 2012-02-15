@@ -17,6 +17,10 @@
    <script type="text/javascript" src="/view/javascript/jquery-ui-1.8.13.custom.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery.dropdownPlain.js"></script>
 
+   <script type="text/javascript">
+      var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
+   </script>
+
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 
 </head>

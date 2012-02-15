@@ -12,11 +12,10 @@
 
       </div>
 
-
       <div id="ss1">
          <div class="row">
             <div class="cell1s" style="width: 75px;"><?php print $text_search; ?>: </div>
-            <div class="cell2"><input type="text" id="_search" name="_search" class="advtext" style="width: 100%;" value="<?php if(isset($_search)) { print $_search; } ?>" /></div>
+            <div class="cell2"><input type="text" id="_search" name="_search" class="advtext<?php if(!isset($_search)) { ?>grey<?php } ?>" style="width: 100%;" value="<?php if(isset($_search)) { print $_search; } else { print $text_enter_search_terms; ?>" onclick="if(expsrc==0){this.value=''; this.className = 'advtext'; expsrc++;}<?php } ?>" /></div>
          </div>
       </div>
 

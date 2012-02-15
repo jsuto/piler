@@ -103,7 +103,8 @@ class ControllerSearchHelper extends Controller {
       $this->a['from_domain'] = substr($this->a['from_domain'], 1, strlen($this->a['from_domain']));
       $this->a['to_domain'] = substr($this->a['to_domain'], 1, strlen($this->a['to_domain']));
 
-      $this->a['ref'] = $this->request->post['ref'];
+      if(isset($this->request->post['ref'])) { $this->a['ref'] = $this->request->post['ref']; }
+
       $this->a['sort'] = $this->request->post['sort'];
       $this->a['order'] = $this->request->post['order'];
    }
@@ -111,6 +112,8 @@ class ControllerSearchHelper extends Controller {
 
    private function preprocess_post_expert_request($data = array()) {
       $token = '';
+
+      if(!isset($data['search'])) { return; }
 
       $s = preg_replace("/:/", ": ", $data['search']);
       $s = preg_replace("/,/", " ", $s);

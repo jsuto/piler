@@ -17,6 +17,7 @@
 
 <script type="text/javascript">
    var health_worker_url = "<?php print HEALTH_WORKER_URL; ?>";
+   var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
 </script>
 
 </head>

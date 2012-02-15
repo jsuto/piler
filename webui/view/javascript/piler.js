@@ -1,6 +1,8 @@
 
 var attachment_types = ["word", "excel", "powerpoint", "pdf", "compressed", "text", "odf", "vcard", "image", "audio", "video", "flash", "other"];
 var count = 0;
+var expsrc = 0;
+
 
 function getXMLHttp() {
    var XMLHttp = null;
