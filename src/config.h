@@ -78,6 +78,7 @@
 #define SQL_ATTACHMENT_TABLE "attachment"
 #define SQL_RECIPIENT_TABLE "rcpt"
 #define SQL_ARCHIVING_RULE_TABLE "archiving_rule"
+#define SQL_RETENTION_RULE_TABLE "retention_rule"
 #define SQL_COUNTER_TABLE "counter"
 #define SQL_MESSAGES_VIEW "messages"
 

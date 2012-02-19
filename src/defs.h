@@ -93,13 +93,17 @@ struct rule {
    regex_t subject;
    regex_t attachment_type;
 #endif
+   int spam;
    int size;
    char _size[4];
    int attachment_size;
    char _attachment_size[4];
 
+   int days;
+
    char *rulestr;
    char compiled;
+
    struct rule *r;
 };
 
@@ -165,7 +169,7 @@ struct session_data {
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
    char bodydigest[2*DIGEST_LENGTH+1];
    char digest[2*DIGEST_LENGTH+1];
-   time_t now, sent;
+   time_t now, sent, retained;
 #ifdef NEED_MYSQL
    MYSQL mysql;
 #endif
@@ -217,7 +221,8 @@ struct memcached_server {
 
 struct __data {
 #ifdef HAVE_TRE
-   struct rule *rules;
+   struct rule *archiving_rules;
+   struct rule *retention_rules;
 #endif
 
 #ifdef HAVE_MEMCACHED

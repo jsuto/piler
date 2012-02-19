@@ -11,10 +11,11 @@
                <div class="mcell" style="width: 350px; border: 0px solid red;">
 
                   <ul class="dropdown">
-            <li class="search_li" style="padding: 0;"><a href="search.php"<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> id="active"<?php } ?>><?php print $text_simple_search; ?></a> | </li>
-            <li class="search_li" style="padding: 0; padding-left: 2px;"><a href="advanced.php"<?php if(strstr($_SERVER['REQUEST_URI'], "advanced.php")){ ?> id="active"<?php } ?>><?php print $text_advanced_search; ?></a> | </li>
+            <li class="search_li" style=""><a href="search.php"<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> id="active"<?php } ?>><?php print $text_simple; ?></a> / </li>
+            <li class="search_li" style=""><a href="advanced.php"<?php if(strstr($_SERVER['REQUEST_URI'], "advanced.php")){ ?> id="active"<?php } ?>><?php print $text_advanced; ?></a></li>
+            <li class="no_search_li" style=""><?php print $text_search2; ?> | </li>
 
-            <li class="search_li" style="padding:0; padding-left: 2px;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "stat/") || strstr($_SERVER['QUERY_STRING'], "health/") || strstr($_SERVER['QUERY_STRING'], "audit/") ) { ?> id="active"<?php } ?>><?php print $text_monitor; ?></a> |
+            <li class="search_li" style=""><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "stat/") || strstr($_SERVER['QUERY_STRING'], "health/") || strstr($_SERVER['QUERY_STRING'], "audit/") ) { ?> id="active"<?php } ?>><?php print $text_monitor; ?></a> |
                <ul class="sub_menu">
                   <li><a href="index.php?route=stat/stat&timespan=daily"><?php print $text_statistics; ?></a></li>
                   <li><a href="index.php?route=health/health"><?php print $text_health; ?></a></li>
@@ -22,7 +23,7 @@
                </ul>
             </li>
 
-            <li class="search_li" style="padding:0; padding-left: 2px;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>><?php print $text_administration; ?></a>
+            <li class="search_li" style=""><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>><?php print $text_administration; ?></a>
                <ul class="sub_menu">
                   <li><a href="index.php?route=user/list"><?php print $text_user_management; ?></a></li>
                   <li><a href="index.php?route=domain/domain"><?php print $text_domain; ?></a></li>

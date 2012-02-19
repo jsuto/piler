@@ -47,6 +47,8 @@ struct __config {
 
    char spam_header_line[MAXVAL];
 
+   int default_retention_days;
+
    // mysql stuff
 
    char mysqlhost[MAXVAL];

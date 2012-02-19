@@ -50,7 +50,11 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
    if(sdata->sent == -1) sdata->sent = 0;
 
-   rule = check_againt_ruleset(data->rules, &state, st.st_size);
+   /* fat chances that you won't import emails before 1990.01.01 */
+
+   if(sdata->sent > 631148400) sdata->retained = sdata->sent;
+
+   rule = check_againt_ruleset(data->archiving_rules, &state, st.st_size, sdata->spam_message);
 
    if(rule){
       printf("discarding %s by archiving policy: %s\n", filename, rule);
@@ -230,9 +234,11 @@ int main(int argc, char **argv){
 
    setlocale(LC_CTYPE, cfg.locale);
 
-   data.rules = NULL;
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
 
-   load_archiving_rules(&sdata, &(data.rules));
+   load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
 
 
@@ -242,7 +248,8 @@ int main(int argc, char **argv){
 
 
 
-   free_rule(data.rules);
+   free_rule(data.archiving_rules);
+   free_rule(data.retention_rules);
 
    mysql_close(&(sdata.mysql));
 

@@ -238,7 +238,8 @@ void clean_exit(){
 
    kill_children(SIGTERM);
 
-   free_rule(data.rules);
+   free_rule(data.archiving_rules);
+   free_rule(data.retention_rules);
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
@@ -282,8 +283,11 @@ void initialise_configuration(){
    setlocale(LC_CTYPE, cfg.locale);
 
 
-   free_rule(data.rules);
-   data.rules = NULL;
+   free_rule(data.archiving_rules);
+   free_rule(data.retention_rules);
+
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
 
    mysql_init(&(sdata.mysql));
    mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
@@ -292,7 +296,8 @@ void initialise_configuration(){
       return;
    }
 
-   load_archiving_rules(&sdata, &(data.rules));
+   load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
    mysql_close(&(sdata.mysql));
 
@@ -334,7 +339,8 @@ int main(int argc, char **argv){
 
    (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
-   data.rules = NULL;
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
 
 
    initialise_configuration();

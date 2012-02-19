@@ -228,14 +228,15 @@ int main(int argc, char **argv){
             {"to",           required_argument,  0,  'r' },
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
+            {"id",           required_argument,  0,  'i' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:s:S:f:r:a:b:Adhv?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:s:S:f:r:a:b:i:Adhv?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:s:S:f:r:a:b:Adhv?");
+      c = getopt(argc, argv, "c:s:S:f:r:a:b:i:Adhv?");
 #endif
 
       if(c == -1) break;

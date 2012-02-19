@@ -10,18 +10,18 @@
 #include "rules.h"
 
 
-void load_archiving_rules(struct session_data *sdata, struct rule **rules){
+void load_rules(struct session_data *sdata, struct rule **rules, char *table){
    char s[SMALLBUFSIZE];
    MYSQL_RES *res;
    MYSQL_ROW row;
 
-   snprintf(s, sizeof(s)-1, "SELECT `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size` FROM `%s`", SQL_ARCHIVING_RULE_TABLE);
+   snprintf(s, sizeof(s)-1, "SELECT `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
 
    if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
       res = mysql_store_result(&(sdata->mysql));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
-            append_rule(rules, (char*)row[0], (char*)row[1], (char*)row[2], (char*)row[3], atoi(row[4]), (char*)row[5], (char*)row[6], atoi(row[7]));
+            append_rule(rules, (char*)row[0], (char*)row[1], (char*)row[2], (char*)row[3], atoi(row[4]), (char*)row[5], (char*)row[6], atoi(row[7]), atoi(row[8]), atoi(row[9]));
          }
 
          mysql_free_result(res);
@@ -32,7 +32,7 @@ void load_archiving_rules(struct session_data *sdata, struct rule **rules){
 }
 
 
-int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size){
+int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
    struct rule *q, *t, *u=NULL;
 
    q = *rule;
@@ -42,7 +42,7 @@ int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_
       q = q->r;
    }
 
-   t = create_rule_item(from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size);
+   t = create_rule_item(from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
    if(t){
       if(*rule == NULL)
          *rule = t;
@@ -56,7 +56,7 @@ int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_
 }
 
 
-struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size){
+struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -76,6 +76,9 @@ struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, 
    if(!subject) subject = &empty;
    if(regcomp(&(h->subject), subject, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
+   h->spam = spam;
+   h->days = days;
+
    h->size = size;
 
    if(!_size) _size = &empty;
@@ -91,12 +94,12 @@ struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, 
    if(!_attachment_size) _attachment_size = &empty;
    snprintf(h->_attachment_size, 3, "%s", _attachment_size);
 
-   len = strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 15 + 15;
+   len = strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 8 + 15 + 15;
    h->rulestr = malloc(len);
 
 
 
-   if(h->rulestr) snprintf(h->rulestr, len-1, "from=%s,to=%s,subject=%s,size%s%d,att.type=%s,att.size%s%d", from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size);
+   if(h->rulestr) snprintf(h->rulestr, len-1, "from=%s,to=%s,subject=%s,size%s%d,att.type=%s,att.size%s%d,spam=%d", from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam);
    else h->compiled = 0;
 
    h->r = NULL;
@@ -105,7 +108,7 @@ struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, 
 }
 
 
-char *check_againt_ruleset(struct rule *rule, struct _state *state, int size){
+char *check_againt_ruleset(struct rule *rule, struct _state *state, int size, int spam){
    size_t nmatch=0;
    struct rule *p;
 
@@ -119,7 +122,8 @@ char *check_againt_ruleset(struct rule *rule, struct _state *state, int size){
          regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
          regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
          check_size_rule(size, p->size, p->_size) == 1 &&
-         check_attachment_rule(state, p) == 1
+         check_attachment_rule(state, p) == 1 &&
+         check_spam_rule(spam, p->spam) == 1
       ){
          return p->rulestr;
       }
@@ -131,6 +135,33 @@ char *check_againt_ruleset(struct rule *rule, struct _state *state, int size){
 }
 
 
+unsigned long query_retain_period(struct rule *rule, struct _state *state, int size, int spam, struct __config *cfg){
+   size_t nmatch=0;
+   struct rule *p;
+
+   p = rule;
+
+   while(p != NULL){
+
+      if(
+         p->compiled == 1 &&
+         regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
+         regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
+         regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
+         check_size_rule(size, p->size, p->_size) == 1 &&
+         check_attachment_rule(state, p) == 1 &&
+         check_spam_rule(spam, p->spam) == 1
+      ){
+         return p->days * 86400;
+      }
+
+      p = p->r;
+   }
+
+   return cfg->default_retention_days * 86400;
+}
+
+
 int check_size_rule(int message_size, int size, char *_size){
    if(size <= 0) return 1;
 
@@ -139,6 +170,13 @@ int check_size_rule(int message_size, int size, char *_size){
    if(strcmp(_size, "=") == 0 && message_size == size) return 1;
    if( (strcmp(_size, "<>") == 0 || strcmp(_size, "!=") == 0) && message_size != size) return 1;
 
+   return 0;
+}
+
+
+int check_spam_rule(int is_spam, int spam){
+   if(spam == -1) return 1;
+   if(is_spam == spam) return 1;
    return 0;
 }
 

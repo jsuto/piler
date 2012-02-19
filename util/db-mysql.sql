@@ -38,6 +38,7 @@ create table if not exists `metadata` (
   `spam` tinyint(1) default 0,
   `arrived` int not null,
   `sent` int not null,
+  `retained` int not null,
   `deleted` tinyint(1) default 0,
   `size` int default 0,
   `hlen` int default 0,
@@ -58,6 +59,7 @@ create index metadata_idx3 on metadata(`reference`);
 create index metadata_idx4 on metadata(`bodydigest`); 
 create index metadata_idx5 on metadata(`deleted`); 
 create index metadata_idx6 on metadata(`arrived`); 
+create index metadata_idx7 on metadata(`retained`); 
 
 
 drop table if exists `rcpt`;
@@ -113,8 +115,28 @@ create table if not exists `archiving_rule` (
    `attachment_type` char(128) character set 'latin1' default null,
    `_attachment_size` char(2) default null,
    `attachment_size` int default 0,
+   `spam` tinyint(1) default -1,
+   `days` int default 0,
    primary key (`id`),
-   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`) 
+   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`) 
+) ENGINE=InnoDB;
+
+
+drop table if exists `retention_rule`;
+create table if not exists `retention_rule` (
+   `id` bigint unsigned not null auto_increment,
+   `from` char(128) character set 'latin1' default null,
+   `to` char(255) character set 'latin1' default null,
+   `subject` char(255) character set 'latin1' default null,
+   `_size` char(2) default null,
+   `size` int default 0,
+   `attachment_type` char(128) character set 'latin1' default null,
+   `_attachment_size` char(2) default null,
+   `attachment_size` int default 0,
+   `spam` tinyint(1) default -1,
+   `days` int default 0,
+   primary key (`id`),
+   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`)
 ) ENGINE=InnoDB;
 
 

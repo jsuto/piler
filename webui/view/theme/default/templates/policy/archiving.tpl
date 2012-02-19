@@ -43,6 +43,18 @@
             <input type="text" class="ruletext" name="attachment_size" />
          </div>
       </div>
+      <div class="row">
+         <div class="domaincell"><?php print $text_spam; ?>:</div>
+         <div class="domaincell">
+            <select class="ruleselect" name="spam">
+               <option value="-1">-</option>
+               <option value="0"><?php print $text_not_spam; ?></option>
+               <option value="1"><?php print $text_spam2; ?></option>
+            </select>
+            <input type="text" class="ruletext" name="attachment_size" />
+         </div>
+      </div>
+
 
       <div class="row">
          <div class="domaincell">&nbsp;</div>
@@ -58,11 +70,12 @@
 
 <?php if(isset($rules)){ ?>
 
-   <div id="ss1" style="margin-top: 10px; width: 600px; border: 1px solid red;">
+   <div id="ss1" style="margin-top: 10px; border: 1px solid red;">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_from; ?></div>
          <div class="domaincell"><?php print $text_to; ?></div>
          <div class="domaincell"><?php print $text_subject; ?></div>
+         <div class="domaincell"><?php print $text_spam; ?></div>
          <div class="domaincell"><?php print $text_size; ?></div>
          <div class="domaincell"><?php print $text_attachment_type; ?></div>
          <div class="domaincell"><?php print $text_attachment_size; ?></div>
@@ -74,6 +87,7 @@
          <div class="domaincell"><?php print $rule['from']; ?></div>
          <div class="domaincell"><?php print $rule['to']; ?></div>
          <div class="domaincell"><?php print $rule['subject']; ?></div>
+         <div class="domaincell"><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></div>
          <div class="domaincell"><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></div>
          <div class="domaincell"><?php print $rule['attachment_type']; ?></div>
          <div class="domaincell"><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></div>

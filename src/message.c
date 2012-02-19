@@ -278,7 +278,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%d%d%d%d%s%s%s", id, subj, state->b_from, state->message_id, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%ld%d%d%d%d%s%s%s", id, subj, state->b_from, state->message_id, sdata->now, sdata->sent, sdata->retained, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
    digest_string(s, &vcode[0]);
 
@@ -286,7 +286,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
    if(strlen(state->reference) > 10) digest_string(state->reference, &ref[0]);
 
 
-   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%d,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s','%s')", SQL_METADATA_TABLE, sdata->spam_message, sdata->now, sdata->sent, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, ref, sdata->digest, sdata->bodydigest, vcode);
+   snprintf(s, MAXBUFSIZE-1, "INSERT INTO %s (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,%d,%ld,%ld,%ld,%d,%d,%d,%d,'%s',?,'%s','%s','%s','%s')", SQL_METADATA_TABLE, sdata->spam_message, sdata->now, sdata->sent, sdata->retained, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, ref, sdata->digest, sdata->bodydigest, vcode);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: meta sql: *%s*", sdata->ttmpfile, s);
 
@@ -411,6 +411,8 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
       return ERR;
    }
 
+
+   sdata->retained += query_retain_period(data->retention_rules, state, sdata->tot_len, sdata->spam_message, cfg);
 
    rc = store_meta_data(sdata, state, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);

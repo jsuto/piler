@@ -91,6 +91,7 @@ define('TABLE_DOMAIN', 'domain');
 define('TABLE_COUNTER', 'counter');
 define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
+define('TABLE_RETENTION_RULE', 'retention_rule');
 define('VIEW_MESSAGES', 'messages');
 
 define('SPHINX_DRIVER', 'sphinx');

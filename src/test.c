@@ -51,9 +51,11 @@ int main(int argc, char **argv){
    printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
 
-   data.rules = NULL;
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
 
-   load_archiving_rules(&sdata, &(data.rules));
+   load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
    rc = 0;
 
@@ -82,13 +84,18 @@ int main(int argc, char **argv){
 
    printf("hdr len: %d\n", sdata.hdr_len);
 
-   rule = check_againt_ruleset(data.rules, &state, st.st_size);
+   rule = check_againt_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
  
    printf("body digest: %s\n", sdata.bodydigest);
 
    printf("rules check: %s\n", rule);
 
-   free_rule(data.rules);
+   sdata.retained = sdata.now + query_retain_period(data.retention_rules, &state, st.st_size, sdata.spam_message, &cfg);
+
+   printf("retention period: %ld\n", sdata.retained);
+
+   free_rule(data.archiving_rules);
+   free_rule(data.retention_rules);
 
    for(i=1; i<=state.n_attachments; i++){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);

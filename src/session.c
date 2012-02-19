@@ -193,7 +193,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                         /* check message against archiving rules */
 
-                        arule = check_againt_ruleset(data->rules, &sstate, sdata.tot_len);
+                        arule = check_againt_ruleset(data->archiving_rules, &sstate, sdata.tot_len, sdata.spam_message);
 
                         if(arule){
                            syslog(LOG_PRIORITY, "%s: discarding message by archiving policy: *%s*", sdata.ttmpfile, arule);
