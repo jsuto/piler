@@ -415,6 +415,18 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function bulk_add_message_tag($ids = array(), $uid = 0, $tag = '', $q = '') {
+      $arr = array_merge(array($uid), $ids);
+
+      $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id IN ($q)", $arr);
+
+      if($tag) {
+         foreach ($ids as $id) {
+            $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
+         }
+      } 
+   }
+
 }
 
 ?>

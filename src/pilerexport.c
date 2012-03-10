@@ -311,6 +311,8 @@ int main(int argc, char **argv){
 
    regfree(&regexp);
 
+   (void) openlog("pilerexport", LOG_PID, LOG_MAIL);
+
 
    snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE ", SQL_MESSAGES_VIEW);
 

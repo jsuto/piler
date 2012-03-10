@@ -214,6 +214,7 @@ int main(int argc, char **argv){
 
    if(!mailbox && !emlfile && !directory) usage();
 
+   (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    cfg = read_config(configfile);
 

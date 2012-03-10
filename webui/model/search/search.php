@@ -11,6 +11,7 @@ class ModelSearchSearch extends Model {
       $cache_key = "";
       $q = "";
       $s = "";
+      $all_ids_csv = "";
 
       while(list($k,$v) = each($data)) {
          if($v) { $s .= '&' . $k . '=' . $v; }
@@ -61,6 +62,7 @@ class ModelSearchSearch extends Model {
 
 
       $total_hits = count($all_ids);
+      $all_ids_csv = implode(",", $all_ids);
 
       $data['page_len'] = get_page_length();
 
@@ -71,6 +73,7 @@ class ModelSearchSearch extends Model {
 
             if($i >= $data['page_len'] * $page && $i < $data['page_len'] * ($page+1) ) {
                array_push($one_page_of_ids, $id);
+               $all_ids_csv .= ",$id";
 
                if($q) { $q .= ",?"; } else { $q = "?"; }
             }
@@ -80,7 +83,7 @@ class ModelSearchSearch extends Model {
 
       }
 
-      return array($total_hits, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
+      return array($total_hits, $all_ids_csv, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
    }
 
 
@@ -448,6 +451,46 @@ class ModelSearchSearch extends Model {
       if(isset($query->row['id'])) { return 1; }
 
       return 0;
+   }
+
+
+   public function check_your_permission_by_id_list($id = array()) {
+      $q = $q2 = '';
+      $arr = $a = $result = array();
+
+      if($id == '') { return 0; }
+
+      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) { return 1; }
+
+      $arr = $id;
+
+      for($i=0; $i<count($id); $i++) {
+         $q2 .= ",?";
+      }
+
+      $q2 = preg_replace("/^\,/", "", $q2);
+
+
+      while(list($k, $v) = each($_SESSION['emails'])) {
+         if(validemail($v) == 1) {
+            $q .= ",?";
+            array_push($a, $v);
+         }
+      }
+
+      $q = preg_replace("/^\,/", "", $q);
+
+      $arr = array_merge($arr, $a, $a);
+
+      $query = $this->db->query("SELECT distinct id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+
+      if($query->num_rows > 0) {
+         foreach ($query->rows as $q) {
+            array_push($result, $q['id']);
+         }
+      }
+
+      return $result;
    }
 
 

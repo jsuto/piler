@@ -10,7 +10,7 @@
                <div class="mcell" style="width: 315px;">
 
                   <ul class="dropdown">
-                     <li class="search_li"><a href="search.php"<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> id="active"<?php } ?>><?php print $text_simple_search; ?></a></li>
+                     <li class="search_li"><a href="search.php"<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> id="active"<?php } ?>><?php print $text_simple_search; ?></a> |&nbsp;</li>
                      <li class="search_li"><a href="advanced.php"<?php if(strstr($_SERVER['REQUEST_URI'], "advanced.php")){ ?> id="active"<?php } ?>><?php print $text_advanced_search; ?></a></li>
                   </ul>
                </div>

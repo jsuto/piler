@@ -53,7 +53,7 @@ class ControllerSearchHelper extends Controller {
          $this->preprocess_post_advanced_request($this->request->post);
          $this->fixup_post_request();
 
-         list ($this->data['n'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
       }
 
       else if($this->request->post['searchtype'] == 'expert'){
@@ -61,14 +61,15 @@ class ControllerSearchHelper extends Controller {
          $this->preprocess_post_expert_request($this->request->post);
          $this->fixup_post_request();
 
-         list ($this->data['n'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
       }
 
       else {
          $this->fixup_post_simple_request();
-         list ($this->data['n'], $this->data['messages']) = $this->model_search_search->search_messages($this->request->post, SIMPLE_SEARCH, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->request->post, SIMPLE_SEARCH, $this->data['page']);
       }
 
+      if($this->a['ref']) { $this->data['_ref'] = $this->a['ref']; }
 
       /* paging info */
 

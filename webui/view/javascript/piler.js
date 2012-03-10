@@ -355,6 +355,37 @@ function removeme(id) {
 }
 
 
+function tag_search_results(url){
+   var idlist = '';
+
+   var tag_keys = document.getElementById('tag_keys').value;
+   var tag_value = document.getElementById('tag_value').value;
+
+   if(tag_keys) {
+      params = "idlist=" + tag_keys + "&tag=" + encodeURI(tag_value);
+
+      var http = getXMLHttp();
+
+      if(http == null) { alert("Error creating XMLHttpRequest"); return; }
+
+      http.onreadystatechange = function() {
+         if(http.readyState == 4) {
+            if(http.status != 200) alert("Problem retrieving XML data:" + http.statusText);
+         }
+      }
+
+      http.open("POST", url, true);
+
+      http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      http.setRequestHeader("Content-length", params.length);
+      http.setRequestHeader("Connection", "close");
+
+      http.send(params);
+   }
+}
+
+
+
 $(document).ready(function() {
    $.datepicker.setDefaults($.datepicker.regional[piler_ui_lang]);
    $("#date1").datepicker( { dateFormat: 'yy-mm-dd' } );

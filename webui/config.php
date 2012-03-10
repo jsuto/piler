@@ -129,6 +129,7 @@ define('SEARCH_HELPER_URL', SITE_URL . 'search-helper.php');
 define('AUDIT_HELPER_URL', SITE_URL . 'audit-helper.php');
 
 define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
+define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
 
 define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
 define('HEALTH_REFRESH', 60);

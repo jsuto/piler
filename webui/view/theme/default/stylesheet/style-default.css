@@ -64,6 +64,7 @@
 	.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
 	.ruletext { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 365px; }
 	.advtext { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
+	.tagtext { font: normal 10px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
 	.advtextgrey { font: bold 12px Arial, sans-serif; color: #999; font-weight: bold; text-align:left; width: 280px; }
 	.textregular { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; }
 
@@ -108,13 +109,14 @@
 	#health1 .error { color: red; font-weight: bold; }
 
 	#pagenav { float: left; margin-top: 0px; margin-bottom: 0px; text-align: left; width: 990px; border: 0px solid red; }
-	.navrow { display: table-row; width: 282px; border: 1px solid red; }
+	.navrow { display: table-row; }
 	.navlink { color: #bbb; font: bold 12px Arial, sans-serif; }
 	#pagenav a.navlink { color: #850505; font: bold 12px Arial, sans-serif; }
 
         #pagingleft { display: table-cell; float: left; text-align: left; width: 60px;  border: 0px solid red; }
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
-        #pagingright { display: table-cell; float: right; text-align: right; width: 60px; border: 0px solid red; }
+        #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
+        #tagbox { display: table-cell; float: left; text-align: right; vertical-align: top; width: 725px; border: 0px solid red; }
 
 	.messagelink { border-bottom: 1px solid gray; color: #850505; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
@@ -125,7 +127,6 @@
 	.advselect2 { width: 205px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
 	.ruleselect { width: 40px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
 
-	/*button { margin-left: 0px; background-color:gray; border-top:1px solid gray; border-left:1px solid gray; font: bold 12px Arial, sans-serif; border-left: yellow; border-right: black; width:50%;}*/
 	button { margin: 0; background-color:gray; font: bold 12px Arial, sans-serif; width:40%; height: 40px; margin-left: 5%; margin-right: 5%; }
 	button.active { background-color: #850505; color:white; }
 
@@ -136,6 +137,8 @@
 	input[type=button].load { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; width: 17%;}
 
 	input[type=button].short { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 50px;}
+	input[type=button].tag { margin: 0; background-color:#eee; color: gray; font: normal 10px Arial, sans-serif; }
+
 	input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
 
 	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
@@ -158,8 +161,8 @@
 	ul.dropdown                         { position: relative; }
 	ul.dropdown li                      { font-weight: bold; float: left; background: #ffffff; text-align: center; padding-right: 40px; padding-left: 40px; border: 0px solid red; }
 	ul.dropdown li.first_li             { font-weight: bold; float: left; background: #ffffff; text-align: left; padding-left:80px; padding-right: 5px; }
-	ul.dropdown li.search_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 5px; }
-	ul.dropdown li.no_search_li         { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 5px; }
+	ul.dropdown li.search_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 0px; }
+	ul.dropdown li.no_search_li         { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 0px; }
 	ul.dropdown li.center_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; width: 190px; }
 	ul.dropdown li.last_li              { font-weight: bold; float: left; background: #ffffff; text-align: right; padding: 0; }
 
