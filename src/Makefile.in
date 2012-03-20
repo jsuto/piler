@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pilerimport pilerexport test
+all: libpiler.a piler pilerconf pilerget pilerimport pilerexport pilerpurge test
 install: install-piler
 
 
@@ -57,6 +57,9 @@ pilerimport: pilerimport.c libpiler.a
 pilerexport: pilerexport.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
+pilerpurge: pilerpurge.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
 
@@ -77,9 +80,11 @@ install-piler:
 	$(INSTALL) -m 0755 pilerconf $(DESTDIR)$(sbindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerget $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerimport $(DESTDIR)$(bindir)
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerexport $(DESTDIR)$(bindir)
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerpurge $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilertest
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilerpurge pilertest
 
 distclean: clean
 	rm -f Makefile

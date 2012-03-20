@@ -11,7 +11,7 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.14"
+#define VERSION "0.1.15"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n"
 
@@ -81,11 +81,7 @@
 #define SQL_RETENTION_RULE_TABLE "retention_rule"
 #define SQL_COUNTER_TABLE "counter"
 #define SQL_MESSAGES_VIEW "messages"
-
-
-/* TRE stuff */
-
-#define NUM_OF_REGEXES 20
+#define SQL_ATTACHMENTS_VIEW "v_attachment"
 
 
 /* Error codes */

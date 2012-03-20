@@ -84,7 +84,7 @@ ENDE:
                         break;
 
       default:
-                        printf("failed to import: %s\n", filename);
+                        printf("failed to import: %s (id: %s)\n", filename, sdata->ttmpfile);
                         break;
    } 
 
@@ -214,7 +214,6 @@ int main(int argc, char **argv){
 
    if(!mailbox && !emlfile && !directory) usage();
 
-   (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    cfg = read_config(configfile);
 
@@ -237,6 +236,8 @@ int main(int argc, char **argv){
 
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+
+   (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
