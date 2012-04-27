@@ -45,7 +45,7 @@
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_processed_emails; ?>:</div>
-            <div class="cellhealthright"><?php print $processed_emails[0]; ?> (<?= $text_24_hours; ?>)<br /><?php print $processed_emails[1]; ?> (<?= $text_1_week; ?>)<br /><?php print $processed_emails[2]; ?> (<?= $text_30_days; ?>)</div>
+            <div class="cellhealthright"><?php print $processed_emails[0]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_30_days; ?>)</div>
          </div>
 
          <div class="row">
@@ -67,6 +67,12 @@
             <div class="cellhealthleft"><?php print $text_disk_usage; ?></div>
             <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="<?php if($partition['utilization'] < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $partition['partition']; ?> <?php print $partition['utilization']; ?>%</span> <?php } ?></div>
          </div>
+
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_periodic_purge; ?></div>
+            <div class="cellhealthright"><span class="<?php if($options['enable_purge'] == 1) { ?>ok<?php } else { ?>error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a><?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?> </span></div>
+         </div>
+
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_counters; ?></div>

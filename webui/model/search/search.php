@@ -361,7 +361,10 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
 
-         $tags = $this->db->query("SELECT `id`, `tag` FROM `" . TABLE_TAG . "` WHERE `id` IN ($q)", $ids);
+         array_unshift($ids, (int)$_SESSION['uid']);
+
+         $tags = $this->db->query("SELECT `id`, `tag` FROM `" . TABLE_TAG . "` WHERE `uid`=? AND `id` IN ($q)", $ids);
+
          foreach ($tags->rows as $t) {
             $tag[$t['id']] = $t['tag'];
          }
@@ -494,18 +497,8 @@ class ModelSearchSearch extends Model {
    }
 
 
-   public function remove_message($id = '') {
-      if($id == '') { return 0; }
-
-      if(Registry::get('admin_user') == 0) { return 0; }
-
-      $query = $this->db->query("UPDATE " . TABLE_META . " SET deleted=1 WHERE piler_id=?", array($id));
-
-      return $this->db->countAffected();
-   }
-
-
    private function fix_email_address_for_sphinx($email = '') {
+      $email = preg_replace("/\|@/", "|", $email);
       return preg_replace("/[\@\.\+\-]/", "X", $email);
    }
 

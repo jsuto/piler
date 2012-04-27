@@ -21,10 +21,33 @@ extern int optind;
 
 int dryrun = 0;
 
+
+#define SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE "SELECT `value` FROM `" SQL_OPTION_TABLE "` WHERE `key`='enable_purge'"
 #define SQL_STMT_DELETE_FROM_META_TABLE "UPDATE `" SQL_METADATA_TABLE "` SET `deleted`=1 WHERE `id` IN ("
 #define SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID "UPDATE `" SQL_METADATA_TABLE "` SET `deleted`=1 WHERE `piler_id` IN ('"
 #define SQL_STMT_SELECT_NON_REFERENCED_ATTACHMENTS "SELECT `piler_id`, `attachment_id`, `i` FROM `" SQL_ATTACHMENTS_VIEW "` WHERE `refcount`=0 AND `piler_id` IN ('"
 #define SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE "DELETE FROM `" SQL_ATTACHMENT_TABLE "` WHERE `id` IN ("
+
+
+int is_purge_allowed(struct session_data *sdata, struct __config *cfg){
+   int rc=0;
+   MYSQL_RES *res;
+   MYSQL_ROW row;
+
+   if(mysql_real_query(&(sdata->mysql), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE, strlen(SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE)) == 0){
+      res = mysql_store_result(&(sdata->mysql));
+      if(res){
+         row = mysql_fetch_row(res);
+         if(row[0]){
+            rc = atoi(row[0]);
+         }
+
+         mysql_free_result(res);
+      }
+   }
+
+   return rc;
+}
 
 
 int remove_message_frame_files(char *s, char *update_meta_sql, struct session_data *sdata, struct __config *cfg){
@@ -318,11 +341,14 @@ int main(int argc, char **argv){
 
    init_session_data(&sdata);
 
-   purged += purge_messages_without_attachment(&sdata, &cfg);
-   purged += purge_messages_with_attachments(&sdata, &cfg);
+   i = is_purge_allowed(&sdata, &cfg);
+   if(i == 1){
+      purged += purge_messages_without_attachment(&sdata, &cfg);
+      purged += purge_messages_with_attachments(&sdata, &cfg);
 
-   printf("purged: %d\n", purged);
-
+      printf("purged: %d\n", purged);
+   }
+   else printf("purge is not allowed by configuration, enable_purge=%d\n", i);
 
    mysql_close(&(sdata.mysql));
 

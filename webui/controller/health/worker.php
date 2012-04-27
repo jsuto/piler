@@ -78,6 +78,8 @@ class ControllerHealthWorker extends Controller {
 
       $this->data['sysinfo'] = $this->model_health_health->sysinfo();
 
+      $this->data['options'] = $this->model_health_health->get_options();
+
       $this->render();
    }
 

@@ -108,6 +108,36 @@ class ModelHealthHealth extends Model {
    }
 
 
+   public function get_options() {
+      $data = array();
+
+      $query = $this->db->query("SELECT * FROM `" . TABLE_OPTION . "`");
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) {
+            $data[$q['key']] = $q['value'];
+         }
+      }
+
+      return $data;
+   }
+
+
+   public function toggle_option($option = '') {
+      $value = 0;
+
+      $query = $this->db->query("SELECT `value` FROM `" . TABLE_OPTION . "` WHERE `key`=?", array($option));
+
+      if(isset($query->row['value'])) {
+         if($query->row['value'] == 0) { $value = 1; }
+         else { $value = 0; }
+
+         $query = $this->db->query("UPDATE `" . TABLE_OPTION . "` SET `value`=? WHERE `key`=?", array($value, $option));
+
+      }
+
+   }
+
+
 }
 
 

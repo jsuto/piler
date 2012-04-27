@@ -18,8 +18,8 @@ create table if not exists `sph_index` (
   `fromdomain` char(255) default null,
   `todomain` text(512) default null,
   `subject` text(512) default null,
-  `arrived` int not null,
-  `sent` int not null,
+  `arrived` int unsigned not null,
+  `sent` int unsigned not null,
   `body` text,
   `size` int default '0',
   `direction` int default 0,
@@ -36,9 +36,9 @@ create table if not exists `metadata` (
   `fromdomain` char(48) not null,
   `subject` text(512) default null,
   `spam` tinyint(1) default 0,
-  `arrived` int not null,
-  `sent` int not null,
-  `retained` int not null,
+  `arrived` int unsigned not null,
+  `sent` int unsigned not null,
+  `retained` int unsigned not null,
   `deleted` tinyint(1) default 0,
   `size` int default 0,
   `hlen` int default 0,
@@ -74,8 +74,8 @@ create index `rcpt_idx` on `rcpt`(`id`);
 create index `rcpt_idx2` on `rcpt`(`to`);
 
 
-drop view if exists `messages`;
-create view `messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+drop view if exists `v_messages`;
+create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 
 drop table if exists `attachment`;
@@ -154,6 +154,15 @@ create table if not exists `counter` (
 ) Engine=InnoDB;
 
 insert into `counter` values(0, 0, 0, 0, 0);
+
+
+drop table if exists `option`;
+create table if not exists `option` (
+   `key` char(64) not null,
+   `value` char(32) not null
+) Engine=InnoDB;
+
+insert into `option` (`key`, `value`) values('enable_purge', '1');
 
 
 drop table if exists `search`;

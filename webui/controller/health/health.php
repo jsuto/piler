@@ -9,6 +9,7 @@ class ControllerHealthHealth extends Controller {
       $this->template = "health/health.tpl";
       $this->layout = "common/layout-health";
 
+      $this->load->model('health/health');
 
       $request = Registry::get('request');
       $language = Registry::get('language');
@@ -21,6 +22,14 @@ class ControllerHealthHealth extends Controller {
       if(Registry::get('admin_user') != 1 && Registry::get('readonly_admin') != 1 && Registry::get('auditor_admin') != 1) {
          $this->template = "common/error.tpl";
          $this->data['errorstring'] = $this->data['text_you_are_not_admin'];
+      }
+      else {
+         if(isset($_GET['toggle_enable_purge'])) {
+            $this->model_health_health->toggle_option('enable_purge');
+            header("Location: " . HEALTH_URL);
+            exit;
+         }
+
       }
 
 

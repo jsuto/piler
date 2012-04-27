@@ -15,8 +15,6 @@ define('ENABLE_REMOTE_IMAGES', '0');
 define('ENABLE_ON_THE_FLY_VERIFICATION', 1);
 define('ENABLE_LDAP_IMPORT_FEATURE', 0);
 
-define('HOLD_EMAIL', 0);
-
 define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
 define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');
 define('ICON_ARROW_DOWN', '/view/theme/default/images/arrowdown.gif');
@@ -92,7 +90,8 @@ define('TABLE_COUNTER', 'counter');
 define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');
-define('VIEW_MESSAGES', 'messages');
+define('TABLE_OPTION', 'option');
+define('VIEW_MESSAGES', 'v_messages');
 
 define('SPHINX_DRIVER', 'sphinx');
 define('SPHINX_DATABASE', 'sphinx');
@@ -131,6 +130,7 @@ define('AUDIT_HELPER_URL', SITE_URL . 'audit-helper.php');
 define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
 define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
 
+define('HEALTH_URL', SITE_URL . 'index.php?route=health/health');
 define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
 define('HEALTH_REFRESH', 60);
 define('HEALTH_RATIO', 80);

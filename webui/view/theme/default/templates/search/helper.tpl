@@ -20,7 +20,7 @@
          <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
          <input type="hidden" id="_ref" name="_ref" value="<?php print $_ref; ?>" />
 
-         Tag search results: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;" value="OK" />
+         <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;" value="OK" />
       </div>
 
 <?php } else { ?>&nbsp;<?php } ?>
@@ -39,23 +39,23 @@
             <div class="cell1">&nbsp;</div>
             <div class="cell3 date">
                <?php print $text_date; ?>
-               <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('date', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_from; ?>
-               <a href="#" onclick="script:fix_search_order('from', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('from', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('from', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('from', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_subject; ?>
-               <a href="#" onclick="script:fix_search_order('subj', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('subj', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('subj', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('subj', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_size; ?>
-               <a href="#" onclick="script:fix_search_order('size', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('size', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('size', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('size', 0); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3">&nbsp;</div>
             <div class="cell3">&nbsp;</div>
@@ -63,7 +63,7 @@
             <div class="cell3">&nbsp;</div>
          <?php } ?>
 <?php } else if($n == 0) { ?>
-            <div class="cell3 error"><?= $text_empty_search_result; ?></div>
+            <div class="cell3 error"><?php print $text_empty_search_result; ?></div>
 <?php } ?>
          </div>
 

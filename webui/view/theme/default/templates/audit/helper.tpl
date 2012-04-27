@@ -32,30 +32,30 @@
 <?php if($n > 0){ ?>
             <div class="cellaudit title">
                <?php print $text_date; ?>
-               <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('date', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cellaudit title">
                <?php print $text_user; ?>
-               <a href="#" onclick="script:fix_search_order('user', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('user', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('user', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('user', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
                <?php print $text_ipaddr; ?>
-               <a href="#" onclick="script:fix_search_order('ipaddr', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('ipaddr', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('ipaddr', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('ipaddr', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
                <?php print $text_action; ?>
-               <a href="#" onclick="script:fix_search_order('action', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('action', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('action', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('action', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cellaudit title">
                <?php print $text_description; ?>
-               <a href="#" onclick="script:fix_search_order('description', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('description', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?= ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('description', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('description', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
@@ -63,7 +63,7 @@
             </div>
 
 <?php } else if($n == 0) { ?>
-            <div class="cell3 error"><?= $text_empty_search_result; ?></div>
+            <div class="cell3 error"><?php print $text_empty_search_result; ?></div>
 <?php } ?>
          </div>
 

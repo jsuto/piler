@@ -35,7 +35,7 @@
             <div class="cell2">
                <button id="button_search" class="active" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0);"><?php print $text_search; ?></button>
                <input type="button" class="advsecondary" onclick="javascript:reset_simple_form(); return false;" value="<?php print $text_cancel; ?>" />
-               <input type="button" class="advsecondary" value="<?= $text_save; ?>" onclick="javascript:send_ajax_post_request('<?php print SAVE_SEARCH_URL; ?>', assemble_search_term(count) + '&save=1', 'A1');" />
+               <input type="button" class="advsecondary" value="<?php print $text_save; ?>" onclick="javascript:send_ajax_post_request('<?php print SAVE_SEARCH_URL; ?>', assemble_search_term(count) + '&save=1', 'A1');" />
                <input type="button" class="load" name="load" onclick="javascript:load_ajax_url('<?php print SAVE_SEARCH_URL; ?>&<?php if(isset($search_args)) { print $search_args; } ?>');" value="<?php print $text_load; ?>..." />
             </div>
          </div>
