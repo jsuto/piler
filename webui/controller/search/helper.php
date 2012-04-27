@@ -70,7 +70,7 @@ class ControllerSearchHelper extends Controller {
       }
 
       if($this->a['ref']) { $this->data['_ref'] = $this->a['ref']; }
-      if($this->request->post['ref']) { $this->data['_ref'] = $this->request->post['ref']; }
+      if(isset($this->request->post['ref']) && $this->request->post['ref']) { $this->data['_ref'] = $this->request->post['ref']; }
 
       /* paging info */
 

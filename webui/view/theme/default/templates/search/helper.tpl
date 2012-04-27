@@ -18,7 +18,7 @@
 <?php } if($n > 0){ ?>
       <div id="tagbox"<?php if($n < $page_len) { ?> style="margin-left: 265px;"<?php } ?>>
          <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
-         <input type="hidden" id="_ref" name="_ref" value="<?php print $_ref; ?>" />
+         <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
 
          <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;" value="OK" />
       </div>
