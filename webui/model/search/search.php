@@ -461,9 +461,9 @@ class ModelSearchSearch extends Model {
       $q = $q2 = '';
       $arr = $a = $result = array();
 
-      if($id == '') { return 0; }
+      if(count($id) < 1) { return array(); }
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) { return 1; }
+      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) { return $id; }
 
       $arr = $id;
 
