@@ -29,15 +29,15 @@ class ModelAuditAudit extends Model {
       }
 
       if(isset($data['ipaddr'])) {
-         $where .= " AND ipaddr IN (" . $this->append_search_criteria($data['ipaddr'], &$arr) . ")";
+         $where .= " AND ipaddr IN (" . $this->append_search_criteria($data['ipaddr'], $arr) . ")";
       }
 
       if(isset($data['user'])) {
-         $where .= " AND email IN (" . $this->append_search_criteria($data['user'], &$arr) . ")";
+         $where .= " AND email IN (" . $this->append_search_criteria($data['user'], $arr) . ")";
       }
 
       if(isset($data['ref'])) {
-         $where .= " AND ref IN (" . $this->append_search_criteria($data['ref'], &$arr) . ")";
+         $where .= " AND ref IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
       }
 
 
@@ -98,7 +98,7 @@ class ModelAuditAudit extends Model {
    }
 
 
-   private function append_search_criteria($s = '', $arr = array()) {
+   private function append_search_criteria($s = '', &$arr = array()) {
       $q = "";
 
       $a = explode("*", $s);

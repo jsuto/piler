@@ -130,9 +130,9 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
       p2 = strrchr(s, '/'); if(!p2) goto ENDE;
       *p2 = '\0';
 
-      rc = mkdir(s, 0750); if(rc == -1) syslog(LOG_PRIORITY, "%s: mkdir %s: error=%s", sdata->ttmpfile, s, strerror(errno));
+      rc = mkdir(s, 0750);
       *p2 = '/';
-      rc = mkdir(s, 0750); if(rc == -1) syslog(LOG_PRIORITY, "%s: mkdir %s: error=%s", sdata->ttmpfile, s, strerror(errno));
+      rc = mkdir(s, 0750);
       *p1 = '/';
       rc = mkdir(s, 0770); if(rc == -1) syslog(LOG_PRIORITY, "%s: mkdir %s: error=%s", sdata->ttmpfile, s, strerror(errno));
    }
