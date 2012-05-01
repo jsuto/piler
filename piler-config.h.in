@@ -5,10 +5,6 @@
 #define CONFDIR "/usr/local/etc"
 #define DATADIR "/usr/local/var"
 
-#define VIRUS_TEMPLATE "/usr/local/share/clapf/template.virus"
-
-#define ZOMBIE_NET_REGEX "/usr/local/share/clapf/zombienets.regex"
-
 #define KEYFILE CONFDIR "/piler.key"
 
 #define HAVE_DAEMON 1
