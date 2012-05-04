@@ -409,6 +409,31 @@ void init_session_data(struct session_data *sdata){
 }
 
 
+int read_from_stdin(struct session_data *sdata){
+   int fd, rc=ERR, n;
+   char buf[MAXBUFSIZE];
+
+   fd = open(sdata->ttmpfile, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
+   if(fd == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open ttmpfile", sdata->ttmpfile);
+      return rc;
+   }
+
+   while((n = read(0, buf, sizeof(buf))) > 0){
+      sdata->tot_len += write(fd, buf, n);
+   }
+
+   if(fsync(fd)){
+      syslog(LOG_PRIORITY, "%s: fsync() error", sdata->ttmpfile);
+   }
+   else rc = OK;
+
+   close(fd);
+
+   return rc;
+}
+
+
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;

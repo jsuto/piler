@@ -27,22 +27,40 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    struct _state state;
    struct __counters counters;
 
-   if(stat(filename, &st) != 0){
-      printf("cannot read: %s\n", filename);
-      return rc;
-   }
-
-   if(S_ISREG(st.st_mode) == 0){
-      printf("%s is not a file\n", filename);
-      return rc;
-   }
-
 
    init_session_data(sdata);
-   snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+
+   if(strcmp(filename, "-") == 0){
+
+      if(read_from_stdin(sdata) == ERR){
+         printf("error reading from stdin\n");
+         return rc;
+      }
+
+      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);
+
+   }
+   else {
+
+      if(stat(filename, &st) != 0){
+         printf("cannot read: %s\n", filename);
+         return rc;
+      }
+
+      if(S_ISREG(st.st_mode) == 0){
+         printf("%s is not a file\n", filename);
+         return rc;
+      }
+
+      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+      sdata->tot_len = st.st_size;
+   }
+
+
    
    sdata->sent = 0;
-   sdata->tot_len = st.st_size;
 
    state = parse_message(sdata, cfg);
    post_parse(sdata, &state, cfg);
@@ -54,7 +72,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    if(sdata->sent > 631148400) sdata->retained = sdata->sent;
 
-   rule = check_againt_ruleset(data->archiving_rules, &state, st.st_size, sdata->spam_message);
+   rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 
    if(rule){
       printf("discarding %s by archiving policy: %s\n", filename, rule);
@@ -68,6 +86,9 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
 ENDE:
    unlink(sdata->tmpframe);
+
+   if(strcmp(filename, "-") == 0) unlink(sdata->ttmpfile);
+
 
    switch(rc) {
       case OK:
