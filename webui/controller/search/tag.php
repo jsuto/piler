@@ -23,7 +23,7 @@ class ControllerSearchTag extends Controller {
 
             $q = '';
 
-            $ids = $this->model_search_search->check_your_permission_by_id_list($idlist);
+            list($ids, $a) = $this->model_search_search->check_your_permission_by_id_list($idlist);
 
             for($i=0; $i<count($ids); $i++) { $q .= ",?"; }
             $q = preg_replace("/^\,/", "", $q);

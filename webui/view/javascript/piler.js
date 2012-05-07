@@ -385,6 +385,62 @@ function tag_search_results(url){
 }
 
 
+function restore_selected_emails(url) {
+   var a = document.getElementById('results');
+   var idlist = "";
+
+   len = a.childNodes.length;
+
+   for(i=0; i<a.childNodes.length; i++) {
+
+      if(a.childNodes[i].nodeName == "DIV" && a.childNodes[i].id.substring(0, 2) == "e_") {
+
+         id = a.childNodes[i].id.substring(2,1000);
+
+         b = document.getElementById('r_' + id);
+
+         if(b.checked == true) {
+
+            if(idlist) { idlist += "," + id; }
+            else { idlist = id; }
+         }
+      }
+   }
+
+   if(idlist) {
+      var http = getXMLHttp();
+
+      if(http == null) { alert("Error creating XMLHttpRequest"); return; }
+
+      document.getElementById('A1').innerHTML = '<div class="restore_spinner"><img src="/view/theme/default/images/spinner.gif" id="spinner_restore" alt="spinner" /></div>';
+
+
+      http.open("POST", url, true);
+
+      params = "idlist=" + idlist;
+
+      http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      http.setRequestHeader("Content-length", params.length);
+      http.setRequestHeader("Connection", "close");
+
+
+      http.onreadystatechange = function() {
+         if(http.readyState == 4) {
+            if(http.status == 200) {
+               document.getElementById('A1').innerHTML = http.responseText;
+            }
+            else {
+               alert("Problem retrieving XML data:" + http.statusText);
+            }
+         }
+      }
+
+      http.send(params);
+   }
+
+   //document.getElementById('A1').innerHTML = '&nbsp;';
+}
+
 
 $(document).ready(function() {
    $.datepicker.setDefaults($.datepicker.regional[piler_ui_lang]);

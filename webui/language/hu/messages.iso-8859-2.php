@@ -26,6 +26,7 @@ $_['text_audit'] = "Audit";
 $_['text_back'] = "Vissza";
 $_['text_body'] = "Szöveg";
 $_['text_bulk_edit_selected_uids'] = "Kiválasztott azonosítók szerkesztése";
+$_['text_bulk_restore_selected_emails'] = "Kiválasztott levelek visszaállítása";
 $_['text_bulk_update_selected_uids'] = "Kiválasztott azonosítók szerkesztése";
 
 $_['text_cancel'] = "Mégse";

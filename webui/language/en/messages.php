@@ -26,6 +26,7 @@ $_['text_audit'] = "Audit";
 $_['text_back'] = "Back";
 $_['text_body'] = "Body";
 $_['text_bulk_edit_selected_uids'] = "Bulk edit selected uids";
+$_['text_bulk_restore_selected_emails'] = "Bulk restore selected emails";
 $_['text_bulk_update_selected_uids'] = "Bulk update selected uids";
 
 $_['text_cancel'] = "Cancel";

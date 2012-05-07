@@ -20,6 +20,8 @@
          <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
          <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
 
+         <input type="button" class="restore" value="<?php print $text_bulk_restore_selected_emails; ?>" onclick="javascript: restore_selected_emails('<?php print BULK_RESTORE_URL; ?>');" /> &nbsp;
+
          <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;" value="OK" />
       </div>
 
@@ -36,7 +38,8 @@
 
          <div class="resultrow">
 <?php if($n > 0){ ?>
-            <div class="cell1">&nbsp;</div>
+            <div class="cell1r">&nbsp;</div>
+            <div class="cell1q">&nbsp;</div>
             <div class="cell3 date">
                <?php print $text_date; ?>
                <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
@@ -72,6 +75,7 @@
 <?php $i=0; foreach ($messages as $message) { $i++; ?>
 
          <div id="e_<?php print $message['id']; ?>" class="resultrow<?php if($i % 2) { ?> odd<?php } ?><?php if($message['spam'] == 1) { ?> spam<?php } ?>">
+            <div class="cell5 restore"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" checked="checked" class="restorebox" /></div>
             <div class="cell5 id"><?php print ($page*$page_len) + $i; ?>.</div>
             <div class="cell5 date"><?php print $message['date']; ?></div>
             <div class="cell5 from"><?php if($message['from'] != $message['shortfrom']) { ?><span onmouseover="Tip('<?php print preg_replace("/&/", "&amp;", $message['from']); ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></div>

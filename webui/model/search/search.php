@@ -459,7 +459,7 @@ class ModelSearchSearch extends Model {
 
    public function check_your_permission_by_id_list($id = array()) {
       $q = $q2 = '';
-      $arr = $a = $result = array();
+      $arr = $a = $result = $result2 = array();
 
       if(count($id) < 1) { return array(); }
 
@@ -485,15 +485,16 @@ class ModelSearchSearch extends Model {
 
       $arr = array_merge($arr, $a, $a);
 
-      $query = $this->db->query("SELECT distinct id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+      $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
 
       if($query->num_rows > 0) {
          foreach ($query->rows as $q) {
             array_push($result, $q['id']);
+            array_push($result2, $q['piler_id']);
          }
       }
 
-      return $result;
+      return array($result, $result2);
    }
 
 
