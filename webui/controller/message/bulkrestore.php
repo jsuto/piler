@@ -39,10 +39,10 @@ class ControllerMessageBulkrestore extends Controller {
 
          AUDIT(ACTION_RESTORE_MESSAGE, '', '', $id, '');
 
-         /*$x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+         $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
                "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $this->model_search_message->get_raw_message($id) );
 
-         if($x == 1) { $this->data['restored']++; }*/
+         if($x == 1) { $this->data['restored']++; }
       }
 
       $this->render();
