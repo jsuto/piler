@@ -44,6 +44,7 @@ $_['text_cpu_usage'] = "CPU usage";
 $_['text_daily_quarantine_report'] = "Daily quarantine report";
 $_['text_daily_quarantine_report_status'] = "Daily quarantine report status";
 $_['text_daily_report'] = "Daily report";
+$_['text_daily_piler_report'] = "Daily piler report";
 $_['text_database_emails'] = "email addresses in piler database";
 $_['text_date'] = "Date";
 $_['text_date_from'] = "Date from";

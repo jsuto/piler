@@ -44,6 +44,7 @@ $_['text_cpu_usage'] = "CPU használat";
 $_['text_daily_quarantine_report'] = "Napi karantén riport";
 $_['text_daily_quarantine_report_status'] = "Napi karantén értesítés";
 $_['text_daily_report'] = "Napi jelentés";
+$_['text_daily_piler_report'] = "Napi piler jelentés";
 $_['text_database_emails'] = "email cím a piler adatbázisban";
 $_['text_date'] = "Dátum";
 $_['text_date_from'] = "Dátumtól";

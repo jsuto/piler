@@ -35,6 +35,7 @@ define('SMARTHOST', '127.0.0.1');
 define('SMARTHOST_PORT', 10026);
 define('SMTP_DOMAIN', 'mailpiler.org');
 define('SMTP_FROMADDR', 'no-reply@mailpiler.org');
+define('ADMIN_EMAIL', 'admin@mailpiler.org');
 
 define('EOL', "\n");
 
