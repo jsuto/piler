@@ -38,8 +38,8 @@
 
          <div class="resultrow">
 <?php if($n > 0){ ?>
-            <div class="cell1r">&nbsp;</div>
-            <div class="cell1q">&nbsp;</div>
+            <div class="cell1r" style="vertical-align:middle;"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" checked="checked" class="restorebox" onchange="javascript:toggle_bulk_check(); return false;" /></div>
+            <div class="cell1q" style="text-align: center;"><a href="#" onclick="javascript: download_selected_emails('<?php print BULK_RESTORE_URL; ?>'); return false;"><img style="margin: 0px 0 -2px 0; border: 0px solid black;" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0"></a></div>
             <div class="cell3 date">
                <?php print $text_date; ?>
                <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
@@ -79,7 +79,7 @@
             <div class="cell5 id"><?php print ($page*$page_len) + $i; ?>.</div>
             <div class="cell5 date"><?php print $message['date']; ?></div>
             <div class="cell5 from"><?php if($message['from'] != $message['shortfrom']) { ?><span onmouseover="Tip('<?php print preg_replace("/&/", "&amp;", $message['from']); ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></div>
-            <div class="cell5 subject"><a class="messagelink<?php if($message['spam'] == 1) { ?> spam<?php } ?>" href="<?php print SITE_URL; ?>message.php/<?php print $message['piler_id']; ?>"><?php if($message['subject'] != $message['shortsubject']) { ?><span onmouseover="Tip('<?php print preg_replace("/&/", "&amp;", $message['subject']); ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();"><?php print $message['shortsubject']; ?></span><?php } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" onclick="script:add_message_reference_to_form('<?php print $message['reference']; ?>'); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); a = document.getElementById('ref'); a.value=''; return false;"><span onmouseover="Tip('<?php print $text_conversation_available; ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();">[+]</span></a><?php } ?></div>
+            <div class="cell5 subject"><a class="messagelink<?php if($message['spam'] == 1) { ?> spam<?php } ?>" href="<?php print SITE_URL; ?>message.php/<?php print $message['piler_id']; ?>"><?php if($message['subject'] != $message['shortsubject']) { ?><span onmouseover="Tip('<?php print preg_replace("/&/", "&amp;", $message['subject']); ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();"><?php print $message['shortsubject']; ?></span><?php } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" onclick="script:add_message_reference_to_form('<?php print $message['reference']; ?>'); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); a = document.getElementById('ref'); a.value=''; return false;"><span onmouseover="Tip('<?php print $text_conversation_available; ?>', BALLOON, true, ABOVE, true);" onmouseout="UnTip();">[+]</span></a><?php } ?></div>
             <div class="cell5 size"><?php print $message['size']; ?></div>
             <div class="cell5"><?php if($message['attachments'] > 0) { ?><img src="<?php print ICON_ATTACHMENT; ?>" alt="" width="16" height="18" /><?php } else { ?>&nbsp;<?php } ?></div>
             <div class="cell5"><?php if($message['tag']) { ?><span onmouseover="Tip('<?php print $message['tag']; ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip();"><img src="<?php print ICON_TAG; ?>" alt="" /></span><?php } else { ?>&nbsp;<?php } ?></div>

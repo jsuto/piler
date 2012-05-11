@@ -163,8 +163,7 @@ function verify_piler_id($id = '') {
 }
 
 
-function createTempName($dir = '', $prefix = '') {
-   $length = 8;
+function generate_random_string($length = 8) {
    $rnd = "";
    $aZ09 = array_merge(range('A', 'Z'), range('a', 'z'),range(0, 9));
 
@@ -172,7 +171,12 @@ function createTempName($dir = '', $prefix = '') {
       $rnd .= $aZ09[mt_rand(0, count($aZ09)-1)];
    }
 
-   return $dir . "/" . $prefix . $rnd;
+   return $rnd;
+}
+
+
+function createTempName($dir = '', $prefix = '') {
+   return $dir . "/" . $prefix . generate_random_string(8);
 }
 
 

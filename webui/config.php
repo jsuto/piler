@@ -22,6 +22,7 @@ define('ICON_ATTACHMENT', '/view/theme/default/images/attachment_icon.png');
 define('ICON_TAG', '/view/theme/default/images/tag_blue.png');
 define('ICON_GREEN_OK', '/view/theme/default/images/green_ok.png');
 define('ICON_RED_X', '/view/theme/default/images/red_x.png');
+define('ICON_DOWNLOAD', '/view/theme/default/images/download_icon.jpg');
 
 define('MAX_CGI_FROM_SUBJ_LEN', 45);
 define('PAGE_LEN', 20);
@@ -53,6 +54,7 @@ define('DIR_APPLICATION', DIR_BASE . 'controller/');
 define('DIR_THEME', DIR_BASE . 'view/theme/');
 define('DIR_REPORT', DIR_BASE . 'reports/');
 define('DIR_LOG', DIR_BASE . 'log/');
+define('DIR_TMP', DIR_BASE . 'tmp/');
 
 define('DIR_STORE', '/var/piler/store');
 define('DIR_STAT', '/var/piler/stat');

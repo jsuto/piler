@@ -80,7 +80,7 @@
 	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }
 	.cell1s { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 85px; }
 	.cell1q { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 50px; }
-	.cell1r { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 15px; }
+	.cell1r { display: table-cell; height: 25px; text-align: left; padding: 0px; font: bold 12px Arial, sans-serif; width: 15px; }
 	.cell3 { display: table-cell; height: 25px; text-align: left; padding: 0px; padding-top: 3px; font: bold 19px Arial, sans-serif; }
 
 	.cell3.title { color: black; text-align: left; }

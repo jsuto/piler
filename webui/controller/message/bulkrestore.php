@@ -14,6 +14,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->load->model('search/search');
       $this->load->model('search/message');
+      $this->load->model('message/restore');
 
       $this->load->model('user/user');
       $this->load->model('mail/mail');
@@ -24,13 +25,28 @@ class ControllerMessageBulkrestore extends Controller {
 
       list($a, $idlist) = $this->model_search_search->check_your_permission_by_id_list(explode(",", $this->request->post['idlist']));
 
+      $download = $this->request->post['download'];
+
+
+      if($download == 1) {
+         $this->model_message_restore->download_files_as_zip($idlist);
+         exit;
+      }
+
 
       $this->data['username'] = Registry::get('username');
 
       $rcpt = array();
 
 
-      array_push($rcpt, $_SESSION['email']);
+      /* send the email to all the recipients of the original email if we are admin or auditor users */
+
+      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
+         $rcpt = $this->model_search_search->get_message_recipients($this->data['id']);
+      }
+      else {
+         array_push($rcpt, $_SESSION['email']);
+      }
 
 
       $this->data['restored'] = 0;
@@ -44,6 +60,7 @@ class ControllerMessageBulkrestore extends Controller {
 
          if($x == 1) { $this->data['restored']++; }
       }
+
 
       $this->render();
    }

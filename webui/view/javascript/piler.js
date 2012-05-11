@@ -385,7 +385,7 @@ function tag_search_results(url){
 }
 
 
-function restore_selected_emails(url) {
+function assemble_idlist() {
    var a = document.getElementById('results');
    var idlist = "";
 
@@ -407,6 +407,14 @@ function restore_selected_emails(url) {
       }
    }
 
+   return idlist;
+}
+
+
+function restore_selected_emails(url) {
+
+   var idlist = assemble_idlist();
+
    if(idlist) {
       var http = getXMLHttp();
 
@@ -414,10 +422,9 @@ function restore_selected_emails(url) {
 
       document.getElementById('A1').innerHTML = '<div class="restore_spinner"><img src="/view/theme/default/images/spinner.gif" id="spinner_restore" alt="spinner" /></div>';
 
-
       http.open("POST", url, true);
 
-      params = "idlist=" + idlist;
+      params = "idlist=" + idlist + "&download=0";
 
       http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       http.setRequestHeader("Content-length", params.length);
@@ -438,7 +445,69 @@ function restore_selected_emails(url) {
       http.send(params);
    }
 
-   //document.getElementById('A1').innerHTML = '&nbsp;';
+}
+
+
+function download_selected_emails(url) {
+   var hiddenField;
+   var idlist = assemble_idlist();
+
+   if(idlist) {
+
+      var form = document.createElement("form");
+
+      form.setAttribute("method", "post");
+      form.setAttribute("action", url);
+      form.setAttribute("name", "download");
+
+      hiddenField = document.createElement("input");
+
+      hiddenField.setAttribute("type", "hidden");
+      hiddenField.setAttribute("name", "download");
+      hiddenField.setAttribute("value", "1");
+      form.appendChild(hiddenField);
+
+      hiddenField = document.createElement("input");
+
+      hiddenField.setAttribute("type", "hidden");
+      hiddenField.setAttribute("name", "idlist");
+      hiddenField.setAttribute("value", idlist);
+      form.appendChild(hiddenField);
+
+      document.body.appendChild(form);
+      form.submit();
+   }
+}
+
+
+function toggle_bulk_check() {
+   var isChecked = document.getElementById('bulkcheck').value;
+
+   var a = document.getElementById('results');
+
+   len = a.childNodes.length;
+
+   for(i=0; i<a.childNodes.length; i++) {
+
+      if(a.childNodes[i].nodeName == "DIV" && a.childNodes[i].id.substring(0, 2) == "e_") {
+
+         id = a.childNodes[i].id.substring(2,1000);
+
+         b = document.getElementById('r_' + id);
+
+         if(isChecked == 1) { b.checked = 0; }
+         else { b.checked = 1; }
+      }
+   }
+
+   if(isChecked == 1) {
+      document.getElementById('bulkcheck').checked = 0;
+      document.getElementById('bulkcheck').value = 0;
+   }
+   else {
+      document.getElementById('bulkcheck').checked = 1;
+      document.getElementById('bulkcheck').value = 1;
+   }
 }
 
 
