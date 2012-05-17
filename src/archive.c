@@ -203,7 +203,7 @@ CLEANUP:
 
 
 int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct __config *cfg){
-   int i, rc, attachments;
+   int i, rc, n, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
 
@@ -236,7 +236,7 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
             p = strstr(buffer, pointer);
             if(p){
                *p = '\0';
-               fwrite(buffer, 1, p - buffer, dest);
+               n = fwrite(buffer, 1, p - buffer, dest);
                buffer = p + strlen(pointer);
 
                if(strlen(ptr_arr[i].piler_id) == RND_STR_LEN){
@@ -249,7 +249,7 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
          }
 
          if(buffer){
-            fwrite(buffer, 1, strlen(buffer), dest);
+            n = fwrite(buffer, 1, strlen(buffer), dest);
          }
 
          buffer = saved_buffer;

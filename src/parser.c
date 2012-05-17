@@ -96,7 +96,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
-   int x, len, b64_len, boundary_line=0;
+   int x, n, len, b64_len, boundary_line=0;
 
    state->line_num++;
    len = strlen(buf);
@@ -121,13 +121,13 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
 
    if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
       //printf("dumping: %s", buf);
-      write(state->fd, buf, len);
+      n = write(state->fd, buf, len);
       state->attachments[state->n_attachments].size += len;
    }
    else {
       state->saved_size += len;
       //printf("%s", buf);
-      write(state->mfd, buf, len);
+      n = write(state->mfd, buf, len);
    }
 
 
@@ -163,7 +163,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
          }
          else {
             snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
-            write(state->mfd, puf, strlen(puf));
+            n = write(state->mfd, puf, strlen(puf));
             //printf("%s", puf);
          }
       }
