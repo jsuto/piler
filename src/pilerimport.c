@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <time.h>
@@ -21,7 +22,7 @@ extern int optind;
 
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR;
+   int rc=ERR, fd;
    char *rule;
    struct stat st;
    struct _state state;
@@ -44,7 +45,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    else {
 
       if(stat(filename, &st) != 0){
-         printf("cannot read: %s\n", filename);
+         printf("cannot stat() %s\n", filename);
          return rc;
       }
 
@@ -52,6 +53,13 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
          printf("%s is not a file\n", filename);
          return rc;
       }
+
+      fd = open(filename, O_RDONLY);
+      if(fd == -1){
+         printf("cannot open %s\n", filename);
+         return rc;
+      }
+      close(fd);
 
       snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
