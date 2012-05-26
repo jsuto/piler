@@ -5,6 +5,8 @@
 #ifndef _DECODER_H
  #define _DECODER_H
 
+void base64_encode(unsigned char *in, int inlen, char *out, int outlen);
+
 void sanitiseBase64(char *s);
 int decodeBase64(char *p);
 void decodeQP(char *p);

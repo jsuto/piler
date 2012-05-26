@@ -50,6 +50,7 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
 
 int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s);
 
+int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg);
 
 #endif /* _PILER_H */
 

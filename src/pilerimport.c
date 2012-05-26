@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/socket.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -21,104 +22,9 @@ extern char *optarg;
 extern int optind;
 
 
-int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, fd;
-   char *rule;
-   struct stat st;
-   struct _state state;
-   struct __counters counters;
-
-
-   init_session_data(sdata);
-
-
-   if(strcmp(filename, "-") == 0){
-
-      if(read_from_stdin(sdata) == ERR){
-         printf("error reading from stdin\n");
-         return rc;
-      }
-
-      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);
-
-   }
-   else {
-
-      if(stat(filename, &st) != 0){
-         printf("cannot stat() %s\n", filename);
-         return rc;
-      }
-
-      if(S_ISREG(st.st_mode) == 0){
-         printf("%s is not a file\n", filename);
-         return rc;
-      }
-
-      fd = open(filename, O_RDONLY);
-      if(fd == -1){
-         printf("cannot open %s\n", filename);
-         return rc;
-      }
-      close(fd);
-
-      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
-
-      sdata->tot_len = st.st_size;
-   }
-
-
-   
-   sdata->sent = 0;
-
-   state = parse_message(sdata, cfg);
-   post_parse(sdata, &state, cfg);
-
-   if(sdata->sent > sdata->now) sdata->sent = sdata->now;
-   if(sdata->sent == -1) sdata->sent = 0;
-
-   /* fat chances that you won't import emails before 1990.01.01 */
-
-   if(sdata->sent > 631148400) sdata->retained = sdata->sent;
-
-   rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
-
-   if(rule){
-      printf("discarding %s by archiving policy: %s\n", filename, rule);
-      rc = OK;
-      goto ENDE;
-   }
-
-   make_digests(sdata, cfg);
-
-   rc = process_message(sdata, &state, data, cfg);
-
-ENDE:
-   unlink(sdata->tmpframe);
-
-   if(strcmp(filename, "-") == 0) unlink(sdata->ttmpfile);
-
-
-   switch(rc) {
-      case OK:
-                        printf("imported: %s\n", filename);
-
-                        bzero(&counters, sizeof(counters));
-                        counters.c_size += sdata->tot_len;
-                        update_counters(sdata, data, &counters, cfg);
-
-                        break;
-
-      case ERR_EXISTS:
-                        printf("discarding duplicate message: %s\n", filename);
-                        break;
-
-      default:
-                        printf("failed to import: %s (id: %s)\n", filename, sdata->ttmpfile);
-                        break;
-   } 
-
-   return rc;
-}
+int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
+int list_folders(int sd, int *seq, char *folders, int foldersize);
+int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg);
 
 
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
@@ -172,6 +78,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
    struct dirent *de;
    int rc=ERR, tot_msgs=0;
    char fname[SMALLBUFSIZE];
+   struct stat st;
 
    dir = opendir(directory);
    if(!dir){
@@ -179,14 +86,31 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
       return rc;
    }
 
+
    while((de = readdir(dir))){
       if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
 
       snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
 
-      rc = import_message(fname, sdata, data, cfg);
+      if(stat(fname, &st) == 0){
+         if(S_ISDIR(st.st_mode)){
+            import_from_maildir(fname, sdata, data, cfg);
+         }
+         else {
 
-      if(rc != ERR) tot_msgs++;
+            if(S_ISREG(st.st_mode)){
+               rc = import_message(fname, sdata, data, cfg);
+               if(rc != ERR) tot_msgs++;
+            }
+            else {
+               printf("%s is not a file\n", fname);
+            }
+
+         }
+      }
+      else {
+         printf("cannot stat() %s\n", fname);
+      }
 
    }
    closedir(dir);
@@ -195,8 +119,45 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 }
 
 
+int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   int rc=ERR, sd, seq=1;
+   char *p, puf[MAXBUFSIZE];
+   char folders[MAXBUFSIZE];
+   
+   if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+      printf("cannot create socket\n");
+      return rc;
+   }
+
+   if(connect_to_imap_server(sd, &seq, imapserver, username, password) == ERR){
+      close(sd);
+      return rc;
+   }
+
+
+   list_folders(sd, &seq, &folders[0], sizeof(folders));
+
+
+   p = &folders[0];
+   do {
+      memset(puf, 0, sizeof(puf));
+      p = split(p, '\n', puf, sizeof(puf)-1);
+
+      printf("processing folder: %s... ", puf);
+
+      rc = process_imap_folder(sd, &seq, puf, sdata, data, cfg);
+
+   } while(p);
+
+
+   close(sd);
+
+   return rc;
+}
+
+
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory>\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password>\n");
    exit(0);
 }
 
@@ -204,12 +165,13 @@ void usage(){
 int main(int argc, char **argv){
    int i, rc;
    char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
+   char *imapserver=NULL, *username=NULL, *password=NULL;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
 
 
-   while((i = getopt(argc, argv, "c:m:e:d:h?")) > 0){
+   while((i = getopt(argc, argv, "c:m:e:d:i:u:p:h?")) > 0){
        switch(i){
 
          case 'c' :
@@ -228,6 +190,18 @@ int main(int argc, char **argv){
                     mailbox = optarg;
                     break;
 
+         case 'i' :
+                    imapserver = optarg;
+                    break;
+
+         case 'u' :
+                    username = optarg;
+                    break;
+
+         case 'p' :
+                    password = optarg;
+                    break;
+
          case 'h' :
          case '?' :
                     usage();
@@ -241,7 +215,7 @@ int main(int argc, char **argv){
 
 
 
-   if(!mailbox && !emlfile && !directory) usage();
+   if(!mailbox && !emlfile && !directory && !imapserver) usage();
 
 
    cfg = read_config(configfile);
@@ -276,6 +250,7 @@ int main(int argc, char **argv){
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
    if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
+   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, &cfg);
 
 
 

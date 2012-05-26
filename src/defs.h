@@ -211,7 +211,7 @@ struct memcached_server {
 
    struct sockaddr_in addr;
 
-   char server_ip[16];
+   char server_ip[IPLEN];
    int server_port;
 
    char initialised;

@@ -51,7 +51,7 @@ void memcached_init(struct memcached_server *ptr, char *server_ip, int server_po
 
    ptr->last_read_bytes = 0;
 
-   snprintf(ptr->server_ip, IPLEN, "%s", server_ip);
+   snprintf(ptr->server_ip, IPLEN-1, "%s", server_ip);
    ptr->server_port = server_port;
 
    ptr->initialised = 0;
