@@ -37,6 +37,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg);
 
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg);
 int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg);
+int remove_stored_message_files(struct session_data *sdata, struct _state *state, struct __config *cfg);
 int store_attachments(struct session_data *sdata, struct _state *state, struct __config *cfg);
 int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, struct __config *cfg);
 

@@ -173,3 +173,28 @@ ENDE:
 }
 
 
+int remove_stored_message_files(struct session_data *sdata, struct _state *state, struct __config *cfg){
+   int i;
+   char s[SMALLBUFSIZE];
+
+   if(state->n_attachments > 0){
+
+      for(i=1; i<=state->n_attachments; i++){
+         snprintf(s, sizeof(s)-1, "%s/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, sdata->ttmpfile[RND_STR_LEN-6], sdata->ttmpfile[RND_STR_LEN-5], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile, i);
+
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: unlinking %s", sdata->ttmpfile, s);
+
+         unlink(s);
+      }
+   }
+
+   snprintf(s, sizeof(s)-1, "%s/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, sdata->ttmpfile[RND_STR_LEN-6], sdata->ttmpfile[RND_STR_LEN-5], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: unlinking %s", sdata->ttmpfile, s);
+
+   unlink(s);
+
+   return 0;
+}
+
+

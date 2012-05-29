@@ -416,7 +416,12 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
    rc = store_meta_data(sdata, state, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
-   if(rc == ERR_EXISTS) return ERR_EXISTS;
+   if(rc == ERR_EXISTS){
+
+      remove_stored_message_files(sdata, state, cfg);
+
+      return ERR_EXISTS;
+   }
 
    return OK;
 }
