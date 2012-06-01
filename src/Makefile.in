@@ -88,7 +88,7 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) reindex $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilerpurge pilertest
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilerpurge pilertest reindex
 
 distclean: clean
 	rm -f Makefile

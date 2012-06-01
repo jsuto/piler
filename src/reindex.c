@@ -52,7 +52,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, uint64 from_id,
    struct _state state;
 
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE id BETWEEN %llu AND %llu", SQL_METADATA_TABLE, from_id, to_id);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
    rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
 
@@ -93,8 +93,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, uint64 from_id,
 
                   unlink(filename);
 
-                  if(progressbar && reindexed % 10 == 0) printf(".");
-
+                  if(progressbar && reindexed % 100 == 0) printf(".");
                }
                else printf("cannot open: %s\n", filename);
 
