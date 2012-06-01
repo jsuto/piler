@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-struct _state parse_message(struct session_data *sdata, struct __config *cfg){
+struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __config *cfg){
    FILE *f;
    char buf[MAXBUFSIZE];
    struct _state state;
@@ -30,19 +30,23 @@ struct _state parse_message(struct session_data *sdata, struct __config *cfg){
    }
 
 
-   state.mfd = open(sdata->tmpframe, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
-   if(state.mfd == -1){
-      syslog(LOG_PRIORITY, "%s: cannot open frame file: %s", sdata->ttmpfile, sdata->tmpframe);
-      fclose(f);
-      return state;
+   if(take_into_pieces == 1){
+      state.mfd = open(sdata->tmpframe, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+      if(state.mfd == -1){
+         syslog(LOG_PRIORITY, "%s: cannot open frame file: %s", sdata->ttmpfile, sdata->tmpframe);
+         fclose(f);
+         return state;
+      }
    }
-
 
    while(fgets(buf, sizeof(buf)-1, f)){
-      parse_line(buf, &state, sdata, cfg);
+      parse_line(buf, &state, sdata, take_into_pieces, cfg);
    }
 
-   close(state.mfd); state.mfd = 0;
+   if(take_into_pieces == 1){
+      close(state.mfd); state.mfd = 0;
+   }
+
    fclose(f);
 
    return state;
@@ -94,7 +98,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 }
 
 
-int parse_line(char *buf, struct _state *state, struct session_data *sdata, struct __config *cfg){
+int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    int x, n, len, b64_len, boundary_line=0;
 
@@ -119,15 +123,17 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
    }
 
 
-   if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
-      //printf("dumping: %s", buf);
-      n = write(state->fd, buf, len);
-      state->attachments[state->n_attachments].size += len;
-   }
-   else {
-      state->saved_size += len;
-      //printf("%s", buf);
-      n = write(state->mfd, buf, len);
+   if(take_into_pieces == 1){
+      if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
+         //printf("dumping: %s", buf);
+         n = write(state->fd, buf, len);
+         state->attachments[state->n_attachments].size += len;
+      }
+      else {
+         state->saved_size += len;
+         //printf("%s", buf);
+         n = write(state->mfd, buf, len);
+      }
    }
 
 
@@ -146,26 +152,30 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
          snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
 
          //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
-         state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
-         if(state->fd == -1){
 
-            state->attachments[state->n_attachments].size = 0;
-            memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
-            memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
-            memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
-            memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
+         if(take_into_pieces == 1){
+            state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+            if(state->fd == -1){
 
-            syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
+               state->attachments[state->n_attachments].size = 0;
+               memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
+               memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
+               memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
+               memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
 
-            state->n_attachments--;
-            state->has_to_dump = 0;
+               syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
 
+               state->n_attachments--;
+               state->has_to_dump = 0;
+
+            }
+            else {
+               snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
+               n = write(state->mfd, puf, strlen(puf));
+               //printf("%s", puf);
+            }
          }
-         else {
-            snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
-            n = write(state->mfd, puf, strlen(puf));
-            //printf("%s", puf);
-         }
+
       }
       else {
          state->has_to_dump = 0;
@@ -325,7 +335,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, stru
       state->content_type_is_set = 0;
 
       if(state->has_to_dump == 1){
-         if(state->fd != -1) close(state->fd);
+         if(take_into_pieces == 1 && state->fd != -1) close(state->fd);
          state->fd = -1;
       }
 

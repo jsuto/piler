@@ -66,7 +66,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    
    sdata->sent = 0;
 
-   state = parse_message(sdata, cfg);
+   state = parse_message(sdata, 1, cfg);
    post_parse(sdata, &state, cfg);
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;

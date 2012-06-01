@@ -53,5 +53,7 @@ int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, cha
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg);
 
+int store_index_data(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg);
+
 #endif /* _PILER_H */
 

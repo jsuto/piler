@@ -68,7 +68,7 @@ int main(int argc, char **argv){
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
-   state = parse_message(&sdata, &cfg);
+   state = parse_message(&sdata, 0, &cfg);
    post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);

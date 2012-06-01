@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pilerimport pilerexport pilerpurge test
+all: libpiler.a piler pilerconf pilerget pilerimport pilerexport pilerpurge reindex test
 install: install-piler
 
 
@@ -63,6 +63,9 @@ pilerpurge: pilerpurge.c libpiler.a
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
 
+reindex: reindex.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+
 test: test.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $^ -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
@@ -82,6 +85,7 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerimport $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerexport $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerpurge $(DESTDIR)$(bindir)
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) reindex $(DESTDIR)$(bindir)
 
 clean:
 	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilerimport pilerexport pilerpurge pilertest
