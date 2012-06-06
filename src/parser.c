@@ -131,7 +131,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    len = strlen(state->b_to);
    if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
 
-   syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s, reference=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id, state->reference);
+   //syslog(LOG_PRIORITY, "%s: from=%s, to=%s, subj=%s, message-id=%s, reference=%s", sdata->ttmpfile, state->b_from, state->b_to, state->b_subject, state->message_id, state->reference);
 }
 
 

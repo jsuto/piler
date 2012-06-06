@@ -138,7 +138,7 @@ static void child_main(struct child *ptr){
 
       ptr->status = BUSY;
 
-      syslog(LOG_PRIORITY, "child (pid: %d) connection from %s", getpid(), inet_ntoa(client_addr.sin_addr));
+      syslog(LOG_PRIORITY, "connection from %s", inet_ntoa(client_addr.sin_addr));
 
       sig_block(SIGHUP);
       ptr->messages += handle_smtp_session(new_sd, &data, &cfg);

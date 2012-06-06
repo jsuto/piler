@@ -19,7 +19,7 @@
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char rctptoemail[SMALLBUFSIZE], fromemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], reason[SMALLBUFSIZE];
+   char rctptoemail[SMALLBUFSIZE], fromemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
    char *arule = NULL;
    struct session_data sdata;
    struct _state sstate;
@@ -228,11 +228,11 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                      counters.c_duplicate++;
                   }
 
-                  snprintf(reason, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f", 
+                  snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f", 
                                (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
                                    sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
 
-                  syslog(LOG_PRIORITY, "%s: %s got mail size=%d, body digest=%s, %s", sdata.ttmpfile, rctptoemail, sdata.tot_len, sdata.bodydigest, reason);
+                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, reference=%s, message-id=%s, %s", sdata.ttmpfile, fromemail, sdata.tot_len, sstate.reference, sstate.message_id, delay);
 
 
 
