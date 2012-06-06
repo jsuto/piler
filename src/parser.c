@@ -18,7 +18,8 @@
 
 struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __config *cfg){
    FILE *f;
-   char buf[MAXBUFSIZE];
+   int i, len;
+   char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
    struct _state state;
 
    init_state(&state);
@@ -29,6 +30,42 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
       return state;
    }
 
+
+   if(sdata->num_of_rcpt_to > 0){
+      for(i=0; i<sdata->num_of_rcpt_to; i++){
+         extractEmail(sdata->rcptto[i], puf);
+
+         if(strlen(puf) > 5){
+            p = strstr(puf, cfg->hostid);
+            if(p && *(p-1) == '.'){
+
+               *(p-1) = ' ';
+               *p = '\0';
+
+               len = strlen(puf);
+
+               if(does_it_seem_like_an_email_address(puf) == 1){
+
+                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing rcpt to address: *%s*", sdata->ttmpfile, puf);
+
+                  if(strlen(state.b_to) < MAXBUFSIZE-len-1){
+                     if(is_string_on_list(state.rcpt, puf) == 0){
+                        append_list(&(state.rcpt), puf);
+                        memcpy(&(state.b_to[strlen(state.b_to)]), puf, len);
+
+                        if(strlen(state.b_to) < MAXBUFSIZE-len-1){
+                           split_email_address(puf);
+                           memcpy(&(state.b_to[strlen(state.b_to)]), puf, len);
+                        }
+                     }
+                  }
+
+               }
+            }
+         }
+
+      }
+   }
 
    if(take_into_pieces == 1){
       state.mfd = open(sdata->tmpframe, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);

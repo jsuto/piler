@@ -195,6 +195,8 @@ void trimBuffer(char *s){
 int extractEmail(char *rawmail, char *email){
    char *p;
 
+   memset(email, 0, SMALLBUFSIZE);
+
    p = strchr(rawmail, '<');
    if(p){
       snprintf(email, SMALLBUFSIZE-1, "%s", p+1);
