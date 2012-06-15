@@ -83,11 +83,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             memcpy(last2buf+prevlen, puf, MAXBUFSIZE);
 
 
-            /*if(sdata.hdr_len == 0){
-               sdata.hdr_len = searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, "\n\r\n", 3);
-               if(sdata.hdr_len == 0) searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, "\n\n", 2);
-            }*/
-
             pos = searchStringInBuffer(last2buf, 2*MAXBUFSIZE+1, SMTP_CMD_PERIOD, 5);
             if(pos > 0){
 
@@ -454,6 +449,15 @@ AFTER_PERIOD:
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
       send(new_sd, buf, strlen(buf), 0);
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+
+      if(sdata.fd != -1){
+
+         syslog(LOG_PRIORITY, "%s: removing stale files: %s, %s", sdata.ttmpfile, sdata.ttmpfile, sdata.tmpframe);
+
+         close(sdata.fd);
+         unlink(sdata.ttmpfile);
+         unlink(sdata.tmpframe);
+      }
 
       goto QUITTING;
    }
