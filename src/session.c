@@ -391,14 +391,13 @@ AFTER_PERIOD:
             state = SMTP_STATE_FINISHED;
 
             snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_221_GOODBYE, cfg->hostid);
-            send(new_sd, buf, strlen(buf), 0);
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+            strncat(resp, buf, MAXBUFSIZE-1);
 
             unlink(sdata.ttmpfile);
             unlink(sdata.tmpframe);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sdata.ttmpfile);
 
-            goto QUITTING;
+            continue;
          }
 
 
@@ -436,6 +435,10 @@ AFTER_PERIOD:
          send(new_sd, resp, strlen(resp), 0);
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, resp);
          memset(resp, 0, MAXBUFSIZE);
+      }
+
+      if(state == SMTP_STATE_FINISHED){
+         goto QUITTING;
       }
 
    } /* while */
