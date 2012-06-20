@@ -378,6 +378,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
    /* discard if existing message_id */
 
    if(is_existing_message_id(sdata, state, data, cfg) == 1){
+      for(i=1; i<=state->n_attachments; i++) unlink(state->attachments[i].internalname);
       return ERR_EXISTS;
    }
 
