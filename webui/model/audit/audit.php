@@ -9,6 +9,7 @@ class ModelAuditAudit extends Model {
       $sort = "ts";
       $order = "DESC";
       $sortorder = "ORDER BY ts DESC";
+      $date1 = $date2 = 0;
       $q = '';
 
 
@@ -40,8 +41,10 @@ class ModelAuditAudit extends Model {
          $where .= " AND ref IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
       }
 
+      if(isset($data['date1'])) { $date1 = $data['date1']; }
+      if(isset($data['date2'])) { $date2 = $data['date2']; }
 
-      $date = fixup_date_condition('ts', $data['date1'], $data['date2']);
+      $date = fixup_date_condition('ts', $date1, $date2);
 
 
       if($date) { $where .= " AND $date "; }

@@ -44,7 +44,7 @@ class ModelSearchSearch extends Model {
          $all_ids = $m['ids'];
       } else {
 
-         if($data['ref']){
+         if(isset($data['ref']) && $data['ref']){
             $all_ids = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
          }
          else {
@@ -269,7 +269,7 @@ class ModelSearchSearch extends Model {
 
       if(isset($data['attachment_type']) && $data['attachment_type'] == 'any') { $a = "attachments > 0 AND "; }
 
-      if($data['tag']) {
+      if(isset($data['tag']) && $data['tag']) {
          $data['tag'] = $this->fixup_sphinx_operators($data['tag']);
 
          $aa = $this->sphx->query("SELECT id FROM " . SPHINX_TAG_INDEX . " WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@tag " . $data['tag'] . " ') ");
