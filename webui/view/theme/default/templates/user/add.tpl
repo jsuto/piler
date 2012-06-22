@@ -34,6 +34,20 @@
          </div>
       </div>
 
+
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_groups; ?>:</div>
+         <div class="domaincell">
+            <select name="gid">
+            <option value="0"<?php if(isset($post) && $post['gid'] == 0){ ?> selected="selected"<?php } ?>>-</option>
+<?php foreach ($groups as $group) { ?>
+            <option value="<?php print $group['id']; ?>"<?php if(isset($post) && $post['gid'] == $group['id']){ ?> selected="selected"<?php } ?>><?php print $group['groupname']; ?></option>
+<?php } ?>
+         </select>
+         </div>
+      </div>
+
+
 <?php if(ENABLE_LDAP_IMPORT_FEATURE == 1) { ?>
       <div class="domainrow">
          <div class="domaincell">LDAP DN:</div>

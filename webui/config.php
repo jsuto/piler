@@ -80,6 +80,8 @@ define('DB_PASSWORD', 'piler');
 define('DB_DATABASE', 'piler');
 
 define('TABLE_USER', 'user');
+define('TABLE_GROUP', 'group');
+define('TABLE_GROUP_EMAIL', 'group_email');
 define('TABLE_EMAIL', 'email');
 define('TABLE_META', 'metadata');
 define('TABLE_ATTACHMENT', 'attachment');

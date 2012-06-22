@@ -16,6 +16,7 @@ class ControllerUserAdd extends Controller {
       $db = Registry::get('db');
 
       $this->load->model('user/user');
+      $this->load->model('group/group');
 
       $this->document->title = $this->data['text_user_management'];
 
@@ -59,6 +60,7 @@ class ControllerUserAdd extends Controller {
          }
          else {
             $this->data['next_user_id'] = $this->model_user_user->getNextUid();
+            $this->data['groups'] = $this->model_group_group->get_groups();
          }
       }
       else {

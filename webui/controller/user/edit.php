@@ -19,6 +19,7 @@ class ControllerUserEdit extends Controller {
       $language = Registry::get('language');
 
       $this->load->model('user/user');
+      $this->load->model('group/group');
 
 
       $this->document->title = $language->get('text_user_management');
@@ -69,7 +70,8 @@ class ControllerUserEdit extends Controller {
             }
          }
          else {
-            $this->data['user'] = $this->model_user_user->getUserByUid($this->data['uid']);
+            $this->data['user'] = $this->model_user_user->get_user_by_uid($this->data['uid']);
+            $this->data['groups'] = $this->model_group_group->get_groups();
 
             $this->data['user']['group_membership'] = $this->model_user_user->get_additional_uids($this->data['uid']);
 

@@ -25,7 +25,8 @@
 
             <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>><?php print $text_administration; ?></a>
                <ul class="sub_menu">
-                  <li><a href="index.php?route=user/list"><?php print $text_user_management; ?></a></li>
+                  <li><a href="index.php?route=user/list"><?php print $text_users; ?></a></li>
+                  <li><a href="index.php?route=group/list"><?php print $text_groups; ?></a></li>
                   <li><a href="index.php?route=domain/domain"><?php print $text_domain; ?></a></li>
                   <li><a href="index.php?route=policy/archiving"><?php print $text_archiving_rules; ?></a></li>
                   <li><a href="index.php?route=policy/retention"><?php print $text_retention_rules; ?></a></li>

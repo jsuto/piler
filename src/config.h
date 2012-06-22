@@ -11,7 +11,7 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.18"
+#define VERSION "0.1.19"
 
 #define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n"
 

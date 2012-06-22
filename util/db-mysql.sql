@@ -189,6 +189,7 @@ create index `user_settings_idx` on `user_settings`(`username`);
 drop table if exists `user`;
 create table if not exists `user` (
    `uid` int unsigned not null primary key,
+   `gid` int default 0,
    `username` char(64) not null unique,
    `realname` char(64) default null,
    `password` char(48) default null,
@@ -197,7 +198,7 @@ create table if not exists `user` (
    `isadmin` tinyint default 0
 ) Engine=InnoDB;
 
-insert into `user` (`uid`, `username`, `realname`, `password`, `isadmin`, `domain`) values (0, 'admin', 'built-in piler admin', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 1, 'local');
+insert into `user` (`uid`, `gid`, `username`, `realname`, `password`, `isadmin`, `domain`) values (0, 0, 'admin', 'built-in piler admin', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 1, 'local');
 
 drop table if exists `email`;
 create table if not exists `email` (
@@ -213,6 +214,19 @@ create table if not exists `email_groups` (
    `gid` int unsigned not null,
    unique key `uid` (`uid`,`gid`),
    key `email_groups_idx` (`uid`,`gid`)
+) ENGINE=InnoDB;
+
+
+create table if not exists `group` (
+   `id` bigint unsigned not null auto_increment primary key,
+   `groupname` char(255) not null unique
+) ENGINE=InnoDB;
+
+
+create table if not exists `group_email` (
+   `id` bigint unsigned not null,
+   `email` char(128) not null,
+   key `group_email_idx` (`id`)
 ) ENGINE=InnoDB;
 
 

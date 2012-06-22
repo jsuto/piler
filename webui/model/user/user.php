@@ -57,7 +57,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function get_users_all_email_addresses($uid = 0) {
+   public function get_users_all_email_addresses($uid = 0, $gid = 0) {
       $data = array();
       $uids = $uid;
 
@@ -77,6 +77,15 @@ class ModelUserUser extends Model {
             array_push($data, $q['email']);
          }
       
+      }
+
+
+      $query = $this->db->query("SELECT email FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($gid));
+
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) {
+            if(!in_array($email, $data)) { array_push($data, $q['email']); }
+         }
       }
 
       return $data;
@@ -150,7 +159,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getUserByUid($uid = 0) {
+   public function get_user_by_uid($uid = 0) {
       if(!is_numeric($uid) || (int)$uid < 0){
          return array();
       }
@@ -209,13 +218,14 @@ class ModelUserUser extends Model {
 
       if($page_len > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$page_len; }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit");
+      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, gid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit");
 
       foreach ($query->rows as $q) {
 
          if(Registry::get('admin_user') == 1 || (isset($q['domain']) && $q['domain'] == $my_domain[0]) ) {
             $users[] = array(
                           'uid'          => $q['uid'],
+                          'gid'          => $q['gid'],
                           'username'     => $q['username'],
                           'realname'     => $q['realname'],
                           'domain'       => isset($q['domain']) ? $q['domain'] : "",
@@ -313,7 +323,7 @@ class ModelUserUser extends Model {
 
       $encrypted_password = crypt($user['password']);
 
-      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin) VALUES(?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin']));
+      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, gid, username, realname, password, domain, dn, isadmin) VALUES(?,?,?,?,?,?,?,?)", array((int)$user['uid'], (int)$user['gid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin']));
 
       if($query->error == 1 || $this->db->countAffected() == 0){ return $user['username']; }
 
@@ -377,7 +387,7 @@ class ModelUserUser extends Model {
          if($this->db->countAffected() != 1) { return 0; }
       }
 
-      $query = $this->db->query("UPDATE " . TABLE_USER . " SET username=?, realname=?, domain=?, dn=?, isadmin=? WHERE uid=?", array($user['username'], $user['realname'], $user['domain'], @$user['dn'], $user['isadmin'], (int)$user['uid']));
+      $query = $this->db->query("UPDATE " . TABLE_USER . " SET username=?, realname=?, domain=?, gid=?, dn=?, isadmin=? WHERE uid=?", array($user['username'], $user['realname'], $user['domain'], $user['gid'], @$user['dn'], $user['isadmin'], (int)$user['uid']));
 
 
       /* first, remove all his email addresses */
