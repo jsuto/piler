@@ -41,13 +41,9 @@ class ControllerGroupAdd extends Controller {
 
             if($ret == 0) {
 
-               //$this->data['post'] = $this->request->post;
-               //$this->data['next_group_id'] = $this->model_group_group->getNextUid();
+               $this->data['post'] = $this->request->post;
 
             }
-         }
-         else {
-            //$this->data['next_group_id'] = $this->model_group_group->getNextUid();
          }
       }
       else {
@@ -68,6 +64,9 @@ class ControllerGroupAdd extends Controller {
          $this->error['group'] = $this->data['text_missing_data'];
       }
 
+      if(!isset($this->request->post['email']) || $this->request->post['email'] == '') {
+         $this->error['email'] = $this->data['text_missing_data'];
+      }
 
       if (!$this->error) {
          return true;
