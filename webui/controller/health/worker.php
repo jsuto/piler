@@ -61,7 +61,7 @@ class ControllerHealthWorker extends Controller {
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['resetcounters']) && $this->request->post['resetcounters'] == 1) {
          if(isset($this->request->post['confirmed']) && $this->request->post['confirmed'] == 1 && Registry::get('admin_user') == 1) {
-            $this->model_stat_counter->resetCounters();
+            $this->model_stat_counter->reset_counters();
             header("Location: index.php?route=health/health");
             exit;
          }
@@ -71,7 +71,7 @@ class ControllerHealthWorker extends Controller {
       }
 
 
-      list($this->data['archive_size'], $this->data['counters']) = $this->model_stat_counter->getCounters();
+      list($this->data['archive_size'], $this->data['counters']) = $this->model_stat_counter->get_counters();
 
       $this->data['prefix'] = '';
       if(isset($this->data['counters'][MEMCACHED_PREFIX . 'rcvd'])) { $this->data['prefix'] = MEMCACHED_PREFIX; }

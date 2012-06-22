@@ -1,6 +1,4 @@
 
-<h4><?php print $text_add_new_user_alias; ?></h4>
-
 <?php if(isset($errorstring)){ ?><p class="loginfailed"><?php print $text_error; ?>: <?php print $errorstring; ?></p><?php } ?>
 
 

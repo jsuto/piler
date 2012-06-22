@@ -24,12 +24,12 @@ class ControllerStatCounter extends Controller {
       if(Registry::get('admin_user') == 1) {
 
          if($this->request->server['REQUEST_METHOD'] == 'POST' && @$this->request->post['reset'] == 1) {
-            $this->model_stat_counter->resetCounters();
+            $this->model_stat_counter->reset_counters();
             header("Location: index.php?route=stat/counter");
             exit;
          }
 
-         $this->data['counters'] = $this->model_stat_counter->getCounters();
+         $this->data['counters'] = $this->model_stat_counter->get_counters();
 
          $this->data['prefix'] = '';
 

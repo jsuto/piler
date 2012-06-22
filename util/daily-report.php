@@ -66,7 +66,7 @@ $mail = new ModelMailMail();
       list($totalmem, $meminfo, $totalswap, $swapinfo) = $health->meminfo();
       $shortdiskinfo = $health->diskinfo();
 
-      list($archive_size, $counters) = $counter->getCounters();
+      list($archive_size, $counters) = $counter->get_counters();
 
       $sysinfo = $health->sysinfo();
 

@@ -22,7 +22,7 @@ class ControllerUserEdit extends Controller {
       $this->load->model('group/group');
 
 
-      $this->document->title = $language->get('text_user_management');
+      $this->document->title = $language->get('text_edit_user');
 
       $this->data['domains'] = array();
 
@@ -53,7 +53,7 @@ class ControllerUserEdit extends Controller {
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
             if($this->validate() == true){
 
-               $ret = $this->model_user_user->updateUser($this->request->post);
+               $ret = $this->model_user_user->update_user($this->request->post);
 
                if($ret == 1){
                   $this->data['x'] = $this->data['text_successfully_modified'];
@@ -75,7 +75,7 @@ class ControllerUserEdit extends Controller {
 
             $this->data['user']['group_membership'] = $this->model_user_user->get_additional_uids($this->data['uid']);
 
-            $this->data['emails'] = $this->model_user_user->getEmails($this->data['user']['username']);
+            $this->data['emails'] = $this->model_user_user->get_emails($this->data['user']['username']);
 
          }
       }

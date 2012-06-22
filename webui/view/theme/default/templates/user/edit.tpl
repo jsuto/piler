@@ -85,7 +85,7 @@
          <div class="domaincell"><?php print $text_group_membership; ?>:</div>
          <div class="domaincell">
             <?php foreach ($user['group_membership'] as $_group_uid) { ?>
-               <?php $a = preg_split("/\s/", $this->model_user_user->getEmailsByUid($_group_uid)); print $a[0]; ?></br />
+               <?php $a = preg_split("/\s/", $this->model_user_user->get_emails_by_uid($_group_uid)); print $a[0]; ?></br />
             <?php } ?>
          </div>
       </div>

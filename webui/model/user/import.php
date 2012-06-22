@@ -4,18 +4,10 @@
 class ModelUserImport extends Model {
 
 
-   public function getLdapParameters() {
-      $my_domain = $this->model_user_user->getDomains();
-      $query = $this->db->query("SELECT remotehost, basedn, binddn FROM " . TABLE_REMOTE . " WHERE remotedomain=?", array($my_domain[0]));
-
-      return $query->row;
-   }
-
-
-   public function queryRemoteUsers($host) {
+   public function query_remote_users($host) {
       $data = array();
 
-      LOGGER("running queryRemoteUsers() ...");
+      LOGGER("running query_remote_users() ...");
 
       $attrs = array("cn", "mail", "mailAlternateAddress", "memberdn", "memberaddr");
       $mailAttr = 'mail';
@@ -111,7 +103,7 @@ class ModelUserImport extends Model {
 
 
 
-   public function fillRemoteTable($host = array(), $domain = '') {
+   public function fill_remote_table($host = array(), $domain = '') {
       if($domain == '') { return 0; }
 
       /*
@@ -141,7 +133,7 @@ class ModelUserImport extends Model {
 
 
 
-   public function processUsers($users = array(), $globals = array()) {
+   public function process_users($users = array(), $globals = array()) {
       $late_add = array();
       $uids = array();
       $exclude = array();
@@ -149,7 +141,7 @@ class ModelUserImport extends Model {
       $deleteduser = 0;
       $n = 0;
 
-      LOGGER("running processUsers() ...");
+      LOGGER("running process_users() ...");
 
       /* build a list of DNs to exclude from the import */
 
@@ -170,7 +162,7 @@ class ModelUserImport extends Model {
 
          /* Does this DN exist in the user table ? */
 
-         $__user = $this->model_user_user->getUserByDN($_user['dn']);
+         $__user = $this->model_user_user->get_user_by_dn($_user['dn']);
 
          if(isset($__user['uid'])) {
 
@@ -180,7 +172,7 @@ class ModelUserImport extends Model {
             /* if so, then verify the email addresses */
 
             $changed = 0;
-            $emails = $this->model_user_user->getEmailsByUid($__user['uid']);
+            $emails = $this->model_user_user->get_emails_by_uid($__user['uid']);
 
             /* first let's add the new email addresses */
 
@@ -189,7 +181,7 @@ class ModelUserImport extends Model {
 
             foreach ($ldap_emails as $email) {
                if(!in_array($email, $sql_emails)) {
-                  $rc = $this->model_user_user->addEmail($__user['uid'], $email);
+                  $rc = $this->model_user_user->add_email($__user['uid'], $email);
                   $changed++;
 
                   /* in case of an error add it to the $late_add array() */
@@ -208,7 +200,7 @@ class ModelUserImport extends Model {
 
             foreach ($sql_emails as $email) {
                if(!in_array($email, $ldap_emails)) {
-                  $rc = $this->model_user_user->removeEmail($__user['uid'], $email);
+                  $rc = $this->model_user_user->remove_email($__user['uid'], $email);
                   $changed++;
                }
             }
@@ -224,7 +216,7 @@ class ModelUserImport extends Model {
             $user = $this->createNewUserArray($_user['dn'], $_user['username'], $_user['realname'], $_user['emails'], $globals);
             array_push($uids, $user['uid']);
 
-            $rc = $this->model_user_user->addUser($user);
+            $rc = $this->model_user_user->add_user($user);
             if($rc == 1) { $newuser++; }
          }
       }
@@ -233,7 +225,7 @@ class ModelUserImport extends Model {
       /* add the rest to the email table */
 
       foreach ($late_add as $new) {
-         $rc = $this->model_user_user->addEmail($new['uid'], $new['email']);
+         $rc = $this->model_user_user->add_email($new['uid'], $new['email']);
          if($rc == 1) { $newuser++; }
       }
 
@@ -258,7 +250,7 @@ class ModelUserImport extends Model {
       foreach ($users as $user) {
          if($user['members']) {
 
-            $group = $this->model_user_user->getUserByDN($user['dn']);
+            $group = $this->model_user_user->get_user_by_dn($user['dn']);
 
             $members = explode("\n", $user['members']);
             if(count($members) > 0) {
@@ -269,9 +261,9 @@ class ModelUserImport extends Model {
 
                foreach ($members as $member) {
                   if(validemail($member)) {
-                     $__user = $this->model_user_user->getUserByEmail($member);
+                     $__user = $this->model_user_user->get_user_by_email($member);
                   } else {
-                     $__user = $this->model_user_user->getUserByDN($member);
+                     $__user = $this->model_user_user->get_user_by_dn($member);
                   }
 
                   if(isset($group['uid']) && isset($__user['uid'])) {
@@ -291,7 +283,7 @@ class ModelUserImport extends Model {
    private function createNewUserArray($dn = '', $username = '', $realname = '', $emails = '', $globals = array()) {
       $user = array();
 
-      $user['uid'] = $this->model_user_user->getNextUid();
+      $user['uid'] = $this->model_user_user->get_next_uid();
       $user['gid'] = $globals['gid'];
 
       $user['email'] = $emails;
@@ -322,7 +314,7 @@ class ModelUserImport extends Model {
    }
 
 
-   public function trashPassword($users = array()) {
+   public function trash_password($users = array()) {
       foreach ($users as $user) {
          $query = $this->db->query("UPDATE " . TABLE_USER . " SET password='*' WHERE dn=?", array($user['dn']));
          $rc = $this->db->countAffected();

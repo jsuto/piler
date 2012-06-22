@@ -3,7 +3,7 @@
 class ModelUserUser extends Model {
 
 
-   public function checkUID($uid) {
+   public function check_uid($uid) {
       if($uid == "") { return 0; }
 
       if(!is_numeric($uid)) { return 0; }
@@ -14,7 +14,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getUidByName($username = '') {
+   public function get_uid_by_name($username = '') {
       if($username == ""){ return -1; }
 
       $query = $this->db->query("SELECT uid FROM " . TABLE_USER . " WHERE username=?", array($username));
@@ -24,18 +24,6 @@ class ModelUserUser extends Model {
       }
 
       return -1;
-   }
-
-
-   public function getUsernameByUid($uid = 0) {
-
-      $query = $this->db->query("SELECT username FROM " . TABLE_USER . " WHERE uid=?", array((int)$uid));
-
-      if(isset($query->row['username'])){
-         return $query->row['username'];
-      }
-
-      return "";
    }
 
 
@@ -109,19 +97,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getEmailAddress($username = '') {
-
-      $query = $this->db->query("SELECT " . TABLE_EMAIL . ".email AS email FROM " . TABLE_EMAIL . "," . TABLE_USER . " WHERE " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid AND " . TABLE_USER . ".username=? LIMIT 1", array($username));
-
-      if(isset($query->row['email'])){
-         return $query->row['email'];
-      }
-
-      return "";
-   }
-
-
-   public function getEmails($username = '') {
+   public function get_emails($username = '') {
       $emails = "";
 
       $query = $this->db->query("SELECT " . TABLE_EMAIL . ".email AS email FROM " . TABLE_EMAIL . "," . TABLE_USER . " WHERE " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid AND " . TABLE_USER . ".username=?", array($username));
@@ -134,7 +110,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getEmailsByUid($uid = 0) {
+   public function get_emails_by_uid($uid = 0) {
       $emails = "";
 
       $query = $this->db->query("SELECT email FROM " . TABLE_EMAIL . " WHERE uid=?", array((int)$uid));
@@ -146,7 +122,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getUserByDN($dn = '') {
+   public function get_user_by_dn($dn = '') {
       if($dn == '') { return array(); }
 
       $query = $this->db->query("SELECT * FROM " . TABLE_USER . " WHERE dn=?", array($dn));
@@ -170,7 +146,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getUserByEmail($email = '') {
+   public function get_user_by_email($email = '') {
       if($email == '') {
          return array();
       }
@@ -181,20 +157,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getUsernameByEmail($email = '') {
-      $username = "";
-
-      if($email == '') { return $username; }
-
-      $query = $this->db->query("SELECT username FROM " . TABLE_USER . " WHERE uid IN (SELECT uid FROM " . TABLE_EMAIL . " WHERE email=?)", array($email));
-
-      if(isset($query->row['username'])) { $username = $query->row['username']; }
-
-      return $username;
-   }
-
-
-   public function getUsers($search = '', $page = 0, $page_len = 0, $sort = 'username', $order = 0) {
+   public function get_users($search = '', $page = 0, $page_len = 0, $sort = 'username', $order = 0) {
       $where_cond = " WHERE " . TABLE_USER . ".uid=" . TABLE_EMAIL . ".uid ";
       $_order = "";
       $users = array();
@@ -240,7 +203,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function howManyUsers($search = '') {
+   public function count_users($search = '') {
       $where_cond = "";
 
       if($search){
@@ -279,7 +242,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function getNextUid() {
+   public function get_next_uid() {
 
       $query = $this->db->query("SELECT MAX(uid) AS last_id FROM " . TABLE_USER);
 
@@ -291,11 +254,11 @@ class ModelUserUser extends Model {
    }
 
 
-   public function addUser($user) {
+   public function add_user($user) {
       LOGGER("add user: " . $user['username'] . ", uid=" . (int)$user['uid']);
 
       if(!isset($user['domain']) || $user['domain'] == "") { return -1; }
-      if(!isset($user['username']) || $user['username'] == "" || $this->getUidByName($user['username']) > 0) { return -1; }
+      if(!isset($user['username']) || $user['username'] == "" || $this->get_uid_by_name($user['username']) > 0) { return -1; }
 
       $emails = explode("\n", $user['email']);
       foreach ($emails as $email) {
@@ -330,7 +293,7 @@ class ModelUserUser extends Model {
       foreach ($emails as $email) {
          $email = rtrim($email);
 
-         $ret = $this->addEmail((int)$user['uid'], $email);
+         $ret = $this->add_email((int)$user['uid'], $email);
          if($ret == 0) { return -2; }
       }
 
@@ -339,7 +302,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function addEmail($uid = 0, $email = '') {
+   public function add_email($uid = 0, $email = '') {
       if($uid < 1 || $email == ""){ return 0; }
 
       $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array((int)$uid, $email));
@@ -352,7 +315,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function removeEmail($uid = 0, $email = '') {
+   public function remove_email($uid = 0, $email = '') {
       if((int)$uid < 1 || $email == ""){ return 0; }
 
       $query = $this->db->query("DELETE FROM " . TABLE_EMAIL . " WHERE uid=? AND email=?", array((int)$uid, $email));
@@ -365,7 +328,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function updateUser($user) {
+   public function update_user($user) {
       LOGGER("update user: " . $user['username'] . ", uid=" . (int)$user['uid']);
 
       $emails = explode("\n", $user['email']);
@@ -413,8 +376,8 @@ class ModelUserUser extends Model {
    }
 
 
-   public function deleteUser($uid) {
-      if(!$this->checkUID($uid)){ return 0; }
+   public function delete_user($uid) {
+      if(!$this->check_uid($uid)){ return 0; }
 
       $query = $this->db->query("DELETE FROM " . TABLE_EMAIL . " WHERE uid=?", array((int)$uid));
       $query = $this->db->query("DELETE FROM " . TABLE_USER . " WHERE uid=?", array((int)$uid));

@@ -18,7 +18,7 @@ class ControllerUserAdd extends Controller {
       $this->load->model('user/user');
       $this->load->model('group/group');
 
-      $this->document->title = $this->data['text_user_management'];
+      $this->document->title = $this->data['text_add_new_user_alias'];
 
       $this->data['domains'] = array();
 
@@ -37,7 +37,7 @@ class ControllerUserAdd extends Controller {
             $ret = 0;
 
             if($this->validate() == true){
-               $ret = $this->model_user_user->addUser($this->request->post);
+               $ret = $this->model_user_user->add_user($this->request->post);
 
                $_SESSION['last_domain'] = $this->request->post['domain'];
 
@@ -54,12 +54,12 @@ class ControllerUserAdd extends Controller {
             if($ret == 0) {
 
                $this->data['post'] = $this->request->post;
-               $this->data['next_user_id'] = $this->model_user_user->getNextUid();
+               $this->data['next_user_id'] = $this->model_user_user->get_next_uid();
 
             }
          }
          else {
-            $this->data['next_user_id'] = $this->model_user_user->getNextUid();
+            $this->data['next_user_id'] = $this->model_user_user->get_next_uid();
             $this->data['groups'] = $this->model_group_group->get_groups();
          }
       }
@@ -114,7 +114,7 @@ class ControllerUserAdd extends Controller {
          $this->error['username'] = $this->data['text_invalid_username'];
       }
 
-      if(isset($this->request->post['username']) && $this->model_user_user->getUidByName($this->request->post['username']) > 0) {
+      if(isset($this->request->post['username']) && $this->model_user_user->get_uid_by_name($this->request->post['username']) > 0) {
          $this->error['username'] = $this->data['text_existing_user'];
       }
 

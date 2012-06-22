@@ -2,7 +2,7 @@
 
 class ModelStatCounter extends Model {
 
-   public function getCounters(){
+   public function get_counters(){
       $counter = array();
       $asize = 0;
 
@@ -32,7 +32,7 @@ class ModelStatCounter extends Model {
    }
 
 
-   public function resetCounters(){
+   public function reset_counters(){
 
       if(MEMCACHED_ENABLED) {
          $memcache = Registry::get('memcache');

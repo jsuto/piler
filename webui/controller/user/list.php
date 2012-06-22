@@ -59,10 +59,10 @@ class ControllerUserList extends Controller {
 
       if(Registry::get('admin_user') == 1) {
 
-         $users = $this->model_user_user->getUsers($this->data['search'], $this->data['page'], $this->data['page_len'], 
+         $users = $this->model_user_user->get_users($this->data['search'], $this->data['page'], $this->data['page_len'], 
                     $this->data['sort'], $this->data['order']);
 
-         $this->data['total_users'] = $this->model_user_user->howManyUsers($this->data['search']);
+         $this->data['total_users'] = $this->model_user_user->count_users($this->data['search']);
 
          foreach ($users as $user) {
             $policy_group = DEFAULT_POLICY;

@@ -20,7 +20,7 @@ class ControllerGroupEdit extends Controller {
       $this->load->model('group/group');
 
 
-      $this->document->title = $language->get('text_group_management');
+      $this->document->title = $language->get('text_edit_group');
 
       $this->data['domains'] = array();
 
@@ -38,7 +38,10 @@ class ControllerGroupEdit extends Controller {
 
       if(Registry::get('admin_user') == 1) {
 
+         $this->data['group'] = $this->model_group_group->get_domain_by_id($this->data['id']);
+
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
+
             if($this->validate() == true){
 
                $ret = $this->model_group_group->update_group($this->request->post);
@@ -50,20 +53,13 @@ class ControllerGroupEdit extends Controller {
                   $this->data['errorstring'] = $this->data['text_failed_to_modify'] . ": " . $ret;
                }
 
-               //$__groupname = $this->request->post['groupname'];
             }
             else {
-               $this->template = "common/error.tpl";
                $this->data['errorstring'] = array_pop($this->error);
             }
          }
          else {
-            $this->data['group'] = $this->model_group_group->get_domain_by_id($this->data['id']);
             $this->data['email'] = $this->model_group_group->get_emails_by_group_id($this->data['id']);
-
-            //$this->data['user']['group_membership'] = $this->model_user_user->get_additional_uids($this->data['uid']);
-            //$this->data['emails'] = $this->model_user_user->getEmails($this->data['user']['username']);
-
          }
       }
       else {
@@ -82,6 +78,10 @@ class ControllerGroupEdit extends Controller {
 
       if(!isset($this->request->post['groupname'])) {
          $this->error['group'] = $this->data['text_missing_data'];
+      }
+
+      if(!isset($this->request->post['email']) || $this->request->post['email'] == '') {
+         $this->error['email'] = $this->data['text_missing_data'];
       }
 
       if(!isset($this->request->post['id']) || !is_numeric($this->request->post['id']) || (int)$this->request->post['id'] < 0) {

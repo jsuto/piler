@@ -1,4 +1,5 @@
 
+<?php if(isset($errorstring)){ ?><p class="loginfailed"><?php print $text_error; ?>: <?php print $errorstring; ?></p><?php } ?>
 
 <?php if(isset($group)) { ?>
 

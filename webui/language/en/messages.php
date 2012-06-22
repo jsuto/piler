@@ -74,6 +74,8 @@ $_['text_download_message'] = "Download message (EML)";
 $_['text_download_message2'] = "download message";
 
 $_['text_edit'] = "Edit";
+$_['text_edit_group'] = "Edit group";
+$_['text_edit_user'] = "Edit user";
 $_['text_edit_or_view'] = "Edit/view";
 $_['text_email'] = "Email address";
 $_['text_email_addresses'] = "Email addresses";
@@ -297,7 +299,7 @@ $_['text_users'] = "Users";
 $_['text_user_id'] = "User id";
 $_['text_user_auditor'] = "Auditor";
 $_['text_user_domainadmin'] = "Domain admin";
-$_['text_user_management'] = "User";
+$_['text_user_management'] = "User management";
 $_['text_user_masteradmin'] = "Master admin";
 $_['text_user_read_only_admin'] = "Read-only admin";
 $_['text_user_regular'] = "Regular user";

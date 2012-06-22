@@ -50,7 +50,7 @@ class ModelUserAuth extends Model {
          $_SESSION['admin_user'] = 0;
          $_SESSION['email'] = $user['username'];
 
-         $this->changePassword($user['username'], $password);
+         $this->change_password($user['username'], $password);
 
          AUDIT(ACTION_LOGIN, $user['username'], '', '', 'changed password in local table');
 
@@ -64,7 +64,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   public function changePassword($username = '', $password = '') {
+   public function change_password($username = '', $password = '') {
       if($username == "" || $password == ""){ return 0; }
 
       $query = $this->db->query("UPDATE " . TABLE_USER . " SET password=? WHERE username=?", array(crypt($password), $username));

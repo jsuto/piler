@@ -17,7 +17,7 @@ class ControllerGroupAdd extends Controller {
 
       $this->load->model('group/group');
 
-      $this->document->title = $this->data['text_group_management'];
+      $this->document->title = $this->data['text_add_new_group'];
 
       /* check if we are admin */
 

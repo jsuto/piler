@@ -55,19 +55,19 @@ extract($language->data);
 
 
 foreach ($cfg as $ldap_params) {
-   $users = $import->model_user_import->queryRemoteUsers($ldap_params, $ldap_params['domain']);
-   $rc = $import->model_user_import->fillRemoteTable($ldap_params, $ldap_params['domain']);
+   $users = $import->model_user_import->query_remote_users($ldap_params, $ldap_params['domain']);
+   $rc = $import->model_user_import->fill_remote_table($ldap_params, $ldap_params['domain']);
 
    $totalusers += count($users);
 
-   list($newusers, $deletedusers) = $import->model_user_import->processUsers($users, $ldap_params);
-   list($a1, $a2) = $import->model_user_import->processUsers($users, $ldap_params);
+   list($newusers, $deletedusers) = $import->model_user_import->process_users($users, $ldap_params);
+   list($a1, $a2) = $import->model_user_import->process_users($users, $ldap_params);
 
    $totalnewusers += $newusers;
    $totaldeletedusers += $deletedusers;
 
    if($trash_passwords == 1) {
-      $import->model_user_import->trashPassword($users);
+      $import->model_user_import->trash_password($users);
    }
 
 }

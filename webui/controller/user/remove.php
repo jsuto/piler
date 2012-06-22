@@ -31,7 +31,7 @@ class ControllerUserRemove extends Controller {
       if($this->validate() == true) {
 
          if($this->data['confirmed'] == 1) {
-            $ret = $this->model_user_user->deleteUser($this->data['uid']);
+            $ret = $this->model_user_user->delete_user($this->data['uid']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
             }

@@ -74,6 +74,8 @@ $_['text_download_message'] = "Levél letöltése (EML)";
 $_['text_download_message2'] = "levél letöltése";
 
 $_['text_edit'] = "Szerkeszt";
+$_['text_edit_group'] = "Csoport szerkesztése";
+$_['text_edit_user'] = "Felhasználó szerkesztése";
 $_['text_edit_or_view'] = "Szerkeszt/Megnéz";
 $_['text_email'] = "Email cím";
 $_['text_email_addresses'] = "Email címek";
@@ -120,7 +122,7 @@ $_['text_home'] = "Kezdõlap";
 $_['text_group_id'] = "Csoport azonosító";
 $_['text_groupname'] = "Csoportnév";
 $_['text_groups'] = "Csoportok";
-$_['text_group_management'] = "Csoport";
+$_['text_group_management'] = "Csoportok";
 $_['text_group_membership'] = "Csoport tagság";
 
 $_['text_image'] = "kép";
@@ -298,7 +300,7 @@ $_['text_users'] = "Felhasználók";
 $_['text_user_id'] = "Felhasználó azonosító";
 $_['text_user_auditor'] = "Auditor";
 $_['text_user_domainadmin'] = "Domain admin";
-$_['text_user_management'] = "Felhasználó";
+$_['text_user_management'] = "Felhasználók";
 $_['text_user_masteradmin'] = "Mester admin";
 $_['text_user_read_only_admin'] = "Read-only admin";
 $_['text_user_regular'] = "Sima felhasználó";
