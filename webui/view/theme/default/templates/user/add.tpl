@@ -32,17 +32,14 @@
          </div>
       </div>
 
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_search_groups; ?>*:</div>
+         <div class="domaincell"><input type="text" id="s_piler_group" name="s_piler_group" value="<?php print $text_search_group_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 0);" /></div>
+      </div>
 
       <div class="domainrow">
-         <div class="domaincell"><?php print $text_groups; ?>:</div>
-         <div class="domaincell">
-            <select name="gid">
-            <option value="0"<?php if(isset($post) && $post['gid'] == 0){ ?> selected="selected"<?php } ?>>-</option>
-<?php foreach ($groups as $group) { ?>
-            <option value="<?php print $group['id']; ?>"<?php if(isset($post) && $post['gid'] == $group['id']){ ?> selected="selected"<?php } ?>><?php print $group['groupname']; ?></option>
-<?php } ?>
-         </select>
-         </div>
+         <div class="domaincell"><?php print $text_groups; ?>**:</div>
+         <div class="domaincell"><textarea style="height:80px;" name="group" id="group" class="domain"><?php if(isset($post['group'])){ print $post['group']; } ?></textarea></div>
       </div>
 
 
@@ -74,6 +71,11 @@
                <option value="3"<?php if(isset($user['isadmin']) && $user['isadmin'] == 3){ ?> selected="selected"<?php } ?>><?php print $text_user_read_only_admin; ?></option>
             </select>
          </div>
+      </div>
+
+      <div class="domainrow">
+         <div class="domaincell">&nbsp;</div>
+         <div class="domaincell">*: <?php print $text_min_2_chars; ?><br />**: <?php print $text_enter_one_group_per_line; ?></div>
       </div>
 
       <div class="domainrow">

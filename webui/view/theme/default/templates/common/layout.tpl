@@ -16,9 +16,12 @@
    <script type="text/javascript" src="/view/javascript/jquery-1.7.1.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery-ui-1.8.13.custom.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery.dropdownPlain.js"></script>
+   <script type="text/javascript" src="/view/javascript/colorbox.js"></script>
 
    <script type="text/javascript">
       var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
+      var email_search_url = '<?php print SITE_URL; ?>/index.php?route=group/email&';
+      var group_search_url = '<?php print SITE_URL; ?>/index.php?route=group/group&';
    </script>
 
    <script type="text/javascript" src="/view/javascript/piler.js"></script>

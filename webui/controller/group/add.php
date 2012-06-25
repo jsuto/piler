@@ -26,6 +26,8 @@ class ControllerGroupAdd extends Controller {
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
             $ret = 0;
 
+            $this->data['post'] = $this->request->post;
+
             if($this->validate() == true){
                $ret = $this->model_group_group->add_group($this->request->post);
 

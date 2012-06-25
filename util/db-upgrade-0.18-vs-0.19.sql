@@ -10,6 +10,12 @@ create table if not exists `group_email` (
    key `group_email_idx` (`id`)
 ) ENGINE=InnoDB;
 
-alter table `user` add column `gid` int default 0;
+create table if not exists `group_user` (
+   `id` bigint unsigned not null,
+   `uid` int unsigned not null,
+   key `group_user_idx` (`id`),
+   key `group_user_idx2` (`uid`)
+) ENGINE=InnoDB;
+
 
 

@@ -38,8 +38,6 @@ class ControllerGroupEdit extends Controller {
 
       if(Registry::get('admin_user') == 1) {
 
-         $this->data['group'] = $this->model_group_group->get_domain_by_id($this->data['id']);
-
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
 
             if($this->validate() == true){
@@ -59,6 +57,7 @@ class ControllerGroupEdit extends Controller {
             }
          }
          else {
+            $this->data['group'] = $this->model_group_group->get_domain_by_id($this->data['id']);
             $this->data['email'] = $this->model_group_group->get_emails_by_group_id($this->data['id']);
          }
       }

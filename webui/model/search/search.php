@@ -104,7 +104,7 @@ class ModelSearchSearch extends Model {
       $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
 
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
+      if(Registry::get('auditor_user') == 1) {
          if($data['f_from']) { $f1 .= "|" . $data['f_from']; $n_fc++; }
          if($data['o_from']) { $f1 .= "|" . $data['o_from']; $n_fc++; }
          if($data['from_domain']) { $fd .= "(@fromdomain " . substr($data['from_domain'], 1, strlen($data['from_domain'])) . ")"; $n_fc++; }
@@ -174,7 +174,7 @@ class ModelSearchSearch extends Model {
    private function assemble_simple_query_conditions($data = array(), $sort = 'sent', $order = 'DESC', $sortorder = '', $cache_key = '') {
       $email = $match = "";
 
-      if(Registry::get('admin_user') == 0 && Registry::get('auditor_user') == 0) {
+      if(Registry::get('auditor_user') == 0) {
 
          $all_your_addresses = $this->get_all_your_address();
 
@@ -404,7 +404,7 @@ class ModelSearchSearch extends Model {
    public function get_message_recipients($id = '') {
       $rcpt = array();
 
-      if(Registry::get('admin_user') == 0 && Registry::get('auditor_user') == 0) { return $rcpt; }
+      if(Registry::get('auditor_user') == 0) { return $rcpt; }
 
       $query = $this->db->query("SELECT `to` FROM " . VIEW_MESSAGES . " WHERE piler_id=?", array($id));
 
@@ -434,7 +434,7 @@ class ModelSearchSearch extends Model {
 
       if($id == '') { return 0; }
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) { return 1; }
+      if(Registry::get('auditor_user') == 1) { return 1; }
 
       array_push($arr, $id);
 
@@ -463,7 +463,7 @@ class ModelSearchSearch extends Model {
 
       if(count($id) < 1) { return array(); }
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) { return $id; }
+      if(Registry::get('auditor_user') == 1) { return $id; }
 
       $arr = $id;
 

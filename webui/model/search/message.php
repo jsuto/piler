@@ -57,8 +57,6 @@ class ModelSearchMessage extends Model {
    public function get_message_headers($id = '') {
       $data = '';
 
-      //$f = $this->get_store_path($id);
-      //$msg = $this->decrypt_and_uncompress_file($f.".m");
       $msg = $this->get_raw_message($id);
 
       $pos = strpos($msg, "\n\r\n");
@@ -94,8 +92,6 @@ class ModelSearchMessage extends Model {
       $from = $to = $subject = $date = $message = "";
 
       $msg = $this->get_raw_message($id);
-
-//print "a: $msg\n";
 
       $a = explode("\n", $msg); $msg = "";
 
@@ -166,7 +162,7 @@ class ModelSearchMessage extends Model {
                if($this->check_boundary($boundary, $l) == 1){
 
                   if($text_plain == 1 || $has_text_plain == 0) {
-                  $message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+                     $message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
                   }
 
                   $text_plain = $text_html = $qp = $base64 = 0;
@@ -235,7 +231,6 @@ class ModelSearchMessage extends Model {
          $chunk = preg_replace("/</", "&lt;", $chunk);
          $chunk = preg_replace("/>/", "&gt;", $chunk);
 
-         //$chunk = "<pre>\n" . $this->print_nicely($chunk) . "</pre>\n";
          $chunk = preg_replace("/\n/", "<br />\n", $chunk);
          $chunk = "\n" . $this->print_nicely($chunk);
       }

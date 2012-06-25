@@ -523,3 +523,55 @@ $(document).ready(function() {
   });
 
 
+
+  $(function() {
+
+    $("#s_piler_email").autocomplete({
+        source: email_search_url,
+        minLength: 2,
+        select: function( event, ui ) {
+                if(ui.item){
+                   var prefix = '\n';
+                   var a = document.getElementById("email");
+
+                   if(a && a.value == '') prefix = '';
+
+                   $('#email').val($('#email').val() + prefix + ui.item.value);
+                }
+
+                ui.item.value = '';
+        }
+    });
+
+    $("#s_piler_group").autocomplete({
+        source: group_search_url,
+        minLength: 2,
+        select: function( event, ui ) {
+                if(ui.item){
+                   var prefix = '\n';
+                   var a = document.getElementById("group");
+
+                   if(a && a.value == '') prefix = '';
+
+                   $('#group').val($('#group').val() + prefix + ui.item.value);
+                }
+
+                ui.item.value = '';
+        }
+    });
+
+
+  });
+
+
+function toggle_hint(id, s, focus) {
+
+   if(focus == 1){
+      if(document.getElementById(id).value == s) document.getElementById(id).value = '';
+   }
+   else {
+      if(document.getElementById(id).value == '') document.getElementById(id).value = s;
+   }
+}
+
+

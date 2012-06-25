@@ -10,17 +10,22 @@
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_groupname; ?>:</div>
-         <div class="domaincell"><input type="text" name="groupname" value="<?php print $group['groupname']; ?>" class="text" /></div>
+         <div class="domaincell"><input type="text" name="groupname" id="groupname" value="<?php print $group['groupname']; ?>" class="text" /></div>
       </div>
 
       <div class="domainrow">
-         <div class="domaincell"><?php print $text_email_addresses; ?>*:</div>
-         <div class="domaincell"><textarea style="height:280px;" name="email" class="domain"><?php if(isset($email)){ print $email; } ?></textarea></div>
+         <div class="domaincell"><?php print $text_search_emails; ?>*:</div>
+         <div class="domaincell"><input type="text" id="s_piler_email" name="s_piler_email" value="<?php print $text_search_email_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 0);" /></div>
+      </div>
+
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_email_addresses; ?>**:</div>
+         <div class="domaincell"><textarea style="height:280px;" name="email" id="email" class="domain"><?php if(isset($email)){ print $email; } ?></textarea></div>
       </div>
 
       <div class="domainrow">
          <div class="domaincell">&nbsp;</div>
-         <div class="domaincell">*: <?php print $text_enter_one_email_address_per_line; ?></div>
+         <div class="domaincell">*: <?php print $text_min_2_chars; ?><br />**: <?php print $text_enter_one_email_address_per_line; ?></div>
       </div>
 
       <div class="domainrow">
@@ -32,6 +37,7 @@
 
 
 </form>
+
 
 <p>&nbsp;</p>
 <p><a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;group=<?php print $group['groupname']; ?>"><?php print $text_remove_this_group; ?>: <?php print $group['groupname']; ?></a></p>

@@ -4,7 +4,7 @@ class ModelUserAuth extends Model {
 
    public function checkLogin($username = '', $password = '') {
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".gid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($username));
+      $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($username));
 
       if(!isset($query->row['password'])) { return 0; }
 
@@ -14,7 +14,6 @@ class ModelUserAuth extends Model {
 
          $_SESSION['username'] = $query->row['username'];
          $_SESSION['uid'] = $query->row['uid'];
-         $_SESSION['gid'] = $query->row['gid'];
          $_SESSION['admin_user'] = $query->row['isadmin'];
          $_SESSION['email'] = $username;
          $_SESSION['domain'] = $query->row['domain'];

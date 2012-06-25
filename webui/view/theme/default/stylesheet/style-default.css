@@ -65,6 +65,7 @@
 	.restore_spinner { text-align: center; border: 0px solid black; }
 
 	.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
+	.autocompletetext { font: normal 12px Arial, sans-serif; font-style: italic; color: gray; font-weight: bold; text-align:left; width: 408px; }
 	.ruletext { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 365px; }
 	.advtext { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
 	.tagtext { font: normal 10px Arial, sans-serif; font-weight: bold; text-align:left; width: 265px; }

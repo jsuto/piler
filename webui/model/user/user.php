@@ -68,7 +68,8 @@ class ModelUserUser extends Model {
       }
 
 
-      $query = $this->db->query("SELECT email FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($gid));
+      $query = $this->db->query("SELECT `" . TABLE_GROUP_EMAIL . "`.email FROM `" . TABLE_GROUP_EMAIL . "`, `" . TABLE_GROUP_USER . "` WHERE `" . TABLE_GROUP_EMAIL . "`.id=`" . TABLE_GROUP_USER . "`.id and `" . TABLE_GROUP_USER . "`.uid=?", array($uid) );
+
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
@@ -181,14 +182,13 @@ class ModelUserUser extends Model {
 
       if($page_len > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$page_len; }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, gid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit");
+      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit");
 
       foreach ($query->rows as $q) {
 
          if(Registry::get('admin_user') == 1 || (isset($q['domain']) && $q['domain'] == $my_domain[0]) ) {
             $users[] = array(
                           'uid'          => $q['uid'],
-                          'gid'          => $q['gid'],
                           'username'     => $q['username'],
                           'realname'     => $q['realname'],
                           'domain'       => isset($q['domain']) ? $q['domain'] : "",
@@ -286,7 +286,7 @@ class ModelUserUser extends Model {
 
       $encrypted_password = crypt($user['password']);
 
-      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, gid, username, realname, password, domain, dn, isadmin) VALUES(?,?,?,?,?,?,?,?)", array((int)$user['uid'], (int)$user['gid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin']));
+      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin) VALUES(?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin']));
 
       if($query->error == 1 || $this->db->countAffected() == 0){ return $user['username']; }
 
@@ -297,6 +297,7 @@ class ModelUserUser extends Model {
          if($ret == 0) { return -2; }
       }
 
+      $this->update_group_settings((int)$user['uid'], $user['group']);
 
       return 1;
    }
@@ -350,7 +351,7 @@ class ModelUserUser extends Model {
          if($this->db->countAffected() != 1) { return 0; }
       }
 
-      $query = $this->db->query("UPDATE " . TABLE_USER . " SET username=?, realname=?, domain=?, gid=?, dn=?, isadmin=? WHERE uid=?", array($user['username'], $user['realname'], $user['domain'], $user['gid'], @$user['dn'], $user['isadmin'], (int)$user['uid']));
+      $query = $this->db->query("UPDATE " . TABLE_USER . " SET username=?, realname=?, domain=?, dn=?, isadmin=? WHERE uid=?", array($user['username'], $user['realname'], $user['domain'], @$user['dn'], $user['isadmin'], (int)$user['uid']));
 
 
       /* first, remove all his email addresses */
@@ -370,6 +371,34 @@ class ModelUserUser extends Model {
             $memcache->delete(MEMCACHED_PREFIX . $email);
          }
 
+      }
+
+      $this->update_group_settings((int)$user['uid'], $user['group']);
+
+      return 1;
+   }
+
+
+   private function update_group_settings($uid = -1, $group = '') {
+
+      if($uid <= 0 || $group == '') { return 0; }
+
+      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE uid=?", array($uid));
+
+      $query = $this->db->query("SELECT id, groupname FROM `" . TABLE_GROUP . "`");
+
+      $groups = array();
+
+      foreach ($query->rows as $q) {
+         $groups[$q['groupname']] = $q['id'];
+      }
+
+      $group = explode("\n", $group);
+
+      foreach($group as $g) {
+         $g = rtrim($g);
+
+         $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
       }
 
       return 1;

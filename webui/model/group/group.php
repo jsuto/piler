@@ -140,6 +140,41 @@ class ModelGroupGroup extends Model {
    }
 
 
+   public function get_emails_by_string($s = '') {
+      if(strlen($s) < 2) { return array(); }
+
+       $query = $this->db->query("SELECT email FROM `" . TABLE_EMAIL . "` WHERE email LIKE ? ORDER BY email ASC", array($s . "%") );
+
+       if(isset($query->rows)) { return $query->rows; }
+
+       return array();
+   }
+
+
+   public function get_groups_by_string($s = '') {
+      if(strlen($s) < 2) { return array(); }
+
+      $query = $this->db->query("SELECT groupname FROM `" . TABLE_GROUP . "` WHERE groupname LIKE ? ORDER BY groupname ASC", array($s . "%") );
+
+      if(isset($query->rows)) { return $query->rows; }
+
+      return array();
+   }
+
+
+   public function get_groups_by_uid($uid = 0) {
+      $groups = '';
+
+      $query = $this->db->query("SELECT `" . TABLE_GROUP_USER . "`.id, groupname FROM `" . TABLE_GROUP_USER . "`, `" . TABLE_GROUP . "` WHERE `" . TABLE_GROUP_USER . "`.id=`" . TABLE_GROUP . "`.id AND uid=?", array($uid) );
+
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) { $groups .= "\n" . $q['groupname']; }
+      }
+
+      return preg_replace("/^\n/", "", $groups);
+   }
+
+
 }
 
 ?>

@@ -35,17 +35,14 @@
       </div>
 
       <div class="domainrow">
-         <div class="domaincell"><?php print $text_groups; ?>:</div>
-         <div class="domaincell">
-            <select name="gid">
-               <option value="0"<?php if($user['gid'] == 0){ ?> selected="selected"<?php } ?>>-</option>
-<?php foreach ($groups as $group) { ?>
-               <option value="<?php print $group['id']; ?>"<?php if($user['gid'] == $group['id']){ ?> selected="selected"<?php } ?>><?php print $group['groupname']; ?></option>
-<?php } ?>
-            </select>
-         </div>
+         <div class="domaincell"><?php print $text_search_groups; ?>*:</div>
+         <div class="domaincell"><input type="text" id="s_piler_group" name="s_piler_group" value="<?php print $text_search_group_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 0);" /></div>
       </div>
 
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_groups; ?>**:</div>
+         <div class="domaincell"><textarea style="height:80px;" name="group" id="group" class="domain"><?php if(isset($user['group'])){ print $user['group']; } ?></textarea></div>
+      </div>
 
 <?php if(ENABLE_LDAP_IMPORT_FEATURE == 1) { ?>
       <div class="domainrow">
@@ -88,6 +85,11 @@
                <?php $a = preg_split("/\s/", $this->model_user_user->get_emails_by_uid($_group_uid)); print $a[0]; ?></br />
             <?php } ?>
          </div>
+      </div>
+
+      <div class="domainrow">
+         <div class="domaincell">&nbsp;</div>
+         <div class="domaincell">*: <?php print $text_min_2_chars; ?><br />**: <?php print $text_enter_one_group_per_line; ?></div>
       </div>
 
       <div class="domainrow">
