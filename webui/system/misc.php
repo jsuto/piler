@@ -55,7 +55,7 @@ function isAdminUser() {
 
 
 function isAuditorUser() {
-   if(isset($_SESSION['auditor_user']) && $_SESSION['admin_user'] == 2){ return 1; }
+   if(isset($_SESSION['admin_user']) && $_SESSION['admin_user'] == 2){ return 1; }
 
    return 0;
 }
