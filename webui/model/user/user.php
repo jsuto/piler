@@ -380,6 +380,7 @@ class ModelUserUser extends Model {
 
 
    private function update_group_settings($uid = -1, $group = '') {
+      $__g = array();
 
       if($uid <= 0 || $group == '') { return 0; }
 
@@ -398,7 +399,10 @@ class ModelUserUser extends Model {
       foreach($group as $g) {
          $g = rtrim($g);
 
-         $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
+         if(!isset($__g[$groups[$g]])) {
+            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
+            $__g[$groups[$g]] = 1;
+         }
       }
 
       return 1;

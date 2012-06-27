@@ -177,6 +177,9 @@ $themes = array(
                );
 
 
+$letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+
+
 define('ACTION_ALL', 0);
 define('ACTION_UNKNOWN', 1);
 define('ACTION_LOGIN', 2);

@@ -19,6 +19,11 @@
       <div class="domainrow">
          <div class="domaincell"><?php print $text_email_addresses; ?>**:</div>
          <div class="domaincell"><textarea style="height:280px;" name="email" id="email" class="domain"><?php if(isset($post['email'])){ print $post['email']; } ?></textarea></div>
+         <div class="domaincell">
+<?php foreach(Registry::get('letters') as $letter) { ?>
+         <a href="#" onclick="window.open('<?php print SITE_URL; ?>index.php?route=group/email&term=<?php print $letter; ?>', 'aaa', 'width=300,height=400');" ><?php print $letter; ?></a>
+<?php } ?>
+         </div>
       </div>
 
       <div class="domainrow">

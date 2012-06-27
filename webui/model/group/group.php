@@ -140,14 +140,25 @@ class ModelGroupGroup extends Model {
    }
 
 
-   public function get_emails_by_string($s = '') {
-      if(strlen($s) < 2) { return array(); }
+   public function get_emails_by_string($s = '', $page = 0, $page_len = PAGE_LEN) {
+      $from = (int)$page * (int)$page_len;
 
-       $query = $this->db->query("SELECT email FROM `" . TABLE_EMAIL . "` WHERE email LIKE ? ORDER BY email ASC", array($s . "%") );
+      if(strlen($s) < 1) { return array(); }
+
+       $query = $this->db->query("SELECT email FROM `" . TABLE_EMAIL . "` WHERE email LIKE ? ORDER BY email ASC  LIMIT " . (int)$from . ", " . (int)$page_len, array($s . "%") );
 
        if(isset($query->rows)) { return $query->rows; }
 
        return array();
+   }
+
+
+   public function count_emails($s = '') {
+      if(strlen($s) < 1) { return 0; }
+
+      $query = $this->db->query("SELECT COUNT(*) AS num FROM `" . TABLE_EMAIL . "` WHERE email LIKE ?", array($s . "%") );
+
+      return $query->row['num'];
    }
 
 

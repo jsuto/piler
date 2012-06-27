@@ -511,6 +511,16 @@ function toggle_bulk_check() {
 }
 
 
+function append_email_from_slider(id, value) {
+   var prefix = '\n';
+
+   a = opener.document.getElementById('email');
+   if(a && a.value == '') prefix = '';
+
+   a.value += prefix + value;
+}
+
+
 $(document).ready(function() {
    $.datepicker.setDefaults($.datepicker.regional[piler_ui_lang]);
    $("#date1").datepicker( { dateFormat: 'yy-mm-dd' } );
