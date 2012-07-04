@@ -382,7 +382,7 @@ class ModelUserUser extends Model {
    private function update_group_settings($uid = -1, $group = '') {
       $__g = array();
 
-      if($uid <= 0 || $group == '') { return 0; }
+      if($uid <= 0) { return 0; }
 
       $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE uid=?", array($uid));
 
