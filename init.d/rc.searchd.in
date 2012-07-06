@@ -13,7 +13,7 @@ start() {
 
 stop() {
 	echo "stopping searchd"
-	killall ${NAME}
+	kill ${PID_NUMBER}
 }
 
 check_status(){
