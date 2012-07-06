@@ -403,7 +403,7 @@ class ModelUserUser extends Model {
       foreach($group as $g) {
          $g = rtrim($g);
 
-         if(!isset($__g[$groups[$g]])) {
+         if($g && !isset($__g[$groups[$g]])) {
             $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
             $__g[$groups[$g]] = 1;
          }
