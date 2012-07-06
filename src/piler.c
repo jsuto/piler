@@ -328,8 +328,8 @@ int main(int argc, char **argv){
 
         case 'v' :
         case 'V' :
-                   __fatal(PROGNAME " " PROGINFO);
-                   break;
+                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\n\n", PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS);
+                   return 0;
 
         case 'h' :
         default  : 
@@ -373,7 +373,7 @@ int main(int argc, char **argv){
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
 
 
-   syslog(LOG_PRIORITY, "%s %s starting", PROGNAME, VERSION);
+   syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
 
 
 #if HAVE_DAEMON == 1

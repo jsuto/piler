@@ -10,6 +10,7 @@
 #include <cfg.h>
 #include "defs.h"
 
+int get_build();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
 int searchStringInBuffer(char *s, int len1, char *what, int len2);

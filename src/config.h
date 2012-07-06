@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.19"
 
-#define PROGINFO VERSION ", Janos SUTO <sj@acts.hu>\n\n" CONFIGURE_PARAMS "\n"
+#define BUILD 671
 
 #define HOSTID "mailarchiver"
 

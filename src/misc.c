@@ -25,9 +25,10 @@
 #include "tai.h"
 
 
-/*
- * fatal function for quitting
- */
+int get_build(){
+   return BUILD;
+}
+
 
 void __fatal(char *s){
    fprintf(stderr, "%s\n", s);
