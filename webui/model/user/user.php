@@ -164,13 +164,15 @@ class ModelUserUser extends Model {
       $users = array();
       $my_domain = array();
       $limit = "";
+      $q = array();
 
       $from = (int)$page * (int)$page_len;
 
       $search = preg_replace("/\s{1,}/", "", $search);
 
       if($search){
-         $where_cond .= " AND email like '%" . $this->db->escape($search) . "%' ";
+         $where_cond .= " AND email like ? ";
+         array_push($q, '%' . $search . '%');
       }
 
       /* sort order */
@@ -182,7 +184,7 @@ class ModelUserUser extends Model {
 
       if($page_len > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$page_len; }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit");
+      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond group by " . TABLE_USER . ".uid $_order $limit", $q);
 
       foreach ($query->rows as $q) {
 
@@ -205,12 +207,14 @@ class ModelUserUser extends Model {
 
    public function count_users($search = '') {
       $where_cond = "";
+      $q = array();
 
       if($search){
-         $where_cond .= " WHERE email like '%" . $this->db->escape($search) . "%' ";
+         $where_cond .= " WHERE email like ? ";
+         array_push($q, '%' . $search . '%');
       }
 
-      $query = $this->db->query("SELECT COUNT(*) AS num, uid FROM " . TABLE_EMAIL . " $where_cond group by uid");
+      $query = $this->db->query("SELECT COUNT(*) AS num, uid FROM " . TABLE_EMAIL . " $where_cond group by uid", $q);
 
       return $query->num_rows;
    }
