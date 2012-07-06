@@ -62,6 +62,7 @@ struct __config {
    int update_counters_to_memcached;
    int memcached_to_db_interval;
 
+   int archive_emails_not_having_message_id;
 };
 
 

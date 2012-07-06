@@ -59,6 +59,7 @@ struct _parse_rule {
 struct _parse_rule config_parse_rules[] =
 {
 
+   { "archive_emails_not_having_message_id", "integer", (void*) int_parser, offsetof(struct __config, archive_emails_not_having_message_id), "0", sizeof(int)},
    { "backlog", "integer", (void*) int_parser, offsetof(struct __config, backlog), "20", sizeof(int)},
    { "clamd_addr", "string", (void*) string_parser, offsetof(struct __config, clamd_addr), "", MAXVAL-1},
    { "clamd_port", "integer", (void*) int_parser, offsetof(struct __config, clamd_port), "0", sizeof(int)},
