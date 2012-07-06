@@ -45,7 +45,7 @@ class ModelUserUser extends Model {
    }
 
 
-   public function get_users_all_email_addresses($uid = 0, $gid = 0) {
+   public function get_users_all_email_addresses($uid = 0) {
       $data = array();
       $uids = $uid;
 
@@ -73,7 +73,7 @@ class ModelUserUser extends Model {
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
-            if(!in_array($email, $data)) { array_push($data, $q['email']); }
+            if(!in_array($q['email'], $data)) { array_push($data, $q['email']); }
          }
       }
 

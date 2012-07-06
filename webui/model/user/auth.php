@@ -19,7 +19,7 @@ class ModelUserAuth extends Model {
          $_SESSION['domain'] = $query->row['domain'];
          $_SESSION['realname'] = $query->row['realname'];
 
-         $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid'], $query->row['gid']);
+         $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
 
          AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against user table');
 

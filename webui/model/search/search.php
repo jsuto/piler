@@ -293,11 +293,13 @@ class ModelSearchSearch extends Model {
 
       $q = "";
 
-      foreach($query->rows as $a) {
-         array_push($ids, $a['id']);
+      if(isset($query->rows)) {
+         foreach($query->rows as $a) {
+            array_push($ids, $a['id']);
 
-         if($q) { $q .= ",?"; }
-         else { $q = "?"; }
+            if($q) { $q .= ",?"; }
+            else { $q = "?"; }
+         }
       }
 
 

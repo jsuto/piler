@@ -12,7 +12,7 @@ class ModelStatCounter extends Model {
          $counter = $memcache->get(Registry::get('counters'));
 
          if(isset($counter[MEMCACHED_PREFIX . 'counters_last_update'])) {
-            $asize = nice_size($counter[MEMCACHED_PREFIX . 'size'], ' ');
+            if(isset($counter[MEMCACHED_PREFIX . 'size'])) { $asize = nice_size($counter[MEMCACHED_PREFIX . 'size'], ' '); }
             unset($counter[MEMCACHED_PREFIX . 'size']);
 
             return array ($asize, $counter);
