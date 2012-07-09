@@ -106,6 +106,7 @@ ENDE:
 
       case ERR_EXISTS:
                         printf("discarding duplicate message: %s\n", filename);
+                        rc = OK;
                         break;
 
       default:

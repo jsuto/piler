@@ -29,7 +29,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
    FILE *F, *f=NULL;
-   int rc=ERR, tot_msgs=0;
+   int rc=ERR, tot_msgs=0, ret=OK;
    char buf[MAXBUFSIZE], fname[SMALLBUFSIZE];
    time_t t;
 
@@ -49,6 +49,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
          if(f){
             fclose(f);
             rc = import_message(fname, sdata, data, cfg);
+            if(rc == ERR) ret = ERR;
             unlink(fname);
          }
 
@@ -63,27 +64,28 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
    if(f){
       fclose(f);
       rc = import_message(fname, sdata, data, cfg);
+      if(rc == ERR) ret = ERR;
       unlink(fname);
    }
 
    fclose(F);
 
 
-   return rc;
+   return ret;
 }
 
 
 int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
    DIR *dir;
    struct dirent *de;
-   int rc=ERR, tot_msgs=0;
+   int rc=ERR, ret=OK, tot_msgs=0;
    char fname[SMALLBUFSIZE];
    struct stat st;
 
    dir = opendir(directory);
    if(!dir){
       printf("cannot open directory: %s\n", directory);
-      return rc;
+      return ERR;
    }
 
 
@@ -94,13 +96,15 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
-            import_from_maildir(fname, sdata, data, cfg);
+            rc = import_from_maildir(fname, sdata, data, cfg);
+            if(rc == ERR) ret = ERR;
          }
          else {
 
             if(S_ISREG(st.st_mode)){
                rc = import_message(fname, sdata, data, cfg);
-               if(rc != ERR) tot_msgs++;
+               if(rc == OK) tot_msgs++;
+               else ret = ERR;
             }
             else {
                printf("%s is not a file\n", fname);
@@ -115,23 +119,23 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
    }
    closedir(dir);
 
-   return rc;
+   return ret;
 }
 
 
 int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, sd, seq=1;
+   int rc=ERR, ret=OK, sd, seq=1;
    char *p, puf[MAXBUFSIZE];
    char folders[MAXBUFSIZE];
    
    if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
       printf("cannot create socket\n");
-      return rc;
+      return ERR;
    }
 
    if(connect_to_imap_server(sd, &seq, imapserver, username, password) == ERR){
       close(sd);
-      return rc;
+      return ERR;
    }
 
 
@@ -146,13 +150,14 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
       printf("processing folder: %s... ", puf);
 
       rc = process_imap_folder(sd, &seq, puf, sdata, data, cfg);
+      if(rc == ERR) ret = ERR;
 
    } while(p);
 
 
    close(sd);
 
-   return rc;
+   return ret;
 }
 
 
@@ -222,14 +227,14 @@ int main(int argc, char **argv){
 
    if(read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);
-      return 1;
+      return ERR;
    }
 
    mysql_init(&(sdata.mysql));
    mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
    if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
       printf("cant connect to mysql server\n");
-      return 0;
+      return ERR;
    }
 
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
@@ -245,8 +250,6 @@ int main(int argc, char **argv){
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
-
-
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
    if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
@@ -259,7 +262,7 @@ int main(int argc, char **argv){
 
    mysql_close(&(sdata.mysql));
 
-   return 0;
+   return rc;
 }
 
 
