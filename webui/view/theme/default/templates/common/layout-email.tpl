@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
 
 <head>
-   <title>piler | <?php print $title; ?></title>
+   <title>piler<?php if(isset($title) && $title) { ?> | <?php print $title; } ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
    <meta name="keywords" content="piler email archiver" />
@@ -19,7 +19,7 @@
 
 <div id="wrap" style="width:200px; height: 300px; border: 0px;">
 
-<?php if($title) { ?><h3><?php print $title; ?></h3><?php } ?>
+<?php if(isset($title) && $title) { ?><h3><?php print $title; ?></h3><?php } ?>
 <?php print $content; ?>
 
 
