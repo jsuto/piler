@@ -419,6 +419,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
+   /* remove all HTML tags */
    if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
 
    if(state->message_state == MSG_BODY && state->qp == 1){
@@ -426,7 +427,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       decodeQP(buf);
    }
 
-   decodeURL(buf);
+   /* I believe that we can live without this function call */
+   //decodeURL(buf);
 
    if(state->texthtml == 1) decodeHTML(buf);
 

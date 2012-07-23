@@ -306,9 +306,7 @@ void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
       if(p){
          memset(state->qpbuf, 0, MAX_TOKEN_LEN);
          if(strlen(p) < MAX_TOKEN_LEN-1){
-            //snprintf(state->qpbuf, MAX_TOKEN_LEN-1, "%s", p);
             memcpy(&(state->qpbuf[0]), p, MAX_TOKEN_LEN-1);
-
             *p = '\0';
          }
 
@@ -334,9 +332,7 @@ void fixupBase64EncodedLine(char *buf, struct _state *state){
    if(buf[strlen(buf)-1] != '\n'){
       p = strrchr(buf, ' ');
       if(p){
-         //strncpy(state->miscbuf, p+1, MAX_TOKEN_LEN-1);
          memcpy(&(state->miscbuf[0]), p+1, MAX_TOKEN_LEN-1);
-
          *p = '\0';
       }
    }
@@ -478,15 +474,8 @@ void translateLine(unsigned char *p, struct _state *state){
          if(strncasecmp((char *)p, "http://", 7) == 0){ p += 7; url = 1; continue; }
          if(strncasecmp((char *)p, "https://", 8) == 0){ p += 8; url = 1; continue; }
 
-         if(url == 1 && (*p == '.' || *p == '-' || *p == '_' || *p == '/' || isalnum(*p)) ) continue;
+         if(url == 1 && (*p == '.' || *p == '-' || *p == '_' || *p == '/' || *p == '%' || *p == '?' || isalnum(*p)) ) continue;
          if(url == 1) url = 0;
-      }
-
-      if(state->texthtml == 1 && state->message_state == MSG_BODY && strncmp((char *)p, "HTML*", 5) == 0){
-         p += 5;
-         while(isspace(*p) == 0){
-            p++;
-         }
       }
 
       if(delimiter_characters[(unsigned int)*p] != ' ') *p = ' ';
