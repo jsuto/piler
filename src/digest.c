@@ -20,7 +20,7 @@
 int search_header_end(char *p, int n){
    int hdr_len=0;
 
-   if(strlen(p) < 5) return hdr_len;
+   if(n < 5) return hdr_len;
 
    for(; *p; p++){
       if(hdr_len < n-2 && *p == '\n' && *(p+1) == '\r' && *(p+2) == '\n'){ hdr_len += 3; return MAX(hdr_len, n); }
