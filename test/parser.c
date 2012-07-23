@@ -84,82 +84,9 @@ int test_translates(){
    count += test_translate("MAIL FROM:    <zoltan.szabo@zte.com.cn>", "MAIL FROM      zoltan.szabo@zte.com.cn ", &state);
    count += test_translate("Enjoy your game, and then enjoy your jackpot!", "Enjoy your game  and then enjoy your jackpot!", &state);
    count += test_translate("Az �n által megküldött,", "Az �n által megküldött ", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
-   count += test_translate("", "", &state);
 
    return count;
 }
-
-
-/*
-markHTML elott: '</head>'
-markHTML utan: ' '
-markHTML elott: '<body>'
-markHTML utan: ' '
-markHTML elott: '<div class=3D"Section1">'
-markHTML utan: ' '
-markHTML elott: '    <p class=3D"style1">'
-markHTML utan: '     '
-markHTML elott: '        <b>'
-markHTML utan: '         '
-markHTML elott: '        <span dir=3D"rtl" lang=3D"HE"=20'
-markHTML utan: '         '
-markHTML elott: '            style=3D"FONT-SIZE: 14pt; FONT-FAMILY: Arial; mso-fareast-l='
-markHTML utan: ''
-markHTML elott: 'anguage: EN-US">'
-markHTML utan: ''
-
-markHTML elott: ' - </span><span class=3D"style5">=F4=F8=F1=ED =E7=E9=F0=ED!</span></spa='
-markHTML utan: ' -   =F4=F8=F1=ED =E7=E9=F0=ED!  '
-markHTML elott: 'n><o:p></o:p></p>'
-markHTML utan: '   '
-markHTML elott: '    <p class=3D"style1"=20'
-markHTML utan: '     '
-markHTML elott: '        style=3D"FONT-WEIGHT: bold; FONT-SIZE: x-large; COLOR: #ff0000;='
-markHTML utan: ''
-markHTML elott: ' FONT-FAMILY: Arial">'
-markHTML utan: ''
-
-markHTML elott: '    <p class=3D"style1"=20'
-markHTML utan: '     '
-markHTML elott: '        style=3D"FONT-WEIGHT: bold; FONT-SIZE: x-large; COLOR: #ff0000;='
-markHTML utan: ''
-markHTML elott: ' FONT-FAMILY: Arial">'
-markHTML utan: ''
-markHTML elott: '        +</p>'
-markHTML utan: '        + '
-
-
-markHTML elott: '        <span class=3D"style">xxxxxx =E4=F6=F2=E5=FA =F2=E1=E5=E3=E4</span><s='
-markHTML utan: '         xxxxxx =E4=F6=F2=E5=FA =F2=E1=E5=E3=E4  '
-markHTML elott: 'pan class=3D"style1">, <b><i>=E3=E9=F8=E5=FA</i></b>,'
-markHTML utan: ',   =E3=E9=F8=E5=FA  ,'
-
-markHTML elott: '        <b><i>=F8=EB=E1</i></b>, <b><i>=E9=E3 =F9=F0=E9=E9=E4</i></b> ,='
-markHTML utan: '          =F8=EB=E1  ,   =E9=E3 =F9=F0=E9=E9=E4   ,='
-markHTML elott: '</span></span><span class=3D"style1"></span><span=20'
-markHTML utan: '     '
-
-markHTML elott: '<p class=3DMsoNormal><o:p><a ='
-markHTML utan: '   '
-markHTML elott: 'href=3D"http://www.ipplayerp.com/">http://www.vipplayerp.com/</a></o:p><='
-markHTML utan: 'http://www.vipplayerp.com/   '
-markHTML elott: '/p>'
-markHTML utan: ''
-markHTML elott: '</div>'
-markHTML utan: ' '*/
-
 
 
 int test_html(char *what, char *expected, struct _state *state){
@@ -204,11 +131,6 @@ int test_htmls(){
    count += test_html("=E9=ED =E1</span> <a href=3D\"http://www=2Eybay=2Eco=2Eil/\">=E0=E9=F0=E3=", "=E9=ED =E1   =E0=E9=F0=E3=", &state);
    count += test_html("=F7=F1 =F2=F1=F7=E9=ED</a><o:p></o:p></span></b></p>", "=F7=F1 =F2=F1=F7=E9=ED      ", &state);
    count += test_html("        <span dir=3D\"rtl\" lang=3D\"HE\"=20", "         ", &state);
-   count += test_html("", "", &state);
-   count += test_html("", "", &state);
-   count += test_html("", "", &state);
-   count += test_html("", "", &state);
-   count += test_html("", "", &state);
 
    state.htmltag = 1;
    count += test_html("span></p>llll", " llll", &state);
