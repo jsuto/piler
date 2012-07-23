@@ -168,7 +168,7 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, rc;
+   int i, rc=0;
    char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
    char *imapserver=NULL, *username=NULL, *password=NULL;
    struct session_data sdata;

@@ -51,7 +51,7 @@ os=`uname -s`
 id_bin="id"
 
 dnl SUBDIRS="src etc util perl init.d templates history contrib/stat"
-SUBDIRS="src etc util init.d"
+SUBDIRS="src etc util init.d test"
 
 
 dnl static build
@@ -276,6 +276,6 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o $objs"
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile test/Makefile])
 AC_OUTPUT
 

@@ -460,6 +460,9 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 
 void translateLine(unsigned char *p, struct _state *state){
    int url=0;
+   int has_url = 0;
+
+   if(strcasestr((char *)p, "http://") || strcasestr((char *)p, "https://")) has_url = 1;
 
    for(; *p; p++){
 
@@ -471,11 +474,13 @@ void translateLine(unsigned char *p, struct _state *state){
 
       if(*p == '.' || *p == '-'){ continue; }
 
-      if(strncasecmp((char *)p, "http://", 7) == 0){ p += 7; url = 1; continue; }
-      if(strncasecmp((char *)p, "https://", 8) == 0){ p += 8; url = 1; continue; }
+      if(has_url == 1){
+         if(strncasecmp((char *)p, "http://", 7) == 0){ p += 7; url = 1; continue; }
+         if(strncasecmp((char *)p, "https://", 8) == 0){ p += 8; url = 1; continue; }
 
-      if(url == 1 && (*p == '.' || *p == '-' || *p == '_' || *p == '/' || isalnum(*p)) ) continue;
-      if(url == 1) url = 0;
+         if(url == 1 && (*p == '.' || *p == '-' || *p == '_' || *p == '/' || isalnum(*p)) ) continue;
+         if(url == 1) url = 0;
+      }
 
       if(state->texthtml == 1 && state->message_state == MSG_BODY && strncmp((char *)p, "HTML*", 5) == 0){
          p += 5;
@@ -484,12 +489,8 @@ void translateLine(unsigned char *p, struct _state *state){
          }
       }
 
-      if(delimiter_characters[(unsigned int)*p] != ' ')
-         *p = ' ';
-      else {
-         // commented out because it breaks utf-8 encoding, 2011.12.07.
-         //*p = tolower(*p);
-      }
+      if(delimiter_characters[(unsigned int)*p] != ' ') *p = ' ';
+      /* we MUSTN'T convert it to lowercase in the 'else' case, because it breaks utf-8 encoding! */
 
    }
 
@@ -585,7 +586,10 @@ void degenerateToken(unsigned char *p){
 
 
 void fixURL(char *url){
+   int len=0;
    char *p, *q, fixed_url[SMALLBUFSIZE];
+
+   if(strlen(url) < 3) return;
 
    memset(fixed_url, 0, sizeof(fixed_url));
 
@@ -599,6 +603,12 @@ void fixURL(char *url){
 
    snprintf(fixed_url, sizeof(fixed_url)-1, "__URL__%s ", p);
    fix_email_address_for_sphinx(fixed_url+7);
+
+   len = strlen(fixed_url);
+   if(len > 9 && fixed_url[len-2] == 'X'){
+      fixed_url[len-2] = ' ';
+      fixed_url[len-1] = '\0';
+   }
 
    strcpy(url, fixed_url);   
 }
