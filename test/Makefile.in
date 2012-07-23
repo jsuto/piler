@@ -24,12 +24,12 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all: parser view
+all: parser debug
 
 parser: parser.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
-view: view.c ../src/libpiler.a
+debug: debug.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
 install:
@@ -38,7 +38,7 @@ test:
 	./parser
 
 clean:
-	rm -f parser view
+	rm -f parser debug
 
 distclean: clean
 	rm -f Makefile

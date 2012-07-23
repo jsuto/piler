@@ -42,6 +42,8 @@ int main(int argc, char **argv){
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
+   cfg.debug = 1;
+
    state = parse_message(&sdata, 0, &cfg);
    post_parse(&sdata, &state, &cfg);
 

@@ -142,6 +142,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    char *p, *q, puf[SMALLBUFSIZE];
    int x, n, len, b64_len, boundary_line=0;
 
+   if(cfg->debug == 1) printf("line: %s", buf);
+
    state->line_num++;
    len = strlen(buf);
 
