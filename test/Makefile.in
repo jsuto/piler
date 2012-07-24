@@ -21,10 +21,11 @@ LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../../src
 LIBS = @LIBS@ @mysql_libs@
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
+OBJS = import_helper.o
 
 INSTALL = @INSTALL@
 
-all: parser debug
+all: $(OBJS) parser debug import
 
 parser: parser.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
@@ -32,13 +33,18 @@ parser: parser.c ../src/libpiler.a
 debug: debug.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
 
+import: import.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler import_helper.o $(LIBS) $(LIBDIR)
+
+
+%.o: $(srcdir)/%.c
+	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@
+
+
 install:
 
-test:
-	./parser
-
 clean:
-	rm -f parser debug
+	rm -f parser debug import
 
 distclean: clean
 	rm -f Makefile
