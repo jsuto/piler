@@ -38,7 +38,7 @@ install: install-piler
 
 
 piler: piler.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ piler.c -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@ @libclamav_extra_libs@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@ @libclamav_extra_libs@
 
 libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(MYSQL_OBJS)
@@ -49,25 +49,25 @@ libpiler.a: $(OBJS) $(MYSQL_OBJS)
 
 
 pilerget: pilerget.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 pilerimport: pilerimport.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 pilerexport: pilerexport.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 pilerpurge: pilerpurge.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 pilerconf: pilerconf.c cfg.o misc.o tai.o
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
 
 reindex: reindex.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 test: test.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $^ -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
 %.o: $(srcdir)/%.c
 	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@

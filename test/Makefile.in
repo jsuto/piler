@@ -17,7 +17,7 @@ CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@
 DEFS = @defs@
 INCDIR = -I. -I.. -I../.. -I../../src -I../src @INCDIR@ @mysql_includes@
-LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../../src
+LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../src
 LIBS = @LIBS@ @mysql_libs@
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
@@ -28,13 +28,13 @@ INSTALL = @INSTALL@
 all: $(OBJS) parser debug import
 
 parser: parser.c ../src/libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 debug: debug.c ../src/libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 import: import.c ../src/libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ -lpiler import_helper.o $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler import_helper.o $(LIBS) $(LIBDIR)
 
 
 %.o: $(srcdir)/%.c
