@@ -346,6 +346,8 @@ class ModelSearchMessage extends Model {
          $what = preg_replace("/^\=\?/", "", $what);
          $what = preg_replace("/\?\=$/", "", $what);
 
+         $encoding = substr($what, 0, strpos($what, '?'));
+
          if(preg_match("/\?Q\?/i", $what)){
             $x = preg_replace("/^([\w\-]+)\?Q\?/i", "", $what);
 
@@ -360,9 +362,8 @@ class ModelSearchMessage extends Model {
             $s = preg_replace('/\0/', "*", $s);
          }
 
-
-         if(!preg_match("/utf-8/i", $what)){
-            $s = utf8_encode($s);
+         if(!preg_match("/utf-8/i", $encoding)){
+            $s = iconv($encoding, 'utf-8', $s);
          }
 
       }

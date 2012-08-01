@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -14,6 +15,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
+#include <iconv.h>
 #include <piler.h>
 #include "trans.h"
 #include "html.h"
@@ -218,8 +220,13 @@ int extract_boundary(char *p, struct _state *state){
 
 
 void fixupEncodedHeaderLine(char *buf){
-   char *sb, *sq, *p, *q, *r, *s, v[SMALLBUFSIZE], puf[MAXBUFSIZE];
-   char *start, *end;
+   char *sb, *sq, *p, *q, *r, *s, *e, *start, *end;
+   char v[SMALLBUFSIZE], puf[MAXBUFSIZE], encoding[SMALLBUFSIZE], tmpbuf[2*SMALLBUFSIZE];
+   iconv_t cd;
+   size_t size, inbytesleft, outbytesleft;
+   char *inbuf, *outbuf;
+   int need_encoding;
+
 
    memset(puf, 0, sizeof(puf));
 
@@ -230,6 +237,8 @@ void fixupEncodedHeaderLine(char *buf){
 
       p = v;
 
+      memset(encoding, 0, sizeof(encoding));
+
       do {
          start = strstr(p, "=?");
          if(start){
@@ -239,6 +248,13 @@ void fixupEncodedHeaderLine(char *buf){
             }
 
             start++;
+
+            e = strchr(start+2, '?');
+            if(e){
+               *e = '\0';
+               snprintf(encoding, sizeof(encoding)-1, "%s", start+1);
+               *e = '?';
+            }
 
             s = NULL;
             sb = strcasestr(start, "?B?"); if(sb) s = sb;
@@ -253,9 +269,30 @@ void fixupEncodedHeaderLine(char *buf){
                   if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
 
                   /* encode everything if it's not utf-8 encoded */
-                  if(strncasecmp(start+1, "utf-8", 5)) utf8_encode((unsigned char*)s+3);
+                  //if(strncasecmp(start+1, "utf-8", 5)) utf8_encode((unsigned char*)s+3);
+                  //strncat(puf, s+3, sizeof(puf)-1);
 
-                  strncat(puf, s+3, sizeof(puf)-1);
+                  size = need_encoding = 0;
+
+                  if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8")){
+                     need_encoding = 1;
+
+                     cd = iconv_open("utf-8", encoding);
+
+                     memset(tmpbuf, 0, sizeof(tmpbuf));
+
+                     inbuf = s+3;
+                     outbuf = &tmpbuf[0];
+                     inbytesleft = strlen(s+3);
+                     outbytesleft = sizeof(tmpbuf)-1;
+                     size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+                     iconv_close(cd);
+                  }
+
+                  if(need_encoding == 1 && size >= 0)
+                     strncat(puf, tmpbuf, sizeof(puf)-1);
+                  else 
+                     strncat(puf, s+3, sizeof(puf)-1);
 
                   p = end + 2;
                }
