@@ -191,7 +191,7 @@ create table if not exists `user` (
    `uid` int unsigned not null primary key,
    `username` char(64) not null unique,
    `realname` char(64) default null,
-   `password` char(48) default null,
+   `password` char(128) default null,
    `domain` char(64) default null,
    `dn` char(255) default '*',
    `isadmin` tinyint default 0
