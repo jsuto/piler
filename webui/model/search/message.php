@@ -224,7 +224,7 @@ class ModelSearchMessage extends Model {
       }
 
       if(!preg_match("/utf-8/i", $charset)){
-         $chunk = utf8_encode($chunk);
+         $chunk = iconv($charset, 'utf-8', $chunk);
       }
 
       if($text_plain == 1){
