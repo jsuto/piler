@@ -240,8 +240,8 @@ create table if not exists `group_email` (
 create table if not exists `remote` (
    `remotedomain` char(64) not null primary key,
    `remotehost` char(64) not null,
-   `basedn` char(64) not null,
-   `binddn` char(64) not null,
+   `basedn` char(255) not null,
+   `binddn` char(255) not null,
    `sitedescription` char(64) default null
 ) ENGINE=InnoDB;
 
