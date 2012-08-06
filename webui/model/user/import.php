@@ -309,6 +309,7 @@ class ModelUserImport extends Model {
       $user['isadmin'] = 0;
       $user['whitelist'] = '';
       $user['blacklist'] = '';
+      $user['group'] = 0;
 
       return $user;
    }
