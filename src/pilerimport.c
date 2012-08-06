@@ -21,6 +21,7 @@
 extern char *optarg;
 extern int optind;
 
+#define SKIPLIST "junk,trash,spam,draft"
 
 int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
 int list_folders(int sd, int *seq, char *folders, int foldersize);
@@ -123,11 +124,12 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 }
 
 
-int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, seq=1;
-   char *p, puf[MAXBUFSIZE];
+int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, char *skiplist, struct __config *cfg){
+   int rc=ERR, ret=OK, sd, seq=1, skipmatch;
+   char *p, puf[SMALLBUFSIZE];
+   char *q, muf[SMALLBUFSIZE];
    char folders[MAXBUFSIZE];
-   
+
    if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
       printf("cannot create socket\n");
       return ERR;
@@ -146,6 +148,27 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
    do {
       memset(puf, 0, sizeof(puf));
       p = split(p, '\n', puf, sizeof(puf)-1);
+
+      if(strlen(puf) < 1) continue;
+
+      skipmatch = 0;
+
+      if(skiplist && strlen(skiplist) > 0){
+         q = skiplist;
+         do {
+            memset(muf, 0, sizeof(muf));
+            q = split(q, ',', muf, sizeof(muf)-1);
+            if(strncasecmp(puf, muf, strlen(muf)) == 0){
+               skipmatch = 1;
+               break;
+            }
+         } while(q);
+      }
+
+      if(skipmatch == 1){
+         printf("SKIPPING FOLDER: %s\n", puf);
+         continue;
+      }
 
       printf("processing folder: %s... ", puf);
 
@@ -170,13 +193,13 @@ void usage(){
 int main(int argc, char **argv){
    int i, rc=0;
    char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
-   char *imapserver=NULL, *username=NULL, *password=NULL;
+   char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
 
 
-   while((i = getopt(argc, argv, "c:m:e:d:i:u:p:h?")) > 0){
+   while((i = getopt(argc, argv, "c:m:e:d:i:u:p:x:h?")) > 0){
        switch(i){
 
          case 'c' :
@@ -205,6 +228,10 @@ int main(int argc, char **argv){
 
          case 'p' :
                     password = optarg;
+                    break;
+
+         case 'x' :
+                    skiplist = optarg;
                     break;
 
          case 'h' :
@@ -253,7 +280,7 @@ int main(int argc, char **argv){
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
    if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
-   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, &cfg);
+   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
 
 
 

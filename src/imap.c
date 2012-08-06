@@ -38,16 +38,58 @@ unsigned long resolve_host(char *host){
 }
 
 
-int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, i, n, pos, messages=0, len, readlen, fd;
-   char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
+int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
+   char *p, *q;
+   int len=0;
 
+
+   p = strstr(s, "\r\n");
+   if(!p){
+      printf("invalid reply: %s", s);
+      return len;
+   }
+
+   *p = '\0';
+
+   *_1st_line_bytes = strlen(s)+2;
+
+   if(*(p-1) == '}') *(p-1) = '\0';
+
+
+   q = strchr(s, '{');
+   if(q){
+      q++;
+      len = atoi(q);
+   }
+
+   *(p-1) = '}';
+   *p = '\r';
+
+   return len;
+}
+
+
+int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad){
+
+   if(*(s+len-2) == '\r' && *(s+len-1) == '\n'){
+      if(strstr(s, tagok)) return 1;
+      if(strstr(s, tagbad)) return 1;
+   }
+
+   return 0;
+}
+
+
+int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   int rc=ERR, i, n, pos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
+   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
+   char aggrbuf[3*MAXBUFSIZE];
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s SELECT %s\r\n", tag, folder);
+   snprintf(buf, sizeof(buf)-1, "%s SELECT \"%s\"\r\n", tag, folder);
    send(sd, buf, strlen(buf), 0);
-   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
 
+   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
 
    if(!strstr(buf, tagok)){
       trimBuffer(buf);
@@ -55,27 +97,28 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       return rc;
    }
 
-
-   p = &buf[0];
-   do {
-      memset(puf, 0, sizeof(puf));
-      p = split(p, '\n', puf, sizeof(puf)-1);
-
-      q = strstr(puf, " EXISTS");
-      if(q){
-         *q = '\0';
-         messages = atoi(puf+2);
+   p = strstr(buf, " EXISTS");
+   if(p){
+      *p = '\0';
+      p = strrchr(buf, '\n');
+      if(p){
+         while(!isdigit(*p)){ p++; }
+         messages = atoi(p);
       }
-
-   } while(p);
-
+   }
 
    printf("found %d messages\n", messages);
 
    if(messages <= 0) return rc;
-   for(i=1; i<=messages; i++){
 
-      snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
+   for(i=1; i<=messages; i++){
+      printf("processed: %7d\r", processed_messages); fflush(stdout);
+      processed_messages++;
+
+      snprintf(tag, sizeof(tag)-1, "A%d", *seq);
+      snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
+      snprintf(tagbad, sizeof(tagbad)-1, "\r\n%s BAD", tag);
+
       snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
 
       snprintf(filename, sizeof(filename)-1, "%s-%d.txt", folder, i);
@@ -89,69 +132,59 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 
       send(sd, buf, strlen(buf), 0);
-      memset(buf, 0, sizeof(buf));
-      n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
+
+      readlen = 0;
+      pos = 0;
+      len = 0;
+      nreads = 0;
+
+      memset(aggrbuf, 0, sizeof(aggrbuf));
+      lastpos = 0;
 
 
-      len = 0; readlen = n;
-
-      p = strstr(buf, "\r\n");
-      if(!p){
-         printf("invalid reply: %s", buf);
-         continue;
-      }
-
-      *p = '\0';
-      pos = strlen(buf) + 2;
-
-
-      if(*(p-1) == '}') *(p-1) = '\0';
-
-
-      q = strchr(buf, '{');
-      if(q){
-         q++;
-         len = atoi(q);
-      }
-
-      if(len < 10){
-         printf("too short message: %s\n", buf);
-         continue;
-      }
-
-      n -= pos;
-
-      q = strstr(p+2, tagok);
-      if(q){
-         n -= strlen(q) + 1;
-      }
-
-
-      write(fd, p+2, n);
-
-
-      while(readlen < len){
-         memset(buf, 0, sizeof(buf));
-         n = recvtimeout(sd, buf, MAXBUFSIZE, 3);
+      while((n = recvtimeout(sd, buf, sizeof(buf), 15)) > 0){
+         nreads++;
          readlen += n;
 
-         p = strstr(buf, tagok);
-         if(p){
-            n -= strlen(p)+1;
+         if(nreads == 1){
+            len = get_message_length_from_imap_answer(buf, &pos);
+
+            if(len < 10){
+               printf("%d: too short message! %s\n", i, buf);
+               break;
+            }
          }
 
-         write(fd, buf, n);
-      
-      }
+         if(lastpos + n + sizeof(buf) > sizeof(aggrbuf)){
+            write(fd, aggrbuf, lastpos);
+            memset(aggrbuf, 0, sizeof(aggrbuf));
+            lastpos = 0;
+         }
+
+         memcpy(aggrbuf+lastpos, buf, n);
+         lastpos += n;
+
+         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad) == 1){
+            write(fd, aggrbuf, lastpos);
+            break;
+         }
+         else {
+            write(fd, aggrbuf, lastpos-n);
+            memmove(aggrbuf, aggrbuf+lastpos-n, n);
+            lastpos = n;
+            memset(aggrbuf+lastpos, 0, sizeof(aggrbuf)-lastpos);
+         }
+      } 
+
 
       close(fd);
 
       rc = import_message(filename, sdata, data, cfg);
 
       unlink(filename);
-
    }
 
+   printf("\n");
 
    return OK;
 }
@@ -180,7 +213,6 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
    }
 
    n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
-   //printf("connected...\n");
 
 
    /*
@@ -209,8 +241,6 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
       return ERR;
    }
 
-   //printf("logged in...\n");
-
    return OK;
 }
 
@@ -219,11 +249,9 @@ int list_folders(int sd, int *seq, char *folders, int foldersize){
    int n;
    char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE];
 
-   snprintf(folders, foldersize-1, "INBOX");
-
-
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s LIST \"\" %%\r\n", tag);
+   //snprintf(buf, sizeof(buf)-1, "%s LIST \"\" %%\r\n", tag);
+   snprintf(buf, sizeof(buf)-1, "%s LIST \"\" \"*\"\r\n", tag);
 
    send(sd, buf, strlen(buf), 0);
 
@@ -236,15 +264,17 @@ int list_folders(int sd, int *seq, char *folders, int foldersize){
       trimBuffer(puf);
 
       if(strncmp(puf, "* LIST ", 7) == 0){
-         q = strrchr(puf, ' ');
+         q = strstr(puf, "\".\"");
          if(q){
-            if(*(q+1) == '"') q += 2;
-            if(puf[strlen(puf)-1] == '"') puf[strlen(puf)-1] = '\0';
+            q += 3;
+          
+            if(*q == ' ') q++;
+            if(*q == '"') q++;
 
-            if(strncasecmp(q, "junk", 4) && strncasecmp(q, "trash", 5) && strncasecmp(q, "spam", 4) && strncasecmp(q, "draft", 5)){
-               strncat(folders, "\n", foldersize-1);
-               strncat(folders, q, foldersize-1);
-            }
+            if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
+
+            strncat(folders, "\n", foldersize-1);
+            strncat(folders, q, foldersize-1);
 
          }
       }
@@ -253,7 +283,6 @@ int list_folders(int sd, int *seq, char *folders, int foldersize){
       }
 
    } while(p);
-
 
    return 0;
 }
