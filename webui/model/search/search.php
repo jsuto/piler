@@ -463,9 +463,7 @@ class ModelSearchSearch extends Model {
       $q = $q2 = '';
       $arr = $a = $result = $result2 = array();
 
-      if(count($id) < 1) { return array(); }
-
-      if(Registry::get('auditor_user') == 1) { return $id; }
+      if(count($id) < 1) { return array($result, $result2); }
 
       $arr = $id;
 
@@ -475,19 +473,25 @@ class ModelSearchSearch extends Model {
 
       $q2 = preg_replace("/^\,/", "", $q2);
 
-
-      while(list($k, $v) = each($_SESSION['emails'])) {
-         if(validemail($v) == 1) {
-            $q .= ",?";
-            array_push($a, $v);
+      if(Registry::get('auditor_user') == 0) {
+         while(list($k, $v) = each($_SESSION['emails'])) {
+            if(validemail($v) == 1) {
+               $q .= ",?";
+               array_push($a, $v);
+            }
          }
       }
 
+
       $q = preg_replace("/^\,/", "", $q);
 
-      $arr = array_merge($arr, $a, $a);
+      if(Registry::get('auditor_user') == 1) {
+         $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2)", $arr);
+      } else {
+         $arr = array_merge($arr, $a, $a);
+         $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+      }
 
-      $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
 
       if($query->num_rows > 0) {
          foreach ($query->rows as $q) {
