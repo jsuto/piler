@@ -69,10 +69,17 @@ int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
 }
 
 
-int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad){
+int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *pos){
+   char *p;
+
+   *pos = 0;
 
    if(*(s+len-2) == '\r' && *(s+len-1) == '\n'){
-      if(strstr(s, tagok)) return 1;
+      if((p = strstr(s, tagok))){
+         *pos = p - s;
+         if(*pos > 3) *pos -= 2;
+         return 1;
+      }
       if(strstr(s, tagbad)) return 1;
    }
 
@@ -81,7 +88,7 @@ int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad){
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, i, n, pos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
+   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, nwrites, processed_messages=0;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
@@ -112,8 +119,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
    if(messages <= 0) return rc;
 
    for(i=1; i<=messages; i++){
-      printf("processed: %7d\r", processed_messages); fflush(stdout);
       processed_messages++;
+      printf("processed: %7d\r", processed_messages); fflush(stdout);
 
       snprintf(tag, sizeof(tag)-1, "A%d", *seq);
       snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
@@ -137,6 +144,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       pos = 0;
       len = 0;
       nreads = 0;
+      nwrites = 0;
+      endpos = 0;
 
       memset(aggrbuf, 0, sizeof(aggrbuf));
       lastpos = 0;
@@ -156,7 +165,13 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
          }
 
          if(lastpos + n + sizeof(buf) > sizeof(aggrbuf)){
-            write(fd, aggrbuf, lastpos);
+            nwrites++;
+
+            if(nwrites == 1)
+               write(fd, aggrbuf+pos, lastpos-pos);
+            else
+               write(fd, aggrbuf, lastpos);
+
             memset(aggrbuf, 0, sizeof(aggrbuf));
             lastpos = 0;
          }
@@ -164,12 +179,24 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
          memcpy(aggrbuf+lastpos, buf, n);
          lastpos += n;
 
-         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad) == 1){
-            write(fd, aggrbuf, lastpos);
+         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad, &endpos) == 1){
+            nwrites++;
+            if(nwrites == 1)
+               write(fd, aggrbuf+pos, lastpos-(lastpos-endpos)-pos);
+            else
+               write(fd, aggrbuf, lastpos-(lastpos-endpos));
+
             break;
          }
          else {
-            write(fd, aggrbuf, lastpos-n);
+            nwrites++;
+            if(nwrites == 1){
+               if(lastpos-n-pos > 0) write(fd, aggrbuf+pos, lastpos-n-pos); else nwrites--;
+            }
+            else {
+               write(fd, aggrbuf, lastpos-n);
+            }
+
             memmove(aggrbuf, aggrbuf+lastpos-n, n);
             lastpos = n;
             memset(aggrbuf+lastpos, 0, sizeof(aggrbuf)-lastpos);
