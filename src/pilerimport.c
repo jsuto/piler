@@ -21,6 +21,8 @@
 extern char *optarg;
 extern int optind;
 
+int quiet=0;
+
 #define SKIPLIST "junk,trash,spam,draft"
 
 int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
@@ -52,6 +54,8 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
             rc = import_message(fname, sdata, data, cfg);
             if(rc == ERR) ret = ERR;
             unlink(fname);
+
+            if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
          }
 
          snprintf(fname, sizeof(fname)-1, "%ld-%d", t, tot_msgs);
@@ -67,19 +71,22 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
       rc = import_message(fname, sdata, data, cfg);
       if(rc == ERR) ret = ERR;
       unlink(fname);
+
+      if(quiet == 0) printf("processed: %7d\r", ++tot_msgs); fflush(stdout);
    }
 
    fclose(F);
 
+   if(quiet == 0) printf("\n");
 
    return ret;
 }
 
 
-int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
+int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
    DIR *dir;
    struct dirent *de;
-   int rc=ERR, ret=OK, tot_msgs=0;
+   int rc=ERR, ret=OK;
    char fname[SMALLBUFSIZE];
    struct stat st;
 
@@ -97,15 +104,17 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
-            rc = import_from_maildir(fname, sdata, data, cfg);
+            rc = import_from_maildir(fname, sdata, data, tot_msgs, cfg);
             if(rc == ERR) ret = ERR;
          }
          else {
 
             if(S_ISREG(st.st_mode)){
                rc = import_message(fname, sdata, data, cfg);
-               if(rc == OK) tot_msgs++;
+               if(rc == OK) (*tot_msgs)++;
                else ret = ERR;
+
+               if(quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
             }
             else {
                printf("%s is not a file\n", fname);
@@ -119,6 +128,8 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
    }
    closedir(dir);
+
+   if(quiet == 0) printf("\n");
 
    return ret;
 }
@@ -166,11 +177,11 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
       }
 
       if(skipmatch == 1){
-         printf("SKIPPING FOLDER: %s\n", puf);
+         if(quiet == 0) printf("SKIPPING FOLDER: %s\n", puf);
          continue;
       }
 
-      printf("processing folder: %s... ", puf);
+      if(quiet == 0) printf("processing folder: %s... ", puf);
 
       rc = process_imap_folder(sd, &seq, puf, sdata, data, cfg);
       if(rc == ERR) ret = ERR;
@@ -179,6 +190,8 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
 
 
    close(sd);
+
+   if(quiet == 0) printf("\n");
 
    return ret;
 }
@@ -192,6 +205,7 @@ void usage(){
 
 int main(int argc, char **argv){
    int i, rc=0;
+   int tot_msgs=0;
    char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
    char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
    struct session_data sdata;
@@ -279,7 +293,7 @@ int main(int argc, char **argv){
 
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
    if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
-   if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
+   if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
 
 
