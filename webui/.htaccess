@@ -1,3 +1,4 @@
+DirectoryIndex index.php
 
 RewriteEngine On
 RewriteRule ^search.php /index.php?route=search/search&type=simple [L]
