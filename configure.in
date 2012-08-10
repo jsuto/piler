@@ -3,7 +3,7 @@ AC_CONFIG_SRCDIR([src/piler.c])
 AC_CONFIG_HEADER(piler-config.h)
 
 CONFIGURE_PARAMS_FILE=params.h
-rm -f $CONFIGURE_PARAMS_FILE; echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\nConfigure command: ./configure $@\"" > $CONFIGURE_PARAMS_FILE
+rm -f $CONFIGURE_PARAMS_FILE; echo "#define CONFIGURE_PARAMS \"Build Date: "`date`\\nConfigure command: ./configure $@\""" > $CONFIGURE_PARAMS_FILE
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -22,6 +22,7 @@ AC_SUBST(LIBDIR)
 AC_SUBST(OBJS)
 AC_SUBST(RUNNING_USER)
 AC_SUBST(SUBDIRS)
+AC_SUBST(MAKE)
 AC_SUBST(mysql_includes)
 AC_SUBST(mysql_libs)
 AC_SUBST(mysql_obj)
@@ -49,6 +50,10 @@ mysql_obj=""
 os=`uname -s`
 
 id_bin="id"
+
+MAKE="make"
+
+if test "$os" = "SunOS"; then MAKE="gmake"; fi
 
 dnl SUBDIRS="src etc util perl init.d templates history contrib/stat"
 SUBDIRS="src etc util init.d test"

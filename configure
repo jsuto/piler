@@ -610,6 +610,7 @@ libclamav_extra_libs
 mysql_obj
 mysql_libs
 mysql_includes
+MAKE
 SUBDIRS
 RUNNING_USER
 OBJS
@@ -2030,7 +2031,7 @@ ac_config_headers="$ac_config_headers piler-config.h"
 
 
 CONFIGURE_PARAMS_FILE=params.h
-rm -f $CONFIGURE_PARAMS_FILE; echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\nConfigure command: ./configure $@\"" > $CONFIGURE_PARAMS_FILE
+rm -f $CONFIGURE_PARAMS_FILE; echo "#define CONFIGURE_PARAMS \"Build Date: "`date`\\nConfigure command: ./configure $@\""" > $CONFIGURE_PARAMS_FILE
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -3402,6 +3403,7 @@ done
 
 
 
+
 have_libclamav="no"
 have_libtool="no"
 have_clamd="no"
@@ -3422,6 +3424,10 @@ mysql_obj=""
 os=`uname -s`
 
 id_bin="id"
+
+MAKE="make"
+
+if test "$os" = "SunOS"; then MAKE="gmake"; fi
 
 SUBDIRS="src etc util init.d test"
 

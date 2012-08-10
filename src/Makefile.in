@@ -43,7 +43,7 @@ piler: piler.c libpiler.a
 libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(MYSQL_OBJS)
 	ranlib libpiler.a
-	$(CC) -shared -Wl -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS) $(LIBS) @LDFLAGS@
+	$(CC) -shared -Wl -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
@@ -60,8 +60,8 @@ pilerexport: pilerexport.c libpiler.a
 pilerpurge: pilerpurge.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
-pilerconf: pilerconf.c cfg.o misc.o tai.o
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $^ $(LIBDIR)
+pilerconf: pilerconf.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 reindex: reindex.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)

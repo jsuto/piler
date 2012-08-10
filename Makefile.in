@@ -26,7 +26,7 @@ SUBDIRS = @SUBDIRS@
 
 RECURSIVE_TARGETS = all-recursive install-recursive clean-recursive distclean-recursive
 
-MAKE = `which make`
+MAKE = `which @MAKE@`
 
 INSTALL = @INSTALL@
 
