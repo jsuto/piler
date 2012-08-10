@@ -4,9 +4,7 @@ AC_CONFIG_HEADER(piler-config.h)
 
 CONFIGURE_PARAMS_FILE=params.h
 
-rm -f $CONFIGURE_PARAMS_FILE
-echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\\n\" \\" > $CONFIGURE_PARAMS_FILE
-echo "\"Configure command: ./configure $@\"" >> $CONFIGURE_PARAMS_FILE
+PARAMS=$@
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -57,6 +55,16 @@ id_bin="id"
 MAKE="make"
 
 if test "$os" = "SunOS"; then MAKE="gmake"; fi
+
+rm -f $CONFIGURE_PARAMS_FILE
+
+if test "$os" = "SunOS"; then
+   echo "#define CONFIGURE_PARAMS \"Build Date: "`date`'\\n" \\' > $CONFIGURE_PARAMS_FILE
+else
+   echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\\n\" \\" > $CONFIGURE_PARAMS_FILE
+fi
+echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
+
 
 dnl SUBDIRS="src etc util perl init.d templates history contrib/stat"
 SUBDIRS="src etc util init.d test"
