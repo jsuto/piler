@@ -90,7 +90,7 @@ $mail = new ModelMailMail();
 
       $rcpt = array(ADMIN_EMAIL);
 
-      $x = $mail->send_smtp_email(LOCALHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
+      $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
 
 
 
