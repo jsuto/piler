@@ -42,7 +42,7 @@ class ControllerMessageRestore extends Controller {
 
       /* send the email to all the recipients of the original email if we are admin or auditor users */
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
+      if(Registry::get('auditor_user') == 1) {
          $rcpt = $this->model_search_search->get_message_recipients($this->data['id']);
       }
       else {
