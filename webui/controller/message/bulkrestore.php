@@ -36,17 +36,6 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $rcpt = array();
-
-
-      /* send the email to all the recipients of the original email if we are admin or auditor users */
-
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
-         $rcpt = $this->model_search_search->get_message_recipients($this->data['id']);
-      }
-      else {
-         array_push($rcpt, $_SESSION['email']);
-      }
 
 
       $this->data['restored'] = 0;
@@ -54,6 +43,17 @@ class ControllerMessageBulkrestore extends Controller {
       foreach($idlist as $id) {
 
          AUDIT(ACTION_RESTORE_MESSAGE, '', '', $id, '');
+
+         $rcpt = array();
+
+         /* send the email to all the recipients of the original email if we are admin or auditor users */
+
+         if(Registry::get('auditor_user') == 1) {
+            $rcpt = $this->model_search_search->get_message_recipients($id);
+         }
+         else {
+            array_push($rcpt, $_SESSION['email']);
+         }
 
          $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
                "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $this->model_search_message->get_raw_message($id) );
