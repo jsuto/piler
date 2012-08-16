@@ -75,6 +75,7 @@ static void takesig(int sig){
    switch(sig){
         case SIGHUP:
                 initialise_configuration();
+                if(read_key(&cfg)) fatal(ERR_READING_KEY);
                 kill_children(SIGHUP);
                 break;
 
