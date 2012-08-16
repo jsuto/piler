@@ -25,10 +25,10 @@ class ModelUserImport extends Model {
       LOGGER("LDAP type: " . $host['type']);
 
       if($host['type'] == "AD") {
-         $attrs = array("cn", "proxyaddresses", "member");
+         $attrs = array("cn", "proxyaddresses", "member", "mail");
 
          $mailAttr = "proxyaddresses";
-         $mailAttrs = array("proxyaddresses");
+         $mailAttrs = array("mail", "proxyaddresses");
 
          $memberAttrs = array("member");
       }
@@ -238,7 +238,7 @@ class ModelUserImport extends Model {
 
          foreach ($query->rows as $deleted) {
             $deleteduser++;
-            $this->model_user_user->deleteUser($deleted['uid']);
+            $this->model_user_user->delete_user($deleted['uid']);
          }
       }
 
