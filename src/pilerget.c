@@ -90,7 +90,7 @@ ENDE:
 
 
 int main(int argc, char **argv){
-   int rc;
+   int rc, readkey=1;
    struct session_data sdata;
    struct __config cfg;
 
@@ -103,8 +103,9 @@ int main(int argc, char **argv){
 
    cfg = read_config(CONFIG_FILE);
 
+   if(argc >= 3) readkey = 0;
 
-   if(read_key(&cfg)){
+   if(readkey == 1 && read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);
       return 1;
    }
