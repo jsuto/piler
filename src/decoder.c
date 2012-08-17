@@ -93,6 +93,10 @@ int decodeBase64(char *p){
 
       i += 3;
 
+      /* safety check against abnormally long lines */
+
+      if(len + 3 > sizeof(puf)-1) break;
+
       if(strlen(s) == 4){
          memset(s2, 0, 3);
 
@@ -117,7 +121,6 @@ int decodeBase64(char *p){
 
          s2[2] = k1 | k2;
 
-         // this is binary safe
          memcpy(puf+len, s2, 3);
 
          len += 3;
@@ -300,8 +303,6 @@ void utf8_encode(unsigned char *p){
 
    if(p == NULL || strlen((char *)p) == 0) return;
 
-   //printf("encoding: *%s*\n", p);
-
    memset(utf8, 0, MAXBUFSIZE);
    u = &utf8[0];
    s = p;
@@ -309,6 +310,16 @@ void utf8_encode(unsigned char *p){
    for(; *s; s++){
 
       utf8_encode_char(*s, &__u[0], sizeof(__u), &len);
+
+      /*
+       * this condition should never happen, as according to the RFCs:
+       *
+       * "Each line of characters MUST be no more than 998 characters, and
+       * SHOULD be no more than 78 characters, excluding the CRLF."
+       *
+       */
+
+      if(count+len > sizeof(utf8)-1) break;
 
       //printf("%s", __u);
       memcpy(u+count, &__u[0], len);
