@@ -276,17 +276,19 @@ void fixupEncodedHeaderLine(char *buf){
 
                   if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8")){
                      need_encoding = 1;
+                     memset(tmpbuf, 0, sizeof(tmpbuf));
 
                      cd = iconv_open("utf-8", encoding);
 
-                     memset(tmpbuf, 0, sizeof(tmpbuf));
-
-                     inbuf = s+3;
-                     outbuf = &tmpbuf[0];
-                     inbytesleft = strlen(s+3);
-                     outbytesleft = sizeof(tmpbuf)-1;
-                     size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-                     iconv_close(cd);
+                     if(cd != (iconv_t)-1){
+                        inbuf = s+3;
+                        outbuf = &tmpbuf[0];
+                        inbytesleft = strlen(s+3);
+                        outbytesleft = sizeof(tmpbuf)-1;
+                        size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+                        iconv_close(cd);
+                     }
+                     else { syslog(LOG_PRIORITY, "unsupported encoding: '%s'", encoding); }
                   }
 
                   if(need_encoding == 1 && size >= 0)

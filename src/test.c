@@ -51,6 +51,8 @@ int main(int argc, char **argv){
    printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
 
+   printf("build: %d\n", get_build());
+
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 

@@ -20,12 +20,13 @@
 #include <piler.h>
 
 
+#define SKIPLIST "junk,trash,spam,draft"
+#define MBOX_ARGS 1024
+
 extern char *optarg;
 extern int optind;
 
 int quiet=0;
-
-#define SKIPLIST "junk,trash,spam,draft"
 
 int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
 int list_folders(int sd, int *seq, char *folders, int foldersize);
@@ -206,14 +207,14 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, rc=0;
-   int tot_msgs=0;
-   char *configfile=CONFIG_FILE, *mailbox=NULL, *emlfile=NULL, *directory=NULL;
+   int i, rc=0, n_mbox=0, tot_msgs=0;
+   char *configfile=CONFIG_FILE, *emlfile=NULL, *mbox[MBOX_ARGS], *directory=NULL;
    char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
 
+   for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
    while((i = getopt(argc, argv, "c:m:e:d:i:u:p:x:h?")) > 0){
        switch(i){
@@ -231,7 +232,12 @@ int main(int argc, char **argv){
                     break;
 
          case 'm' :
-                    mailbox = optarg;
+                    if(n_mbox < MBOX_ARGS){
+                       mbox[n_mbox++] = optarg;
+                    } else {
+                       printf("too many -m <mailbox> arguments: %s\n", optarg);
+                    }
+
                     break;
 
          case 'i' :
@@ -263,7 +269,7 @@ int main(int argc, char **argv){
 
 
 
-   if(!mailbox && !emlfile && !directory && !imapserver) usage();
+   if(!mbox[0] && !emlfile && !directory && !imapserver) usage();
 
 
    cfg = read_config(configfile);
@@ -294,7 +300,11 @@ int main(int argc, char **argv){
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
-   if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
+   if(mbox[0]){
+      for(i=0; i<n_mbox; i++){
+         rc = import_from_mailbox(mbox[i], &sdata, &data, &cfg);
+      }
+   }
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
 
