@@ -53,6 +53,7 @@ int main(int argc, char **argv){
 
    printf("build: %d\n", get_build());
 
+   data.folder = NULL;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 

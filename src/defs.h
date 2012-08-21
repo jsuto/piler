@@ -130,6 +130,8 @@ struct _state {
    int content_type_is_set;
    int pushed_pointer;
    int saved_size;
+   int writebufpos;
+   int abufpos;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char miscbuf[MAX_TOKEN_LEN];
@@ -152,6 +154,9 @@ struct _state {
    char reference[SMALLBUFSIZE];
 
    char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
+
+   int bodylen;
+   int tolen;
 };
 
 
@@ -220,6 +225,8 @@ struct memcached_server {
 
 
 struct __data {
+   char *folder;
+
 #ifdef HAVE_TRE
    struct rule *archiving_rules;
    struct rule *retention_rules;

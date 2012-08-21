@@ -288,6 +288,7 @@ void initialise_configuration(){
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
 
+   data.folder = NULL;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
@@ -341,6 +342,7 @@ int main(int argc, char **argv){
 
    (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
+   data.folder = NULL;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 

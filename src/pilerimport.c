@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
+#include <getopt.h>
 #include <syslog.h>
 #include <piler.h>
 
@@ -80,7 +81,54 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
 
    fclose(F);
 
-   if(quiet == 0) printf("\n");
+   return ret;
+}
+
+
+int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
+   DIR *dir;
+   struct dirent *de;
+   int rc=ERR, ret=OK;
+   char fname[SMALLBUFSIZE];
+   struct stat st;
+
+   dir = opendir(directory);
+   if(!dir){
+      printf("cannot open directory: %s\n", directory);
+      return ERR;
+   }
+
+
+   while((de = readdir(dir))){
+      if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
+
+      snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
+
+      if(stat(fname, &st) == 0){
+         if(S_ISDIR(st.st_mode)){
+            rc = import_mbox_from_dir(fname, sdata, data, tot_msgs, cfg);
+            if(rc == ERR) ret = ERR;
+         }
+         else {
+
+            if(S_ISREG(st.st_mode)){
+               rc = import_from_mailbox(fname, sdata, data, cfg);
+               if(rc == OK) (*tot_msgs)++;
+               else ret = ERR;
+
+            }
+            else {
+               printf("%s is not a file\n", fname);
+            }
+
+         }
+      }
+      else {
+         printf("cannot stat() %s\n", fname);
+      }
+
+   }
+   closedir(dir);
 
    return ret;
 }
@@ -131,8 +179,6 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
    }
    closedir(dir);
-
-   if(quiet == 0) printf("\n");
 
    return ret;
 }
@@ -194,8 +240,6 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
 
    close(sd);
 
-   if(quiet == 0) printf("\n");
-
    return ret;
 }
 
@@ -207,8 +251,8 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, rc=0, n_mbox=0, tot_msgs=0;
-   char *configfile=CONFIG_FILE, *emlfile=NULL, *mbox[MBOX_ARGS], *directory=NULL;
+   int i, c, rc=0, n_mbox=0, tot_msgs=0;
+   char *configfile=CONFIG_FILE, *emlfile=NULL, *mboxdir=NULL, *mbox[MBOX_ARGS], *directory=NULL;
    char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
    struct session_data sdata;
    struct __config cfg;
@@ -216,8 +260,41 @@ int main(int argc, char **argv){
 
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
-   while((i = getopt(argc, argv, "c:m:e:d:i:u:p:x:h?")) > 0){
-       switch(i){
+
+   data.folder = NULL;
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
+
+
+   while(1){
+
+#ifdef _GNU_SOURCE
+      static struct option long_options[] =
+         {
+            {"config",       required_argument,  0,  'c' },
+            {"eml",          required_argument,  0,  'e' },
+            {"dir",          required_argument,  0,  'd' },
+            {"mbox",         required_argument,  0,  'm' },
+            {"mboxdir",      required_argument,  0,  'M' },
+            {"imapserver",   required_argument,  0,  'i' },
+            {"username",     required_argument,  0,  'u' },
+            {"password",     required_argument,  0,  'p' },
+            {"skiplist",     required_argument,  0,  'x' },
+            {"folder",       required_argument,  0,  'f' },
+            {"help",         no_argument,        0,  'h' },
+            {0,0,0,0}
+         };
+
+      int option_index = 0;
+
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:f:h?", long_options, &option_index);
+#else
+      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:f:h?");
+#endif
+
+      if(c == -1) break;
+
+      switch(c){
 
          case 'c' :
                     configfile = optarg;
@@ -240,6 +317,10 @@ int main(int argc, char **argv){
 
                     break;
 
+         case 'M' :
+                    mboxdir = optarg;
+                    break;
+
          case 'i' :
                     imapserver = optarg;
                     break;
@@ -256,6 +337,10 @@ int main(int argc, char **argv){
                     skiplist = optarg;
                     break;
 
+         case 'f' :
+                    data.folder = optarg;
+                    break;
+
          case 'h' :
          case '?' :
                     usage();
@@ -269,7 +354,7 @@ int main(int argc, char **argv){
 
 
 
-   if(!mbox[0] && !emlfile && !directory && !imapserver) usage();
+   if(!mbox[0] && !mboxdir && !emlfile && !directory && !imapserver) usage();
 
 
    cfg = read_config(configfile);
@@ -291,9 +376,6 @@ int main(int argc, char **argv){
 
    setlocale(LC_CTYPE, cfg.locale);
 
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
@@ -305,6 +387,7 @@ int main(int argc, char **argv){
          rc = import_from_mailbox(mbox[i], &sdata, &data, &cfg);
       }
    }
+   if(mboxdir) rc = import_mbox_from_dir(mboxdir, &sdata, &data, &tot_msgs, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
 
@@ -314,6 +397,8 @@ int main(int argc, char **argv){
    free_rule(data.retention_rules);
 
    mysql_close(&(sdata.mysql));
+
+   if(quiet == 0) printf("\n");
 
    return rc;
 }

@@ -97,7 +97,7 @@ ENDE:
 
    switch(rc) {
       case OK:
-                        printf("imported: %s\n", filename);
+                        //printf("imported: %s\n", filename);
 
                         bzero(&counters, sizeof(counters));
                         counters.c_size += sdata->tot_len;
@@ -106,7 +106,7 @@ ENDE:
                         break;
 
       case ERR_EXISTS:
-                        printf("discarding duplicate message: %s\n", filename);
+                        //printf("discarding duplicate message: %s\n", filename);
                         rc = OK;
                         break;
 

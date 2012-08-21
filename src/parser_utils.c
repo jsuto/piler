@@ -62,6 +62,9 @@ void init_state(struct _state *state){
    state->pushed_pointer = 0;
    state->saved_size = 0;
 
+   state->writebufpos = 0;
+   state->abufpos = 0;
+
    state->boundaries = NULL;
    state->rcpt = NULL;
    state->rcpt_domain = NULL;
@@ -84,6 +87,9 @@ void init_state(struct _state *state){
    memset(state->b_to_domain, 0, SMALLBUFSIZE);
    memset(state->b_subject, 0, MAXBUFSIZE);
    memset(state->b_body, 0, BIGBUFSIZE);
+
+   state->tolen = 0;
+   state->bodylen = 0;
 }
 
 

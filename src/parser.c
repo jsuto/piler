@@ -20,6 +20,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    FILE *f;
    int i, len;
    char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
+   char writebuffer[MAXBUFSIZE], abuffer[MAXBUFSIZE];
    struct _state state;
 
    init_state(&state);
@@ -77,7 +78,13 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    while(fgets(buf, sizeof(buf)-1, f)){
-      parse_line(buf, &state, sdata, take_into_pieces, cfg);
+      parse_line(buf, &state, sdata, take_into_pieces, &writebuffer[0], sizeof(writebuffer), &abuffer[0], sizeof(abuffer), cfg);
+   }
+
+   if(take_into_pieces == 1 && state.writebufpos > 0){
+      len = write(state.mfd, writebuffer, state.writebufpos);
+      memset(writebuffer, 0, sizeof(writebuffer));
+      state.writebufpos = 0;
    }
 
    if(take_into_pieces == 1){
@@ -138,9 +145,9 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 }
 
 
-int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, struct __config *cfg){
+int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
-   int x, n, len, b64_len, boundary_line=0;
+   int x, n, len, writelen, b64_len, boundary_line=0;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -167,14 +174,21 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
    if(take_into_pieces == 1){
       if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
-         //printf("dumping: %s", buf);
-         n = write(state->fd, buf, len);
+         //n = write(state->fd, buf, len); // WRITE
+         if(len + state->abufpos > abuffersize-1){
+            n = write(state->fd, abuffer, state->abufpos); state->abufpos = 0; memset(abuffer, 0, abuffersize);
+         }
+         memcpy(abuffer+state->abufpos, buf, len); state->abufpos += len;
+
          state->attachments[state->n_attachments].size += len;
       }
       else {
          state->saved_size += len;
-         //printf("%s", buf);
-         n = write(state->mfd, buf, len);
+         //n = write(state->mfd, buf, len); // WRITE
+         if(len + state->writebufpos > writebuffersize-1){
+            n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+         }
+         memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
       }
    }
 
@@ -213,8 +227,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             }
             else {
                snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
-               n = write(state->mfd, puf, strlen(puf));
-               //printf("%s", puf);
+               //n = write(state->mfd, puf, strlen(puf)); // WRITE
+               writelen = strlen(puf);
+               if(writelen + state->writebufpos > writebuffersize-1){
+                  n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+               }
+               memcpy(writebuffer+state->writebufpos, puf, writelen); state->writebufpos += writelen;
             }
          }
 
@@ -377,7 +395,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       state->content_type_is_set = 0;
 
       if(state->has_to_dump == 1){
-         if(take_into_pieces == 1 && state->fd != -1) close(state->fd);
+         if(take_into_pieces == 1 && state->fd != -1){
+            if(state->abufpos > 0){
+               n = write(state->fd, abuffer, state->abufpos); state->abufpos = 0; memset(abuffer, 0, abuffersize); 
+            }
+            close(state->fd);
+         }
          state->fd = -1;
       }
 
@@ -483,11 +506,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             }
          }
       }
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && strlen(state->b_to) < MAXBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);
-            memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+            memcpy(&(state->b_to[state->tolen]), puf, len);
+            state->tolen += len;
 
             if(does_it_seem_like_an_email_address(puf) == 1){
                if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_recipient = 1;
@@ -501,16 +525,19 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
                   }
                }
 
-               if(strlen(state->b_to) < MAXBUFSIZE-len-1){
+               if(state->tolen < MAXBUFSIZE-len-1){
                   split_email_address(puf);
-                  memcpy(&(state->b_to[strlen(state->b_to)]), puf, len);
+                  memcpy(&(state->b_to[state->tolen]), puf, len);
+                  state->tolen += len;
                }
 
             }
          }
       }
-      else if(state->message_state == MSG_BODY && strlen(state->b_body) < BIGBUFSIZE-len-1)
-         memcpy(&(state->b_body[strlen(state->b_body)]), puf, len);
+      else if(state->message_state == MSG_BODY && state->bodylen < BIGBUFSIZE-len-1){
+         memcpy(&(state->b_body[state->bodylen]), puf, len);
+         state->bodylen += len;
+      }
 
    } while(p);
 
