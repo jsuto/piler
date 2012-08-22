@@ -534,7 +534,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             }
          }
       }
-      else if(state->message_state == MSG_BODY && state->bodylen < BIGBUFSIZE-len-1){
+      else if(state->message_state == MSG_BODY && len >= cfg->min_word_len && state->bodylen < BIGBUFSIZE-len-1){
          memcpy(&(state->b_body[state->bodylen]), puf, len);
          state->bodylen += len;
       }

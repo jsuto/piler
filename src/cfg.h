@@ -64,6 +64,8 @@ struct __config {
 
    int archive_emails_not_having_message_id;
 
+   int min_word_len;
+
    int debug;
 };
 
