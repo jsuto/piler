@@ -253,18 +253,16 @@ void usage(){
 int main(int argc, char **argv){
    int i, c, rc=0, n_mbox=0, tot_msgs=0;
    char *configfile=CONFIG_FILE, *emlfile=NULL, *mboxdir=NULL, *mbox[MBOX_ARGS], *directory=NULL;
-   char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
+   char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST, *folder=NULL;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
 
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
-
-   data.folder = NULL;
+   data.folder = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
-
 
    while(1){
 
@@ -280,16 +278,16 @@ int main(int argc, char **argv){
             {"username",     required_argument,  0,  'u' },
             {"password",     required_argument,  0,  'p' },
             {"skiplist",     required_argument,  0,  'x' },
-            {"folder",       required_argument,  0,  'f' },
+            {"folder",       required_argument,  0,  'F' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:f:h?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:h?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:f:h?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:h?");
 #endif
 
       if(c == -1) break;
@@ -337,8 +335,8 @@ int main(int argc, char **argv){
                     skiplist = optarg;
                     break;
 
-         case 'f' :
-                    data.folder = optarg;
+         case 'F' :
+                    folder = optarg;
                     break;
 
          case 'h' :
@@ -356,7 +354,6 @@ int main(int argc, char **argv){
 
    if(!mbox[0] && !mboxdir && !emlfile && !directory && !imapserver) usage();
 
-
    cfg = read_config(configfile);
 
    if(read_key(&cfg)){
@@ -367,7 +364,7 @@ int main(int argc, char **argv){
    mysql_init(&(sdata.mysql));
    mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
    if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
-      printf("cant connect to mysql server\n");
+      printf("error: cant connect to mysql server\n");
       return ERR;
    }
 
@@ -378,10 +375,26 @@ int main(int argc, char **argv){
 
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
+   if(folder){
+      data.folder = get_folder_id(&sdata, folder);
+
+      if(data.folder == 0){
+         data.folder = add_new_folder(&sdata, folder);
+      }
+
+      if(data.folder == 0){
+         printf("error: cannot get/add folder '%s'\n", folder);
+         mysql_close(&(sdata.mysql));
+         return 0;
+      }
+
+   }
+
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
+
    if(mbox[0]){
       for(i=0; i<n_mbox; i++){
          rc = import_from_mailbox(mbox[i], &sdata, &data, &cfg);
@@ -390,7 +403,6 @@ int main(int argc, char **argv){
    if(mboxdir) rc = import_mbox_from_dir(mboxdir, &sdata, &data, &tot_msgs, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
-
 
 
    free_rule(data.archiving_rules);

@@ -41,7 +41,7 @@ void clean_exit(char *msg, int rc){
 }
 
 
-uint64 retrieve_email_by_metadata_id(struct session_data *sdata, uint64 from_id, uint64 to_id, struct __config *cfg){
+uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *data, uint64 from_id, uint64 to_id, struct __config *cfg){
    MYSQL_RES *res;
    MYSQL_ROW row;
    FILE *f;
@@ -86,7 +86,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, uint64 from_id,
                   sdata->now = strtoul(row[2], NULL, 10);
                   sdata->sent = strtoul(row[3], NULL, 10);
 
-                  rc = store_index_data(sdata, &state, stored_id, cfg);
+                  rc = store_index_data(sdata, &state, data, stored_id, cfg);
 
                   if(rc == OK) reindexed++;
                   else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
@@ -113,13 +113,14 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, uint64 from_id,
 int main(int argc, char **argv){
    int c;
    uint64 from_id=0, to_id=0, n=0;
-   char *configfile=CONFIG_FILE;
+   char *configfile=CONFIG_FILE, *folder=NULL;
    struct session_data sdata;
+   struct __data data;
    struct __config cfg;
 
 
    while(1){
-      c = getopt(argc, argv, "c:f:t:phv?");
+      c = getopt(argc, argv, "c:f:t:F:phv?");
 
       if(c == -1) break;
 
@@ -136,6 +137,11 @@ int main(int argc, char **argv){
          case 't' :
                     to_id = strtoull(optarg, NULL, 10);
                     break;
+
+         case 'F' :
+                    folder = optarg;
+                    break;
+
 
          case 'p' :
                     progressbar = 1;
@@ -163,6 +169,18 @@ int main(int argc, char **argv){
       return 1;
    }
 
+   data.folder = 0;
+   data.archiving_rules = NULL;
+   data.retention_rules = NULL;
+
+   if(folder){
+      data.folder = get_folder_id(&sdata, folder);
+      if(data.folder == 0){
+         printf("error: could not get folder id for '%s'\n", folder);
+         return 0;
+      }
+   }
+
    init_session_data(&sdata);
 
 
@@ -176,7 +194,7 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
 
-   n = retrieve_email_by_metadata_id(&sdata, from_id, to_id, &cfg);
+   n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);
 
    printf("put %llu messages to %s table for reindexing\n", n, SQL_SPHINX_TABLE);
 

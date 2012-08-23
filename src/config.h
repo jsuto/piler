@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.20"
 
-#define BUILD 687
+#define BUILD 691
 
 #define HOSTID "mailarchiver"
 
@@ -76,6 +76,7 @@
 #define SQL_SPHINX_TABLE "sph_index"
 #define SQL_METADATA_TABLE "metadata"
 #define SQL_ATTACHMENT_TABLE "attachment"
+#define SQL_FOLDER_TABLE "folder"
 #define SQL_RECIPIENT_TABLE "rcpt"
 #define SQL_ARCHIVING_RULE_TABLE "archiving_rule"
 #define SQL_RETENTION_RULE_TABLE "retention_rule"

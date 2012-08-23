@@ -118,3 +118,101 @@ ENDE:
    return rc;
 }
 
+
+unsigned long get_folder_id(struct session_data *sdata, char *foldername){
+   unsigned long id=0;
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[1];
+   unsigned long len[1];
+
+
+   snprintf(s, SMALLBUFSIZE-1, "SELECT `id` FROM %s WHERE `name`=?", SQL_FOLDER_TABLE);
+
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = foldername;
+   bind[0].is_null = 0;
+   len[0] = strlen(foldername); bind[0].length = &len[0];
+
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      goto CLOSE;
+   }
+
+
+   if(mysql_stmt_execute(stmt)){
+      goto CLOSE;
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_LONG;
+   bind[0].buffer = (char *)&id;
+   bind[0].is_null = 0;
+   bind[0].length = 0;
+
+   if(mysql_stmt_bind_result(stmt, bind)){
+      goto CLOSE;
+   }
+
+
+   if(mysql_stmt_store_result(stmt)){
+      goto CLOSE;
+   }
+
+   mysql_stmt_fetch(stmt);
+
+CLOSE:
+   mysql_stmt_close(stmt);
+
+ENDE:
+
+   return id;
+}
+
+
+unsigned long add_new_folder(struct session_data *sdata, char *foldername){
+   unsigned long id=0;
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[2];
+   unsigned long len[2];
+
+
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`name`) VALUES(?)", SQL_FOLDER_TABLE);
+
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = foldername;
+   bind[0].is_null = 0;
+   len[0] = strlen(foldername); bind[0].length = &len[0];
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_FOLDER_TABLE, mysql_stmt_error(stmt));
+      goto CLOSE;
+   }
+
+   if(mysql_stmt_execute(stmt)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
+      goto CLOSE;
+   }
+
+
+   id = mysql_stmt_insert_id(stmt);
+
+CLOSE:
+   mysql_stmt_close(stmt);
+
+ENDE:
+
+   return id;
+}
+
+

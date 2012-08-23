@@ -23,6 +23,7 @@ create table if not exists `sph_index` (
   `body` text,
   `size` int default '0',
   `direction` int default 0,
+  `folder` int default 0,
   `attachments` int default 0,
   `attachment_types` text(512) default null,
   primary key (`id`)
@@ -60,6 +61,14 @@ create index metadata_idx4 on metadata(`bodydigest`);
 create index metadata_idx5 on metadata(`deleted`); 
 create index metadata_idx6 on metadata(`arrived`); 
 create index metadata_idx7 on metadata(`retained`); 
+
+drop table if exists `folder`;
+create table if not exists `folder` (
+   `id` int not null auto_increment,
+   `parent_id` int default 0,
+   `name` char(64) not null unique,
+   primary key (`id`)
+) Engine=InnoDB;
 
 
 drop table if exists `rcpt`;

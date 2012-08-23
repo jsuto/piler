@@ -122,7 +122,7 @@ int is_body_digest_already_stored(struct session_data *sdata, struct _state *sta
 }
 
 
-int store_index_data(struct session_data *sdata, struct _state *state, uint64 id, struct __config *cfg){
+int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg){
    int rc=ERR;
    char *subj, s[SMALLBUFSIZE];
 
@@ -134,7 +134,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, uint64 id
    if(*subj == ' ') subj++;
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,?,?,%ld,%ld,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, state->n_attachments);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`) values(%llu,?,?,?,?,?,?,%ld,%ld,%d,%d,%d,%d,?)", SQL_SPHINX_TABLE, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments);
 
    if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return rc;
 
@@ -264,7 +264,7 @@ CLOSE:
 }
 
 
-int store_meta_data(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int store_meta_data(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int rc, ret=ERR;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
 
@@ -356,7 +356,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __c
 
       if(rc == OK){
 
-         rc = store_index_data(sdata, state, id, cfg);
+         rc = store_index_data(sdata, state, data, id, cfg);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
 
@@ -385,7 +385,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
    /* check for existing body digest */
 
-   rc = is_body_digest_already_stored(sdata, state, cfg);
+   //rc = is_body_digest_already_stored(sdata, state, cfg);
 
    /*
     * TODO: check if the bodydigest were stored, then we should
@@ -415,7 +415,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
    sdata->retained += query_retain_period(data->retention_rules, state, sdata->tot_len, sdata->spam_message, cfg);
 
-   rc = store_meta_data(sdata, state, cfg);
+   rc = store_meta_data(sdata, state, data, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
    if(rc == ERR_EXISTS){
 

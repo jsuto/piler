@@ -225,7 +225,7 @@ struct memcached_server {
 
 
 struct __data {
-   char *folder;
+   int folder;
 
 #ifdef HAVE_TRE
    struct rule *archiving_rules;
