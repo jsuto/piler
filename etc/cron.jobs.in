@@ -16,14 +16,10 @@ piler's crontab:
 
 ### optional: show cpu usage
 */5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
+*/15 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
+*/15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 
 ### optional: regular AD sync
 0 8 * * * /usr/bin/php LIBEXECDIR/piler/ldap_sync.php /srv/www/webui.yourdomain.com > LOCALSTATEDIR/piler/stat/adsync.stat
 
-
-
-sphinx's cronjob:
-
-*/5 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
-*/15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 
