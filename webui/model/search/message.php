@@ -223,7 +223,7 @@ class ModelSearchMessage extends Model {
          $chunk = base64_decode($chunk);
       }
 
-      if(!preg_match("/utf-8/i", $charset)){
+      if($charset && !preg_match("/utf-8/i", $charset)){
          $chunk = iconv($charset, 'utf-8', $chunk);
       }
 
