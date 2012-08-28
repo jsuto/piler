@@ -20,7 +20,8 @@ class ControllerSearchHelper extends Controller {
                     'size'            => '',
                     'attachment_type' => '',
                     'tag'             => '',
-                    'ref'             => '' 
+                    'ref'             => '',
+                    'any'             => ''
                      );
 
 
@@ -137,6 +138,7 @@ class ControllerSearchHelper extends Controller {
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
          else if($v == 'ref:') { $token = 'ref'; continue; }
+         else { $this->a['any'] .= ' ' . $v; }
 
          if($token == 'from') {
             $v = fix_email_address($v);

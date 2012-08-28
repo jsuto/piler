@@ -103,6 +103,9 @@ class ModelSearchSearch extends Model {
       $data['body'] = $this->fixup_sphinx_operators($data['body']);
       $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
 
+      $data['any'] = $this->fixup_sphinx_operators($data['any']);
+      $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
+
 
       if(Registry::get('auditor_user') == 1) {
          if($data['f_from']) { $f1 .= "|" . $data['f_from']; $n_fc++; }
@@ -166,6 +169,8 @@ class ModelSearchSearch extends Model {
       if($data['body']) { if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") "; }
       if($data['subject']) { if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") "; }
       if($data['attachment_type'] && $data['attachment_type'] != "any") { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
+
+      if($data['any']) { if($match) { $match .= " & "; } $match .= "(" . $data['any'] . ") "; }
 
       return $match;
    }

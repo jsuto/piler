@@ -62,14 +62,6 @@ create index metadata_idx5 on metadata(`deleted`);
 create index metadata_idx6 on metadata(`arrived`); 
 create index metadata_idx7 on metadata(`retained`); 
 
-drop table if exists `folder`;
-create table if not exists `folder` (
-   `id` int not null auto_increment,
-   `parent_id` int default 0,
-   `name` char(64) not null unique,
-   primary key (`id`)
-) Engine=InnoDB;
-
 
 drop table if exists `rcpt`;
 create table if not exists `rcpt` (
@@ -243,6 +235,21 @@ create table if not exists `group_email` (
    `id` bigint unsigned not null,
    `email` char(128) not null,
    key `group_email_idx` (`id`)
+) ENGINE=InnoDB;
+
+
+create table if not exists `folder` (
+   `id` int not null auto_increment,
+   `parent_id` int default 0,
+   `name` char(64) not null unique,
+   primary key (`id`)
+) Engine=InnoDB;
+
+
+create table if not exists `notes` (
+   `id` bigint unsigned not null,
+   `note` text default null,
+   key `notes_idx` (`id`)
 ) ENGINE=InnoDB;
 
 
