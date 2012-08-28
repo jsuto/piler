@@ -199,6 +199,8 @@ class ControllerSearchHelper extends Controller {
 
       }
 
+      if($this->a['any'] == ' ' . $this->data['text_enter_search_terms']) { $this->a['any'] = ''; }
+
       $this->a['attachment_type'] = substr($this->a['attachment_type'], 1, strlen($this->a['attachment_type']));
    }
 
