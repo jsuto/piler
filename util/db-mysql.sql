@@ -103,9 +103,10 @@ create view `v_attachment` AS select `id` as `i`, `piler_id`, `attachment_id`, `
 
 drop table if exists `tag`;
 create table if not exists `tag` (
-   `id` bigint not null unique,
+   `id` bigint not null,
    `uid` int not null,
-   `tag` char(255) default null
+   `tag` char(255) default null,
+   unique(`id`, `uid`)
 ) ENGINE=InnoDB;
 
 
@@ -246,10 +247,12 @@ create table if not exists `folder` (
 ) Engine=InnoDB;
 
 
-create table if not exists `notes` (
+create table if not exists `note` (
    `id` bigint unsigned not null,
+   `uid` int not null,
    `note` text default null,
-   key `notes_idx` (`id`)
+   unique(`id`, `uid`),
+   key (`id`)
 ) ENGINE=InnoDB;
 
 

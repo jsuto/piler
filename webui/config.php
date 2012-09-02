@@ -23,6 +23,7 @@ define('ICON_TAG', '/view/theme/default/images/tag_blue.png');
 define('ICON_GREEN_OK', '/view/theme/default/images/green_ok.png');
 define('ICON_RED_X', '/view/theme/default/images/red_x.png');
 define('ICON_DOWNLOAD', '/view/theme/default/images/download_icon.jpg');
+define('ICON_NOTES', '/view/theme/default/images/notes.png');
 
 define('MAX_CGI_FROM_SUBJ_LEN', 45);
 define('PAGE_LEN', 20);
@@ -89,6 +90,7 @@ define('TABLE_ATTACHMENT', 'attachment');
 define('TABLE_SEARCH', 'search');
 define('TABLE_EMAIL_LIST', 'email_groups');
 define('TABLE_TAG', 'tag');
+define('TABLE_NOTE', '`note`');
 define('TABLE_USER_SETTINGS', 'user_settings');
 define('TABLE_REMOTE', 'remote');
 define('TABLE_DOMAIN', 'domain');
@@ -104,6 +106,7 @@ define('SPHINX_DATABASE', 'sphinx');
 define('SPHINX_HOSTNAME', '127.0.0.1:9306');
 define('SPHINX_MAIN_INDEX', 'main1');
 define('SPHINX_TAG_INDEX', 'tag1');
+define('SPHINX_NOTE_INDEX', 'note1');
 
 
 define('LDAP_IMPORT_CONFIG_FILE', '/usr/local/etc/ldap-import.cfg');

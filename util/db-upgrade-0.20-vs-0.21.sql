@@ -7,9 +7,12 @@ create table if not exists `folder` (
    primary key (`id`)
 ) Engine=InnoDB;
 
-create table if not exists `notes` (
+
+create table if not exists `note` (
    `id` bigint unsigned not null,
+   `uid` int not null,
    `note` text default null,
-   key `notes_idx` (`id`)
+   unique(`id`, `uid`),
+   key (`id`)
 ) ENGINE=InnoDB;
 
