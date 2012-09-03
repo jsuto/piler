@@ -165,23 +165,26 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_1st_header == 1 && state->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
       state->ms_journal = 1;
       memset(state->message_id, 0, SMALLBUFSIZE);
+
+      memset(state->b_from, 0, SMALLBUFSIZE); 
+      memset(state->b_from_domain, 0, SMALLBUFSIZE);
    }
 
-   //printf("buf: %s", buf);
 
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){
       state->message_state = MSG_BODY;
 
       if(state->is_header == 1) state->is_header = 0;
       state->is_1st_header = 0;
-
-
-      if(state->ms_journal == 1){
-         state->is_1st_header = 1;
-         state->is_header = 1;
-      }
    }
 
+   if(state->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
+      state->is_1st_header = 1;
+      state->is_header = 1;
+      memset(state->b_body, 0, BIGBUFSIZE);
+      state->bodylen = 0;
+      memset(state->b_subject, 0, MAXBUFSIZE);
+   }
 
    if(take_into_pieces == 1){
       if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
@@ -267,8 +270,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       return 0;
    }
 
-   trimBuffer(buf);
 
+   trimBuffer(buf);
 
    /* skip the first line, if it's a "From <email address> date" format */
    if(state->line_num == 1 && strncmp(buf, "From ", 5) == 0) return 0;
@@ -313,6 +316,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       x = extract_boundary(p, state);
    }
 
+
+   if(state->message_state == MSG_BODY && state->ms_journal == 1 && strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0){
+      state->is_header = 1;
+      state->is_1st_header = 1;
+      state->message_state = MSG_RECIPIENT;
+   }
 
    if(state->message_state == MSG_RECIPIENT){
       p = strstr(buf, "Expanded:");
@@ -486,7 +495,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_header == 1) p = strchr(buf, ' ');
    else p = buf;
 
-   //printf("a: *%s*\n", buf);
+   //printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
 
    do {
       memset(puf, 0, sizeof(puf));
