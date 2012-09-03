@@ -162,6 +162,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       sdata->spam_message = 1;
    }
 
+   if(state->is_1st_header == 1 && state->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
+      state->ms_journal = 1;
+      memset(state->message_id, 0, SMALLBUFSIZE);
+   }
+
    //printf("buf: %s", buf);
 
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){
@@ -169,6 +174,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
       if(state->is_header == 1) state->is_header = 0;
       state->is_1st_header = 0;
+
+
+      if(state->ms_journal == 1){
+         state->is_1st_header = 1;
+         state->is_header = 1;
+      }
    }
 
 
@@ -282,6 +293,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
+      else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
       else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf);
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
@@ -301,6 +313,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       x = extract_boundary(p, state);
    }
 
+
+   if(state->message_state == MSG_RECIPIENT){
+      p = strstr(buf, "Expanded:");
+      if(p) *p = '\0';
+   }
 
    if(state->is_1st_header == 1 && state->message_state == MSG_REFERENCES){
       if(strncasecmp(buf, "References:", 11) == 0) parse_reference(state, buf+11);
@@ -431,7 +448,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
    /* skip irrelevant headers */
-   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC) return 0;
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT) return 0;
 
 
    /* don't process body if it's not a text or html part */
@@ -506,7 +523,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             }
          }
       }
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);

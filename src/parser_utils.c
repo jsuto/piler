@@ -90,6 +90,8 @@ void init_state(struct _state *state){
 
    state->tolen = 0;
    state->bodylen = 0;
+
+   state->ms_journal = 0;
 }
 
 
@@ -507,7 +509,7 @@ void translateLine(unsigned char *p, struct _state *state){
 
    for(; *p; p++){
 
-      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC) && *p == '@'){ continue; }
+      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
 
       if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_' || *p == '&') ){ continue; }
 

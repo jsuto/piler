@@ -39,6 +39,7 @@
 #define MSG_CONTENT_DISPOSITION 8
 #define MSG_MESSAGE_ID 9
 #define MSG_REFERENCES 10
+#define MSG_RECIPIENT 11
 
 #define MAXHASH 8171
 
@@ -157,6 +158,7 @@ struct _state {
 
    int bodylen;
    int tolen;
+   char ms_journal;
 };
 
 
@@ -226,7 +228,7 @@ struct memcached_server {
 
 struct __data {
    int folder;
-
+   char recursive_folder_names;
 #ifdef HAVE_TRE
    struct rule *archiving_rules;
    struct rule *retention_rules;
