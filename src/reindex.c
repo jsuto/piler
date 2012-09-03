@@ -170,11 +170,12 @@ int main(int argc, char **argv){
    }
 
    data.folder = 0;
+   data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
    if(folder){
-      data.folder = get_folder_id(&sdata, folder);
+      data.folder = get_folder_id(&sdata, folder, 0);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;

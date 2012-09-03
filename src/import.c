@@ -119,15 +119,15 @@ ENDE:
 }
 
 
-unsigned long get_folder_id(struct session_data *sdata, char *foldername){
+unsigned long get_folder_id(struct session_data *sdata, char *foldername, int parent_id){
    unsigned long id=0;
    char s[SMALLBUFSIZE];
    MYSQL_STMT *stmt;
-   MYSQL_BIND bind[1];
-   unsigned long len[1];
+   MYSQL_BIND bind[2];
+   unsigned long len[2];
 
 
-   snprintf(s, SMALLBUFSIZE-1, "SELECT `id` FROM %s WHERE `name`=?", SQL_FOLDER_TABLE);
+   snprintf(s, SMALLBUFSIZE-1, "SELECT `id` FROM %s WHERE `name`=? AND `parent_id`=?", SQL_FOLDER_TABLE);
 
    if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
 
@@ -138,6 +138,10 @@ unsigned long get_folder_id(struct session_data *sdata, char *foldername){
    bind[0].is_null = 0;
    len[0] = strlen(foldername); bind[0].length = &len[0];
 
+   bind[1].buffer_type = MYSQL_TYPE_LONG;
+   bind[1].buffer = (char *)&parent_id;
+   bind[1].is_null = 0;
+   bind[1].length = 0;
 
    if(mysql_stmt_bind_param(stmt, bind)){
       goto CLOSE;
@@ -175,7 +179,7 @@ ENDE:
 }
 
 
-unsigned long add_new_folder(struct session_data *sdata, char *foldername){
+unsigned long add_new_folder(struct session_data *sdata, char *foldername, int parent_id){
    unsigned long id=0;
    char s[SMALLBUFSIZE];
    MYSQL_STMT *stmt;
@@ -183,7 +187,7 @@ unsigned long add_new_folder(struct session_data *sdata, char *foldername){
    unsigned long len[2];
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`name`) VALUES(?)", SQL_FOLDER_TABLE);
+   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`name`, `parent_id`) VALUES(?,?)", SQL_FOLDER_TABLE);
 
    if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
 
@@ -193,6 +197,11 @@ unsigned long add_new_folder(struct session_data *sdata, char *foldername){
    bind[0].buffer = foldername;
    bind[0].is_null = 0;
    len[0] = strlen(foldername); bind[0].length = &len[0];
+
+   bind[1].buffer_type = MYSQL_TYPE_LONG;
+   bind[1].buffer = (char *)&parent_id;
+   bind[1].is_null = 0;
+   bind[1].length = 0;
 
    if(mysql_stmt_bind_param(stmt, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_FOLDER_TABLE, mysql_stmt_error(stmt));

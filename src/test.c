@@ -54,6 +54,7 @@ int main(int argc, char **argv){
    printf("build: %d\n", get_build());
 
    data.folder = 0;
+   data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 

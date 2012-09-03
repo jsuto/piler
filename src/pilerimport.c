@@ -88,7 +88,8 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
 int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
    DIR *dir;
    struct dirent *de;
-   int rc=ERR, ret=OK;
+   int rc=ERR, ret=OK, i=0;
+   unsigned long folder;
    char fname[SMALLBUFSIZE];
    struct stat st;
 
@@ -106,16 +107,35 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
 
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
+            folder = data->folder;
             rc = import_mbox_from_dir(fname, sdata, data, tot_msgs, cfg);
+            data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
          else {
 
             if(S_ISREG(st.st_mode)){
+               if(i == 0 && data->recursive_folder_names == 1){
+                  folder = get_folder_id(sdata, fname, data->folder);
+                  if(folder == 0){
+                     folder = add_new_folder(sdata, fname, data->folder);
+
+                     if(folder == 0){
+                        printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);
+                        return ERR;
+                     }
+                     else {
+                        data->folder = folder;
+                     }
+                  }
+
+               }
+
                rc = import_from_mailbox(fname, sdata, data, cfg);
                if(rc == OK) (*tot_msgs)++;
                else ret = ERR;
 
+               i++;
             }
             else {
                printf("%s is not a file\n", fname);
@@ -137,8 +157,9 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
 int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
    DIR *dir;
    struct dirent *de;
-   int rc=ERR, ret=OK;
-   char fname[SMALLBUFSIZE];
+   int rc=ERR, ret=OK, i=0;
+   unsigned long folder;
+   char *p, fname[SMALLBUFSIZE];
    struct stat st;
 
    dir = opendir(directory);
@@ -155,15 +176,42 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
+            folder = data->folder;
             rc = import_from_maildir(fname, sdata, data, tot_msgs, cfg);
+            data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
          else {
 
             if(S_ISREG(st.st_mode)){
+               if(i == 0 && data->recursive_folder_names == 1){
+                  p = strrchr(directory, '/');
+                  if(p) p++;
+                  else {
+                     printf("invalid directory name: '%s'\n", directory);
+                     return ERR;
+                  }
+
+                  folder = get_folder_id(sdata, p, data->folder);
+                  if(folder == 0){
+                     folder = add_new_folder(sdata, p, data->folder);
+
+                     if(folder == 0){
+                        printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
+                        return ERR;
+                     }
+                     else {
+                        data->folder = folder;
+                     }
+                  }
+
+               }
+
                rc = import_message(fname, sdata, data, cfg);
                if(rc == OK) (*tot_msgs)++;
                else ret = ERR;
+
+               i++;
 
                if(quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
             }
@@ -261,6 +309,7 @@ int main(int argc, char **argv){
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
    data.folder = 0;
+   data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
@@ -279,15 +328,16 @@ int main(int argc, char **argv){
             {"password",     required_argument,  0,  'p' },
             {"skiplist",     required_argument,  0,  'x' },
             {"folder",       required_argument,  0,  'F' },
+            {"recursive",    required_argument,  0,  'R' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:h?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:h?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rh?");
 #endif
 
       if(c == -1) break;
@@ -339,6 +389,10 @@ int main(int argc, char **argv){
                     folder = optarg;
                     break;
 
+         case 'R' :
+                    data.recursive_folder_names = 1;
+                    break;
+
          case 'h' :
          case '?' :
                     usage();
@@ -376,10 +430,10 @@ int main(int argc, char **argv){
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    if(folder){
-      data.folder = get_folder_id(&sdata, folder);
+      data.folder = get_folder_id(&sdata, folder, 0);
 
       if(data.folder == 0){
-         data.folder = add_new_folder(&sdata, folder);
+         data.folder = add_new_folder(&sdata, folder, 0);
       }
 
       if(data.folder == 0){

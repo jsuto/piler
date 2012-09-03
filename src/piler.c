@@ -289,6 +289,7 @@ void initialise_configuration(){
    free_rule(data.retention_rules);
 
    data.folder = 0;
+   data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
@@ -343,6 +344,7 @@ int main(int argc, char **argv){
    (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
    data.folder = 0;
+   data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
