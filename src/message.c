@@ -207,7 +207,7 @@ CLOSE:
 
 
 int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __config *cfg){
-   int ret=OK;
+   int ret=OK, n=0;
    char *p, *q, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
 
    MYSQL_STMT *stmt;
@@ -252,6 +252,7 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
             ret = ERR;
          }
+         else n++;
       }
 
    } while(p);
@@ -259,6 +260,8 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
 
 CLOSE:
    mysql_stmt_close(stmt);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
 
    return ret;
 }

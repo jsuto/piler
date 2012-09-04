@@ -49,14 +49,16 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing rcpt to address: *%s*", sdata->ttmpfile, puf);
 
-                  if(strlen(state.b_to) < MAXBUFSIZE-len-1){
+                  if(state.tolen < MAXBUFSIZE-len-1){
                      if(is_string_on_list(state.rcpt, puf) == 0){
                         append_list(&(state.rcpt), puf);
-                        memcpy(&(state.b_to[strlen(state.b_to)]), puf, len);
+                        memcpy(&(state.b_to[state.tolen]), puf, len);
+                        state.tolen += len;
 
-                        if(strlen(state.b_to) < MAXBUFSIZE-len-1){
+                        if(state.tolen < MAXBUFSIZE-len-1){
                            split_email_address(puf);
-                           memcpy(&(state.b_to[strlen(state.b_to)]), puf, len);
+                           memcpy(&(state.b_to[state.tolen]), puf, len);
+                           state.tolen += len;
                         }
                      }
                   }
@@ -136,11 +138,11 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
       else snprintf(state->message_id, SMALLBUFSIZE-1, "null");
    }
 
-   len = strlen(state->b_from);
-   if(state->b_from[len-1] == ' ') state->b_from[len-1] = '\0';
+   //len = strlen(state->b_from);
+   //if(state->b_from[len-1] == ' ') state->b_from[len-1] = '\0';
 
-   len = strlen(state->b_to);
-   if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
+   //len = strlen(state->b_to);
+   //if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
 
 }
 
