@@ -18,6 +18,7 @@ class ControllerLoginLogin extends Controller {
       $this->load->model('user/auth');
       $this->load->model('user/user');
       $this->load->model('user/prefs');
+      $this->load->model('folder/folder');
 
       $this->document->title = $this->data['text_login'];
 
@@ -28,6 +29,11 @@ class ControllerLoginLogin extends Controller {
             $this->model_user_prefs->get_user_preferences($_SESSION['username']);
 
             LOGGER('logged in');
+
+            if(isAdminUser() == 1) {
+               header("Location: " . SITE_URL . "index.php?route=health/health");
+               exit;
+            }
 
             if(isset($_POST['relocation']) && $_POST['relocation']) {
                header("Location: " . SITE_URL . $_POST['relocation']);

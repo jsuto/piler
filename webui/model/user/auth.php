@@ -20,6 +20,7 @@ class ModelUserAuth extends Model {
          $_SESSION['realname'] = $query->row['realname'];
 
          $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
+         $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
 
          AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against user table');
 

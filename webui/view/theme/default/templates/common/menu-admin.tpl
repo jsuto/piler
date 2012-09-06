@@ -1,19 +1,14 @@
 <?php if(Registry::get('username')) { ?>
 
-   <div class="row">
+   <div class="row"  style="z-index: 2;">
 
       <div class="leftcell">
 
          <div id="ss1">
             <div class="row">
-               <div class="mcell" style="width: 80px;">
-               </div>
-               <div class="mcell" style="width: 350px; border: 0px solid red;">
+               <div class="mcell" style="width: 350px; border: 0px solid red; z-index: 3;">
 
                   <ul class="dropdown">
-            <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a href="search.php"<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> id="active"<?php } ?>><?php print $text_simple; ?></a>&nbsp;/&nbsp;</li>
-            <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a href="advanced.php"<?php if(strstr($_SERVER['REQUEST_URI'], "advanced.php")){ ?> id="active"<?php } ?>><?php print $text_advanced; ?></a>&nbsp;</li>
-            <li class="no_search_li" style="font: 11px normal Arial, sans-serif;"><?php print $text_search2; ?> | </li>
 
             <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "stat/") || strstr($_SERVER['QUERY_STRING'], "health/") || strstr($_SERVER['QUERY_STRING'], "audit/") ) { ?> id="active"<?php } ?>><?php print $text_monitor; ?></a> |
                <ul class="sub_menu">
@@ -23,7 +18,7 @@
                </ul>
             </li>
 
-            <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>><?php print $text_administration; ?></a>
+            <li class="search_li" style="font: 11px normal Arial, sans-serif;"><a class="hide" href="#"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>><?php print $text_administration; ?></a> | 
                <ul class="sub_menu">
                   <li><a href="index.php?route=user/list"><?php print $text_users; ?></a></li>
                   <li><a href="index.php?route=group/list"><?php print $text_groups; ?></a></li>
@@ -33,11 +28,7 @@
                </ul>
             </li>
 
-                  </ul>
-               </div>
-               <div class="mcell" style="width: 60px; border: 0px solid red;">
-                  <ul class="dropdown">
-                     <li class="last_li" style="text-align: right; float: right; font: 11px normal Arial, sans-serif;"><a href="settings.php"<?php if(strstr($_SERVER['REQUEST_URI'], "settings.php")){ ?> id="active"<?php } ?>><?php print $text_settings; ?></a></li>
+                     <li class="last_li" style="text-align: left; font: 11px normal Arial, sans-serif;"><a href="settings.php"<?php if(strstr($_SERVER['REQUEST_URI'], "settings.php")){ ?> id="active"<?php } ?>><?php print $text_settings; ?></a></li>
                   </ul>
                </div>
             </div>

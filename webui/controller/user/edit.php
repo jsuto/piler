@@ -20,6 +20,7 @@ class ControllerUserEdit extends Controller {
 
       $this->load->model('user/user');
       $this->load->model('group/group');
+      $this->load->model('folder/folder');
 
 
       $this->document->title = $language->get('text_edit_user');
@@ -74,6 +75,7 @@ class ControllerUserEdit extends Controller {
 
             $this->data['user']['group_membership'] = $this->model_user_user->get_additional_uids($this->data['uid']);
             $this->data['user']['group'] = $this->model_group_group->get_groups_by_uid($this->data['uid']);
+            $this->data['user']['folder'] = $this->model_folder_folder->get_folders_by_uid($this->data['uid']);
 
             $this->data['emails'] = $this->model_user_user->get_emails($this->data['user']['username']);
 

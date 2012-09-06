@@ -10,9 +10,11 @@
 
 	body { background-color: #6D6D6D; margin: 0 auto; padding: 15px 0; text-align: center; font: normal 12px Arial, sans-serif; color: #3d3d3d; }
 
-	#wrap { margin: 0 auto; padding: 0; width: 1070px; background-color: white; border: 3px solid black; text-align: left; }
+	#fuku1 { width: 1200px; height: 830px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; }
 
-	#menu { display: table; margin: 0px 40px 15px 40px; padding: 10px 0 0px 0px; width: 990px; border-bottom: 1px solid gray; }
+	#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }
+
+	#menu { display: table; margin: 0px 10px 15px 20px; padding: 10px 0 0px 0px; width: 1160px; border-bottom: 1px solid gray; }
 	#menu .leftcell { display: table-cell; width: 490px; text-align: justify; }
 	#menu .rightcell { display: table-cell; width: 490px; text-align: right; font: normal 12px Arial, sans-serif; margin: 0; padding: 0; }
 	#menu .logout22 { float: right; text-align: right; }
@@ -27,6 +29,10 @@
 
 
 	#main { margin: 0px 40px 20px 40px; width: 990px; float: left; clear: both; }
+
+	.aoo { cursor: pointer; position: absolute; left: 915px; top: 0px; width: 10px; margin-left: -5px; }
+	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/default/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
+
 
 	#footer { clear: both; text-align: left; margin: 0; padding: 0 36px; }
 
@@ -50,17 +56,16 @@
 
 	#ss1 { display: table; border-collapse: collapse; margin: 0; padding: 0;}
 
-	#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; }
-	#resultscontainer.empty { border-bottom: 0px solid black; height: 580px;  }
+	#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; height: auto; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; overflow:auto; }
+	#resultscontainer.empty { border-bottom: 0px solid black; height: auto; overflow:auto; }
 
-	/*#results { float: left; width: 990px; height: 580px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }*/
-	#results { float: left; width: 990px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
+	#results { float: left; width: 950px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
 
 
-	#auditresultscontainer { float: left; width: 990px; padding: 0; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; }
+	#auditresultscontainer { float: left; width: 990px; padding: 0; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; height: 580px; overflow: auto; }
 	#auditresultscontainer.empty { border-bottom: 0px solid black; height: 580px; }
 
-	#spinner { margin-left: 480px; margin-top: 275px; }
+	#spinner { margin: auto; margin-top: 100px; }
 	#spinner_restore { border: 0px solid red; margin-top: 60px; }
 	.restore_spinner { text-align: center; border: 0px solid black; }
 
@@ -74,7 +79,7 @@
 
 	.row { display: table-row; }
 	.row.savedsearch { display: table-row; text-align: right; }
-	.resultrow { display: table-row; height: 25px; }
+	.resultrow { display: table-row; height: 18px; }
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.spam { color: #aaa; }
 
@@ -92,7 +97,7 @@
 
 	.cell4 { display: table-cell; width: 490px; height: 15px; margin: 0; padding: 0; }
 
-	.cell5 { display: table-cell; height: 25px; text-align: left; padding-bottom: 0px; padding-right: 3px; vertical-align: middle; }
+	.cell5 { display: table-cell; height: 18px; text-align: left; padding-bottom: 0px; padding-right: 3px; vertical-align: middle; }
 
 	.cell5.restore { text-align: left; border: 0px solid blue; }
 	.cell5.id { text-align: center; border: 0px solid red; }

@@ -64,7 +64,7 @@
       <div class="row">
          <div class="cell1s">&nbsp;</div>
          <div class="cell2">
-            <button id="button_search" class="active" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0);"><?php print $text_search; ?></button>
+            <button id="button_search" class="active" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0);"><?php print $text_search; ?></button>
          </div>
       </div>
 

@@ -375,10 +375,17 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function get_piler_id_by_id($id = 0) {
+      $query = $this->db->query("SELECT `piler_id` FROM `" . TABLE_META . "` WHERE id=?", array($id));
+      if(isset($query->row['piler_id'])) { return $query->row['piler_id']; }
+      return '';
+   }
+
+
    public function get_message_tag($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 
-      $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . "," . TABLE_META . " WHERE " . TABLE_TAG . ".id=" . TABLE_META . ".id AND uid=? AND piler_id=?", array($uid, $id));
+      $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
 
       if(isset($query->row['tag'])) { return $query->row['tag']; }
 
@@ -389,25 +396,16 @@ class ModelSearchMessage extends Model {
    public function add_message_tag($id = '', $uid = 0, $tag = '') {
       if($id == '' || $uid <= 0) { return 0; }
 
-      $query = $this->db->query("SELECT `id` FROM " . TABLE_META . " WHERE piler_id=?", array($id));
-
-      if(isset($query->row['id']) && $query->row['id'] > 0) {
-
-         $id = $query->row['id'];
-
-         if($tag == '') {
-            $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
-         } else {
-            $query = $this->db->query("UPDATE " . TABLE_TAG . " SET tag=? WHERE uid=? AND id=?", array($tag, $uid, $id));
-            if($this->db->countAffected() == 0) {
-               $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
-            }
+      if($tag == '') {
+         $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
+      } else {
+         $query = $this->db->query("UPDATE " . TABLE_TAG . " SET tag=? WHERE uid=? AND id=?", array($tag, $uid, $id));
+         if($this->db->countAffected() == 0) {
+            $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
          }
-
-         return 1;
       }
 
-      return 0;
+      return 1;
    }
 
 
@@ -422,6 +420,35 @@ class ModelSearchMessage extends Model {
          }
       } 
    }
+
+
+   public function get_message_note($id = '', $uid = 0) {
+      if($id == '' || $uid <= 0) { return ''; }
+
+      $query = $this->db->query("SELECT `note` FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
+
+      if(isset($query->row['note'])) { return $query->row['note']; }
+
+      return '';
+   }
+
+
+   public function add_message_note($id = '', $uid = 0, $note = '') {
+      if($id == '' || $uid <= 0) { return 0; }
+
+      if($note == '') {
+         $query = $this->db->query("DELETE FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
+      } else {
+         $query = $this->db->query("UPDATE " . TABLE_NOTE . " SET note=? WHERE uid=? AND id=?", array($note, $uid, $id));
+         if($this->db->countAffected() == 0) {
+            $query = $this->db->query("INSERT INTO " . TABLE_NOTE . " (id, uid, note) VALUES(?,?,?)", array($id, $uid, $note));
+         }
+      }
+
+      return 1;
+   }
+
+
 
 }
 

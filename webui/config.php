@@ -14,6 +14,7 @@ define('ENABLE_HISTORY', 1);
 define('ENABLE_REMOTE_IMAGES', '0');
 define('ENABLE_ON_THE_FLY_VERIFICATION', 1);
 define('ENABLE_LDAP_IMPORT_FEATURE', 0);
+define('ENABLE_FOLDER_RESTRICTIONS', 0);
 
 define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
 define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');
@@ -84,6 +85,8 @@ define('TABLE_USER', 'user');
 define('TABLE_GROUP', 'group');
 define('TABLE_GROUP_USER', 'group_user');
 define('TABLE_GROUP_EMAIL', 'group_email');
+define('TABLE_FOLDER', 'folder');
+define('TABLE_FOLDER_USER', 'folder_user');
 define('TABLE_EMAIL', 'email');
 define('TABLE_META', 'metadata');
 define('TABLE_ATTACHMENT', 'attachment');

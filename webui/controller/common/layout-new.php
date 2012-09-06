@@ -1,13 +1,13 @@
 <?php  
 
-class ControllerCommonLayoutSearch extends Controller {
+class ControllerCommonLayoutNew extends Controller {
 
       protected function index() {
 
 
          $this->data['title'] = $this->document->title;
 
-         $this->template = "common/layout-search.tpl";
+         $this->template = "common/layout-new.tpl";
 
          $this->data['search_args'] = '';
 
@@ -23,6 +23,8 @@ class ControllerCommonLayoutSearch extends Controller {
 
          $this->children = array(
                       "common/menu",
+                      "search/folder",
+                      "search/popup",
                       "common/footer"
          );
 

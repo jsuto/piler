@@ -7,7 +7,7 @@ class ControllerHealthHealth extends Controller {
 
       $this->id = "content";
       $this->template = "health/health.tpl";
-      $this->layout = "common/layout-health";
+      $this->layout = "common/layout";
 
       $this->load->model('health/health');
 

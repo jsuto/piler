@@ -302,6 +302,7 @@ class ModelUserUser extends Model {
       }
 
       $this->update_group_settings((int)$user['uid'], $user['group']);
+      $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
       return 1;
    }
@@ -378,6 +379,7 @@ class ModelUserUser extends Model {
       }
 
       $this->update_group_settings((int)$user['uid'], $user['group']);
+      $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
       return 1;
    }
@@ -406,6 +408,36 @@ class ModelUserUser extends Model {
          if($g && !isset($__g[$groups[$g]])) {
             $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
             $__g[$groups[$g]] = 1;
+         }
+      }
+
+      return 1;
+   }
+
+
+   private function update_folder_settings($uid = -1, $folder = '') {
+      $__g = array();
+
+      if($uid <= 0) { return 0; }
+
+      $query = $this->db->query("DELETE FROM `" . TABLE_FOLDER_USER . "` WHERE uid=?", array($uid));
+
+      $query = $this->db->query("SELECT id, name FROM `" . TABLE_FOLDER . "`");
+
+      $folders = array();
+
+      foreach ($query->rows as $q) {
+         $folders[$q['name']] = $q['id'];
+      }
+
+      $folder = explode("\n", $folder);
+
+      foreach($folder as $g) {
+         $g = rtrim($g);
+
+         if($g && !isset($__g[$folders[$g]])) {
+            $query = $this->db->query("INSERT INTO `" . TABLE_FOLDER_USER . "` (id, uid) VALUES(?,?)", array($folders[$g], (int)$uid));
+            $__g[$folders[$g]] = 1;
          }
       }
 

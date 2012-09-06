@@ -69,7 +69,39 @@ function load_ajax_url(url) {
 
 function load_search_results(url, params, page) {
 
-   document.getElementById('AS').innerHTML = '<div id="resultscontainer" class="empty"><img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" /></div>';
+   document.getElementById('messagelistcontainer').innerHTML = '<img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />';
+
+   var http = getXMLHttp();
+
+   if(http == null) { alert("Error creating XMLHttpRequest"); return; }
+
+   http.open("POST", url, true);
+
+   params = params + "&page=" + page;
+
+   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   http.setRequestHeader("Content-length", params.length);
+   http.setRequestHeader("Connection", "close");
+
+
+   http.onreadystatechange = function() {
+      if(http.readyState == 4) {
+         if(http.status == 200) {
+            document.getElementById('mailcontframe').innerHTML = http.responseText;
+         }
+         else {
+            alert("Problem retrieving XML data:" + http.statusText);
+         }
+      }
+   }
+
+   http.send(params);
+}
+
+
+function load_audit_results(url, params, page) {
+
+   document.getElementById('AS').innerHTML = '<img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />';
 
    var http = getXMLHttp();
 
@@ -88,9 +120,6 @@ function load_search_results(url, params, page) {
       if(http.readyState == 4) {
          if(http.status == 200) {
             document.getElementById('AS').innerHTML = http.responseText;
-
-            $(".messagelink").colorbox({iframe:true, width:"80%", height:"80%" });
-
          }
          else {
             alert("Problem retrieving XML data:" + http.statusText);
@@ -102,7 +131,30 @@ function load_search_results(url, params, page) {
 }
 
 
-function send_ajax_post_request(url, params, id) {
+function load_url_with_get(url, id) {
+   var http = getXMLHttp();
+
+   if(http == null) { alert("Error creating XMLHttpRequest"); return; }
+
+   http.onreadystatechange = function() {
+      if(http.readyState == 4) {
+         if(http.status == 200){
+            document.getElementById(id).innerHTML = http.responseText;
+         }
+         else alert("Problem retrieving XML data:" + http.statusText);
+      }
+   }
+
+   http.open("GET", url, true);
+   http.send(null);
+
+   document.body.style.cursor = 'default';
+
+
+}
+
+
+function send_ajax_post_request(url, params) {
    var http = getXMLHttp();
 
    if(http == null) { alert("Error creating XMLHttpRequest"); return; }
@@ -117,7 +169,6 @@ function send_ajax_post_request(url, params, id) {
    http.onreadystatechange = function() {
       if(http.readyState == 4) {
          if(http.status == 200) {
-            document.getElementById(id).innerHTML = http.responseText;
          }
          else {
             alert("Problem retrieving XML data:" + http.statusText);
@@ -135,25 +186,29 @@ function add_message_reference_to_form(s) {
 }
 
 
-function assemble_search_term(n) {
+function assemble_search_term(n, prefix) {
    var data = '';
    var attachment_type = '';
    var e;
+   var folders = '';
 
-   e = document.getElementById('searchtype');
+   e = document.getElementById(prefix + 'searchtype');
    if(e && e.value) { data = data + "searchtype=" + e.value; }
 
-   e = document.getElementById('_search');
+   e = document.getElementById(prefix + '_search');
    if(e && e.value) { data = data + "&search=" + e.value; }
 
-   e = document.getElementById('from');
+   e = document.getElementById(prefix + 'from');
    if(e && e.value) { data = data + "&from=" + e.value; }
 
-   e = document.getElementById('to');
+   e = document.getElementById(prefix + 'to');
    if(e && e.value) { data = data + "&to=" + e.value; }
 
-   e = document.getElementById('subject');
+   e = document.getElementById(prefix + 'subject');
    if(e && e.value) { data = data + "&subject=" + e.value; }
+
+   e = document.getElementById(prefix + 'body');
+   if(e && e.value) { data = data + "&body=" + e.value; }
 
    for(i=0; i<=n; i++) {
       var a = 'key' + i;
@@ -175,10 +230,10 @@ function assemble_search_term(n) {
    e = document.getElementById('date2');
    if(e && e.value) { data = data + "&date2=" + e.value; }
 
-   e = document.getElementById('direction');
+   e = document.getElementById(prefix + 'direction');
    if(e && e.value) { data = data + "&direction=" + e.value; }
 
-   e = document.getElementById('action');
+   e = document.getElementById(prefix + 'action');
    if(e && e.value) { data = data + "&action=" + e.value; }
 
    for(i=0; i<attachment_types.length; i++) {
@@ -188,14 +243,38 @@ function assemble_search_term(n) {
 
    if(attachment_type) { data = data + "&attachment_type=" + attachment_type.substring(1,attachment_type.length); }
 
-   e = document.getElementById('ref');
+   e = document.getElementById(prefix + 'tag');
+   if(e && e.value) { data = data + "&tag=" + e.value; }
+
+   e = document.getElementById(prefix + 'note');
+   if(e && e.value) { data = data + "&note=" + e.value; }
+
+   e = document.getElementById(prefix + 'has_attachment');
+   if(e && e.checked == 1) { data = data + "&has_attachment=1"; }
+
+   e = document.getElementById(prefix + 'ref');
    if(e && e.value) { data = data + "&ref=" + e.value; }
 
-   e = document.getElementById('sort');
+   e = document.getElementById(prefix + 'sort');
    if(e && e.value) { data = data + "&sort=" + e.value; }
 
-   e = document.getElementById('order');
+   e = document.getElementById(prefix + 'order');
    if(e && e.value) { data = data + "&order=" + e.value; }
+
+   var a = document.getElementById('folders');
+   if(a) {
+      for(i=0; i<a.childNodes.length; i++) {
+         b = a.childNodes[i];
+         if(b.name && b.name.substring(0, 7) == 'folder_' && b.checked) {
+            folders = folders + "+" + b.name.substring(7);
+         }
+      }
+   }
+
+   if(folders) {
+      folders = folders.substring(1);
+      data = data + "&folders=" + folders;
+   }
 
 
    //alert("data: " + data);
@@ -235,9 +314,13 @@ function reset_simple_form() {
    a = document.getElementById('date1'); a.value = '';
    a = document.getElementById('date2'); a.value = '';
 
-   a = document.getElementById('from'); a.value = '';
-   a = document.getElementById('to'); a.value = '';
-   a = document.getElementById('subject'); a.value = '';
+   a = document.getElementById('xfrom'); a.value = '';
+   a = document.getElementById('xto'); a.value = '';
+   a = document.getElementById('xsubject'); a.value = '';
+   a = document.getElementById('xbody'); a.value = '';
+   a = document.getElementById('xtag'); a.value = '';
+   a = document.getElementById('xnote'); a.value = '';
+   a = document.getElementById('xhas_attachment'); a.checked = 0;
 
    a = document.getElementById('ref');
    if(a) { a.value = ''; }
@@ -356,13 +439,12 @@ function removeme(id) {
 
 
 function tag_search_results(url){
-   var idlist = '';
+   var idlist = assemble_idlist();
 
-   var tag_keys = document.getElementById('tag_keys').value;
    var tag_value = document.getElementById('tag_value').value;
 
-   if(tag_keys) {
-      params = "idlist=" + tag_keys + "&tag=" + encodeURI(tag_value);
+   if(idlist) {
+      params = "idlist=" + idlist + "&tag=" + encodeURI(tag_value);
 
       var http = getXMLHttp();
 
@@ -420,8 +502,6 @@ function restore_selected_emails(url) {
 
       if(http == null) { alert("Error creating XMLHttpRequest"); return; }
 
-      document.getElementById('A1').innerHTML = '<div class="restore_spinner"><img src="/view/theme/default/images/spinner.gif" id="spinner_restore" alt="spinner" /></div>';
-
       http.open("POST", url, true);
 
       params = "idlist=" + idlist + "&download=0";
@@ -434,7 +514,6 @@ function restore_selected_emails(url) {
       http.onreadystatechange = function() {
          if(http.readyState == 4) {
             if(http.status == 200) {
-               document.getElementById('A1').innerHTML = http.responseText;
             }
             else {
                alert("Problem retrieving XML data:" + http.statusText);
@@ -526,10 +605,6 @@ $(document).ready(function() {
    $("#date1").datepicker( { dateFormat: 'yy-mm-dd' } );
    $("#date2").datepicker( { dateFormat: 'yy-mm-dd' } );
 
-
-   $(".messagelink").colorbox({iframe:true, width:"80%", height:"80%" });
-   $(".savedsearch").colorbox({iframe:true, width:"400px", height:"300px", top:"50px", left:"50%"});
-
   });
 
 
@@ -570,6 +645,23 @@ $(document).ready(function() {
         }
     });
 
+    $("#s_piler_folder").autocomplete({
+        source: folder_search_url,
+        minLength: 2,
+        select: function( event, ui ) {
+                if(ui.item){
+                   var prefix = '\n';
+                   var a = document.getElementById("folder");
+
+                   if(a && a.value == '') prefix = '';
+
+                   $('#folder').val($('#folder').val() + prefix + ui.item.value);
+                }
+
+                ui.item.value = '';
+        }
+    });
+
 
   });
 
@@ -582,6 +674,13 @@ function toggle_hint(id, s, focus) {
    else {
       if(document.getElementById(id).value == '') document.getElementById(id).value = s;
    }
+}
+
+
+function show_message(id, msg, timeout){
+   document.getElementById(id).innerHTML = msg;
+   document.getElementById(id).style.display = '';
+   setTimeout(function() { document.getElementById(id).style.display = 'none'; }, timeout*1000);
 }
 
 

@@ -7,7 +7,7 @@ class ControllerAuditAudit extends Controller {
 
       $this->id = "content";
       $this->template = "audit/audit.tpl";
-      $this->layout = "common/layout-search";
+      $this->layout = "common/layout";
 
       $request = Registry::get('request');
       $db = Registry::get('db');

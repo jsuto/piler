@@ -17,9 +17,7 @@ class ControllerUserSettings extends Controller {
       $this->load->model('user/auth');
       $this->load->model('user/prefs');
 
-
-      $this->document->title = $this->data['text_home'];
-
+      $this->document->title = $this->data['text_settings'];
 
       if(isset($this->request->post['pagelen']) && isset($this->request->post['lang']) && isset($this->request->post['theme'])) {
          $this->model_user_prefs->set_user_preferences(Registry::get('username'), $this->request->post);

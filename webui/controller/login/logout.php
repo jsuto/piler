@@ -8,7 +8,7 @@ class ControllerLoginLogout extends Controller {
 
       $this->id = "content";
       $this->template = "login/logout.tpl";
-      $this->layout = "common/layout-minimal";
+      $this->layout = "common/layout";
 
       $request = Registry::get('request');
 

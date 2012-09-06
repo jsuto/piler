@@ -3,7 +3,7 @@
 
 <form method="post" name="add1" action="index.php?route=policy/archiving" style="margin-bottom: 30px;">
 
-   <div id="ss1" style="margin-top: 10px; width: 600px; border: 1px solid red;">
+   <div id="ss1" style="margin-top: 10px; width: 600px;">
 
       <div class="row">
          <div class="domaincell"><?php print $text_from; ?>:</div>
@@ -70,7 +70,7 @@
 
 <?php if(isset($rules)){ ?>
 
-   <div id="ss1" style="margin-top: 10px; border: 1px solid red;">
+   <div id="ss1" style="margin-top: 10px;">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_from; ?></div>
          <div class="domaincell"><?php print $text_to; ?></div>

@@ -44,6 +44,20 @@
          <div class="domaincell"><textarea style="height:80px;" name="group" id="group" class="domain"><?php if(isset($user['group'])){ print $user['group']; } ?></textarea></div>
       </div>
 
+
+
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_search_folders; ?>*:</div>
+         <div class="domaincell"><input type="text" id="s_piler_folder" name="s_piler_folder" value="<?php print $text_search_folder_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 0);" /></div>
+      </div>
+
+      <div class="domainrow">
+         <div class="domaincell"><?php print $text_folders; ?>**:</div>
+         <div class="domaincell"><textarea style="height:80px;" name="folder" id="folder" class="domain"><?php if(isset($user['folder'])){ print $user['folder']; } ?></textarea></div>
+      </div>  
+
+
+
 <?php if(ENABLE_LDAP_IMPORT_FEATURE == 1) { ?>
       <div class="domainrow">
          <div class="domaincell">LDAP DN:</div>

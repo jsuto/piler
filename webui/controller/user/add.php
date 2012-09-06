@@ -17,6 +17,7 @@ class ControllerUserAdd extends Controller {
 
       $this->load->model('user/user');
       $this->load->model('group/group');
+      $this->load->model('folder/folder');
 
       $this->document->title = $this->data['text_add_new_user_alias'];
 
@@ -61,6 +62,7 @@ class ControllerUserAdd extends Controller {
          else {
             $this->data['next_user_id'] = $this->model_user_user->get_next_uid();
             $this->data['groups'] = $this->model_group_group->get_groups();
+            $this->data['folders'] = $this->model_folder_folder->get_folders();
          }
       }
       else {

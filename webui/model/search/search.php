@@ -2,7 +2,7 @@
 
 class ModelSearchSearch extends Model {
 
-   public function search_messages($data = array(), $search_type = SIMPLE_SEARCH, $page = 0) {
+   public function search_messages($data = array(), $page = 0) {
       $one_page_of_ids = array();
       $total_hits = 0;
       $sort = "sent";
@@ -48,21 +48,13 @@ class ModelSearchSearch extends Model {
             $all_ids = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
          }
          else {
-            if($search_type == SIMPLE_SEARCH) {
-               $conditions = $this->assemble_simple_query_conditions($data);
-            }
-            else {
-               $conditions = $this->assemble_advanced_query_conditions($data);
-            }
-
-            $all_ids = $this->query_all_possible_IDs($data, $conditions, $sort, $order, $sortorder, $cache_key);
+            $all_ids = $this->query_all_possible_IDs($data, $sort, $order, $sortorder, $cache_key);
          }
       }
 
 
-
       $total_hits = count($all_ids);
-      $all_ids_csv = implode(",", $all_ids);
+
 
       $data['page_len'] = get_page_length();
 
@@ -83,181 +75,182 @@ class ModelSearchSearch extends Model {
 
       }
 
+      $all_ids_csv = substr($all_ids_csv, 1, strlen($all_ids_csv));
+
+
       return array($total_hits, $all_ids_csv, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
    }
 
 
-   private function assemble_advanced_query_conditions($data = array()) {
-      $f1 = $f2 = $t1 = $t2 = $fd = $td = '';
-      $incoming = $outgoing = '';
-      $email = $match = '';
-      $n_fc = $n_tc = 0;
+   private function assemble_email_address_condition($from = '', $to = '') {
+      $s = '';
+      $f_from = $f_fromdomain = $f_to = $f_todomain = '';
+      $o_from = $o_fromdomain = $o_to = $o_todomain = '';
+      $f_f = $o_f = $f_t = $o_t = '';
+      $f = $t = $fdomain = $tdomain = '';
 
-      $data['f_from'] = $this->fix_email_address_for_sphinx($data['f_from']);
-      $data['o_from'] = $this->fix_email_address_for_sphinx($data['o_from']);
-      $data['f_to'] = $this->fix_email_address_for_sphinx($data['f_to']);
-      $data['o_to'] = $this->fix_email_address_for_sphinx($data['o_to']);
-      $data['from_domain'] = $this->fix_email_address_for_sphinx($data['from_domain']);
-      $data['to_domain'] = $this->fix_email_address_for_sphinx($data['to_domain']);
+      $session_emails = $this->fix_email_address_for_sphinx($_SESSION['emails']);
 
-      $data['body'] = $this->fixup_sphinx_operators($data['body']);
-      $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
+      $all_your_addresses = $this->get_all_your_address();
 
-      $data['any'] = $this->fixup_sphinx_operators($data['any']);
-      $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
+      $from = preg_replace("/OR/", "", $from);
+      $to = preg_replace("/OR/", "", $to);
 
+      if($from) {
+         $e = preg_split("/\s/", $from);
+         foreach ($e as $email) {
+            if($email == '') { continue; }
 
-      if(Registry::get('auditor_user') == 1) {
-         if($data['f_from']) { $f1 .= "|" . $data['f_from']; $n_fc++; }
-         if($data['o_from']) { $f1 .= "|" . $data['o_from']; $n_fc++; }
-         if($data['from_domain']) { $fd .= "(@fromdomain " . substr($data['from_domain'], 1, strlen($data['from_domain'])) . ")"; $n_fc++; }
-         if($data['from']) { $f1 .= "|" . $this->fixup_sphinx_operators($data['from']); $n_fc++; }
+            $email = $this->fix_email_address_for_sphinx($email);
 
-         if($data['f_to']) { $t1 .= "|" . $data['f_to']; $n_tc++; }
-         if($data['o_to']) { $t1 .= "|" . $data['o_to']; $n_tc++; }
-         if($data['to_domain']) { $td .= "(@todomain " . substr($data['to_domain'], 1, strlen($data['to_domain'])) . ")"; $n_tc++; }
-         if($data['to']) { $f2 .= "|" . $this->fixup_sphinx_operators($data['to']); $n_tc++; }
+            $field = 'from';
+            if($email[0] == 'X') {
+               $email = substr($email, 1, strlen($email));
 
-         if($f1) { $f1 = "(@from " . substr($f1, 1, strlen($f1)) . ")"; }
-         if($t1) { $t1 = "(@to " . substr($t1, 1, strlen($t1)) . ")"; }
-
-      }
-      else {
-         $all_your_addresses = $this->get_all_your_address();
-
-         if($data['f_from']) { $f1 = "(@from " . $data['f_from'] . " @to $all_your_addresses)"; $n_fc++; }
-         if($data['o_from']) { $f2 = "(@from " . $data['o_from'] . ")"; $n_fc++; }
-         if($data['from_domain']) { $fd = "(@fromdomain " . substr($data['from_domain'], 1, strlen($data['from_domain'])) . " @to $all_your_addresses)"; $n_fc++; }
-         if($data['from']) { $fd = "(@from " . $this->fixup_sphinx_operators($data['from']) . " @to $all_your_addresses)"; $n_fc++; }
-
-         if($data['f_to']) { $t1 = "(@to " . $data['f_to'] . " @from $all_your_addresses)"; $n_tc++; }
-         if($data['o_to']) { $t2 = "(@to " . $data['o_to'] . ")"; $n_tc++; }
-         if($data['to_domain']) { $td = "(@todomain " . substr($data['to_domain'], 1, strlen($data['to_domain'])) . " @from $all_your_addresses)"; $n_tc++; }
-         if($data['to']) { $fd = "(@to " . $this->fixup_sphinx_operators($data['to']) . " @from $all_your_addresses)"; $n_tc++; }
-
-         if($n_fc == 0 && $n_tc == 0 && $data['from_domain'] == '' && $data['to_domain'] == '') {
-            if($data['direction'] == 2) {
-               $f1 = " (@from " . $all_your_addresses . ")";
-            } else {
-               $t1 = " (@to " . $all_your_addresses . ")";
+               $field = 'fromdomain';
+               $fdomain .= "|$email";
             }
-         }
-      }
-
-      if($f1) { $incoming .= "|$f1"; }
-      if($f2) { $incoming .= "|$f2"; }
-      if($fd) { $incoming .= "|$fd"; }
-
-      if($t1) { $outgoing .= "|$t1"; }
-      if($t2) { $outgoing .= "|$t2"; }
-      if($td) { $outgoing .= "|$td"; }
-
-      if($incoming) { $incoming = substr($incoming, 1, strlen($incoming)); if($n_fc > 1) { $incoming = "($incoming)"; } }
-      if($outgoing) { $outgoing = substr($outgoing, 1, strlen($outgoing)); if($n_tc > 1) { $outgoing = "($outgoing)"; } }
-
-
-      if($incoming) {
-         $email = $incoming;
-         if($outgoing) { $email = $incoming . " & " . $outgoing; }
-      } else if($outgoing) {
-         $email = $outgoing;
-      }
-
-
-      if($email) { $match = $email; }
-
-      if($data['body']) { if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") "; }
-      if($data['subject']) { if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") "; }
-      if($data['attachment_type'] && $data['attachment_type'] != "any") { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
-
-      if($data['any']) { if($match) { $match .= " & "; } $match .= "(" . $data['any'] . ") "; }
-
-      return $match;
-   }
-
-
-   private function assemble_simple_query_conditions($data = array(), $sort = 'sent', $order = 'DESC', $sortorder = '', $cache_key = '') {
-      $email = $match = "";
-
-      if(Registry::get('auditor_user') == 0) {
-
-         $all_your_addresses = $this->get_all_your_address();
-
-         if(isset($data['from'])) { $data['from'] = fix_email_address($data['from']); }
-         if(isset($data['to'])) { $data['to'] = fix_email_address($data['to']); }
-
-         // missing From: address
-
-         if(!isset($data['from'])) {
-
-            if(isset($data['to']) && substr($data['to'], 0, 1) == '@') {
-               $email = "@from $all_your_addresses @todomain " . $this->fix_email_address_for_sphinx(substr($data['to'], 1, strlen($data['to'])));
-            }
-            else if(isset($data['to']) && !strstr($data['to'], '@')) { $email = "@from $all_your_addresses @to " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['to'])); }
-            else if(!isset($data['to'])) { $email = "@to $all_your_addresses"; }
-            else if(!in_array($data['to'], $_SESSION['emails'])) { $email = "@from $all_your_addresses @to " . $this->fix_email_address_for_sphinx($data['to']); }
-            else { $email = "@to " . $this->fix_email_address_for_sphinx($data['to']); }
-
-         }
-
-         // missing To: address
-
-         else if(!isset($data['to'])) {
-            if(isset($data['from']) && substr($data['from'], 0, 1) == '@') {
-               $email = "@to $all_your_addresses @fromdomain " . $this->fix_email_address_for_sphinx(substr($data['from'], 1, strlen($data['from'])));
-            }
-            else if(isset($data['from']) && !strstr($data['from'], '@')) { $email = "@to $all_your_addresses @from " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['from'])); }
-            else if(!in_array($data['from'], $_SESSION['emails'])) { $email = "@to $all_your_addresses @from " . $this->fix_email_address_for_sphinx($data['from']); }
-            else { $email = "@from " . $this->fix_email_address_for_sphinx($data['from']); }
-         }
-
-         else if(isset($data['from']) && isset($data['to'])) {
-
-            if(
-               (!in_array($data['from'], $_SESSION['emails']) && in_array($data['to'], $_SESSION['emails'])) ||
-               (!in_array($data['to'], $_SESSION['emails']) && in_array($data['from'], $_SESSION['emails']))
-            ) {
-               $email = "@from " . $this->fix_email_address_for_sphinx($data['from']) . " @to " . $this->fix_email_address_for_sphinx($data['to']);
-            }
-
             else {
-               $email = " @to INVALID ";
+               $f .= "|$email";
             }
-         }
 
-      }
-      else {
-         if(isset($data['from'])) {
-            if(substr($data['from'], 0, 1) == '@') { $match .= " @fromdomain " . $this->fix_email_address_for_sphinx(substr($data['from'], 1, strlen($data['from']))); }
-            else { $match .= " @from " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['from'])); }
-         }
 
-         if(isset($data['to'])) {
-            if(substr($data['to'], 0, 1) == '@') { $match .= " @todomain " . $this->fix_email_address_for_sphinx(substr($data['to'], 1, strlen($data['to']))); }
-            else { $match .= " @to " . $this->fixup_sphinx_operators($this->fix_email_address_for_sphinx($data['to'])); }
-         }
+            if(in_array($email, $session_emails)) {
+               $a = "o_$field";
+            }
+            else {
+               $a = "f_$field";
+            }
 
+            if($$a) { $$a .= "|"; }
+            $$a .= "$email";
+         }
       }
 
+      if($to) {
+         $e = preg_split("/\s/", $to);
+         foreach ($e as $email) {
+            if($email == '') { continue; }
 
+            $email = $this->fix_email_address_for_sphinx($email);
 
-      if(isset($data['subject'])) {
-         $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
-         $match .= " @(subject,body) " . $data['subject'];
+            $field = 'to';
+            if($email[0] == 'X') {
+               $email = substr($email, 1, strlen($email));
+               $field = 'todomain';
+               $tdomain .= "|$email";
+            }
+            else {
+               $t .= "|$email";
+            }
+
+            if(in_array($email, $session_emails)) {
+               $a = "o_$field";
+            }
+            else {
+               $a = "f_$field";
+            }
+
+            if($$a) { $$a .= "|"; }
+            $$a .= "$email";
+         }
       }
 
 
-      if($email) { $match = " $email " . $match; }
+      if($f) { $f = preg_replace("/^\|/", "@from ", $f); }
 
-      return $match;
+      if($fdomain) {
+         $fdomain = preg_replace("/^\|/", "@fromdomain ", $fdomain);
+         if($f) { $f = "(($f)|($fdomain))"; }
+         else { $f = "($fdomain)"; }
+      }
+
+      if($t) { $t = preg_replace("/^\|/", "@to ", $t); }
+
+      if($tdomain) {
+         $tdomain = preg_replace("/^\|/", "@todomain ", $tdomain);
+         if($t) { $t = "(($t)|($tdomain))"; }
+         else { $t = "($tdomain)"; }
+      }
+
+
+      if(Registry::get('auditor_user') == 1 || ENABLE_FOLDER_RESTRICTIONS == 1) {
+         if($from == '' && $to == '') { return ""; }
+
+         if($f && $t) { return "($f & $t)"; }
+         else if($f) { return "($f)"; }
+         else if($t) { return "($t)"; }
+      }
+
+
+      if($f_from) { $f_f = "@from $f_from"; }
+      if($f_fromdomain) { if($f_f) { $f_f = "($f_f | @fromdomain $f_fromdomain)"; } else { $f_f = "@fromdomain $f_fromdomain"; } }
+
+      if($o_from) { $o_f = "@from $o_from"; }
+
+      if($f_to) { $f_t = "@to $f_to"; }
+      if($f_todomain) { if($f_t) { $f_t = "($f_t | @todomain $f_todomain)"; } else { $f_t = "@todomain $f_todomain"; } }
+
+      if($o_to) { $o_t = "@to $o_to"; }
+
+
+      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t == '') { return "@to $all_your_addresses"; }
+      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t      ) { return "$o_t"; }
+      if($f_f == '' && $o_f == '' && $f_t       && $o_t == '') { return "(@from $all_your_addresses & $f_t)"; }
+      if($f_f == '' && $o_f == '' && $f_t       && $o_t      ) { return "($o_t | (@from $all_your_addresses & $f_t))"; }
+
+      if($f_f == '' && $o_f       && $f_t == '' && $o_t == '') { return "$o_f"; }
+      if($f_f == '' && $o_f       && $f_t == '' && $o_t      ) { return "($o_f & $o_t)"; }
+      if($f_f == '' && $o_f       && $f_t       && $o_t == '') { return "($o_f & $f_t)"; }
+      if($f_f == '' && $o_f       && $f_t       && $o_t      ) { return "(($o_f & $f_t) | ($o_f & $o_t))"; }
+
+      if($f_f       && $o_f == '' && $f_t == '' && $o_t == '') { return "($f_f & @to $all_your_addresses)"; }
+      if($f_f       && $o_f == '' && $f_t == '' && $o_t      ) { return "($f_f & $o_t)"; }
+      if($f_f       && $o_f == '' && $f_t       && $o_t == '') { return "@from INVALID"; }
+      if($f_f       && $o_f == '' && $f_t       && $o_t      ) { return "($f_f & $o_t)"; }
+
+      if($f_f       && $o_f       && $f_t == '' && $o_t == '') { return "(($f_f & @to $all_your_addresses)|$o_f)"; }
+      if($f_f       && $o_f       && $f_t == '' && $o_t      ) { return "(($f_f & $o_t)|($o_f & $o_t))"; }
+      if($f_f       && $o_f       && $f_t       && $o_t == '') { return "($o_f & $f_t)"; }
+      if($f_f       && $o_f       && $f_t       && $o_t      ) { return "(($f_f & $o_t)|($o_f & $f_t))"; }
+
+
+      return "(@from $all_your_addresses | @to $all_your_addresses)";
+
    }
 
 
-   private function query_all_possible_IDs($data = array(), $conditions = '', $sort = 'sent', $order = 'DESC', $sortorder = '', $cache_key = '') {
+   private function query_all_possible_IDs($data = array(), $sort = 'sent', $order = 'DESC', $sortorder = '', $cache_key = '') {
       $ids = array();
-      $direction = $size = '';
+      $__folders = array();
+      $match = '';
+      $direction = $attachment = $size = $folders = '';
       $tag_id_list = '';
       $a = "";
+
+
+      $match = $this->assemble_email_address_condition($data['from'], $data['to']);
+
+      if($data['body']) {
+         $data['body'] = $this->fixup_sphinx_operators($data['body']);
+         if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") ";
+      }
+
+      if($data['subject']) {
+         $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
+         if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") ";
+      }
+
+      if($data['attachment_type'] && $data['attachment_type'] != "any") { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
+
+
+      if($data['any']) {
+         $data['any'] = $this->fixup_sphinx_operators($data['any']);
+         $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
+         if($match) { $match = "($match) & "; } $match .= "(" . $data['any'] . ") ";
+      }
+
+
 
       if($data['sort'] == 'from' || $data['sort'] == 'subj') { $sortorder = ''; }
 
@@ -273,20 +266,31 @@ class ModelSearchSearch extends Model {
       }
 
       if(isset($data['attachment_type']) && $data['attachment_type'] == 'any') { $a = "attachments > 0 AND "; }
+      else if(isset($data['has_attachment']) && $data['has_attachment'] == 1) { $attachment = "attachments > 0 AND "; }
 
-      if(isset($data['tag']) && $data['tag']) {
-         $data['tag'] = $this->fixup_sphinx_operators($data['tag']);
 
-         $aa = $this->sphx->query("SELECT id FROM " . SPHINX_TAG_INDEX . " WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@tag " . $data['tag'] . " ') ");
-
-         foreach($aa->rows as $a) {
-            $tag_id_list .= "," . $a['id'];
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+         $s = explode(" ", $data['folders']);
+         while(list($k,$v) = each($s)) {
+            if(in_array($v, $_SESSION['folders'])) {
+               array_push($__folders, $v);
+            }
          }
 
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . substr($tag_id_list, 1, strlen($tag_id_list)) . ") $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
+      }
+
+
+      if(isset($data['tag']) && $data['tag']) {
+         $id_list = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag');
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+      }
+      else if(isset($data['note']) && $data['note']) {
+         $id_list = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note');
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $direction $size MATCH('$conditions') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
 
 //print $query->query; print "<p>" . $query->exec_time . "</p>\n";
@@ -331,7 +335,6 @@ class ModelSearchSearch extends Model {
          $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
       }
 
-
       return $ids;
    }
 
@@ -347,6 +350,15 @@ class ModelSearchSearch extends Model {
          array_push($ids, $q['id']);
       }
 
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $ids) . ")");
+         $ids = array();
+         foreach($query->rows as $q) {
+            if(isset($q['folder']) && in_array($q['folder'], $_SESSION['folders'])) { array_push($ids, $q['id']); }
+         }
+      }
+
+
       if(MEMCACHED_ENABLED && $cache_key) {
          $memcache = Registry::get('memcache');
          $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
@@ -356,10 +368,27 @@ class ModelSearchSearch extends Model {
    }
 
 
+   private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '') {
+      $id_list = '';
+
+      $s = $this->fixup_sphinx_operators($s);
+
+      $q = $this->sphx->query("SELECT id FROM $sphx_table WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@$field $s') ");
+
+      foreach($q->rows as $a) {
+         $id_list .= "," . $a['id'];
+      }
+
+      if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
+
+      return $id_list;
+   }
+
+
    private function get_meta_data($ids = array(), $q = '', $sortorder = '') {
       $messages = array();
       $tag = array();
-
+      $note = array();
 
       if(count($ids) == 0) return $messages;
 
@@ -376,6 +405,11 @@ class ModelSearchSearch extends Model {
             $tag[$t['id']] = $t['tag'];
          }
 
+         $notes = $this->db->query("SELECT `id`, `note` FROM " . TABLE_NOTE . " WHERE `uid`=? AND `id` IN ($q)", $ids);
+
+         foreach ($notes->rows as $n) {
+            $note[$n['id']] = $n['note'];
+         }
 
          $lang = Registry::get('language');
 
@@ -399,6 +433,7 @@ class ModelSearchSearch extends Model {
             }
 
             if(isset($tag[$m['id']])) { $m['tag'] = $tag[$m['id']]; } else { $m['tag'] = ''; }
+            if(isset($note[$m['id']])) { $m['note'] = $note[$m['id']]; } else { $m['note'] = ''; }
 
             array_push($messages, $m);
          }
@@ -419,7 +454,7 @@ class ModelSearchSearch extends Model {
          array_push($domains, $q['domain']);
       }
 
-      $query = $this->db->query("SELECT `to` FROM " . VIEW_MESSAGES . " WHERE piler_id=?", array($id));
+      $query = $this->db->query("SELECT `to` FROM " . VIEW_MESSAGES . " WHERE id=?", array($id));
 
       foreach($query->rows as $q) {
          $mydomain = 0;
@@ -449,7 +484,7 @@ class ModelSearchSearch extends Model {
    }
 
 
-   public function check_your_permission_by_piler_id($id = '') {
+   public function check_your_permission_by_id($id = '') {
       $q = '';
       $arr = $a = array();
 
@@ -470,9 +505,14 @@ class ModelSearchSearch extends Model {
 
       $arr = array_merge($arr, $a, $a);
 
-      $query = $this->db->query("SELECT * FROM " . VIEW_MESSAGES . " WHERE piler_id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
-
-      if(isset($query->row['id'])) { return 1; }
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+         $query = $this->sphx->query("SELECT folder FROM " . SPHINX_MAIN_INDEX . " WHERE id=" . (int)$id);
+         if(isset($query->row['folder']) && in_array($query->row['folder'], $_SESSION['folders'])) { return 1; }
+      }
+      else {
+         $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+         if(isset($query->row['id'])) { return 1; }
+      }
 
       return 0;
    }
@@ -480,15 +520,16 @@ class ModelSearchSearch extends Model {
 
    public function check_your_permission_by_id_list($id = array()) {
       $q = $q2 = '';
-      $arr = $a = $result = $result2 = array();
+      $arr = $a = $result = array();
 
-      if(count($id) < 1) { return array($result, $result2); }
+      if(count($id) < 1) { return $result; }
 
       $arr = $id;
 
       for($i=0; $i<count($id); $i++) {
          $q2 .= ",?";
       }
+
 
       $q2 = preg_replace("/^\,/", "", $q2);
 
@@ -505,21 +546,30 @@ class ModelSearchSearch extends Model {
       $q = preg_replace("/^\,/", "", $q);
 
       if(Registry::get('auditor_user') == 1) {
-         $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2)", $arr);
+         $query = $this->db->query("SELECT id FROM `" . TABLE_META . "` WHERE `id` IN ($q2)", $arr);
       } else {
-         $arr = array_merge($arr, $a, $a);
-         $query = $this->db->query("SELECT distinct id, piler_id FROM " . VIEW_MESSAGES . " WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
-      }
 
-
-      if($query->num_rows > 0) {
-         foreach ($query->rows as $q) {
-            array_push($result, $q['id']);
-            array_push($result2, $q['piler_id']);
+         if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+            $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $id) . ")");
+         }
+         else {
+            $arr = array_merge($arr, $a, $a);
+            $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
          }
       }
 
-      return array($result, $result2);
+      if($query->num_rows > 0) {
+         foreach ($query->rows as $q) {
+            if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+               if(in_array($q['folder'], $_SESSION['folders'])) { array_push($result, $q['id']); }
+            }
+            else {
+               array_push($result, $q['id']);
+            }
+         }
+      }
+
+      return $result;
    }
 
 
@@ -566,6 +616,7 @@ class ModelSearchSearch extends Model {
 
       $s = preg_replace("/ OR /", "|", $s);
       $s = preg_replace("/(\-)/", " ", $s);
+      $s = preg_replace("/\'/", '"', $s);
       $a = explode(" ", $s);
       $s = '';
 

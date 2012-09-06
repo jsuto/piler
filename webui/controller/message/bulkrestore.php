@@ -23,7 +23,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       if(!isset($this->request->post['idlist']) || $this->request->post['idlist'] == '') { die("no idlist parameter given"); }
 
-      list($a, $idlist) = $this->model_search_search->check_your_permission_by_id_list(explode(",", $this->request->post['idlist']));
+      $idlist = $this->model_search_search->check_your_permission_by_id_list(explode(",", $this->request->post['idlist']));
 
       $download = $this->request->post['download'];
 
@@ -55,10 +55,14 @@ class ControllerMessageBulkrestore extends Controller {
             array_push($rcpt, $_SESSION['email']);
          }
 
-         $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
-               "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $this->model_search_message->get_raw_message($id) );
+         if(count($rcpt) > 0) {
+            $piler_id = $this->model_search_message->get_piler_id_by_id($id);
 
-         if($x == 1) { $this->data['restored']++; }
+            $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+               "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $this->model_search_message->get_raw_message($piler_id) );
+
+            if($x == 1) { $this->data['restored']++; }
+         }
       }
 
 

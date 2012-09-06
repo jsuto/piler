@@ -4,14 +4,8 @@
 class ControllerSearchHelper extends Controller {
    private $error = array();
    private $a = array(
-                    'o_from'          => '',
-                    'f_from'          => '',
-                    'o_to'            => '',
-                    'f_to'            => '',
                     'from'            => '',
                     'to'              => '',
-                    'from_domain'     => '',
-                    'to_domain'       => '',
                     'subject'         => '',
                     'body'            => '',
                     'date1'           => '',
@@ -20,7 +14,9 @@ class ControllerSearchHelper extends Controller {
                     'size'            => '',
                     'attachment_type' => '',
                     'tag'             => '',
+                    'note'            => '',
                     'ref'             => '',
+                    'folders'         => '',
                     'any'             => ''
                      );
 
@@ -49,26 +45,25 @@ class ControllerSearchHelper extends Controller {
 
       $this->data['n'] = -1;
 
-      if($this->request->post['searchtype'] == 'advanced') {
+      if($this->request->post['searchtype'] == 'expert'){
 
-         $this->preprocess_post_advanced_request($this->request->post);
+         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|size|date1|date2|attachment|tagnote)\:/", $this->request->post['search'])) {
+            $this->preprocess_post_expert_request($this->request->post);
+         }
+         else {
+            $this->naive_preprocess_post_expert_request($this->request->post);
+         }
+
          $this->fixup_post_request();
 
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
-      }
-
-      else if($this->request->post['searchtype'] == 'expert'){
-
-         $this->preprocess_post_expert_request($this->request->post);
-         $this->fixup_post_request();
-
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, ADVANCED_SEARCH, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
       }
 
       else {
          $this->fixup_post_simple_request();
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->request->post, SIMPLE_SEARCH, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->request->post, $this->data['page']);
       }
+
 
       if($this->a['ref']) { $this->data['_ref'] = $this->a['ref']; }
       if(isset($this->request->post['ref']) && $this->request->post['ref']) { $this->data['_ref'] = $this->request->post['ref']; }
@@ -97,24 +92,43 @@ class ControllerSearchHelper extends Controller {
 
 
    private function fixup_post_request() {
-      $this->a['o_from'] = substr($this->a['o_from'], 1, strlen($this->a['o_from']));
-      $this->a['f_from'] = substr($this->a['f_from'], 1, strlen($this->a['f_from']));
-      $this->a['o_to'] = substr($this->a['o_to'], 1, strlen($this->a['o_to']));
-      $this->a['f_to'] = substr($this->a['f_to'], 1, strlen($this->a['f_to']));
-      $this->a['from'] = substr($this->a['from'], 1, strlen($this->a['from']));
-      $this->a['to'] = substr($this->a['to'], 1, strlen($this->a['to']));
-      $this->a['from_domain'] = substr($this->a['from_domain'], 1, strlen($this->a['from_domain']));
-      $this->a['to_domain'] = substr($this->a['to_domain'], 1, strlen($this->a['to_domain']));
-
       if(isset($this->request->post['ref'])) { $this->a['ref'] = $this->request->post['ref']; }
+      if(isset($this->request->post['folders'])) { $this->a['folders'] = $this->request->post['folders']; }
 
       $this->a['sort'] = $this->request->post['sort'];
       $this->a['order'] = $this->request->post['order'];
    }
 
 
+   private function naive_preprocess_post_expert_request($data = array()) {
+      $ndate = 0;
+
+      if(!isset($data['search'])) { return; }
+
+      $b = preg_split("/\s/", $data['search']);
+
+      while(list($k, $v) = each($b)) {
+         if($v == '') { continue; }
+
+         if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v)) {
+            $ndate++;
+            $this->a["date$ndate"] = $v;
+         }
+         else if(strchr($v, '@')) {
+            $this->a['from'] .= " $v";
+         }
+         else { $this->a['any'] .= ' ' . $v; }
+      }
+
+      if($this->a['date1'] && $this->a['date2'] == '') { $this->a['date2'] = $this->a['date1']; }
+
+      if($this->a['any'] == ' ' . $this->data['text_enter_search_terms']) { $this->a['any'] = ''; }
+   }
+
+
    private function preprocess_post_expert_request($data = array()) {
       $token = '';
+      $ndate = 0;
 
       if(!isset($data['search'])) { return; }
 
@@ -137,41 +151,37 @@ class ControllerSearchHelper extends Controller {
          else if($v == 'attachment:' || $v == 'a:') { $token = 'attachment_type'; continue; }
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
+         else if($v == 'note:') { $token = 'note'; continue; }
          else if($v == 'ref:') { $token = 'ref'; continue; }
-         else { $this->a['any'] .= ' ' . $v; }
+         else {
+            if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v)) {
+               $ndate++;
+               $this->a["date$ndate"] = $v;
+            }
+         }
+
 
          if($token == 'from') {
-            $v = fix_email_address($v);
-
-            if(substr($v, 0, 1) == '@') { $this->a['from_domain'] .= "|$v"; }
-            else if(strstr($v, '@')) {
-               if(in_array($v, $_SESSION['emails'])) { $this->a['o_from'] .= "|$v"; } else { $this->a['f_from'] .= "|$v"; }
-            }
-            else {
-               $this->a['from'] .= " $v";
-            }
+            if($v == 'OR') { continue; }
+            $this->a['from'] .= " $v";
          }
+
          else if($token == 'to') {
-            $v = fix_email_address($v);
-
-            if(substr($v, 0, 1) == '@') { $this->a['to_domain'] .= "|$v"; }
-            else if(strstr($v, '@')) {
-               if(in_array($v, $_SESSION['emails'])) { $this->a['o_to'] .= "|$v"; } else { $this->a['f_to'] .= "|$v"; }
-            }
-            else {
-               $this->a['to'] .= " $v";
-            }
+            if($v == 'OR') { continue; }
+            $this->a['to'] .= " $v";
          }
+
          else if($token == 'subject') { $this->a['subject'] .= ' ' . $v; }
          else if($token == 'body') { $this->a['body'] .= ' ' . $v; }
          else if($token == 'date1') { $this->a['date1'] = ' ' . $v; }
          else if($token == 'date2') { $this->a['date2'] = ' ' . $v; }
          else if($token == 'attachment_type') { $this->a['attachment_type'] .= '|' . $v; }
          else if($token == 'tag') { $this->a['tag'] .= ' ' . $v; }
+         else if($token == 'note') { $this->a['note'] .= ' ' . $v; }
          else if($token == 'ref') { $this->a['ref'] = ' ' . $v; }
 
          else if($token == 'direction') {
-            if($v == 'inbound') { $this->a['direction'] = 0; }
+            if($v == 'inbound') { $this->a['direction'] = "0"; }
             else if($v == 'outbound') { $this->a['direction'] = 2; }
             else if($v == 'internal') { $this->a['direction'] = 1; }
          }
@@ -202,52 +212,6 @@ class ControllerSearchHelper extends Controller {
       if($this->a['any'] == ' ' . $this->data['text_enter_search_terms']) { $this->a['any'] = ''; }
 
       $this->a['attachment_type'] = substr($this->a['attachment_type'], 1, strlen($this->a['attachment_type']));
-   }
-
-
-   private function preprocess_post_advanced_request($data = array()) {
-
-      if(isset($data['f'])) {
-         foreach($data['f'] as $f) {
-            $v = array_shift($data['v']);
-
-            if($v == '') { continue; }
-
-            if($f == 'from') {
-               $v = fix_email_address($v);
-
-               if(substr($v, 0, 1) == '@') { $this->a['from_domain'] .= "|$v"; }
-               else if(strstr($v, '@')) {
-                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_from'] .= "|$v"; } else { $this->a['f_from'] .= "|$v"; }
-               }
-               else {
-                  $this->a['from'] .= " $v";
-               }
-            }
-
-            if($f == 'to') {
-               $v = fix_email_address($v);
-
-               if(substr($v, 0, 1) == '@') { $this->a['to_domain'] .= "|$v"; }
-               else if(strstr($v, '@')) {
-                  if(in_array($v, $_SESSION['emails'])) { $this->a['o_to'] .= "|$v"; } else { $this->a['f_to'] .= "|$v"; }
-               }
-               else {
-                  $this->a['to'] .= " $v";
-               }
-            }
-
-
-            if($f == 'subject') { $this->a['subject'] .= ' ' . $v; }
-            if($f == 'body') { $this->a['body'] .= ' ' . $v; }
-         }
-      }
-
-      if(isset($data['attachment_type'])) { $this->a['attachment_type'] = $data['attachment_type']; }
-      if(isset($data['direction'])) { $this->a['direction'] = $data['direction']; }
-      if(isset($data['tag'])) { $this->a['tag'] = $data['tag']; }
-      if(isset($data['date1'])) { $this->a['date1'] = $data['date1']; }
-      if(isset($data['date2'])) { $this->a['date2'] = $data['date2']; }
    }
 
 

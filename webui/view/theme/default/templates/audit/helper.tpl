@@ -3,8 +3,8 @@
    <div class="navrow">
 <?php if($n >= $page_len){ ?>
       <div id="pagingleft">
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
       </div>
 
       <div id="pagingcenter">
@@ -12,8 +12,8 @@
       </div>
 
       <div id="pagingright">
-         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
-         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
+         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
+         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
       </div>
 
 <?php } else { ?>&nbsp;<?php } ?>
@@ -23,7 +23,7 @@
 
 
 
-<div id="auditresultscontainer"<?php if($n <= 0) { ?> class="empty"<?php } ?>>
+<div id="auditresultscontainer"<?php if($n <= 0) { ?> class="empty"<?php } ?> style="border: 3px solid red;">
 
    <div id="results">
 
@@ -32,30 +32,30 @@
 <?php if($n > 0){ ?>
             <div class="cellaudit title">
                <?php print $text_date; ?>
-               <a href="#" onclick="script:fix_search_order('date', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('date', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 1); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 0); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cellaudit title">
                <?php print $text_user; ?>
-               <a href="#" onclick="script:fix_search_order('user', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('user', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('user', 1); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('user', 0); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
                <?php print $text_ipaddr; ?>
-               <a href="#" onclick="script:fix_search_order('ipaddr', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('ipaddr', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('ipaddr', 1); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('ipaddr', 0); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
                <?php print $text_action; ?>
-               <a href="#" onclick="script:fix_search_order('action', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('action', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('action', 1); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('action', 0); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cellaudit title">
                <?php print $text_description; ?>
-               <a href="#" onclick="script:fix_search_order('description', 1); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('description', 0); load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('description', 1); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('description', 0); load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
 
             <div class="cellaudit title">
@@ -97,8 +97,8 @@
    <div class="navrow">
 <?php if($n >= $page_len){ ?>
       <div id="pagingleft">
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
       </div>
 
       <div id="pagingcenter">
@@ -106,8 +106,8 @@
       </div>
 
       <div id="pagingright">
-         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
-         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_search_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
+         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
+         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_audit_results('<?php print AUDIT_HELPER_URL; ?>', assemble_search_term(count), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
       </div>
 
 <?php } else { ?>&nbsp;<?php } ?>

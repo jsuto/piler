@@ -19,11 +19,12 @@ class ControllerSearchTag extends Controller {
 
       if(isset($this->request->post['tag']) && isset($this->request->post['idlist'])) {
          $idlist = explode(",", $this->request->post['idlist']);
+
          if(count($idlist) > 0) {
 
             $q = '';
 
-            list($ids, $a) = $this->model_search_search->check_your_permission_by_id_list($idlist);
+            $ids = $this->model_search_search->check_your_permission_by_id_list($idlist);
 
             for($i=0; $i<count($ids); $i++) { $q .= ",?"; }
             $q = preg_replace("/^\,/", "", $q);
@@ -31,10 +32,6 @@ class ControllerSearchTag extends Controller {
             $this->model_search_message->bulk_add_message_tag($ids, $_SESSION['uid'], $this->request->post['tag'], $q);
          }
       }
-
-      /*$this->data['message'] = 'I tagged this!';
-
-      $this->render();*/
    }
 
 }
