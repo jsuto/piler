@@ -68,9 +68,11 @@ struct child {
 struct attachment {
    int size;
    char type[TINYBUFSIZE];
+   char aname[TINYBUFSIZE];
    char filename[TINYBUFSIZE];
    char internalname[TINYBUFSIZE];
    char digest[2*DIGEST_LENGTH+1];
+   char dumped;
 };
 
 
@@ -125,6 +127,7 @@ struct _state {
    int skip_html;
    int has_to_dump;
    int fd;
+   int b64fd;
    int mfd;
    int octetstream;
    int realbinary;

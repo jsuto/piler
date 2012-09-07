@@ -80,8 +80,38 @@ void sanitiseBase64(char *s){
 }
 
 
+inline void pack_4_into_3(char *s, char *s2){
+   int j, n[4], k1, k2;
+
+   memset(s2, 0, 3);
+
+   if(strlen(s) != 4) return;
+
+   for(j=0; j<4; j++){
+      k1 = s[j];
+      n[j] = b64[k1];
+   }
+
+   k1 = n[0]; k1 = k1 << 2;
+   k2 = n[1]; k2 = k2 >> 4;
+
+   s2[0] = k1 | k2;
+
+   k1 = (n[1] & 0x0F) << 4;
+   k2 = n[2]; k2 = k2 >> 2;
+
+   s2[1] = k1 | k2;
+
+   k1 = n[2] << 6;
+   k2 = n[3] >> 0;
+
+
+  s2[2] = k1 | k2;
+}
+
+
 int decodeBase64(char *p){
-   int i, j, n[4], k1, k2, len=0;
+   int i, len=0;
    char s[5], s2[3], puf[MAXBUFSIZE];
 
    if(strlen(p) < 4 || strlen(p) > MAXBUFSIZE/2)
@@ -98,29 +128,7 @@ int decodeBase64(char *p){
       if(len + 3 > sizeof(puf)-1) break;
 
       if(strlen(s) == 4){
-         memset(s2, 0, 3);
-
-         for(j=0; j<4; j++){
-            k1 = s[j];
-            n[j] = b64[k1];
-         }
-
-         k1 = n[0]; k1 = k1 << 2;
-         k2 = n[1]; k2 = k2 >> 4;
-
-         s2[0] = k1 | k2;
-
-         k1 = (n[1] & 0x0F) << 4;
-         k2 = n[2]; k2 = k2 >> 2;
-
-         s2[1] = k1 | k2;
-
-         k1 = n[2] << 6;
-         k2 = n[3] >> 0;
-
-
-         s2[2] = k1 | k2;
-
+         pack_4_into_3(s, s2);
          memcpy(puf+len, s2, 3);
 
          len += 3;
@@ -133,7 +141,36 @@ int decodeBase64(char *p){
    snprintf(p, MAXBUFSIZE-1, "%s", puf);
 
    return len;
+}
 
+
+int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
+   int i, len=0;
+   char s[5], s2[3];
+
+   if(plen < 4 || plen > blen)
+      return 0;
+
+   for(i=0; i<plen; i++){
+      memcpy(s, p+i, 4);
+      s[4] = '\0';
+
+      i += 3;
+
+      /* safety check against abnormally long lines */
+
+      if(len + 3 > blen-1) break;
+
+      if(strlen(s) == 4){
+         pack_4_into_3(s, s2);
+         memcpy(b+len, s2, 3);
+
+         len += 3;
+      }
+
+   }
+
+   return len;
 }
 
 

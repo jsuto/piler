@@ -9,3 +9,4 @@
 
 #define HAVE_DAEMON 1
 
+#undef HAVE_PDFTOTEXT

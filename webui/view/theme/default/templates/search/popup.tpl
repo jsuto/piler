@@ -47,7 +47,7 @@
 
          <div class="row">
             <div class="cell1"><?php print $text_attachment; ?>:</div>
-            <div class="cell2" style="text-align: left;"><input type="checkbox" class="checkbox" style="margin:0;" name="xhas_attachment" id="xhas_attachment" <?php if(isset($has_attachment) && $has_attachment == 1) { ?>checked="checked"<? } ?> /></div>
+            <div class="cell2" style="text-align: left;"><input type="checkbox" class="checkbox" style="margin:0;" name="xhas_attachment" id="xhas_attachment" <?php if(isset($has_attachment) && $has_attachment == 1) { ?>checked="checked"<?php } ?> /></div>
          </div>
 
          <div class="row">

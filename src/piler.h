@@ -13,6 +13,7 @@
 #include <decoder.h>
 #include <list.h>
 #include <rules.h>
+#include <extract.h>
 #include <defs.h>
 #include <tai.h>
 #include <sig.h>

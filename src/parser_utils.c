@@ -56,6 +56,7 @@ void init_state(struct _state *state){
 
    state->has_to_dump = 0;
    state->fd = -1;
+   state->b64fd = -1;
    state->mfd = -1;
    state->realbinary = 0;
    state->octetstream = 0;
@@ -73,7 +74,9 @@ void init_state(struct _state *state){
 
    for(i=0; i<MAX_ATTACHMENTS; i++){
       state->attachments[i].size = 0;
+      state->attachments[i].dumped = 0;
       memset(state->attachments[i].type, 0, TINYBUFSIZE);
+      memset(state->attachments[i].aname, 0, TINYBUFSIZE);
       memset(state->attachments[i].filename, 0, TINYBUFSIZE);
       memset(state->attachments[i].internalname, 0, TINYBUFSIZE);
       memset(state->attachments[i].digest, 0, 2*DIGEST_LENGTH+1);
@@ -746,5 +749,19 @@ void parse_reference(struct _state *state, char *s){
       }
    } while(s);
 
+}
+
+
+int base64_decode_attachment_buffer(char *p, int plen, unsigned char *b, int blen){
+   int b64len=0;
+   char puf[2*SMALLBUFSIZE];
+
+   do {
+      p = split_str(p, "\n", puf, sizeof(puf)-1);
+      trimBuffer(puf);
+      b64len += decode_base64_to_buffer(puf, strlen(puf), b+b64len, blen);
+   } while(p);
+
+   return b64len;
 }
 

@@ -3414,6 +3414,8 @@ have_mysql="no"
 have_tre="no"
 have_zlib="no"
 
+pdftotext="no"
+
 
 have_static_build="no"
 
@@ -4151,6 +4153,19 @@ if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
 fi
 
 
+if test z`which pdftotext 2>/dev/null` != "z"; then
+   pdftotext=`which pdftotext`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PDFTOTEXT "$pdftotext"
+_ACEOF
+
+fi
+
+
+echo "pdftotext: $pdftotext"
+
+
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null
 if test $? -eq 1; then echo "the user \"$RUNNING_USER\" does not exists, please create it, first with adduser..."; exit 1; fi
 
@@ -4168,7 +4183,7 @@ echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
-OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o $objs"
+OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o extract.o $objs"
 
 ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile test/Makefile"
 

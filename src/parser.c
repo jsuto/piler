@@ -129,6 +129,19 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
       len = strlen(p);
 
       if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1 && !strstr(sdata->attachments, p)) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
+
+      if(state->attachments[i].dumped == 1){
+
+      #ifdef HAVE_PDFTOTEXT
+         if(
+            strcmp(p, "pdf,") == 0 || 
+            (strcmp(p, "other,") == 0 && strcasestr(state->attachments[i].filename, ".pdf"))
+         ) extract_pdf(sdata, state, state->attachments[i].aname, cfg);
+      #endif
+
+         unlink(state->attachments[i].aname);
+      }
+
    }
 
 
@@ -138,18 +151,13 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
       else snprintf(state->message_id, SMALLBUFSIZE-1, "null");
    }
 
-   //len = strlen(state->b_from);
-   //if(state->b_from[len-1] == ' ') state->b_from[len-1] = '\0';
-
-   //len = strlen(state->b_to);
-   //if(state->b_to[len-1] == ' ') state->b_to[len-1] = '\0';
-
 }
 
 
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
-   int x, n, len, writelen, b64_len, boundary_line=0;
+   unsigned char b64buffer[MAXBUFSIZE];
+   int x, n, n64, len, writelen, b64_len, boundary_line=0;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -192,7 +200,15 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
          //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
-            n = write(state->fd, abuffer, state->abufpos); state->abufpos = 0; memset(abuffer, 0, abuffersize);
+            n = write(state->fd, abuffer, state->abufpos); 
+
+            if(state->b64fd != -1){
+               abuffer[state->abufpos] = '\0';
+               n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
+               n64 = write(state->b64fd, b64buffer, n64);
+            }
+
+            state->abufpos = 0; memset(abuffer, 0, abuffersize);
          }
          memcpy(abuffer+state->abufpos, buf, len); state->abufpos += len;
 
@@ -222,14 +238,24 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          snprintf(state->attachments[state->n_attachments].filename, TINYBUFSIZE-1, "%s", state->filename);
          snprintf(state->attachments[state->n_attachments].type, TINYBUFSIZE-1, "%s", state->type);
          snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
+         snprintf(state->attachments[state->n_attachments].aname, TINYBUFSIZE-1, "%s.a%d.bin", sdata->ttmpfile, state->n_attachments);
 
          //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
 
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+
+            p = determine_attachment_type(state->attachments[state->n_attachments].filename, state->attachments[state->n_attachments].type);
+   
+            if(strcmp("pdf,", p) == 0 || strcmp("other,", p) == 0){ 
+               state->b64fd = open(state->attachments[state->n_attachments].aname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+               state->attachments[state->n_attachments].dumped = 1;
+            }
+
             if(state->fd == -1){
 
                state->attachments[state->n_attachments].size = 0;
+               state->attachments[state->n_attachments].dumped = 0;
                memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
                memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
                memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
@@ -425,11 +451,21 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->has_to_dump == 1){
          if(take_into_pieces == 1 && state->fd != -1){
             if(state->abufpos > 0){
-               n = write(state->fd, abuffer, state->abufpos); state->abufpos = 0; memset(abuffer, 0, abuffersize); 
+               n = write(state->fd, abuffer, state->abufpos);
+
+               if(state->b64fd != -1){
+                  abuffer[state->abufpos] = '\0';
+                  n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
+                  n64 = write(state->b64fd, b64buffer, n64);
+               }
+
+               state->abufpos = 0; memset(abuffer, 0, abuffersize); 
             }
             close(state->fd);
+            close(state->b64fd);
          }
          state->fd = -1;
+         state->b64fd = -1;
       }
 
 
