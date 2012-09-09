@@ -38,9 +38,14 @@ have_clamd="no"
 have_antivirus="no"
 have_mysql="no"
 have_tre="no"
+have_zip="no"
 have_zlib="no"
 
 pdftotext="no"
+catdoc="no"
+catppt="no"
+xls2csv="no"
+odt2txt="no"
 
 
 have_static_build="no"
@@ -118,6 +123,12 @@ if test "$have_tre" = "no"; then
    exit 1;
 fi
 
+
+
+dnl libzip
+
+AC_CHECK_HEADERS(zip.h, have_zip=yes, echo "zip.h is not found")
+AC_CHECK_LIB([zip],[main],[AC_CHECK_LIB(zip, zip_open, have_zip=yes, echo "libzip.so is not found"; have_zip=no)],[],[])ac_cv_lib_zip=ac_cv_lib_zip_main
 
 
 dnl zlib
@@ -266,6 +277,12 @@ if test "$have_tre" = "yes"; then
    antispam_libs="$antispam_libs -ltre"
 fi
 
+if test "$have_zip" = "yes"; then
+   echo "zip library: yes"
+   AC_DEFINE_UNQUOTED(HAVE_ZIP, 1, [libzip support])
+   antispam_libs="$antispam_libs -lzip"
+fi
+
 if test "$have_mysql" = "yes"; then
    defs="$defs -DNEED_MYSQL"
 fi
@@ -281,7 +298,35 @@ if test z`which pdftotext 2>/dev/null` != "z"; then
 fi
 
 
+if test z`which catdoc 2>/dev/null` != "z"; then
+   catdoc=`which catdoc`
+   AC_DEFINE_UNQUOTED(HAVE_CATDOC, "$catdoc", [path to catdoc])
+fi
+
+
+if test z`which catppt 2>/dev/null` != "z"; then
+   catppt=`which catppt`
+   AC_DEFINE_UNQUOTED(HAVE_CATPPT, "$catppt", [path to catppt])
+fi
+
+
+if test z`which xls2csv 2>/dev/null` != "z"; then
+   xls2csv=`which xls2csv`
+   AC_DEFINE_UNQUOTED(HAVE_XLS2CSV, "$xls2csv", [path to xls2csv])
+fi
+
+
+if test z`which odt2txt 2>/dev/null` != "z"; then
+   odt2txt=`which odt2txt`
+   AC_DEFINE_UNQUOTED(HAVE_ODT2TXT, "$odt2txt", [path to odt2txt])
+fi
+
+
 echo "pdftotext: $pdftotext"
+echo "catdoc: $catdoc"
+echo "catppt: $catppt"
+echo "xls2csv: $xls2csv"
+echo "odt2txt: $odt2txt"
 
 
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null

@@ -76,6 +76,7 @@ void init_state(struct _state *state){
       state->attachments[i].size = 0;
       state->attachments[i].dumped = 0;
       memset(state->attachments[i].type, 0, TINYBUFSIZE);
+      memset(state->attachments[i].shorttype, 0, TINYBUFSIZE);
       memset(state->attachments[i].aname, 0, TINYBUFSIZE);
       memset(state->attachments[i].filename, 0, TINYBUFSIZE);
       memset(state->attachments[i].internalname, 0, TINYBUFSIZE);
@@ -697,22 +698,39 @@ char *determine_attachment_type(char *filename, char *type){
 
    if(strncasecmp(type, "application/pdf", strlen("application/pdf")) == 0) return "pdf,";
 
+   if(strncasecmp(type, "application/ms-tnef", strlen("application/ms-tnef")) == 0) return "winmail,";
    if(strncasecmp(type, "application/msword", strlen("application/msword")) == 0) return "word,";
+
+   // a .csv file has the same type
    if(strncasecmp(type, "application/vnd.ms-excel", strlen("application/vnd.ms-excel")) == 0) return "excel,";
+
    if(strncasecmp(type, "application/vnd.ms-powerpoint", strlen("application/vnd.ms-powerpoint")) == 0) return "powerpoint,";
+
+   if(strncasecmp(type, "application/vnd.visio", strlen("application/vnd.visio")) == 0) return "visio,";
+
+   if(strncasecmp(type, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", strlen("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) == 0) return "word,";
+   if(strncasecmp(type, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", strlen("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) == 0) return "excel,";
+   if(strncasecmp(type, "application/vnd.openxmlformats-officedocument.presentationml.presentation", strlen("application/vnd.openxmlformats-officedocument.presentationml.presentation")) == 0) return "powerpoint,";
 
    if(strncasecmp(type, "application/x-shockwave-flash", strlen("application/x-shockwave-flash")) == 0) return "flash,";
 
    if(strcasestr(type, "opendocument")) return "odf,";
 
-   if(strcasecmp(type, "application/octet-stream") == 0){
 
-      p = strrchr(type, '.');
+
+   if(strncasecmp(type, "application/", 12) == 0){
+
+      p = strrchr(filename, '.');
       if(p){
          p++;
 
+         if(strncasecmp(p, "pdf", 3) == 0) return "pdf,";
+
          if(strncasecmp(p, "zip", 3) == 0) return "compressed,";
          if(strncasecmp(p, "rar", 3) == 0) return "compressed,";
+
+         // tar.gz has the same type
+         if(strncasecmp(p, "x-gzip", 3) == 0) return "compressed,";
 
          if(strncasecmp(p, "doc", 3) == 0) return "word,";
          if(strncasecmp(p, "docx", 4) == 0) return "word,";
@@ -730,6 +748,32 @@ char *determine_attachment_type(char *filename, char *type){
    }
 
    return "other,";
+}
+
+
+char *get_attachment_extractor_by_filename(char *filename){
+   char *p;
+
+   p = strrchr(filename, '.');
+   if(!p) return "other";
+
+   if(strcasecmp(p, ".pdf") == 0) return "pdf";
+   if(strcasecmp(p, ".zip") == 0) return "zip";
+   if(strcasecmp(p, ".gz") == 0) return "gzip";
+   if(strcasecmp(p, ".rar") == 0) return "rar";
+   if(strcasecmp(p, ".odt") == 0) return "odf";
+   if(strcasecmp(p, ".odp") == 0) return "odf";
+   if(strcasecmp(p, ".ods") == 0) return "odf";
+   if(strcasecmp(p, ".doc") == 0) return "doc";
+   if(strcasecmp(p, ".docx") == 0) return "docx";
+   if(strcasecmp(p, ".xls") == 0) return "xls";
+   if(strcasecmp(p, ".xlsx") == 0) return "xlsx";
+   if(strcasecmp(p, ".ppt") == 0) return "ppt";
+   if(strcasecmp(p, ".pptx") == 0) return "pptx";
+   if(strcasecmp(p, ".txt") == 0) return "text";
+   if(strcasecmp(p, ".csv") == 0) return "text";
+
+   return "other";
 }
 
 

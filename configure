@@ -3412,9 +3412,14 @@ have_clamd="no"
 have_antivirus="no"
 have_mysql="no"
 have_tre="no"
+have_zip="no"
 have_zlib="no"
 
 pdftotext="no"
+catdoc="no"
+catppt="no"
+xls2csv="no"
+odt2txt="no"
 
 
 have_static_build="no"
@@ -3782,6 +3787,98 @@ fi
 
 
 
+for ac_header in zip.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "zip.h" "ac_cv_header_zip_h" "$ac_includes_default"
+if test "x$ac_cv_header_zip_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_ZIP_H 1
+_ACEOF
+ have_zip=yes
+else
+  echo "zip.h is not found"
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lzip" >&5
+$as_echo_n "checking for main in -lzip... " >&6; }
+if ${ac_cv_lib_zip_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lzip  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_zip_main=yes
+else
+  ac_cv_lib_zip_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_zip_main" >&5
+$as_echo "$ac_cv_lib_zip_main" >&6; }
+if test "x$ac_cv_lib_zip_main" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for zip_open in -lzip" >&5
+$as_echo_n "checking for zip_open in -lzip... " >&6; }
+if ${ac_cv_lib_zip_zip_open+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lzip  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char zip_open ();
+int
+main ()
+{
+return zip_open ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_zip_zip_open=yes
+else
+  ac_cv_lib_zip_zip_open=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_zip_zip_open" >&5
+$as_echo "$ac_cv_lib_zip_zip_open" >&6; }
+if test "x$ac_cv_lib_zip_zip_open" = xyes; then :
+  have_zip=yes
+else
+  echo "libzip.so is not found"; have_zip=no
+fi
+
+fi
+ac_cv_lib_zip=ac_cv_lib_zip_main
+
+
+
 for ac_header in zlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "zlib.h" "ac_cv_header_zlib_h" "$ac_includes_default"
@@ -4144,6 +4241,16 @@ if test "$have_tre" = "yes"; then
    antispam_libs="$antispam_libs -ltre"
 fi
 
+if test "$have_zip" = "yes"; then
+   echo "zip library: yes"
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_ZIP "1"
+_ACEOF
+
+   antispam_libs="$antispam_libs -lzip"
+fi
+
 if test "$have_mysql" = "yes"; then
    defs="$defs -DNEED_MYSQL"
 fi
@@ -4163,7 +4270,51 @@ _ACEOF
 fi
 
 
+if test z`which catdoc 2>/dev/null` != "z"; then
+   catdoc=`which catdoc`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_CATDOC "$catdoc"
+_ACEOF
+
+fi
+
+
+if test z`which catppt 2>/dev/null` != "z"; then
+   catppt=`which catppt`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_CATPPT "$catppt"
+_ACEOF
+
+fi
+
+
+if test z`which xls2csv 2>/dev/null` != "z"; then
+   xls2csv=`which xls2csv`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_XLS2CSV "$xls2csv"
+_ACEOF
+
+fi
+
+
+if test z`which odt2txt 2>/dev/null` != "z"; then
+   odt2txt=`which odt2txt`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_ODT2TXT "$odt2txt"
+_ACEOF
+
+fi
+
+
 echo "pdftotext: $pdftotext"
+echo "catdoc: $catdoc"
+echo "catppt: $catppt"
+echo "xls2csv: $xls2csv"
+echo "odt2txt: $odt2txt"
 
 
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null

@@ -68,6 +68,7 @@ struct child {
 struct attachment {
    int size;
    char type[TINYBUFSIZE];
+   char shorttype[TINYBUFSIZE];
    char aname[TINYBUFSIZE];
    char filename[TINYBUFSIZE];
    char internalname[TINYBUFSIZE];

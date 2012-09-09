@@ -100,7 +100,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
 
 void post_parse(struct session_data *sdata, struct _state *state, struct __config *cfg){
-   int i, len;
+   int i, len, rec=0;
    char *p;
 
    free_list(state->boundaries);
@@ -127,18 +127,12 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
       p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
       len = strlen(p);
-
       if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1 && !strstr(sdata->attachments, p)) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
 
       if(state->attachments[i].dumped == 1){
-
-      #ifdef HAVE_PDFTOTEXT
-         if(
-            strcmp(p, "pdf,") == 0 || 
-            (strcmp(p, "other,") == 0 && strcasestr(state->attachments[i].filename, ".pdf"))
-         ) extract_pdf(sdata, state, state->attachments[i].aname, cfg);
-      #endif
-
+         rec = 0;
+         if(state->bodylen < BIGBUFSIZE-1024) extract_attachment_content(sdata, state, state->attachments[i].aname, get_attachment_extractor_by_filename(state->attachments[i].filename), &rec);
+      
          unlink(state->attachments[i].aname);
       }
 
@@ -245,21 +239,28 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
 
-            p = determine_attachment_type(state->attachments[state->n_attachments].filename, state->attachments[state->n_attachments].type);
-   
-            if(strcmp("pdf,", p) == 0 || strcmp("other,", p) == 0){ 
+            p = get_attachment_extractor_by_filename(state->attachments[state->n_attachments].filename);
+
+            snprintf(state->attachments[state->n_attachments].shorttype, TINYBUFSIZE-1, "%s", p);
+ 
+            if(strcmp("other", p)){
                state->b64fd = open(state->attachments[state->n_attachments].aname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
                state->attachments[state->n_attachments].dumped = 1;
             }
+
+
 
             if(state->fd == -1){
 
                state->attachments[state->n_attachments].size = 0;
                state->attachments[state->n_attachments].dumped = 0;
                memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
+               memset(state->attachments[state->n_attachments].shorttype, 0, TINYBUFSIZE);
+               memset(state->attachments[state->n_attachments].aname, 0, TINYBUFSIZE);
                memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
                memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
                memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
+
 
                syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
 

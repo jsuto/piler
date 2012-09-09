@@ -10,3 +10,8 @@
 #define HAVE_DAEMON 1
 
 #undef HAVE_PDFTOTEXT
+#undef HAVE_CATDOC
+#undef HAVE_CATPPT
+#undef HAVE_XLS2CSV
+#undef HAVE_ZIP
+

@@ -72,7 +72,7 @@ int main(int argc, char **argv){
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
-   state = parse_message(&sdata, 0, &cfg);
+   state = parse_message(&sdata, 1, &cfg);
    post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);
@@ -80,7 +80,7 @@ int main(int argc, char **argv){
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
    printf("reference: *%s*\n", state.reference);
    printf("subject: *%s*\n", state.b_subject);
-   //printf("body: *%s*\n", state.b_body);
+   printf("body: *%s*\n", state.b_body);
 
    printf("sent: %ld\n", sdata.sent);
 
@@ -103,7 +103,10 @@ int main(int argc, char **argv){
 
    for(i=1; i<=state.n_attachments; i++){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+      unlink(state.attachments[i].internalname);
    }
+
+   unlink(sdata.tmpframe);
 
    printf("attachments:%s\n", sdata.attachments);
 
