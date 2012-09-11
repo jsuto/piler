@@ -45,7 +45,6 @@ pdftotext="no"
 catdoc="no"
 catppt="no"
 xls2csv="no"
-odt2txt="no"
 
 
 have_static_build="no"
@@ -250,19 +249,8 @@ fi
 
 echo; echo
 
-if test "$have_clamd" = "yes"; then
-   echo "clamd support: yes"
-   objs="$objs clamd.o"
-   defs="$defs -DHAVE_CLAMD"
-fi
-
-if test "$want_memcached" = "yes"; then
-   echo "memcached support: yes"
-   objs="$objs memc.o"
-   defs="$defs -DHAVE_MEMCACHED"
-fi
-
 echo "run as user: $RUNNING_USER"
+echo "piler data directory: $data_dir/piler"
 
 if test "$have_static_build" = "yes"; then
    echo "link mode: static"
@@ -270,6 +258,8 @@ if test "$have_static_build" = "yes"; then
 else
    echo "link mode: dynamic"
 fi
+
+echo
 
 if test "$have_tre" = "yes"; then
    echo "tre library: yes"
@@ -281,6 +271,20 @@ if test "$have_zip" = "yes"; then
    echo "zip library: yes"
    AC_DEFINE_UNQUOTED(HAVE_ZIP, 1, [libzip support])
    antispam_libs="$antispam_libs -lzip"
+fi
+
+echo
+
+if test "$have_clamd" = "yes"; then
+   echo "clamd support: yes"
+   objs="$objs clamd.o"
+   defs="$defs -DHAVE_CLAMD"
+fi
+
+if test "$want_memcached" = "yes"; then
+   echo "memcached support: yes"
+   objs="$objs memc.o"
+   defs="$defs -DHAVE_MEMCACHED"
 fi
 
 if test "$have_mysql" = "yes"; then
@@ -316,29 +320,15 @@ if test z`which xls2csv 2>/dev/null` != "z"; then
 fi
 
 
-if test z`which odt2txt 2>/dev/null` != "z"; then
-   odt2txt=`which odt2txt`
-   AC_DEFINE_UNQUOTED(HAVE_ODT2TXT, "$odt2txt", [path to odt2txt])
-fi
-
-
+echo
 echo "pdftotext: $pdftotext"
 echo "catdoc: $catdoc"
 echo "catppt: $catppt"
 echo "xls2csv: $xls2csv"
-echo "odt2txt: $odt2txt"
 
 
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null
 if test $? -eq 1; then echo "the user \"$RUNNING_USER\" does not exists, please create it, first with adduser..."; exit 1; fi
-
-if test "$have_clamd" = "no" ; then
-   echo; echo
-   echo "You have not selected any antivirus support."
-   echo "piler will not protect you from hostile code coming in e-mail"
-fi
-
-echo "piler data directory: $data_dir/piler"
 
 iv=`util/gen-iv.pl`
 
