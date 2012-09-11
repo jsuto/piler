@@ -85,7 +85,7 @@ class ModelFolderFolder extends Model {
    public function get_folders_by_string($s = '') {
       if(strlen($s) < 2) { return array(); }
 
-      $query = $this->db->query("SELECT name FROM `" . TABLE_FOLDER . "` WHERE name LIKE ? ORDER BY name ASC", array($s . "%") );
+      $query = $this->db->query("SELECT name FROM `" . TABLE_FOLDER . "` WHERE parent_id=0 AND name LIKE ? ORDER BY name ASC", array($s . "%") );
 
       if(isset($query->rows)) { return $query->rows; }
 

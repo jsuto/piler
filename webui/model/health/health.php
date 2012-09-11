@@ -70,10 +70,10 @@ class ModelHealthHealth extends Model {
          if(isset($a[0]) && $a[0]) { $_m[$a[0]] = $a[1]; }
       }
 
-      $mem_percentage = sprintf("%.2f", 100*($_m['MemTotal:'] - $_m['MemFree:'] - $_m['Cached:']) / $_m['MemTotal:']);
-      $swap_percentage = sprintf("%.2f", 100*($_m['SwapTotal:'] - $_m['SwapFree:']) / $_m['SwapTotal:']);
+      $mem_percentage = isset($_m['MemTotal:']) ? sprintf("%.2f", 100*($_m['MemTotal:'] - $_m['MemFree:'] - $_m['Cached:']) / $_m['MemTotal:']) : "0";
+      $swap_percentage = isset($_m['SwapTotal:']) ? sprintf("%.2f", 100*($_m['SwapTotal:'] - $_m['SwapFree:']) / $_m['SwapTotal:']) : "0";
 
-      return array(sprintf("%.0f", $_m['MemTotal:'] / 1000), $mem_percentage, sprintf("%.0f", $_m['SwapTotal:'] / 1000), $swap_percentage);
+      return array(sprintf("%.0f", @$_m['MemTotal:'] / 1000), $mem_percentage, sprintf("%.0f", @$_m['SwapTotal:'] / 1000), $swap_percentage);
    }
 
 
