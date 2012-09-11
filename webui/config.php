@@ -142,6 +142,7 @@ define('BULK_RESTORE_URL', SITE_URL . 'bulkrestore.php');
 
 define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
 define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
+define('MESSAGE_NOTE_URL', SITE_URL . 'index.php?route=message/note');
 
 define('HEALTH_URL', SITE_URL . 'index.php?route=health/health');
 define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
