@@ -62,7 +62,7 @@ class ModelFolderFolder extends Model {
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
             array_push($arr, $q['id']);
-            $this->get_sub_folders($q['id'], &$arr);
+            $this->get_sub_folders($q['id'], $arr);
          }
       }
 
@@ -70,13 +70,13 @@ class ModelFolderFolder extends Model {
    }
 
 
-   private function get_sub_folders($id = 0, $arr = array()) {
+   private function get_sub_folders($id = 0, &$arr = array()) {
       $query = $this->db->query("SELECT id FROM `" . TABLE_FOLDER . "` WHERE parent_id=?", array($id));
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
             array_push($arr, $q['id']);
-            $this->get_sub_folders($q['id'], &$arr);
+            $this->get_sub_folders($q['id'], $arr);
          }
       }
 
