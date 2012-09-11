@@ -25,9 +25,12 @@ OBJS = import_helper.o
 
 INSTALL = @INSTALL@
 
-all: $(OBJS) parser debug import
+all: $(OBJS) parser debug import ptest
 
 parser: parser.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
+ptest: ptest.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 debug: debug.c ../src/libpiler.a
@@ -44,7 +47,7 @@ import: import.c ../src/libpiler.a
 install:
 
 clean:
-	rm -f parser debug import
+	rm -f parser debug import ptest
 
 distclean: clean
 	rm -f Makefile

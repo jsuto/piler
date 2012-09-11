@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <piler.h>
 
 #ifdef HAVE_ZIP
@@ -38,6 +42,7 @@ void remove_xml(char *buf, int *html){
 }
 
 
+#ifdef HAVE_ZIP
 int extract_opendocument(struct session_data *sdata, struct _state *state, char *filename, char *prefix){
    int errorp, i=0, len=0, html=0;
    char buf[MAXBUFSIZE];
@@ -69,6 +74,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
             }
             zip_fclose(zf);
          }
+         else syslog(LOG_PRIORITY, "%s: cannot extract '%s' from '%s'", sdata->ttmpfile, sb.name, filename);
 
          if(state->bodylen > BIGBUFSIZE-1024) break;
       }
@@ -82,6 +88,60 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
    return 0;
 }
 
+
+int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec){
+   int errorp, i=0, len=0, fd;
+   char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
+   struct zip *z;
+   struct zip_stat sb;
+   struct zip_file *zf;
+
+   (*rec)++;
+
+   z = zip_open(filename, 0, &errorp);
+   if(!z) return 1;
+
+   while(zip_stat_index(z, i, 0, &sb) == 0){
+      p = strrchr(sb.name, '.');
+
+      if(p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+
+         snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
+
+         fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+         if(fd != -1){
+            zf = zip_fopen_index(z, i, 0);
+            if(zf){
+               while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
+                  write(fd, buf, len);
+               }
+               zip_fclose(zf);
+            }
+            else syslog(LOG_PRIORITY, "%s: cannot extract '%s' from '%s'", sdata->ttmpfile, sb.name, extracted_filename);
+
+            close(fd);
+
+            extract_attachment_content(sdata, state, extracted_filename, get_attachment_extractor_by_filename(extracted_filename), rec);
+
+            unlink(extracted_filename);
+
+         }
+         else {
+            syslog(LOG_PRIORITY, "%s: cannot open '%s'", sdata->ttmpfile, extracted_filename);
+         }
+
+      }
+
+      i++;
+   }
+
+
+   zip_close(z);
+
+   return 0;
+}
+
+#endif
 
 void read_content_with_popen(struct session_data *sdata, struct _state *state, char *cmd){
    int len;
@@ -157,9 +217,13 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
       return;
    }
 
-   if(strcmp(type, "zip") == 0 && *rec == 0){
-      (*rec)++;
-
+   if(strcmp(type, "zip") == 0){
+      if(*rec < MAX_ZIP_RECURSION_LEVEL){
+         unzip_file(sdata, state, filename, rec);
+      }
+      else {
+         syslog(LOG_PRIORITY, "%s: multiple recursion level zip attachment, skipping %s", sdata->ttmpfile, filename);
+      }
    }
 #endif
 

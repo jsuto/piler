@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.21"
 
-#define BUILD 701
+#define BUILD 704
 
 #define HOSTID "mailarchiver"
 
@@ -70,6 +70,7 @@
 #define DELIMITER ' '
 #define BOUNDARY_LEN 255
 #define MAX_ATTACHMENTS 16
+#define MAX_ZIP_RECURSION_LEVEL 2
 
 /* SQL stuff */
 

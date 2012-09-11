@@ -13,7 +13,6 @@
 #include <decoder.h>
 #include <list.h>
 #include <rules.h>
-#include <extract.h>
 #include <defs.h>
 #include <tai.h>
 #include <sig.h>
@@ -57,6 +56,8 @@ unsigned long get_folder_id(struct session_data *sdata, char *foldername, int pa
 unsigned long add_new_folder(struct session_data *sdata, char *foldername, int parent_id);
 
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg);
+
+void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec);
 
 #endif /* _PILER_H */
 
