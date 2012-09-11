@@ -550,7 +550,7 @@ class ModelSearchSearch extends Model {
       } else {
 
          if(ENABLE_FOLDER_RESTRICTIONS == 1) {
-            $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $id) . ")");
+            $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $id) . ")");
          }
          else {
             $arr = array_merge($arr, $a, $a);
