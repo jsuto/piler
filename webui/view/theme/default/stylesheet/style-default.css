@@ -81,6 +81,7 @@
 	.row.savedsearch { display: table-row; text-align: right; }
 	.resultrow { display: table-row; height: 18px; }
 	.resultrow.odd { background: #f5f5f5; }
+	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
 
 	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }

@@ -3,6 +3,8 @@ var attachment_types = ["word", "excel", "powerpoint", "pdf", "compressed", "tex
 var count = 0;
 var expsrc = 0;
 
+var current_message_serial = 1;
+var current_messages = new Array();
 
 function getXMLHttp() {
    var XMLHttp = null;
@@ -68,6 +70,8 @@ function load_ajax_url(url) {
 
 
 function load_search_results(url, params, page) {
+   current_message_serial = 0;
+   current_messages = new Array();
 
    document.getElementById('messagelistcontainer').innerHTML = '<img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />';
 
@@ -88,6 +92,8 @@ function load_search_results(url, params, page) {
       if(http.readyState == 4) {
          if(http.status == 200) {
             document.getElementById('mailcontframe').innerHTML = http.responseText;
+
+            fill_current_messages_array();
          }
          else {
             alert("Problem retrieving XML data:" + http.statusText);
@@ -600,6 +606,25 @@ function append_email_from_slider(id, value) {
 }
 
 
+function fill_current_messages_array() {
+   var a = document.getElementById('results');
+   j = 1;
+
+   len = a.childNodes.length;
+
+   for(i=0; i<a.childNodes.length; i++) {
+
+      if(a.childNodes[i].nodeName == "DIV" && a.childNodes[i].id.substring(0, 2) == "e_") {
+
+         id = a.childNodes[i].id.substring(2,1000);
+
+         current_messages[j] = id; j++;
+      }
+   }
+
+}
+
+
 $(document).ready(function() {
    $.datepicker.setDefaults($.datepicker.regional[piler_ui_lang]);
    $("#date1").datepicker( { dateFormat: 'yy-mm-dd' } );
@@ -681,6 +706,32 @@ function show_message(id, msg, timeout){
    document.getElementById(id).innerHTML = msg;
    document.getElementById(id).style.display = '';
    setTimeout(function() { document.getElementById(id).style.display = 'none'; }, timeout*1000);
+}
+
+
+function move_message_list_scrollbar(direction) {
+
+   var current_result_div = document.getElementById('e_' + current_messages[current_message_serial]);
+   if(current_result_div){
+      if(current_message_serial % 2) current_result_div.className = 'resultrow odd';
+      else current_result_div.className = 'resultrow';
+   }
+
+   if(direction == 'down') {
+      if(current_message_serial < current_messages.length-1) current_message_serial++;
+   }
+   else {
+      if(current_message_serial > 1) current_message_serial--;
+   }
+
+   load_url_with_get(message_loader_url + current_messages[current_message_serial], 'mailpreviewframe');
+
+   current_result_div = document.getElementById('e_' + current_messages[current_message_serial]);
+
+   if(current_result_div){ current_result_div.className = 'resultrow selected'; }
+
+   var objDiv = document.getElementById("messagelistcontainer");
+   if(objDiv) objDiv.scrollTop = current_message_serial*17 - 30;
 }
 
 

@@ -25,12 +25,15 @@
       var email_search_url = '<?php print SITE_URL; ?>/index.php?route=group/email&';
       var group_search_url = '<?php print SITE_URL; ?>/index.php?route=group/group&';
       var folder_search_url = '<?php print SITE_URL; ?>/index.php?route=folder/folder&';
+      var message_loader_url = '<?php print SITE_URL; ?>message.php/';
    </script>
 
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
    <script type="text/javascript" src="/view/javascript/splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/rc1.js"></script>
    <script type="text/javascript" src="/view/javascript/rc2.js"></script>
+
+   <script type="text/javascript" src="/view/javascript/shortcut.js"></script>
 
    <style type="text/css">
       /*#mailcontframe { height: 341px; }
@@ -41,6 +44,24 @@
 
    <script type="text/javascript">
       var split = new rcube_webmail();
+
+      shortcut.add("Down", function() {
+         move_message_list_scrollbar('down');
+      },{
+	'type':'keydown',
+	'propagate':true,
+	'target':document
+      });
+
+      shortcut.add("Up", function() {
+        move_message_list_scrollbar('up');
+      },{
+        'type':'keydown',
+        'propagate':true,
+        'target':document
+      });
+
+
    </script>
 
 
