@@ -211,6 +211,13 @@ class ModelUserImport extends Model {
          }
          else {
 
+            /* update DN field if it's an existing user */
+
+            if(($cuid = $this->model_user_user->get_uid_by_name($_user['username'])) > 0) {
+               $this->model_user_user->update_dn_by_uid($cuid, $_user['dn']);
+               continue;
+            }
+
             /* or add the new user */
 
             $user = $this->createNewUserArray($_user['dn'], $_user['username'], $_user['realname'], $_user['emails'], $globals);

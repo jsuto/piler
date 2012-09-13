@@ -445,6 +445,20 @@ class ModelUserUser extends Model {
    }
 
 
+   public function update_dn_by_uid($uid = 0, $new_dn = '') {
+      if(!$this->check_uid($uid) || $new_dn == ''){ return 0; }
+
+      $user = $this->get_user_by_uid($uid);
+
+      if(isset($user['uid']) && $user['dn'] != '' && $user['dn'] != '*') {
+         $query = $this->db->query("UPDATE " . TABLE_USER . " SET dn=? WHERE uid=?", array($new_dn, $uid));
+         return 1;
+      }
+
+      return 0;
+   }
+
+
    public function delete_user($uid) {
       if(!$this->check_uid($uid)){ return 0; }
 
