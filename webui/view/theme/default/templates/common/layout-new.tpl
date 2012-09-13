@@ -111,6 +111,7 @@
 <div id="mainscreen">
   <div id="mailleftcontainer">
 
+<?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
     <div id="mailboxlist-container">
        <?php print $folder; ?>
     </div>
@@ -120,9 +121,11 @@
   split.add_onload('mailviewsplitv.init()');
     </script>
 
+<?php } ?>
+
   </div>
 
-  <div id="mailrightcontainer">
+  <div id="mailrightcontainer"<?php if(ENABLE_FOLDER_RESTRICTIONS == 0) { ?> style="left: 0px;"<?php } ?>>
     <div id="mailrightcontent">
 
       <div id="mailcontframe">
