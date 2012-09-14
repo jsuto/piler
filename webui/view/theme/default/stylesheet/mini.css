@@ -10,7 +10,7 @@
 
 .boxtitle { height: 12px !important; padding: 2px 10px 5px 5px; border-bottom: 1px solid #999; color: #333; font-size: 11px; font-weight: bold; overflow: hidden; }
 .boxlistcontent { position: absolute; top: 20px; bottom: 22px; left: 0; right: 0; width: 100%; overflow-y: auto; overflow-x: hidden; }
-.boxfooter { position: absolute; bottom: 0px; left: 0px; right: 0px; overflow: hidden; height: 22px; border-top: 1px solid #999; background: url(/view/theme/default/images/listheader.gif) top left repeat-x #CCC; }
+.boxfooter { position: absolute; bottom: 0px; left: 0px; right: 0px; overflow: hidden; height: 15px; border-top: 1px solid #999; background: url(/view/theme/default/images/listheader.gif) top left repeat-x #CCC; }
 
 #mailboxlist { position:relative; height: auto; margin: 0px; padding: 0px; list-style-image: none; list-style-type: none; overflow: hidden; white-space: nowrap; background-color: #FFF; }
 

@@ -19,8 +19,7 @@ function LOGGER($event = '', $username = '') {
 }
 
 
-function AUDIT($action = 0, $email = '', $ipaddr = '', $piler_id = '', $description = '') {
-   $id = 0;
+function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '') {
 
    if(ENABLE_AUDIT == 0) { return 0; }
 
@@ -29,12 +28,8 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $piler_id = '', $descript
 
    $db = Registry::get('db');
 
-   if($piler_id && verify_piler_id($piler_id) == 1){
-      $query = $db->query("SELECT id FROM " . TABLE_META . " WHERE piler_id=?", array($piler_id));
-      if(isset($query->row['id'])) { $id = $query->row['id']; }
-   }
-
    $query = $db->query("INSERT INTO " . TABLE_AUDIT . " (ts, email, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?)", array(time(), $email, $action, $ipaddr, $id, $description));
+
    return $db->countAffected();
 }
 
