@@ -77,16 +77,12 @@
             <div class="cellaudit"><?php print $message['ipaddr']; ?></div>
             <div class="cellaudit"><?php print $actions[$message['action']]; ?></div>
             <div class="cellaudit"><?php if($message['description'] != $message['shortdescription']) { ?><span onmouseover="Tip('<?php print preg_replace("/&/", "&amp;", $message['description']); ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip()"><?php print $message['shortdescription']; ?></span><?php } else { print $message['description']; } ?></div>
-            <div class="cellaudit"><?php if($message['piler_id']) { ?><a class="messagelink" href="<?php print SITE_URL; ?>message.php/<?php print $message['piler_id']; ?>"><?php } ?><?php print $message['id']; ?><?php if($message['piler_id']) { ?></a><?php } ?></div>
+            <div class="cellaudit"><?php print $message['id']; ?></div>
          </div>
 
 <?php } ?>
 
 
-
-<?php if($n > 0) { for($i=$i; $i<$page_len;$i++){ ?>
-      <div class="resultrow"></div>
-<?php } } ?>
 
    </div>
 
