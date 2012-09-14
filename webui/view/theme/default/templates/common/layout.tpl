@@ -29,7 +29,7 @@
 
 </head>
 
-<body<?php if($this->request->get['route'] == 'health/health') { ?> onload="loadHealth(); setInterval('loadHealth()', <?php print HEALTH_REFRESH; ?> * 1000)" style="cursor: wait"<?php } ?>>
+<body<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="loadHealth(); setInterval('loadHealth()', <?php print HEALTH_REFRESH; ?> * 1000)" style="cursor: wait"<?php } ?>>
 
 <div id="fuku1">
 

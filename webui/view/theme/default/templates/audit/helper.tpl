@@ -23,7 +23,7 @@
 
 
 
-<div id="auditresultscontainer"<?php if($n <= 0) { ?> class="empty"<?php } ?> style="border: 3px solid red;">
+<div id="auditresultscontainer"<?php if($n <= 0) { ?> class="empty"<?php } ?> style="border: 0px solid red;">
 
    <div id="results">
 

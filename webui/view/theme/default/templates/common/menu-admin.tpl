@@ -14,7 +14,9 @@
                <ul class="sub_menu">
                   <li><a href="index.php?route=stat/stat&timespan=daily"><?php print $text_statistics; ?></a></li>
                   <li><a href="index.php?route=health/health"><?php print $text_health; ?></a></li>
+               <?php if(ENABLE_AUDIT == 1) { ?>
                   <li><a href="index.php?route=audit/audit"><?php print $text_audit; ?></a></li>
+               <?php } ?>
                </ul>
             </li>
 
