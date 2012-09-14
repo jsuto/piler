@@ -247,7 +247,7 @@ class ModelSearchSearch extends Model {
       if($data['any']) {
          $data['any'] = $this->fixup_sphinx_operators($data['any']);
          $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
-         if($match) { $match = "($match) & "; } $match .= "(" . $data['any'] . ") ";
+         if($match) { $match = "($match) & "; } $match .= "(@subject,@body" . $data['any'] . ") ";
       }
 
 
@@ -277,7 +277,10 @@ class ModelSearchSearch extends Model {
             }
          }
 
-         $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
+         if(count($__folders) > 0) {
+            $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
+         }
+
       }
 
 
