@@ -45,6 +45,7 @@ pdftotext="no"
 catdoc="no"
 catppt="no"
 xls2csv="no"
+unrtf="no"
 
 
 have_static_build="no"
@@ -320,11 +321,18 @@ if test z`which xls2csv 2>/dev/null` != "z"; then
 fi
 
 
+if test z`which unrtf 2>/dev/null` != "z"; then
+   unrtf=`which unrtf`
+   AC_DEFINE_UNQUOTED(HAVE_UNRTF, "$unrtf", [path to unrtf])
+fi
+
+
 echo
 echo "pdftotext: $pdftotext"
 echo "catdoc: $catdoc"
 echo "catppt: $catppt"
 echo "xls2csv: $xls2csv"
+echo "unrtf: $unrtf"
 
 
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null

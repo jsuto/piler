@@ -226,7 +226,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
       // this is a real attachment to dump
-      if(state->base64 == 1 && strlen(state->filename) > 5 && strlen(state->type) > 3 && state->n_attachments < MAX_ATTACHMENTS-1){
+      if(state->base64 == 1 && strlen(state->filename) > 4 && strlen(state->type) > 3 && state->n_attachments < MAX_ATTACHMENTS-1){
          state->n_attachments++;
 
          snprintf(state->attachments[state->n_attachments].filename, TINYBUFSIZE-1, "%s", state->filename);

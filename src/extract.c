@@ -190,6 +190,10 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
    if(strcmp(type, "xls") == 0) snprintf(cmd, sizeof(cmd)-1, "%s -d utf-8 %s", HAVE_XLS2CSV, filename);
 #endif
 
+#ifdef HAVE_UNRTF
+   if(strcmp(type, "rtf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s --text %s", HAVE_UNRTF, filename);
+#endif
+
    if(strlen(cmd) > 12){
       read_content_with_popen(sdata, state, cmd);
       return;

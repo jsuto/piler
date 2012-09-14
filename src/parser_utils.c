@@ -732,6 +732,7 @@ char *determine_attachment_type(char *filename, char *type){
          // tar.gz has the same type
          if(strncasecmp(p, "x-gzip", 3) == 0) return "compressed,";
 
+         if(strncasecmp(p, "rtf", 3) == 0) return "word,";
          if(strncasecmp(p, "doc", 3) == 0) return "word,";
          if(strncasecmp(p, "docx", 4) == 0) return "word,";
          if(strncasecmp(p, "xls", 3) == 0) return "excel,";
@@ -770,6 +771,7 @@ char *get_attachment_extractor_by_filename(char *filename){
    if(strcasecmp(p, ".xlsx") == 0) return "xlsx";
    if(strcasecmp(p, ".ppt") == 0) return "ppt";
    if(strcasecmp(p, ".pptx") == 0) return "pptx";
+   if(strcasecmp(p, ".rtf") == 0) return "rtf";
    if(strcasecmp(p, ".txt") == 0) return "text";
    if(strcasecmp(p, ".csv") == 0) return "text";
 

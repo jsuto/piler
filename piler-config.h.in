@@ -13,5 +13,6 @@
 #undef HAVE_CATDOC
 #undef HAVE_CATPPT
 #undef HAVE_XLS2CSV
+#undef HAVE_UNRTF
 #undef HAVE_ZIP
 
