@@ -268,10 +268,10 @@ function assemble_search_term(n, prefix) {
    e = document.getElementById(prefix + 'order');
    if(e && e.value) { data = data + "&order=" + e.value; }
 
-   var a = document.getElementById('folders');
-   if(a) {
-      for(i=0; i<a.childNodes.length; i++) {
-         b = a.childNodes[i];
+   var childNodeArray = document.getElementById('folders').getElementsByTagName('*');
+   if(childNodeArray) {
+      for(i=0; i<childNodeArray.length; i++) {
+         b = childNodeArray[i];
          if(b.name && b.name.substring(0, 7) == 'folder_' && b.checked) {
             folders = folders + "+" + b.name.substring(7);
          }
@@ -697,7 +697,6 @@ $(document).ready(function() {
         }
     });
 
-
   });
 
 
@@ -773,6 +772,35 @@ function copy_message_to_folder(folder_id, id, copied) {
 
    current_message_id = 0;
 
+}
+
+
+function open_folder(id) {
+   var a;
+
+   a  = document.getElementById('fldr_' + id);
+   a.style.display = '';
+
+   a  = document.getElementById('fldr_collapse_' + id);
+   a.style.display = '';
+
+   a = document.getElementById('fldr_open_' + id);
+   a.style.display = 'none';
+
+}
+
+
+function close_folder(id) {
+   var a;
+
+   a  = document.getElementById('fldr_' + id);
+   a.style.display = 'none';
+
+   a  = document.getElementById('fldr_collapse_' + id);
+   a.style.display = 'none';
+
+   a = document.getElementById('fldr_open_' + id);
+   a.style.display = '';
 }
 
 

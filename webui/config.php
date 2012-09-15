@@ -25,6 +25,9 @@ define('ICON_GREEN_OK', '/view/theme/default/images/green_ok.png');
 define('ICON_RED_X', '/view/theme/default/images/red_x.png');
 define('ICON_DOWNLOAD', '/view/theme/default/images/download_icon.jpg');
 define('ICON_NOTES', '/view/theme/default/images/notes.png');
+define('ICON_PLUS', '/view/theme/default/images/plus.gif');
+define('ICON_MINUS', '/view/theme/default/images/minus.gif');
+define('ICON_EMPTY', '/view/theme/default/images/1x1.gif');
 
 define('MAX_CGI_FROM_SUBJ_LEN', 45);
 define('PAGE_LEN', 20);

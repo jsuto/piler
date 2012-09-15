@@ -95,6 +95,24 @@ class ModelFolderFolder extends Model {
    }
 
 
+   public function get_all_folder_ids_hier($uid = 0) {
+      $arr = array();
+      $a = array();
+
+      $query = $this->db->query("SELECT " . TABLE_FOLDER_USER . ".id AS id, " . TABLE_FOLDER . ".name AS name FROM " . TABLE_FOLDER_USER . ", " . TABLE_FOLDER . " WHERE uid=? AND " . TABLE_FOLDER_USER . ".id=" . TABLE_FOLDER . ".id", array($uid));
+
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) {
+            $a = array('id' => $q['id'], 'name' => $q['name'], 'children' => array());
+            $a['children'] = $this->get_sub_folders_hier($q['id']);
+            array_push($arr, $a);
+         }
+      }
+
+      return $arr;
+   }
+
+
    public function get_all_extra_folder_ids($uid = 0) {
       $arr = array();
 
@@ -121,6 +139,26 @@ class ModelFolderFolder extends Model {
       }
 
    }
+
+
+   private function get_sub_folders_hier($id = 0) {
+      $arr = array();
+
+      $query = $this->db->query("SELECT id, name FROM `" . TABLE_FOLDER . "` WHERE parent_id=?", array($id));
+
+      if($query->num_rows > 0) {
+
+         foreach ($query->rows as $q) {
+            $a = array('id'=> $q['id'], 'name'=>$q['name'], 'children'=>array());
+            $a['children'] = $this->get_sub_folders_hier($q['id']);
+            array_push($arr, $a);
+         }
+
+      }
+
+      return $arr;
+   }
+
 
    public function get_folders_by_string($s = '') {
       if(strlen($s) < 2) { return array(); }
