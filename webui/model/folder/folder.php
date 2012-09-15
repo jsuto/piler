@@ -54,6 +54,31 @@ class ModelFolderFolder extends Model {
    }
 
 
+   public function get_extra_folders_for_user() {
+      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? ORDER BY name", array($_SESSION['uid']));
+
+      if(isset($query->rows)) { return $query->rows; }
+
+      return array();
+   }
+
+
+   private function is_your_extra_folder($folder_id = 0) {
+      $query = $this->db->query("SELECT `id` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? AND id=?", array($_SESSION['uid'], $folder_id));
+      if(isset($query->row['id'])) { return 1; }
+
+      return 0;
+   }
+
+
+   public function copy_message_to_folder_by_id($folder_id = 0, $meta_id = 0) {
+      if(!$this->is_your_extra_folder($folder_id)) { return -1; }
+
+      $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_MESSAGE . " (folder_id, id) VALUES(?,?)", array($folder_id, $meta_id));
+      return $this->db->countAffected();
+   }
+
+
    public function get_all_folder_ids($uid = 0) {
       $arr = array();
 
@@ -63,6 +88,21 @@ class ModelFolderFolder extends Model {
          foreach ($query->rows as $q) {
             array_push($arr, $q['id']);
             $this->get_sub_folders($q['id'], $arr);
+         }
+      }
+
+      return $arr;
+   }
+
+
+   public function get_all_extra_folder_ids($uid = 0) {
+      $arr = array();
+
+      $query = $this->db->query("SELECT id FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=?", array($uid));
+
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) {
+            array_push($arr, $q['id']);
          }
       }
 
@@ -103,6 +143,27 @@ class ModelFolderFolder extends Model {
       }
 
       return preg_replace("/^\n/", "", $folders);
+   }
+
+
+   public function add_extra_folder($name = '') {
+      if($name == '') { return -1; }
+
+      $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_EXTRA . " (uid, name) VALUES(?,?)", array($_SESSION['uid'], $name));
+      return $this->db->countAffected();
+   }
+
+
+   public function remove_extra_folder($id = 0) {
+      if($id == 0) { return -1; }
+
+      $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_EXTRA . " WHERE id=? AND uid=?", array($id, $_SESSION['uid']));
+      if($this->db->countAffected() == 1) {
+         $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id=?", array($id));
+         return $this->db->countAffected();
+      }
+
+      return 0;
    }
 
 

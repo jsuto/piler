@@ -17,6 +17,7 @@ class ControllerSearchHelper extends Controller {
                     'note'            => '',
                     'ref'             => '',
                     'folders'         => '',
+                    'extra_folders'   => '',
                     'any'             => ''
                      );
 
@@ -94,6 +95,7 @@ class ControllerSearchHelper extends Controller {
    private function fixup_post_request() {
       if(isset($this->request->post['ref'])) { $this->a['ref'] = $this->request->post['ref']; }
       if(isset($this->request->post['folders'])) { $this->a['folders'] = $this->request->post['folders']; }
+      if(isset($this->request->post['extra_folders'])) { $this->a['extra_folders'] = $this->request->post['extra_folders']; }
 
       $this->a['sort'] = $this->request->post['sort'];
       $this->a['order'] = $this->request->post['order'];

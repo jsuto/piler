@@ -21,10 +21,12 @@
    <script type="text/javascript" src="/view/javascript/jquery.dropdownPlain.js"></script>
 
    <script type="text/javascript">
+      var current_message_id = 0;
       var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
       var email_search_url = '<?php print SITE_URL; ?>/index.php?route=group/email&';
       var group_search_url = '<?php print SITE_URL; ?>/index.php?route=group/group&';
       var folder_search_url = '<?php print SITE_URL; ?>/index.php?route=folder/folder&';
+      var folder_copy_url = '<?php print SITE_URL; ?>/index.php?route=folder/copy';
       var message_loader_url = '<?php print SITE_URL; ?>message.php/';
    </script>
 
@@ -116,6 +118,7 @@
        <?php print $folder; ?>
     </div>
 
+
     <script type="text/javascript">
   var mailviewsplitv = new rcube_splitter({id:'splitter1', p1: 'mailleftcontainer', p2: 'mailrightcontainer', orientation: 'v', relative: true, start: 165});
   split.add_onload('mailviewsplitv.init()');
@@ -140,7 +143,7 @@
   split.add_onload('mailviewsplit.init()');
 </script>
 
-      <div id="mailpreviewframe" style="text-align: left; overflow:auto;">
+      <div id="mailpreviewframe" onmouseover="javascript: current_message_id = 0;" style="text-align: left; overflow:auto;">
       </div>
 
 

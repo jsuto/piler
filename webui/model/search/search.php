@@ -292,6 +292,10 @@ class ModelSearchSearch extends Model {
          $id_list = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note');
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
+      else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && $data['extra_folders']) {
+         $ids_in_extra_folders = $this->get_sphinx_id_list_by_extra_folders($data['extra_folders']);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+      }
       else {
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
@@ -377,6 +381,33 @@ class ModelSearchSearch extends Model {
       $s = $this->fixup_sphinx_operators($s);
 
       $q = $this->sphx->query("SELECT id FROM $sphx_table WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@$field $s') ");
+
+      foreach($q->rows as $a) {
+         $id_list .= "," . $a['id'];
+      }
+
+      if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
+
+      return $id_list;
+   }
+
+
+   private function get_sphinx_id_list_by_extra_folders($extra_folders = '') {
+      $id_list = '';
+      $q = '';
+      $__folders = array();
+
+      $s = explode(" ", $extra_folders);
+      while(list($k,$v) = each($s)) {
+         if(in_array($v, $_SESSION['extra_folders']) && is_numeric($v)) {
+            array_push($__folders, $v);
+            if($q) { $q .= ",?"; }
+            else { $q = "?"; }
+         }
+      }
+
+
+      $q = $this->db->query("SELECT id FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id IN ($q)", $__folders);
 
       foreach($q->rows as $a) {
          $id_list .= "," . $a['id'];

@@ -197,6 +197,7 @@ function assemble_search_term(n, prefix) {
    var attachment_type = '';
    var e;
    var folders = '';
+   var extra_folders = '';
 
    e = document.getElementById(prefix + 'searchtype');
    if(e && e.value) { data = data + "searchtype=" + e.value; }
@@ -274,6 +275,11 @@ function assemble_search_term(n, prefix) {
          if(b.name && b.name.substring(0, 7) == 'folder_' && b.checked) {
             folders = folders + "+" + b.name.substring(7);
          }
+
+         if(b.name && b.name.substring(0, 13) == 'extra_folder_' && b.checked) {
+            extra_folders = extra_folders + "+" + b.name.substring(13);
+         }
+
       }
    }
 
@@ -282,6 +288,10 @@ function assemble_search_term(n, prefix) {
       data = data + "&folders=" + folders;
    }
 
+   if(extra_folders) {
+      extra_folders = extra_folders.substring(1);
+      data = data + "&extra_folders=" + extra_folders;
+   }
 
    //alert("data: " + data);
 
@@ -709,13 +719,37 @@ function show_message(id, msg, timeout){
 }
 
 
-function move_message_list_scrollbar(direction) {
-
-   var current_result_div = document.getElementById('e_' + current_messages[current_message_serial]);
-   if(current_result_div){
-      if(current_message_serial % 2) current_result_div.className = 'resultrow odd';
-      else current_result_div.className = 'resultrow';
+function set_scroll_position(current_message_serial) {
+   var objDiv = document.getElementById("messagelistcontainer");
+   if(objDiv) {
+      objDiv.scrollTop = current_message_serial*17 - 30;
    }
+}
+
+
+function highlight_message_by_position(pos) {
+   var a;
+
+   for(i=1; i<=current_messages.length; i++) {
+      a = document.getElementById('e_' + current_messages[i]);
+      if(a) {
+         if(i % 2) a.className = 'resultrow odd';
+         else a.className = 'resultrow';
+      }
+   }
+
+   load_url_with_get(message_loader_url + current_messages[pos], 'mailpreviewframe');
+
+   a = document.getElementById('e_' + current_messages[pos]);
+
+   if(a){ a.className = 'resultrow selected'; }
+
+   set_scroll_position(pos);
+
+}
+
+
+function move_message_list_scrollbar(direction) {
 
    if(direction == 'down') {
       if(current_message_serial < current_messages.length-1) current_message_serial++;
@@ -724,14 +758,21 @@ function move_message_list_scrollbar(direction) {
       if(current_message_serial > 1) current_message_serial--;
    }
 
-   load_url_with_get(message_loader_url + current_messages[current_message_serial], 'mailpreviewframe');
+   highlight_message_by_position(current_message_serial);
+}
 
-   current_result_div = document.getElementById('e_' + current_messages[current_message_serial]);
 
-   if(current_result_div){ current_result_div.className = 'resultrow selected'; }
+function copy_message_to_folder(folder_id, id, copied) {
+   if(id <= 0) { return 0; }
 
-   var objDiv = document.getElementById("messagelistcontainer");
-   if(objDiv) objDiv.scrollTop = current_message_serial*17 - 30;
+   params = "folder_id=" + folder_id + "&id=" + id;
+
+   send_ajax_post_request(folder_copy_url, params);
+
+   show_message('messagebox1', '<p>' + copied + '</p>', 0.85);
+
+   current_message_id = 0;
+
 }
 
 
