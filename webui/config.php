@@ -146,6 +146,7 @@ define('AUDIT_HELPER_URL', SITE_URL . 'audit-helper.php');
 define('BULK_RESTORE_URL', SITE_URL . 'bulkrestore.php');
 
 define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
+define('LOAD_SAVED_SEARCH_URL', SITE_URL . 'index.php?route=search/load');
 define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
 define('MESSAGE_NOTE_URL', SITE_URL . 'index.php?route=message/note');
 
