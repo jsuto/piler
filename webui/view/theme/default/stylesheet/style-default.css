@@ -30,7 +30,7 @@
 
 	#main { margin: 0px 40px 20px 40px; width: 990px; float: left; clear: both; }
 
-	.aoo { cursor: pointer; position: absolute; left: 915px; top: 0px; width: 10px; margin-left: -5px; }
+	.aoo { cursor: pointer; position: absolute; left: 845px; top: 0px; width: 10px; margin-left: -5px; }
 	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/default/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
 
 

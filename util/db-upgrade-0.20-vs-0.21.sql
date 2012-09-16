@@ -25,6 +25,18 @@ create table if not exists `folder_user` (
    key `folder_user_idx2` (`uid`)
 ) ENGINE=InnoDB;
 
+create table if not exists `folder_extra` (
+   `id` int unsigned not null auto_increment,
+   `uid` int unsigned not null,
+   `name` char(64) not null,
+   unique(uid, name)
+) ENGINE=InnoDB;
+
+create table if not exists `folder_message` (
+   folder_id bigint not null,
+   id bigint not null,
+   unique(folder_id, id)
+) ENGINE=InnoDB;
 
 create table if not exists `note` (
    `_id` bigint unsigned auto_increment not null,

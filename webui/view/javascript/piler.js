@@ -105,6 +105,26 @@ function load_search_results(url, params, page) {
 }
 
 
+function load_saved_search_terms(url) {
+   var http = getXMLHttp();
+
+   if(http == null) { alert("Error creating XMLHttpRequest"); return; }
+
+   http.onreadystatechange = function() {
+      if(http.readyState == 4) {
+         if(http.status == 200) document.getElementById('mailcontframe').innerHTML = http.responseText;
+         else alert("Problem retrieving XML data:" + http.statusText);
+      }
+   }
+
+   http.open("GET", url, true);
+   http.send(null);
+
+   document.body.style.cursor = 'default';
+
+}
+
+
 function load_audit_results(url, params, page) {
 
    document.getElementById('AS').innerHTML = '<img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />';

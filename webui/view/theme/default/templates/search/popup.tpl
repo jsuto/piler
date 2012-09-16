@@ -1,4 +1,4 @@
-   <div id="searchpopup1" style="position: absolute; top: 22px; right: 233px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1;">
+   <div id="searchpopup1" style="position: absolute; top: 22px; right: 303px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1;">
 
         <input type="hidden" name="xsearchtype" id="xsearchtype" value="simple" />
 

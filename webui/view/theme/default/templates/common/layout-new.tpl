@@ -93,7 +93,7 @@
 
          <span style="font-weight: bold;"><?php print $text_search; ?>:</span>
 
-         <input type="text" id="_search" name="_search" class="advtext<?php if(!isset($_search)) { ?>grey<?php } ?>" style="width: 500px;margin: 0px;" value="<?php if(isset($_search)) { print $_search; } else { print $text_enter_search_terms; ?>" onclick="if(expsrc==0){this.value=''; this.className = 'advtext'; expsrc++;}<?php } ?>" />
+         <input type="text" id="_search" name="_search" class="advtext<?php if(!isset($_search)) { ?>grey<?php } ?>" style="width: 528px;margin: 0px;" value="<?php if(isset($_search)) { print $_search; } else { print $text_enter_search_terms; ?>" onclick="if(expsrc==0){this.value=''; this.className = 'advtext'; expsrc++;}<?php } ?>" />
 
          <div class="aoo" onclick="javascript: document.getElementById('searchpopup1').style.display = ''; return false;">
             <div class="aoq"></div>
@@ -102,6 +102,7 @@
          <button id="button_search" class="active" style="margin-left: 10px; margin-right: 0px; height: 20px; width: 70px;" onclick="script:var a=document.getElementById('ref'); if(a) a.value=''; load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0);"><?php print $text_search; ?></button>
          <input type="button" class="advsecondary" style="height: 20px; width: 70px;" onclick="javascript:var a=document.getElementById('_search'); a.value=''; a = document.getElementById('ref'); a.value=''; return false;" value="<?php print $text_cancel; ?>" />
          <input type="button" class="advsecondary" style="height: 20px; width: 70px;" value="<?php print $text_save; ?>" onclick="javascript:send_ajax_post_request('<?php print SAVE_SEARCH_URL; ?>', assemble_search_term(0, '') + '&save=1'); show_message('messagebox1', '<p><?php print $text_saved; ?></p>', 0.85);" />
+         <input type="button" class="advsecondary" style="height: 20px; width: 70px;" value="<?php print $text_load; ?>" onclick="javascript:load_saved_search_terms('<?php print LOAD_SAVED_SEARCH_URL; ?>');" />
 
 
          <?php print $popup; ?>
