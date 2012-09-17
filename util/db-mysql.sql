@@ -261,7 +261,8 @@ create table if not exists `folder_extra` (
    `id` int unsigned not null auto_increment,
    `uid` int unsigned not null,
    `name` char(64) not null,
-   unique(uid, name)
+   unique(uid, name),
+   key (`id`)
 ) ENGINE=InnoDB;
 
 

@@ -218,6 +218,7 @@ function assemble_search_term(n, prefix) {
    var e;
    var folders = '';
    var extra_folders = '';
+   var childNodeArray = new Array();
 
    e = document.getElementById(prefix + 'searchtype');
    if(e && e.value) { data = data + "searchtype=" + e.value; }
@@ -288,7 +289,10 @@ function assemble_search_term(n, prefix) {
    e = document.getElementById(prefix + 'order');
    if(e && e.value) { data = data + "&order=" + e.value; }
 
-   var childNodeArray = document.getElementById('folders').getElementsByTagName('*');
+
+
+   a = document.getElementById('folders');
+   if(a) { childNodeArray = a.getElementsByTagName('*'); }
    if(childNodeArray) {
       for(i=0; i<childNodeArray.length; i++) {
          b = childNodeArray[i];
