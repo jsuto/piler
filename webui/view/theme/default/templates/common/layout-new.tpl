@@ -63,6 +63,14 @@
         'target':document
       });
 
+      shortcut.add("Enter", function() {
+        var a=document.getElementById('ref'); if(a) a.value=''; load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0);
+      },{
+        'type':'keydown',
+        'propagate':true,
+        'target':document
+      });
+
 
    </script>
 

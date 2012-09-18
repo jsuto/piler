@@ -13,18 +13,17 @@
 
 <?php foreach($terms as $term) {
          parse_str($term['term'], $s);
+         if(isset($s['search'])) {
 ?>
          <div class="resultrow">
             <a href="#" onclick="javascript:load_search_results('<?php print SEARCH_HELPER_URL; ?>', '<?php print $term['term']; ?>', 0); var a=document.getElementById('_search'); var v=decodeURIComponent('<?php print urlencode($s['search']); ?>'); v = v.replace(/\+/g, ' '); a.value=v; "><?php print $s['search']; ?></a></br />
          </div>
-<?php } ?>
+<?php } } ?>
 
        </div>
    </div>
 
 
 <?php
-
-//print_r($terms);
 
 ?>

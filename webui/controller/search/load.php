@@ -19,8 +19,6 @@ class ControllerSearchLoad extends Controller {
       $this->load->model('search/message');
       $this->load->model('user/user');
 
-      if($this->data['hits_to'] > $this->data['n']) { $this->data['hits_to'] = $this->data['n']; }
-
       $this->data['terms'] = $this->model_search_search->get_search_terms();
 
       $this->render();
