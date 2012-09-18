@@ -232,11 +232,13 @@ class ModelSearchSearch extends Model {
       $match = $this->assemble_email_address_condition($data['from'], $data['to']);
 
       if($data['body']) {
+         $data['body'] = $this->fixup_meta_characters($data['body']);
          $data['body'] = $this->fixup_sphinx_operators($data['body']);
          if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") ";
       }
 
       if($data['subject']) {
+         $data['subject'] = $this->fixup_meta_characters($data['subject']);
          $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
          if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") ";
       }
@@ -245,6 +247,7 @@ class ModelSearchSearch extends Model {
 
 
       if($data['any']) {
+         $data['any'] = $this->fixup_meta_characters($data['any']);
          $data['any'] = $this->fixup_sphinx_operators($data['any']);
          $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
          if($match) { $match = "($match) & "; } $match .= "(@subject,@body" . $data['any'] . ") ";
@@ -642,6 +645,15 @@ class ModelSearchSearch extends Model {
       $query = $this->db->query("UPDATE " . TABLE_SEARCH . " SET ts=? WHERE term=? AND email=?", array(time(), $term, $_SESSION['email']));
 
       return $this->db->countAffected();
+   }
+
+
+   private function fixup_meta_characters($s = '') {
+      if($s == '') { return $s; }
+
+      $s = preg_replace("/\'/", ' ', $s);
+
+      return $s;
    }
 
 
