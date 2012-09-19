@@ -58,7 +58,7 @@
          <div class="row">
             <div class="cell1"></div>
             <div class="cell2" style="text-align: left;">
-               <button id="button_search" class="active" style="width: 100px; margin: 0px;" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, 'x'), 0); document.getElementById('searchpopup1').style.display = 'none'; document.getElementById('_search').value='';"><?php print $text_search; ?></button> <input type="button" class="advsecondary" onclick="javascript:reset_simple_form(); return false;" value="<?php print $text_cancel; ?>" />
+               <button id="button_search" class="active" style="width: 100px; margin: 0px;" onclick="script:a = document.getElementById('prefix'); if(a) a.value='x'; load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); document.getElementById('searchpopup1').style.display = 'none'; document.getElementById('_search').value='';"><?php print $text_search; ?></button> <input type="button" class="advsecondary" onclick="javascript:reset_simple_form(); return false;" value="<?php print $text_cancel; ?>" />
             </div>
          </div>
 

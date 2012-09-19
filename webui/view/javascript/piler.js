@@ -212,13 +212,17 @@ function add_message_reference_to_form(s) {
 }
 
 
-function assemble_search_term(n, prefix) {
+function assemble_search_term(n) {
+   var prefix = '';
    var data = '';
    var attachment_type = '';
    var e;
    var folders = '';
    var extra_folders = '';
    var childNodeArray = new Array();
+
+   e = document.getElementById('prefix');
+   if(e && e.value) { prefix = e.value; }
 
    e = document.getElementById(prefix + 'searchtype');
    if(e && e.value) { data = data + "searchtype=" + e.value; }

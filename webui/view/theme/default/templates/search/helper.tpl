@@ -9,23 +9,23 @@
             <div class="cell1q" style="text-align: center;"><a href="#" onclick="javascript: download_selected_emails('<?php print BULK_RESTORE_URL; ?>'); return false;"><img style="margin: 0px 0 -2px 0; border: 0px solid black;" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0"></a></div>
             <div class="cell3 date">
                <?php print $text_date; ?>
-               <a href="#" onclick="script:fix_search_order('date', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('date', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('date', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_from; ?>
-               <a href="#" onclick="script:fix_search_order('from', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('from', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('from', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('from', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_subject; ?>
-               <a href="#" onclick="script:fix_search_order('subj', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('subj', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('subj', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('subj', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
                <?php print $text_size; ?>
-               <a href="#" onclick="script:fix_search_order('size', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-               <a href="#" onclick="script:fix_search_order('size', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('size', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
+               <a href="#" onclick="script:fix_search_order('size', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3">&nbsp;</div>
             <div class="cell3">&nbsp;</div>
@@ -47,7 +47,7 @@
             <div class="cell5 id"><a href="#" onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php print ($page*$page_len) + $i; ?>.</a></div>
             <div class="cell5 date"><?php print $message['date']; ?></div>
             <div class="cell5 from"><?php if($message['from'] != $message['shortfrom']) { ?><a href="#" title="<?php print preg_replace("/&/", "&amp;", $message['from']); ?>"><?php print $message['shortfrom']; ?></a><?php } else { print $message['from']; } ?></div>
-            <div class="cell5 subject"><a href="#" <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php print preg_replace("/&/", "&amp;", $message['subject']); ?>"<?php } ?> onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php if($message['subject'] != $message['shortsubject']) { print $message['shortsubject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="script:add_message_reference_to_form('<?php print $message['reference']; ?>'); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); a = document.getElementById('ref'); a.value=''; return false;">[+]</span></a><?php } ?></div>
+            <div class="cell5 subject"><a href="#" <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php print preg_replace("/&/", "&amp;", $message['subject']); ?>"<?php } ?> onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php if($message['subject'] != $message['shortsubject']) { print $message['shortsubject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="script:add_message_reference_to_form('<?php print $message['reference']; ?>'); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); a = document.getElementById('ref'); a.value=''; return false;">[+]</span></a><?php } ?></div>
 
             <div class="cell5 size"><?php print $message['size']; ?></div>
             <div class="cell5"><?php if($message['attachments'] > 0) { ?><img src="<?php print ICON_ATTACHMENT; ?>" alt="" width="16" height="18" /><?php } else { ?>&nbsp;<?php } ?></div>
@@ -72,8 +72,8 @@
    <div class="navrow">
 <?php if($n >= $page_len){ ?>
       <div id="pagingleft">
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
-         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;">&lt;&lt;</a> &nbsp; <?php } else { ?><span class="navlink">&lt;&lt; &nbsp; </span><?php } ?>
+         <?php if($page > 0) { ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), <?php print $prev_page; ?>); return false;"> &lt; </a> <?php } else { ?><span class="navlink"> &lt; </span><?php } ?>
       </div>
 
       <div id="pagingcenter">
@@ -81,8 +81,8 @@
       </div>
 
       <div id="pagingright">
-         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
-         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
+         <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), <?php print $next_page; ?>); return false;">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
+         <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="script:load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), <?php print $total_pages; ?>); return false;"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
       </div>
 
 <?php } else { ?>&nbsp;<?php } ?>
@@ -92,7 +92,7 @@
 
       <input type="button" class="restore" value="<?php print $text_bulk_restore_selected_emails; ?>" onclick="javascript: restore_selected_emails('<?php print BULK_RESTORE_URL; ?>'); show_message('messagebox1', '<p><?php print $text_restored; ?></p>', 0.8); " />
 
-      <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); show_message('messagebox1', '<p><?php print $text_tagged; ?></p>', 0.8); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count, ''), 0); return false;" value="OK" />
+      <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="javascript: tag_search_results('<?php print SEARCH_TAG_URL; ?>'); show_message('messagebox1', '<p><?php print $text_tagged; ?></p>', 0.8); var __ref = document.getElementById('_ref').value; if(__ref) { add_message_reference_to_form(__ref); } load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;" value="OK" />
 
 
    </div>

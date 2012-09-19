@@ -87,6 +87,14 @@ class ControllerSearchHelper extends Controller {
 
 
    private function fixup_post_simple_request() {
+      if(!isset($this->request->post['from'])) { $this->request->post['from'] = ''; }
+      if(!isset($this->request->post['to'])) { $this->request->post['to'] = ''; }
+      if(!isset($this->request->post['subject'])) { $this->request->post['subject'] = ''; }
+      if(!isset($this->request->post['body'])) { $this->request->post['body'] = ''; }
+      if(!isset($this->request->post['tag'])) { $this->request->post['tag'] = ''; }
+      if(!isset($this->request->post['note'])) { $this->request->post['note'] = ''; }
+      if(!isset($this->request->post['any'])) { $this->request->post['any'] = ''; }
+      if(!isset($this->request->post['attachment_type'])) { $this->request->post['attachment_type'] = ''; }
       if(!isset($this->request->post['date1'])) { $this->request->post['date1'] = ''; }
       if(!isset($this->request->post['date2'])) { $this->request->post['date2'] = ''; }
    }
