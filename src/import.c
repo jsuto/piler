@@ -28,6 +28,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    init_session_data(sdata);
 
+   if(cfg->verbosity > 1) printf("processing: %s\n", filename);
 
    if(strcmp(filename, "-") == 0){
 
