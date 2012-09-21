@@ -11,6 +11,7 @@ class Language {
 
       if(isset($_SESSION['lang'])) {
          $file = DIR_LANGUAGE . $_SESSION['lang'] . '/messages.php';
+         define('LANG', $_SESSION['lang']);
       }
       else {
          $pref_langs = $this->get_preferred_languages();

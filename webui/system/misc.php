@@ -74,6 +74,7 @@ function logout() {
 
    Registry::set('username', '');
 
+   session_destroy();
 }
 
 
