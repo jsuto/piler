@@ -166,6 +166,7 @@
 
 	#dhtmltooltip { position: absolute; width: 150px; border: 2px solid black; padding: 2px; background-color: yellow; color: #ffffff; visibility: hidden; z-index: 100; }
 
+	.extra_folder { color: #850505; font-weight: bold; border: none; width: 70%; background: transparent; }
 
 	/*
          * dropdown menu
