@@ -1,6 +1,6 @@
 <?php
 
-define('LANG', 'en');
+define('DEFAULT_LANG', 'en');
 define('THEME', 'default');
 
 define('SITE_NAME', 'demo.mailpiler.org');

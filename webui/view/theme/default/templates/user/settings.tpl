@@ -20,17 +20,6 @@
          </div>
 
          <div class="row">
-            <div class="cell1"><?php print $text_language; ?>:</div>
-            <div class="cell2">
-               <select name="lang">
-            <?php foreach(Registry::get('langs') as $t) { ?>
-                  <option value="<?php print $t; ?>"<?php if(isset($_SESSION['lang']) && $_SESSION['lang'] == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
-            <?php } ?>
-               </select>
-            </div>
-         </div>
-
-         <div class="row">
             <div class="cell1"><?php print $text_theme; ?>:</div>
             <div class="cell2">
                <select name="theme">
