@@ -293,7 +293,7 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password>\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password> [-F <foldername>] [-R]\n");
    exit(0);
 }
 

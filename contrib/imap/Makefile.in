@@ -1,0 +1,40 @@
+SHELL = @SHELL@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+sbindir = @sbindir@
+includedir = @includedir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+mandir = @mandir@
+datarootdir = @datarootdir@
+localstatedir = @localstatedir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@ @CPPFLAGS@
+DEFS = @defs@
+INCDIR = -I. -I.. -I../.. -I../../src -I../src @INCDIR@ @mysql_includes@
+LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../src -L../../src
+LIBS = @LIBS@ @mysql_libs@
+RUNNING_USER = @RUNNING_USER@
+RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
+OBJS = 
+
+INSTALL = @INSTALL@
+
+all: $(OBJS) imap-seen
+
+imap-seen: imap-seen.c ../../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
+
+install:
+
+clean:
+	rm -f imap-seen
+
+distclean: clean
+	rm -f Makefile
