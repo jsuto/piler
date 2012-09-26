@@ -212,7 +212,7 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
    }
 
    if(strcmp(type, "xlsx") == 0){
-      extract_opendocument(sdata, state, filename, "xl/worksheets/sheet");
+      extract_opendocument(sdata, state, filename, "xl/sharedStrings.xml");
       return;
    }
 
