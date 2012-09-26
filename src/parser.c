@@ -141,7 +141,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
    if(state->message_id[0] == 0){
       if(cfg->archive_emails_not_having_message_id == 1)
-         snprintf(state->message_id, SMALLBUFSIZE-1, sdata->ttmpfile);
+         snprintf(state->message_id, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);
       else snprintf(state->message_id, SMALLBUFSIZE-1, "null");
    }
 
