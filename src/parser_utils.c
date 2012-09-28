@@ -94,9 +94,6 @@ void init_state(struct _state *state){
 
    state->tolen = 0;
    state->bodylen = 0;
-
-   state->ms_journal = 0;
-   state->ms_journal_dropped = 0;
 }
 
 
@@ -820,14 +817,14 @@ void remove_trailing_journal_boundary(struct session_data *sdata, struct _state 
    p = strstr(writebuffer, state->boundaries->s);
    if(p){
       len = strlen(p);
+      sdata->journal_bottom_length = len;
       state->writebufpos -= len;
-      sdata->tot_len -= len;
       *p = '\0';
       p = strrchr(writebuffer, '\n');
       if(p){
          len = strlen(p);
+         sdata->journal_bottom_length += len;
          state->writebufpos -= len;
-         sdata->tot_len -= len;
          *p = '\0';
       }
    }

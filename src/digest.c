@@ -33,7 +33,7 @@ int search_header_end(char *p, int n){
 
 
 int make_digests(struct session_data *sdata, struct __config *cfg){
-   int i=0, n, fd, offset=3, hdr_len=0;
+   int i=0, n, fd, offset=3, hdr_len=0, len=0;
    char *body=NULL;
    unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];
    SHA256_CTX context, context2;
@@ -47,7 +47,15 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
    fd = open(sdata->filename, O_RDONLY);
    if(fd == -1) return -1;
 
+   if(sdata->ms_journal == 1 && sdata->journal_envelope_length < sizeof(buf)){
+      n = read(fd, buf, sdata->journal_envelope_length);
+   }
+
+
    while((n = read(fd, buf, sizeof(buf))) > 0){
+      len += n;
+
+      if(sdata->ms_journal == 1 && len > sdata->tot_len) n -= len - sdata->tot_len;
 
       SHA256_Update(&context2, buf, n);
 

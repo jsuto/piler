@@ -84,7 +84,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
-      if(state.ms_journal == 1) remove_trailing_journal_boundary(sdata, &state, &writebuffer[0]);
+      if(sdata->ms_journal == 1) remove_trailing_journal_boundary(sdata, &state, &writebuffer[0]);
 
       len = write(state.mfd, writebuffer, state.writebufpos);
       memset(writebuffer, 0, sizeof(writebuffer));
@@ -93,6 +93,10 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
    if(take_into_pieces == 1){
       close(state.mfd); state.mfd = 0;
+   }
+
+   if(sdata->ms_journal == 1){
+      sdata->tot_len -= sdata->journal_envelope_length + sdata->journal_bottom_length;
    }
 
    fclose(f);
@@ -168,12 +172,17 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       sdata->spam_message = 1;
    }
 
-   if(state->is_1st_header == 1 && state->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
-      state->ms_journal = 1;
+   if(state->is_1st_header == 1 && sdata->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
+      sdata->ms_journal = 1;
       memset(state->message_id, 0, SMALLBUFSIZE);
 
       memset(state->b_from, 0, SMALLBUFSIZE); 
       memset(state->b_from_domain, 0, SMALLBUFSIZE);
+   }
+
+
+   if(sdata->ms_journal_dropped == 0){
+      sdata->journal_envelope_length += len;
    }
 
 
@@ -184,7 +193,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       state->is_1st_header = 0;
    }
 
-   if(state->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
+   if(sdata->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
       state->is_1st_header = 1;
       state->is_header = 1;
       memset(state->b_body, 0, BIGBUFSIZE);
@@ -214,7 +223,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
-            if(state->ms_journal == 1) remove_trailing_journal_boundary(sdata, state, writebuffer);
+            if(sdata->ms_journal == 1) remove_trailing_journal_boundary(sdata, state, writebuffer);
             n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
@@ -350,7 +359,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   if(state->message_state == MSG_BODY && state->ms_journal == 1 && strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0){
+   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0){
       state->is_header = 1;
       state->is_1st_header = 1;
       state->message_state = MSG_RECIPIENT;
@@ -361,10 +370,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(p) *p = '\0';
    }
 
-   if(state->message_state == MSG_RECEIVED && state->ms_journal == 1 && state->ms_journal_dropped == 0){
-      state->ms_journal_dropped = 1;
+   if(state->message_state == MSG_RECEIVED && sdata->ms_journal == 1 && sdata->ms_journal_dropped == 0){
+      sdata->ms_journal_dropped = 1;
+      sdata->journal_envelope_length -= len;
       state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
-      memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += strlen(buf);
+      memcpy(writebuffer+state->writebufpos, buf, strlen(buf)); state->writebufpos += strlen(buf);
       memcpy(writebuffer+state->writebufpos, "\n", 1); state->writebufpos++;
    }
 
