@@ -28,6 +28,8 @@ extern char *optarg;
 extern int optind;
 
 int quiet=0;
+int remove_after_successful_import = 0;
+
 
 int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
 int list_folders(int sd, int *seq, char *folders, int foldersize);
@@ -211,6 +213,8 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                if(rc == OK) (*tot_msgs)++;
                else ret = ERR;
 
+               if(remove_after_successful_import == 1 && ret != ERR) unlink(fname);
+
                i++;
 
                if(quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
@@ -293,7 +297,7 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password> [-F <foldername>] [-R]\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password> [-F <foldername>] [-R] [-r] [-q]\n");
    exit(0);
 }
 
@@ -328,16 +332,18 @@ int main(int argc, char **argv){
             {"password",     required_argument,  0,  'p' },
             {"skiplist",     required_argument,  0,  'x' },
             {"folder",       required_argument,  0,  'F' },
+            {"quiet",        required_argument,  0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
+            {"remove-after-import",    required_argument,  0,  'r' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rrqh?");
 #endif
 
       if(c == -1) break;
@@ -391,6 +397,14 @@ int main(int argc, char **argv){
 
          case 'R' :
                     data.recursive_folder_names = 1;
+                    break;
+
+         case 'r' :
+                    remove_after_successful_import = 1;
+                    break;
+
+         case 'q' :
+                    quiet = 1;
                     break;
 
          case 'h' :

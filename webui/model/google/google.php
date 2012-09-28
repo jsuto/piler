@@ -48,6 +48,7 @@ class ModelGoogleGoogle extends Model {
    public function download_users_emails($email, $accessToken) {
       $last_msg_id = -1;
       $from = 1;
+      $downloaded = 0;
 
       if(!$email || !$accessToken) { return 0; }
 
@@ -82,11 +83,15 @@ class ModelGoogleGoogle extends Model {
             while(list($k, $v) = each($messages)) {
                $uuid = $storage->getUniqueId($k);
 
-               $tmpname = DIR_TMP . "piler-" . $email . "-" . $k . "-" . $uuid . ".eml";
-               $f = fopen($tmpname, "w+");
+               $tmpname = "piler-" . $email . "-" . $k . "-" . $uuid . ".eml";
+               $f = fopen(DIR_TMP . "/" . $tmpname, "w+");
                if($f){
                   fwrite($f, $v['RFC822.HEADER'] . $v['RFC822.TEXT']);
                   fclose($f);
+
+                  rename(DIR_TMP . "/" . $tmpname, DIR_IMAP . "/" . $tmpname);
+
+                  $downloaded++;
                }
                //print "k: $k\n";
             }
@@ -97,7 +102,7 @@ class ModelGoogleGoogle extends Model {
          }
 
 
-
+        syslog(LOG_INFO, "downloaded $downloaded messages for $email");
      }
 
    }

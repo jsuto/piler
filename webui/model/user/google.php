@@ -80,6 +80,31 @@ class ModelUserGoogle extends Model {
    }
 
 
+   public function refresh_access_token($email = '') {
+      if($email == '') { return ''; }
+
+      $query = $this->db->query("SELECT refresh_token FROM " . TABLE_GOOGLE . " WHERE email=?", array($email));
+
+      if(!isset($query->row['refresh_token'])) { return ''; }
+
+      $client = new apiClient();
+      $client->setApplicationName(GOOGLE_APPLICATION_NAME);
+
+      $client->setClientId(GOOGLE_CLIENT_ID);
+      $client->setClientSecret(GOOGLE_CLIENT_SECRET);
+      $client->setRedirectUri(GOOGLE_REDIRECT_URL);
+      $client->setDeveloperKey(GOOGLE_DEVELOPER_KEY);
+
+      $client->refreshToken($query->row['refresh_token']);
+      $s = $client->getAccessToken();
+      $a = json_decode($s);
+
+      if(isset($a->{'access_token'})) { return $a->{'access_token'}; }
+
+      return '';
+   }
+
+
 }
 
 ?>

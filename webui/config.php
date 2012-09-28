@@ -65,10 +65,11 @@ define('DIR_APPLICATION', DIR_BASE . 'controller/');
 define('DIR_THEME', DIR_BASE . 'view/theme/');
 define('DIR_REPORT', DIR_BASE . 'reports/');
 define('DIR_LOG', DIR_BASE . 'log/');
-define('DIR_TMP', DIR_BASE . 'tmp/');
 
 define('DIR_STORE', '/var/piler/store');
 define('DIR_STAT', '/var/piler/stat');
+define('DIR_IMAP', '/var/piler/imap');
+define('DIR_TMP', '/var/piler/tmp');
 
 define('DECRYPT_BINARY', '/usr/local/bin/pilerget');
 define('DECRYPT_BUFFER_LENGTH', 65536);
@@ -176,7 +177,7 @@ define('CGI_INPUT_FIELD_WIDTH', 50);
 define('CGI_INPUT_FIELD_HEIGHT', 7);
 
 define('MEMCACHED_PREFIX', '_piler:');
-define('MEMCACHED_TTL', 3600);
+define('MEMCACHED_TTL', 600);
 
 $memcached_servers = array(
       array('127.0.0.1', 11211)
