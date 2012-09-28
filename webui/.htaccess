@@ -12,4 +12,5 @@ RewriteRule ^folders.php /index.php?route=folder/list& [QSA,L]
 RewriteRule ^settings.php /index.php?route=user/settings [L]
 RewriteRule ^login.php /index.php?route=login/login [L]
 RewriteRule ^logout.php /index.php?route=login/logout [L]
+RewriteRule ^google.php /index.php?route=login/google [QSA,L]
 

@@ -96,6 +96,7 @@ void init_state(struct _state *state){
    state->bodylen = 0;
 
    state->ms_journal = 0;
+   state->ms_journal_dropped = 0;
 }
 
 
@@ -810,4 +811,22 @@ int base64_decode_attachment_buffer(char *p, int plen, unsigned char *b, int ble
 
    return b64len;
 }
+
+
+void remove_trailing_journal_boundary(char *writebuffer, struct _state *state){
+   char *p;
+
+   p = strstr(writebuffer, state->boundaries->s);
+   if(p){
+      state->writebufpos -= strlen(p);
+      *p = '\0';
+      p = strrchr(writebuffer, '\n');
+      if(p){
+         state->writebufpos -= strlen(p);
+         *p = '\0';
+      }
+   }
+
+}
+
 

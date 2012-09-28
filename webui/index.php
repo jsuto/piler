@@ -79,7 +79,11 @@ if(Registry::get('username')) {
    }
 }
 else {
-   $action = new Router('login/login');
+   if(ENABLE_GOOGLE_LOGIN == 1 && isset($request->get['route']) && $request->get['route'] == 'login/google') {
+      $action = new Router('login/google');
+   } else {
+      $action = new Router('login/login');
+   }
 }
 
 

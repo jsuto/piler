@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.21"
 
-#define BUILD 706
+#define BUILD 708
 
 #define HOSTID "mailarchiver"
 

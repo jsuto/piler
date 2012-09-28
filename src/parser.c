@@ -84,6 +84,8 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
+      if(state.ms_journal == 1) remove_trailing_journal_boundary(&writebuffer[0], &state);
+
       len = write(state.mfd, writebuffer, state.writebufpos);
       memset(writebuffer, 0, sizeof(writebuffer));
       state.writebufpos = 0;
@@ -212,6 +214,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
+            if(state->ms_journal == 1) remove_trailing_journal_boundary(writebuffer, state);
             n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
@@ -327,6 +330,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
       else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
       else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf);
+      else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
          p = strchr(buf+11, ' ');
@@ -356,6 +360,14 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       p = strstr(buf, "Expanded:");
       if(p) *p = '\0';
    }
+
+   if(state->message_state == MSG_RECEIVED && state->ms_journal == 1 && state->ms_journal_dropped == 0){
+      state->ms_journal_dropped = 1;
+      state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+      memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += strlen(buf);
+      memcpy(writebuffer+state->writebufpos, "\n", 1); state->writebufpos++;
+   }
+
 
    if(state->is_1st_header == 1 && state->message_state == MSG_REFERENCES){
       if(strncasecmp(buf, "References:", 11) == 0) parse_reference(state, buf+11);

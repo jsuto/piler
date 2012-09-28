@@ -15,6 +15,12 @@ define('ENABLE_REMOTE_IMAGES', '0');
 define('ENABLE_ON_THE_FLY_VERIFICATION', 1);
 define('ENABLE_LDAP_IMPORT_FEATURE', 0);
 define('ENABLE_FOLDER_RESTRICTIONS', 0);
+define('ENABLE_GOOGLE_LOGIN', 0);
+
+define('GOOGLE_CLIENT_ID', 'xxxxxxxxxxx');
+define('GOOGLE_CLIENT_SECRET', 'xxxxxxxxxxxxx');
+define('GOOGLE_DEVELOPER_KEY', 'xxxxxxxxxxxx');
+define('GOOGLE_APPLICATION_NAME', 'piler enterprise email archiver');
 
 define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
 define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');
@@ -107,6 +113,8 @@ define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');
 define('TABLE_OPTION', 'option');
+define('TABLE_GOOGLE', 'google');
+define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('SPHINX_DRIVER', 'sphinx');
@@ -149,6 +157,8 @@ define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
 define('LOAD_SAVED_SEARCH_URL', SITE_URL . 'index.php?route=search/load');
 define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
 define('MESSAGE_NOTE_URL', SITE_URL . 'index.php?route=message/note');
+
+define('GOOGLE_REDIRECT_URL', SITE_URL . 'google.php');
 
 define('HEALTH_URL', SITE_URL . 'index.php?route=health/health');
 define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');

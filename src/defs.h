@@ -162,7 +162,7 @@ struct _state {
 
    int bodylen;
    int tolen;
-   char ms_journal;
+   char ms_journal, ms_journal_dropped;
 };
 
 

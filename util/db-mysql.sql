@@ -319,3 +319,23 @@ create index `audit_idx2` on `audit`(`action`);
 create index `audit_idx3` on `audit`(`ipaddr`);
 create index `audit_idx4` on `audit`(`ts`);
 
+
+
+drop table if exists `google`;
+create table if not exists `google` (
+   `id` bigint unsigned not null primary key,
+   `email` char(128) not null unique,
+   `access_token` char(255) default null,
+   `refresh_token` char(255) default null,
+   `created` int default 0
+) ENGINE=InnoDB;
+
+
+drop table if exists `google_imap`;
+create table if not exists `google_imap` (
+   `id` bigint unsigned not null,
+   `email` char(128) not null,
+   `last_msg_id` bigint default 0,
+   key(`email`)
+) ENGINE=InnoDB;
+

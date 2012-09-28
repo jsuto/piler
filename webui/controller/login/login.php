@@ -51,6 +51,25 @@ class ControllerLoginLogin extends Controller {
       }
 
 
+      if(ENABLE_GOOGLE_LOGIN == 1) {
+         $client = new apiClient();
+         $client->setApplicationName(GOOGLE_APPLICATION_NAME);
+
+         $client->setScopes(array(
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://mail.google.com/',
+         ));
+
+         $client->setClientId(GOOGLE_CLIENT_ID);
+         $client->setClientSecret(GOOGLE_CLIENT_SECRET);
+         $client->setRedirectUri(GOOGLE_REDIRECT_URL);
+         $client->setDeveloperKey(GOOGLE_DEVELOPER_KEY);
+
+         $this->data['auth_url'] = $client->createAuthUrl();
+      }
+
+
       $this->render();
    }
 

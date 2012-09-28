@@ -163,6 +163,7 @@ $_['text_logged_out'] = "You are logged out";
 $_['text_login'] = "Login";
 $_['text_login2'] = "login";
 $_['text_login_failed'] = "login failed";
+$_['text_login_via_google'] = "Login via Google account";
 $_['text_logout'] = "Logout";
 $_['text_logout2'] = "logout";
 

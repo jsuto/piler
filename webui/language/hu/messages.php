@@ -164,6 +164,7 @@ $_['text_logged_out'] = "Ön kijelentkezett";
 $_['text_login'] = "Bejelentkezés";
 $_['text_login2'] = "bejelentkezés";
 $_['text_login_failed'] = "sikertelen bejelentkezés";
+$_['text_login_via_google'] = "Bejelentkezés Google fiókkal";
 $_['text_logout'] = "Kijelentkezés";
 $_['text_logout2'] = "kijelentkezés";
 
