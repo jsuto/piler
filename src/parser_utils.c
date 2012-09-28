@@ -813,16 +813,21 @@ int base64_decode_attachment_buffer(char *p, int plen, unsigned char *b, int ble
 }
 
 
-void remove_trailing_journal_boundary(char *writebuffer, struct _state *state){
+void remove_trailing_journal_boundary(struct session_data *sdata, struct _state *state, char *writebuffer){
+   int len;
    char *p;
 
    p = strstr(writebuffer, state->boundaries->s);
    if(p){
-      state->writebufpos -= strlen(p);
+      len = strlen(p);
+      state->writebufpos -= len;
+      sdata->tot_len -= len;
       *p = '\0';
       p = strrchr(writebuffer, '\n');
       if(p){
-         state->writebufpos -= strlen(p);
+         len = strlen(p);
+         state->writebufpos -= len;
+         sdata->tot_len -= len;
          *p = '\0';
       }
    }

@@ -84,7 +84,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
-      if(state.ms_journal == 1) remove_trailing_journal_boundary(&writebuffer[0], &state);
+      if(state.ms_journal == 1) remove_trailing_journal_boundary(sdata, &state, &writebuffer[0]);
 
       len = write(state.mfd, writebuffer, state.writebufpos);
       memset(writebuffer, 0, sizeof(writebuffer));
@@ -214,7 +214,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
-            if(state->ms_journal == 1) remove_trailing_journal_boundary(writebuffer, state);
+            if(state->ms_journal == 1) remove_trailing_journal_boundary(sdata, state, writebuffer);
             n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
