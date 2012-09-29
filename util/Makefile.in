@@ -29,6 +29,7 @@ all:
 install:
 	$(INSTALL) -m 0755 $(srcdir)/ldap_sync.php $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/daily-report.php $(DESTDIR)$(libexecdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/gmail-imap-import.php $(DESTDIR)$(libexecdir)/piler
 
 clean:
 
