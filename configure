@@ -3418,6 +3418,7 @@ have_zlib="no"
 pdftotext="no"
 catdoc="no"
 catppt="no"
+ppthtml="no"
 xls2csv="no"
 unrtf="no"
 
@@ -4295,6 +4296,16 @@ _ACEOF
 fi
 
 
+if test z`which ppthtml 2>/dev/null` != "z"; then
+   ppthtml=`which ppthtml`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PPTHTML "$ppthtml"
+_ACEOF
+
+fi
+
+
 if test z`which xls2csv 2>/dev/null` != "z"; then
    xls2csv=`which xls2csv`
 
@@ -4319,6 +4330,7 @@ echo
 echo "pdftotext: $pdftotext"
 echo "catdoc: $catdoc"
 echo "catppt: $catppt"
+echo "ppthtml: $ppthtml"
 echo "xls2csv: $xls2csv"
 echo "unrtf: $unrtf"
 
