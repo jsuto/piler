@@ -181,15 +181,23 @@ char *split_str(char *row, char *what, char *s, int size){
  * trim trailing CR-LF
  */
 
-void trimBuffer(char *s){
+int trimBuffer(char *s){
+   int n=0;
    char *p;
 
    p = strrchr(s, '\n');
-   if(p) *p = '\0';
+   if(p){
+      *p = '\0';
+      n++;
+   }
 
    p = strrchr(s, '\r');
-   if(p) *p = '\0';
+   if(p){
+      *p = '\0';
+      n++;
+   }
 
+   return n;
 }
 
 

@@ -18,7 +18,7 @@ int countCharacterInBuffer(char *p, char c);
 void replaceCharacterInBuffer(char *p, char from, char to);
 char *split(char *row, int ch, char *s, int size);
 char *split_str(char *row, char *what, char *s, int size);
-void trimBuffer(char *s);
+int trimBuffer(char *s);
 int extractEmail(char *rawmail, char *email);
 void create_id(char *id);
 int get_random_bytes(unsigned char *buf, int len);

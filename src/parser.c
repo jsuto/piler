@@ -157,7 +157,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
-   int x, n, n64, len, writelen, b64_len, boundary_line=0;
+   int t, x, n, n64, len, writelen, b64_len, boundary_line=0;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -312,7 +312,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   trimBuffer(buf);
+   t = trimBuffer(buf);
 
    /* skip the first line, if it's a "From <email address> date" format */
    if(state->line_num == 1 && strncmp(buf, "From ", 5) == 0) return 0;
@@ -375,7 +375,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       sdata->journal_envelope_length -= len;
       state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
       memcpy(writebuffer+state->writebufpos, buf, strlen(buf)); state->writebufpos += strlen(buf);
-      memcpy(writebuffer+state->writebufpos, "\n", 1); state->writebufpos++;
+      if(t == 2){
+         memcpy(writebuffer+state->writebufpos, "\r\n", 2); state->writebufpos += 2;
+      } else {
+         memcpy(writebuffer+state->writebufpos, "\n", 1); state->writebufpos++;
+      }
+
    }
 
 
