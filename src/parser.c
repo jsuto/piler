@@ -393,7 +393,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_1st_header == 1 && state->message_state == MSG_SUBJECT && strlen(state->b_subject) + strlen(buf) < MAXBUFSIZE-1){
 
       if(state->b_subject[0] == '\0'){
-         strncat(state->b_subject, buf+strlen("Subject:"), MAXBUFSIZE-1);
+         p = &buf[0];
+         if(strncmp(buf, "Subject:", strlen("Subject:")) == 0) p += strlen("Subject:");
+
+         strncat(state->b_subject, p, MAXBUFSIZE-1);
       }
       else {
 
@@ -588,7 +591,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
          if(does_it_seem_like_an_email_address(puf) == 1){
             q = strchr(puf, '@');
-            if(q) memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
+            if(q){
+               memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
+               /*if(strstr(sdata->mailfrom, "<>")){
+
+               }*/
+            }
 
             if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
 
