@@ -593,9 +593,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             q = strchr(puf, '@');
             if(q){
                memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
-               /*if(strstr(sdata->mailfrom, "<>")){
-
-               }*/
+               if(strstr(sdata->mailfrom, "<>")){
+                  snprintf(sdata->fromemail, SMALLBUFSIZE-1, "%s", puf);
+                  sdata->fromemail[len-1] = '\0';
+               }
             }
 
             if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;

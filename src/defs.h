@@ -169,6 +169,7 @@ struct session_data {
    char filename[SMALLBUFSIZE];
    char ttmpfile[SMALLBUFSIZE], tmpframe[SMALLBUFSIZE], tre, restored_copy;
    char mailfrom[SMALLBUFSIZE], rcptto[MAX_RCPT_TO][SMALLBUFSIZE], client_addr[SMALLBUFSIZE];
+   char fromemail[SMALLBUFSIZE];
    char acceptbuf[SMALLBUFSIZE];
    char attachments[SMALLBUFSIZE];
    char internal_sender, internal_recipient, external_recipient;

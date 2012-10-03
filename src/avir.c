@@ -10,7 +10,7 @@
 #include <piler.h>
 
 
-int do_av_check(struct session_data *sdata, char *rcpttoemail, char *fromemail, char *virusinfo, struct __data *data, struct __config *cfg){
+int do_av_check(struct session_data *sdata, char *rcpttoemail, char *virusinfo, struct __data *data, struct __config *cfg){
    int rav = AVIR_OK;
    char avengine[SMALLBUFSIZE];
 

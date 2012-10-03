@@ -20,7 +20,7 @@
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char rctptoemail[SMALLBUFSIZE], fromemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
+   char rctptoemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
    char *arule = NULL;
    struct session_data sdata;
    struct _state sstate;
@@ -148,7 +148,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){
                   gettimeofday(&tv1, &tz);
-                  sdata.rav = do_av_check(&sdata, rctptoemail, fromemail, &virusinfo[0], data, cfg);
+                  sdata.rav = do_av_check(&sdata, rctptoemail, &virusinfo[0], data, cfg);
                   gettimeofday(&tv2, &tz);
                   sdata.__av = tvdiff(tv2, tv1);
                }
@@ -228,7 +228,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                                (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
                                    sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
 
-                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, reference=%s, message-id=%s, %s", sdata.ttmpfile, fromemail, sdata.tot_len, sstate.reference, sstate.message_id, delay);
+                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, reference=%s, message-id=%s, %s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sstate.reference, sstate.message_id, delay);
 
 
 
@@ -317,8 +317,8 @@ AFTER_PERIOD:
 
                snprintf(sdata.mailfrom, SMALLBUFSIZE-1, "%s\r\n", buf);
 
-               memset(fromemail, 0, SMALLBUFSIZE);
-               extractEmail(sdata.mailfrom, fromemail);
+               memset(sdata.fromemail, 0, SMALLBUFSIZE);
+               extractEmail(sdata.mailfrom, sdata.fromemail);
 
                strncat(resp, SMTP_RESP_250_OK, strlen(SMTP_RESP_250_OK));
 

@@ -27,7 +27,7 @@
 
 int read_key(struct __config *cfg);
 
-int do_av_check(struct session_data *sdata, char *rcpttoemail, char *fromemail, char *virusinfo, struct __data *data, struct __config *cfg);
+int do_av_check(struct session_data *sdata, char *rcpttoemail, char *virusinfo, struct __data *data, struct __config *cfg);
 
 int make_digests(struct session_data *sdata, struct __config *cfg);
 void digest_file(char *filename, char *digest);
@@ -58,6 +58,8 @@ unsigned long add_new_folder(struct session_data *sdata, char *foldername, int p
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg);
 
 void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec);
+
+int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg);
 
 #endif /* _PILER_H */
 

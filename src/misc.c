@@ -395,6 +395,8 @@ void init_session_data(struct session_data *sdata){
 
    memset(sdata->attachments, 0, SMALLBUFSIZE);
 
+   memset(sdata->fromemail, 0, SMALLBUFSIZE);
+
    sdata->restored_copy = 0;
 
    sdata->internal_sender = sdata->internal_recipient = sdata->external_recipient = 0;
