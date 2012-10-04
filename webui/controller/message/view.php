@@ -59,6 +59,8 @@ class ControllerMessageView extends Controller {
 
       $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
+      $this->data['attachments'] = $this->model_search_message->get_attachment_list($this->data['piler_id']);
+
       $this->data['message'] = $this->model_search_message->extract_message($this->data['piler_id']);
       $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $_SESSION['uid']);
       $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $_SESSION['uid']);

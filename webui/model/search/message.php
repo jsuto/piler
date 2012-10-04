@@ -54,6 +54,25 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function get_attachment($piler_id = '', $attachment_id = '') {
+      $data = '';
+
+      if($piler_id == '' || $attachment_id == '' || !preg_match("/^([0-9a-f]+)$/", $piler_id) || !preg_match("/^([0-9]+)$/", $attachment_id)) { return $data; }
+
+      $handle = popen(DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id", "r");
+
+      while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
+         $data .= $buf;
+      }
+
+      pclose($handle);
+
+      /* TODO: decode only if it's a base64 encoded attachment */
+
+      return base64_decode(preg_replace("/\s/", "", $data));
+   }
+
+
    public function get_message_headers($id = '') {
       $data = '';
 
@@ -380,6 +399,56 @@ class ModelSearchMessage extends Model {
       $query = $this->db->query("SELECT `piler_id` FROM `" . TABLE_META . "` WHERE id=?", array($id));
       if(isset($query->row['piler_id'])) { return $query->row['piler_id']; }
       return '';
+   }
+
+
+   public function get_id_by_piler_id($piler_id = '') {
+      if($piler_id == '') { return -1; }
+
+      $query = $this->db->query("SELECT `id` FROM `" . TABLE_META . "` WHERE piler_id=?", array($piler_id));
+      if(isset($query->row['id'])) { return $query->row['id']; }
+
+      return -1;
+   }
+
+
+   public function get_attachment_by_id($id = 0) {
+      if($id <= 0) { return array(); }
+
+      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type, ptr FROM " . TABLE_ATTACHMENT . " WHERE id=?", array($id));
+
+      if(isset($query->row)) {
+         $metaid = $this->get_id_by_piler_id($query->row['piler_id']);
+
+         if($metaid > 0 && $this->model_search_search->check_your_permission_by_id($metaid) == 1) {
+            if($query->row['ptr'] > 0) {
+               $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type FROM " . TABLE_ATTACHMENT . " WHERE id=?", array($query->row['ptr']));
+            }
+
+            $attachment = $this->get_attachment($query->row['piler_id'], $query->row['attachment_id']);
+
+            return array('filename' => $query->row['name'], 'attachment' => $attachment);
+         }
+      }
+
+      return array();
+   }
+
+
+   public function get_attachment_list($piler_id = 0) {
+      $data = array();
+
+      if($piler_id == '') { return array(); }
+
+      $query = $this->db->query("SELECT id, name, type, ptr FROM " . TABLE_ATTACHMENT . " WHERE piler_id=?", array($piler_id));
+
+      if(!isset($query->rows)) { return array(); }
+
+      foreach($query->rows as $q) {
+         array_push($data, $q);
+      }
+
+      return $data;
    }
 
 

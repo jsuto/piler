@@ -72,6 +72,7 @@ define('DIR_IMAP', '/var/piler/imap');
 define('DIR_TMP', '/var/piler/tmp');
 
 define('DECRYPT_BINARY', '/usr/local/bin/pilerget');
+define('DECRYPT_ATTACHMENT_BINARY', '/usr/local/bin/pileraget');
 define('DECRYPT_BUFFER_LENGTH', 65536);
 
 define('QSHAPE_ACTIVE_INCOMING', DIR_STAT . '/active+incoming');
@@ -220,6 +221,8 @@ define('ACTION_CHANGE_USER_SETTINGS', 12);
 
 define('ACTION_REMOVE_MESSAGE', 13);
 define('ACTION_UNAUTHORIZED_REMOVE_MESSAGE', 14);
+define('ACTION_DOWNLOAD_ATTACHMENT', 15);
+define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 
 
 define('NOW', time());
