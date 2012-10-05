@@ -56,7 +56,7 @@ int is_string_on_list(struct list *list, char *s){
    p = list;
 
    while(p != NULL){
-      if(strcasecmp(p->s, s) == 0) return 1;
+      if(strcmp(p->s, s) == 0) return 1;
       p = p->r;
    }
 

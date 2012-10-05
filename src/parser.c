@@ -112,6 +112,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    free_list(state->boundaries);
    free_list(state->rcpt);
    free_list(state->rcpt_domain);
+   free_list(state->journal_recipient);
 
    trimBuffer(state->b_subject);
    fixupEncodedHeaderLine(state->b_subject);
@@ -608,6 +609,15 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          }
       }
       else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
+         strtolower(puf);
+
+         if(state->message_state == MSG_RECIPIENT && is_string_on_list(state->journal_recipient, puf) == 0){
+            append_list(&(state->journal_recipient), puf);
+            memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
+            memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
+         }
+
 
          if(is_string_on_list(state->rcpt, puf) == 0){
             append_list(&(state->rcpt), puf);
@@ -634,6 +644,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
             }
          }
+
       }
       else if(state->message_state == MSG_BODY && len >= cfg->min_word_len && state->bodylen < BIGBUFSIZE-len-1){
          memcpy(&(state->b_body[state->bodylen]), puf, len);

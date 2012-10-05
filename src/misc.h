@@ -31,6 +31,7 @@ int drop_privileges(struct passwd *pwd);
 int is_email_address_on_my_domains(char *email, struct __config *cfg);
 void init_session_data(struct session_data *sdata);
 int read_from_stdin(struct session_data *sdata);
+void strtolower(char *s);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);

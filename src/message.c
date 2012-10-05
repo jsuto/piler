@@ -206,7 +206,59 @@ CLOSE:
 }
 
 
-int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __config *cfg){
+uint64 get_metaid_by_messageid(struct session_data *sdata, char *message_id, struct __config *cfg){
+   unsigned long len=0;
+   uint64 id=0;
+   char s[SMALLBUFSIZE];
+   MYSQL_STMT *stmt;
+   MYSQL_BIND bind[1];
+
+   snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE message_id=?", SQL_METADATA_TABLE);
+
+   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) return id;
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = message_id;
+   bind[0].is_null = 0;
+   len = strlen(message_id); bind[0].length = &len;
+
+   if(mysql_stmt_bind_param(stmt, bind)){
+      goto CLOSE;
+   }
+
+   if(mysql_stmt_execute(stmt)){
+      goto CLOSE;
+   }
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
+   bind[0].buffer = (char *)&id;
+   bind[0].is_null = 0;
+   bind[0].length = 0;
+
+
+   if(mysql_stmt_bind_result(stmt, bind)){
+      goto CLOSE;
+   }
+
+
+   if(mysql_stmt_store_result(stmt)){
+      goto CLOSE;
+   }
+
+   mysql_stmt_fetch(stmt);
+
+CLOSE:
+   mysql_stmt_close(stmt);
+
+   return id;
+}
+
+
+int store_recipients(struct session_data *sdata, char *to, uint64 id, int log_errors, struct __config *cfg){
    int ret=OK, n=0;
    char *p, *q, s[SMALLBUFSIZE], puf[SMALLBUFSIZE];
 
@@ -248,7 +300,7 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct __c
          }
 
 
-         if(mysql_stmt_execute(stmt)){
+         if(mysql_stmt_execute(stmt) && log_errors == 1){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
             ret = ERR;
          }
@@ -353,7 +405,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    else {
       id = mysql_stmt_insert_id(stmt);
 
-      rc = store_recipients(sdata, state->b_to, id, cfg);
+      rc = store_recipients(sdata, state->b_to, id, 1, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
 
@@ -377,11 +429,19 @@ CLOSE:
 
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int i, rc;
+   uint64 id=0;
 
    /* discard if existing message_id */
 
    if(is_existing_message_id(sdata, state, data, cfg) == 1){
       for(i=1; i<=state->n_attachments; i++) unlink(state->attachments[i].internalname);
+
+      if(strlen(state->b_journal_to) > 0){
+         id = get_metaid_by_messageid(sdata, state->message_id, cfg);
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, id, state->message_id);
+         store_recipients(sdata, state->b_journal_to, id, 0, cfg);
+      }
+
       return ERR_EXISTS;
    }
 

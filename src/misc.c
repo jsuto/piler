@@ -452,6 +452,11 @@ int read_from_stdin(struct session_data *sdata){
 }
 
 
+void strtolower(char *s){
+   for(; *s; s++) *s = tolower(*s);
+}
+
+
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;

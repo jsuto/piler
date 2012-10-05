@@ -152,6 +152,7 @@ struct _state {
    struct list *boundaries;
    struct list *rcpt;
    struct list *rcpt_domain;
+   struct list *journal_recipient;
 
    int n_attachments;
    struct attachment attachments[MAX_ATTACHMENTS];
@@ -159,9 +160,11 @@ struct _state {
    char reference[SMALLBUFSIZE];
 
    char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
+   char b_journal_to[MAXBUFSIZE];
 
    int bodylen;
    int tolen;
+   int journaltolen;
 };
 
 

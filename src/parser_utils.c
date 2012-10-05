@@ -69,6 +69,7 @@ void init_state(struct _state *state){
    state->boundaries = NULL;
    state->rcpt = NULL;
    state->rcpt_domain = NULL;
+   state->journal_recipient = NULL;
 
    state->n_attachments = 0;
 
@@ -91,9 +92,11 @@ void init_state(struct _state *state){
    memset(state->b_to_domain, 0, SMALLBUFSIZE);
    memset(state->b_subject, 0, MAXBUFSIZE);
    memset(state->b_body, 0, BIGBUFSIZE);
+   memset(state->b_journal_to, 0, MAXBUFSIZE);
 
    state->tolen = 0;
    state->bodylen = 0;
+   state->journaltolen = 0;
 }
 
 
