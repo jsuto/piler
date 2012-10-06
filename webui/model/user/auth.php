@@ -21,7 +21,7 @@ class ModelUserAuth extends Model {
       }
 
       if($ok == 0 && strlen($query->row['dn']) > 3) {
-         $ok = $this->checkLoginAgainstLDAP($query->row, $password); }
+         $ok = $this->checkLoginAgainstLDAP($query->row, $password);
       }
 
 
