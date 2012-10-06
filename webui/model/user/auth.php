@@ -3,6 +3,7 @@
 class ModelUserAuth extends Model {
 
    public function checkLogin($username = '', $password = '') {
+      $ok = 0;
 
       $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($username));
 
@@ -11,7 +12,20 @@ class ModelUserAuth extends Model {
       $pass = crypt($password, $query->row['password']);
 
       if($pass == $query->row['password']){
+         $ok = 1;
 
+         AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against user table');
+      }
+      else {
+         AUDIT(ACTION_LOGIN_FAILED, $username, '', '', 'failed auth against user table');
+      }
+
+      if($ok == 0 && strlen($query->row['dn']) > 3) {
+         $ok = $this->checkLoginAgainstLDAP($query->row, $password); }
+      }
+
+
+      if($ok == 1) {
          $_SESSION['username'] = $query->row['username'];
          $_SESSION['uid'] = $query->row['uid'];
          $_SESSION['admin_user'] = $query->row['isadmin'];
@@ -23,15 +37,9 @@ class ModelUserAuth extends Model {
          $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
          $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
 
-         AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against user table');
-
          return 1;
       }
-      else {
-         AUDIT(ACTION_LOGIN_FAILED, $username, '', '', 'failed auth against user table');
-      }
 
-      if(strlen($query->row['dn']) > 3) { return $this->checkLoginAgainstLDAP($query->row, $password); }
 
       return 0;
    }
@@ -47,10 +55,6 @@ class ModelUserAuth extends Model {
       $ldap = new LDAP($query->row['remotehost'], $user['dn'], $password);
 
       if($ldap->is_bind_ok()) {
-         $_SESSION['username'] = $user['username'];
-         $_SESSION['admin_user'] = 0;
-         $_SESSION['email'] = $user['username'];
-
          $this->change_password($user['username'], $password);
 
          AUDIT(ACTION_LOGIN, $user['username'], '', '', 'changed password in local table');
