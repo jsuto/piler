@@ -244,7 +244,8 @@ create table if not exists `group_email` (
 create table if not exists `folder` (
    `id` int not null auto_increment,
    `parent_id` int default 0,
-   `name` char(64) not null unique,
+   `name` char(64) not null,
+   unique(`parent_id`, `name`),
    primary key (`id`)
 ) Engine=InnoDB;
 
