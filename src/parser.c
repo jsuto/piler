@@ -335,6 +335,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(strncasecmp(buf, "From:", strlen("From:")) == 0) state->message_state = MSG_FROM;
       else if(strncasecmp(buf, "To:", 3) == 0) state->message_state = MSG_TO;
       else if(strncasecmp(buf, "Cc:", 3) == 0) state->message_state = MSG_CC;
+      else if(strncasecmp(buf, "Bcc:", 4) == 0) state->message_state = MSG_CC;
       else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
@@ -365,6 +366,13 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       state->is_1st_header = 1;
       state->message_state = MSG_RECIPIENT;
    }
+
+   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && strncasecmp(buf, "Bcc:", 4) == 0){
+      state->is_header = 1;
+      state->is_1st_header = 1;
+      state->message_state = MSG_CC;
+   }
+
 
    if(state->message_state == MSG_RECIPIENT){
       p = strstr(buf, "Expanded:");
