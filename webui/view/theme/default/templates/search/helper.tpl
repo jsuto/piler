@@ -5,7 +5,7 @@
 
          <div class="resultrow">
 <?php if($n > 0){ ?>
-            <div class="cell1r" style="vertical-align:middle;"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" checked="checked" class="restorebox" onchange="javascript:toggle_bulk_check(); return false;" /></div>
+            <div class="cell1r" style="vertical-align:middle;"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onchange="javascript:toggle_bulk_check(); return false;" /></div>
             <div class="cell1q" style="text-align: center;"><a href="#" onclick="javascript: download_selected_emails('<?php print BULK_RESTORE_URL; ?>'); return false;"><img style="margin: 0px 0 -2px 0; border: 0px solid black;" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0"></a></div>
             <div class="cell3 date">
                <?php print $text_date; ?>
@@ -43,7 +43,7 @@
 <?php $i=0; foreach ($messages as $message) { $i++; ?>
 
          <div id="e_<?php print $message['id']; ?>" class="resultrow<?php if($i % 2) { ?> odd<?php } ?><?php if($message['spam'] == 1) { ?> spam<?php } ?>">
-            <div class="cell5 restore"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" checked="checked" class="restorebox" /></div>
+            <div class="cell5 restore"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></div>
             <div class="cell5 id"><a href="#" onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php print ($page*$page_len) + $i; ?>.</a></div>
             <div class="cell5 date"><?php print $message['date']; ?></div>
             <div class="cell5 from"><?php if($message['from'] != $message['shortfrom']) { ?><a href="#" title="<?php print preg_replace("/&/", "&amp;", $message['from']); ?>"><?php print $message['shortfrom']; ?></a><?php } else { print $message['from']; } ?></div>

@@ -16,6 +16,7 @@ define('ENABLE_ON_THE_FLY_VERIFICATION', 1);
 define('ENABLE_LDAP_IMPORT_FEATURE', 0);
 define('ENABLE_FOLDER_RESTRICTIONS', 0);
 define('ENABLE_GOOGLE_LOGIN', 0);
+define('SEARCH_RESULT_CHECKBOX_CHECKED', 1);
 
 define('GOOGLE_CLIENT_ID', 'xxxxxxxxxxx');
 define('GOOGLE_CLIENT_SECRET', 'xxxxxxxxxxxxx');
