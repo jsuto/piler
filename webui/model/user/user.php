@@ -61,6 +61,7 @@ class ModelUserUser extends Model {
          }
 
          $query = $this->db->query("SELECT email FROM " . TABLE_EMAIL . " WHERE uid IN ($uids)");
+
          foreach ($query->rows as $q) {
             array_push($data, $q['email']);
          }
@@ -290,7 +291,10 @@ class ModelUserUser extends Model {
 
       $encrypted_password = crypt($user['password']);
 
-      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin) VALUES(?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin']));
+      $samaccountname = '';
+      if(isset($user['samaccountname'])) { $samaccountname = $user['samaccountname']; }
+
+      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin, samaccountname) VALUES(?,?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin'], $samaccountname));
 
       if($query->error == 1 || $this->db->countAffected() == 0){ return $user['username']; }
 

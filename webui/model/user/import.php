@@ -25,7 +25,7 @@ class ModelUserImport extends Model {
       LOGGER("LDAP type: " . $host['type']);
 
       if($host['type'] == "AD") {
-         $attrs = array("cn", "proxyaddresses", "member", "mail");
+         $attrs = array("cn", "samaccountname", "proxyaddresses", "member", "mail");
 
          $mailAttr = "proxyaddresses";
          $mailAttrs = array("mail", "proxyaddresses");
@@ -86,12 +86,14 @@ class ModelUserImport extends Model {
 
          }
 
+
          $data[] = array(
-                         'username'     => preg_replace("/\n{1,}$/", "", $__emails[0]),
-                         'realname'     => $result['cn'],
-                         'dn'           => $result['dn'],
-                         'emails'       => preg_replace("/\n{1,}$/", "", $emails),
-                         'members'      => preg_replace("/\n{1,}$/", "", $members)
+                         'username'       => preg_replace("/\n{1,}$/", "", $__emails[0]),
+                         'realname'       => $result['cn'],
+                         'dn'             => $result['dn'],
+                         'samaccountname' => isset($result['samaccountname']) ? $result['samaccountname'] : '',
+                         'emails'         => preg_replace("/\n{1,}$/", "", $emails),
+                         'members'        => preg_replace("/\n{1,}$/", "", $members)
                         );
 
       }
@@ -220,7 +222,9 @@ class ModelUserImport extends Model {
 
             /* or add the new user */
 
-            $user = $this->createNewUserArray($_user['dn'], $_user['username'], $_user['realname'], $_user['emails'], $globals);
+            $user = $this->createNewUserArray($_user['dn'], $_user['username'], $_user['realname'], $_user['emails'], $_user['samaccountname'], $globals);
+            $user['folder'] = '';
+
             array_push($uids, $user['uid']);
 
             $rc = $this->model_user_user->add_user($user);
@@ -287,7 +291,7 @@ class ModelUserImport extends Model {
    }
 
 
-   private function createNewUserArray($dn = '', $username = '', $realname = '', $emails = '', $globals = array()) {
+   private function createNewUserArray($dn = '', $username = '', $realname = '', $emails = '', $samaccountname = '', $globals = array()) {
       $user = array();
 
       $user['uid'] = $this->model_user_user->get_next_uid();
@@ -317,6 +321,7 @@ class ModelUserImport extends Model {
       $user['whitelist'] = '';
       $user['blacklist'] = '';
       $user['group'] = 0;
+      $user['samaccountname'] = $samaccountname;
 
       return $user;
    }
