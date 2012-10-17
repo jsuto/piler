@@ -69,6 +69,34 @@ class ModelUserAuth extends Model {
    }
 
 
+   public function check_ntlm_auth() {
+      if(!isset($_SERVER['REMOTE_USER'])) { return 0; }
+
+      $u = explode("\\", $_SERVER['REMOTE_USER']);
+
+      if(!isset($u[1])) { return 0; }
+
+      $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . " WHERE " . TABLE_USER . ".samaccountname=?", array($u[1]));
+
+      if($query->num_rows == 1) {
+         $_SESSION['username'] = $query->row['username'];
+         $_SESSION['uid'] = $query->row['uid'];
+         $_SESSION['admin_user'] = $query->row['isadmin'];
+         $_SESSION['email'] = $username;
+         $_SESSION['domain'] = $query->row['domain'];
+         $_SESSION['realname'] = $query->row['realname'];
+
+         $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
+         $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
+         $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
+
+         return 1;
+      }
+
+      return 0; 
+   }
+
+
    public function change_password($username = '', $password = '') {
       if($username == "" || $password == ""){ return 0; }
 
