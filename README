@@ -24,6 +24,10 @@ Features:
 
 - AD / LDAP authentication
 
+- single sign-on
+
+- Google Apps support
+
 - i18n
 - customisable theme
 
