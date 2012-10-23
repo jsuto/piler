@@ -18,7 +18,7 @@ define('ENABLE_FOLDER_RESTRICTIONS', 0);
 define('ENABLE_GOOGLE_LOGIN', 0);
 define('SEARCH_RESULT_CHECKBOX_CHECKED', 1);
 define('HELPER_URL', '');
-
+define('ENABLE_SYSLOG', 0);
 define('GOOGLE_CLIENT_ID', 'xxxxxxxxxxx');
 define('GOOGLE_CLIENT_SECRET', 'xxxxxxxxxxxxx');
 define('GOOGLE_DEVELOPER_KEY', 'xxxxxxxxxxxx');
