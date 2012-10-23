@@ -303,7 +303,7 @@ class ModelSearchSearch extends Model {
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
       }
 
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: %s in %.2f s", $query->query, $query->exec_time)); }
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->num_rows)); }
 
 
       /*
