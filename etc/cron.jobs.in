@@ -27,4 +27,7 @@ piler's crontab:
 ### optional: regular AD sync
 0 8 * * * /usr/bin/php LIBEXECDIR/piler/ldap_sync.php /srv/www/webui.yourdomain.com > LOCALSTATEDIR/piler/stat/adsync.stat
 
+### optional: purge aged emails
+2 0 * * * /usr/local/bin/pilerpurge
+
 
