@@ -14,10 +14,15 @@ root's crontab:
 
 piler's crontab:
 
-### optional: show cpu usage
+### mandatory
+
 */5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
 */15 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
 */15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
+*/15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
+
+### optional: the same report you can see on the health page
+30 7 * * * /usr/local/libexec/piler/daily-report.php /srv/www/webui.yourdomain.com
 
 ### optional: regular AD sync
 0 8 * * * /usr/bin/php LIBEXECDIR/piler/ldap_sync.php /srv/www/webui.yourdomain.com > LOCALSTATEDIR/piler/stat/adsync.stat
