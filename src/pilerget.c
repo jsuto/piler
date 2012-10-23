@@ -27,6 +27,7 @@ int main(int argc, char **argv){
       exit(1);
    }
 
+   (void) openlog("pilerget", LOG_PID, LOG_MAIL);
 
    cfg = read_config(CONFIG_FILE);
 

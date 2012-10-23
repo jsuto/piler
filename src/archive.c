@@ -142,13 +142,13 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
    fd = open(filename, O_RDONLY);
    if(fd == -1){
-      printf("error reading file: %s\n", filename);
+      syslog(LOG_PRIORITY, "%s: cannot open()", filename);
       return 1;
    }
 
 
    if(fstat(fd, &st)){
-      printf("cannot fstat() on %s\n", filename);
+      syslog(LOG_PRIORITY, "%s: cannot fstat()", filename);
       close(fd);
       return 1;
    }
@@ -172,7 +172,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    while((n = read(fd, inbuf, sizeof(inbuf)))){
 
       if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
-         printf("EVP_DecryptUpdate()\n");
+         syslog(LOG_PRIORITY, "%s: EVP_DecryptUpdate()", filename);
          goto CLEANUP;
       }
 
@@ -181,7 +181,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 
    if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
-      printf("EVP_DecryptFinal()\n");
+      syslog(LOG_PRIORITY, "%s: EVP_DecryptFinal()", filename);
       goto CLEANUP;
    }
 
