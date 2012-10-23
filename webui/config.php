@@ -195,7 +195,8 @@ $partitions_to_monitor = array('/', '/home', '/var', '/tmp');
 
 $langs = array(
                 'hu',
-                'en'
+                'en',
+                'pt'
                );
 
 
