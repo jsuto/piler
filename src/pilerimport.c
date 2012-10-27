@@ -31,9 +31,10 @@ int quiet=0;
 int remove_after_successful_import = 0;
 
 
-int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password);
-int list_folders(int sd, int *seq, char *folders, int foldersize);
-int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg);
+int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password, int port, struct __data *data, int use_ssl);
+void close_connection(int sd, struct __data *data, int use_ssl);
+int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data);
+int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg);
 
 
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
@@ -236,24 +237,28 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 }
 
 
-int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, char *skiplist, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, seq=1, skipmatch;
+int import_from_imap_server(char *imapserver, char *username, char *password, int port, struct session_data *sdata, struct __data *data, char *skiplist, struct __config *cfg){
+   int rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
    char *p, puf[SMALLBUFSIZE];
    char *q, muf[SMALLBUFSIZE];
    char folders[MAXBUFSIZE];
+
+
+   if(port == 993) use_ssl = 1;
+
 
    if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
       printf("cannot create socket\n");
       return ERR;
    }
 
-   if(connect_to_imap_server(sd, &seq, imapserver, username, password) == ERR){
+   if(connect_to_imap_server(sd, &seq, imapserver, username, password, port, data, use_ssl) == ERR){
       close(sd);
       return ERR;
    }
 
 
-   list_folders(sd, &seq, &folders[0], sizeof(folders));
+   list_folders(sd, &seq, &folders[0], sizeof(folders), use_ssl, data);
 
 
    p = &folders[0];
@@ -284,26 +289,26 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
 
       if(quiet == 0) printf("processing folder: %s... ", puf);
 
-      rc = process_imap_folder(sd, &seq, puf, sdata, data, cfg);
+      rc = process_imap_folder(sd, &seq, puf, sdata, data, use_ssl, cfg);
       if(rc == ERR) ret = ERR;
 
    } while(p);
 
 
-   close(sd);
+   close_connection(sd, data, use_ssl);
 
    return ret;
 }
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password> [-F <foldername>] [-R] [-r] [-q]\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> -u <imap username> -p <imap password> -P <imap port> [-F <foldername>] [-R] [-r] [-q]\n");
    exit(0);
 }
 
 
 int main(int argc, char **argv){
-   int i, c, rc=0, n_mbox=0, tot_msgs=0;
+   int i, c, rc=0, n_mbox=0, tot_msgs=0, port=143;
    char *configfile=CONFIG_FILE, *emlfile=NULL, *mboxdir=NULL, *mbox[MBOX_ARGS], *directory=NULL;
    char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST, *folder=NULL;
    struct session_data sdata;
@@ -330,6 +335,7 @@ int main(int argc, char **argv){
             {"imapserver",   required_argument,  0,  'i' },
             {"username",     required_argument,  0,  'u' },
             {"password",     required_argument,  0,  'p' },
+            {"port",         required_argument,  0,  'P' },
             {"skiplist",     required_argument,  0,  'x' },
             {"folder",       required_argument,  0,  'F' },
             {"quiet",        required_argument,  0,  'q' },
@@ -341,9 +347,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:u:p:P:x:F:Rrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:x:F:Rrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:u:p:P:x:F:Rrqh?");
 #endif
 
       if(c == -1) break;
@@ -385,6 +391,10 @@ int main(int argc, char **argv){
 
          case 'p' :
                     password = optarg;
+                    break;
+
+         case 'P' :
+                    port = atoi(optarg);
                     break;
 
          case 'x' :
@@ -470,7 +480,7 @@ int main(int argc, char **argv){
    }
    if(mboxdir) rc = import_mbox_from_dir(mboxdir, &sdata, &data, &tot_msgs, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
-   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, skiplist, &cfg);
+   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, port, &sdata, &data, skiplist, &cfg);
 
 
    free_rule(data.archiving_rules);

@@ -51,7 +51,7 @@ unrtf="no"
 
 have_static_build="no"
 
-antispam_libs="-lz -lm -ldl -lcrypto"
+antispam_libs="-lz -lm -ldl -lcrypto -lssl"
 defs=""
 objs=""
 user_obj=""
@@ -109,7 +109,10 @@ dnl openssl library
 AC_CHECK_HEADERS(openssl/sha.h, have_crypto=yes, have_crypto=no)
 AC_CHECK_LIB([crypto],[SHA256_Init],[AC_CHECK_LIB(crypto, SHA256_Init, have_crypto=yes, echo "libcrypto is not found"; have_crypto=no)],[],[])ac_cv_lib_crypto=ac_cv_lib_crypto_main
 
-if test "$have_crypto" = "no"; then
+AC_CHECK_HEADERS(openssl/ssl.h, have_ssl=yes, have_ssl=no)
+AC_CHECK_LIB([ssl],[SSL_write],[AC_CHECK_LIB(ssl, SSL_write, have_ssl=yes, echo "libssl is not found"; have_ssl=no)],[],[])ac_cv_lib_ssl=ac_cv_lib_ssl_main
+
+if test "$have_crypto" = "no" || test "$have_ssl" = "no"; then
    echo "please install openssl developer package"
    exit 1
 fi

@@ -18,6 +18,7 @@
 #include <syslog.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <openssl/ssl.h>
 #include "misc.h"
 #include "smtpcodes.h"
 #include "errmsg.h"
@@ -293,7 +294,7 @@ int recvtimeout(int s, char *buf, int len, int timeout){
     int n;
     struct timeval tv;
 
-    memset(buf, 0, MAXBUFSIZE);
+    memset(buf, 0, len);
 
     FD_ZERO(&fds);
     FD_SET(s, &fds);
@@ -306,6 +307,31 @@ int recvtimeout(int s, char *buf, int len, int timeout){
     if (n == -1) return -1; // error
 
     return recv(s, buf, len, 0);
+}
+
+
+int write1(int sd, char *buf, int use_ssl, SSL *ssl){
+   int n;
+
+   if(use_ssl == 1)
+      n = SSL_write(ssl, buf, strlen(buf));
+   else
+      n = send(sd, buf, strlen(buf), 0);
+
+   return n;
+}
+
+
+int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl){
+
+    memset(buf, 0, len);
+
+    if(use_ssl == 1){
+       return SSL_read(ssl, buf, len-1);
+    }
+    else {
+       return recvtimeout(s, buf, len-1, timeout);
+    }
 }
 
 

@@ -14,6 +14,7 @@
 #include <netdb.h>
 #include <sys/time.h>
 #include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <fcntl.h>
 #include <ctype.h>
 #include <syslog.h>
@@ -21,6 +22,9 @@
 #include <limits.h>
 #include <piler.h>
 
+
+#define CHK_NULL(x, errmsg) if ((x)==NULL) { printf("error: %s\n", errmsg); return ERR; }
+#define CHK_SSL(err, msg) if ((err)==-1) { printf("ssl error: %s\n", msg); return ERR; }
 
 
 unsigned long resolve_host(char *host){
@@ -52,7 +56,8 @@ int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
 
    *p = '\0';
 
-   *_1st_line_bytes = strlen(s)+2;
+   //*_1st_line_bytes = strlen(s)+2;
+   *_1st_line_bytes = p-s+2;
 
    if(*(p-1) == '}') *(p-1) = '\0';
 
@@ -88,16 +93,16 @@ int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *po
 }
 
 
-int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, nwrites, processed_messages=0;
+int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg){
+   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s SELECT \"%s\"\r\n", tag, folder);
-   send(sd, buf, strlen(buf), 0);
 
-   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
+   n = write1(sd, buf, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    if(!strstr(buf, tagok)){
       trimBuffer(buf);
@@ -139,20 +144,19 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       }
 
 
-      send(sd, buf, strlen(buf), 0);
+      n = write1(sd, buf, use_ssl, data->ssl);
 
       readlen = 0;
       pos = 0;
       len = 0;
       nreads = 0;
-      nwrites = 0;
       endpos = 0;
 
       memset(aggrbuf, 0, sizeof(aggrbuf));
       lastpos = 0;
 
 
-      while((n = recvtimeout(sd, buf, sizeof(buf), 15)) > 0){
+      while((n = recvtimeoutssl(sd, buf, sizeof(buf), 15, use_ssl, data->ssl)) > 0){
          nreads++;
          readlen += n;
 
@@ -165,45 +169,33 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
             }
          }
 
-         if(lastpos + n + sizeof(buf) > sizeof(aggrbuf)){
-            nwrites++;
+         if(lastpos + 1 + n < sizeof(aggrbuf)){
 
-            if(nwrites == 1)
-               write(fd, aggrbuf+pos, lastpos-pos);
-            else
-               write(fd, aggrbuf, lastpos);
-
-            memset(aggrbuf, 0, sizeof(aggrbuf));
-            lastpos = 0;
-         }
-
-         memcpy(aggrbuf+lastpos, buf, n);
-         lastpos += n;
-
-         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad, &endpos) == 1){
-            nwrites++;
-            if(nwrites == 1)
-               write(fd, aggrbuf+pos, lastpos-(lastpos-endpos)-pos);
-            else
-               write(fd, aggrbuf, lastpos-(lastpos-endpos));
-
-            break;
-         }
-         else {
-            nwrites++;
-            if(nwrites == 1){
-               if(lastpos-n-pos > 0) write(fd, aggrbuf+pos, lastpos-n-pos); else nwrites--;
+            if(nreads == 1){
+               memcpy(aggrbuf+lastpos, buf+pos, n-pos);
+               lastpos += n-pos;
             }
             else {
-               write(fd, aggrbuf, lastpos-n);
+               memcpy(aggrbuf+lastpos, buf, n);
+               lastpos += n;
             }
-
-            memmove(aggrbuf, aggrbuf+lastpos-n, n);
-            lastpos = n;
-            memset(aggrbuf+lastpos, 0, sizeof(aggrbuf)-lastpos);
          }
-      } 
+         else {
+            write(fd, aggrbuf, sizeof(buf));
 
+            memmove(aggrbuf, aggrbuf+sizeof(buf), lastpos-sizeof(buf));
+            lastpos -= sizeof(buf);
+
+            memcpy(aggrbuf+lastpos, buf, n);
+            lastpos += n;
+         }
+
+         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad, &endpos) == 1){
+            write(fd, aggrbuf, lastpos-(lastpos-endpos));
+            break;
+         }
+
+      } 
 
       close(fd);
 
@@ -218,29 +210,69 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 }
 
 
-int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password){
+int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password, int port, struct __data *data, int use_ssl){
    int n, pos=0;
    char tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE];
    char auth[2*SMALLBUFSIZE];
    unsigned char tmp[SMALLBUFSIZE];
    unsigned long host=0;
    struct sockaddr_in remote_addr;
+   X509* server_cert;
+   SSL_METHOD *meth;
+   char *str;
 
 
    host = resolve_host(imapserver);
 
    remote_addr.sin_family = AF_INET;
-   remote_addr.sin_port = htons(143);
+   remote_addr.sin_port = htons(port);
    remote_addr.sin_addr.s_addr = host;
    bzero(&(remote_addr.sin_zero),8);
-
 
    if(connect(sd, (struct sockaddr *)&remote_addr, sizeof(struct sockaddr)) == -1){
       printf("connect()\n");
       return ERR;
    }
 
-   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
+
+   if(use_ssl == 1){
+
+      SSLeay_add_ssl_algorithms();
+      meth = SSLv3_client_method();
+      SSL_load_error_strings();
+
+      data->ctx = SSL_CTX_new(meth);
+      CHK_NULL(data->ctx, "internal SSL error");
+
+      data->ssl = SSL_new(data->ctx);
+      CHK_NULL(data->ssl, "internal ssl error");
+
+      SSL_set_fd(data->ssl, sd);
+      n = SSL_connect(data->ssl);
+      CHK_SSL(n, "internal ssl error");
+
+      //printf("Cipher: %s\n", SSL_get_cipher(data->ssl));
+
+      server_cert = SSL_get_peer_certificate(data->ssl);
+      CHK_NULL(server_cert, "server cert error");
+
+      //if(verbose){
+         str = X509_NAME_oneline(X509_get_subject_name(server_cert), 0, 0);
+         CHK_NULL(str, "error in server cert");
+         printf("server cert:\n\t subject: %s\n", str);
+         OPENSSL_free(str);
+
+         str = X509_NAME_oneline(X509_get_issuer_name(server_cert), 0, 0);
+         CHK_NULL(str, "error in server cert");
+         printf("\t issuer: %s\n\n", str);
+         OPENSSL_free(str);
+      //}
+
+      X509_free(server_cert);
+   }
+
+
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
 
    /*
@@ -262,8 +294,10 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s AUTHENTICATE PLAIN %s\r\n", tag, auth);
-   send(sd, buf, strlen(buf), 0);
-   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
+
+   write1(sd, buf, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+
    if(strncmp(buf, tagok, strlen(tagok))){
       printf("login failed, server reponse: %s\n", buf);
       return ERR;
@@ -273,7 +307,18 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
 }
 
 
-int list_folders(int sd, int *seq, char *folders, int foldersize){
+void close_connection(int sd, struct __data *data, int use_ssl){
+   close(sd);
+ 
+   if(use_ssl == 1){
+      SSL_shutdown(data->ssl);
+      SSL_free(data->ssl);
+      SSL_CTX_free(data->ctx);
+   }
+}
+
+
+int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data){
    int n;
    char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE];
 
@@ -281,9 +326,9 @@ int list_folders(int sd, int *seq, char *folders, int foldersize){
    //snprintf(buf, sizeof(buf)-1, "%s LIST \"\" %%\r\n", tag);
    snprintf(buf, sizeof(buf)-1, "%s LIST \"\" \"*\"\r\n", tag);
 
-   send(sd, buf, strlen(buf), 0);
+   write1(sd, buf, use_ssl, data->ssl);
 
-   n = recvtimeout(sd, buf, MAXBUFSIZE, 10);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    p = &buf[0];
    do {

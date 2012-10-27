@@ -5,6 +5,7 @@
 #ifndef _MISC_H
  #define _MISC_H
 
+#include <openssl/ssl.h>
 #include <sys/time.h>
 #include <pwd.h>
 #include <cfg.h>
@@ -24,6 +25,8 @@ void create_id(char *id);
 int get_random_bytes(unsigned char *buf, int len);
 int readFromEntropyPool(int fd, void *_s, size_t n);
 int recvtimeout(int s, char *buf, int len, int timeout);
+int write1(int sd, char *buf, int use_ssl, SSL *ssl);
+int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl);
 
 void write_pid_file(char *pidfile);
 int drop_privileges(struct passwd *pwd);

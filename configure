@@ -3425,7 +3425,7 @@ unrtf="no"
 
 have_static_build="no"
 
-antispam_libs="-lz -lm -ldl -lcrypto"
+antispam_libs="-lz -lm -ldl -lcrypto -lssl"
 defs=""
 objs=""
 user_obj=""
@@ -3684,7 +3684,103 @@ fi
 fi
 ac_cv_lib_crypto=ac_cv_lib_crypto_main
 
-if test "$have_crypto" = "no"; then
+for ac_header in openssl/ssl.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "openssl/ssl.h" "ac_cv_header_openssl_ssl_h" "$ac_includes_default"
+if test "x$ac_cv_header_openssl_ssl_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_OPENSSL_SSL_H 1
+_ACEOF
+ have_ssl=yes
+else
+  have_ssl=no
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SSL_write in -lssl" >&5
+$as_echo_n "checking for SSL_write in -lssl... " >&6; }
+if ${ac_cv_lib_ssl_SSL_write+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lssl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_write ();
+int
+main ()
+{
+return SSL_write ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ssl_SSL_write=yes
+else
+  ac_cv_lib_ssl_SSL_write=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_SSL_write" >&5
+$as_echo "$ac_cv_lib_ssl_SSL_write" >&6; }
+if test "x$ac_cv_lib_ssl_SSL_write" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SSL_write in -lssl" >&5
+$as_echo_n "checking for SSL_write in -lssl... " >&6; }
+if ${ac_cv_lib_ssl_SSL_write+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lssl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SSL_write ();
+int
+main ()
+{
+return SSL_write ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ssl_SSL_write=yes
+else
+  ac_cv_lib_ssl_SSL_write=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssl_SSL_write" >&5
+$as_echo "$ac_cv_lib_ssl_SSL_write" >&6; }
+if test "x$ac_cv_lib_ssl_SSL_write" = xyes; then :
+  have_ssl=yes
+else
+  echo "libssl is not found"; have_ssl=no
+fi
+
+fi
+ac_cv_lib_ssl=ac_cv_lib_ssl_main
+
+if test "$have_crypto" = "no" || test "$have_ssl" = "no"; then
    echo "please install openssl developer package"
    exit 1
 fi

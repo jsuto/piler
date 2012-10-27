@@ -24,6 +24,7 @@
 #endif
 
 #include <openssl/sha.h>
+#include <openssl/ssl.h>
 #include "tai.h"
 #include "config.h"
 
@@ -247,6 +248,8 @@ struct __data {
    struct memcached_server memc;
 #endif
 
+   SSL_CTX *ctx;
+   SSL *ssl;
 };
 
 
