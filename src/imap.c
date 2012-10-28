@@ -218,7 +218,6 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
    unsigned long host=0;
    struct sockaddr_in remote_addr;
    X509* server_cert;
-   SSL_METHOD *meth;
    char *str;
 
 
@@ -237,11 +236,10 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
 
    if(use_ssl == 1){
 
-      SSLeay_add_ssl_algorithms();
-      meth = SSLv3_client_method();
+      SSL_library_init();
       SSL_load_error_strings();
 
-      data->ctx = SSL_CTX_new(meth);
+      data->ctx = SSL_CTX_new(SSLv3_client_method());
       CHK_NULL(data->ctx, "internal SSL error");
 
       data->ssl = SSL_new(data->ctx);
@@ -314,6 +312,7 @@ void close_connection(int sd, struct __data *data, int use_ssl){
       SSL_shutdown(data->ssl);
       SSL_free(data->ssl);
       SSL_CTX_free(data->ctx);
+      ERR_free_strings();
    }
 }
 

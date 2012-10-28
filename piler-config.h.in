@@ -17,3 +17,4 @@
 #undef HAVE_UNRTF
 #undef HAVE_ZIP
 
+#undef HAVE_STARTTLS

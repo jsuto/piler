@@ -322,12 +322,67 @@ int write1(int sd, char *buf, int use_ssl, SSL *ssl){
 }
 
 
+int ssl_want_retry(SSL *ssl, int ret, int timeout){
+   int i;
+   fd_set fds;
+   struct timeval tv;
+   int sock;
+
+   // something went wrong.  I'll retry, die quietly, or complain
+   i = SSL_get_error(ssl, ret);
+   if(i == SSL_ERROR_NONE)
+      return 1;
+ 
+   tv.tv_sec = timeout/1000;
+   tv.tv_usec = 0;
+   FD_ZERO(&fds);
+ 
+   switch(i){
+      case SSL_ERROR_WANT_READ: // pause until the socket is readable
+          sock = SSL_get_rfd(ssl);
+          FD_SET(sock, &fds);
+          i = select(sock+1, &fds, 0, 0, &tv);
+          break;
+ 
+      case SSL_ERROR_WANT_WRITE: // pause until the socket is writeable
+         sock = SSL_get_wfd(ssl);
+         FD_SET(sock, &fds);
+         i = select(sock+1, 0, &fds, 0, &tv);
+         break;
+ 
+      case SSL_ERROR_ZERO_RETURN: // the sock closed, just return quietly
+         i = 0;
+         break;
+ 
+      default: // ERROR - unexpected error code
+         i = -1;
+         break;
+   };
+
+   return i;
+}
+
+
+int ssl_read_timeout(SSL *ssl, void *buf, int len, int timeout){
+   int i;
+
+   while(1){
+      i = SSL_read(ssl, (char*)buf, len);
+      if(i > 0) break;
+      i = ssl_want_retry(ssl, i, timeout);
+      if(i <= 0) break;
+   }
+
+   return i;
+}
+
+
 int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl){
 
     memset(buf, 0, len);
 
     if(use_ssl == 1){
-       return SSL_read(ssl, buf, len-1);
+       return ssl_read_timeout(ssl, buf, len-1, timeout);
     }
     else {
        return recvtimeout(s, buf, len-1, timeout);

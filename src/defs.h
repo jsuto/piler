@@ -178,6 +178,7 @@ struct session_data {
    char attachments[SMALLBUFSIZE];
    char internal_sender, internal_recipient, external_recipient;
    int direction;
+   int tls;
    int spam_message;
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
    int need_scan;
@@ -239,6 +240,8 @@ struct memcached_server {
 struct __data {
    int folder;
    char recursive_folder_names;
+   char starttls[TINYBUFSIZE];
+
 #ifdef HAVE_TRE
    struct rule *archiving_rules;
    struct rule *retention_rules;

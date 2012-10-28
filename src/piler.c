@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <locale.h>
 #include <errno.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <piler.h>
 
 
@@ -247,6 +249,13 @@ void clean_exit(){
 
    unlink(cfg.pidfile);
 
+#ifdef HAVE_STARTTLS
+   if(data.ctx){
+      SSL_CTX_free(data.ctx);
+      ERR_free_strings();
+   }
+#endif
+
    exit(1);
 }
 
@@ -255,6 +264,27 @@ void fatal(char *s){
    syslog(LOG_PRIORITY, "%s\n", s);
    clean_exit();
 }
+
+
+#ifdef HAVE_STARTTLS
+int init_ssl(){
+
+   SSL_library_init();
+   SSL_load_error_strings();
+
+   data.ctx = SSL_CTX_new(SSLv23_server_method());
+
+   if(data.ctx == NULL){ syslog(LOG_PRIORITY, "SSL_CTX_new() failed"); return ERR; }
+
+   if(SSL_CTX_set_cipher_list(data.ctx, cfg.cipher_list) == 0){ syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", cfg.cipher_list); return ERR; }
+
+   if(SSL_CTX_use_PrivateKey_file(data.ctx, cfg.pemfile, SSL_FILETYPE_PEM) != 1){ syslog(LOG_PRIORITY, "cannot load private key from %s", cfg.pemfile); return ERR; }
+
+   if(SSL_CTX_use_certificate_file(data.ctx, cfg.pemfile, SSL_FILETYPE_PEM) != 1){ syslog(LOG_PRIORITY, "cannot load certificate from %s", cfg.pemfile); return ERR; }
+
+   return OK;
+}
+#endif
 
 
 void initialise_configuration(){
@@ -292,6 +322,14 @@ void initialise_configuration(){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+
+   memset(data.starttls, 0, TINYBUFSIZE);
+
+#ifdef HAVE_STARTTLS
+   if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
+      snprintf(data.starttls, TINYBUFSIZE-1, "250-STARTTLS\r\n");
+   }
+#endif
 
    mysql_init(&(sdata.mysql));
    mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
@@ -347,6 +385,8 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.ctx = NULL;
+   data.ssl = NULL;
 
 
    initialise_configuration();

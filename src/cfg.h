@@ -20,6 +20,10 @@ struct __config {
    int clamd_port;
    char clamd_socket[MAXVAL];
 
+   int tls_enable;
+   char pemfile[MAXVAL];
+   char cipher_list[MAXVAL];
+
    int use_antivirus;
 
    char memcached_servers[MAXVAL];

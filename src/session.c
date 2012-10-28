@@ -14,6 +14,8 @@
 #include <signal.h>
 #include <syslog.h>
 #include <time.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include <piler.h>
 
 
@@ -31,10 +33,15 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    struct timezone tz;
    struct timeval tv1, tv2;
 
+#ifdef HAVE_STARTTLS
+   int starttls = 0;
+   char ssl_error[SMALLBUFSIZE];
+#endif
 
    state = SMTP_STATE_INIT;
 
    init_session_data(&sdata);
+   sdata.tls = 0;
 
    bzero(&counters, sizeof(counters));
 
@@ -70,7 +77,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    send(new_sd, buf, strlen(buf), 0);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
-   while((n = recvtimeout(new_sd, puf, MAXBUFSIZE, TIMEOUT)) > 0){
+   while((n = recvtimeoutssl(new_sd, puf, MAXBUFSIZE, TIMEOUT, sdata.tls, data->ssl)) > 0){
          pos = 0;
 
          /* accept mail data */
@@ -120,7 +127,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   for(i=0; i<sdata.num_of_rcpt_to; i++){
                #endif
 
-                     send(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), 0);
+                     //send(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), 0);
+                     write1(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, sdata.tls, data->ssl);
 
                #ifdef HAVE_LMTP
                   }
@@ -213,7 +221,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   if(inj == ERR) snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rctptoemail);
 
-                  send(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), 0);
+                  //send(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), 0);
+                  write1(new_sd, sdata.acceptbuf, sdata.tls, data->ssl);
 
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, sdata.acceptbuf);
 
@@ -288,7 +297,9 @@ AFTER_PERIOD:
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
             if(state == SMTP_STATE_INIT) state = SMTP_STATE_HELO;
 
-            snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid);
+            if(sdata.tls == 0) snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, data->starttls);
+            else snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, "");
+
             strncat(resp, buf, MAXBUFSIZE-1);
 
             continue;
@@ -305,6 +316,29 @@ AFTER_PERIOD:
             continue;
          }
 
+
+      #ifdef HAVE_STARTTLS
+         if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(data->starttls) > 4 && sdata.tls == 0){
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata.ttmpfile);
+
+            if(data->ctx){
+               data->ssl = SSL_new(data->ctx);
+               if(data->ssl){
+                  if(SSL_set_fd(data->ssl, new_sd) == 1){
+                     strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, MAXBUFSIZE-1);
+                     starttls = 1;
+                     state = SMTP_STATE_INIT;
+
+                     continue;
+                  } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", sdata.ttmpfile);
+               } syslog(LOG_PRIORITY, "%s: SSL_new() failed", sdata.ttmpfile);
+            } syslog(LOG_PRIORITY, "%s: SSL ctx is null!", sdata.ttmpfile);
+
+
+            strncat(resp, SMTP_RESP_454_ERR_TLS_TEMP_ERROR, MAXBUFSIZE-1);
+            continue;
+         }
+      #endif
 
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
@@ -433,9 +467,32 @@ AFTER_PERIOD:
       /* now we can send our buffered response */
 
       if(strlen(resp) > 0){
-         send(new_sd, resp, strlen(resp), 0);
+         //send(new_sd, resp, strlen(resp), 0);
+         write1(new_sd, resp, sdata.tls, data->ssl);
+
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, resp);
          memset(resp, 0, MAXBUFSIZE);
+
+      #ifdef HAVE_STARTTLS
+         if(starttls == 1 && sdata.tls == 0){
+
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata.ttmpfile);
+
+            rc = SSL_accept(data->ssl);
+
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sdata.ttmpfile);
+
+            if(rc == 1){
+               sdata.tls = 1;
+            }
+            else {
+               ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
+               syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata.ttmpfile, rc, SSL_get_error(data->ssl, rc), ssl_error);
+            }
+         }
+      #endif
+
+
       }
 
       if(state == SMTP_STATE_FINISHED){
@@ -451,7 +508,9 @@ AFTER_PERIOD:
 
    if(state < SMTP_STATE_QUIT && inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
-      send(new_sd, buf, strlen(buf), 0);
+      //send(new_sd, buf, strlen(buf), 0);
+      write1(new_sd, buf, sdata.tls, data->ssl);
+
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
       if(sdata.fd != -1){
@@ -473,6 +532,13 @@ QUITTING:
 
 #ifdef NEED_MYSQL
    mysql_close(&(sdata.mysql));
+#endif
+
+#ifdef HAVE_STARTTLS
+   if(sdata.tls == 1){
+      SSL_shutdown(data->ssl);
+      SSL_free(data->ssl);
+   }
 #endif
 
    if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", counters.c_rcvd);
