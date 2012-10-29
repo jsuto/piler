@@ -52,6 +52,7 @@
 #define SMTP_RESP_550_ERR_PREF "550 Access denied."
 #define SMTP_RESP_550_INVALID_RECIPIENT "550 Unknown recipient\r\n"
 #define SMTP_RESP_550_ERR_TOO_LONG_RCPT_TO "550 too long recipient\r\n"
+#define SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY "550 You are banned by local policy\r\n"
 #define SMTP_RESP_552_ERR "552 Too many recipients\r\n"
 
 

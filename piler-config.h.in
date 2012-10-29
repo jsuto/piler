@@ -18,3 +18,5 @@
 #undef HAVE_ZIP
 
 #undef HAVE_STARTTLS
+#undef HAVE_LIBWRAP
+

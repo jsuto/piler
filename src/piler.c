@@ -47,7 +47,7 @@ static void child_main(struct child *ptr);
 static pid_t child_make(struct child *ptr);
 int search_slot_by_pid(pid_t pid);
 void kill_children(int sig);
-void clean_exit();
+void p_clean_exit();
 void fatal(char *s);
 void initialise_configuration();
 
@@ -85,7 +85,7 @@ static void takesig(int sig){
         case SIGTERM:
         case SIGKILL:
                 quit = 1;
-                clean_exit();
+                p_clean_exit();
                 break;
 
         case SIGCHLD:
@@ -206,7 +206,7 @@ int child_pool_create(){
 
       if(children[i].pid == -1){
          syslog(LOG_PRIORITY, "error: failed to fork a child");
-         clean_exit();
+         p_clean_exit();
       }
    }
 
@@ -237,7 +237,7 @@ void kill_children(int sig){
 }
 
 
-void clean_exit(){
+void p_clean_exit(){
    if(sd != -1) close(sd);
 
    kill_children(SIGTERM);
@@ -262,7 +262,7 @@ void clean_exit(){
 
 void fatal(char *s){
    syslog(LOG_PRIORITY, "%s\n", s);
-   clean_exit();
+   p_clean_exit();
 }
 
 
@@ -439,7 +439,7 @@ int main(int argc, char **argv){
 
    for(;;){ sleep(1); }
 
-   clean_exit();
+   p_clean_exit();
 
    return 0;
 }

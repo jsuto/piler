@@ -22,6 +22,9 @@
    #include <tre/tre.h>
    #include <tre/regex.h>
 #endif
+#ifdef HAVE_LIBWRAP
+   #include <tcpd.h>
+#endif
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>

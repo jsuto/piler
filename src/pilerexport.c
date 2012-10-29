@@ -41,7 +41,7 @@ void usage(){
 }
 
 
-void clean_exit(char *msg, int rc){
+void p_clean_exit(char *msg, int rc){
    if(msg) printf("error: %s\n", msg);
 
    if(query) free(query);
@@ -207,7 +207,7 @@ int main(int argc, char **argv){
 
 
    if(regcomp(&regexp, "^([\\+a-z0-9_\\.@\\-]+)$", REG_ICASE | REG_EXTENDED)){
-      clean_exit("cannot compile rule!", 1);
+      p_clean_exit("cannot compile rule!", 1);
    }
 
 
@@ -380,7 +380,7 @@ int main(int argc, char **argv){
 
    rc += append_string_to_buffer(&query, " ORDER BY id ASC");
 
-   if(rc) clean_exit("malloc problem building query", 1);
+   if(rc) p_clean_exit("malloc problem building query", 1);
 
 
 
@@ -388,7 +388,7 @@ int main(int argc, char **argv){
    cfg = read_config(configfile);
 
 
-   if(read_key(&cfg)) clean_exit(ERR_READING_KEY, 1);
+   if(read_key(&cfg)) p_clean_exit(ERR_READING_KEY, 1);
 
 
    init_session_data(&sdata);
@@ -397,7 +397,7 @@ int main(int argc, char **argv){
    mysql_init(&(sdata.mysql));
    mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
    if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
-      clean_exit("cannot connect to mysql server", 1);
+      p_clean_exit("cannot connect to mysql server", 1);
    }
 
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));

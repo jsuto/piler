@@ -38,6 +38,20 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    char ssl_error[SMALLBUFSIZE];
 #endif
 
+
+#ifdef HAVE_LIBWRAP
+   struct request_info req;
+
+   request_init(&req, RQ_DAEMON, PROGNAME, RQ_FILE, new_sd, 0);
+   fromhost(&req);
+   if(!hosts_access(&req)){
+      send(new_sd, SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY, strlen(SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY), 0);
+      syslog(LOG_PRIORITY, "denied connection from %s by tcp_wrappers", eval_client(&req));
+      return 0;
+   }
+#endif
+
+
    state = SMTP_STATE_INIT;
 
    init_session_data(&sdata);

@@ -676,6 +676,7 @@ enable_static_build
 enable_clamd
 enable_memcached
 enable_starttls
+enable_tcpwrappers
 with_piler_user
 '
       ac_precious_vars='build_alias
@@ -1300,6 +1301,7 @@ Optional Features:
   --enable-clamd          build clamd antivirus support
   --enable-memcached      build memcached support
   --enable-starttls       build starttls support
+  --enable-tcpwrappers    build tcpwrappers support
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3417,6 +3419,7 @@ have_tre="no"
 have_zip="no"
 have_zlib="no"
 have_starttls="no"
+have_tcpwrappers="no"
 
 pdftotext="no"
 catdoc="no"
@@ -3496,6 +3499,118 @@ else
 fi
 
 
+
+# Check whether --enable-tcpwrappers was given.
+if test "${enable_tcpwrappers+set}" = set; then :
+  enableval=$enable_tcpwrappers; want_tcpwrappers=$enableval
+else
+  want_tcpwrappers"no"
+fi
+
+
+
+if test "$want_tcpwrappers" = "yes"; then
+   for ac_header in tcpd.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "tcpd.h" "ac_cv_header_tcpd_h" "$ac_includes_default"
+if test "x$ac_cv_header_tcpd_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_TCPD_H 1
+_ACEOF
+ have_tcpwrappers=yes
+else
+  have_tcpwrappers=no
+fi
+
+done
+
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for hosts_access in -lwrap" >&5
+$as_echo_n "checking for hosts_access in -lwrap... " >&6; }
+if ${ac_cv_lib_wrap_hosts_access+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwrap  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char hosts_access ();
+int
+main ()
+{
+return hosts_access ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_wrap_hosts_access=yes
+else
+  ac_cv_lib_wrap_hosts_access=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_wrap_hosts_access" >&5
+$as_echo "$ac_cv_lib_wrap_hosts_access" >&6; }
+if test "x$ac_cv_lib_wrap_hosts_access" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for hosts_access in -lwrap" >&5
+$as_echo_n "checking for hosts_access in -lwrap... " >&6; }
+if ${ac_cv_lib_wrap_hosts_access+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwrap  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char hosts_access ();
+int
+main ()
+{
+return hosts_access ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_wrap_hosts_access=yes
+else
+  ac_cv_lib_wrap_hosts_access=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_wrap_hosts_access" >&5
+$as_echo "$ac_cv_lib_wrap_hosts_access" >&6; }
+if test "x$ac_cv_lib_wrap_hosts_access" = xyes; then :
+  have_tcpwrappers=yes
+else
+  echo "libwrap is not found"; have_tcpwrappers=no
+fi
+
+fi
+ac_cv_lib_wrap=ac_cv_lib_wrap_main
+
+   if test "$have_tcpwrappers" = "no"; then
+      echo "can't find either tcpd.h or libwrap";
+      exit 1;
+   fi
+fi
 
 
 
@@ -4360,6 +4475,19 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
+
+if test "$have_tcpwrappers" = "yes"; then
+   echo "tcpwrappers support: yes"
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBWRAP 1
+_ACEOF
+
+   antispam_libs="$antispam_libs -lwrap -lnsl"
+else
+   echo "tcpwrappers support: no"
+fi
+
 
 echo
 
