@@ -24,6 +24,8 @@
 
 <h4><?php print $text_existing_domains; ?></h4>
 
+<div style="overflow:auto; height: 500px;">
+
 <?php if(isset($domains)){ ?>
 
    <div id="ss1" style="margin-top: 10px;">
@@ -46,5 +48,7 @@
 <?php } else { ?>
 <?php print $text_not_found; ?>
 <?php } ?>
+
+</div>
 
 
