@@ -37,7 +37,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
       found = 0;
       id = 0;
 
-      if(strlen(state->attachments[i].filename) > 4 && state->attachments[i].size > 10){
+      if(state->attachments[i].size > 0){
 
          snprintf(s, sizeof(s)-1, "SELECT `id` FROM `%s` WHERE `sig`='%s'", SQL_ATTACHMENT_TABLE, state->attachments[i].digest);
 

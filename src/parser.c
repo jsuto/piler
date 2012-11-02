@@ -155,6 +155,26 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 }
 
 
+void storno_attachment(struct _state *state){
+   state->has_to_dump = 0;
+
+   if(state->n_attachments <= 0) return;
+
+   state->attachments[state->n_attachments].size = 0;
+   state->attachments[state->n_attachments].dumped = 0;
+
+   memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].shorttype, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].aname, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
+
+
+   state->n_attachments--;
+}
+
+
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
@@ -264,22 +284,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
             if(state->fd == -1){
-
-               state->attachments[state->n_attachments].size = 0;
-               state->attachments[state->n_attachments].dumped = 0;
-               memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
-               memset(state->attachments[state->n_attachments].shorttype, 0, TINYBUFSIZE);
-               memset(state->attachments[state->n_attachments].aname, 0, TINYBUFSIZE);
-               memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
-               memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
-               memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
-
-
+               storno_attachment(state);
                syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
-
-               state->n_attachments--;
-               state->has_to_dump = 0;
-
             }
             else {
                snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
