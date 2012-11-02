@@ -106,7 +106,7 @@ AC_ARG_ENABLE(starttls,
 
 
 AC_ARG_ENABLE(tcpwrappers,
-	[  --enable-tcpwrappers    build tcpwrappers support], want_tcpwrappers=$enableval, want_tcpwrappers"no")
+	[  --enable-tcpwrappers    build tcpwrappers support], want_tcpwrappers=$enableval, want_tcpwrappers="no")
 
 
 if test "$want_tcpwrappers" = "yes"; then
