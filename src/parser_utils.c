@@ -338,13 +338,9 @@ void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
    char *p, puf[MAXBUFSIZE];
 
    if(strlen(state->qpbuf) > 0){
-      memset(puf, 0, MAXBUFSIZE);
-      strncpy(puf, state->qpbuf, MAXBUFSIZE-1);
-      strncat(puf, buf, MAXBUFSIZE-1);
-
-      memset(buf, 0, MAXBUFSIZE);
-      memcpy(buf, puf, MAXBUFSIZE);
-
+      memset(puf, 0, sizeof(puf));
+      snprintf(puf, sizeof(puf)-1, "%s%s", state->qpbuf, buf);
+      snprintf(buf, MAXBUFSIZE-1, "%s", puf);
       memset(state->qpbuf, 0, MAX_TOKEN_LEN);
    }
 
