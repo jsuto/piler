@@ -286,13 +286,12 @@ int memcached_increment(struct memcached_server *ptr, char *key, unsigned int ke
 
 
 char *memcached_get(struct memcached_server *ptr, char *key, unsigned int *len, unsigned int *flags){
-   int rc;
    char *p;
 
    if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return NULL;
 
    snprintf(ptr->buf, MAXBUFSIZE, "get %s \r\n", key);
-   rc = send(ptr->fd, ptr->buf, strlen(ptr->buf), 0);
+   send(ptr->fd, ptr->buf, strlen(ptr->buf), 0);
 
    ptr->last_read_bytes = __recvtimeout(ptr->fd, ptr->buf, MAXBUFSIZE, ptr->rcv_timeout);
 
@@ -333,12 +332,11 @@ char *memcached_get(struct memcached_server *ptr, char *key, unsigned int *len, 
 
 
 int memcached_mget(struct memcached_server *ptr, char *key){
-   int rc;
 
    if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return MEMCACHED_FAILURE;
 
    snprintf(ptr->buf, MAXBUFSIZE, "get %s \r\n", key);
-   rc = send(ptr->fd, ptr->buf, strlen(ptr->buf), 0);
+   send(ptr->fd, ptr->buf, strlen(ptr->buf), 0);
 
    ptr->last_read_bytes = __recvtimeout(ptr->fd, ptr->buf, MAXBUFSIZE, ptr->rcv_timeout);
 

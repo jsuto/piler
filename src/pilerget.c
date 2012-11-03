@@ -17,7 +17,7 @@
 
 
 int main(int argc, char **argv){
-   int rc, readkey=1;
+   int readkey=1;
    struct session_data sdata;
    struct __config cfg;
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv){
 
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
-   rc = retrieve_email_from_archive(&sdata, stdout, &cfg);
+   retrieve_email_from_archive(&sdata, stdout, &cfg);
 
 
    mysql_close(&(sdata.mysql));

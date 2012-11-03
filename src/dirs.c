@@ -47,14 +47,13 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
 
 void createdir(char *path, uid_t uid, gid_t gid, mode_t mode){
    struct stat st;
-   int rc;
 
    if(strlen(path) > 2){
       if(path[strlen(path)-1] == '/') path[strlen(path)-1] = '\0';
 
       if(stat(path, &st)){
          if(mkdir(path, mode) == 0){
-            rc = chown(path, uid, gid);
+            chown(path, uid, gid);
             syslog(LOG_PRIORITY, "created directory: *%s*", path);
          }
          else syslog(LOG_PRIORITY, "could not create directory: *%s*", path);

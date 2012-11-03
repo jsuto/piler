@@ -178,7 +178,7 @@ void storno_attachment(struct _state *state){
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
-   int t, x, n, n64, len, writelen, b64_len, boundary_line=0;
+   int t, n64, len, writelen, boundary_line=0;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -226,7 +226,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
          //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
-            n = write(state->fd, abuffer, state->abufpos); 
+            write(state->fd, abuffer, state->abufpos); 
 
             if(state->b64fd != -1){
                abuffer[state->abufpos] = '\0';
@@ -245,7 +245,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
             if(sdata->ms_journal == 1) remove_trailing_journal_boundary(sdata, state, writebuffer);
-            n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+            write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
       }
@@ -292,7 +292,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
                //n = write(state->mfd, puf, strlen(puf)); // WRITE
                writelen = strlen(puf);
                if(writelen + state->writebufpos > writebuffersize-1){
-                  n = write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+                  write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
                }
                memcpy(writebuffer+state->writebufpos, puf, writelen); state->writebufpos += writelen;
             }
@@ -363,7 +363,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
    if((p = strcasestr(buf, "boundary"))){
-      x = extract_boundary(p, state);
+      extract_boundary(p, state);
    }
 
 
@@ -497,7 +497,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->has_to_dump == 1){
          if(take_into_pieces == 1 && state->fd != -1){
             if(state->abufpos > 0){
-               n = write(state->fd, abuffer, state->abufpos);
+               write(state->fd, abuffer, state->abufpos);
 
                if(state->b64fd != -1){
                   abuffer[state->abufpos] = '\0';
@@ -549,7 +549,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
    if(state->base64 == 1 && state->message_state == MSG_BODY){
-      b64_len = decodeBase64(buf);
+      decodeBase64(buf);
       fixupBase64EncodedLine(buf, state);
    }
 

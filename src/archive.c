@@ -203,7 +203,7 @@ CLEANUP:
 
 
 int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct __config *cfg){
-   int i, rc, n, attachments;
+   int i, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
 
@@ -222,10 +222,10 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
    snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, *(sdata->ttmpfile+RND_STR_LEN-6), *(sdata->ttmpfile+RND_STR_LEN-5), *(sdata->ttmpfile+RND_STR_LEN-4), *(sdata->ttmpfile+RND_STR_LEN-3), *(sdata->ttmpfile+RND_STR_LEN-2), *(sdata->ttmpfile+RND_STR_LEN-1), sdata->ttmpfile);
 
    if(attachments == 0){
-      rc = retrieve_file_from_archive(filename, WRITE_TO_STDOUT, &buffer, dest, cfg);
+      retrieve_file_from_archive(filename, WRITE_TO_STDOUT, &buffer, dest, cfg);
    }
    else {
-      rc = retrieve_file_from_archive(filename, WRITE_TO_BUFFER, &buffer, dest, cfg);
+      retrieve_file_from_archive(filename, WRITE_TO_BUFFER, &buffer, dest, cfg);
 
       if(buffer){
          saved_buffer = buffer;
@@ -236,20 +236,20 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
             p = strstr(buffer, pointer);
             if(p){
                *p = '\0';
-               n = fwrite(buffer, 1, p - buffer, dest);
+               fwrite(buffer, 1, p - buffer, dest);
                buffer = p + strlen(pointer);
 
                if(strlen(ptr_arr[i].piler_id) == RND_STR_LEN){
                   snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, ptr_arr[i].piler_id[RND_STR_LEN-6], ptr_arr[i].piler_id[RND_STR_LEN-5], ptr_arr[i].piler_id[RND_STR_LEN-4], ptr_arr[i].piler_id[RND_STR_LEN-3], ptr_arr[i].piler_id[RND_STR_LEN-2], ptr_arr[i].piler_id[RND_STR_LEN-1], ptr_arr[i].piler_id, ptr_arr[i].attachment_id);
 
-                  rc = retrieve_file_from_archive(filename, WRITE_TO_STDOUT, NULL, dest, cfg);
+                  retrieve_file_from_archive(filename, WRITE_TO_STDOUT, NULL, dest, cfg);
                }
             }
 
          }
 
          if(buffer){
-            n = fwrite(buffer, 1, strlen(buffer), dest);
+            fwrite(buffer, 1, strlen(buffer), dest);
          }
 
          buffer = saved_buffer;

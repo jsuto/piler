@@ -43,7 +43,7 @@ piler: piler.c libpiler.a
 libpiler.a: $(OBJS) $(MYSQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(MYSQL_OBJS)
 	ranlib libpiler.a
-	$(CC) -shared -Wl -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS)
+	$(CC) -shared -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(MYSQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 

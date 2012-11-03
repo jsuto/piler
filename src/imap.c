@@ -318,7 +318,6 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 
 
 int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data){
-   int n;
    char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE];
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
@@ -327,7 +326,7 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
 
    write1(sd, buf, use_ssl, data->ssl);
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    p = &buf[0];
    do {

@@ -16,7 +16,7 @@
 
 
 int main(int argc, char **argv){
-   int i, rc;
+   int i;
    struct stat st;
    struct session_data sdata;
    struct _state state;
@@ -59,8 +59,6 @@ int main(int argc, char **argv){
 
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
-
-   rc = 0;
 
    init_session_data(&sdata);
  
