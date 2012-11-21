@@ -211,10 +211,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 
 int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password, int port, struct __data *data, int use_ssl){
-   int n, pos=0;
+   int n;
    char tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE];
-   char auth[2*SMALLBUFSIZE];
-   unsigned char tmp[SMALLBUFSIZE];
    unsigned long host=0;
    struct sockaddr_in remote_addr;
    X509* server_cert;
@@ -273,25 +271,15 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
 
-   /*
-    * create auth buffer: username + NUL character + username + NUL character + password
-    */
+   snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
+   snprintf(buf, sizeof(buf)-1, "%s CAPABILITY\r\n", tag);
 
-   memset(tmp, 0, sizeof(tmp));
-   pos = 0;
+   write1(sd, buf, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
-   memcpy(tmp+pos, username, strlen(username));
-   pos = strlen(username) + 1;
-   memcpy(tmp+pos, username, strlen(username));
-   pos += strlen(username) + 1;
-   memcpy(tmp+pos, password, strlen(password));
-   pos += strlen(password);
-
-
-   base64_encode(&tmp[0], pos, &auth[0], sizeof(auth));
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s AUTHENTICATE PLAIN %s\r\n", tag, auth);
+   snprintf(buf, sizeof(buf)-1, "%s LOGIN %s %s\r\n", tag, username, password);
 
    write1(sd, buf, use_ssl, data->ssl);
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
