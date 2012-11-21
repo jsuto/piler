@@ -330,8 +330,14 @@ function assemble_search_term(n) {
 function fix_search_order(sort, order) {
    var a;
 
+   a = document.getElementById('xsort');
+   if(a) a.value = sort;
+
    a = document.getElementById('sort');
    a.value = sort;
+
+   a = document.getElementById('xorder');
+   if(a) a.value = order;
 
    a = document.getElementById('order');
    a.value = order;
