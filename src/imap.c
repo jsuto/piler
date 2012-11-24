@@ -23,26 +23,6 @@
 #include <piler.h>
 
 
-#define CHK_NULL(x, errmsg) if ((x)==NULL) { printf("error: %s\n", errmsg); return ERR; }
-#define CHK_SSL(err, msg) if ((err)==-1) { printf("ssl error: %s\n", msg); return ERR; }
-
-
-unsigned long resolve_host(char *host){
-   struct hostent *h;
-   struct in_addr addr;
-
-   if(!host) return 0;
-
-   if((addr.s_addr = inet_addr(host)) == -1){
-       if((h = gethostbyname(host)) == NULL){
-          return 0;
-       }
-       else return *(unsigned long*)h->h_addr;
-   }
-   else return addr.s_addr;
-}
-
-
 int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
    char *p, *q;
    int len=0;
@@ -210,7 +190,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 }
 
 
-int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, char *password, int port, struct __data *data, int use_ssl){
+int connect_to_imap_server(int sd, int *seq, char *server, char *username, char *password, int port, struct __data *data, int use_ssl){
    int n;
    char tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE];
    unsigned long host=0;
@@ -219,7 +199,7 @@ int connect_to_imap_server(int sd, int *seq, char *imapserver, char *username, c
    char *str;
 
 
-   host = resolve_host(imapserver);
+   host = resolve_host(server);
 
    remote_addr.sin_family = AF_INET;
    remote_addr.sin_port = htons(port);

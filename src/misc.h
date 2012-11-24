@@ -11,6 +11,9 @@
 #include <cfg.h>
 #include "defs.h"
 
+#define CHK_NULL(x, errmsg) if ((x)==NULL) { printf("error: %s\n", errmsg); return ERR; }
+#define CHK_SSL(err, msg) if ((err)==-1) { printf("ssl error: %s\n", msg); return ERR; }
+
 int get_build();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
@@ -35,6 +38,8 @@ int is_email_address_on_my_domains(char *email, struct __config *cfg);
 void init_session_data(struct session_data *sdata);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
+
+unsigned long resolve_host(char *host);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);
