@@ -20,6 +20,7 @@ define('SEARCH_RESULT_CHECKBOX_CHECKED', 1);
 define('HELPER_URL', '');
 define('ENABLE_SYSLOG', 0);
 define('REWRITE_MESSAGE_ID', 0);
+define('RESTRICTED_AUDITOR', 0);
 define('GOOGLE_CLIENT_ID', 'xxxxxxxxxxx');
 define('GOOGLE_CLIENT_SECRET', 'xxxxxxxxxxxxx');
 define('GOOGLE_DEVELOPER_KEY', 'xxxxxxxxxxxx');

@@ -175,11 +175,21 @@ class ModelSearchSearch extends Model {
 
 
       if(Registry::get('auditor_user') == 1 || ENABLE_FOLDER_RESTRICTIONS == 1) {
-         if($from == '' && $to == '') { return ""; }
+         $domain_restrictions = '';
 
-         if($f && $t) { return "($f & $t)"; }
-         else if($f) { return "($f)"; }
-         else if($t) { return "($t)"; }
+         if(RESTRICTED_AUDITOR == 1) {
+            $domain_restrictions = ' (@todomain ' . $this->fix_email_address_for_sphinx($_SESSION['domain']) . ' | @fromdomain '  . $this->fix_email_address_for_sphinx($_SESSION['domain']) . ')';
+         }
+
+         if($from == '' && $to == '') { return $domain_restrictions; }
+
+         if(RESTRICTED_AUDITOR == 1) {
+            $domain_restrictions = " & $domain_restrictions";
+         }
+
+         if($f && $t) { return "($f & $t) $domain_restrictions"; }
+         else if($f) { return "($f) $domain_restrictions"; }
+         else if($t) { return "($t) $domain_restrictions"; }
       }
 
 
@@ -527,18 +537,25 @@ class ModelSearchSearch extends Model {
 
       if($id == '') { return 0; }
 
-      if(Registry::get('auditor_user') == 1) { return 1; }
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) { return 1; }
 
       array_push($arr, $id);
 
-      while(list($k, $v) = each($_SESSION['emails'])) {
-         if(validemail($v) == 1) {
-            $q .= ",?";
-            array_push($a, $v);
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+         $q = "?";
+         array_push($a, $_SESSION['domain']);
+      }
+      else {
+         while(list($k, $v) = each($_SESSION['emails'])) {
+            if(validemail($v) == 1) {
+               $q .= ",?";
+               array_push($a, $v);
+            }
          }
+
+         $q = preg_replace("/^\,/", "", $q);
       }
 
-      $q = preg_replace("/^\,/", "", $q);
 
       $arr = array_merge($arr, $a, $a);
 
@@ -547,7 +564,12 @@ class ModelSearchSearch extends Model {
          if(isset($query->row['folder']) && in_array($query->row['folder'], $_SESSION['folders'])) { return 1; }
       }
       else {
-         $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+         if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `fromdomain` IN ($q) OR `todomain` IN ($q) )", $arr);
+         } else {
+            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+         }
+
          if(isset($query->row['id'])) { return 1; }
       }
 
@@ -570,28 +592,40 @@ class ModelSearchSearch extends Model {
 
       $q2 = preg_replace("/^\,/", "", $q2);
 
-      if(Registry::get('auditor_user') == 0) {
-         while(list($k, $v) = each($_SESSION['emails'])) {
-            if(validemail($v) == 1) {
-               $q .= ",?";
-               array_push($a, $v);
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+         $q = "?";
+         array_push($a, $_SESSION['domain']);
+      }
+      else {
+         if(Registry::get('auditor_user') == 0) {
+            while(list($k, $v) = each($_SESSION['emails'])) {
+               if(validemail($v) == 1) {
+                  $q .= ",?";
+                  array_push($a, $v);
+               }
             }
          }
+
+         $q = preg_replace("/^\,/", "", $q);
       }
 
 
-      $q = preg_replace("/^\,/", "", $q);
-
-      if(Registry::get('auditor_user') == 1) {
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) {
          $query = $this->db->query("SELECT id FROM `" . TABLE_META . "` WHERE `id` IN ($q2)", $arr);
-      } else {
+      }
+      else {
 
          if(ENABLE_FOLDER_RESTRICTIONS == 1) {
             $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $id) . ")");
          }
          else {
             $arr = array_merge($arr, $a, $a);
-            $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+            if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `fromdomain` IN ($q) OR `todomain` IN ($q) )", $arr);
+            } else {
+               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+            }
+
          }
       }
 
