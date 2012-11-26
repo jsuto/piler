@@ -82,7 +82,7 @@ class ModelUserAuth extends Model {
          $_SESSION['username'] = $query->row['username'];
          $_SESSION['uid'] = $query->row['uid'];
          $_SESSION['admin_user'] = $query->row['isadmin'];
-         $_SESSION['email'] = $username;
+         $_SESSION['email'] = $this->model_user_user->get_primary_email_by_domain($query->row['uid'], $query->row['domain']);
          $_SESSION['domain'] = $query->row['domain'];
          $_SESSION['realname'] = $query->row['realname'];
 

@@ -124,6 +124,21 @@ class ModelUserUser extends Model {
    }
 
 
+   public function get_primary_email_by_domain($uid = 0, $domain = '') {
+      $email = "";
+
+      $query = $this->db->query("SELECT email FROM " . TABLE_EMAIL . " WHERE uid=?", array((int)$uid));
+
+      if(isset($query->row)) { $email = $query->row['email']; }
+
+      foreach ($query->rows as $q) {
+         if(preg_match("/\@$domain$/", $q['email'])) { return $q['email']; }
+      }
+
+      return $email;
+   }
+
+
    public function get_user_by_dn($dn = '') {
       if($dn == '') { return array(); }
 
