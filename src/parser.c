@@ -348,6 +348,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
       else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf);
       else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
+      else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0) state->message_state = MSG_TO;
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
          p = strchr(buf+11, ' ');

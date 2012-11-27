@@ -43,6 +43,7 @@ struct __config {
    int session_timeout;
 
    char piler_header_field[MAXVAL];
+   char extra_to_field[MAXVAL];
 
    unsigned char key[KEYLEN];
    unsigned char iv[MAXVAL];
