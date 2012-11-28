@@ -155,8 +155,8 @@ class ModelSearchMessage extends Model {
             }
 
             if($state == "CONTENT_TRANSFER_ENCODING"){
-               if(strstr($l, "quoted-printable")){ $qp = 1; }
-               if(strstr($l, "base64")){ $base64 = 1; }
+               if(preg_match("/quoted-printable/i", $l)){ $qp = 1; }
+               if(preg_match("/base64/i", $l)){ $base64 = 1; }
             }
 
 
