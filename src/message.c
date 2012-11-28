@@ -371,14 +371,10 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    bind[0].is_null = 0;
    len[0] = strlen(s2); bind[0].length = &len[0];
 
-   p = strchr(state->b_from, '@');
-   if(p && strlen(p) > 3){
-      p++;
-      bind[1].buffer_type = MYSQL_TYPE_STRING;
-      bind[1].buffer = p;
-      bind[1].is_null = 0;
-      len[1] = strlen(p); bind[1].length = &len[1];
-   }
+   bind[1].buffer_type = MYSQL_TYPE_STRING;
+   bind[1].buffer = state->b_from_domain;
+   bind[1].is_null = 0;
+   len[1] = strlen(state->b_from_domain); bind[1].length = &len[1];
 
    bind[2].buffer_type = MYSQL_TYPE_STRING;
    bind[2].buffer = subj;
