@@ -605,10 +605,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-         if(does_it_seem_like_an_email_address(puf) == 1){
+         if(does_it_seem_like_an_email_address(puf) == 1 && state->b_from_domain[0] == '\0' && len > 5){
             q = strchr(puf, '@');
-            if(q){
-               memcpy(&(state->b_from_domain[strlen(state->b_from_domain)]), q+1, len);
+            if(q && strlen(q) > 5){
+               memcpy(&(state->b_from_domain), q+1, strlen(q+1)-1);
                if(strstr(sdata->mailfrom, "<>")){
                   snprintf(sdata->fromemail, SMALLBUFSIZE-1, "%s", puf);
                   sdata->fromemail[len-1] = '\0';
