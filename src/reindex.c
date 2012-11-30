@@ -28,6 +28,7 @@ void usage(){
    printf("    [-c|--config <config file>] \n");
    printf("    -f <from id>\n");
    printf("    -t <to id>\n");
+   printf("    -a\n");
    printf("    [-p]\n");
 
    exit(0);
@@ -38,6 +39,31 @@ void p_clean_exit(char *msg, int rc){
    if(msg) printf("error: %s\n", msg);
 
    exit(rc);
+}
+
+
+uint64 get_max_meta_id(struct session_data *sdata){
+   MYSQL_RES *res;
+   MYSQL_ROW row;
+   char s[SMALLBUFSIZE];
+   int rc;
+   uint64 id=0;
+
+   snprintf(s, sizeof(s)-1, "SELECT MAX(`id`) FROM %s", SQL_METADATA_TABLE);
+
+   rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
+
+   if(rc == 0){
+      res = mysql_store_result(&(sdata->mysql));
+      if(res){
+         row = mysql_fetch_row(res);
+         if(row){
+            id = strtoull(row[0], NULL, 10);
+         }
+         mysql_free_result(res);
+      }
+   }
+   return id;
 }
 
 
@@ -111,7 +137,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
 
 int main(int argc, char **argv){
-   int c;
+   int c, all=0;
    uint64 from_id=0, to_id=0, n=0;
    char *configfile=CONFIG_FILE, *folder=NULL;
    struct session_data sdata;
@@ -120,7 +146,7 @@ int main(int argc, char **argv){
 
 
    while(1){
-      c = getopt(argc, argv, "c:f:t:F:phv?");
+      c = getopt(argc, argv, "c:f:t:F:pahv?");
 
       if(c == -1) break;
 
@@ -136,6 +162,10 @@ int main(int argc, char **argv){
 
          case 't' :
                     to_id = strtoull(optarg, NULL, 10);
+                    break;
+
+         case 'a' :
+                    all = 1;
                     break;
 
          case 'F' :
@@ -156,7 +186,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(from_id <= 0 || to_id <= 0) usage();
+   if(all == 0 && (from_id <= 0 || to_id <= 0) ) usage();
 
 
    (void) openlog("reindex", LOG_PID, LOG_MAIL);
@@ -194,6 +224,11 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
+
+   if(all == 1){
+      from_id = 1;
+      to_id = get_max_meta_id(&sdata);
+   }
 
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);
 
