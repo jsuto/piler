@@ -357,10 +357,20 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
 
-            if(state != SMTP_STATE_HELO){
+            if(state != SMTP_STATE_HELO && state != SMTP_STATE_PERIOD){
                strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
-            } 
+            }
             else {
+
+               if(state == SMTP_STATE_PERIOD){
+                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: initiated new transaction", sdata.ttmpfile);
+
+                  unlink(sdata.ttmpfile);
+                  unlink(sdata.tmpframe);
+
+                  init_session_data(&sdata);
+               }
+
                state = SMTP_STATE_MAIL_FROM;
 
                snprintf(sdata.mailfrom, SMALLBUFSIZE-1, "%s\r\n", buf);
