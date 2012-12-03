@@ -60,6 +60,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
          tot_msgs++;
          if(f){
             fclose(f);
+            f = NULL;
             rc = import_message(fname, sdata, data, cfg);
             if(rc == ERR) ret = ERR;
             unlink(fname);
@@ -81,7 +82,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
       if(rc == ERR) ret = ERR;
       unlink(fname);
 
-      if(quiet == 0) printf("processed: %7d\r", ++tot_msgs); fflush(stdout);
+      if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
    }
 
    fclose(F);
