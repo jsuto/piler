@@ -63,6 +63,7 @@ int main(int argc, char **argv){
    init_session_data(&sdata);
  
    sdata.sent = 0;
+   sdata.delivered = 0;
    sdata.tot_len = st.st_size;
 
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
@@ -79,7 +80,7 @@ int main(int argc, char **argv){
    printf("subject: *%s*\n", state.b_subject);
    printf("body: *%s*\n", state.b_body);
 
-   printf("sent: %ld\n", sdata.sent);
+   printf("sent: %ld, delivered-date: %ld\n", sdata.sent, sdata.delivered);
 
    make_digests(&sdata, &cfg);
 
