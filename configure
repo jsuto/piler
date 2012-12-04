@@ -3446,10 +3446,15 @@ if test "$os" = "SunOS"; then MAKE="gmake"; fi
 
 rm -f $CONFIGURE_PARAMS_FILE
 
+LDD_VERSION=`ldd --version | head -1`
+GCC_VERSION=''
+
+if test -f `which gcc`; then gcc -v 2> aa; GCC_VERSION=`tail -1 aa`; rm -f aa; fi
+
 if test "$os" = "SunOS"; then
    echo "#define CONFIGURE_PARAMS \"Build Date: "`date`'\\n" \\' > $CONFIGURE_PARAMS_FILE
 else
-   echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\\n\" \\" > $CONFIGURE_PARAMS_FILE
+   echo "#define CONFIGURE_PARAMS \"Build Date: "`date`"\\nldd version: $LDD_VERSION\\ngcc version: $GCC_VERSION\n"\" \\ > $CONFIGURE_PARAMS_FILE
 fi
 echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
 
