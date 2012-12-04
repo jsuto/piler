@@ -56,7 +56,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
    memset(buf, 0, sizeof(buf));
 
    while(zip_stat_index(z, i, 0, &sb) == 0){
-      if(strncmp(sb.name, prefix, strlen(prefix)) == 0){
+      if(strncmp(sb.name, prefix, strlen(prefix)) == 0 && (int)sb.size > 0){
 
          zf = zip_fopen_index(z, i, 0);
          if(zf){
@@ -102,9 +102,11 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
    if(!z) return 1;
 
    while(zip_stat_index(z, i, 0, &sb) == 0){
+      //printf("processing file inside the zip: %s, index: %d, size: %d\n", sb.name, sb.index, (int)sb.size);
+
       p = strrchr(sb.name, '.');
 
-      if(p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+      if((int)sb.size > 0 && p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
 
          snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
 
