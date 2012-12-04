@@ -105,7 +105,7 @@ int connect_to_pop3_server(int sd, char *server, char *username, char *password,
 
 
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg){
-   int i, rc=ERR, n, messages=0, processed_messages=0, pos, endpos, len, readlen, fd, lastpos, nreads;
+   int i, rc=ERR, n, messages=0, processed_messages=0, pos, readlen, fd, lastpos, nreads;
    char *p, buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
@@ -148,9 +148,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
       readlen = 0;
       pos = 0;
-      len = 0;
       nreads = 0;
-      endpos = 0;
 
       memset(aggrbuf, 0, sizeof(aggrbuf));
       lastpos = 0;

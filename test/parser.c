@@ -141,9 +141,9 @@ int test_htmls(){
 
 int main(int argc, char **argv){
    int n;
-   struct __config cfg;
+   //struct __config cfg;
 
-   cfg = read_config(CONFIG_FILE);
+   //cfg = read_config(CONFIG_FILE);
 
    n = test_urls();
    printf("testing fixURL(), errors: %d\n", n);

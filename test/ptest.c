@@ -297,7 +297,7 @@ void usage(){
 int main(int argc, char **argv){
    int i, c, rc=0, n_mbox=0, tot_msgs=0;
    char *configfile=CONFIG_FILE, *emlfile=NULL, *mboxdir=NULL, *mbox[MBOX_ARGS], *directory=NULL;
-   char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST, *folder=NULL;
+   char *imapserver=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST;
    struct session_data sdata;
    struct __config cfg;
    struct __data data;
@@ -382,7 +382,7 @@ int main(int argc, char **argv){
                     break;
 
          case 'F' :
-                    folder = optarg;
+                    //folder = optarg;
                     break;
 
          case 'h' :
