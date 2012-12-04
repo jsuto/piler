@@ -11,9 +11,9 @@
 
 #define PROGNAME "piler"
 
-#define VERSION "0.1.22"
+#define VERSION "0.1.23-master-branch"
 
-#define BUILD 735
+#define BUILD 739
 
 #define HOSTID "mailarchiver"
 
