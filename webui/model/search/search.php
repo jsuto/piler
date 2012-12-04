@@ -439,8 +439,14 @@ class ModelSearchSearch extends Model {
 
       if(count($ids) == 0) return $messages;
 
-      $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
+      if(MEMCACHED_ENABLED) {
+         $cache_key = $this->make_cache_file_name($ids, 'meta');
+         $memcache = Registry::get('memcache');
+         $m = $memcache->get($cache_key);
+         if(isset($m['meta'])) { return unserialize($m['meta']); }
+      }
 
+      $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
 
       if(isset($query->rows)) {
 
@@ -484,6 +490,10 @@ class ModelSearchSearch extends Model {
 
             array_push($messages, $m);
          }
+      }
+
+      if(MEMCACHED_ENABLED) {
+         $memcache->add($cache_key, array('meta' => serialize($messages)), 0, MEMCACHED_TTL);
       }
 
       return $messages;
