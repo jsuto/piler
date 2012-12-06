@@ -114,28 +114,18 @@ void replaceCharacterInBuffer(char *p, char from, char to){
 
 char *split(char *row, int ch, char *s, int size){
    char *r;
-   int len;
 
-   if(row == NULL)
+   if(row == NULL || s == NULL)
       return NULL;
 
    r = strchr(row, ch);
-   if(r == NULL){
-      len = strlen(row);
-      if(len > size)
-         len = size;
-   }
-   else {
-      len = strlen(row) - strlen(r);
-      if(len > size)
-         len = size;
+   if(r) *r = '\0';
 
+   snprintf(s, size, "%s", row);
+
+   if(r){
+      *r = ch;
       r++;
-   }
-
-   if(s != NULL){
-      strncpy(s, row, len);
-      s[len] = '\0';
    }
 
    return r;
