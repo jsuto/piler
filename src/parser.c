@@ -128,7 +128,6 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
    for(i=1; i<=state->n_attachments; i++){
       digest_file(state->attachments[i].internalname, &(state->attachments[i].digest[0]));
-      fixupEncodedHeaderLine(state->attachments[i].filename);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
 
@@ -271,6 +270,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+
+            fixupEncodedHeaderLine(state->attachments[state->n_attachments].filename);
 
             p = get_attachment_extractor_by_filename(state->attachments[state->n_attachments].filename);
 
