@@ -25,6 +25,10 @@ define('GOOGLE_CLIENT_ID', 'xxxxxxxxxxx');
 define('GOOGLE_CLIENT_SECRET', 'xxxxxxxxxxxxx');
 define('GOOGLE_DEVELOPER_KEY', 'xxxxxxxxxxxx');
 define('GOOGLE_APPLICATION_NAME', 'piler enterprise email archiver');
+define('ENABLE_IMAP_AUTH', 0);
+define('IMAP_HOST', 'mail.yourdomain.com');
+define('IMAP_PORT', 993);
+define('IMAP_SSL', true);
 
 define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
 define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');

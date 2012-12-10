@@ -5,6 +5,11 @@ class ModelUserAuth extends Model {
    public function checkLogin($username = '', $password = '') {
       $ok = 0;
 
+      if(ENABLE_IMAP_AUTH == 1) {
+         require 'Zend/Mail/Protocol/Imap.php';
+         $ok = $this->checkLoginAgainstIMAP($username, $password);
+      }
+
       $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($username));
 
       if(!isset($query->row['password'])) { return 0; }
@@ -66,6 +71,35 @@ class ModelUserAuth extends Model {
       }
 
       return 0; 
+   }
+
+
+   private function checkLoginAgainstIMAP($username = '', $password = '') {
+      $user = array();
+
+      $imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
+      if($imap->login($username, $password)) {
+         $imap->logout();
+
+         $query = $this->db->query("SELECT email, uid FROM " . TABLE_EMAIL . " WHERE email=?", array($username));
+         if($query->num_rows == 0) {
+            $a = explode("@", $username);
+
+            $user['uid'] = $this->model_user_user->get_next_uid();
+            $user['username'] = $username;
+            $user['realname'] = $a[0];
+            $user['password'] = generate_random_string(8);
+            $user['domain'] = @$a[1];
+            $user['isadmin'] = 0;
+            $user['email'] = $username;
+
+            $this->model_user_user->add_user($user);
+         }
+
+         return 1;
+      }
+
+      return 0;
    }
 
 
