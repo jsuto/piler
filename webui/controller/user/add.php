@@ -44,6 +44,7 @@ class ControllerUserAdd extends Controller {
 
                if($ret == 1){
                   $this->data['x'] = $this->data['text_successfully_added'];
+                  $this->data['next_user_id'] = $this->model_user_user->get_next_uid();
                } else {
                   $this->data['errorstring'] = $this->data['text_failed_to_add'] . ": " . $ret;
                }
