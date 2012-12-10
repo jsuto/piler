@@ -11,12 +11,12 @@ class ModelUserGoogle extends Model {
       }
       else {
 /*
-    [id] => 117316069531814989987
-    [email] => forum@hfp.hu
+    [id] => 11731982531819289345
+    [email] => bela@bacsi.hu
     [verified_email] => 1
-    [name] => Forum Admin
-    [given_name] => Forum
-    [family_name] => Admin
+    [name] => Bela Bacsi
+    [given_name] => Bela
+    [family_name] => Bacsi
 */      
 
          $d = explode('@', $google_account['email']);
