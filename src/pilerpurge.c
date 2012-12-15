@@ -53,13 +53,18 @@ int is_purge_allowed(struct session_data *sdata, struct __config *cfg){
 int remove_message_frame_files(char *s, char *update_meta_sql, struct session_data *sdata, struct __config *cfg){
    char *p, puf[SMALLBUFSIZE], filename[SMALLBUFSIZE];
    int n=0;
+   struct stat st;
 
    p = s;
    do {
       p = split(p, ' ', puf, sizeof(puf)-1);
 
       if(strlen(puf) == RND_STR_LEN){
-         snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, puf[RND_STR_LEN-6], puf[RND_STR_LEN-5], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
+         snprintf(filename, sizeof(filename)-1, "%s/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, puf[8], puf[9], puf[10], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
+
+         if(stat(filename, &st)){
+            snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, puf[RND_STR_LEN-6], puf[RND_STR_LEN-5], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
+         }
 
          if(dryrun == 1){
             n++;
@@ -92,6 +97,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __config *cf
    int n=0, len;
    MYSQL_RES *res;
    MYSQL_ROW row;
+   struct stat st;
 
 
    if(strlen(in) < 10) return 0;
@@ -123,7 +129,10 @@ int remove_attachments(char *in, struct session_data *sdata, struct __config *cf
          while((row = mysql_fetch_row(res))){
             if(!row[0]) continue;
 
-            snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, row[0][RND_STR_LEN-6], row[0][RND_STR_LEN-5], row[0][RND_STR_LEN-4], row[0][RND_STR_LEN-3], row[0][RND_STR_LEN-2], row[0][RND_STR_LEN-1], row[0], atoi(row[1]));
+            snprintf(filename, sizeof(filename)-1, "%s/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, row[0][8], row[0][9], row[0][10], row[0][RND_STR_LEN-4], row[0][RND_STR_LEN-3], row[0][RND_STR_LEN-2], row[0][RND_STR_LEN-1], row[0], atoi(row[1]));
+            if(stat(filename, &st)){
+               snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, row[0][RND_STR_LEN-6], row[0][RND_STR_LEN-5], row[0][RND_STR_LEN-4], row[0][RND_STR_LEN-3], row[0][RND_STR_LEN-2], row[0][RND_STR_LEN-1], row[0], atoi(row[1]));
+            }
 
             if(dryrun == 1){
                printf("removing attachment: *%s*\n", filename);
