@@ -217,6 +217,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                            syslog(LOG_PRIORITY, "%s: discarding message by archiving policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
                            counters.c_ignore++;
+
+                           remove_stripped_attachments(&sstate);
                         }
                         else {
                            inj = process_message(&sdata, &sstate, data, cfg);

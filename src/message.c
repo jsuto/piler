@@ -423,6 +423,13 @@ CLOSE:
 }
 
 
+void remove_stripped_attachments(struct _state *state){
+   int i;
+
+   for(i=1; i<=state->n_attachments; i++) unlink(state->attachments[i].internalname);
+}
+
+
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int i, rc;
    uint64 id=0;
@@ -430,7 +437,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
    /* discard if existing message_id */
 
    if(is_existing_message_id(sdata, state, data, cfg) == 1){
-      for(i=1; i<=state->n_attachments; i++) unlink(state->attachments[i].internalname);
+      remove_stripped_attachments(state);
 
       if(strlen(state->b_journal_to) > 0){
          id = get_metaid_by_messageid(sdata, state->message_id, cfg);
