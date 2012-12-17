@@ -9,7 +9,7 @@ class ModelMessageRestore extends Model {
 
       $randomid = generate_random_string(16);
 
-      $filename = DIR_TMP . "/" . $randomid;
+      $filename = DIR_BASE . "tmp/" . $randomid;
 
       if($zip->open($filename, ZIPARCHIVE::CREATE) != true) { exit("cannot open <$filename>\n"); }
 
