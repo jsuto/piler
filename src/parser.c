@@ -413,6 +413,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       if(state->b_subject[0] == '\0'){
          p = &buf[0];
          if(strncmp(buf, "Subject:", strlen("Subject:")) == 0) p += strlen("Subject:");
+         if(*p == ' ') p++;
 
          strncat(state->b_subject, p, MAXBUFSIZE-1);
       }
