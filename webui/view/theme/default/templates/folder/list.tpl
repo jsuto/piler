@@ -3,7 +3,7 @@
 
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 
-<form action="/folders.php" method="post" name="extra_folders">
+<form action="folders.php" method="post" name="extra_folders">
 
    <div id="search">
 

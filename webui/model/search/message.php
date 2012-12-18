@@ -3,16 +3,6 @@
 class ModelSearchMessage extends Model {
 
 
-   public function get_store_path($id = '') {
-
-      if($id == '') { return ''; }
-
-      $len = strlen($id);
-
-      return DIR_STORE . "/" . substr($id, $len-6, 2) . "/" . substr($id, $len-4, 2) . "/" . substr($id, $len-2, 2) . "/" . $id;
-   }
-
-
    public function verify_message($id = '') {
       if($id == '') { return 0; }
 

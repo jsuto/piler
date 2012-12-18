@@ -1,7 +1,7 @@
 
 <?php if(!isset($x)){ ?>
 
-<form action="/settings.php" method="post" name="setpagelen">
+<form action="settings.php" method="post" name="setpagelen">
 
    <div id="search">
 

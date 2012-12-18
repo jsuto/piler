@@ -19,9 +19,9 @@
 
    <script type="text/javascript">
       var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
-      var email_search_url = '<?php print SITE_URL; ?>/index.php?route=group/email&';
-      var group_search_url = '<?php print SITE_URL; ?>/index.php?route=group/group&';
-      var folder_search_url = '<?php print SITE_URL; ?>/index.php?route=folder/folder&';
+      var email_search_url = '<?php print SITE_URL; ?>index.php?route=group/email&';
+      var group_search_url = '<?php print SITE_URL; ?>index.php?route=group/group&';
+      var folder_search_url = '<?php print SITE_URL; ?>index.php?route=folder/folder&';
       var health_worker_url = "<?php print HEALTH_WORKER_URL; ?>";
    </script>
 

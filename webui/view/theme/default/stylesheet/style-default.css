@@ -140,6 +140,8 @@
 	.advselect2 { width: 205px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
 	.ruleselect { width: 40px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
 
+        .restore_to_mailbox { font: normal 12px Arial, sans-serif; color: #850505; padding: 0; margin:0; height: 18px; border: 0px; background: #eee; vertical-align: middle; }
+
 	button { margin: 0; background-color:gray; font: bold 12px Arial, sans-serif; width:40%; height: 40px; margin-left: 5%; margin-right: 5%; }
 	button.active { background-color: #850505; color:white; }
 
@@ -152,6 +154,7 @@
 	input[type=button].short { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 50px;}
 	input[type=button].tag { margin: 0; background-color:#eee; color: gray; font: normal 10px Arial, sans-serif; }
 	input[type=button].restore { margin: 0; background-color:yellow; color: black; font: normal 10px Arial, sans-serif; }
+	input[type=button].restore_to_mailbox_button { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; }
 
 	input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
 	input[type=checkbox].restorebox { margin: 0; vertical-align: middle; }

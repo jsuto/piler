@@ -23,10 +23,10 @@
    <script type="text/javascript">
       var current_message_id = 0;
       var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
-      var email_search_url = '<?php print SITE_URL; ?>/index.php?route=group/email&';
-      var group_search_url = '<?php print SITE_URL; ?>/index.php?route=group/group&';
-      var folder_search_url = '<?php print SITE_URL; ?>/index.php?route=folder/folder&';
-      var folder_copy_url = '<?php print SITE_URL; ?>/index.php?route=folder/copy';
+      var email_search_url = '<?php print SITE_URL; ?>index.php?route=group/email&';
+      var group_search_url = '<?php print SITE_URL; ?>index.php?route=group/group&';
+      var folder_search_url = '<?php print SITE_URL; ?>index.php?route=folder/folder&';
+      var folder_copy_url = '<?php print SITE_URL; ?>index.php?route=folder/copy';
       var message_loader_url = '<?php print SITE_URL; ?>message.php/';
    </script>
 
@@ -36,13 +36,6 @@
    <script type="text/javascript" src="/view/javascript/rc2.js"></script>
 
    <script type="text/javascript" src="/view/javascript/shortcut.js"></script>
-
-   <style type="text/css">
-      /*#mailcontframe { height: 341px; }
-      #mailpreviewframe { top: 351px; }
-      #mailleftcontainer { width: 160px; }
-      #mailrightcontainer { left: 170px; min-height: 200px; }*/
-   </style>
 
    <script type="text/javascript">
       var split = new rcube_webmail();
