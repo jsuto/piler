@@ -241,6 +241,7 @@ $_['text_remove_this_group'] = "Remover este grupo";
 $_['text_remove_this_user'] = "Remover este usuário";
 $_['text_reset_counters'] = "Zerar contadores";
 
+$_['text_restore'] = "reenviar";
 $_['text_restore_message'] = "reenviar mensagem";
 $_['text_restore_to_mailbox'] = "Reenviar mensagem";
 $_['text_restored'] = "Reenviado.";
@@ -265,6 +266,7 @@ $_['text_search_group_to_add'] = "Pesquisar grupos para adicionar";
 $_['text_search_terms'] = "Pesquisar strings";
 $_['text_select_action'] = "Selecionar ação";
 $_['text_select_all'] = "Selcionar todos";
+$_['text_select_recipients'] = "Selcionar recipiente";
 $_['text_sender'] = "Remetente";
 $_['text_sending_domains'] = "envio de domínios";
 $_['text_server_name'] = "Nome do servidor";

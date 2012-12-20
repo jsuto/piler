@@ -529,6 +529,42 @@ class ModelSearchSearch extends Model {
    }
 
 
+   public function get_message_addresses_in_my_domain($id = '') {
+      $addr = array();
+      $domains = array();
+
+      if(Registry::get('auditor_user') == 0) { return $addr; }
+
+      $query = $this->db->query("SELECT `domain` FROM " . TABLE_DOMAIN);
+      foreach($query->rows as $q) {
+         array_push($domains, $q['domain']);
+      }
+
+      $query = $this->db->query("SELECT `from`, `to` FROM " . VIEW_MESSAGES . " WHERE id=?", array($id));
+
+      if(isset($query->row)) {
+         foreach ($domains as $domain) {
+            if(preg_match("/\@$domain$/", $query->row['from'])) { array_push($addr, $query->row['from']); }
+         }
+      }
+
+      foreach($query->rows as $q) {
+         $mydomain = 0;
+
+         foreach ($domains as $domain) {
+            if(preg_match("/\@$domain$/", $q['to'])) { $mydomain = 1; break; }
+         }
+
+         if($mydomain == 1) {
+            array_push($addr, $q['to']);
+         }
+      }
+
+      return $addr;
+
+   }
+
+
    private function get_all_your_address() {
       $s = '';
 

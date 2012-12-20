@@ -22,6 +22,14 @@ class ControllerMessageRestore extends Controller {
 
       $this->data['id'] = @$this->request->get['id'];
 
+      $rcpt = array();
+
+      if(Registry::get('auditor_user') == 1) {
+         $this->data['id'] = @$this->request->post['id'];
+         $rcpt = preg_split("/\s/", $this->request->post['rcpt']);
+      }
+
+
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown piler id: ' . $this->data['id']);
          die("invalid id: " . $this->data['id']);
@@ -37,26 +45,24 @@ class ControllerMessageRestore extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $rcpt = array();
-
 
       /* send the email to all the recipients of the original email if we are admin or auditor users */
 
-      if(Registry::get('admin_user') == 1 || Registry::get('auditor_user') == 1) {
-         $rcpt = $this->model_search_search->get_message_recipients($this->data['id']);
-
-      }
-      else {
+      if(Registry::get('auditor_user') == 0) {
          array_push($rcpt, $_SESSION['email']);
       }
 
-      $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
+      $this->data['data'] = $this->data['text_failed_to_restore'];
 
-      $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
-            "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $this->model_search_message->get_raw_message($this->data['piler_id']) );
+      if(count($rcpt) > 0) {
 
-      if($x == 1) { $this->data['data'] = $this->data['text_restored']; }
-      else { $this->data['data'] = $this->data['text_failed_to_restore']; }
+         $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
+
+         $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+               "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $this->model_search_message->get_raw_message($this->data['piler_id']) );
+
+         if($x == 1) { $this->data['data'] = $this->data['text_restored']; }
+      }
 
       $this->render();
    }

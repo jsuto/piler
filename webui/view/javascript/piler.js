@@ -838,3 +838,25 @@ function close_folder(id) {
 }
 
 
+function assemble_recipient_list() {
+   var a = document.getElementById('restorebox');
+   var emails = '';
+
+   for(i=0; i<a.childNodes.length; i++) {
+
+      if(a.childNodes[i].id && a.childNodes[i].id.substring(0, 5) == "rcpt_") {
+         var e = document.getElementById(a.childNodes[i].id);
+         if(e && e.checked == 1) {
+
+            email = a.childNodes[i].id.substring(5,1000);
+
+            if(emails) { emails += ' ' + email; } else { emails = email; }
+         }
+
+      }
+   }
+
+   return encodeURI(emails);
+}
+
+

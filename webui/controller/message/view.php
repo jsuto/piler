@@ -21,8 +21,9 @@ class ControllerMessageView extends Controller {
       $this->document->title = $this->data['text_message'];
 
       $this->data['id'] = '';
+      $this->data['rcpt'] = array();
 
-      if(isset($_SERVER['REQUEST_URI'])) { $this->data['id'] = preg_replace("/\/message.php\//", "", $_SERVER['REQUEST_URI']); }
+      if(isset($_SERVER['REQUEST_URI'])) { $a = preg_split("/\//", $_SERVER['REQUEST_URI']); $this->data['id'] = $a[count($a)-1]; }
 
       if($this->request->server['REQUEST_METHOD'] == 'POST') {
          $this->data['id'] = $this->request->post['id'];
@@ -43,6 +44,8 @@ class ControllerMessageView extends Controller {
       AUDIT(ACTION_VIEW_MESSAGE, '', '', $this->data['id'], '');
 
       $this->data['username'] = Registry::get('username');
+
+      if(Registry::get('auditor_user') == 1) { $this->data['rcpt'] = $this->model_search_search->get_message_addresses_in_my_domain($this->data['id']); }
 
       /* fix username if we are admin */
 

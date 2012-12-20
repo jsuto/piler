@@ -33,6 +33,8 @@ class ControllerMessageHeaders extends Controller {
 
       AUDIT(ACTION_VIEW_HEADER, '', '', $this->data['id'], '');
 
+      if(Registry::get('auditor_user') == 1) { $this->data['rcpt'] = $this->model_search_search->get_message_addresses_in_my_domain($this->data['id']); }
+
       $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
       $this->data['data'] = $this->model_search_message->get_message_headers($this->data['piler_id']);

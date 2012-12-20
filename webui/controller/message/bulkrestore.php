@@ -46,7 +46,7 @@ class ControllerMessageBulkrestore extends Controller {
 
          $rcpt = array();
 
-         /* send the email to all the recipients of the original email if we are admin or auditor users */
+         /* send the email to all the recipients of the original email if you are an auditor user */
 
          if(Registry::get('auditor_user') == 1) {
             $rcpt = $this->model_search_search->get_message_recipients($id);
