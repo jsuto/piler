@@ -556,7 +556,7 @@ class ModelSearchSearch extends Model {
          }
 
          if($mydomain == 1) {
-            array_push($addr, $q['to']);
+            if(!in_array($q['to'], $addr)) { array_push($addr, $q['to']); }
          }
       }
 
