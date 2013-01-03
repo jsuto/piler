@@ -139,7 +139,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    MYSQL_RES *res;
    MYSQL_ROW row;
    FILE *f;
-   uint64 id;
+   uint64 id, n=0;
    char *digest=NULL, *bodydigest=NULL;
    char filename[SMALLBUFSIZE];
    int rc=0;
@@ -167,14 +167,17 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                      rc = retrieve_email_from_archive(sdata, f, cfg);
                      fclose(f);
 
+                     n++;
+
                      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
                      make_digests(sdata, cfg);
 
-                     if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0)
-                        printf("exported %s, verification: OK\n", filename);
+                     if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
+                        printf("exported: %10llu\r", n); fflush(stdout);
+                     }
                      else
-                        printf("exported %s, verification: FAILED\n", filename);
+                        printf("verification FAILED. %s\n", filename);
 
                   }
                   else printf("cannot open: %s\n", filename);
@@ -189,6 +192,8 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
       }
       else rc = 1;
    }
+
+   printf("\n");
 
    return rc;
 }
@@ -313,10 +318,14 @@ int main(int argc, char **argv){
 
    (void) openlog("pilerexport", LOG_PID, LOG_MAIL);
 
-
    snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE ", SQL_MESSAGES_VIEW);
 
    rc = append_string_to_buffer(&query, s);
+
+   if(exportall == 1){
+      rc += append_string_to_buffer(&query, "1=1");
+   }
+
 
    if(from){
       rc += append_string_to_buffer(&query, "`from` IN (");
