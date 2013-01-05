@@ -9,6 +9,19 @@ class ModelDomainDomain extends Model {
    }
 
 
+   public function get_domains_by_string($s = '', $page = 0, $page_len = PAGE_LEN) {
+      $from = (int)$page * (int)$page_len;
+
+      if(strlen($s) < 1) { return array(); }
+
+      $query = $this->db->query("SELECT domain FROM `" . TABLE_DOMAIN . "` WHERE domain LIKE ? ORDER BY domain ASC  LIMIT " . (int)$from . ", " . (int)$page_len, array($s . "%") );
+
+      if(isset($query->rows)) { return $query->rows; }
+
+      return array();
+   }
+
+
    public function deleteDomain($domain = '') {
       if($domain == "") { return 0; }
 

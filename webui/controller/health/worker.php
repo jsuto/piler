@@ -59,17 +59,6 @@ class ControllerHealthWorker extends Controller {
       $db = Registry::get('db');
       $db->select_db($db->database);
 
-      if($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['resetcounters']) && $this->request->post['resetcounters'] == 1) {
-         if(isset($this->request->post['confirmed']) && $this->request->post['confirmed'] == 1 && Registry::get('admin_user') == 1) {
-            $this->model_stat_counter->reset_counters();
-            header("Location: index.php?route=health/health");
-            exit;
-         }
-         else {
-            $this->template = "health/counter-reset-confirm.tpl";
-         }
-      }
-
 
       list($this->data['archive_size'], $this->data['counters']) = $this->model_stat_counter->get_counters();
 

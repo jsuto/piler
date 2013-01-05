@@ -82,6 +82,23 @@ class ModelUserUser extends Model {
    }
 
 
+   public function get_users_all_domains($uid = 0) {
+      $data = array();
+
+      if($uid > 0) {
+         $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
+
+         if(isset($query->rows)) {
+            foreach ($query->rows as $q) {
+               array_push($data, $q['domain']);
+            }
+         }
+      }
+
+      return $data;
+   }
+
+
    public function get_additional_uids($uid = 0) {
       $data = array();
 
@@ -121,6 +138,19 @@ class ModelUserUser extends Model {
       }
 
       return preg_replace("/\n$/", "", $emails);
+   }
+
+
+   public function get_domains_by_uid($uid = 0) {
+      $domains = "";
+
+      $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
+
+      foreach ($query->rows as $q) {
+         $domains .= $q['domain'] . "\n";
+      }
+
+      return preg_replace("/\n$/", "", $domains);
    }
 
 
@@ -320,6 +350,7 @@ class ModelUserUser extends Model {
          if($ret == 0) { return -2; }
       }
 
+      $this->update_domains_settings((int)$user['uid'], $user['domains']);
       $this->update_group_settings((int)$user['uid'], $user['group']);
       $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
@@ -397,8 +428,31 @@ class ModelUserUser extends Model {
 
       }
 
+      $this->update_domains_settings((int)$user['uid'], $user['domains']);
       $this->update_group_settings((int)$user['uid'], $user['group']);
       $this->update_folder_settings((int)$user['uid'], $user['folder']);
+
+      return 1;
+   }
+
+
+   private function update_domains_settings($uid = -1, $domains = '') {
+      $__d = array();
+
+      if($uid <= 0) { return 0; }
+
+      $query = $this->db->query("DELETE FROM `" . TABLE_DOMAIN_USER . "` WHERE uid=?", array($uid));
+
+      $all_domains = $this->get_email_domains();
+      $submitted_domains = explode("\n", $domains);
+          
+      foreach($submitted_domains as $d) {
+         $d = trim($d);
+
+         if($d && checkdomain($d, $all_domains) > 0) {
+            $query = $this->db->query("INSERT INTO `" . TABLE_DOMAIN_USER . "` (domain, uid) VALUES(?,?)", array($d, (int)$uid));
+         }
+      }
 
       return 1;
    }

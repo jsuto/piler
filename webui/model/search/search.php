@@ -90,6 +90,7 @@ class ModelSearchSearch extends Model {
       $f = $t = $fdomain = $tdomain = '';
 
       $session_emails = $this->fix_email_address_for_sphinx($_SESSION['emails']);
+      $session_domains = $this->fix_email_address_for_sphinx($_SESSION['auditdomains']);
 
       $all_your_addresses = $this->get_all_your_address();
 
@@ -176,9 +177,17 @@ class ModelSearchSearch extends Model {
 
       if(Registry::get('auditor_user') == 1 || ENABLE_FOLDER_RESTRICTIONS == 1) {
          $domain_restrictions = '';
+         $sd = '';
+
+         foreach ($session_domains as $d) {
+            $sd .= '|'.$d;
+         }
+         $sd = preg_replace("/^\|/", "", $sd);
+
 
          if(RESTRICTED_AUDITOR == 1) {
-            $domain_restrictions = ' (@todomain ' . $this->fix_email_address_for_sphinx($_SESSION['domain']) . ' | @fromdomain '  . $this->fix_email_address_for_sphinx($_SESSION['domain']) . ')';
+            /* !!!FIXME!!! test this evaluation */
+            $domain_restrictions = ' (@todomain ' . $sd . ' | @fromdomain '  . $sd . ')';
          }
 
          if($from == '' && $to == '') { return $domain_restrictions; }
@@ -588,8 +597,12 @@ class ModelSearchSearch extends Model {
       array_push($arr, $id);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
-         $q = "?";
-         array_push($a, $_SESSION['domain']);
+         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+            if(validdomain($v) == 1) {
+               $q .= ",?";
+               array_push($a, $v);
+            }
+         }
       }
       else {
          while(list($k, $v) = each($_SESSION['emails'])) {
@@ -598,10 +611,9 @@ class ModelSearchSearch extends Model {
                array_push($a, $v);
             }
          }
-
-         $q = preg_replace("/^\,/", "", $q);
       }
 
+      $q = preg_replace("/^\,/", "", $q);
 
       $arr = array_merge($arr, $a, $a);
 
@@ -639,8 +651,12 @@ class ModelSearchSearch extends Model {
       $q2 = preg_replace("/^\,/", "", $q2);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
-         $q = "?";
-         array_push($a, $_SESSION['domain']);
+         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+            if(validdomain($v) == 1) {
+               $q .= ",?";
+               array_push($a, $v);
+            }
+         }
       }
       else {
          if(Registry::get('auditor_user') == 0) {
@@ -651,9 +667,9 @@ class ModelSearchSearch extends Model {
                }
             }
          }
-
-         $q = preg_replace("/^\,/", "", $q);
       }
+
+      $q = preg_replace("/^\,/", "", $q);
 
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) {

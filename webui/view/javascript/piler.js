@@ -650,6 +650,16 @@ function append_email_from_slider(id, value) {
 }
 
 
+function append_domain_from_slider(id, value) {
+   var prefix = '\n';
+
+   a = opener.document.getElementById('domains');
+   if(a && a.value == '') prefix = '';
+
+   a.value += prefix + value;
+}
+
+
 function fill_current_messages_array() {
    var a = document.getElementById('results');
    j = 1;
@@ -696,6 +706,26 @@ $(document).ready(function() {
                 ui.item.value = '';
         }
     });
+
+    $("#s_piler_domain").autocomplete({
+        source: domains_search_url,
+        minLength: 2,
+        select: function( event, ui ) {
+                if(ui.item){
+                   var prefix = '\n';
+                   var a = document.getElementById("domains");
+
+                   if(a && a.value == '') prefix = '';
+
+                   $('#domains').val($('#domains').val() + prefix + ui.item.value);
+
+                }
+
+                ui.item.value = '';
+        }
+
+    });
+
 
     $("#s_piler_group").autocomplete({
         source: group_search_url,

@@ -87,18 +87,6 @@
             </div>
          </div>
 
-      <?php if(Registry::get('admin_user') == 1) { ?>
-         <div class="row">
-            <div class="cellhealthleft">&nbsp;</div>
-            <div class="cellhealthright">
-               <form action="index.php?route=health/worker" method="post">
-                  <input type="hidden" name="resetcounters" value="1" />
-                  <input type="submit" name="submit" value="<?php print $text_reset_counters; ?>" />
-               </form>
-            </div>
-         </div>
-      <?php } ?>
-
       </div>
 
 

@@ -16,8 +16,32 @@ class ControllerUserSettings extends Controller {
 
       $this->load->model('user/auth');
       $this->load->model('user/prefs');
+      $this->load->model('user/user');
+      $this->load->model('group/group');
 
       $this->document->title = $this->data['text_settings'];
+	  
+      $d = $r = '';
+      $auditemails = $auditdomains = $auditgroups = $auditfolders = '';
+	  
+      $auditemails = $this->model_user_user->get_emails_by_uid($_SESSION['uid']);
+	  
+      foreach($_SESSION['auditdomains'] as $d) {
+         $auditdomains .= ', '.$d;
+      }
+      $auditdomains = preg_replace("/^,\s/", "", $auditdomains);
+	  
+      $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_uid($_SESSION['uid']));
+	  
+      foreach ($_SESSION['folders'] as $r) {
+         $auditfolders .= ', '.$r;
+      }
+      $auditfolders = preg_replace("/^,\s/", "", $auditfolders);	  
+	  
+      if($auditemails) { $this->data['emails'] = $auditemails; } else { $this->data['emails'] = $this->data['text_none_found']; }
+      if($auditdomains) { $this->data['domains'] = $auditdomains; } else { $this->data['domains'] = $this->data['text_none_found']; }
+      if($auditgroups) { $this->data['groups'] = $auditgroups; } else { $this->data['groups'] = $this->data['text_none_found']; }
+      if($auditfolders) { $this->data['folders'] = $auditfolders; } else { $this->data['folders'] = $this->data['text_none_found']; }
 
       if(isset($this->request->post['pagelen']) && isset($this->request->post['theme'])) {
          $this->model_user_prefs->set_user_preferences(Registry::get('username'), $this->request->post);

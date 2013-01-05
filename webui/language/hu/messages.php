@@ -356,4 +356,13 @@ $_['text_24_hours'] = "24 óra";
 $_['text_1_week'] = "1 hét";
 $_['text_30_days'] = "30 nap";
 
+$_['text_access_settings'] = 'Hozzáférések';
+$_['text_access_setting_explanation'] = "A saját email címeihez mindig hozzáférhet. Az egyes domainekhez ill. csoportokhoz való auditor hozzáférésért, kérjük lépjen kapcsolatba az archívum adminisztrátorokkal.";
+$_['text_display_settings'] = 'Megjelenítés';
+$_['text_change_password'] = "Jelszó módosítás";
+$_['text_none_found'] = "Nincs";
+$_['text_primary_domain'] = "Elsődleges Domain";
+$_['text_search_domains'] = "Domainek keresése";
+$_['text_search_domain_to_add'] = "Írja be a domain nevének elejét";
+
 ?>

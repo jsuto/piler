@@ -103,7 +103,6 @@ function checkemail($email, $domains) {
 
    if($email == 'admin@local') { return 1; }
 
-
    list($u, $d) = explode('@', $email);
 
    foreach ($domains as $domain) {
@@ -120,6 +119,34 @@ function validemail($email = '') {
    if(preg_match("/@local$/", $email)) { return 1; }
 
    if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,5})$/', $email)) {
+      return 1;
+   }
+
+   return 0;
+}
+
+
+function checkdomain($domain, $domains) {
+   if(validdomain($domain) == 0){
+      return 0;
+   }
+
+   if($domain == 'local') { return 1; }
+
+   if(in_array($domain, $domains) ) {
+      return 1;
+   } else {
+      return -1;
+   }
+}
+
+
+function validdomain($domain = '') {
+   if($domain == '') { return 0; }
+
+   if(preg_match("/@local$/", $domain)) { return 1; }
+
+   if(preg_match('/@?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,5})$/', $domain)) {
       return 1;
    }
 

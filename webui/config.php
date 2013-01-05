@@ -171,6 +171,7 @@ define('TABLE_NOTE', '`note`');
 define('TABLE_USER_SETTINGS', 'user_settings');
 define('TABLE_REMOTE', 'remote');
 define('TABLE_DOMAIN', 'domain');
+define('TABLE_DOMAIN_USER', 'domain_user');
 define('TABLE_COUNTER', 'counter');
 define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');

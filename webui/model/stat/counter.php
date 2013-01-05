@@ -45,7 +45,7 @@ class ModelStatCounter extends Model {
          }
       }
 
-      $query = $this->db->query("UPDATE " . TABLE_COUNTER . " set `rcvd`=0, `virus`=0, `duplicate`=0, `ignore`=0");
+      $query = $this->db->query("UPDATE " . TABLE_COUNTER . " SET `rcvd`=0, `virus`=0, `duplicate`=0, `ignore`=0");
 
       return 0;
    }

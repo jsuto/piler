@@ -355,4 +355,13 @@ $_['text_24_hours'] = "24 horas";
 $_['text_1_week'] = "1 semana";
 $_['text_30_days'] = "30 dias";
 
+$_['text_access_settings'] = 'Access Settings';
+$_['text_access_setting_explanation'] = "You always have access to your own email addresses.  For auditor access to specific groups or domains, please contact your archive administrator.";
+$_['text_display_settings'] = 'Display Settings';
+$_['text_change_password'] = "Change Password";
+$_['text_none_found'] = "None found";
+$_['text_primary_domain'] = "Primary Domain";
+$_['text_search_domains'] = "Search domains";
+$_['text_search_domain_to_add'] = "Search domain to add";
+
 ?>

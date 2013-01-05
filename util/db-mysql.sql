@@ -242,6 +242,14 @@ create table if not exists `group_email` (
 ) ENGINE=InnoDB;
 
 
+create table if not exists `domain_user` (
+   `domain` char(64) not null,
+   `uid` int unsigned not null,
+   key `domain_user_idx` (`domain`),
+   key `domain_user_idx2` (`uid`)
+) ENGINE=InnoDB;
+
+
 create table if not exists `folder` (
    `id` int not null auto_increment,
    `parent_id` int default 0,

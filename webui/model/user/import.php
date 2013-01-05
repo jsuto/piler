@@ -14,6 +14,7 @@ class ModelUserImport extends Model {
       $mailAttrs = array("mail", "mailalternateaddress");
 
       $memberAttrs = array("memberdn");
+      $filter="$mailAttr=*";
 
       $ldap = new LDAP($host['ldap_host'], $host['ldap_binddn'], $host['ldap_bindpw']);
       if($ldap->is_bind_ok() == 0) {
@@ -25,16 +26,17 @@ class ModelUserImport extends Model {
       LOGGER("LDAP type: " . $host['type']);
 
       if($host['type'] == "AD") {
-         $attrs = array("cn", "samaccountname", "proxyaddresses", "member", "mail");
+         $attrs = array("cn", "samaccountname", "proxyaddresses", "member", "mail", "displayname");
 
          $mailAttr = "proxyaddresses";
          $mailAttrs = array("mail", "proxyaddresses");
 
          $memberAttrs = array("member");
+         $filter="(&(objectClass=user)($mailAttr=*))";
       }
 
 
-      $query = $ldap->query($host['ldap_basedn'], "$mailAttr=*", $attrs );
+      $query = $ldap->query($host['ldap_basedn'], $filter, $attrs );
       LOGGER("LDAP query: $mailAttr=* for basedn:" . $host['ldap_basedn']);
 
       foreach ($query->rows as $result) {
@@ -87,9 +89,17 @@ class ModelUserImport extends Model {
          }
 
 
+         $realname = '';
+         if($host['type'] == "AD") {
+            $realname = $result['displayname'];
+         } else {
+            $realname = $result['cn'];
+         }
+
+
          $data[] = array(
                          'username'       => preg_replace("/\n{1,}$/", "", $__emails[0]),
-                         'realname'       => $result['cn'],
+                         'realname'       => $realname,
                          'dn'             => $result['dn'],
                          'samaccountname' => isset($result['samaccountname']) ? $result['samaccountname'] : '',
                          'emails'         => preg_replace("/\n{1,}$/", "", $emails),
