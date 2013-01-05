@@ -186,7 +186,6 @@ class ModelSearchSearch extends Model {
 
 
          if(RESTRICTED_AUDITOR == 1) {
-            /* !!!FIXME!!! test this evaluation */
             $domain_restrictions = ' (@todomain ' . $sd . ' | @fromdomain '  . $sd . ')';
          }
 
@@ -269,7 +268,8 @@ class ModelSearchSearch extends Model {
          $data['any'] = $this->fixup_meta_characters($data['any']);
          $data['any'] = $this->fixup_sphinx_operators($data['any']);
          $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
-         if($match) { $match = "($match) & "; } $match .= "(" . $data['any'] . ") ";
+         $fields = '';
+         if($match) { $match = "($match) & "; $fields = '@subject,@body '; } $match .= "($fields " . $data['any'] . ") ";
       }
 
 
