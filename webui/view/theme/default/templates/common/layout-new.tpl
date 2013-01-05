@@ -23,6 +23,7 @@
    <script type="text/javascript">
       var current_message_id = 0;
       var piler_ui_lang = '<?php if(LANG == 'en') { ?>en-GB<?php } else { print LANG; } ?>';
+      var domains_search_url = '<?php print SITE_URL; ?>/index.php?route=domain/domains&';
       var email_search_url = '<?php print SITE_URL; ?>index.php?route=group/email&';
       var group_search_url = '<?php print SITE_URL; ?>index.php?route=group/group&';
       var folder_search_url = '<?php print SITE_URL; ?>index.php?route=folder/folder&';
