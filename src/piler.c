@@ -323,11 +323,11 @@ void initialise_configuration(){
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
 
-   memset(data.starttls, 0, TINYBUFSIZE);
+   memset(data.starttls, 0, sizeof(data.starttls));
 
 #ifdef HAVE_STARTTLS
    if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
-      snprintf(data.starttls, TINYBUFSIZE-1, "250-STARTTLS\r\n");
+      snprintf(data.starttls, sizeof(data.starttls)-1, "250-STARTTLS\r\n");
    }
 #endif
 
@@ -340,6 +340,8 @@ void initialise_configuration(){
 
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+
+   load_mydomains(&sdata, &data, &cfg);
 
    mysql_close(&(sdata.mysql));
 

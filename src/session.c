@@ -155,7 +155,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                gettimeofday(&tv1, &tz);
 
-               sstate = parse_message(&sdata, 1, cfg);
+               sstate = parse_message(&sdata, 1, data, cfg);
                post_parse(&sdata, &sstate, cfg);
 
                gettimeofday(&tv2, &tz);

@@ -49,8 +49,6 @@ struct __config {
    unsigned char key[KEYLEN];
    unsigned char iv[MAXVAL];
 
-   char mydomains[MAXVAL];
-
    char spam_header_line[MAXVAL];
 
    int default_retention_days;

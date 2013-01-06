@@ -69,7 +69,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    sdata->sent = 0;
    sdata->delivered = 0;
 
-   state = parse_message(sdata, 1, cfg);
+   state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
    if(sdata->sent <= 0 && sdata->delivered > 0) sdata->sent = sdata->delivered;

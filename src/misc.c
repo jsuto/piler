@@ -425,11 +425,11 @@ int drop_privileges(struct passwd *pwd){
 }
 
 
-int is_email_address_on_my_domains(char *email, struct __config *cfg){
+int is_email_address_on_my_domains(char *email, struct __data *data){
    int rc=0;
    char *p, *q=NULL;
 
-   if(email == NULL || cfg->mydomains == NULL) return rc;
+   if(email == NULL || data->mydomains[0] == '\0') return rc;
 
    p = strchr(email, '@');
 
@@ -441,7 +441,7 @@ int is_email_address_on_my_domains(char *email, struct __config *cfg){
 
    if(q) *q = '\0';
 
-   if(strcasestr(cfg->mydomains, p+1)) rc = 1;
+   if(strcasestr(data->mydomains, p+1)) rc = 1;
 
    if(q) *q = ' ';
 

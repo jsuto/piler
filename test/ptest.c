@@ -67,7 +67,7 @@ int parse_it(char *filename, struct session_data *sdata, struct __data *data, st
    
    sdata->sent = 0;
 
-   state = parse_message(sdata, 1, cfg);
+   state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
    unlink(sdata->tmpframe);
@@ -424,6 +424,8 @@ int main(int argc, char **argv){
 
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+
+   load_mydomains(&sdata, &data, &cfg);
 
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
    if(mbox[0]){

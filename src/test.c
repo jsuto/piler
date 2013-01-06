@@ -60,6 +60,8 @@ int main(int argc, char **argv){
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
+   load_mydomains(&sdata, &data, &cfg);
+
    init_session_data(&sdata, cfg.server_id);
  
    sdata.sent = 0;
@@ -70,7 +72,7 @@ int main(int argc, char **argv){
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
 
-   state = parse_message(&sdata, 1, &cfg);
+   state = parse_message(&sdata, 1, &data, &cfg);
    post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);

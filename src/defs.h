@@ -244,6 +244,7 @@ struct __data {
    int folder;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
+   char mydomains[MAXBUFSIZE];
 
 #ifdef HAVE_TRE
    struct rule *archiving_rules;

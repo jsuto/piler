@@ -106,7 +106,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
                   snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
-                  state = parse_message(sdata, 0, cfg);
+                  state = parse_message(sdata, 0, data, cfg);
                   post_parse(sdata, &state, cfg);
 
                   sdata->now = strtoul(row[2], NULL, 10);
@@ -224,6 +224,7 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
+   load_mydomains(&sdata, &data, &cfg);
 
    if(all == 1){
       from_id = 1;

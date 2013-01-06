@@ -9,9 +9,9 @@
 #include "config.h"
 #include "defs.h"
 
-struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __config *cfg);
+struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg);
 void post_parse(struct session_data *sdata, struct _state *state, struct __config *cfg);
-int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg);
+int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg);
 
 void init_state(struct _state *state);
 unsigned long parse_date_header(char *s);

@@ -504,6 +504,8 @@ int main(int argc, char **argv){
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
+   load_mydomains(&sdata, &data, &cfg);
+
    if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
 
    if(mbox[0]){

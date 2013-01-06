@@ -16,6 +16,7 @@ int main(int argc, char **argv){
    struct stat st;
    struct session_data sdata;
    struct _state state;
+   struct __data data;
    struct __config cfg;
 
 
@@ -44,7 +45,7 @@ int main(int argc, char **argv){
 
    cfg.debug = 1;
 
-   state = parse_message(&sdata, 0, &cfg);
+   state = parse_message(&sdata, 0, &data, &cfg);
    post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s\n", state.message_id);

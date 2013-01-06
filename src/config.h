@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.23-master-branch"
 
-#define BUILD 744
+#define BUILD 748
 
 #define HOSTID "mailarchiver"
 
@@ -83,6 +83,7 @@
 #define SQL_RETENTION_RULE_TABLE "retention_rule"
 #define SQL_COUNTER_TABLE "counter"
 #define SQL_OPTION_TABLE "option"
+#define SQL_DOMAIN_TABLE "domain"
 #define SQL_MESSAGES_VIEW "v_messages"
 #define SQL_ATTACHMENTS_VIEW "v_attachment"
 

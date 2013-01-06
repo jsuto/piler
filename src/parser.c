@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __config *cfg){
+struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg){
    FILE *f;
    int i, len;
    char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
@@ -80,7 +80,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    while(fgets(buf, sizeof(buf)-1, f)){
-      parse_line(buf, &state, sdata, take_into_pieces, &writebuffer[0], sizeof(writebuffer), &abuffer[0], sizeof(abuffer), cfg);
+      parse_line(buf, &state, sdata, take_into_pieces, &writebuffer[0], sizeof(writebuffer), &abuffer[0], sizeof(abuffer), data, cfg);
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
@@ -174,7 +174,7 @@ void storno_attachment(struct _state *state){
 }
 
 
-int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __config *cfg){
+int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
    int t, n64, len, writelen, boundary_line=0;
@@ -618,7 +618,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
                }
             }
 
-            if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_sender = 1;
+            if(is_email_address_on_my_domains(puf, data) == 1) sdata->internal_sender = 1;
 
             if(strlen(state->b_from) < SMALLBUFSIZE-len-1){
                split_email_address(puf);
@@ -643,7 +643,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
             state->tolen += len;
 
             if(does_it_seem_like_an_email_address(puf) == 1){
-               if(is_email_address_on_my_domains(puf, cfg) == 1) sdata->internal_recipient = 1;
+               if(is_email_address_on_my_domains(puf, data) == 1) sdata->internal_recipient = 1;
                else sdata->external_recipient = 1;
 
                q = strchr(puf, '@');
