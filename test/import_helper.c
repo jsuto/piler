@@ -24,7 +24,7 @@ int import_message2(char *filename, struct session_data *sdata, struct __data *d
    struct _state state;
 
 
-   init_session_data(sdata);
+   init_session_data(sdata, cfg->server_id);
 
 
    if(strcmp(filename, "-") == 0){
@@ -65,7 +65,7 @@ int import_message2(char *filename, struct session_data *sdata, struct __data *d
    
    sdata->sent = 0;
 
-   state = parse_message(sdata, 1, cfg);
+   state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
