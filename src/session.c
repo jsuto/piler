@@ -54,7 +54,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
    state = SMTP_STATE_INIT;
 
-   init_session_data(&sdata);
+   init_session_data(&sdata, cfg->server_id);
    sdata.tls = 0;
 
    bzero(&counters, sizeof(counters));
@@ -370,7 +370,7 @@ AFTER_PERIOD:
                   unlink(sdata.ttmpfile);
                   unlink(sdata.tmpframe);
 
-                  init_session_data(&sdata);
+                  init_session_data(&sdata, cfg->server_id);
                }
 
                state = SMTP_STATE_MAIL_FROM;
@@ -476,7 +476,7 @@ AFTER_PERIOD:
             unlink(sdata.ttmpfile);
             unlink(sdata.tmpframe);
 
-            init_session_data(&sdata);
+            init_session_data(&sdata, cfg->server_id);
 
             state = SMTP_STATE_HELO;
 

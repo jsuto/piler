@@ -400,7 +400,7 @@ int main(int argc, char **argv){
    if(read_key(&cfg)) p_clean_exit(ERR_READING_KEY, 1);
 
 
-   init_session_data(&sdata);
+   init_session_data(&sdata, cfg.server_id);
 
 
    mysql_init(&(sdata.mysql));

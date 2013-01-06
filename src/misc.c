@@ -211,13 +211,13 @@ int extractEmail(char *rawmail, char *email){
 }
 
 
-void create_id(char *id){
+void create_id(char *id, unsigned char server_id){
    int i;
    unsigned char buf[RND_STR_LEN/2];
 
    memset(id, 0, SMALLBUFSIZE);
 
-   get_random_bytes(buf, RND_STR_LEN/2);
+   get_random_bytes(buf, RND_STR_LEN/2, server_id);
 
    for(i=0; i < RND_STR_LEN/2; i++){
       sprintf(id, "%02x", buf[i]);
@@ -231,7 +231,7 @@ void create_id(char *id){
  * reading from pool
  */
 
-int get_random_bytes(unsigned char *buf, int len){
+int get_random_bytes(unsigned char *buf, int len, unsigned char server_id){
    int fd, ret=0;
    struct taia now;
    char nowpack[TAIA_PACK];
@@ -246,7 +246,9 @@ int get_random_bytes(unsigned char *buf, int len){
    fd = open(RANDOM_POOL, O_RDONLY);
    if(fd == -1) return ret;
 
-   if(readFromEntropyPool(fd, buf+12, len-12) != len-12){
+   *(buf + 12) = server_id;
+
+   if(readFromEntropyPool(fd, buf+12+1, len-12-1) != len-12-1){
       syslog(LOG_PRIORITY, "%s: %s", ERR_CANNOT_READ_FROM_POOL, RANDOM_POOL);
    }
    
@@ -447,13 +449,13 @@ int is_email_address_on_my_domains(char *email, struct __config *cfg){
 }
 
 
-void init_session_data(struct session_data *sdata){
+void init_session_data(struct session_data *sdata, unsigned char server_id){
    int i;
 
 
    sdata->fd = -1;
 
-   create_id(&(sdata->ttmpfile[0]));
+   create_id(&(sdata->ttmpfile[0]), server_id);
    unlink(sdata->ttmpfile);
 
    snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);

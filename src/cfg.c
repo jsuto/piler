@@ -91,6 +91,7 @@ struct _parse_rule config_parse_rules[] =
    { "pidfile", "string", (void*) string_parser, offsetof(struct __config, pidfile), PIDFILE, MAXVAL-1},
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "", MAXVAL-1},
    { "queuedir", "string", (void*) string_parser, offsetof(struct __config, queuedir), QUEUE_DIR, MAXVAL-1},
+   { "server_id", "integer", (void*) int_parser, offsetof(struct __config, server_id), "0", sizeof(int)},
    { "session_timeout", "integer", (void*) int_parser, offsetof(struct __config, session_timeout), "420", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct __config, spam_header_line), "", MAXVAL-1},
    { "tls_enable", "integer", (void*) int_parser, offsetof(struct __config, tls_enable), "0", sizeof(int)},

@@ -8,6 +8,7 @@
 #include "config.h"
 
 struct __config {
+   int server_id;
    char username[MAXVAL];
 
    char hostid[MAXVAL];

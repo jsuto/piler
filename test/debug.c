@@ -33,7 +33,7 @@ int main(int argc, char **argv){
    cfg = read_config(CONFIG_FILE);
 
 
-   init_session_data(&sdata);
+   init_session_data(&sdata, cfg.server_id);
  
    sdata.sent = 0;
    sdata.tot_len = st.st_size;

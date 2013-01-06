@@ -60,7 +60,7 @@ int main(int argc, char **argv){
    load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
-   init_session_data(&sdata);
+   init_session_data(&sdata, cfg.server_id);
  
    sdata.sent = 0;
    sdata.delivered = 0;

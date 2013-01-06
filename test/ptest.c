@@ -40,7 +40,7 @@ int parse_it(char *filename, struct session_data *sdata, struct __data *data, st
    struct _state state;
 
 
-   init_session_data(sdata);
+   init_session_data(sdata, cfg->server_id);
 
       if(stat(filename, &st) != 0){
          printf("cannot stat() %s\n", filename);

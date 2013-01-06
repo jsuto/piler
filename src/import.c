@@ -26,7 +26,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    struct __counters counters;
 
 
-   init_session_data(sdata);
+   init_session_data(sdata, cfg->server_id);
 
    if(cfg->verbosity > 1) printf("processing: %s\n", filename);
 
