@@ -177,7 +177,7 @@ class ModelSearchSearch extends Model {
 
       if(Registry::get('auditor_user') == 1 || ENABLE_FOLDER_RESTRICTIONS == 1) {
          $domain_restrictions = '';
-         $sd = '';
+         $sd = $this->fix_email_address_for_sphinx($_SESSION['domain']);
 
          foreach ($session_domains as $d) {
             $sd .= '|'.$d;
