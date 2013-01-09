@@ -101,27 +101,6 @@ ENDE:
 }
 
 
-int is_body_digest_already_stored(struct session_data *sdata, struct _state *state, struct __config *cfg){
-   int rc=0;
-   char s[SMALLBUFSIZE];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
-
-   snprintf(s, SMALLBUFSIZE-1, "SELECT `bodydigest` FROM `%s` WHERE `bodydigest`='%s'", SQL_METADATA_TABLE, sdata->bodydigest);
-
-   if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res != NULL){
-         row = mysql_fetch_row(res);
-         if(row) rc = 1;
-         mysql_free_result(res);
-      }
-   }
-
-   return rc;
-}
-
-
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg){
    int rc=ERR;
    char *subj, s[SMALLBUFSIZE];
@@ -447,16 +426,6 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
       return ERR_EXISTS;
    }
-
-
-   /* check for existing body digest */
-
-   //rc = is_body_digest_already_stored(sdata, state, cfg);
-
-   /*
-    * TODO: check if the bodydigest were stored, then we should
-    *       only store the header and append a 'bodypointer'
-    */
 
 
    /* store base64 encoded file attachments */
