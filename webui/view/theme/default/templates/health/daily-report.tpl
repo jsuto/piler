@@ -3,7 +3,7 @@
    <title><?php print $text_daily_piler_report; ?>, <?php print $date; ?></title>
 
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-   <meta http-equiv="Content-Language" content="<?php print LANG; ?>" />
+   <meta http-equiv="Content-Language" content="<?php print getenv("LANG"); ?>" />
 
    <style type="text/css">
         .row { display: table-row; }
