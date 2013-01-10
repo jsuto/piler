@@ -51,7 +51,7 @@ create table if not exists `metadata` (
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
   `vcode` char(64) default null,
-  primary key (`id`), unique(`message_id`)
+  primary key (`id`)
 ) Engine=InnoDB;
 
 create index metadata_idx on metadata(`piler_id`);

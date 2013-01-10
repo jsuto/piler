@@ -6,3 +6,6 @@ create table if not exists `domain_user` (
    key `domain_user_idx2` (`uid`)
 ) ENGINE=InnoDB;
 
+
+alter table metadata drop index message_id;
+
