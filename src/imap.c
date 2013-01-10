@@ -93,7 +93,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
    p = strstr(buf, " EXISTS");
    if(p){
       *p = '\0';
-      p = strrchr(buf, '\n');
+      p = strrchr(buf, ' ');
       if(p){
          while(!isdigit(*p)){ p++; }
          messages = atoi(p);
@@ -286,16 +286,28 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 
 
 int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data){
-   char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE];
+   char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[3*MAXBUFSIZE+3], puf[MAXBUFSIZE];
+   int len=0, n;
+
+   memset(buf, 0, sizeof(buf));
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   //snprintf(buf, sizeof(buf)-1, "%s LIST \"\" %%\r\n", tag);
-   snprintf(buf, sizeof(buf)-1, "%s LIST \"\" \"*\"\r\n", tag);
+   //snprintf(puf, sizeof(puf)-1, "%s LIST \"\" %%\r\n", tag);
+   snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
 
-   write1(sd, buf, use_ssl, data->ssl);
+   write1(sd, puf, use_ssl, data->ssl);
 
-   recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   while(1){
+      n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+      if(len + n < sizeof(buf)){
+         memcpy(&buf[len], puf, n);
+         len += n;
+      }
+      else break;
 
+      if(strstr(buf, tagok)) break;
+   }
+ 
    p = &buf[0];
    do {
       memset(puf, 0, sizeof(puf));
@@ -303,10 +315,11 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
       trimBuffer(puf);
 
       if(strncmp(puf, "* LIST ", 7) == 0){
-         q = strstr(puf, "\".\"");
+
+         q = strstr(puf, ") \"");
          if(q){
-            q += 3;
-          
+            q += 5;
+
             if(*q == ' ') q++;
             if(*q == '"') q++;
 

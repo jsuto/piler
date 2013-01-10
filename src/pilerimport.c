@@ -21,7 +21,7 @@
 #include <piler.h>
 
 
-#define SKIPLIST "junk,trash,spam,draft"
+#define SKIPLIST "junk,trash,spam,draft,"
 #define MBOX_ARGS 1024
 
 extern char *optarg;
@@ -243,7 +243,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 int import_from_imap_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, char *skiplist, struct __config *cfg){
    int rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
    char *p, puf[SMALLBUFSIZE];
-   char *q, muf[SMALLBUFSIZE];
+   char muf[SMALLBUFSIZE];
    char folders[MAXBUFSIZE];
 
 
@@ -274,15 +274,8 @@ int import_from_imap_server(char *server, char *username, char *password, int po
       skipmatch = 0;
 
       if(skiplist && strlen(skiplist) > 0){
-         q = skiplist;
-         do {
-            memset(muf, 0, sizeof(muf));
-            q = split(q, ',', muf, sizeof(muf)-1);
-            if(strncasecmp(puf, muf, strlen(muf)) == 0){
-               skipmatch = 1;
-               break;
-            }
-         } while(q);
+         snprintf(muf, sizeof(muf)-1, "%s,", puf);
+         if(strstr(skiplist, muf)) skipmatch = 1;
       }
 
       if(skipmatch == 1){
