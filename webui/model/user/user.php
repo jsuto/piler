@@ -314,6 +314,8 @@ class ModelUserUser extends Model {
       foreach ($emails as $email) {
          $email = rtrim($email);
 
+         if(validemail($email) == 0) { continue; }
+
          $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_EMAIL . " WHERE email=?", array($email));
 
          /* remove from memcached */
@@ -345,6 +347,8 @@ class ModelUserUser extends Model {
 
       foreach ($emails as $email) {
          $email = rtrim($email);
+
+         if(validemail($email) == 0) { continue; }
 
          $ret = $this->add_email((int)$user['uid'], $email);
          if($ret == 0) { return -2; }
@@ -391,6 +395,8 @@ class ModelUserUser extends Model {
       foreach ($emails as $email) {
          $email = rtrim($email);
 
+         if(validemail($email) == 0) { continue; }
+
          $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_EMAIL . " WHERE uid!=? AND email=?", array((int)$user['uid'], $email));
 
          if($query->row['count'] > 0) {
@@ -417,6 +423,9 @@ class ModelUserUser extends Model {
 
       foreach ($emails as $email) {
          $email = rtrim($email);
+
+         if(validemail($email) == 0) { continue; }
+
          $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array((int)$user['uid'], $email));
 
          /* remove from memcached */

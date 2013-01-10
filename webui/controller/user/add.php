@@ -103,12 +103,14 @@ class ControllerUserAdd extends Controller {
          $emails = explode("\n", $this->request->post['email']);
          foreach ($emails as $email) {
             $email = rtrim($email);
+            if($email == '') { continue; }
+
             $ret = checkemail($email, $this->domains);
             if($ret == 0) {
-               $this->error['email'] = $this->data['text_invalid_email'] . ": $email";
+               $this->error['email'] = $this->data['text_invalid_email'] . ": *$email*";
             }
             else if($ret == -1) {
-               $this->error['email'] = $this->data['text_email_in_unknown_domain'] . ": $email";
+               $this->error['email'] = $this->data['text_email_in_unknown_domain'] . ": *$email*";
             }
          }
       }
