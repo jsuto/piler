@@ -21,6 +21,8 @@ struct __config {
    int clamd_port;
    char clamd_socket[MAXVAL];
 
+   int encrypt_messages;
+
    int tls_enable;
    char pemfile[MAXVAL];
    char cipher_list[MAXVAL];

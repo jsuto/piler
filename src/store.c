@@ -48,7 +48,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    EVP_CIPHER_CTX ctx;
    unsigned char *outbuf=NULL;
-   int outlen, tmplen;
+   int outlen, writelen, tmplen;
 
    struct timezone tz;
    struct timeval tv1, tv2;
@@ -91,22 +91,23 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    if(rc != Z_OK) goto ENDE;
 
-   gettimeofday(&tv1, &tz);
+   if(cfg->encrypt_messages == 1){
+      gettimeofday(&tv1, &tz);
 
-   EVP_CIPHER_CTX_init(&ctx);
-   EVP_EncryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      EVP_CIPHER_CTX_init(&ctx);
+      EVP_EncryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
 
-   outbuf = malloc(dstlen + EVP_MAX_BLOCK_LENGTH);
-   if(outbuf == NULL) goto ENDE;
+      outbuf = malloc(dstlen + EVP_MAX_BLOCK_LENGTH);
+      if(outbuf == NULL) goto ENDE;
 
-   if(!EVP_EncryptUpdate(&ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
-   if(!EVP_EncryptFinal_ex(&ctx, outbuf + outlen, &tmplen)) goto ENDE;
-   outlen += tmplen;
-   EVP_CIPHER_CTX_cleanup(&ctx);
+      if(!EVP_EncryptUpdate(&ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
+      if(!EVP_EncryptFinal_ex(&ctx, outbuf + outlen, &tmplen)) goto ENDE;
+      outlen += tmplen;
+      EVP_CIPHER_CTX_cleanup(&ctx);
 
-   gettimeofday(&tv2, &tz);
-   sdata->__encrypt += tvdiff(tv2, tv1);
-
+      gettimeofday(&tv2, &tz);
+      sdata->__encrypt += tvdiff(tv2, tv1);
+   }
 
    /* create a filename in the store based on piler_id */
 
@@ -146,14 +147,21 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
    }
 
 
-   n = write(fd, outbuf, outlen);
-
-   if(n == outlen){
-      ret = 1;
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored '%s' %d/%d bytes", sdata->ttmpfile, filename, len, outlen);
+   if(cfg->encrypt_messages == 1){
+      n = write(fd, outbuf, outlen);
+      writelen = outlen;
    }
    else {
-      syslog(LOG_PRIORITY, "%s: cannot write %d bytes (only %d)", sdata->ttmpfile, outlen, n);
+      n = write(fd, z, dstlen);
+      writelen = dstlen;
+   }
+
+   if(n == writelen){
+      ret = 1;
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored '%s' %d/%d bytes", sdata->ttmpfile, filename, len, writelen);
+   }
+   else {
+      syslog(LOG_PRIORITY, "%s: cannot write %d bytes (only %d)", sdata->ttmpfile, writelen, n);
    }
 
    fsync(fd);

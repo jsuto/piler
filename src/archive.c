@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
@@ -132,7 +133,7 @@ int inf(unsigned char *in, int len, int mode, char **buffer, FILE *dest){
 
 int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg){
    int rc=0, n, olen, tlen, len, fd=-1;
-   unsigned char *s=NULL, inbuf[REALLYBIGBUFSIZE];
+   unsigned char *s=NULL, *addr=NULL, inbuf[REALLYBIGBUFSIZE];
    struct stat st;
    EVP_CIPHER_CTX ctx;
 
@@ -154,49 +155,55 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    }
 
 
-   EVP_CIPHER_CTX_init(&ctx);
-   EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+   if(cfg->encrypt_messages == 1){
+      EVP_CIPHER_CTX_init(&ctx);
+      EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
 
-   len = st.st_size+EVP_MAX_BLOCK_LENGTH;
+      len = st.st_size+EVP_MAX_BLOCK_LENGTH;
 
-   s = malloc(len);
+      s = malloc(len);
 
-   if(!s){
-      printf("malloc()\n");
-      goto CLEANUP;
-   }
-
-
-   tlen = 0;
-
-   while((n = read(fd, inbuf, sizeof(inbuf)))){
-
-      if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
-         syslog(LOG_PRIORITY, "%s: EVP_DecryptUpdate()", filename);
+      if(!s){
+         printf("malloc()\n");
          goto CLEANUP;
       }
 
+      tlen = 0;
+
+      while((n = read(fd, inbuf, sizeof(inbuf)))){
+
+         if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
+            syslog(LOG_PRIORITY, "%s: EVP_DecryptUpdate()", filename);
+            goto CLEANUP;
+         }
+
+         tlen += olen;
+      }
+
+
+      if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
+         syslog(LOG_PRIORITY, "%s: EVP_DecryptFinal()", filename);
+         goto CLEANUP;
+      }
+
+
       tlen += olen;
+      rc = inf(s, tlen, mode, buffer, dest);
+   }
+   else {
+      addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+      rc = inf(addr, st.st_size, mode, buffer, dest);
+      munmap(addr, st.st_size);
    }
 
 
-   if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
-      syslog(LOG_PRIORITY, "%s: EVP_DecryptFinal()", filename);
-      goto CLEANUP;
-   }
-
-
-   tlen += olen;
-
-
-   rc = inf(s, tlen, mode, buffer, dest);
    if(rc != Z_OK) zerr(rc);
 
 
 CLEANUP:
    if(fd != -1) close(fd);
    if(s) free(s);
-   EVP_CIPHER_CTX_cleanup(&ctx);
+   if(cfg->encrypt_messages == 1) EVP_CIPHER_CTX_cleanup(&ctx);
 
    return 0;
 }

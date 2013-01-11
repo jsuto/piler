@@ -67,6 +67,7 @@ struct _parse_rule config_parse_rules[] =
    { "clamd_socket", "string", (void*) string_parser, offsetof(struct __config, clamd_socket), CLAMD_SOCKET, MAXVAL-1},
    { "debug", "integer", (void*) int_parser, offsetof(struct __config, debug), "0", sizeof(int)},
    { "default_retention_days", "integer", (void*) int_parser, offsetof(struct __config, default_retention_days), "2557", sizeof(int)},
+   { "encrypt_messages", "integer", (void*) int_parser, offsetof(struct __config, encrypt_messages), "1", sizeof(int)},
    { "extra_to_field", "string", (void*) string_parser, offsetof(struct __config, extra_to_field), "", MAXVAL-1},
    { "hostid", "string", (void*) string_parser, offsetof(struct __config, hostid), HOSTID, MAXVAL-1},
    { "iv", "string", (void*) string_parser, offsetof(struct __config, iv), "", MAXVAL-1},
