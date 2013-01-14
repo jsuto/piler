@@ -18,6 +18,9 @@
                <a href="#" onclick="script:fix_search_order('from', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
             </div>
             <div class="cell3 title">
+               <?php print $text_to; ?>
+            </div>
+            <div class="cell3 title">
                <?php print $text_subject; ?>
                <a href="#" onclick="script:fix_search_order('subj', 1); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
                <a href="#" onclick="script:fix_search_order('subj', 0); <?php if(isset($_POST['ref'])) { ?>add_message_reference_to_form('<?php print $_POST['ref']; ?>');<?php } ?> load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); return false;"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
@@ -47,6 +50,7 @@
             <div class="cell5 id"><a href="#" onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php print ($page*$page_len) + $i; ?>.</a></div>
             <div class="cell5 date"><?php print $message['date']; ?></div>
             <div class="cell5 from"><?php if($message['from'] != $message['shortfrom']) { ?><a href="#" title="<?php print preg_replace("/&/", "&amp;", $message['from']); ?>"><?php print $message['shortfrom']; ?></a><?php } else { print $message['from']; } ?></div>
+            <div class="cell5 to"><?php if($message['to'] != $message['shortto']) { ?><a href="#" title="<?php print preg_replace("/&/", "&amp;", $message['to']); ?>"><?php print $message['shortto']; ?></a><?php } else { print $message['to']; } ?></div>
             <div class="cell5 subject"><a href="#" <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php print preg_replace("/&/", "&amp;", $message['subject']); ?>"<?php } ?> onmouseover="javascript: current_message_id = <?php print $message['id']; ?>; return false;" onclick="script:highlight_message_by_position(<?php print $i; ?>); current_message_id = <?php print $message['id']; ?>; return false;"><?php if($message['subject'] != $message['shortsubject']) { print $message['shortsubject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="script:add_message_reference_to_form('<?php print $message['reference']; ?>'); load_search_results('<?php print SEARCH_HELPER_URL; ?>', assemble_search_term(count), 0); a = document.getElementById('ref'); a.value=''; return false;">[+]</span></a><?php } ?></div>
 
             <div class="cell5 size"><?php print $message['size']; ?></div>

@@ -443,6 +443,7 @@ class ModelSearchSearch extends Model {
 
    private function get_meta_data($ids = array(), $q = '', $sortorder = '') {
       $messages = array();
+      $rcpt = $srcpt = array();
       $tag = array();
       $note = array();
 
@@ -454,6 +455,21 @@ class ModelSearchSearch extends Model {
          $m = $memcache->get($cache_key);
          if(isset($m['meta'])) { return unserialize($m['meta']); }
       }
+
+      $query = $this->db->query("SELECT `id`, `to` FROM `" . TABLE_RCPT . "` WHERE `id` IN ($q)", $ids);
+
+      if(isset($query->rows)) {
+         foreach($query->rows as $r) {
+            if(!isset($rcpt[$r['id']])) {
+               $srcpt[$r['id']] = $r['to'];
+               $rcpt[$r['id']] .= $r['to'];
+            }
+            else {
+               $rcpt[$r['id']] .= ",\n" . $r['to'];
+            }
+         }
+      }
+
 
       $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
 
@@ -477,6 +493,9 @@ class ModelSearchSearch extends Model {
 
          foreach($query->rows as $m) {
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
+
+            $m['shortto'] = $srcpt[$m['id']];
+            $m['to'] = $rcpt[$m['id']];
 
             if($m['subject'] == "") { $m['subject'] = "&lt;" . $lang->data['text_no_subject'] . "&gt;"; }
 

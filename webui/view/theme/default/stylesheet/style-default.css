@@ -59,7 +59,7 @@
 	#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; height: auto; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; overflow:auto; }
 	#resultscontainer.empty { border-bottom: 0px solid black; height: auto; overflow:auto; }
 
-	#results { float: left; width: 950px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
+	#results { float: left; width: 1120px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
 
 
 	#auditresultscontainer { float: left; width: 990px; padding: 0; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; height: 580px; overflow: auto; }

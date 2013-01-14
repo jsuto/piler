@@ -163,6 +163,7 @@ define('TABLE_FOLDER_EXTRA', 'folder_extra');
 define('TABLE_FOLDER_MESSAGE', 'folder_message');
 define('TABLE_EMAIL', 'email');
 define('TABLE_META', 'metadata');
+define('TABLE_RCPT', 'rcpt');
 define('TABLE_ATTACHMENT', 'attachment');
 define('TABLE_SEARCH', 'search');
 define('TABLE_EMAIL_LIST', 'email_groups');
