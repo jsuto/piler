@@ -1,7 +1,7 @@
 
 <?php if(!isset($x)){ ?>
 
-<form action="settings.php" method="post" name="setpagelen">
+<form action="settings.php" method="post" name="setpagelen" style="margin-bottom: 30px;">
 
 	<h4><?php print $text_access_settings; ?></h4>
 
@@ -92,18 +92,32 @@
 
 </form>
 
+
 <p>&nbsp;</p>
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
-<h4><?php print $text_change_password; ?></h4>
-<form name="pwdchange" action="index.php?route=common/home" method="post" autocomplete="off">
-   <table border="0" cellpadding="0" cellspacing="0">
-      <tr><td><?php print $text_password; ?>: </td><td><input type="password" name="password" /></td></tr>
-      <tr><td><?php print $text_password_again; ?>: </td><td><input type="password" name="password2" /></td></tr>
-     <tr><td>&nbsp;</td><td><input type="submit" value="<?php print $text_submit; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></td></tr>
-   </table>
-</form>
+   <div id="search">
+      <form method="post" name="pwdchange" action="index.php?route=common/home" style="margin-bottom: 30px;">
+      <div id="ss1" style="margin-top: 10px;">
+         <div class="row">
+            <div class="domaincell"><?php print $text_password; ?>:</div>
+            <div class="domaincell"><input type="password" class="text" name="password" /></div>
+         </div>
+         <div class="row">
+            <div class="domaincell"><?php print $text_password_again; ?>:</div>
+            <div class="domaincell"><input type="password" class="text" name="password2" /></div>
+         </div>
+         <div class="row">
+            <div class="domaincell">&nbsp;</div>
+            <div class="domaincell"><input type="submit" value="<?php print $text_submit; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+         </div>
+      </div>
+   </form>
+   </div>
 <?php } ?>
+
+
+<p>&nbsp;</p>
 
 <?php } else { ?>
 <?php print $x; ?>. <a href="index.php?route=common/home"><?php print $text_back; ?></a>
