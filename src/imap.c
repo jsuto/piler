@@ -259,7 +259,7 @@ int connect_to_imap_server(int sd, int *seq, char *server, char *username, char 
 
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s LOGIN %s %s\r\n", tag, username, password);
+   snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
 
    write1(sd, buf, use_ssl, data->ssl);
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
