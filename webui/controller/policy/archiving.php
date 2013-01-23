@@ -14,6 +14,7 @@ class ControllerPolicyArchiving extends Controller {
       $request = Registry::get('request');
 
       $db = Registry::get('db');
+      $lang = Registry::get('language');
 
       $this->load->model('policy/archiving');
 
@@ -21,12 +22,18 @@ class ControllerPolicyArchiving extends Controller {
 
       $this->data['rules'] = array();
 
+      $this->data['error'] = '';
+
       if(Registry::get('admin_user') == 0) {
          die("go away");
       }
 
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
-         $rc = $this->model_policy_archiving->add_new_rule($this->request->post);
+         if($this->validate == true) {
+            $rc = $this->model_policy_archiving->add_new_rule($this->request->post);
+         } else {
+            $this->data['error'] = $lang->data['text_invalid_data'];
+         }
       }
 
       $this->data['rules'] = $this->model_policy_archiving->get_rules();
@@ -35,6 +42,18 @@ class ControllerPolicyArchiving extends Controller {
       $this->render();
    }
 
+
+   private function validate() {
+      if($this->request->post['from'] == '' && $this->request->post['to'] == '' &&
+         $this->request->post['subject'] == '' && $this->request->post['size'] == '' &&
+         $this->request->post['attachment_type'] == '' && $this->request->post['attachment_size'] == '' &&
+         $this->request->post['spam'] == -1
+      ) {
+         return false;
+      }
+
+      return true;
+   }
 
 }
 

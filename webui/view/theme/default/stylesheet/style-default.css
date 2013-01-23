@@ -166,6 +166,7 @@
 	.fcell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
 	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
 
+	p.error { margin-bottom: 20px; color: red; font-weight: bold; }
 
 	#dhtmltooltip { position: absolute; width: 150px; border: 2px solid black; padding: 2px; background-color: yellow; color: #ffffff; visibility: hidden; z-index: 100; }
 

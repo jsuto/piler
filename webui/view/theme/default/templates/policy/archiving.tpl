@@ -65,6 +65,10 @@
 
 </form>
 
+<?php if($error) { ?>
+<p class="error"><?php print $text_error; ?>: <?php print $error; ?></p>
+<?php } ?>
+
 
 <h4><?php print $text_existing_rules; ?></h4>
 
@@ -100,5 +104,4 @@
 <?php } else { ?>
 <?php print $text_not_found; ?>
 <?php } ?>
-
 
