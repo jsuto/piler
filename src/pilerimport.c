@@ -62,8 +62,11 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
             fclose(f);
             f = NULL;
             rc = import_message(fname, sdata, data, cfg);
-            if(rc == ERR) ret = ERR;
-            unlink(fname);
+            if(rc == ERR){
+               printf("error importing: '%s'\n", fname);
+               ret = ERR;
+            }
+            else unlink(fname);
 
             if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
          }
@@ -79,8 +82,11 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
    if(f){
       fclose(f);
       rc = import_message(fname, sdata, data, cfg);
-      if(rc == ERR) ret = ERR;
-      unlink(fname);
+      if(rc == ERR){
+         printf("error importing: '%s'\n", fname);
+         ret = ERR;
+      }
+      else unlink(fname);
 
       if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
    }
@@ -215,8 +221,11 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
                rc = import_message(fname, sdata, data, cfg);
                if(rc == OK) (*tot_msgs)++;
-               else ret = ERR;
-
+               else {
+                  printf("error importing: '%s'\n", fname);
+                  ret = ERR;
+               }
+ 
                if(remove_after_successful_import == 1 && ret != ERR) unlink(fname);
 
                i++;

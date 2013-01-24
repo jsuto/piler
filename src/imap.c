@@ -181,7 +181,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       rc = import_message(filename, sdata, data, cfg);
 
-      unlink(filename);
+      if(rc == ERR) printf("error importing '%s'\n", filename);
+      else unlink(filename);
    }
 
    printf("\n");
