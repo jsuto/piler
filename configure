@@ -5930,3 +5930,9 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
+
+echo
+echo
+echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/en/upgrade.html"
+echo
+echo
