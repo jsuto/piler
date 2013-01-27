@@ -115,7 +115,7 @@ class ModelSearchMessage extends Model {
          }
       }
 
-      $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
+      if($boundary) { $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6); }
    }
 
 
