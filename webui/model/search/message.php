@@ -68,6 +68,8 @@ class ModelSearchMessage extends Model {
 
       $msg = $this->get_raw_message($id);
 
+      $this->remove_journal($msg);
+
       $pos = strpos($msg, "\n\r\n");
       if($pos == false) {
          $pos = strpos($msg, "\n\n");
@@ -82,6 +84,38 @@ class ModelSearchMessage extends Model {
       $data = preg_replace("/\>/", "&gt;", $data);
 
       return $data;
+   }
+
+
+   public function remove_journal(&$msg = '') {
+      $p = $q = '';
+      $boundary = '';
+
+      $hdr = substr($msg, 0, 4096);
+
+      $s = preg_split("/\n/", $hdr);
+      while(list($k, $v) = each($s)) {
+         if(preg_match("/boundary\s{0,}=\s{0,}\"{0,}([\w\_\-\@\.]+)\"{0,}/i", $v, $m)) {
+            if(isset($m[1])) { $boundary = $m[1]; break; }
+         }
+      }
+
+      $p = strstr($msg, "\nX-MS-Journal-Report:");
+      if($p) {
+         $msg = '';
+         $q = strstr($p, "Received: from");
+         if($q) {
+            $p = '';
+            $msg = $q;
+            $q = '';
+         }
+         else {
+            $msg = $p;
+            $p = '';
+         }
+      }
+
+      $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
    }
 
 
@@ -101,6 +135,8 @@ class ModelSearchMessage extends Model {
       $from = $to = $subject = $date = $message = "";
 
       $msg = $this->get_raw_message($id);
+
+      $this->remove_journal($msg);
 
       $a = explode("\n", $msg); $msg = "";
 

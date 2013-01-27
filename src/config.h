@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.23-master-branch"
 
-#define BUILD 752
+#define BUILD 761
 
 #define HOSTID "mailarchiver"
 
@@ -86,6 +86,10 @@
 #define SQL_DOMAIN_TABLE "domain"
 #define SQL_MESSAGES_VIEW "v_messages"
 #define SQL_ATTACHMENTS_VIEW "v_attachment"
+
+#define SQL_PREPARED_STMT_SELECT_MESSAGE_ID          "SELECT message_id FROM " SQL_METADATA_TABLE "  WHERE message_id=?"
+#define SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID  "SELECT id FROM " SQL_METADATA_TABLE " WHERE message_id=?"
+#define SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE     "INSERT INTO " SQL_RECIPIENT_TABLE " (`id`,`to`,`todomain`) VALUES(?,?,?)"
 
 
 /* Error codes */

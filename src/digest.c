@@ -47,15 +47,9 @@ int make_digests(struct session_data *sdata, struct __config *cfg){
    fd = open(sdata->filename, O_RDONLY);
    if(fd == -1) return -1;
 
-   if(sdata->ms_journal == 1 && sdata->journal_envelope_length < sizeof(buf)){
-      n = read(fd, buf, sdata->journal_envelope_length);
-   }
-
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
       len += n;
-
-      if(sdata->ms_journal == 1 && len > sdata->tot_len) n -= len - sdata->tot_len;
 
       SHA256_Update(&context2, buf, n);
 

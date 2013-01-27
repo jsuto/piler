@@ -480,7 +480,6 @@ void init_session_data(struct session_data *sdata, unsigned char server_id){
    sdata->num_of_rcpt_to = 0;
 
    sdata->ms_journal = 0;
-   sdata->ms_journal_dropped = 0;
    sdata->journal_envelope_length = 0;
    sdata->journal_bottom_length = 0;
 

@@ -41,10 +41,9 @@ class ControllerMessageDownload extends Controller {
       header("Content-Transfer-Encoding: binary\n");
 
 
-      print $this->model_search_message->get_raw_message($this->data['piler_id']);
-      exit;
-
-      $this->render();
+      $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
+      $this->model_search_message->remove_journal($msg);
+      print $msg;
    }
 
 

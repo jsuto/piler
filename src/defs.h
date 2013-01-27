@@ -189,7 +189,7 @@ struct session_data {
    char bodydigest[2*DIGEST_LENGTH+1];
    char digest[2*DIGEST_LENGTH+1];
    time_t now, sent, delivered, retained;
-   char ms_journal, ms_journal_dropped;
+   char ms_journal;
    int journal_envelope_length, journal_bottom_length;
 #ifdef NEED_MYSQL
    MYSQL mysql;

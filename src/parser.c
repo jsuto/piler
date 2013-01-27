@@ -84,8 +84,6 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
-      if(sdata->ms_journal == 1) remove_trailing_journal_boundary(sdata, &state, &writebuffer[0]);
-
       len = write(state.mfd, writebuffer, state.writebufpos);
       memset(writebuffer, 0, sizeof(writebuffer));
       state.writebufpos = 0;
@@ -93,10 +91,6 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
    if(take_into_pieces == 1){
       close(state.mfd); state.mfd = 0;
-   }
-
-   if(sdata->ms_journal == 1){
-      sdata->tot_len -= sdata->journal_envelope_length + sdata->journal_bottom_length;
    }
 
    fclose(f);
@@ -201,11 +195,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   if(sdata->ms_journal_dropped == 0){
-      sdata->journal_envelope_length += len;
-   }
-
-
    if(state->message_rfc822 == 0 && (buf[0] == '\r' || buf[0] == '\n') ){
       state->message_state = MSG_BODY;
 
@@ -243,7 +232,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
-            if(sdata->ms_journal == 1) remove_trailing_journal_boundary(sdata, state, writebuffer);
             write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
@@ -386,19 +374,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->message_state == MSG_RECIPIENT){
       p = strstr(buf, "Expanded:");
       if(p) *p = '\0';
-   }
-
-   if(state->message_state == MSG_RECEIVED && sdata->ms_journal == 1 && sdata->ms_journal_dropped == 0){
-      sdata->ms_journal_dropped = 1;
-      sdata->journal_envelope_length -= len;
-      state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
-      memcpy(writebuffer+state->writebufpos, buf, strlen(buf)); state->writebufpos += strlen(buf);
-      if(t == 2){
-         memcpy(writebuffer+state->writebufpos, "\r\n", 2); state->writebufpos += 2;
-      } else {
-         memcpy(writebuffer+state->writebufpos, "\n", 1); state->writebufpos++;
-      }
-
    }
 
 

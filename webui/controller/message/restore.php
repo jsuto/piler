@@ -58,8 +58,11 @@ class ControllerMessageRestore extends Controller {
 
          $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
+         $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
+         $this->model_search_message->remove_journal($msg);
+
          $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
-               "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $this->model_search_message->get_raw_message($this->data['piler_id']) );
+               "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $msg );
 
          if($x == 1) { $this->data['data'] = $this->data['text_restored']; }
       }
