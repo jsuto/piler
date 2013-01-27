@@ -79,6 +79,11 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);
 #endif
 
+   if(db_conn == 0){
+      send(new_sd, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
+      return 0;
+   }
+
 
    gettimeofday(&tv1, &tz);
 
