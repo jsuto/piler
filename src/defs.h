@@ -246,6 +246,13 @@ struct __data {
    char starttls[TINYBUFSIZE];
    char mydomains[MAXBUFSIZE];
 
+#ifdef NEED_MYSQL
+   MYSQL_STMT *stmt_get_meta_id_by_message_id;
+   MYSQL_STMT *stmt_insert_into_rcpt_table;
+   MYSQL_STMT *stmt_insert_into_sphinx_table;
+   MYSQL_STMT *stmt_insert_into_meta_table;
+#endif
+
 #ifdef HAVE_TRE
    struct rule *archiving_rules;
    struct rule *retention_rules;
