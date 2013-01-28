@@ -39,8 +39,8 @@ void remove_stripped_attachments(struct _state *state);
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg);
 int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg);
 int remove_stored_message_files(struct session_data *sdata, struct _state *state, struct __config *cfg);
-int store_attachments(struct session_data *sdata, struct _state *state, struct __config *cfg);
-int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr, struct __config *cfg);
+int store_attachments(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg);
+int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr, struct __config *cfg);
 
 struct __config read_config(char *configfile);
 
@@ -48,7 +48,7 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid);
 
 void update_counters(struct session_data *sdata, struct __data *data, struct __counters *counters, struct __config *cfg);
 
-int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct __config *cfg);
+int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg);
 
 int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s);
 

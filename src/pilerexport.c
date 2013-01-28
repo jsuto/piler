@@ -135,7 +135,7 @@ int append_string_to_buffer(char **buffer, char *str){
 }
 
 
-int export_emails_matching_to_query(struct session_data *sdata, char *s, struct __config *cfg){
+int export_emails_matching_to_query(struct session_data *sdata, struct __data *data, char *s, struct __config *cfg){
    MYSQL_RES *res;
    MYSQL_ROW row;
    FILE *f;
@@ -164,7 +164,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
                   f = fopen(filename, "w");
                   if(f){
-                     rc = retrieve_email_from_archive(sdata, f, cfg);
+                     rc = retrieve_email_from_archive(sdata, data, f, cfg);
                      fclose(f);
 
                      n++;
@@ -208,6 +208,7 @@ int main(int argc, char **argv){
    char *to=NULL, *from=NULL;
    char s[SMALLBUFSIZE];
    struct session_data sdata;
+   struct __data data;
    struct __config cfg;
 
 
@@ -413,7 +414,7 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
 
-   rc = export_emails_matching_to_query(&sdata, query, &cfg);
+   rc = export_emails_matching_to_query(&sdata, &data, query, &cfg);
 
    free(query);
 

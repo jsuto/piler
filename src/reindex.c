@@ -95,7 +95,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
                f = fopen(filename, "w");
                if(f){
-                  rc = retrieve_email_from_archive(sdata, f, cfg);
+                  rc = retrieve_email_from_archive(sdata, data, f, cfg);
                   fclose(f);
 
                   if(rc){

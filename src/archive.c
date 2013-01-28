@@ -209,7 +209,7 @@ CLEANUP:
 }
 
 
-int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct __config *cfg){
+int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg){
    int i, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
@@ -221,7 +221,7 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct _
       return 1;
    }
 
-   attachments = query_attachments(sdata, &ptr_arr[0], cfg);
+   attachments = query_attachments(sdata, data, &ptr_arr[0], cfg);
 
    if(attachments == -1){
       printf("problem querying the attachment of %s\n", sdata->ttmpfile);

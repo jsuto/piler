@@ -456,7 +456,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
    /* store base64 encoded file attachments */
 
    if(state->n_attachments > 0){
-      rc = store_attachments(sdata, state, cfg);
+      rc = store_attachments(sdata, state, data, cfg);
 
       for(i=1; i<=state->n_attachments; i++){
          unlink(state->attachments[i].internalname);
