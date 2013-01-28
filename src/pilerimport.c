@@ -128,9 +128,9 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
 
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
-                  folder = get_folder_id(sdata, fname, data->folder);
+                  folder = get_folder_id(sdata, data, fname, data->folder);
                   if(folder == 0){
-                     folder = add_new_folder(sdata, fname, data->folder);
+                     folder = add_new_folder(sdata, data, fname, data->folder);
 
                      if(folder == 0){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);
@@ -204,9 +204,9 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                      return ERR;
                   }
 
-                  folder = get_folder_id(sdata, p, data->folder);
+                  folder = get_folder_id(sdata, data, p, data->folder);
                   if(folder == 0){
-                     folder = add_new_folder(sdata, p, data->folder);
+                     folder = add_new_folder(sdata, data, p, data->folder);
 
                      if(folder == 0){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
@@ -489,10 +489,10 @@ int main(int argc, char **argv){
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
    if(folder){
-      data.folder = get_folder_id(&sdata, folder, 0);
+      data.folder = get_folder_id(&sdata, &data, folder, 0);
 
       if(data.folder == 0){
-         data.folder = add_new_folder(&sdata, folder, 0);
+         data.folder = add_new_folder(&sdata, &data, folder, 0);
       }
 
       if(data.folder == 0){

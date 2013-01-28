@@ -53,8 +53,8 @@ int retrieve_email_from_archive(struct session_data *sdata, struct __data *data,
 int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s);
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg);
-unsigned long get_folder_id(struct session_data *sdata, char *foldername, int parent_id);
-unsigned long add_new_folder(struct session_data *sdata, char *foldername, int parent_id);
+unsigned long get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
+unsigned long add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
 
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg);
 

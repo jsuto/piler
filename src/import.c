@@ -120,17 +120,12 @@ ENDE:
 }
 
 
-unsigned long get_folder_id(struct session_data *sdata, char *foldername, int parent_id){
+unsigned long get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    unsigned long id=0;
-   char s[SMALLBUFSIZE];
-   MYSQL_STMT *stmt;
    MYSQL_BIND bind[2];
    unsigned long len[2];
 
-
-   snprintf(s, SMALLBUFSIZE-1, "SELECT `id` FROM %s WHERE `name`=? AND `parent_id`=?", SQL_FOLDER_TABLE);
-
-   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
+   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) goto ENDE;
 
    memset(bind, 0, sizeof(bind));
 
@@ -144,12 +139,12 @@ unsigned long get_folder_id(struct session_data *sdata, char *foldername, int pa
    bind[1].is_null = 0;
    bind[1].length = 0;
 
-   if(mysql_stmt_bind_param(stmt, bind)){
+   if(mysql_stmt_bind_param(data->stmt_get_folder_id, bind)){
       goto CLOSE;
    }
 
 
-   if(mysql_stmt_execute(stmt)){
+   if(mysql_stmt_execute(data->stmt_get_folder_id)){
       goto CLOSE;
    }
 
@@ -160,19 +155,19 @@ unsigned long get_folder_id(struct session_data *sdata, char *foldername, int pa
    bind[0].is_null = 0;
    bind[0].length = 0;
 
-   if(mysql_stmt_bind_result(stmt, bind)){
+   if(mysql_stmt_bind_result(data->stmt_get_folder_id, bind)){
       goto CLOSE;
    }
 
 
-   if(mysql_stmt_store_result(stmt)){
+   if(mysql_stmt_store_result(data->stmt_get_folder_id)){
       goto CLOSE;
    }
 
-   mysql_stmt_fetch(stmt);
+   mysql_stmt_fetch(data->stmt_get_folder_id);
 
 CLOSE:
-   mysql_stmt_close(stmt);
+   mysql_stmt_close(data->stmt_get_folder_id);
 
 ENDE:
 
@@ -180,17 +175,13 @@ ENDE:
 }
 
 
-unsigned long add_new_folder(struct session_data *sdata, char *foldername, int parent_id){
+unsigned long add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    unsigned long id=0;
-   char s[SMALLBUFSIZE];
-   MYSQL_STMT *stmt;
    MYSQL_BIND bind[2];
    unsigned long len[2];
 
 
-   snprintf(s, sizeof(s)-1, "INSERT INTO %s (`name`, `parent_id`) VALUES(?,?)", SQL_FOLDER_TABLE);
-
-   if(prepare_a_mysql_statement(sdata, &stmt, s) == ERR) goto ENDE;
+   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) goto ENDE;
 
    memset(bind, 0, sizeof(bind));
 
@@ -204,21 +195,21 @@ unsigned long add_new_folder(struct session_data *sdata, char *foldername, int p
    bind[1].is_null = 0;
    bind[1].length = 0;
 
-   if(mysql_stmt_bind_param(stmt, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_FOLDER_TABLE, mysql_stmt_error(stmt));
+   if(mysql_stmt_bind_param(data->stmt_insert_into_folder_table, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_FOLDER_TABLE, mysql_stmt_error(data->stmt_insert_into_folder_table));
       goto CLOSE;
    }
 
-   if(mysql_stmt_execute(stmt)){
+   if(mysql_stmt_execute(data->stmt_insert_into_folder_table)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
       goto CLOSE;
    }
 
 
-   id = mysql_stmt_insert_id(stmt);
+   id = mysql_stmt_insert_id(data->stmt_insert_into_folder_table);
 
 CLOSE:
-   mysql_stmt_close(stmt);
+   mysql_stmt_close(data->stmt_insert_into_folder_table);
 
 ENDE:
 

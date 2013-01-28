@@ -205,7 +205,7 @@ int main(int argc, char **argv){
    data.retention_rules = NULL;
 
    if(folder){
-      data.folder = get_folder_id(&sdata, folder, 0);
+      data.folder = get_folder_id(&sdata, &data, folder, 0);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;
