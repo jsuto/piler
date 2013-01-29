@@ -97,7 +97,7 @@
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
    <div id="search">
-      <form method="post" name="pwdchange" action="index.php?route=common/home" style="margin-bottom: 30px;">
+      <form method="post" name="pwdchange" action="settings.php" style="margin-bottom: 30px;">
       <div id="ss1" style="margin-top: 10px;">
          <div class="row">
             <div class="domaincell"><?php print $text_password; ?>:</div>
@@ -120,7 +120,7 @@
 <p>&nbsp;</p>
 
 <?php } else { ?>
-<?php print $x; ?>. <a href="index.php?route=common/home"><?php print $text_back; ?></a>
+<?php print $x; ?>. <a href="settings.php"><?php print $text_back; ?></a>
 <?php } ?>
 
 
