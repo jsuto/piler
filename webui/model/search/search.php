@@ -462,7 +462,7 @@ class ModelSearchSearch extends Model {
          foreach($query->rows as $r) {
             if(!isset($rcpt[$r['id']])) {
                $srcpt[$r['id']] = $r['to'];
-               $rcpt[$r['id']] .= $r['to'];
+               $rcpt[$r['id']] = $r['to'];
             }
             else {
                $rcpt[$r['id']] .= ",\n" . $r['to'];
