@@ -17,23 +17,6 @@
 #include <zlib.h>
 
 
-int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s){
-
-   *stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!*stmt){
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_init() error", sdata->ttmpfile);
-      return ERR;
-   }
-
-   if(mysql_stmt_prepare(*stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_prepare() error: %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(*stmt), s);
-      return ERR;
-   }
-
-   return OK; 
-}
-
-
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg){
    int rc=ERR;
    char *subj;

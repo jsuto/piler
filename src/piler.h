@@ -26,6 +26,7 @@
 #endif
 
 int read_key(struct __config *cfg);
+void insert_offset(struct session_data *sdata, int server_id);
 
 int do_av_check(struct session_data *sdata, char *rcpttoemail, char *virusinfo, struct __data *data, struct __config *cfg);
 
