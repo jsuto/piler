@@ -29,7 +29,7 @@ class ControllerPolicyArchiving extends Controller {
       }
 
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
-         if($this->validate == true) {
+         if($this->validate() == true) {
             $rc = $this->model_policy_archiving->add_new_rule($this->request->post);
          } else {
             $this->data['error'] = $lang->data['text_invalid_data'];
