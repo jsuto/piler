@@ -33,8 +33,8 @@ create table if not exists `sph_index` (
 drop table if exists `metadata`;
 create table if not exists `metadata` (
   `id` bigint unsigned not null auto_increment,
-  `from` char(255) not null,
-  `fromdomain` char(48) not null,
+  `from` varchar(128) not null,
+  `fromdomain` varchar(64) not null,
   `subject` text(512) default null,
   `spam` tinyint(1) default 0,
   `arrived` int unsigned not null,
@@ -46,7 +46,7 @@ create table if not exists `metadata` (
   `direction` int default 0,
   `attachments` int default 0,
   `piler_id` char(36) not null,
-  `message_id` char(128) not null,
+  `message_id` varchar(128) not null,
   `reference` char(64) not null,
   `digest` char(64) not null,
   `bodydigest` char(64) not null,
@@ -66,8 +66,8 @@ create index metadata_idx7 on metadata(`retained`);
 drop table if exists `rcpt`;
 create table if not exists `rcpt` (
    `id` bigint unsigned not null,
-   `to` char(64) not null,
-   `todomain` char(48) not null,
+   `to` varchar(128) not null,
+   `todomain` varchar(64) not null,
    unique(`id`,`to`)
 ) Engine=InnoDB;
 
@@ -84,8 +84,8 @@ create table if not exists `attachment` (
    `id` bigint unsigned not null auto_increment,
    `piler_id` char(36) not null,
    `attachment_id` int not null,
-   `name` char(64) default null,
-   `type` char(72) default null,
+   `name` varchar(128) default null,
+   `type` varchar(128) default null,
    `sig` char(64) not null,
    `size` int default 0,
    `ptr` int default 0,
@@ -106,7 +106,7 @@ create table if not exists `tag` (
    `_id` bigint unsigned auto_increment not null,
    `id` bigint not null,
    `uid` int not null,
-   `tag` char(255) default null,
+   `tag` varchar(255) default null,
    unique(`id`, `uid`),
    key (`_id`)
 ) ENGINE=InnoDB;
@@ -315,11 +315,11 @@ drop table if exists `audit`;
 create table if not exists `audit` (
    `id` bigint unsigned not null auto_increment,
    `ts` int not null,
-   `email` char(128) not null,
+   `email` varchar(128) not null,
    `action` int not null,
    `ipaddr` char(15) not null,
    `meta_id` bigint unsigned not null,
-   `description` char(255) default null,
+   `description` varchar(255) default null,
    `vcode` char(64) default null,
    primary key (`id`)
 ) ENGINE=InnoDB;
