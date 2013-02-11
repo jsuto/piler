@@ -23,22 +23,21 @@ class ModelAuditAudit extends Model {
 
       $sortorder = "ORDER BY `$sort` $order";
 
-
       if(isset($data['action']) && $data['action'] != ACTION_ALL) {
          $where .= " AND action=?";
          array_push($arr, $data['action']);
       }
 
-      if(isset($data['ipaddr'])) {
+      if(isset($data['ipaddr']) && $data['ipaddr']) {
          $where .= " AND ipaddr IN (" . $this->append_search_criteria($data['ipaddr'], $arr) . ")";
       }
 
-      if(isset($data['user'])) {
+      if(isset($data['user']) && $data['user']) {
          $where .= " AND email IN (" . $this->append_search_criteria($data['user'], $arr) . ")";
       }
 
-      if(isset($data['ref'])) {
-         $where .= " AND ref IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
+      if(isset($data['ref']) && $data['ref']) {
+         $where .= " AND meta_id IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
       }
 
       if(isset($data['date1'])) { $date1 = $data['date1']; }
@@ -55,31 +54,23 @@ class ModelAuditAudit extends Model {
 
       $from = $data['page_len'] * $data['page'];
 
+      if($where) {
+         $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_AUDIT . " $where", $arr);
+         $n = $query->row['count'];
 
-      $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_AUDIT . " $where", $arr);
+         if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("audit query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->row['count'])); }
+      }
+      else { $n = MAX_AUDIT_HITS; }
 
-      $n = $query->row['count'];
 
       if($n > 0) {
          if($n > MAX_AUDIT_HITS) { $n = MAX_AUDIT_HITS; }
 
          $query = $this->db->query("SELECT * FROM " . TABLE_AUDIT . " $where $sortorder LIMIT $from," . $data['page_len'], $arr);
 
- 
+         if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("audit query: '%s', param: '%s' in %.2f s, %d hits", $query->query, implode(' ', $arr), $query->exec_time, $query->num_rows)); }
+
          if(isset($query->rows)) {
-
-            foreach($query->rows as $a) {
-               if($a['meta_id'] > 0) { $q .= "," . $a['meta_id']; }
-            }
-
-            if($q) {
-               $q = substr($q, 1, strlen($q));
-               $Q = $this->db->query("SELECT id, piler_id FROM " . TABLE_META . " WHERE id IN($q)");
-
-               foreach($Q->rows as $a) {
-                  $m[$a['id']] = $a['piler_id'];
-               }
-            }
 
             foreach($query->rows as $a) {
                $results[] = array(

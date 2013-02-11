@@ -24,7 +24,7 @@
 </div>
 
 
-   <div id="ss1" style="margin-top: 10px; clear: both;">
+   <div id="ss1">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_groupname; ?> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
          <div class="domaincell">&nbsp;</div>

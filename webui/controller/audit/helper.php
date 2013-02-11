@@ -3,7 +3,18 @@
 
 class ControllerAuditHelper extends Controller {
    private $error = array();
-   private $search_args = 0;
+   private $a = array(
+                    'user'            => '',
+                    'ipaddr'          => '',
+                    'action'          => '',
+                    'ref'             => '',
+                    'date1'           => '',
+                    'date2'           => '',
+                    'order'           => '',
+                    'sort'            => '',
+                    'page_len'        => 50
+                    );
+
 
    public function index(){
 
@@ -28,8 +39,8 @@ class ControllerAuditHelper extends Controller {
 
 
       if(isset($this->request->post)) {
-         $a = $this->fixup_request($this->request->post);
-         list($this->data['n'], $this->data['messages']) = $this->model_audit_audit->search_audit($a);
+         $this->fixup_request($this->request->post);
+         list($this->data['n'], $this->data['messages']) = $this->model_audit_audit->search_audit($this->a);
       }
 
       $this->data['actions'][ACTION_UNKNOWN] = '??';
@@ -68,33 +79,39 @@ class ControllerAuditHelper extends Controller {
 
 
    private function fixup_request($data = array()) {
-      $arr = array();
+      $ndate = 0;
 
-      if(isset($data['f'])) {
-         foreach($data['f'] as $f) {
-            $val = array_shift($data['v']);
+      if(!isset($data['search'])) { return; }
 
+      $s = preg_replace("/:/", ": ", $data['search']);
+      $s = preg_replace("/,/", " ", $s);
+      $s = preg_replace("/\s{1,}/", " ", $s);
+      $b = explode(" ", $s);
 
-            if($val == '') { continue; }
+      while(list($k, $v) = each($b)) {
+         if($v == '') { continue; }
 
-            if($f == 'user') { if(isset($arr['user'])) { $arr['user'] .= '*' . $val; } else { $arr['user'] = $val; } }
-            if($f == 'ipaddr') { if(isset($arr['ipaddr'])) { $arr['ipaddr'] .= '*' . $val; } else { $arr['ipaddr'] = $val; } }
-            if($f == 'ref') { if(isset($arr['ref'])) { $arr['ref'] .= '*' . $val; } else { $arr['ref'] = $val; } }
+         if(preg_match("/\@/", $v)) { $this->a['user'] .= '*' . $v; }
+         if(preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $v)) { $this->a['ipaddr'] .= '*' . $v; }
+         if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= '*' . $v; }
+         if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{4}\.\d{1,2}\.\d{1,2}/", $v)) {
+            $ndate++;
+            $this->a["date$ndate"] = $v;
          }
       }
 
-      if(isset($data['action'])) { $arr['action'] = $data['action']; }
 
-      if(isset($data['date1'])) { $arr['date1'] = $data['date1']; }
-      if(isset($data['date2'])) { $arr['date2'] = $data['date2']; }
+      $this->a['user'] = preg_replace("/^\*/", "", $this->a['user']);
+      $this->a['ipaddr'] = preg_replace("/^\*/", "", $this->a['ipaddr']);
+      $this->a['ref'] = preg_replace("/^\*/", "", $this->a['ref']);
 
-      if(isset($data['sort'])) { $arr['sort'] = $data['sort']; }
-      if(isset($data['order'])) { $arr['order'] = $data['order']; }
+      //if(isset($data['action'])) { $arr['action'] = $data['action']; }
 
-      $arr['page'] = $this->data['page'];
-      $arr['page_len'] = $this->data['page_len'];
+      if(isset($data['sort'])) { $this->a['sort'] = $data['sort']; }
+      if(isset($data['order'])) { $this->a['order'] = $data['order']; }
+      if(isset($data['page'])) { $this->a['page'] = $data['page']; }
+      if(isset($data['page_len'])) { $this->a['page_len'] = $data['page_len']; }
 
-      return $arr;
    }
 
 

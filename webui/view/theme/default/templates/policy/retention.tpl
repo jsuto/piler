@@ -1,9 +1,9 @@
 
 <h4><?php print $text_add_new_rule; ?></h4>
 
-<form method="post" name="add1" action="index.php?route=policy/retention" style="margin-bottom: 30px;">
+<form method="post" name="add1" action="index.php?route=policy/retention" class="formbottom">
 
-   <div id="ss1" style="margin-top: 10px;">
+   <div id="ss1">
 
       <div class="row">
          <div class="domaincell"><?php print $text_from; ?>:</div>
@@ -74,7 +74,7 @@
 
 <?php if(isset($rules)){ ?>
 
-   <div id="ss1" style="margin-top: 10px;">
+   <div id="ss1">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_from; ?></div>
          <div class="domaincell"><?php print $text_to; ?></div>

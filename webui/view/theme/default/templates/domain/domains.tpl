@@ -1,6 +1,6 @@
 
 <?php foreach($domains as $domain) { ?>
-   <a href="#" onclick="javascript:append_domain_from_slider('domains', '<?php print $domain['domain']; ?>');"><?php print $domain['domain']; ?></a><br />
+   <a href="#" onclick="append_value_from_slider('domains', '<?php print $domain['domain']; ?>');"><?php print $domain['domain']; ?></a><br />
 <?php } ?>
 
 
@@ -12,5 +12,5 @@
    <?php if($page < $total_pages){ ?><a href="index.php?route=domain/domains&amp;page=<?php print $total_pages; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
 </div>
 
-<div style="margin-top: 20px;"><a href="#" onclick="javascript: window.close();">close</a></div>
+<div class="top20px"><a href="#" onclick="window.close();">close</a></div>
 

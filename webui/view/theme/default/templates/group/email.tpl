@@ -1,6 +1,6 @@
 
 <?php foreach($emails as $email) { ?>
-   <a href="#" onclick="javascript:append_email_from_slider('email', '<?php print $email['email']; ?>');"><?php print $email['email']; ?></a><br />
+   <a href="#" onclick="append_value_from_slider('email', '<?php print $email['email']; ?>');"><?php print $email['email']; ?></a><br />
 <?php } ?>
 
 
@@ -12,5 +12,5 @@
    <?php if($page < $total_pages){ ?><a href="index.php?route=group/email&amp;page=<?php print $total_pages; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
 </div>
 
-<div style="margin-top: 20px;"><a href="#" onclick="javascript: window.close();">close</a></div>
+<div style="margin-top: 20px;"><a href="#" onclick="window.close();">close</a></div>
 

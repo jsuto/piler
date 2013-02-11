@@ -493,9 +493,12 @@ class ModelSearchSearch extends Model {
 
          foreach($query->rows as $m) {
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
+            $m['from'] = escape_gt_lt_quote_symbols($m['from']);
 
-            $m['shortto'] = $srcpt[$m['id']];
-            $m['to'] = $rcpt[$m['id']];
+            isset($srcpt[$m['id']]) ? $m['shortto'] = $srcpt[$m['id']] : $m['shortto'] = '';
+            isset($rcpt[$m['id']]) ? $m['to'] = $rcpt[$m['id']] : $m['to'] = '';
+            $m['to'] = escape_gt_lt_quote_symbols($m['to']);
+
 
             if($m['subject'] == "") { $m['subject'] = "&lt;" . $lang->data['text_no_subject'] . "&gt;"; }
 
@@ -515,6 +518,9 @@ class ModelSearchSearch extends Model {
 
             if(isset($tag[$m['id']])) { $m['tag'] = $tag[$m['id']]; } else { $m['tag'] = ''; }
             if(isset($note[$m['id']])) { $m['note'] = $note[$m['id']]; } else { $m['note'] = ''; }
+
+            $m['note'] = strip_tags(urldecode($m['note']));
+            $m['tag'] = strip_tags(urldecode($m['tag']));
 
             array_push($messages, $m);
          }
@@ -570,7 +576,7 @@ class ModelSearchSearch extends Model {
 
       $query = $this->db->query("SELECT `from`, `to` FROM " . VIEW_MESSAGES . " WHERE id=?", array($id));
 
-      if(isset($query->row)) {
+      if(isset($query->row['from'])) {
          foreach ($domains as $domain) {
             if(preg_match("/\@$domain$/", $query->row['from'])) { array_push($addr, $query->row['from']); }
          }

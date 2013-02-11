@@ -1,14 +1,14 @@
 
 <?php if(!isset($x)){ ?>
 
-<form action="settings.php" method="post" name="setpagelen" style="margin-bottom: 30px;">
+<form action="settings.php" method="post" name="setpagelen" class="formbottom">
 
 	<h4><?php print $text_access_settings; ?></h4>
 
    <div id="search">
 
 	 <div class="row">
-		<div class="cell1" style="width: 100px;"><?php print $text_email_addresses; ?>:</div>
+		<div class="cell1 100px"><?php print $text_email_addresses; ?>:</div>
 		<div class="cell2">
 			<?php print $emails; ?>
 		</div>
@@ -17,7 +17,7 @@
 <?php if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) { ?>
    
 	 <div class="row">
-		<div class="cell1" style="width: 100px;"><?php print $text_domains; ?>:</div>
+		<div class="cell1 100px"><?php print $text_domains; ?>:</div>
 		<div class="cell2">
 			<?php print $domains; ?>
 		</div>
@@ -28,7 +28,7 @@
 <?php if(Registry::get('auditor_user') == 0 || RESTRICTED_AUDITOR == 0) { ?>
 	 
 	 <div class="row">
-		<div class="cell1" style="width: 100px;"><?php print $text_groups; ?>:</div>
+		<div class="cell1 100px"><?php print $text_groups; ?>:</div>
 		<div class="cell2">
 			<?php print $groups; ?>
 		</div>
@@ -39,7 +39,7 @@
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 	 
 	 <div class="row">
-		<div class="cell1" style="width: 100px;"><?php print $text_folders; ?>:</div>
+		<div class="cell1 100px"><?php print $text_folders; ?>:</div>
 		<div class="cell2">
 			<?php print $folders; ?>
 		</div>
@@ -57,7 +57,7 @@
       <div id="search1">
 
          <div class="row">
-            <div class="cell1" style="width: 100px;"><?php print $text_page_length; ?>:</div>
+            <div class="cell1 100px"><?php print $text_page_length; ?>:</div>
             <div class="cell2">
                <select name="pagelen">
                   <option value="10"<?php if($page_len == 10) { ?> selected="selected"<?php } ?>>10
@@ -97,8 +97,8 @@
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
    <div id="search">
-      <form method="post" name="pwdchange" action="settings.php" style="margin-bottom: 30px;">
-      <div id="ss1" style="margin-top: 10px;">
+      <form method="post" name="pwdchange" action="settings.php" class="formbottom">
+      <div id="ss1">
          <div class="row">
             <div class="domaincell"><?php print $text_password; ?>:</div>
             <div class="domaincell"><input type="password" class="text" name="password" /></div>

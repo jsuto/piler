@@ -24,7 +24,7 @@
 </div>
 
 
-   <div id="ss1" style="margin-top: 10px;">
+   <div id="ss1">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_realname; ?> <a href="index.php?route=user/list&amp;sort=realname&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=user/list&amp;sort=realname&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
          <div class="domaincell"><?php print $text_email; ?> <a href="index.php?route=user/list&amp;sort=email&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=user/list&amp;sort=email&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
@@ -35,7 +35,7 @@
 <?php foreach($users as $user) { ?>
       <div class="domainrow">
          <div class="domaincell"><?php print $user['realname']; ?></div>
-         <div class="domaincell"><?php if($user['email'] != $user['shortemail']){ ?><span onmouseover="Tip('<?php print $user['email']; ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip()"><?php print $user['shortemail']; ?></span><?php } else { print $user['email']; } ?></div>
+         <div class="domaincell"><?php if($user['email'] != $user['shortemail']){ ?><span><?php print $user['shortemail']; ?></span><?php } else { print $user['email']; } ?></div>
          <div class="domaincell">
             <?php
                if($user['isadmin'] == 0){ print $text_user_regular; }

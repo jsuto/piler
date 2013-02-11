@@ -1,5 +1,5 @@
 
-        <div id="messagelistcontainer" class="boxlistcontent" style="top:0">
+        <div id="messagelistcontainer" class="boxlistcontent">
 
    <div id="results">
 
@@ -16,7 +16,7 @@
          if(isset($s['search'])) {
 ?>
          <div class="resultrow">
-            <a href="#" onclick="javascript:load_search_results('<?php print SEARCH_HELPER_URL; ?>', '<?php print $term['term']; ?>', 0); var a=document.getElementById('_search'); var v=decodeURIComponent('<?php print urlencode($s['search']); ?>'); v = v.replace(/\+/g, ' '); a.value=v; "><?php print $s['search']; ?></a></br />
+            <a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></br />
          </div>
 <?php } } ?>
 

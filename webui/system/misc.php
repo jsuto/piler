@@ -434,14 +434,14 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
    $date = "";
 
    if($date1) {
-      list($y,$m,$d) = explode("-", $date1);
+      list($y,$m,$d) = preg_split("/(\.|\-)/", $date1);
       $date1 = mktime(0, 0, 0, $m, $d, $y);
 
       if($date1 > 0) { $date .= "$field >= $date1 "; }
    }
 
    if($date2) {
-      list($y,$m,$d) = explode("-", $date2);
+      list($y,$m,$d) = preg_split("/(\.|\-)/", $date2);
       $date2 = mktime(23, 59, 59, $m, $d, $y);
 
       if($date2 > 0) {

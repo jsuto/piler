@@ -3,9 +3,12 @@
 class ModelDomainDomain extends Model {
 
    public function getDomains() {
+
       $query = $this->db->query("SELECT domain, mapped FROM " . TABLE_DOMAIN . " ORDER BY domain ASC");
 
-      return $query->rows;
+      if(isset($query->rows)) { return $query->rows; }
+
+      return array();
    }
 
 

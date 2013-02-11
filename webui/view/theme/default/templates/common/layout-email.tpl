@@ -11,15 +11,29 @@
    <meta name="robots" content="all" />
 
    <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
-   <script type="text/javascript" src="/view/javascript/piler.js"></script>
+
+   <script type="text/javascript">
+
+    function append_value_from_slider(id, value)
+    {
+        var prefix = '\n';
+
+        a = opener.document.getElementById(id);
+        if(a && a.value == '') prefix = '';
+
+        a.value += prefix + value;
+    }
+
+   </script>
 
 </head>
 
-<body style="background-color: white;">
+<body class="email">
 
-<div id="wrap" style="width:200px; height: 300px; border: 0px;">
+<div id="wrapemail">
 
 <?php if(isset($title) && $title) { ?><h3><?php print $title; ?></h3><?php } ?>
+
 <?php print $content; ?>
 
 

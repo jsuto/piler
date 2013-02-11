@@ -483,7 +483,7 @@ class ModelSearchMessage extends Model {
 
       $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
 
-      if(isset($query->row['tag'])) { return $query->row['tag']; }
+      if(isset($query->row['tag'])) { return strip_tags($query->row['tag']); }
 
       return '';
    }
@@ -523,7 +523,7 @@ class ModelSearchMessage extends Model {
 
       $query = $this->db->query("SELECT `note` FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
 
-      if(isset($query->row['note'])) { return $query->row['note']; }
+      if(isset($query->row['note'])) { return strip_tags(urldecode($query->row['note'])); }
 
       return '';
    }

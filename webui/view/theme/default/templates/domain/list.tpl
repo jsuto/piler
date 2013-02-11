@@ -1,9 +1,9 @@
 
 <h4><?php print $text_add_new_domain; ?></h4>
 
-<form method="post" name="add1" action="index.php?route=domain/domain" style="margin-bottom: 30px;">
+<form method="post" name="add1" action="index.php?route=domain/domain" class="formbottom">
 
-   <div id="ss1" style="margin-top: 10px;">
+   <div id="ss1">
       <div class="row">
          <div class="domaincell"><?php print $text_domain; ?>:</div>
          <div class="domaincell"><input type="text" class="text" name="domain" /></div>
@@ -21,14 +21,13 @@
 
 </form>
 
-
 <h4><?php print $text_existing_domains; ?></h4>
 
-<div style="overflow:auto; height: 500px;">
+<div class="listarea">
 
 <?php if(isset($domains)){ ?>
 
-   <div id="ss1" style="margin-top: 10px;">
+   <div id="ss1">
       <div class="domainrow">
          <div class="domaincell"><?php print $text_domain; ?></div>
          <div class="domaincell"><?php print $text_mapped_domain; ?></div>
@@ -50,5 +49,4 @@
 <?php } ?>
 
 </div>
-
 

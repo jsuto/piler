@@ -37,7 +37,7 @@
                            $status = 'ERROR'; $class = 'error';
                         }
                ?>
-                        <div class="<?php print $class; ?>"><span onmouseover="Tip('<?php print preg_replace("/\'/", "\'", $h[1]); ?>, <?php print $h[2]; ?>', BALLOON, true, ABOVE, true)" onmouseout="UnTip()"><?php print $h[3]; ?>: <?php print $status; ?></span></div>
+                        <div class="<?php print $class; ?>"><span><?php print $h[3]; ?>: <?php print $status; ?></span></div>
                <?php } ?>
             </div>
          </div>

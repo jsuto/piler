@@ -15,7 +15,7 @@
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_search_emails; ?>*:</div>
-         <div class="domaincell"><input type="text" id="s_piler_email" name="s_piler_email" value="<?php print $text_search_email_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 0);" /></div>
+         <div class="domaincell"><input type="text" id="s_piler_email" name="s_piler_email" value="<?php print $text_search_email_to_add; ?>" class="autocompletetext" onfocus="Piler.toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 1);" onblur="Piler.toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 0);" /></div>
       </div>
 
       <div class="domainrow">

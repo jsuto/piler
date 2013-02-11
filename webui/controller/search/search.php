@@ -7,7 +7,7 @@ class ControllerSearchSearch extends Controller {
 
       $this->id = "content";
       $this->template = "search/search.tpl";
-      $this->layout = "common/layout-new";
+      $this->layout = "common/layout-search";
 
       $request = Registry::get('request');
       $db = Registry::get('db');

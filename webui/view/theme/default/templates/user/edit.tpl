@@ -1,8 +1,6 @@
 
 
-<?php if(isset($user)) {
-
-   $userbasedn = preg_replace("/cn=([\w]+),/", "", $user['dn']); ?>
+<?php if(isset($user)) { ?>
 
 <form action="index.php?route=user/edit" name="adduser" method="post" autocomplete="off">
    <input type="hidden" name="uid" value="<?php print $uid; ?>" />
@@ -36,34 +34,34 @@
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_search_domains; ?>*:</div>
-         <div class="domaincell"><input type="text" id="s_piler_domain" name="s_piler_domain" value="<?php print $text_search_domain_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_domain', '<?php print $text_search_domain_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_domain', '<?php print $text_search_domain_to_add; ?>', 0);" /></div>
+         <div class="domaincell"><input type="text" id="s_piler_domain" name="s_piler_domain" value="<?php print $text_search_domain_to_add; ?>" class="autocompletetext" onfocus="Piler.toggle_hint('s_piler_domain', '<?php print $text_search_domain_to_add; ?>', 1);" onblur="Piler.toggle_hint('s_piler_domain', '<?php print $text_search_domain_to_add; ?>', 0);" /></div>
       </div>
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_domains; ?>**:</div>
-         <div class="domaincell"><textarea style="height:80px;" name="domains" id="domains" class="domain"><?php if(isset($user['domains'])){ print $user['domains']; } ?></textarea></div>
-      </div>	
+         <div class="domaincell"><textarea name="domains" id="domains" class="domain"><?php if(isset($post['domains'])){ print $post['domains']; } ?></textarea></div>
+      </div>
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_search_groups; ?>*:</div>
-         <div class="domaincell"><input type="text" id="s_piler_group" name="s_piler_group" value="<?php print $text_search_group_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 0);" /></div>
+         <div class="domaincell"><input type="text" id="s_piler_group" name="s_piler_group" value="<?php print $text_search_group_to_add; ?>" class="autocompletetext" onfocus="Piler.toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 1);" onblur="Piler.toggle_hint('s_piler_group', '<?php print $text_search_group_to_add; ?>', 0);" /></div>
       </div>
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_groups; ?>**:</div>
-         <div class="domaincell"><textarea style="height:80px;" name="group" id="group" class="domain"><?php if(isset($user['group'])){ print $user['group']; } ?></textarea></div>
+         <div class="domaincell"><textarea name="group" id="group" class="domain"><?php if(isset($user['group'])){ print $user['group']; } ?></textarea></div>
       </div>
 
 
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_search_folders; ?>*:</div>
-         <div class="domaincell"><input type="text" id="s_piler_folder" name="s_piler_folder" value="<?php print $text_search_folder_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 0);" /></div>
+         <div class="domaincell"><input type="text" id="s_piler_folder" name="s_piler_folder" value="<?php print $text_search_folder_to_add; ?>" class="autocompletetext" onfocus="Piler.toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 1);" onblur="Piler.toggle_hint('s_piler_folder', '<?php print $text_search_folder_to_add; ?>', 0);" /></div>
       </div>
 
       <div class="domainrow">
          <div class="domaincell"><?php print $text_folders; ?>**:</div>
-         <div class="domaincell"><textarea style="height:80px;" name="folder" id="folder" class="domain"><?php if(isset($user['folder'])){ print $user['folder']; } ?></textarea></div>
+         <div class="domaincell"><textarea name="folder" id="folder" class="domain"><?php if(isset($user['folder'])){ print $user['folder']; } ?></textarea></div>
       </div>  
 
 
