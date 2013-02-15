@@ -65,9 +65,7 @@ var Piler =
      **/
     getSource:function( a, b )
     {
-        // <DEBUG>
         Piler.log("[getSource]", a, b ); 
-        // </DEBUG>
 
         if ( !b )
         {
@@ -79,9 +77,7 @@ var Piler =
             }
             catch ( e ) 
             {
-                // <DEBUG>
                 Piler.log("[getSource]", e ); 
-            // </DEBUG>                
             }
         }
 
