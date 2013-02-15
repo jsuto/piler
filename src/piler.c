@@ -343,6 +343,8 @@ void initialise_configuration(){
 
    load_mydomains(&sdata, &data, &cfg);
 
+   if(cfg.server_id > 0) insert_offset(&sdata, cfg.server_id);
+
    mysql_close(&(sdata.mysql));
 
 
