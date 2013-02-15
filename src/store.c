@@ -114,7 +114,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
    p = strchr(filename, '.');
    if(p) *p = '\0';
 
-   snprintf(s, sizeof(s)-1, "%s/%c%c%c/%c%c/%c%c/%s", cfg->queuedir, filename[8], filename[9], filename[10], filename[RND_STR_LEN-4], filename[RND_STR_LEN-3], filename[RND_STR_LEN-2], filename[RND_STR_LEN-1], filename);
+   snprintf(s, sizeof(s)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s", cfg->queuedir, cfg->server_id, filename[8], filename[9], filename[10], filename[RND_STR_LEN-4], filename[RND_STR_LEN-3], filename[RND_STR_LEN-2], filename[RND_STR_LEN-1], filename);
 
    if(p){
       *p = '.';
@@ -188,7 +188,7 @@ int remove_stored_message_files(struct session_data *sdata, struct _state *state
    if(state->n_attachments > 0){
 
       for(i=1; i<=state->n_attachments; i++){
-         snprintf(s, sizeof(s)-1, "%s/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, sdata->ttmpfile[8], sdata->ttmpfile[9], sdata->ttmpfile[10], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile, i);
+         snprintf(s, sizeof(s)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, sdata->ttmpfile[8], sdata->ttmpfile[9], sdata->ttmpfile[10], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile, i);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: unlinking %s", sdata->ttmpfile, s);
 
@@ -196,7 +196,7 @@ int remove_stored_message_files(struct session_data *sdata, struct _state *state
       }
    }
 
-   snprintf(s, sizeof(s)-1, "%s/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, sdata->ttmpfile[8], sdata->ttmpfile[9], sdata->ttmpfile[10], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile);
+   snprintf(s, sizeof(s)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, sdata->ttmpfile[8], sdata->ttmpfile[9], sdata->ttmpfile[10], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: unlinking %s", sdata->ttmpfile, s);
 

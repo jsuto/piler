@@ -36,3 +36,21 @@ void insert_offset(struct session_data *sdata, int server_id){
 }
 
 
+int create_prepared_statements(struct session_data *sdata, struct __data *data){
+   int rc = OK;
+
+   data->stmt_get_meta_id_by_message_id = NULL;
+   data->stmt_insert_into_rcpt_table = NULL;
+
+   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) rc = ERR;
+   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) rc = ERR;
+
+   return rc;
+}
+
+
+void close_prepared_statements(struct __data *data){
+   if(data->stmt_get_meta_id_by_message_id) mysql_stmt_close(data->stmt_get_meta_id_by_message_id);
+   if(data->stmt_insert_into_rcpt_table) mysql_stmt_close(data->stmt_insert_into_rcpt_table);
+}
+

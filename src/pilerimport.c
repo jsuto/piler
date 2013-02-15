@@ -484,6 +484,11 @@ int main(int argc, char **argv){
    mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
    mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
+   if(create_prepared_statements(&sdata, &data) == ERR){
+      rc = ERR;
+      goto ENDE;
+   }
+
    setlocale(LC_CTYPE, cfg.locale);
 
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
@@ -523,6 +528,9 @@ int main(int argc, char **argv){
 
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
+
+ENDE:
+   close_prepared_statements(&data);
 
    mysql_close(&(sdata.mysql));
 

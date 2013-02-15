@@ -17,7 +17,7 @@ void createdir(char *path, uid_t uid, gid_t gid, mode_t mode);
 
 
 void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
-   char *p;
+   char *p, s[SMALLBUFSIZE];
 
    p = strrchr(cfg->workdir, '/');
    if(p){
@@ -34,6 +34,9 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
       *p = '/';
    }
    createdir(cfg->queuedir, uid, gid, 0700);
+
+   snprintf(s, sizeof(s)-1, "%s/%02x", cfg->queuedir, cfg->server_id);
+   createdir(s, uid, gid, 0700);
 
    p = strrchr(cfg->pidfile, '/');
    if(p){

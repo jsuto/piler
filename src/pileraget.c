@@ -44,9 +44,9 @@ int main(int argc, char **argv){
       return 1;
    }
 
-   snprintf(filename, sizeof(filename)-1, "%s/%c%c%c/%c%c/%c%c/%s.a%d", cfg.queuedir, argv[1][8], argv[1][9], argv[1][10], argv[1][RND_STR_LEN-4], argv[1][RND_STR_LEN-3], argv[1][RND_STR_LEN-2], argv[1][RND_STR_LEN-1], argv[1], atoi(argv[2]));
+   snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg.queuedir, cfg.server_id, argv[1][8], argv[1][9], argv[1][10], argv[1][RND_STR_LEN-4], argv[1][RND_STR_LEN-3], argv[1][RND_STR_LEN-2], argv[1][RND_STR_LEN-1], argv[1], atoi(argv[2]));
    if(stat(filename, &st)){
-      snprintf(filename, sizeof(filename)-1, "%s/%c%c/%c%c/%c%c/%s.a%d", cfg.queuedir, argv[1][RND_STR_LEN-6], argv[1][RND_STR_LEN-5], argv[1][RND_STR_LEN-4], argv[1][RND_STR_LEN-3], argv[1][RND_STR_LEN-2], argv[1][RND_STR_LEN-1], argv[1], atoi(argv[2]));
+      snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.a%d", cfg.queuedir, cfg.server_id, argv[1][RND_STR_LEN-6], argv[1][RND_STR_LEN-5], argv[1][RND_STR_LEN-4], argv[1][RND_STR_LEN-3], argv[1][RND_STR_LEN-2], argv[1][RND_STR_LEN-1], argv[1], atoi(argv[2]));
    }
 
    retrieve_file_from_archive(filename, WRITE_TO_STDOUT, NULL, stdout, &cfg);

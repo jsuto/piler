@@ -136,8 +136,6 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, 
    uint64 id=0;
    MYSQL_BIND bind[1];
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
-
    memset(bind, 0, sizeof(bind));
 
    bind[0].buffer_type = MYSQL_TYPE_STRING;
@@ -173,7 +171,6 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, 
    mysql_stmt_fetch(data->stmt_get_meta_id_by_message_id);
 
 CLOSE:
-   mysql_stmt_close(data->stmt_get_meta_id_by_message_id);
 
    return id;
 }
@@ -185,9 +182,6 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 
    MYSQL_BIND bind[3];
    unsigned long len[3];
-
-
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ERR;
 
 
    p = to;
@@ -216,7 +210,6 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
          bind[2].is_null = 0;
          len[2] = strlen(q); bind[2].length = &len[2];
 
-
          if(mysql_stmt_bind_param(data->stmt_insert_into_rcpt_table, bind)){
             syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(data->stmt_insert_into_rcpt_table));
             ret = ERR;
@@ -235,8 +228,6 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 
 
 CLOSE:
-   mysql_stmt_close(data->stmt_insert_into_rcpt_table);
-
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
 
    return ret;

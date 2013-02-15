@@ -65,5 +65,8 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
 
+int create_prepared_statements(struct session_data *sdata, struct __data *data);
+void close_prepared_statements(struct __data *data);
+
 #endif /* _PILER_H */
 
