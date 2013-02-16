@@ -622,8 +622,13 @@ class ModelSearchSearch extends Model {
       array_push($arr, $id);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+         if(validdomain($_SESSION['domain']) == 1) {
+            $q .= ",?";
+            array_push($a, $_SESSION['domain']);
+         }
+
          while(list($k, $v) = each($_SESSION['auditdomains'])) {
-            if(validdomain($v) == 1) {
+            if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
             }
@@ -676,8 +681,13 @@ class ModelSearchSearch extends Model {
       $q2 = preg_replace("/^\,/", "", $q2);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+         if(validdomain($_SESSION['domain']) == 1) {
+            $q .= ",?";
+            array_push($a, $_SESSION['domain']);
+         }
+
          while(list($k, $v) = each($_SESSION['auditdomains'])) {
-            if(validdomain($v) == 1) {
+            if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
             }

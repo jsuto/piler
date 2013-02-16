@@ -33,24 +33,6 @@ class ModelStatCounter extends Model {
    }
 
 
-   public function reset_counters(){
-
-      if(MEMCACHED_ENABLED) {
-         $memcache = Registry::get('memcache');
-
-         $c = Registry::get('counters');
-         unset($c[MEMCACHED_PREFIX . 'size']);
-
-         foreach ($c as $counter) {
-            $memcache->set($counter, 0);
-         }
-      }
-
-      $query = $this->db->query("UPDATE " . TABLE_COUNTER . " SET `rcvd`=0, `virus`=0, `duplicate`=0, `ignore`=0");
-
-      return 0;
-   }
-
 }
 
 ?>
