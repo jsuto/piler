@@ -13,7 +13,7 @@ Features:
 - digital fingerprinting and verification
 
 - full text search
-- simple, advanced and expert search
+- simple and expert search
 - save search criteria
 - tagging emails
 - view, export, restore emails
@@ -39,6 +39,8 @@ Features:
 - search in audit logs
 
 - online status info
+
+- accounting
 
 - recognised formats: PST, EML, Maildir, mailbox
 
