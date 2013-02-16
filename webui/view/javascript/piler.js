@@ -588,6 +588,8 @@ var Piler =
         .done( function(a) {
            $('#A1').html(a);
            document.body.style.cursor = 'default';
+
+           //setInterval('Piler.load_health()', Piler.health_refresh * 1000);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
