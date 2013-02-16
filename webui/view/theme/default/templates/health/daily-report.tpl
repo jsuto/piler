@@ -91,6 +91,17 @@
             <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="<?php if($partition['utilization'] < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $partition['partition']; ?> <?php print $partition['utilization']; ?>%</span> <?php } ?></div>
          </div>
 
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_space_projection; ?></div>
+            <div class="cellhealthright">
+				<?php print $averagemessages; ?> (<?php print $text_average_messages_day; ?>)<br/>
+				<?php print $averagemessagesize; ?> + <?php print $averagesqlsize; ?> + <?php print $averagesphinxsize; ?> (<?php print $text_average_message_size; ?>)<br/>
+				<?php print $averagesizeday; ?> (<?php print $text_average_size_day; ?>)<br/>
+				<?php print $daysleftatcurrentrate[0]; ?> years, <?php print $daysleftatcurrentrate[1]; ?> months, <?php print $daysleftatcurrentrate[2]; ?> days ("<?php print DATA_PARTITION; ?>" <?php print $text_partition_full; ?>)<br/>
+				<?php if ( $usagetrend > 0 ) { print $text_usage_increasing; } elseif( $usagetrend < 0 ) { print $text_useage_decreasing; } else { print $text_usage_neutral; } ?> (<?php print $text_usage_trend; ?>)<br/>
+            </div>
+         </div>
+		 
 </div></div>
 
 </body>

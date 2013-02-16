@@ -61,6 +61,7 @@ $config['DEFAULT_POLICY'] = 'default_policy';
 
 $config['DIR_BASE'] = '/var/www/piler.yourdomain.com/';
 
+$config['DIR_SPHINX'] = '/var/piler/sphinx/';
 $config['DIR_STAT'] = '/var/piler/stat';
 $config['DIR_IMAP'] = '/var/piler/imap';
 $config['DIR_TMP'] = '/var/piler/tmp';
@@ -122,7 +123,7 @@ $memcached_servers = array(
                           );
 
 $partitions_to_monitor = array('/', '/home', '/var', '/tmp');
-
+$config['DATA_PARTITION'] = '/var';
 
 $langs = array(
                 'hu',
@@ -174,6 +175,8 @@ define('TABLE_REMOTE', 'remote');
 define('TABLE_DOMAIN', 'domain');
 define('TABLE_DOMAIN_USER', 'domain_user');
 define('TABLE_COUNTER', 'counter');
+define('TABLE_COUNTER_MSG', 'counter_messages');
+define('TABLE_STAT_COUNTER', 'counter_stats');
 define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');

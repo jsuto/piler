@@ -86,6 +86,32 @@
                         <?php } } ?>
             </div>
          </div>
+		 
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_space_projection; ?></div>
+            <div class="cellhealthright">
+			   <div class="row">
+				  <div class="cellhealthright"><?php print $text_average_messages_day; ?></div>
+				  <div class="cellhealthright"><?php print $averagemessages; ?></div>
+			   </div>
+			   <div class="row">
+				  <div class="cellhealthright"><?php print $text_average_message_size; ?></div>
+				  <div class="cellhealthright"><?php print $averagemessagesize; ?> + <?php print $averagesqlsize; ?> + <?php print $averagesphinxsize; ?></div>
+			   </div>
+			   <div class="row">
+				  <div class="cellhealthright"><?php print $text_average_size_day; ?></div>
+				  <div class="cellhealthright"><?php print $averagesizeday; ?></div>
+			   </div>
+			   <div class="row">
+				  <div class="cellhealthright">"<?php print DATA_PARTITION; ?>" <?php print $text_partition_full; ?></div>
+				  <div class="cellhealthright"><?php print $daysleftatcurrentrate[0]; ?> years, <?php print $daysleftatcurrentrate[1]; ?> months, <?php print $daysleftatcurrentrate[2]; ?> days</div>
+			   </div>
+			   <div class="row">
+				  <div class="cellhealthright"><?php print $text_usage_trend; ?></div>
+				  <div class="cellhealthright"><?php if ( $usagetrend > 0 ) { print $text_usage_increasing; } elseif( $usagetrend < 0 ) { print $text_usage_decreasing; } else { print $text_usage_neutral; } ?></div>
+			   </div>
+            </div>
+         </div>
 
       </div>
 

@@ -460,4 +460,18 @@ function make_short_string($what, $length) {
 }
 
 
+function convert_days_ymd($convert) {
+   $years = ($convert / 365) ; // days / 365 days
+   $years = floor($years); // Remove all decimals
+
+   $month = ($convert % 365) / 30.5; // I choose 30.5 for Month (30,31) ;)
+   $month = floor($month); // Remove all decimals
+
+   $days = ($convert % 365) % 30.5; // the rest of days
+
+   // Return array of years, months, days
+   return array( $years,$month,$days );
+}
+
+
 ?>

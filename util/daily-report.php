@@ -3,6 +3,10 @@
 $webuidir = "";
 $verbose = 0;
 
+$archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
+$averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
+   
+
 if(isset($_SERVER['argv'][1])) { $webuidir = $_SERVER['argv'][1]; }
 
 for($i=2; $i<$_SERVER['argc']; $i++){
@@ -66,13 +70,42 @@ $mail = new ModelMailMail();
       list($totalmem, $meminfo, $totalswap, $swapinfo) = $health->meminfo();
       $shortdiskinfo = $health->diskinfo();
 
-      list($archive_size, $counters) = $counter->get_counters();
+      list($archivesizeraw, $counters) = $counter->get_counters();
 
+      $archive_size = nice_size($archivesizeraw, ' ');
+	  
       $sysinfo = $health->sysinfo();
 
       $options = $health->get_options();
 
-
+	  /* these next counters are for projecting space */
+	  $averagemessagesweekraw = ($processed_emails[1]) / 7;
+	  $averagemessagesmonthraw = ($processed_emails[2]) / 30;
+	  $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];
+	  $averagesqlsizeraw = $sqlsizeraw / $counters['rcvd'];
+	  $averagesphinxsizeraw = $sphinxsizeraw / $counters['rcvd'];
+	  $averagesizedayraw = ($averagemessagesizeraw+$averagesqlsizeraw+$averagesphinxsizeraw) * $averagemessagesweekraw;
+	  foreach($shortdiskinfo as $part) {
+		if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }
+	  }
+	  
+	  $averagemessages = round($averagemessagesweekraw);							// average of messages over the past week
+	  $averagemessagesize = nice_size($averagemessagesizeraw,' ');				// average message size on disk
+	  $averagesqlsize = nice_size($averagesqlsizeraw,' ');						// average metadata size in sql
+	  $averagesphinxsize = nice_size($averagesphinxsizeraw,' ');					// average sphinx index
+	  $averagesizeday = nice_size($averagesizedayraw,' ');						// average size per day
+	  $daysleftatcurrentrate = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
+	  if ( $averagemessagesweekraw > $averagemessagesmonthraw ) {
+		$useagetrend = 1;
+	  } elseif( $averagemessagesweekraw < $averagemessagesmonthraw ) {
+	    $useagetrend = -1;
+	  } else {
+		$useagetrend = 0;
+	  }
+	  
+	  
+	  /* start email message */
+	  
       $msg = "From: " . SMTP_FROMADDR . EOL;
       $msg .= "To: " . ADMIN_EMAIL . EOL;
       $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($text_daily_piler_report)) . "?=" . EOL;
@@ -81,7 +114,7 @@ $mail = new ModelMailMail();
       $msg .= EOL . EOL;
 
       ob_start();
-
+	  
       include($webuidir . "/view/theme/default/templates/health/daily-report.tpl");
 
       $msg .= ob_get_contents();

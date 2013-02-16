@@ -6,6 +6,9 @@ class ControllerHealthWorker extends Controller {
 
    public function index(){
 
+      $archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
+      $averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
+   
       $this->id = "content";
       $this->template = "health/worker.tpl";
       $this->layout = "common/layout-empty";
@@ -60,7 +63,9 @@ class ControllerHealthWorker extends Controller {
       $db->select_db($db->database);
 
 
-      list($this->data['archive_size'], $this->data['counters']) = $this->model_stat_counter->get_counters();
+      list($archivesizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
+	  
+      $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
 
       $this->data['prefix'] = '';
       if(isset($this->data['counters'][MEMCACHED_PREFIX . 'rcvd'])) { $this->data['prefix'] = MEMCACHED_PREFIX; }
@@ -68,7 +73,38 @@ class ControllerHealthWorker extends Controller {
       $this->data['sysinfo'] = $this->model_health_health->sysinfo();
 
       $this->data['options'] = $this->model_health_health->get_options();
+	  
+      $sqlsizeraw = $this->model_health_health->get_database_size();
+	  
+      $sphinxsizeraw = $this->model_health_health->get_sphinx_size();
+	  
+      /* these next counters are for projecting space */
+      $averagemessagesweekraw = ($this->data['processed_emails'][1]) / 7;
+      $averagemessagesmonthraw = ($this->data['processed_emails'][2]) / 30;
+      $averagemessagesizeraw = $archivesizeraw / $this->data['counters']['rcvd'];
+      $averagesqlsizeraw = $sqlsizeraw / $this->data['counters']['rcvd'];
+      $averagesphinxsizeraw = $sphinxsizeraw / $this->data['counters']['rcvd'];
+      $averagesizedayraw = ($averagemessagesizeraw+$averagesqlsizeraw+$averagesphinxsizeraw) * $averagemessagesweekraw;
 
+      $datapart = 0;
+      foreach($this->data['shortdiskinfo'] as $part) {
+         if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }
+      }
+	  
+      $this->data['averagemessages'] = round($averagemessagesweekraw);							// average of messages over the past week
+      $this->data['averagemessagesize'] = nice_size($averagemessagesizeraw,' ');				// average message size on disk
+      $this->data['averagesqlsize'] = nice_size($averagesqlsizeraw,' ');						// average metadata size in sql
+      $this->data['averagesphinxsize'] = nice_size($averagesphinxsizeraw,' ');					// average sphinx index
+      $this->data['averagesizeday'] = nice_size($averagesizedayraw,' ');						// average size per day
+      $this->data['daysleftatcurrentrate'] = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
+      if ( $averagemessagesweekraw > $averagemessagesmonthraw ) {
+         $this->data['usagetrend'] = 1;
+      } elseif( $averagemessagesweekraw < $averagemessagesmonthraw ) {
+         $this->data['usagetrend'] = -1;
+      } else {
+         $this->data['usagetrend'] = 0;
+      }
+	  
       $this->render();
    }
 

@@ -80,7 +80,7 @@ class ModelHealthHealth extends Model {
    public function diskinfo() {
       $shortinfo = array();
 
-      $s = exec("df -h", $output);
+      $s = exec("df", $output);
 
       $partitions = Registry::get('partitions_to_monitor');
 
@@ -90,6 +90,7 @@ class ModelHealthHealth extends Model {
             if(isset($p[5]) && in_array($p[5], $partitions)) {
                $shortinfo[] = array(
                                     'partition' => $p[5],
+                                    'freespace' => $p[3],
                                     'utilization' => preg_replace("/\%/", "", $p[4])
                               );
             }
@@ -137,6 +138,46 @@ class ModelHealthHealth extends Model {
 
    }
 
+   public function get_database_size() {
+      $data = array();
+
+      $query = $this->db->query("SELECT table_schema AS `name`, 
+								SUM( data_length + index_length ) AS `size` 
+								FROM information_schema.TABLES
+								WHERE table_schema = '".DB_DATABASE."'
+								GROUP BY table_schema;");
+      if(isset($query->rows)) {
+		  $data = array_pop($query->rows);
+      }
+
+      return $data['size'];
+   }
+
+
+   public function get_sphinx_size() {
+      $dirSize=0;
+      $directory = DIR_SPHINX;
+
+      if(!$dh=opendir($directory)) {
+         return false;
+      }
+
+      while($file = readdir($dh)) {
+         if($file == "." || $file == "..") {
+            continue;
+         }
+
+         if(is_file($directory."/".$file)) {
+            $dirSize += filesize($directory."/".$file);
+         }
+         if(is_dir($directory."/".$file)) {
+            $dirSize += getDirectorySize($directory."/".$file);
+         }
+      }
+
+      closedir($dh);
+      return $dirSize;
+   }
 
 }
 

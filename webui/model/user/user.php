@@ -85,12 +85,14 @@ class ModelUserUser extends Model {
    public function get_users_all_domains($uid = 0) {
       $data = array();
 
+      array_push($data, $_SESSION['domain']);
+
       if($uid > 0) {
          $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
 
          if(isset($query->rows)) {
             foreach ($query->rows as $q) {
-               array_push($data, $q['domain']);
+               if(!in_array($q['domain'], $data)) { array_push($data, $q['domain']); }
             }
          }
       }

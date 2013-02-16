@@ -365,4 +365,17 @@ $_['text_primary_domain'] = "Elsõdleges Domain";
 $_['text_search_domains'] = "Domainek keresése";
 $_['text_search_domain_to_add'] = "Írja be a domain nevének elejét";
 
+$_['text_space_projection'] = 'Tárterület elõrejelzés';
+$_['text_average_messages_day'] = 'Levelek számának napi átlaga';
+$_['text_average_message_size'] = 'Átlagos levélméret + Meta adatok + Index méret';
+$_['text_average_size_day'] = 'Napi átlag méret';
+$_['text_partition_full'] = 'partíció beteléséig hátralevõ idõ';
+$_['text_usage_trend'] = 'Kihasználtság trend';
+$_['text_usage_increasing'] = 'nõ';
+$_['text_usage_decreasing'] = 'csökken';
+$_['text_usage_neutral'] = 'nem változik';
+$_['text_accounting'] = 'Archívum statisztika';
+$_['text_accounting_email'] = 'Email szerint';
+$_['text_accounting_domain'] = 'Domain szerint';
+
 ?>

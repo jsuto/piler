@@ -364,5 +364,18 @@ $_['text_primary_domain'] = "Primary Domain";
 $_['text_search_domains'] = "Search domains";
 $_['text_search_domain_to_add'] = "Search domain to add";
 
+$_['text_space_projection'] = 'Space Projection';
+$_['text_average_messages_day'] = 'Average Messages per Day';
+$_['text_average_message_size'] = 'Average Message + Metadata + Index Size';
+$_['text_average_size_day'] = 'Average Size per Day';
+$_['text_partition_full'] = 'Partition Projected to be Full in';
+$_['text_usage_trend'] = 'Usage Trend';
+$_['text_usage_increasing'] = 'Increasing';
+$_['text_usage_decreasing'] = 'Decreasing';
+$_['text_usage_neutral'] = 'Neutral';
+$_['text_accounting'] = 'Archive Accounting';
+$_['text_accounting_email'] = 'By-Email Accounting';
+$_['text_accounting_domain'] = 'By-Domain Accounting';
+
 
 ?>

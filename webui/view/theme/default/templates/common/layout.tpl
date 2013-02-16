@@ -20,7 +20,7 @@
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 </head>
 
-<body<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health();"<?php } ?>>
+<body<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php } ?>>
 
 <div id="piler1">
 

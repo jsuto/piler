@@ -590,8 +590,6 @@ var Piler =
            document.body.style.cursor = 'default';
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
-
-        setInterval('Piler.load_health()', Piler.health_refresh * 1000);
     },
 
 
