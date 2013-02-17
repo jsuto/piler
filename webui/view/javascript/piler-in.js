@@ -8,8 +8,8 @@ var Piler =
 
     // legacy variable(s)
     expsrc: 0,
-    health_refresh: 60,
-    piler_ui_lang: 'en-GB', // TODO: it should be 'LANG' from config.php
+    health_refresh: <?php print HEALTH_REFRESH; ?>,
+    piler_ui_lang: '<?php LANG == 'en' ? print 'en-GB' : print LANG; ?>',
     prev_message_id: 0,
     pos: -1,
 
