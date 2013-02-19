@@ -160,8 +160,8 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
          if(nreads == 1){
 
-            if(strncmp(buf, "+OK ", 4) == 0){
-               p = strchr(&buf[4], '\n');
+            if(strncmp(buf, "+OK", 3) == 0){
+               p = strchr(&buf[3], '\n');
                if(p){
                   *p = '\0';
                   pos = strlen(buf)+1;
