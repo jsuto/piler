@@ -171,7 +171,7 @@ void storno_attachment(struct _state *state){
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
-   int t, n64, len, writelen, boundary_line=0;
+   int n64, len, writelen, boundary_line=0;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -308,7 +308,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   t = trimBuffer(buf);
+   trimBuffer(buf);
 
    /* skip the first line, if it's a "From <email address> date" format */
    if(state->line_num == 1 && strncmp(buf, "From ", 5) == 0) return 0;
