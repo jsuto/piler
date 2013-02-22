@@ -348,7 +348,7 @@ int main(int argc, char **argv){
 
    setlocale(LC_CTYPE, cfg.locale);
 
-   init_session_data(&sdata, cfg.server_id);
+   init_session_data(&sdata, &cfg);
 
    i = is_purge_allowed(&sdata, &cfg);
    if(i == 1){

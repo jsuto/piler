@@ -20,3 +20,4 @@
 #undef HAVE_STARTTLS
 #undef HAVE_LIBWRAP
 
+#undef HAVE_TWEAK_SENT_TIME

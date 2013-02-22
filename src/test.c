@@ -62,7 +62,7 @@ int main(int argc, char **argv){
 
    load_mydomains(&sdata, &data, &cfg);
 
-   init_session_data(&sdata, cfg.server_id);
+   init_session_data(&sdata, &cfg);
  
    sdata.sent = 0;
    sdata.delivered = 0;

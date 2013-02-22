@@ -212,7 +212,7 @@ int main(int argc, char **argv){
       }
    }
 
-   init_session_data(&sdata, cfg.server_id);
+   init_session_data(&sdata, &cfg);
 
 
    mysql_init(&(sdata.mysql));

@@ -42,6 +42,7 @@ have_zip="no"
 have_zlib="no"
 have_starttls="no"
 have_tcpwrappers="no"
+have_tweak_sent_time="no"
 
 pdftotext="no"
 catdoc="no"
@@ -122,6 +123,10 @@ if test "$want_tcpwrappers" = "yes"; then
       exit 1;
    fi
 fi
+
+
+AC_ARG_ENABLE(tweak-sent-time,
+	[  --tweak-sent-time       tweak sent time], have_tweak_sent_time=$enableval, have_tweak_sent_time="no")
 
 
 dnl math library
@@ -374,6 +379,12 @@ if test z`which unrtf 2>/dev/null` != "z"; then
    unrtf=`which unrtf`
    AC_DEFINE_UNQUOTED(HAVE_UNRTF, "$unrtf", [path to unrtf])
 fi
+
+
+if test "$have_tweak_sent_time" = "yes"; then
+   AC_DEFINE_UNQUOTED(HAVE_TWEAK_SENT_TIME, 1, [tweak sent time])
+fi
+
 
 
 echo

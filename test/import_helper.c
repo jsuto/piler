@@ -24,7 +24,7 @@ int import_message2(char *filename, struct session_data *sdata, struct __data *d
    struct _state state;
 
 
-   init_session_data(sdata, cfg->server_id);
+   init_session_data(sdata, cfg);
 
 
    if(strcmp(filename, "-") == 0){

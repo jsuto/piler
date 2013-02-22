@@ -449,13 +449,13 @@ int is_email_address_on_my_domains(char *email, struct __data *data){
 }
 
 
-void init_session_data(struct session_data *sdata, unsigned char server_id){
+void init_session_data(struct session_data *sdata, struct __config *cfg){
    int i;
 
 
    sdata->fd = -1;
 
-   create_id(&(sdata->ttmpfile[0]), server_id);
+   create_id(&(sdata->ttmpfile[0]), cfg->server_id);
    unlink(sdata->ttmpfile);
 
    snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", sdata->ttmpfile);
@@ -496,6 +496,10 @@ void init_session_data(struct session_data *sdata, unsigned char server_id){
 
    time(&(sdata->now));
    sdata->sent = sdata->delivered = sdata->retained = sdata->now;
+
+#ifdef HAVE_TWEAK_SENT_TIME
+   sdata->sent += cfg->tweak_sent_time_offset;
+#endif
 }
 
 

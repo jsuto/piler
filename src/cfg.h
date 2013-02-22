@@ -72,6 +72,8 @@ struct __config {
 
    int min_word_len;
 
+   int tweak_sent_time_offset;
+
    int debug;
 };
 
