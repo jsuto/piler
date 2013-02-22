@@ -14,7 +14,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg);
 
 void init_state(struct _state *state);
-unsigned long parse_date_header(char *s);
+unsigned long parse_date_header(char *s, struct __config *cfg);
 int isHexNumber(char *p);
 int extract_boundary(char *p, struct _state *state);
 void fixupEncodedHeaderLine(char *buf);

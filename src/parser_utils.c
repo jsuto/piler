@@ -100,7 +100,7 @@ void init_state(struct _state *state){
 }
 
 
-unsigned long parse_date_header(char *datestr){
+unsigned long parse_date_header(char *datestr, struct __config *cfg){
    int n=0;
    char *p, *q, *r, s[SMALLBUFSIZE];
    unsigned long ts=0;
@@ -172,6 +172,10 @@ unsigned long parse_date_header(char *datestr){
 
    tm.tm_isdst = -1;
    ts = mktime(&tm);
+
+#ifdef HAVE_TWEAK_SENT_TIME
+   if(ts > 631148400) ts += cfg->tweak_sent_time_offset;
+#endif
 
    return ts;
 }
