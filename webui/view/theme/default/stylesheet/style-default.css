@@ -24,7 +24,6 @@
 	#menu .leftcell { display: table-cell; width: 490px; text-align: justify; }
 	#menu .rightcell { display: table-cell; width: 490px; text-align: right; font: normal 12px Arial, sans-serif; margin: 0; padding: 0; }
 	#menu .logout22 { float: right; text-align: right; }
-	#menu .logout22_admin { float: right; text-align: right; font: normal 11px Arial, sans-serif; }
 	#menu a:link.logout, a:visited.logout { color: #222; }
 	#menu a:hover.logout { background: #F3D673; }
 
