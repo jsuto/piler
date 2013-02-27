@@ -212,10 +212,10 @@ var Piler =
 
 
     /*
-     * load the selected message to preview area
+     * load the selected message by position to preview area
      */
 
-    view_message:function(pos)
+    view_message_by_pos:function(pos)
     {
         Piler.log("[view_message]", pos, Piler.Messages[pos]);
 
@@ -230,6 +230,13 @@ var Piler =
         $('#e_' + id).attr('class', 'resultrow selected');
 
         Piler.prev_message_id = id;
+        Piler.view_message(id);
+    },
+
+
+    view_message:function(id)
+    {
+        Piler.log("[view_message]");
 
         jQuery.ajax('/message.php/' + id, { cache: true })
         .done( function(a) {
@@ -381,7 +388,7 @@ var Piler =
 
             if ( x.nodeName == "DIV" && x.id.charAt( 0 ) == 'e' && x.id.charAt( 1 ) == '_' )
             {
-                Piler.log("[fill_current_messages_array], i/id", i, x.id.substring(2, 1000));
+                Piler.log("[fill_current_messages_array], pos/id", i, x.id.substring(2, 1000));
 
                 u[i] = x.id.substring(2, 1000);
             }
