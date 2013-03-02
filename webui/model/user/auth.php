@@ -66,7 +66,7 @@ class ModelUserAuth extends Model {
       $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
+         $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . "))", array());
 
          if(isset($query->row)) {
             $a = $query->row;
@@ -74,7 +74,7 @@ class ModelUserAuth extends Model {
             $ldap_auth = new LDAP(LDAP_HOST, $a['dn'], $password);
 
             if($ldap_auth->is_bind_ok()) {
-               $emails = $this->get_email_array_from_ldap_attr($a);
+               $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
                $this->add_session_vars($a['cn'], $username, $emails);
 
@@ -95,21 +95,25 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function get_email_array_from_ldap_attr($a = array(), $email = '') {
+   private function get_email_array_from_ldap_attr($e = array()) {
       $data = array();
 
-      foreach (array("mail", "mailalternateaddress", "proxyaddresses") as $mailattr) {
-         if(isset($a[$mailattr])) {
+      foreach($e as $a) {
+         foreach (array("mail", "mailalternateaddress", "proxyaddresses", LDAP_MAIL_ATTR, LDAP_DISTRIBUTIONLIST_ATTR) as $mailattr) {
+            if(isset($a[$mailattr])) {
 
-            if(isset($a[$mailattr]['count'])) {
-               for($i = 0; $i < $a[$mailattr]['count']; $i++) {
-                  if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
-                     array_push($data, strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i])));
+               if(isset($a[$mailattr]['count'])) {
+                  for($i = 0; $i < $a[$mailattr]['count']; $i++) {
+                     if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
+                        $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i]));
+                        if(!in_array($email, $data)) { array_push($data, $email); }
+                     }
                   }
                }
-            }
-            else {
-               array_push($data, strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr])));
+               else {
+                  $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr]));
+                  if(!in_array($email, $data)) { array_push($data, $email); }
+               }
             }
          }
       }
