@@ -5,12 +5,23 @@ class ModelUserAuth extends Model {
    public function checkLogin($username = '', $password = '') {
       $ok = 0;
 
+      if($username == '' || $password == '') { return 0; }
+
+      if(ENABLE_LDAP_AUTH == 1) {
+         $ok = $this->checkLoginAgainstLDAP($username, $password);
+         if($ok == 1) { return $ok; }
+      }
+
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
          $ok = $this->checkLoginAgainstIMAP($username, $password);
+         if($ok == 1) { return $ok; }
       }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($username));
+
+      // fallback local auth
+
+      $query = $this->db->query("SELECT u.username, u.uid, u.realname, u.dn, u.password, u.isadmin, u.domain FROM " . TABLE_USER . " u, " . TABLE_EMAIL . " e WHERE e.email=? AND e.uid=u.uid", array($username));
 
       if(!isset($query->row['password'])) { return 0; }
 
@@ -26,7 +37,7 @@ class ModelUserAuth extends Model {
       }
 
       if($ok == 0 && strlen($query->row['dn']) > 3) {
-         $ok = $this->checkLoginAgainstLDAP($query->row, $password);
+         $ok = $this->checkLoginAgainstFallbackLDAP($query->row, $password);
       }
 
 
@@ -46,12 +57,91 @@ class ModelUserAuth extends Model {
          return 1;
       }
 
+      return 0;
+   }
+
+
+   private function checkLoginAgainstLDAP($username = '', $password = '') {
+
+      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+
+      if($ldap->is_bind_ok()) {
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
+
+         if(isset($query->row)) {
+            $a = $query->row;
+
+            $ldap_auth = new LDAP(LDAP_HOST, $a['dn'], $password);
+
+            if($ldap_auth->is_bind_ok()) {
+               $emails = $this->get_email_array_from_ldap_attr($a);
+
+               $this->add_session_vars($a['cn'], $username, $emails);
+
+               AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
+
+               return 1;
+            }
+            else {
+               AUDIT(ACTION_LOGIN_FAILED, $username, '', '', 'failed auth against LDAP');
+            }
+         }
+      }
+      else if(ENABLE_SYSLOG == 1) {
+         syslog(LOG_INFO, "cannot bind to '" . LDAP_HOST . "' as '" . LDAP_HELPER_DN . "'");
+      }
 
       return 0;
    }
 
 
-   private function checkLoginAgainstLDAP($user = array(), $password = '') {
+   private function get_email_array_from_ldap_attr($a = array(), $email = '') {
+      $data = array();
+
+      foreach (array("mail", "mailalternateaddress", "proxyaddresses") as $mailattr) {
+         if(isset($a[$mailattr])) {
+
+            if(isset($a[$mailattr]['count'])) {
+               for($i = 0; $i < $a[$mailattr]['count']; $i++) {
+                  if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
+                     array_push($data, strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i])));
+                  }
+               }
+            }
+            else {
+               array_push($data, strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr])));
+            }
+         }
+      }
+
+      return $data;
+   }
+
+
+   private function add_session_vars($name = '', $email = '', $emails = array()) {
+      $a = explode("@", $email);
+
+      $uid = $this->model_user_user->get_uid_by_email($email);
+      if($uid < 1) {
+         $uid = $this->model_user_user->get_next_uid();
+         $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array($uid, $email));
+      }
+
+      $_SESSION['username'] = $name;
+      $_SESSION['uid'] = $uid;
+      $_SESSION['admin_user'] = 0;
+      $_SESSION['email'] = $email;
+      $_SESSION['domain'] = $a[1];
+      $_SESSION['realname'] = $name;
+
+      $_SESSION['auditdomains'] = array();
+      $_SESSION['emails'] = $emails;
+      $_SESSION['folders'] = array();
+      $_SESSION['extra_folders'] = array();
+   }
+
+
+   private function checkLoginAgainstFallbackLDAP($user = array(), $password = '') {
       if($password == '' || !isset($user['username']) || !isset($user['domain']) || !isset($user['dn']) || strlen($user['domain']) < 2){ return 0; }
 
       $query = $this->db->query("SELECT remotehost, basedn FROM " . TABLE_REMOTE . " WHERE remotedomain=?", array($user['domain']));
@@ -82,20 +172,7 @@ class ModelUserAuth extends Model {
       if($imap->login($username, $password)) {
          $imap->logout();
 
-         $query = $this->db->query("SELECT email, uid FROM " . TABLE_EMAIL . " WHERE email=?", array($username));
-         if($query->num_rows == 0) {
-            $a = explode("@", $username);
-
-            $user['uid'] = $this->model_user_user->get_next_uid();
-            $user['username'] = $username;
-            $user['realname'] = $a[0];
-            $user['password'] = generate_random_string(8);
-            $user['domain'] = @$a[1];
-            $user['isadmin'] = 0;
-            $user['email'] = $username;
-
-            $this->model_user_user->add_user($user);
-         }
+         $this->add_session_vars($username, $username, array($username));
 
          return 1;
       }
@@ -111,7 +188,7 @@ class ModelUserAuth extends Model {
 
       if(!isset($u[1])) { return 0; }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . " WHERE " . TABLE_USER . ".samaccountname=?", array($u[1]));
+      $query = $this->db->query("SELECT username, uid, realname, dn, isadmin, domain FROM " . TABLE_USER . " WHERE samaccountname=?", array($u[1]));
 
       if($query->num_rows == 1) {
          $_SESSION['username'] = $query->row['username'];

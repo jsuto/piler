@@ -91,6 +91,15 @@ $config['DN_MAX_LEN'] = 255;
 $config['USE_EMAIL_AS_USERNAME'] = 1;
 $config['LDAP_IMPORT_MINIMUM_NUMBER_OF_USERS_TO_HEALTH_OK'] = 100;
 
+
+$config['ENABLE_LDAP_AUTH'] = 0;
+$config['LDAP_HOST'] = 'zimbra.yourdomain.com';
+$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
+$config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
+$config['LDAP_MAIL_ATTR'] = 'mail';
+$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
+$config['LDAP_BASE_DN'] = '';
+
 $config['SIZE_X'] = 430;
 $config['SIZE_Y'] = 250;
 
