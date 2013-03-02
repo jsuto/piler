@@ -406,7 +406,7 @@ var Piler =
 
         Piler.log("[show_next_message]", Piler.pos);
 
-        Piler.view_message(Piler.pos);
+        Piler.view_message_by_pos(Piler.pos);
     },
 
 
@@ -416,7 +416,7 @@ var Piler =
 
         Piler.log("[show_prev_message]", Piler.pos);
 
-        Piler.view_message(Piler.pos);
+        Piler.view_message_by_pos(Piler.pos);
     },
 
 
