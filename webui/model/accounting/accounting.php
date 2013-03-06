@@ -193,7 +193,7 @@ class ModelAccountingAccounting extends Model
             $return = $this->__getAcceptedDomains();
         }elseif(Registry::get('auditor_user') == 1) {
             array_push($return,$_SESSION['domain']);
-            foreach ($return as $d) {
+            foreach ($_SESSION['auditdomains'] as $d) {
                 array_push($return,$d);
             }
         }

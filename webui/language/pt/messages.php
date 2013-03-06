@@ -369,12 +369,24 @@ $_['text_average_messages_day'] = 'Average Messages per Day';
 $_['text_average_message_size'] = 'Average Message + Metadata + Index Size';
 $_['text_average_size_day'] = 'Average Size per Day';
 $_['text_partition_full'] = 'Partition Projected to be Full in';
-$_['text_usage_trend'] = 'Useage Trend';
+$_['text_usage_trend'] = 'Usage Trend';
 $_['text_usage_increasing'] = 'Increasing';
 $_['text_usage_decreasing'] = 'Decreasing';
 $_['text_usage_neutral'] = 'Neutral';
 $_['text_accounting'] = 'Archive Accounting';
 $_['text_accounting_email'] = 'By-Email Accounting';
 $_['text_accounting_domain'] = 'By-Domain Accounting';
+
+$_['text_options'] = 'Options';
+$_['text_spam_flag'] = 'Message Flagged as SPAM';
+$_['text_attachment_flag'] = 'Message has Attachment';
+$_['text_notes_flag'] = 'Message has Notes';
+$_['text_tag_flag'] = 'Message is Tagged';
+$_['text_verified_flag'] = 'Message is Verified';
+$_['text_unverified_flag'] = 'Message Failed Verification';
+$_['text_bulk_download'] = 'Bulk Download Selected Emails';
+$_['text_clear'] = 'Clear';
+$_['text_select_letter'] = 'Select Addresses by Letter';
+$_['text_working'] = 'Working...';
 
 ?>

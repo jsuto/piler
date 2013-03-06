@@ -378,4 +378,16 @@ $_['text_accounting'] = 'Archívum statisztika';
 $_['text_accounting_email'] = 'Email szerint';
 $_['text_accounting_domain'] = 'Domain szerint';
 
+$_['text_options'] = 'Opciók';
+$_['text_spam_flag'] = 'SPAM levél';
+$_['text_attachment_flag'] = 'Melléklet';
+$_['text_notes_flag'] = 'Megjegyzés';
+$_['text_tag_flag'] = 'Címke';
+$_['text_verified_flag'] = 'Ellenőrzött';
+$_['text_unverified_flag'] = 'Módosított levél';
+$_['text_bulk_download'] = 'Kiválasztott levelek letöltése';
+$_['text_clear'] = 'Törlés';
+$_['text_select_letter'] = 'Cím kiválasztása betű szerint';
+$_['text_working'] = 'Keresés...';
+
 ?>
