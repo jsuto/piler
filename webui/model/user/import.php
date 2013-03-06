@@ -52,9 +52,7 @@ class ModelUserImport extends Model {
 
                   for($i = 0; $i < $result[$__mail_attr]['count']; $i++) {
                      LOGGER("found email entry: " . $result['dn'] . " => $__mail_attr:" . $result[$__mail_attr][$i]);
-                     if(preg_match("/^smtp\:/i", $result[$__mail_attr][$i]) || strchr($result[$__mail_attr][$i], '@') ) {
-                        $emails .= strtolower(preg_replace("/^smtp\:/i", "", $result[$__mail_attr][$i])) . "\n";
-                     }
+                     $emails .= strtolower(preg_replace("/^smtp\:/i", "", $result[$__mail_attr][$i])) . "\n";
                   }
                }
                else {
