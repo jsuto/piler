@@ -26,13 +26,33 @@ class ControllerPolicyRetention extends Controller {
       }
 
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
-         $rc = $this->model_policy_retention->add_new_rule($this->request->post);
+         if($this->validate() == true) {
+            $rc = $this->model_policy_retention->add_new_rule($this->request->post);
+         } else {
+            $this->data['error'] = $lang->data['text_invalid_data'];
+         }
+
       }
 
       $this->data['rules'] = $this->model_policy_retention->get_rules();
 
 
       $this->render();
+   }
+
+
+   private function validate() {
+      if($this->request->post['days'] == '' || $this->request->post['days'] < 1) { return false; }
+
+      if($this->request->post['from'] == '' && $this->request->post['to'] == '' &&
+         $this->request->post['subject'] == '' && $this->request->post['size'] == '' &&
+         $this->request->post['attachment_type'] == '' && $this->request->post['attachment_size'] == '' &&
+         $this->request->post['spam'] == -1
+      ) {
+         return false;
+      }
+
+      return true;
    }
 
 
