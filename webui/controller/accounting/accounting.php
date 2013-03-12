@@ -22,7 +22,18 @@ class ControllerAccountingAccounting extends Controller {
       $this->data['sort'] = 'item';
       $this->data['sorttype'] = 0;
       $this->data['order'] = 0;
-      
+
+      if(Registry::get('admin_user') == 0) {
+         die("go away");
+      }
+
+      $this->data['search'] = '';
+
+      /* get search term if there's any */
+
+      if(isset($this->request->post['search'])) { $this->data['search'] = $this->request->post['search']; }
+      else if(isset($this->request->get['search'])) { $this->data['search'] = $this->request->get['search']; }
+
       // get page
       if(isset($this->request->get['page']) && is_numeric($this->request->get['page']) && $this->request->get['page'] > 0) {
          $this->data['page'] = $this->request->get['page'];
@@ -50,15 +61,15 @@ class ControllerAccountingAccounting extends Controller {
       if(@$this->request->get['view'] == "email") {
         $this->data['view'] = 'email';
         $this->data['viewname'] = "Emails";
-        $this->data['accounting'] = $counters->get_accounting('email',$this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
-        $this->data['total_records'] = $counters->count_accounting('email');
+        $this->data['accounting'] = $counters->get_accounting('email',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
+        $this->data['total_records'] = $counters->count_accounting('email',$this->data['search']);
       }
       
       if(@$this->request->get['view'] == "domain") {
         $this->data['view'] = 'domain';
         $this->data['viewname'] = "Domains";
-        $this->data['accounting'] = $counters->get_accounting('domain',$this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
-        $this->data['total_records'] = $counters->count_accounting('domain');
+        $this->data['accounting'] = $counters->get_accounting('domain',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
+        $this->data['total_records'] = $counters->count_accounting('domain',$this->data['search']);
       }   
       
       if($this->data['accounting']) {

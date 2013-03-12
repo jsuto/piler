@@ -28,6 +28,10 @@ class ControllerAuditHelper extends Controller {
 
       $this->load->model('audit/audit');
 
+      if(Registry::get('admin_user') == 0) {
+         die("go away");
+      }
+
 
       $this->data['page'] = 0;
       if(isset($this->request->post['page'])) { $this->data['page'] = $this->request->post['page']; }
