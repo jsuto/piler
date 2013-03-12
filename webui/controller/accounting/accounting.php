@@ -23,9 +23,6 @@ class ControllerAccountingAccounting extends Controller {
       $this->data['sorttype'] = 0;
       $this->data['order'] = 0;
 
-      if(Registry::get('admin_user') == 0) {
-         die("go away");
-      }
 
       $this->data['search'] = '';
 
