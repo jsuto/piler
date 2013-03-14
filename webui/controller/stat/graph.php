@@ -23,22 +23,9 @@ class ControllerStatGraph extends Controller {
 
       $db->select_db($db->database);
 
-      $emails = "";
-
-      /* let the admin users see the whole statistics */
-
-      if(Registry::get('admin_user') == 0 && Registry::get('readonly_admin') == 0) {
-         $uid = $this->model_user_user->get_uid_by_name($this->data['username']);
-         $emails = "AND rcpt IN ('" . preg_replace("/\n/", "','", $this->model_user_user->get_emails_by_uid((int)$uid)) . "')";
-      }
-      else if(isset($this->request->get['uid']) && is_numeric($this->request->get['uid']) && $this->request->get['uid'] > 0){
-         $emails = "AND rcpt IN ('" . preg_replace("/\n/", "','", $this->model_user_user->get_emails_by_uid((int)$this->request->get['uid'])) . "')";
-      }
-
-
       $aa = new ModelStatChart();
 
-      $aa->lineChartHamSpam($emails, $timespan, $this->data['text_archived_messages'], SIZE_X, SIZE_Y, "");
+      $aa->lineChartHamSpam($timespan, $this->data['text_archived_messages'], SIZE_X, SIZE_Y, "");
 
    }
 

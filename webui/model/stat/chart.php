@@ -2,7 +2,7 @@
 
 class ModelStatChart extends Model {
 
-   public function lineChartHamSpam($emails, $timespan, $title, $size_x, $size_y, $output){
+   public function lineChartHamSpam($timespan, $title, $size_x, $size_y, $output){
       $ydata = array();
       $ydata2 = array();
       $dates = array();
@@ -25,12 +25,25 @@ class ModelStatChart extends Model {
 
 
       if($timespan == "daily"){
-         $query = $this->db->query("select arrived-(arrived%3600) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $emails $grouping ORDER BY ts DESC limit $limit");
+         $delta = 3600;
          $date_format = "H:i";
       } else {
-         $query = $this->db->query("select arrived-(arrived%86400) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $emails $grouping ORDER BY ts DESC limit $limit");
+         $delta = 86400;
          $date_format = "m.d.";
       }
+
+      if(Registry::get('admin_user') == 0) {
+
+         $q = '';
+         foreach($_SESSION['auditdomains'] as $a) {
+            if($q) { $q .= ",?"; } else { $q = "?"; }
+         }
+         reset($_SESSION['auditdomains']);
+         $query = $this->db->query("select arrived-(arrived%$delta) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $_SESSION['auditdomains']);
+      } else {
+         $query = $this->db->query("select arrived-(arrived%$delta) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $limit");
+      }
+
 
       foreach ($query->rows as $q) {
          array_push($ydata, $q['num']);
