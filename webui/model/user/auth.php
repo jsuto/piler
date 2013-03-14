@@ -202,6 +202,7 @@ class ModelUserAuth extends Model {
          $_SESSION['domain'] = $query->row['domain'];
          $_SESSION['realname'] = $query->row['realname'];
 
+         $_SESSION['auditdomains'] = $this->model_user_user->get_users_all_domains($query->row['uid']);
          $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
          $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
          $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
