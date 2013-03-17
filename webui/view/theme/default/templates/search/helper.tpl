@@ -61,7 +61,7 @@
 
       <input type="button" class="restore" value="<?php print $text_bulk_restore_selected_emails; ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " />
 
-      <?php print $text_tag_search_results; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" value="OK" />
+      <?php print $text_tag_selected_messages; ?>: <input type="text" id="tag_value" name="tag_value" class="tagtext" /> <input type="button" class="tag" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" value="OK" />
 
 
    </div>

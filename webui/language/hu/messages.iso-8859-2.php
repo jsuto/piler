@@ -293,7 +293,7 @@ $_['text_successfully_trained'] = "Sikeresen tanítva";
 $_['text_successfully_updated'] = "Sikeresen módosítva";
 $_['text_swap_usage'] = "Swap használat";
 
-$_['text_tag_search_results'] = "Keresés eredményének címkézése";
+$_['text_tag_selected_messages'] = "Kijelölt üzenetek címkézése";
 $_['text_tagged'] = "Címkézve";
 $_['text_tags'] = "Címkék";
 $_['text_text'] = "Szöveg";

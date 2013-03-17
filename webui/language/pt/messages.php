@@ -292,7 +292,7 @@ $_['text_successfully_trained'] = "Treinado com sucesso";
 $_['text_successfully_updated'] = "Atualizado com sucesso";
 $_['text_swap_usage'] = "Swap, uso de:";
 
-$_['text_tag_search_results'] = "Marcar(Tag) resultados de pesquisa";
+$_['text_tag_selected_messages'] = "Marcar(Tag) resultados de pesquisa";
 $_['text_tagged'] = "Marcados";
 $_['text_tags'] = "Tags";
 $_['text_text'] = "Texto";

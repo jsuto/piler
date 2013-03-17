@@ -292,7 +292,7 @@ $_['text_successfully_trained'] = "Successfully trained";
 $_['text_successfully_updated'] = "Successfully modified";
 $_['text_swap_usage'] = "Swap usage";
 
-$_['text_tag_search_results'] = "Tag search results";
+$_['text_tag_selected_messages'] = "Tag selected messages";
 $_['text_tagged'] = "Tagged";
 $_['text_tags'] = "Tags";
 $_['text_text'] = "Text";
