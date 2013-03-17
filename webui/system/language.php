@@ -9,7 +9,7 @@ class Language {
 
       $lang = '';
 
-      if(isset($_SESSION['lang'])) {
+      if(isset($_SESSION['lang']) && $_SESSION['lang'] != '') {
          $file = DIR_LANGUAGE . $_SESSION['lang'] . '/messages.php';
          define('LANG', $_SESSION['lang']);
       }

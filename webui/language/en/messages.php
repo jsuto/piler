@@ -389,5 +389,6 @@ $_['text_clear'] = 'Clear';
 $_['text_select_letter'] = 'Select Addresses by Letter';
 $_['text_working'] = 'Working...';
 
+$_['text_use_browser_settings'] = 'Use browser settings';
 
 ?>

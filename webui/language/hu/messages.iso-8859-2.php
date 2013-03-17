@@ -390,4 +390,6 @@ $_['text_clear'] = 'Törlés';
 $_['text_select_letter'] = 'Cím kiválasztása betû szerint';
 $_['text_working'] = 'Keresés...';
 
+$_['text_use_browser_settings'] = 'Böngészõ beállításainak használata';
+
 ?>
