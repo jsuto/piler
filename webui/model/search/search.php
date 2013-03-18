@@ -308,18 +308,18 @@ class ModelSearchSearch extends Model {
 
       if(isset($data['tag']) && $data['tag']) {
          $id_list = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag');
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else if(isset($data['note']) && $data['note']) {
          $id_list = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note');
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && $data['extra_folders']) {
          $ids_in_extra_folders = $this->get_sphinx_id_list_by_extra_folders($data['extra_folders']);
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
 
       if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->num_rows)); }
