@@ -84,6 +84,7 @@ class ControllerAuditHelper extends Controller {
 
    private function fixup_request($data = array()) {
       $ndate = 0;
+      global $actions;
 
       if(!isset($data['search'])) { return; }
 
@@ -95,6 +96,7 @@ class ControllerAuditHelper extends Controller {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
+         if(preg_match("/(login|loginfailed|logout|view|download|search|restore)$/", $v) && isset($actions[$v])) { $this->a['action'] .= '*' . $actions[$v]; }
          if(preg_match("/\@/", $v)) { $this->a['user'] .= '*' . $v; }
          if(preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $v)) { $this->a['ipaddr'] .= '*' . $v; }
          if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= '*' . $v; }
@@ -108,6 +110,7 @@ class ControllerAuditHelper extends Controller {
       $this->a['user'] = preg_replace("/^\*/", "", $this->a['user']);
       $this->a['ipaddr'] = preg_replace("/^\*/", "", $this->a['ipaddr']);
       $this->a['ref'] = preg_replace("/^\*/", "", $this->a['ref']);
+      $this->a['action'] = preg_replace("/^\*/", "", $this->a['action']);
 
       //if(isset($data['action'])) { $arr['action'] = $data['action']; }
 

@@ -262,6 +262,17 @@ define('ACTION_UNAUTHORIZED_REMOVE_MESSAGE', 14);
 define('ACTION_DOWNLOAD_ATTACHMENT', 15);
 define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 
+$actions = array(
+                  'unknown' => 1,
+                  'login' => 2,
+                  'loginfailed' => 3,
+                  'logout' => 4,
+                  'view' => 5,
+                  'restore' => 8,
+                  'download' => 9,
+                  'search' => 10
+                );
+
 
 $counters = array(MEMCACHED_PREFIX . 'rcvd', MEMCACHED_PREFIX . 'virus', MEMCACHED_PREFIX . 'duplicate', MEMCACHED_PREFIX . 'ignore', MEMCACHED_PREFIX . 'counters_last_update');
 
