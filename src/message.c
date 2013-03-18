@@ -234,6 +234,38 @@ CLOSE:
 }
 
 
+int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
+   int rc, ret = ERR;
+   MYSQL_BIND bind[2];
+   unsigned long len[2];
+
+   memset(bind, 0, sizeof(bind));
+
+   bind[0].buffer_type = MYSQL_TYPE_STRING;
+   bind[0].buffer = ref;
+   bind[0].is_null = 0;
+   len[0] = strlen(ref); bind[0].length = &len[0];
+
+   bind[1].buffer_type = MYSQL_TYPE_STRING;
+   bind[1].buffer = state->message_id;
+   bind[1].is_null = 0;
+   len[1] = strlen(state->message_id); bind[1].length = &len[1];
+
+   if(mysql_stmt_bind_param(data->stmt_update_metadata_reference, bind)){
+      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_update_metadata_reference));
+      goto CLOSE;
+   }
+
+   rc = mysql_stmt_execute(data->stmt_update_metadata_reference);
+   if(rc == 0) ret = OK;
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->message_id, rc);
+
+CLOSE:
+   return ret;
+}
+
+
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int rc, ret=ERR;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
@@ -252,7 +284,10 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    digest_string(s, &vcode[0]);
 
    memset(ref, 0, sizeof(ref));
-   if(strlen(state->reference) > 10) digest_string(state->reference, &ref[0]);
+   if(strlen(state->reference) > 10){
+      digest_string(state->reference, &ref[0]);
+      update_metadata_reference(sdata, state, data, &ref[0], cfg);
+   }
 
 
    if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;

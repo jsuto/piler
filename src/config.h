@@ -13,7 +13,7 @@
 
 #define VERSION "0.1.23-master-branch"
 
-#define BUILD 770
+#define BUILD 774
 
 #define HOSTID "mailarchiver"
 
@@ -97,6 +97,7 @@
 #define SQL_PREPARED_STMT_QUERY_ATTACHMENT           "SELECT `attachment_id`, `ptr` FROM " SQL_ATTACHMENT_TABLE " WHERE piler_id=? ORDER BY attachment_id ASC"
 #define SQL_PREPARED_STMT_GET_FOLDER_ID              "SELECT `id` FROM " SQL_FOLDER_TABLE " WHERE `name`=? AND `parent_id`=?"
 #define SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE   "INSERT INTO `" SQL_FOLDER_TABLE "` (`name`, `parent_id`) VALUES(?,?)"
+#define SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE  "UPDATE " SQL_METADATA_TABLE " SET reference=? WHERE message_id=? AND reference=''"
 
 
 /* Error codes */

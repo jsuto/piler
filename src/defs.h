@@ -256,7 +256,8 @@ struct __data {
    MYSQL_STMT *stmt_get_attachment_pointer;
    MYSQL_STMT *stmt_query_attachment;
    MYSQL_STMT *stmt_get_folder_id;
-   MYSQL_STMT *stmt_insert_into_folder_table;   
+   MYSQL_STMT *stmt_insert_into_folder_table;
+   MYSQL_STMT *stmt_update_metadata_reference;
 #endif
 
 #ifdef HAVE_TRE
