@@ -319,14 +319,15 @@ int main(int argc, char **argv){
 
    (void) openlog("pilerexport", LOG_PID, LOG_MAIL);
 
+   if(exportall == 1){
+      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
+      rc += append_string_to_buffer(&query, SQL_METADATA_TABLE);
+      goto GO;
+   }
+
    snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE ", SQL_MESSAGES_VIEW);
 
    rc = append_string_to_buffer(&query, s);
-
-   if(exportall == 1){
-      rc += append_string_to_buffer(&query, "1=1");
-   }
-
 
    if(from){
       rc += append_string_to_buffer(&query, "`from` IN (");
@@ -390,9 +391,9 @@ int main(int argc, char **argv){
 
    rc += append_string_to_buffer(&query, " ORDER BY id ASC");
 
+
+GO:
    if(rc) p_clean_exit("malloc problem building query", 1);
-
-
 
 
    cfg = read_config(configfile);
