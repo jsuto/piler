@@ -247,9 +247,9 @@ int update_metadata_reference(struct session_data *sdata, struct _state *state, 
    len[0] = strlen(ref); bind[0].length = &len[0];
 
    bind[1].buffer_type = MYSQL_TYPE_STRING;
-   bind[1].buffer = state->message_id;
+   bind[1].buffer = state->reference;
    bind[1].is_null = 0;
-   len[1] = strlen(state->message_id); bind[1].length = &len[1];
+   len[1] = strlen(state->reference); bind[1].length = &len[1];
 
    if(mysql_stmt_bind_param(data->stmt_update_metadata_reference, bind)){
       syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_update_metadata_reference));
@@ -259,7 +259,7 @@ int update_metadata_reference(struct session_data *sdata, struct _state *state, 
    rc = mysql_stmt_execute(data->stmt_update_metadata_reference);
    if(rc == 0) ret = OK;
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->message_id, rc);
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->reference, rc);
 
 CLOSE:
    return ret;
