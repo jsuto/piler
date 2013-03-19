@@ -96,11 +96,11 @@ $mail = new ModelMailMail();
 	  $averagesizeday = nice_size($averagesizedayraw,' ');						// average size per day
 	  $daysleftatcurrentrate = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
 	  if ( $averagemessagesweekraw > $averagemessagesmonthraw ) {
-		$useagetrend = 1;
+		$usagetrend = 1;
 	  } elseif( $averagemessagesweekraw < $averagemessagesmonthraw ) {
-	    $useagetrend = -1;
+	    $usagetrend = -1;
 	  } else {
-		$useagetrend = 0;
+		$usagetrend = 0;
 	  }
 	  
 	  
