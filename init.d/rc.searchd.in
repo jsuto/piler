@@ -3,7 +3,7 @@
 ##
 
 NAME=searchd
-PID_FILE=/var/piler/sphinx/searchd.pid
+PID_FILE=/var/run/piler/searchd.pid
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
 
 start() {
