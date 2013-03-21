@@ -53,6 +53,7 @@ $_['text_date'] = "Dátum";
 $_['text_date_from'] = "Dátumtól";
 $_['text_date_to'] = "Dátumig";
 $_['text_days'] = "Napok";
+$_['text_days2'] = "nap";
 $_['text_days_to_retain'] = "Megõrzési idõ (nap)";
 $_['text_deferred_queue'] = "késõbbi kiküldésre váró üzenetsor";
 $_['text_deferred_queue_sender'] = "késõbbi kiküldésre váró üzenetsor (feladó szerint)";
@@ -182,6 +183,7 @@ $_['text_missing_data'] = "Hiányzó adat";
 $_['text_missing_password'] = "Hiányzó jelszó";
 $_['text_modify'] = "Módosítás";
 $_['text_monitor'] = "Monitor";
+$_['text_months'] = "hónap";
 $_['text_monthly_report'] = "Havi jelentés";
 
 $_['text_new_users'] = "új";
@@ -346,6 +348,7 @@ $_['text_whitelist_settings'] = "Fehérlista beállítások";
 $_['text_with_attachment'] = "mellékletekkel";
 $_['text_without_attachment'] = "mellékletek nélkül";
 
+$_['text_years'] = "év";
 $_['text_you_are'] = "Ön";
 $_['text_you_are_not_admin'] = "Önnek nincs jogosultsága a mûvelethez";
 

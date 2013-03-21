@@ -104,7 +104,7 @@
 			   </div>
 			   <div class="row">
 				  <div class="cellhealthright">"<?php print DATA_PARTITION; ?>" <?php print $text_partition_full; ?></div>
-				  <div class="cellhealthright"><?php print $daysleftatcurrentrate[0]; ?> years, <?php print $daysleftatcurrentrate[1]; ?> months, <?php print $daysleftatcurrentrate[2]; ?> days</div>
+				  <div class="cellhealthright"><?php print $daysleftatcurrentrate[0]; ?> <?php print $text_years; ?>, <?php print $daysleftatcurrentrate[1]; ?> <?php print $text_months; ?>, <?php print $daysleftatcurrentrate[2]; ?> <?php print $text_days2; ?></div>
 			   </div>
 			   <div class="row">
 				  <div class="cellhealthright"><?php print $text_usage_trend; ?></div>

@@ -53,6 +53,7 @@ $_['text_date'] = "Date";
 $_['text_date_from'] = "Date from";
 $_['text_date_to'] = "Date to";
 $_['text_days'] = "Days";
+$_['text_days2'] = "days";
 $_['text_days_to_retain'] = "Days to retain";
 $_['text_deferred_queue'] = "deferred queue";
 $_['text_deferred_queue_sender'] = "deferred queue vs. sender";
@@ -181,6 +182,7 @@ $_['text_missing_data'] = "Missing data";
 $_['text_missing_password'] = "Missing password";
 $_['text_modify'] = "Modify";
 $_['text_monitor'] = "Monitor";
+$_['text_months'] = "months";
 $_['text_monthly_report'] = "Monthly report";
 
 $_['text_new_users'] = "new";
@@ -345,6 +347,7 @@ $_['text_whitelist_settings'] = "Whitelist settings";
 $_['text_with_attachment'] = "with attachment(s)";
 $_['text_without_attachment'] = "without attachment";
 
+$_['text_years'] = "years";
 $_['text_you_are'] = "You are";
 $_['text_you_are_not_admin'] = "You are not an admin user";
 
