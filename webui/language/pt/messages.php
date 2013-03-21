@@ -184,6 +184,8 @@ $_['text_monthly_report'] = "Relatório mensal";
 
 $_['text_new_users'] = "novo";
 $_['text_next'] = "Próximo";
+$_['text_no_domain_found'] = 'No domain found';
+$_['text_no_email_found'] = 'No email found';
 $_['text_no_message_in_the_quarantine'] = "Nenhuma mensagem na quarentena combinando com os critérios da pesquisa";
 $_['text_no_records'] = "Sem registros";
 $_['text_no_sender'] = "sem remetente";

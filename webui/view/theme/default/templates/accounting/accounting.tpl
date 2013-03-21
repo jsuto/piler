@@ -75,5 +75,5 @@
         <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
     </div>
 <?php } else { ?>
-    <p>No <?php echo $viewname; ?> Found</p>
+    <p><?php $s = 'text_no_' . $view . '_found'; print $$s; ?></p>
 <?php } ?>

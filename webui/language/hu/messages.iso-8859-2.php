@@ -185,6 +185,8 @@ $_['text_monthly_report'] = "Havi jelentés";
 
 $_['text_new_users'] = "új";
 $_['text_next'] = "Következõ";
+$_['text_no_domain_found'] = 'Nem találtam domaineket';
+$_['text_no_email_found'] = 'Nem találtam emaileket';
 $_['text_no_message_in_the_quarantine'] = "Nincs a keresési feltételnek megfelelõ üzenet a karanténban";
 $_['text_no_records'] = "nincs találat";
 $_['text_no_sender'] = "nincs feladó";
