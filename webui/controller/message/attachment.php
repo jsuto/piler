@@ -19,6 +19,8 @@ class ControllerMessageAttachment extends Controller {
 
       $this->data['id'] = @$this->request->get['id'];
 
+      $messageid = 0;
+
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown id: ' . $this->data['id']);
          die("invalid id: " . $this->data['id']);
@@ -31,7 +33,9 @@ class ControllerMessageAttachment extends Controller {
       }
 
 
-      AUDIT(ACTION_DOWNLOAD_ATTACHMENT, '', '', $this->data['id'], '');
+      $messageid = $this->model_search_message->get_id_by_piler_id($this->data['attachment']['piler_id']);
+
+      AUDIT(ACTION_DOWNLOAD_ATTACHMENT, '', '', $messageid, $this->data['id']);
 
       header("Cache-Control: public, must-revalidate");
       header("Pragma: no-cache");

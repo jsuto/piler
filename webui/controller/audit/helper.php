@@ -61,6 +61,8 @@ class ControllerAuditHelper extends Controller {
       $this->data['actions'][ACTION_CHANGE_USER_SETTINGS] = $this->data['text_change_user_settings'];
       $this->data['actions'][ACTION_REMOVE_MESSAGE] = $this->data['text_remove_message2'];
       $this->data['actions'][ACTION_UNAUTHORIZED_REMOVE_MESSAGE] = $this->data['text_unauthorized_remove_message'];
+      $this->data['actions'][ACTION_DOWNLOAD_ATTACHMENT] = $this->data['text_download_attachment2'];
+      $this->data['actions'][ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT] = $this->data['text_unauthorized_download_attachment'];
 
 
 

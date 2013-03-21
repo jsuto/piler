@@ -453,7 +453,7 @@ class ModelSearchMessage extends Model {
 
             $attachment = $this->get_attachment($query->row['piler_id'], $query->row['attachment_id']);
 
-            return array('filename' => $query->row['name'], 'attachment' => $attachment);
+            return array('filename' => $query->row['name'], 'piler_id' => $query->row['piler_id'], 'attachment' => $attachment);
          }
       }
 

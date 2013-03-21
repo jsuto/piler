@@ -72,6 +72,7 @@ $_['text_dn_asterisk_means_skip_sync'] = "A csillag (*) azt jelenti, hogy ez a f
 $_['text_domain'] = "Domain";
 $_['text_domains'] = "Domain(ek)";
 $_['text_domainname'] = "Domainnév";
+$_['text_download_attachment2'] = "melléklet letöltés";
 $_['text_download_message'] = "Levél letöltése (EML)";
 $_['text_download_message2'] = "levél letöltése";
 
@@ -313,6 +314,7 @@ $_['text_total_users'] = "összes";
 $_['text_uids'] = "Felhasználó azonosítók";
 $_['text_unknown'] = "ismeretlen";
 $_['text_unauthorized_domain'] = "Nem megengedett domain";
+$_['text_unauthorized_download_attachment'] = "jogosulatlan melléklet letöltés";
 $_['text_unauthorized_remove_message'] = "jogosulatlan üzenet törlés";
 $_['text_unauthorized_view_message'] = "jogosulatlan üzenet megtekintés";
 $_['text_update_selected_uids'] = "Kijelölt azonosítók módosítása";

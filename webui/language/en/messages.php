@@ -72,6 +72,7 @@ $_['text_dn_asterisk_means_skip_sync'] = "Asterisk (*) means this user entry wil
 $_['text_domain'] = "Domain";
 $_['text_domains'] = "Domain(s)";
 $_['text_domainname'] = "Domain name";
+$_['text_download_attachment2'] = "download attachment";
 $_['text_download_message'] = "Download message (EML)";
 $_['text_download_message2'] = "download message";
 
@@ -311,6 +312,7 @@ $_['text_total_users'] = "total";
 
 $_['text_uids'] = "uids";
 $_['text_unauthorized_domain'] = "Unauthorized domain";
+$_['text_unauthorized_download_attachment'] = "unauthorized attachment download";
 $_['text_unauthorized_remove_message'] = "unauthorized message removal";
 $_['text_unauthorized_view_message'] = "unathorized message view";
 $_['text_unknown'] = "unknown";
