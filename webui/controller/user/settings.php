@@ -46,7 +46,7 @@ class ControllerUserSettings extends Controller {
       if(isset($this->request->post['pagelen']) && isset($this->request->post['theme'])) {
          $this->model_user_prefs->set_user_preferences(Registry::get('username'), $this->request->post);
 
-         AUDIT(ACTION_CHANGE_USER_SETTINGS, '', '', '', 'pagelen:' . $this->request->post['pagelen'] . ', theme:' . $this->request->post['theme']);
+         AUDIT(ACTION_CHANGE_USER_SETTINGS, '', '', '', 'pagelen:' . $this->request->post['pagelen'] . ', theme:' . $this->request->post['theme'] . ', lang:' . $this->request->post['lang']);
 
          Header("Location: settings.php");
          return;
