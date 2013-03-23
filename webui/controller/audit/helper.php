@@ -36,7 +36,7 @@ class ControllerAuditHelper extends Controller {
       $this->data['page'] = 0;
       if(isset($this->request->post['page'])) { $this->data['page'] = $this->request->post['page']; }
 
-      $this->data['page_len'] = get_page_length();
+      $this->data['page_len'] = $this->a['page_len'] = get_page_length();
 
       $this->data['n'] = -1;
 
@@ -88,7 +88,7 @@ class ControllerAuditHelper extends Controller {
       $ndate = 0;
       global $actions;
 
-      if(!isset($data['search'])) { return; }
+      if(!isset($data['search']) || $data['search'] == $this->data['text_enter_search_terms']) { return; }
 
       $s = preg_replace("/:/", ": ", $data['search']);
       $s = preg_replace("/,/", " ", $s);
