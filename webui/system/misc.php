@@ -474,4 +474,14 @@ function convert_days_ymd($convert) {
 }
 
 
+function fix_evolution_mime_name_crap($s = '') {
+   if(preg_match("/iso\-\d{1,4}\-\d{1,}\'\'/i", $s)) {
+      $s = preg_replace("/iso\-\d{1,4}\-\d{1,}\'\'/i", "", $s);
+      $s = utf8_encode(urldecode($s));
+   }
+
+   return $s;
+}
+
+
 ?>

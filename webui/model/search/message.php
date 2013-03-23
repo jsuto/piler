@@ -453,7 +453,7 @@ class ModelSearchMessage extends Model {
 
             $attachment = $this->get_attachment($query->row['piler_id'], $query->row['attachment_id']);
 
-            return array('filename' => $query->row['name'], 'piler_id' => $query->row['piler_id'], 'attachment' => $attachment);
+            return array('filename' => fix_evolution_mime_name_crap($query->row['name']), 'piler_id' => $query->row['piler_id'], 'attachment' => $attachment);
          }
       }
 
@@ -471,6 +471,7 @@ class ModelSearchMessage extends Model {
       if(!isset($query->rows)) { return array(); }
 
       foreach($query->rows as $q) {
+         $q['name'] = fix_evolution_mime_name_crap($q['name']);
          array_push($data, $q);
       }
 
