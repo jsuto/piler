@@ -57,9 +57,16 @@ class ModelSearchMessage extends Model {
 
       pclose($handle);
 
-      /* TODO: decode only if it's a base64 encoded attachment */
+      /* check if it's a base64 encoded stuff */
 
-      return base64_decode(preg_replace("/\s/", "", $data));
+      $s = substr($data, 0, 4096);
+      $s = preg_replace("/(\r|\n)/", "", $s);
+
+      if(!preg_replace("/\s/", $s)) {
+         return base64_decode(preg_replace("/\s/", "", $data));
+      }
+
+      return $data;
    }
 
 

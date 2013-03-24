@@ -13,7 +13,7 @@
 
 <?php foreach($terms as $term) {
          parse_str($term['term'], $s);
-         if(isset($s['search'])) {
+         if(isset($s['search']) && $s['search']) {
 ?>
          <div class="resultrow">
             <a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></br />

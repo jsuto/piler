@@ -759,6 +759,9 @@ class ModelSearchSearch extends Model {
    public function add_search_term($term = '') {
       if($term == '') { return 0; }
 
+      parse_str($term, $s);
+      if(!isset($s['search']) || $s['search'] == '') { return 0; }
+
       if($this->update_search_term($term) == 0) {
          AUDIT(ACTION_SAVE_SEARCH, '', '', '', $term);
          $query = $this->db->query("INSERT INTO " . TABLE_SEARCH . " (email, ts, term) VALUES(?,?,?)", array($_SESSION['email'], time(), $term));
