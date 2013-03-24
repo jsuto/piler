@@ -62,7 +62,7 @@ class ModelSearchMessage extends Model {
       $s = substr($data, 0, 4096);
       $s = preg_replace("/(\r|\n)/", "", $s);
 
-      if(!preg_replace("/\s/", $s)) {
+      if(!preg_match("/\s/", $s)) {
          return base64_decode(preg_replace("/\s/", "", $data));
       }
 

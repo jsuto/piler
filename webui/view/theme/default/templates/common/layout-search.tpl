@@ -39,7 +39,7 @@
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="advtextgrey" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
+         <input type="text" id="_search" name="_search" class="advtextgrey" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
          <div class="aoo" onclick="$('#searchpopup1').show();">
             <div class="aoq"></div>
