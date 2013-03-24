@@ -1,0 +1,5 @@
+create database MYSQL_DATABASE character set 'utf8';
+grant all privileges on MYSQL_DATABASE.* to MYSQL_USERNAME@localhost identified by 'MYSQL_PASSWORD';
+flush privileges;
+
+

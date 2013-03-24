@@ -5,10 +5,10 @@
 source base
 {
    type = mysql
-   sql_host = localhost
-   sql_db = piler
-   sql_user = piler
-   sql_pass = piler
+   sql_host = MYSQL_HOSTNAME
+   sql_db = MYSQL_DATABASE
+   sql_user = MYSQL_USERNAME
+   sql_pass = MYSQL_PASSWORD
 }
 
 source main : base

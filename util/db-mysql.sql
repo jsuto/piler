@@ -1,6 +1,3 @@
-create database if not exists `piler` character set 'utf8';
-use `piler`;
-
 
 drop table if exists `sph_counter`;
 create table if not exists `sph_counter` (
