@@ -45,6 +45,7 @@ void remove_xml(char *buf, int *html){
 #ifdef HAVE_ZIP
 int extract_opendocument(struct session_data *sdata, struct _state *state, char *filename, char *prefix){
    int errorp, i=0, len=0, html=0;
+   int len2;
    char buf[MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -60,14 +61,14 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 
          zf = zip_fopen_index(z, i, 0);
          if(zf){
-            while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
+            while((len = zip_fread(zf, buf, sizeof(buf)-2)) > 0){
 
                remove_xml(buf, &html);
-               len = strlen(buf);
+               len2 = strlen(buf);
 
-               if(state->bodylen < BIGBUFSIZE-len-1){
-                  memcpy(&(state->b_body[state->bodylen]), buf, len);
-                  state->bodylen += len;
+               if(len2 > 0 && state->bodylen < BIGBUFSIZE-len2-1){
+                  memcpy(&(state->b_body[state->bodylen]), buf, len2);
+                  state->bodylen += len2;
                }
 
                memset(buf, 0, sizeof(buf));

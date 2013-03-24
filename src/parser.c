@@ -320,19 +320,17 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
    if(state->is_header == 0 && buf[0] != ' ' && buf[0] != '\t') state->message_state = MSG_BODY;
 
-   if((state->content_type_is_set == 0 || state->is_header == 1) && strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0) state->message_state = MSG_CONTENT_TYPE;
-   else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
-   else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0) state->message_state = MSG_CONTENT_DISPOSITION;
-
-
-   if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_TRANSFER_ENCODING) state->is_header = 1;
-
 
    /* header checks */
 
    if(state->is_header == 1){
 
       if(strncasecmp(buf, "From:", strlen("From:")) == 0) state->message_state = MSG_FROM;
+
+      else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0) state->message_state = MSG_CONTENT_TYPE;
+      else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
+      else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0) state->message_state = MSG_CONTENT_DISPOSITION;
+
       else if(strncasecmp(buf, "To:", 3) == 0) state->message_state = MSG_TO;
       else if(strncasecmp(buf, "Cc:", 3) == 0) state->message_state = MSG_CC;
       else if(strncasecmp(buf, "Bcc:", 4) == 0) state->message_state = MSG_CC;
@@ -358,8 +356,10 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   if((p = strcasestr(buf, "boundary"))){
-      extract_boundary(p, state);
+   if(state->message_state == MSG_CONTENT_TYPE){
+      if((p = strcasestr(buf, "boundary"))){
+         extract_boundary(p, state);
+      }
    }
 
 
@@ -426,7 +426,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          p++;
          if(*p == ' ' || *p == '\t') p++;
          snprintf(state->type, TINYBUFSIZE-1, "%s", p);
-         state->content_type_is_set = 1;
+         //state->content_type_is_set = 1;
          p = strchr(state->type, ';');
          if(p) *p = '\0';
       }
@@ -476,7 +476,9 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    boundary_line = is_item_on_string(state->boundaries, buf);
 
    if(!strstr(buf, "boundary=") && !strstr(buf, "boundary =") && boundary_line == 1){
-      state->content_type_is_set = 0;
+      state->is_header = 1;
+
+      //state->content_type_is_set = 0;
 
       if(state->has_to_dump == 1){
          if(take_into_pieces == 1 && state->fd != -1){
