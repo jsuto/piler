@@ -56,7 +56,7 @@
 	form { padding-top: 0px; margin: 0px; }
 	.formbottom { margin-bottom: 30px; }
 
-        input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:199px;cursor:pointer;height:15px;}
+        input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:198px;cursor:pointer;height:15px;}
 
         input#savedsearch{background-image:url(../images/search.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:400px;height:15px; }
 
