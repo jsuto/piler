@@ -154,8 +154,8 @@ class ModelSearchMessage extends Model {
                $is_header = 0;
             }
 
-            if(preg_match("/^Content-Type:/i", $l)) $state = "CONTENT_TYPE";
-            if(preg_match("/^Content-Transfer-Encoding:/i", $l)) $state = "CONTENT_TRANSFER_ENCODING";
+            if($is_header == 1 && preg_match("/^Content-Type:/i", $l)) $state = "CONTENT_TYPE";
+            if($is_header == 1 && preg_match("/^Content-Transfer-Encoding:/i", $l)) $state = "CONTENT_TRANSFER_ENCODING";
 
             if($state == "CONTENT_TYPE"){
                $x = strstr($l, "boundary");
@@ -163,7 +163,7 @@ class ModelSearchMessage extends Model {
                   $x = preg_replace("/boundary =/", "boundary=", $x);
                   $x = preg_replace("/boundary= /", "boundary=", $x);
 
-                  $x = preg_replace("/\"/", "", $x);
+                  $x = preg_replace("/\"\;{0,1}/", "", $x);
                   $x = preg_replace("/\'/", "", $x);
 
                   $b = explode("boundary=", $x);
@@ -220,6 +220,8 @@ class ModelSearchMessage extends Model {
                   $text_plain = $text_html = $qp = $base64 = 0;
 
                   $charset = $body_chunk = "";
+
+                  $is_header = 1;
 
                   continue;
                }
