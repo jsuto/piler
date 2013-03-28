@@ -57,14 +57,14 @@ class ControllerAccountingAccounting extends Controller {
       // get type of accounting view
       if(@$this->request->get['view'] == "email") {
         $this->data['view'] = 'email';
-        $this->data['viewname'] = "Emails";
+        $this->data['viewname'] = $this->data['text_email'];
         $this->data['accounting'] = $counters->get_accounting('email',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
         $this->data['total_records'] = $counters->count_accounting('email',$this->data['search']);
       }
       
       if(@$this->request->get['view'] == "domain") {
         $this->data['view'] = 'domain';
-        $this->data['viewname'] = "Domains";
+        $this->data['viewname'] = $this->data['text_domain'];
         $this->data['accounting'] = $counters->get_accounting('domain',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
         $this->data['total_records'] = $counters->count_accounting('domain',$this->data['search']);
       }   

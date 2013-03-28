@@ -399,4 +399,11 @@ $_['text_working'] = 'Keresés...';
 
 $_['text_use_browser_settings'] = 'Böngészõ beállításainak használata';
 
+$_['text_sent'] = 'Küldött';
+$_['text_received'] = 'Fogadott';
+$_['text_oldest_record'] = 'Legrégebbi rekord';
+$_['text_newest_record'] = 'Legújabb rekord';
+$_['text_items'] = 'Tételek';
+$_['text_average_size'] = 'Átlag méret';
+
 ?>

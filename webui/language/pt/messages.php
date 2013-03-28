@@ -398,4 +398,12 @@ $_['text_working'] = 'Working...';
 
 $_['text_use_browser_settings'] = 'Use browser settings';
 
+$_['text_sent'] = 'Sent';
+$_['text_received'] = 'Received';
+$_['text_oldest_record'] = 'Oldest record';
+$_['text_newest_record'] = 'Newest Record';
+$_['text_items'] = 'Items';
+$_['text_average_size'] = 'Avg size';
+
+
 ?>

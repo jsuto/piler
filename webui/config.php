@@ -139,7 +139,8 @@ $config['DATA_PARTITION'] = '/var';
 $langs = array(
                 'hu',
                 'en',
-                'pt'
+                'pt',
+                'de'
                );
 
 
