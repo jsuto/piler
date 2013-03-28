@@ -138,6 +138,7 @@ class ModelSearchMessage extends Model {
       $charset = "";
       $qp = $base64 = 0;
       $has_text_plain = 0;
+      $rfc822 = 0;
 
       $from = $to = $subject = $date = $message = "";
 
@@ -152,6 +153,9 @@ class ModelSearchMessage extends Model {
 
             if(($l[0] == "\r" && $l[1] == "\n" && $is_header == 1) || ($l[0] == "\n" && $is_header == 1) ){
                $is_header = 0;
+
+               if($rfc822 == 1) { $rfc822 = 0; $is_header = 1; }
+
             }
 
             if($is_header == 1 && preg_match("/^Content-Type:/i", $l)) $state = "CONTENT_TYPE";
@@ -183,6 +187,8 @@ class ModelSearchMessage extends Model {
                   }
                }
 
+               if(strstr($l, "message/rfc822")) { $rfc822 = 1; }
+
                if(strstr($l, "text/plain")){ $text_plain = 1; $has_text_plain = 1; }
                if(strstr($l, "text/html")){ $text_html = 1; $text_plain = 0; }
             }
@@ -200,6 +206,7 @@ class ModelSearchMessage extends Model {
                if(preg_match("/^Date:/i", $l)){ $state = "DATE"; }
                if(preg_match("/^Subject:/i", $l)){ $state = "SUBJECT"; }
                if(preg_match("/^Content-Type:/", $l)){ $state = "CONTENT_TYPE"; }
+               if(preg_match("/^Content-Disposition:/", $l)){ $state = "CONTENT_DISPOSITION"; }
 
                $l = preg_replace("/</", "&lt;", $l);
                $l = preg_replace("/>/", "&gt;", $l);
