@@ -5,9 +5,9 @@
 
 <h4><?php print $text_existing_groups; ?></h4>
 
-<form method="post" name="search1" action="index.php?route=group/list">
+<form method="post" name="search1" class="form-search" action="index.php?route=group/list">
    <input type="text" name="search" value="<?php print $search; ?>" />
-   <input type="submit" value="<?php print $text_search; ?>" />
+   <input type="submit" class="btn btn-primary" value="<?php print $text_search; ?>" />
 </form>
 
 
@@ -28,12 +28,14 @@
       <div class="domainrow">
          <div class="domaincell"><?php print $text_groupname; ?> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
          <div class="domaincell">&nbsp;</div>
+         <div class="domaincell">&nbsp;</div>
       </div>
 
 <?php foreach($groups as $group) { ?>
       <div class="domainrow">
          <div class="domaincell"><?php print $group['groupname']; ?></div>
          <div class="domaincell"><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><?php print $text_edit_or_view; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=group/remove&amp;confirmed=1&amp;id=<?php print $group['id']; ?>" onclick="if(confirm('<?php print $text_remove_this_group; ?>: ' + '\'<?php print $group['groupname']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

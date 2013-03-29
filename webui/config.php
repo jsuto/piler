@@ -9,6 +9,8 @@ $config = array();
  */
 
 
+$config['BRANDING_TEXT'] = '';
+$config['BRANDING_URL'] = '';
 
 $config['DEFAULT_LANG'] = 'en';
 
@@ -41,7 +43,7 @@ $config['IMAP_HOST'] = 'mail.yourdomain.com';
 $config['IMAP_PORT'] =  993;
 $config['IMAP_SSL'] = true;
 
-$config['MAX_CGI_FROM_SUBJ_LEN'] = 45;
+$config['MAX_CGI_FROM_SUBJ_LEN'] = 34;
 $config['PAGE_LEN'] = 20;
 $config['MAX_NUMBER_OF_FROM_ITEMS'] = 5;
 $config['MAX_SEARCH_HITS'] = 1000;
@@ -209,18 +211,18 @@ define('DIR_THEME', DIR_BASE . 'view/theme/');
 define('DIR_REPORT', DIR_BASE . 'reports/');
 define('DIR_LOG', DIR_BASE . 'log/');
 
-define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/default/images/remote.gif');
-define('ICON_ARROW_UP', '/view/theme/default/images/arrowup.gif');
-define('ICON_ARROW_DOWN', '/view/theme/default/images/arrowdown.gif');
-define('ICON_ATTACHMENT', '/view/theme/default/images/attachment_icon.png');
-define('ICON_TAG', '/view/theme/default/images/tag_blue.png');
-define('ICON_GREEN_OK', '/view/theme/default/images/green_ok.png');
-define('ICON_RED_X', '/view/theme/default/images/red_x.png');
-define('ICON_DOWNLOAD', '/view/theme/default/images/download_icon.jpg');
-define('ICON_NOTES', '/view/theme/default/images/notes.png');
-define('ICON_PLUS', '/view/theme/default/images/plus.gif');
-define('ICON_MINUS', '/view/theme/default/images/minus.gif');
-define('ICON_EMPTY', '/view/theme/default/images/1x1.gif');
+define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/' . THEME . '/images/remote.gif');
+define('ICON_ARROW_UP', '/view/theme/' . THEME . '/images/arrowup.gif');
+define('ICON_ARROW_DOWN', '/view/theme/' . THEME . '/images/arrowdown.gif');
+define('ICON_ATTACHMENT', '/view/theme/' . THEME . '/images/attachment_icon.png');
+define('ICON_TAG', '/view/theme/' . THEME . '/images/tag_blue.png');
+define('ICON_GREEN_OK', '/view/theme/' . THEME . '/images/green_ok.png');
+define('ICON_RED_X', '/view/theme/' . THEME . '/images/red_x.png');
+define('ICON_DOWNLOAD', '/view/theme/' . THEME . '/images/download_icon.jpg');
+define('ICON_NOTES', '/view/theme/' . THEME . '/images/notes.png');
+define('ICON_PLUS', '/view/theme/' . THEME . '/images/plus.gif');
+define('ICON_MINUS', '/view/theme/' . THEME . '/images/minus.gif');
+define('ICON_EMPTY', '/view/theme/' . THEME . '/images/1x1.gif');
 
 define('LOG_FILE', DIR_LOG . 'webui.log');
 
@@ -269,9 +271,12 @@ $actions = array(
                   'loginfailed' => 3,
                   'logout' => 4,
                   'view' => 5,
+                  'view_header' => 6,
                   'restore' => 8,
                   'download' => 9,
-                  'search' => 10
+                  'search' => 10,
+                  'save_search' => 11,
+                  'download_attachment' => 15
                 );
 
 

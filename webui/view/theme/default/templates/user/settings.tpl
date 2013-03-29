@@ -8,7 +8,7 @@
    <div id="search">
 
 	 <div class="row">
-		<div class="cell1 100px"><?php print $text_email_addresses; ?>:</div>
+		<div class="logincell"><?php print $text_email_addresses; ?>:</div>
 		<div class="cell2">
 			<?php print $emails; ?>
 		</div>
@@ -17,7 +17,7 @@
 <?php if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) { ?>
    
 	 <div class="row">
-		<div class="cell1 100px"><?php print $text_domains; ?>:</div>
+		<div class="logincell"><?php print $text_domains; ?>:</div>
 		<div class="cell2">
 			<?php print $domains; ?>
 		</div>
@@ -28,7 +28,7 @@
 <?php if(Registry::get('auditor_user') == 0 || RESTRICTED_AUDITOR == 0) { ?>
 	 
 	 <div class="row">
-		<div class="cell1 100px"><?php print $text_groups; ?>:</div>
+		<div class="logincell"><?php print $text_groups; ?>:</div>
 		<div class="cell2">
 			<?php print $groups; ?>
 		</div>
@@ -39,7 +39,7 @@
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 	 
 	 <div class="row">
-		<div class="cell1 100px"><?php print $text_folders; ?>:</div>
+		<div class="logincell"><?php print $text_folders; ?>:</div>
 		<div class="cell2">
 			<?php print $folders; ?>
 		</div>
@@ -54,10 +54,11 @@
    <div id="search">
 
 	  <h4><?php print $text_display_settings; ?></h4>
+
       <div id="search1">
 
          <div class="row">
-            <div class="cell1 100px"><?php print $text_page_length; ?>:</div>
+            <div class="logincell"><?php print $text_page_length; ?>:</div>
             <div class="cell2">
                <select name="pagelen">
                   <option value="10"<?php if($page_len == 10) { ?> selected="selected"<?php } ?>>10
@@ -69,7 +70,7 @@
          </div>
 
          <div class="row">
-            <div class="cell1"><?php print $text_theme; ?>:</div>
+            <div class="logincell"><?php print $text_theme; ?>:</div>
             <div class="cell2">
                <select name="theme">
             <?php foreach(Registry::get('themes') as $t) { ?>
@@ -80,7 +81,7 @@
          </div>
 
          <div class="row">
-            <div class="cell1"><?php print $text_language; ?>:</div>
+            <div class="logincell"><?php print $text_language; ?>:</div>
             <div class="cell2">
                <select name="lang">
                   <option value=""><?php print $text_use_browser_settings; ?></option>
@@ -93,8 +94,8 @@
 
 
          <div class="row">
-            <div class="cell1">&nbsp;</div>
-            <div class="cell2"><input type="submit" value="<?php print $text_set; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+            <div class="logincell">&nbsp;</div>
+            <div class="cell2"><input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
          </div>
 
 
@@ -121,7 +122,7 @@
          </div>
          <div class="row">
             <div class="domaincell">&nbsp;</div>
-            <div class="domaincell"><input type="submit" value="<?php print $text_submit; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+            <div class="domaincell"><input type="submit" class="btn btn-primary" value="<?php print $text_submit; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
          </div>
       </div>
    </form>

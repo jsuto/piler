@@ -10,25 +10,29 @@
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+   <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+
    <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/jquery-ui-custom.min.css" />
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/rc-splitter.css" />
    <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
 
    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+   <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 </head>
 
-<body onload="Piler.add_shortcuts();">
+<body class="mybody" onload="Piler.add_shortcuts();">
 
 <div id="messagebox1"></div>
 
-<div id="piler1">
-
+<div id="piler1" class="container">
 
 <div id="menu">
-<?php print $menu; ?>
+   <?php print $menu; ?>
 </div>
 
 <div id="expertsearch">
@@ -39,62 +43,24 @@
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="advtextgrey" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
+         <input type="text" id="_search" name="_search" class="input-medium search-query span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
-         <div class="aoo" onclick="$('#searchpopup1').show();">
-            <div class="aoq"></div>
-         </div>
+         <button id="button_search" class="btn btn-danger" onclick="Piler.expert(this); return false;"><?php print $text_search; ?></button>
 
-         <button id="button_search" class="active" onclick="Piler.expert(this);"><?php print $text_search; ?></button>
-         <input type="button" class="advsecondary" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
-         <input type="button" class="advsecondary" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');" value="<?php print $text_save; ?>" />
-         <input type="button" class="advsecondary" onclick="Piler.load_saved_search_terms();" value="<?php print $text_load; ?>" />
+         <button class="btn" onclick="$('#searchpopup1').show(); return false;"><?php print $text_advanced_search; ?></button>
+         <button class="btn" onclick="Piler.cancel(); return false;"><?php print $text_cancel; ?></button>
+         <button class="btn " onclick="Piler.saved_search_terms('<?php print $text_saved; ?>'); return false;"><?php print $text_save; ?></button>
+         <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>
 
 
          <?php print $popup; ?>
 
          <div id="sspinner">
-            <img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />
+    <div class="progress progress-striped active">
+    <div class="bar" style="width: 100%;"></div>
+    </div>
          </div>
 
-</div>
-
-<div id="resultsheader">
-  <div id="resultstop">
-   <div class="resultrow">
-      <div class="resultcell restore"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check();" /></div>
-      <div class="resultcell id"><a href="#"><img class="download_icon" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0" onclick="Piler.download_messages();" /></a></div>
-      <div class="resultcell date header">
-         <?php print $text_date; ?>
-         <a xid="date" xorder="1" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-         <a xid="date" xorder="0" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
-      </div>
-      <div class="resultcell from header">
-         <?php print $text_from; ?>
-         <a xid="from" xorder="1" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-         <a xid="from" xorder="0" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
-      </div>
-      <div class="resultcell to header">
-         <?php print $text_to; ?>
-      </div>
-      <div class="resultcell subject header">
-         <?php print $text_subject; ?>
-         <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-         <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
-      </div>
-      <div class="resultcell size header">
-         <?php print $text_size; ?>
-         <a xid="size" xorder="1" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_UP; ?>" alt="" border="0"></a>
-         <a xid="size" xorder="0" onclick="Piler.changeOrder(this);"><img src="<?php print ICON_ARROW_DOWN; ?>" alt="" border="0"></a>
-      </div>
-      <div class="resultcell end">&nbsp;</div>
-      <div class="resultcell end">&nbsp;</div>
-      <div class="resultcell end">&nbsp;</div>
-   <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { ?>
-      <div class="resultcell verification">&nbsp;</div>
-   <?php } ?>
-   </div>
-  </div>
 </div>
 
 

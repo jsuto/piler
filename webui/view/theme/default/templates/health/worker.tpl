@@ -32,12 +32,12 @@
             <div class="cellhealthright">
                <?php foreach($health as $h) {
                         if(preg_match("/^220/", $h[1])) {
-                           $status = 'OK'; $class = 'ok';
+                           $status = 'OK'; $class = 'text-success';
                         } else {
-                           $status = 'ERROR'; $class = 'error';
+                           $status = 'ERROR'; $class = 'text-error';
                         }
                ?>
-                        <div class="<?php print $class; ?>"><span><?php print $h[3]; ?>: <?php print $status; ?></span></div>
+                        <div class="bold <?php print $class; ?>"><span><?php print $h[3]; ?>: <?php print $status; ?></span></div>
                <?php } ?>
             </div>
          </div>
@@ -50,27 +50,27 @@
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_cpu_usage; ?>:</div>
-            <div class="cellhealthright"><span class="<?php if($cpuinfo < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $cpuinfo; ?>% <?php print $cpuload; ?></span></div>
+            <div class="cellhealthright"><span class="bold <?php if($cpuinfo < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $cpuinfo; ?>% <?php print $cpuload; ?></span></div>
          </div>
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_memory_usage; ?>:</div>
-            <div class="cellhealthright"><span class="<?php if($meminfo < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $meminfo; ?>% / <?php print $totalmem; ?> MB</span></div>
+            <div class="cellhealthright"><span class="bold <?php if($meminfo < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $meminfo; ?>% / <?php print $totalmem; ?> MB</span></div>
          </div>
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_swap_usage; ?></div>
-            <div class="cellhealthright"><span class="<?php if($swapinfo < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $swapinfo; ?>% / <?php print $totalswap; ?> MB</span></div>
+            <div class="cellhealthright"><span class="bold <?php if($swapinfo < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $swapinfo; ?>% / <?php print $totalswap; ?> MB</span></div>
          </div>
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_disk_usage; ?></div>
-            <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="<?php if($partition['utilization'] < HEALTH_RATIO) { ?>ok<?php } else { ?>error<?php } ?>"><?php print $partition['partition']; ?> <?php print $partition['utilization']; ?>%</span> <?php } ?></div>
+            <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="bold <?php if($partition['utilization'] < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $partition['partition']; ?> <?php print $partition['utilization']; ?>%</span> <?php } ?></div>
          </div>
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_periodic_purge; ?></div>
-            <div class="cellhealthright"><span class="<?php if($options['enable_purge'] == 1) { ?>ok<?php } else { ?>error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a><?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?> </span></div>
+            <div class="cellhealthright"><span class="bold <?php if($options['enable_purge'] == 1) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a><?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?> </span></div>
          </div>
 
 

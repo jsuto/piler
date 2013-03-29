@@ -10,21 +10,26 @@
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+   <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+
    <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/jquery-ui-custom.min.css" />
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/rc-splitter.css" />
    <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
 
    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+   <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 </head>
 
-<body onload="Piler.add_shortcuts();">
+<body class="mybody" onload="Piler.add_shortcuts();">
 
 <div id="messagebox1"></div>
 
-<div id="piler1">
+<div id="piler1" class="container">
 
 
 <div id="menu">
@@ -37,10 +42,10 @@
          <input type="hidden" name="sort" id="sort" value="date" />
          <input type="hidden" name="order" id="order" value="0" />
 
-         <input type="text" id="_search" name="_search" class="advtextgrey" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
+         <input type="text" id="_search" name="_search" class="input-medium search-query span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
-         <button id="button_search" class="active" onclick="Piler.auditexpert(this);"><?php print $text_search; ?></button>
-         <input type="button" class="advsecondary" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
+         <button id="button_search" class="btn btn-primary" onclick="Piler.auditexpert(this);"><?php print $text_search; ?></button>
+         <input type="button" class="btn" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
 
          <div id="sspinner">
             <img src="/view/theme/default/images/spinner.gif" id="spinner" alt="spinner" />

@@ -5,76 +5,60 @@
 
         p { margin: 0 0 10px 0; }
 
-	.loginfailed { color: red; font: normal 19px Arial, sans-serif; }
+	.mybody { background-color: #6D6D6D; color: #3d3d3d; }
 
-
-	body { background-color: #6D6D6D; margin: 0 auto; padding: 15px 0; text-align: center; font: normal 12px Arial, sans-serif; color: #3d3d3d; }
-
-	#piler1 { width: 1200px; min-height: 830px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; }
+	/*#piler1 { width: 1200px; min-height: 830px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; padding-top: 0px; }*/
+	#piler1 { min-height: 860px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; padding-top: 0px; }
 
 	#messagebox1 { position: absolute; top: 0px; left: 50%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
 	#searchpopup1 { position: absolute; top: 25px; left: 0px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
         #popupx { position: absolute; right: 10px; top: 5px; margin: 10px; }
 
-	#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }
+	/*#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }*/
+
 	#wrapemail { margin-left: 20px; background-color: white; width:200px; height: 300px; }
         .email { background-color: white; }
 
-	#menu { display: table; margin: 0px 10px 15px 20px; padding: 10px 0 0px 0px; width: 1160px; border-bottom: 1px solid gray; }
-	#menu .leftcell { display: table-cell; width: 490px; text-align: justify; }
-	#menu .rightcell { display: table-cell; width: 490px; text-align: right; font: normal 12px Arial, sans-serif; margin: 0; padding: 0; }
-	#menu .logout22 { float: right; text-align: right; }
-	#menu a:link.logout, a:visited.logout { color: #222; }
-	#menu a:hover.logout { background: #F3D673; }
+	#menu { height: 40px; border: 0px solid red; }
+	#menu a:hover, #menu a:active { color: #850505; }
 
-        #menu ul { list-style: none; margin: 0; padding: 0; }
-        #menu li { background-image: none; font: normal 12px Arial, sans-serif; }
-        #menu a:hover, #menu a:active { color: #850505; }
-        #menu #active { color: #850505; font-weight: bold; }
+        #main { margin: 0px 40px 20px 40px; width: 100%; text-align: left; float: left; clear: both; }
 
+	.slick { margin:0; padding:0; }
+	.center { text-align: center; }
 
-	/*#main { margin: 0px 40px 20px 40px; width: 990px; float: left; clear: both; }*/
-        #main { margin: 0px 40px 20px 40px; width: 1160px; text-align: left; float: left; clear: both; }
-
-	.aoo { cursor: pointer; position: absolute; left: 520px; top: 0px; width: 10px; margin-left: -5px; }
-	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/default/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
-
-	#expertsearchOBSOLETED { position: absolute; border: 1px solid black; right: 20px; left: 20px; text-align: right; }
-	#expertsearch2 { position: absolute; border: 1px solid black; right: 20px; left: 20px; text-align: left; }
-	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; }
+	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; margin-top: 10px; }
 
 	#resultsheader { display: none; }
-	#resultstop { position: absolute; width: 1160px; border: 1px solid #999; top: 80px; right: 20px; left: 20px; text-align: right; display: table; }
+	#resultstop { position: absolute; width: 1140px; border: 0px solid #999; top: 120px; right: 20px; left: 20px; text-align: right; display: table; padding-right: 0px; margin-right: 20px; }
 
 	#footer { clear: both; text-align: left; margin: 0; padding: 0 36px; }
 
 	#A1 { text-align: right; }
 
-        h3 { margin: 0; padding: 10px 0 10px 0; font: bold 19px Arial, sans-serif; color: #850505; }
-        h4 { margin: 0; padding: 0px 0 0px 0; font: bold 12px Arial, sans-serif; color: #000000; }
+        h3.title { color: #850505; }
 
-	form { padding-top: 0px; margin: 0px; }
 	.formbottom { margin-bottom: 30px; }
 
-        input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:198px;cursor:pointer;height:15px;}
+	input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000; text-align:left; text-indent:6px; cursor:pointer; }
 
         input#savedsearch{background-image:url(../images/search.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:400px;height:15px; }
+
+	.piler-right-margin { margin-right: 30px; }
 
 
 	#search { float: left; width: 990px; margin-top: 5px; margin-bottom: 20px; }
 
 	#search1 { float: left; width: 490px; margin: 0; border: 0px solid green; }
 
-	#search2 { float: right; width: 490px; margin: 0; text-align: right; border: 0px solid green; }
+	/*#search2 { float: right; width: 490px; margin: 0; text-align: right; border: 0px solid green; }*/
 
 	#ss1 { display: table; border-collapse: collapse; margin: 0; padding: 0; margin-top: 10px; clear: both; }
 
-	#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; height: auto; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; overflow:auto; }
-	#resultscontainer.empty { border-bottom: 0px solid black; height: auto; overflow:auto; width: 990px; }
+	/*#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; height: auto; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; overflow:auto; }
+	#resultscontainer.empty { border-bottom: 0px solid black; height: auto; overflow:auto; width: 990px; }*/
 
-	#results { float: left; width: 1160px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
-
-        #mailrightcontainernofolder { left: 0px; }
+	#results { float: left; width: 1140px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
 
 	#mailpreviewframe { text-align: left; overflow:auto; }
 
@@ -83,21 +67,10 @@
 
 	#download_icon { margin: 0px 0 -2px 0; border: 0px solid black; }
 
-	#sspinner { position: absolute; top: 62px; right: 503px; border: 0px solid #999999; color: #000000; font-weight: bold; padding: 15px; z-index: 1; display: none; margin: auto; margin-top: 100px; }
+	#sspinner { position: relative; width: 60%; border: 0px solid #999999; color: #000000; font-weight: bold; vertical-align: middle; text-align: left; padding: 15px; z-index: 1; display: none; margin: auto; margin-top: 150px; }
 
-	#spinner_restore { border: 0px solid red; margin-top: 60px; }
-	.restore_spinner { text-align: center; border: 0px solid black; }
-
-	.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
-	.autocompletetext { font: normal 12px Arial, sans-serif; font-style: italic; color: gray; font-weight: bold; text-align:left; width: 408px; }
-	.ruletext { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 365px; }
-	.advtextOBSLETED { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 280px; }
-	.advtext { font: bold 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 528px; margin: 0px; }
-	.tagtext { font: normal 10px Arial, sans-serif; font-weight: bold; text-align:left; width: 265px; }
-	.advtextgreyOBSOLETED { font: bold 12px Arial, sans-serif; color: #999; font-weight: bold; text-align:left; width: 280px; }
-	.advtextgrey2 { font: bold 12px Arial, sans-serif; color: #999; font-weight: bold; text-align:left; width: 528px;margin: 0px; }
-	.advtextgrey { font: bold 19px Arial, sans-serif; color: #999; font-weight: bold; text-align:left; width: 528px; margin: 0px; }
-	.textregular { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; }
+	//.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
+	//.autocompletetext { font: normal 12px Arial, sans-serif; font-style: italic; color: gray; font-weight: bold; text-align:left; width: 408px; }
 
 	.row { display: table-row; }
 	.row.savedsearch { display: table-row; text-align: right; }
@@ -109,27 +82,13 @@
 	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
 
-	.resultcell { display: table-cell; text-align: left; vertical-align:middle; }
-	.resultcell.restore { width: 15px; }
-	.resultcell.id { width: 55px; text-align: center; }
-	.resultcell.date { width: 85px; }
-	.resultcell.from { width: 235px; }
-	.resultcell.to { width: 240px; }
-	.resultcell.subject { width: 360px; }
-	.resultcell.size { width: 100px; }
-	.resultcell.end { width: 20px; }
-	.resultcell.verification { text-align: right; padding-right: 0px; width: 18px; }
-	.resultcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
+	.tcell { display: table-cell; }
 
 	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }
-	.cell1s { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 85px; border: 1px solid red; }
-	/*.cell1q { display: table-cell; height: 25px; text-align: center; padding: 3px; font: bold 12px Arial, sans-serif; width: 50px; border: 1px solid red; }
-	.cell1r { display: table-cell; height: 25px; text-align: left; padding: 0px; font: bold 12px Arial, sans-serif; width: 15px; vertical-align:middle; border: 1px solid red; }*/
-	.cell3 { display: table-cell; height: 25px; text-align: left; padding: 0px; padding-top: 3px; font: bold 19px Arial, sans-serif; }
 
 	.cell2 { display: table-cell; width: 410px; height: 15px; }
-        .left { text-align: left; }
-	.100px { width: 100px; }
+        //.left { text-align: left; }
+	//.100px { width: 100px; }
 	.top20px { margin-top: 20px; }
 	.listarea { overflow:auto; height: 500px; }
 
@@ -142,18 +101,15 @@
 	.auditcell.ref { width: 90px; }
 	.auditcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
 
-	.cellaudit { display: table-cell; height: 14px; text-align: left; font: normal 12px Arial, sans-serif; padding: 0; margin: 0; vertical-align: middle;}
+	/*.cellaudit { display: table-cell; height: 14px; text-align: left; font: normal 12px Arial, sans-serif; padding: 0; margin: 0; vertical-align: middle;}
 	.cellaudit.date { width: 120px; }
-	.cellaudit.title { font: bold 12px Arial, sans-serif;}
+	.cellaudit.title { font: bold 12px Arial, sans-serif;}*/
 
         #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
         #health2 { display: table-cell; text-align: right; }
 
 	.cellhealthleft { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; }
 	.cellhealthright { display: table-cell; height: 25px; text-align: left; padding: 3px; font: normal 12px Arial, sans-serif; }
-
-	#health1 .ok { color: green; font-weight: bold; }
-	#health1 .error { color: red; font-weight: bold; }
 
 	#pagenav { float: left; margin-top: 0px; margin-bottom: 0px; text-align: left; width: 990px; border: 0px solid red; }
 	.navrow { display: table-row; }
@@ -163,96 +119,64 @@
         #pagingleft { display: table-cell; float: left; text-align: left; width: 60px;  border: 0px solid red; }
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
         #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
-        #tagbox { display: table-cell; float: left; text-align: right; vertical-align: top; width: 725px; border: 0px solid red; }
+
+        //#tagbox { display: table-cell; float: left; text-align: right; vertical-align: top; width: 725px; border: 0px solid red; }
 
 	.messagelink { border-bottom: 1px solid gray; color: #850505; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
 	#results a:hover { border-bottom: 1px solid gray; color: black; }
 
-	.advselect { width: 80px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
-	.advselect2 { width: 205px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
-	.ruleselect { width: 40px; font: bold 12px Arial, sans-serif; padding: 0; margin:0;}
+        //.restore_to_mailbox { font: normal 12px Arial, sans-serif; color: #850505; padding: 0; margin:0; height: 18px; border: 0px; background: #eee; vertical-align: middle; }
 
-        .restore_to_mailbox { font: normal 12px Arial, sans-serif; color: #850505; padding: 0; margin:0; height: 18px; border: 0px; background: #eee; vertical-align: middle; }
 
-	button { margin: 0; background-color:gray; font: bold 12px Arial, sans-serif; width:40%; height: 40px; margin-left: 5%; margin-right: 5%; }
-	button.active { background-color: #850505; color:white; }
-
-	#button_search { margin-left: 10px; margin-right: 0px; height: 20px; width: 70px; }
-	#button_search.popup { height: 40px; width: 100px; margin: 0px; }
-
-	.advbutton { margin: 0; background-color: #850505; color: white; font: bold 12px Arial, sans-serif; height: 40px; }
-
-	input[type=button].secondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 24%;}
-	input[type=button].advsecondary { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; height: 20px; width: 70px; }
-	input[type=button].advsecondary_complex { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 70px; }
-	input[type=button].load { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; width: 17%;}
-
-	input[type=button].short { margin: 0; background-color:#eee; color: gray; font: bold 12px Arial, sans-serif; width: 50px;}
-	input[type=button].tag { margin: 0; background-color:#eee; color: gray; font: normal 10px Arial, sans-serif; }
-	input[type=button].restore { margin: 0; background-color:yellow; color: black; font: normal 10px Arial, sans-serif; }
-	input[type=button].restore_to_mailbox_button { margin: 0; background-color:#eee; color: black; font: bold 12px Arial, sans-serif; }
 
 	input[type=textarea] { height:80px; }
 
-	input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
+	//input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
 	input[type=checkbox].restorebox { margin: 0; vertical-align: middle; }
 	input[type=checkbox].popup { margin: 0; vertical-align: middle; }
 
 	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
 	#restorebox { position: absolute; top: 20px; left: 15%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
 
-	.message_button { vertical-align: middle; font: bold 11px Arial, sans-serif; height:16px; padding:0; margin:0; }:
-	#note { width: 500px; padding: 0; margin: 0px; color: #000000; }
-	.mynote { height: 10px; font: 9px Arial, sans-serif; }
+	//#note { width: 500px; padding: 0; margin: 0px; color: #000000; }
+	//.mynote { height: 10px; font: 9px Arial, sans-serif; }
 
 	.domainrow { display: table-row; border: 2px solid gray; padding: 10px; }
 	.domaincell { display: table-cell; font: bold 12px Arial, sans-serif; border: 1px solid gray; padding: 5px; vertical-align: top; }
 	.logincell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
 	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
 
-	p.error { margin-bottom: 20px; color: red; font-weight: bold; }
-
-	#dhtmltooltip { position: absolute; width: 150px; border: 2px solid black; padding: 2px; background-color: yellow; color: #ffffff; visibility: hidden; z-index: 100; }
+	//p.error { margin-bottom: 20px; color: red; font-weight: bold; }
 
 	.extra_folder { color: #850505; font-weight: bold; border: none; width: 70%; background: transparent; }
 
 	.bold { font-weight: bold; }
+	.left { text-align: left; }
 
-	/*
-         * dropdown menu
-         */
 
-	.mcell { display: table-cell; vertical-align: top; width: 350px; border: 0px solid red; z-index: 3; }
 
-	ul.dropdown                         { position: relative; }
-	ul.dropdown li                      { font-weight: bold; float: left; background: #ffffff; text-align: center; padding-right: 40px; padding-left: 40px; border: 0px solid red; }
-	/*ul.dropdown li.first_li             { font-weight: bold; float: left; background: #ffffff; text-align: left; padding-left:80px; padding-right: 5px; }*/
-	ul.dropdown li.search_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 0px; font: 11px normal Arial, sans-serif; z-index: 5;}
-	/*ul.dropdown li.no_search_li         { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; padding-right: 0px; }*/
-	/*ul.dropdown li.center_li            { font-weight: bold; float: left; background: #ffffff; text-align: center; padding: 0; width: 190px; }*/
-	ul.dropdown li.last_li              { font-weight: bold; float: left; background: #ffffff; text-align: right; padding: 0; text-align: left; font: 11px normal Arial, sans-serif; }
+	/* rc splitter stuff */
 
-	/*ul.dropdown li.admin                { font-weight: bold; float: left; background: #ffffff; padding-right: 5px; padding-left: 2px; }
-	ul.dropdown li.first_li_admin       { background: #ffffff; text-align: left; margin-left: 90px; padding-left: 0px; padding-right: 5px; }
-	ul.dropdown li.last_li_admin        { background: #ffffff; text-align: right; padding: 0; }*/
 
-	ul.dropdown li.logout               { font-weight: bold; float: right; background: #ffffff; width: 100px; text-align: right; }
+	#mainscreen { position: absolute; top: 90px; right: 20px; bottom: 20px; left: 20px; }
 
-	ul.dropdown a:hover                 { color: #000; }
-	ul.dropdown a:active                { color: #ffa500; }
-	ul.dropdown li a                    { padding: 0; color: #222; border-bottom: none; }
-	ul.dropdown li.hover,
-	ul.dropdown li:hover                { background: #F3D673; color: black; position: relative; }
-	/*ul.dropdown li.no_search_li:hover   { background: #ffffff; color: black; position: relative; }*/
-	ul.dropdown li.hover a              { color: black; }
+	#mailleftcontainer { position: absolute; top: 0; left: 0; bottom: 0; width: 195px; }
+	#mailboxlist-container { position: absolute; top: 0; left: 0; width: 100%; bottom: 0; border: 1px solid #999; background-color: #F9F9F9; overflow: hidden; }
+	#mailboxlist { position:relative; height: auto; margin: 0px; padding: 0px; list-style-image: none; list-style-type: none; overflow: hidden; white-space: nowrap; background-color: #FFF; }
+	#mailrightcontainer { position: absolute; top: 0; left: 170px; bottom: 0; right: 0; min-width: 400px; }
+	#mailrightcontent { position: absolute; top: 0px; left: 0; right: 0; bottom: 0; }
+	#mailcontframe { position: absolute; width: 100%; top: 0; bottom: 0; border: 1px solid #999999; background-color: #F9F9F9; overflow: hidden; }
+	#mailpreviewframe { position: absolute; width: 100%; top: 205px; bottom: 0px; border: 1px solid #999999; background-color: #F9F9F9; }
 
-	ul.dropdown ul                      { width: 150px; text-align: left; visibility: hidden; position: absolute; top: 100%; left: 0; }
-	ul.dropdown ul li                   { text-align: left; font-weight: normal; background: #f6f6f6; color: #000; border-bottom: 1px solid #ccc; float: none; paddin-left: 3px; }
+	.boxlistcontent { position: absolute; top: 5px; bottom: 50px; left: 0; right: 0; width: 100%; overflow-y: auto; overflow-x: hidden; height: auto; }
+	.boxfooter { position: absolute; bottom: 0px; left: 0px; right: 0px; overflow: hidden; border-top: 1px solid #999; }
 
-	ul.sub_menu li                      { padding-left: 10px; padding-right: 10px; width: 140px; }
+	.splitter { user-select: none; -moz-user-select: none; -khtml-user-select: none; position: absolute; background: url(/view/theme/default/images/dimple.png) center no-repeat; }
+	.splitter-h { cursor: n-resize; cursor: row-resize; background-position: center 2px; }
+	.splitter-v { cursor: e-resize; cursor: col-resize; background-position: 2px center; }
 
-	ul.dropdown ul li a                 { border-right: none; font: 11px normal Arial, sans-serif; width: 100%; display: inline-block; text-align: left; }
+
 
 }
 

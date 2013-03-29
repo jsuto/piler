@@ -7,67 +7,69 @@
 
       <div class="row">
          <div class="domaincell"><?php print $text_from; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="from" /></div>
+         <div class="domaincell"><input type="text" name="from" class="input-medium span5" /></div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_to; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="to" /></div>
+         <div class="domaincell"><input type="text" name="to" class="input-medium span5" /></div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_subject; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="subject" /></div>
+         <div class="domaincell"><input type="text" name="subject" class="input-medium span5" /></div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_size; ?>:</div>
          <div class="domaincell">
-            <select class="ruleselect" name="_size">
+            <select name="_size" class="span1">
                <option value=">">&gt;</option>
                <option value="=">=</option>
                <option value="<">&lt;</option>
             </select>
-            <input type="text" class="ruletext" name="size" />
+            <input type="text" name="size" class="input-medium span4" />
          </div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_attachment_type; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="attachment_type" /></div>
+         <div class="domaincell"><input type="text" name="attachment_type" class="input-medium span5" /></div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_attachment_size; ?>:</div>
          <div class="domaincell">
-            <select class="ruleselect" name="_attachment_size">
+            <select name="_attachment_size" class="span1">
                <option value=">">&gt;</option>
                <option value="=">=</option>
                <option value="<">&lt;</option>
             </select>
-            <input type="text" class="ruletext" name="attachment_size" />
+            <input type="text" name="attachment_size" class="input-medium span4" />
          </div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_spam; ?>:</div>
          <div class="domaincell">
-            <select class="ruleselect" name="spam">
+            <select name="spam" class="span1">
                <option value="-1">-</option>
                <option value="0"><?php print $text_not_spam; ?></option>
                <option value="1"><?php print $text_spam2; ?></option>
             </select>
-            <input type="text" class="ruletext" name="attachment_size" />
+            <input type="text" name="attachment_size" class="input-medium span4" />
          </div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_days_to_retain; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="days" /></div>
+         <div class="domaincell"><input type="text" name="days" class="input-medium span5" /></div>
       </div>
 
 
       <div class="row">
          <div class="domaincell">&nbsp;</div>
-         <div class="domaincell"><input type="submit" value="<?php print $text_add; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+         <div class="domaincell"><input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
       </div>
 
    </div>
 
 </form>
+
+<?php if($error) { ?><p class="text-error bold"><?php print $text_error; ?>: <?php print $error; ?></p><?php } ?>
 
 
 <h4><?php print $text_existing_rules; ?></h4>
@@ -97,7 +99,7 @@
          <div class="domaincell"><?php print $rule['attachment_type']; ?></div>
          <div class="domaincell"><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></div>
          <div class="domaincell"><?php print $rule['days']; ?></div>
-         <div class="domaincell"><a href="index.php?route=policy/removeretention&amp;id=<?php print $rule['id']; ?>"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=policy/removeretention&amp;confirmed=1&amp;id=<?php print $rule['id']; ?>" onclick="if(confirm('<?php print $text_remove_rule; ?>: ' + '#<?php print $rule['id']; ?>')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

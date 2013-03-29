@@ -14,28 +14,37 @@
          </div>
 <?php } else { ?>
          <div class="row">
-            <div class="logincell"><?php print $text_email; ?>:</div>
-            <div class="logincell"><input type="text" class="textregular" name="username" /></div>
+            <div class="logincell"><input type="text" class="input-medium" name="username" placeholder="<?php print $text_email; ?>" /></div>
          </div>
 
          <div class="row">
-            <div class="logincell"><?php print $text_password; ?>:</div>
-            <div class="logincell"><input type="password" class="textregular" name="password" /></div>
+            <div class="logincell"><input type="password" class="input-medium" name="password" placeholder="<?php print $text_password; ?>" /></div>
          </div>
 
          <div class="row">
-            <div class="logincell">&nbsp;</div>
-            <div class="logincell"><input type="submit" value="<?php print $text_submit; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+            <div class="logincell"><input type="submit" class="btn btn-primary" value="<?php print $text_submit; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
          </div>
 <?php } ?>
 
+
+
+<?php if(isset($x)){ ?>
+         <div class="row">
+            <div class="logincell"><p class="text-error bold"><?php print $x; ?></p></div>
+         </div>
+<?php } ?>
+
+
+
       </div>
+
 
    </div>
 
+
 </form>
 
-<?php if(isset($x)){ ?><p class="loginfailed"><?php print $x; ?></p><?php } ?>
+
 
 <?php } ?>
 

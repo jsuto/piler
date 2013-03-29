@@ -14,7 +14,7 @@
       </div>
       <div class="row">
          <div class="domaincell">&nbsp;</div>
-         <div class="domaincell"><input type="submit" value="<?php print $text_add; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+         <div class="domaincell"><input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
       </div>
 
    </div>
@@ -38,7 +38,7 @@
       <div class="domainrow">
          <div class="domaincell"><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></div>
          <div class="domaincell"><?php print $domain['mapped']; ?></div>
-         <div class="domaincell"><a href="index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=domain/remove&amp;confirmed=1&amp;domain=<?php print urlencode($domain['domain']); ?>" onclick="if(confirm('<?php print $text_remove_domain; ?>: ' + '\'<?php print $domain['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

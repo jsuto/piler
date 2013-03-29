@@ -5,9 +5,9 @@
 
 <h4><?php print $text_existing_users; ?></h4>
 
-<form method="post" name="search1" action="index.php?route=user/list">
+<form method="post" name="search1" class="form-search" action="index.php?route=user/list">
    <input type="text" name="search" value="<?php print $search; ?>" />
-   <input type="submit" value="<?php print $text_search; ?>" />
+   <input type="submit" class="btn btn-primary" value="<?php print $text_search; ?>" />
 </form>
 
 
@@ -30,6 +30,7 @@
          <div class="domaincell"><?php print $text_email; ?> <a href="index.php?route=user/list&amp;sort=email&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=user/list&amp;sort=email&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
          <div class="domaincell"><?php print $text_role; ?> <a href="index.php?route=user/list&amp;sort=domain&amp;order=0"><img src="<?php print ICON_ARROW_UP; ?>" border="0"></a> <a href="index.php?route=user/list&amp;sort=domain&amp;order=1"><img src="<?php print ICON_ARROW_DOWN; ?>" border="0"></a></div>
          <div class="domaincell">&nbsp;</div>
+         <div class="domaincell">&nbsp;</div>
       </div>
 
 <?php foreach($users as $user) { ?>
@@ -45,6 +46,7 @@
             ?>
          </div>
          <div class="domaincell"><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><?php print $text_edit_or_view; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=user/remove&amp;confirmed=1&amp;uid=<?php print $user['uid']; ?>" onclick="if(confirm('<?php print $text_remove_this_user; ?>: ' + '\'<?php print $user['realname']; ?> / <?php print $user['email']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

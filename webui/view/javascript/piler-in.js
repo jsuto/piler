@@ -142,7 +142,7 @@ var Piler =
         .fail(function( a, b )// jqXHR, textStatus, errorThrown
         {
             alert("Problem retrieving XML data:" + b)
-        });        
+        });
     },
 
 
@@ -218,6 +218,8 @@ var Piler =
     view_message_by_pos:function(pos)
     {
         Piler.log("[view_message]", pos, Piler.Messages[pos]);
+
+	if(pos == -1) return false;
 
         id = Piler.Messages[pos];
 
@@ -318,7 +320,9 @@ var Piler =
 
         var idlist = Piler.get_selected_messages_list();
 
-        if(!idlist) return;
+	Piler.log("[tag_search_results, idlist]", idlist);
+
+        if(!idlist) return false;
 
         jQuery.ajax('index.php?route=search/tag', {
            data: { tag: encodeURI($('#tag_value').val()), idlist: idlist },
@@ -377,7 +381,7 @@ var Piler =
     {
         Piler.log("[fill_current_messages_array]" ); 
         
-        var z = $('#results').children(), y = z.length, x;
+        var z = $('#results tbody').children(), y = z.length, x;
         var u = [];
 
         Piler.log("[fill_current_messages_array] y", y ); 
@@ -386,7 +390,7 @@ var Piler =
         {
             x = z[i];
 
-            if ( x.nodeName == "DIV" && x.id.charAt( 0 ) == 'e' && x.id.charAt( 1 ) == '_' )
+            if ( x.nodeName == "TR" && x.id.charAt( 0 ) == 'e' && x.id.charAt( 1 ) == '_' )
             {
                 Piler.log("[fill_current_messages_array], pos/id", i, x.id.substring(2, 1000));
 

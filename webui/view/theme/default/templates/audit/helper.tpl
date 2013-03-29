@@ -15,7 +15,10 @@
          </div>
 
 <?php } } else { ?>
-   <div class="cell3 error"><?php print $text_empty_search_result; ?></div>
+    <div class="alert">
+       <strong><?php print $text_empty_search_result; ?></strong>
+    </div>
+
 <?php } ?>
 
    </div>

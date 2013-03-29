@@ -20,16 +20,19 @@ class ControllerPolicyRetention extends Controller {
       $this->document->title = $this->data['text_retention_rules'];
 
       $this->data['rules'] = array();
+      $this->data['error'] = '';
 
       if(Registry::get('admin_user') == 0) {
          die("go away");
       }
 
+      $lang = Registry::get('language');
+
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
          if($this->validate() == true) {
             $rc = $this->model_policy_retention->add_new_rule($this->request->post);
          } else {
-            $this->data['error'] = $lang->data['text_invalid_data'];
+            $this->data['error'] = $lang->data['text_missing_data'];
          }
 
       }

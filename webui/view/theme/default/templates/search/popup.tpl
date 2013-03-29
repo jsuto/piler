@@ -6,7 +6,7 @@
         <input type="hidden" name="xorder" id="xorder" value="0" />
         <input type="hidden" name="xref" id="xref" value="" />
 
-        <div id="popupx" onclick="$('#searchpopup1').hide();"> X </div>
+        <div id="popupx" onclick="$('#searchpopup1').hide();"> <i class="icon-remove"></i> </div>
 
         <div id="ss1">
 
@@ -52,13 +52,18 @@
 
          <div class="row">
             <div class="cell1"><?php print $text_date; ?>: </div>
-            <div class="cell2"><input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" /> <input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" /></div>
+            <div class="cell2"><input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="YYYY-MM-DD" /></div>
+         </div>
+
+         <div class="row">
+            <div class="cell1">&nbsp;</div>
+            <div class="cell2"><input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" placeholder="YYYY-MM-DD" /></div>
          </div>  
 
          <div class="row">
             <div class="cell1"></div>
             <div class="cell2 left">
-               <button id="button_search" class="active popup" onclick="Piler.complex();"><?php print $text_search; ?></button> <input type="button" class="advsecondary_complex" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
+               <button id="button_search" class="btn btn-danger" onclick="Piler.complex();"><?php print $text_search; ?></button> <input type="button" class="btn" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
             </div>
          </div>
 

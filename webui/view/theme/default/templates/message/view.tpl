@@ -23,7 +23,13 @@
 <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
 <strong><?php print $message['from']; ?></strong><br />
 <strong><?php print $message['to']; ?></strong><br />
-<strong><?php print $message['date']; ?></strong> <?php print $text_notes; ?>: <input type="text" size="60" id="note" name="note" class="mynote" value="<?php print preg_replace("/\"/", "&quot;", $message['note']); ?>" /> <input type="button" value="<?php print $text_save; ?>" class="message_button" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); " /><br />
+<strong><?php print $message['date']; ?></strong><br />
+
+<form class="form-inline" name="view">
+
+<strong><?php print $text_notes; ?></strong>: <input type="text" size="60" id="note" name="note" class="input-medium" value="<?php print preg_replace("/\"/", "&quot;", $message['note']); ?>" /> <input type="button" value="<?php print $text_save; ?>" class="btn btn-warning" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); " />
+
+</form>
 
 <?php foreach($attachments as $a) { ?>
    <span><img src="<?php print ICON_ATTACHMENT; ?>" /><a href="index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>

@@ -1,3 +1,3 @@
 
-<p><?php print $errorstring; ?></p>
+<p class="text-error bold"><?php print $errorstring; ?></p>
 
