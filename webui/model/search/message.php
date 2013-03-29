@@ -139,6 +139,7 @@ class ModelSearchMessage extends Model {
       $qp = $base64 = 0;
       $has_text_plain = 0;
       $rfc822 = 0;
+      $_1st_header = 1;
 
       $from = $to = $subject = $date = $message = "";
 
@@ -152,7 +153,7 @@ class ModelSearchMessage extends Model {
             $l .= "\n";
 
             if(($l[0] == "\r" && $l[1] == "\n" && $is_header == 1) || ($l[0] == "\n" && $is_header == 1) ){
-               $is_header = 0;
+               $is_header = $_1st_header = 0;
 
                if($rfc822 == 1) { $rfc822 = 0; $is_header = 1; }
 
@@ -211,10 +212,12 @@ class ModelSearchMessage extends Model {
                $l = preg_replace("/</", "&lt;", $l);
                $l = preg_replace("/>/", "&gt;", $l);
 
-               if($state == "FROM"){ $from .= preg_replace("/\r|\n/", "", $l); }
-               if($state == "TO"){ $to .= preg_replace("/\r|\n/", "", $l); }
-               if($state == "SUBJECT"){ $subject .= preg_replace("/\r|\n/", "", $l); }
-               if($state == "DATE"){ $date .= preg_replace("/\r|\n/", "", $l); }
+               if($_1st_header == 1) {
+                  if($state == "FROM"){ $from .= preg_replace("/\r|\n/", "", $l); }
+                  if($state == "TO"){ $to .= preg_replace("/\r|\n/", "", $l); }
+                  if($state == "SUBJECT"){ $subject .= preg_replace("/\r|\n/", "", $l); }
+                  if($state == "DATE"){ $date .= preg_replace("/\r|\n/", "", $l); }
+               }
             }
             else {
 
