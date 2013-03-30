@@ -45,9 +45,13 @@
 
          <input type="text" id="_search" name="_search" class="input-medium search-query span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
+         <div class="aoo" onclick="$('#searchpopup1').show();">
+            <div class="aoq"></div>
+         </div>
+
+
          <button id="button_search" class="btn btn-danger" onclick="Piler.expert(this); return false;"><?php print $text_search; ?></button>
 
-         <button class="btn" onclick="$('#searchpopup1').show(); return false;"><?php print $text_advanced_search; ?></button>
          <button class="btn" onclick="Piler.cancel(); return false;"><?php print $text_cancel; ?></button>
          <button class="btn " onclick="Piler.saved_search_terms('<?php print $text_saved; ?>'); return false;"><?php print $text_save; ?></button>
          <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>

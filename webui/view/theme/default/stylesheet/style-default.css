@@ -11,8 +11,12 @@
 	#piler1 { min-height: 860px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; padding-top: 0px; }
 
 	#messagebox1 { position: absolute; top: 0px; left: 50%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
-	#searchpopup1 { position: absolute; top: 25px; left: 0px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
+	#searchpopup1 { position: absolute; top: 30px; left: 0px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
         #popupx { position: absolute; right: 10px; top: 5px; margin: 10px; }
+
+	.aoo { cursor: pointer; position: absolute; left: 570px; top: 0px; width: 10px; margin-left: -5px; }
+	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/default/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
+
 
 	/*#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }*/
 
@@ -124,7 +128,7 @@
 
 	.messagelink { border-bottom: 1px solid gray; color: #850505; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
-	#results a:hover { border-bottom: 1px solid gray; color: black; }
+	#results a:hover { color: black; }
 
         //.restore_to_mailbox { font: normal 12px Arial, sans-serif; color: #850505; padding: 0; margin:0; height: 18px; border: 0px; background: #eee; vertical-align: middle; }
 
