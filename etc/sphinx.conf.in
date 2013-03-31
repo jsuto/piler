@@ -9,13 +9,6 @@ source base
    sql_db = MYSQL_DATABASE
    sql_user = MYSQL_USERNAME
    sql_pass = MYSQL_PASSWORD
-}
-
-source main : base
-{
-   sql_query_pre = SET NAMES utf8
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
-        WHERE id<=( SELECT max_doc_id FROM sph_counter WHERE counter_id=1 )
 
    sql_attr_uint = size
    sql_attr_uint = arrived
@@ -23,9 +16,7 @@ source main : base
    sql_attr_uint = direction
    sql_attr_uint = folder
    sql_attr_uint = attachments
-
 }
-
 
 source delta : base
 {
@@ -35,17 +26,32 @@ source delta : base
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
         WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
 
-   sql_attr_uint = size
-   sql_attr_uint = arrived
-   sql_attr_uint = sent
-   sql_attr_uint = direction
-   sql_attr_uint = folder
-   sql_attr_uint = attachments
-
    sql_query_killlist = SELECT `id` FROM `metadata` WHERE `deleted`=1
-
 }
 
+source main1 : base
+{
+   sql_query_pre = SET NAMES utf8
+   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1;
+}
+
+source main2 : base
+{
+   sql_query_pre = SET NAMES utf8
+   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1;
+}
+
+source main3 : base
+{
+   sql_query_pre = SET NAMES utf8
+   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1;
+}
+
+source main4 : base
+{
+   sql_query_pre = SET NAMES utf8
+   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1;
+}
 
 source tag : base
 {
@@ -71,7 +77,7 @@ source note : base
 
 index main1
 {
-	source			= main
+	source			= main1
 	path			= /var/piler/sphinx/main1
 	docinfo			= extern
 	charset_type		= utf-8
@@ -81,6 +87,38 @@ index main1
 
 }
 
+index main2
+{
+        source                  = main2
+        path                    = /var/piler/sphinx/main2
+        docinfo                 = extern
+        charset_type            = utf-8
+        enable_star             = 1
+        min_prefix_len          = 6
+        min_word_len            = 1
+}
+
+index main3
+{
+        source                  = main3
+        path                    = /var/piler/sphinx/main3
+        docinfo                 = extern
+        charset_type            = utf-8
+        enable_star             = 1
+        min_prefix_len          = 6
+        min_word_len            = 1
+}
+
+index main4
+{
+        source                  = main4
+        path                    = /var/piler/sphinx/main4
+        docinfo                 = extern
+        charset_type            = utf-8
+        enable_star             = 1
+        min_prefix_len          = 6
+        min_word_len            = 1
+}
 
 index delta1
 {
