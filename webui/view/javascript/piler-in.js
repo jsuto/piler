@@ -524,7 +524,9 @@ var Piler =
             attachment_type : $('input#xhas_attachment', z)[0].checked ? 'any' : '',
             date1 : $('input#date1', z).val().trim(),
             date2 : $('input#date2', z).val().trim(),
-            searchtype : 'simple'
+            searchtype : 'simple',
+            folders: Piler.folders,
+            extra_folders: Piler.extra_folders
         }
 
         Piler.load_search_results();//, Piler.assemble_search_term( count ), 0);
