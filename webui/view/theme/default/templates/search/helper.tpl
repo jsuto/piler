@@ -45,7 +45,7 @@
 
         <tbody>
 <?php $i=0; foreach ($messages as $message) { ?>
-         <tr id="e_<?php print $message['id']; ?>" class="resultrow new<?php if($i % 2) { ?> odd<?php } ?><?php if($message['spam'] == 1) { ?> spam<?php } ?>">
+         <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new<?php if($i % 2) { ?> odd<?php } ?><?php if($message['spam'] == 1) { ?> spam<?php } ?>">
             <td><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> /></td>
             <td><a href="#" onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php print ($page*$page_len) + $i + 1; ?>.</a></td>
             <td><?php print $message['date']; ?></td>
@@ -82,7 +82,7 @@
 
 
         <div class="boxfooter">
-           <form class="form-inline slick" name="tagging">
+           <form class="form-inline sleek" name="tagging">
 
 <?php if($n >= $page_len){ ?>
    <span class="piler-right-margin">

@@ -28,7 +28,7 @@
 
         #main { margin: 0px 40px 20px 40px; width: 100%; text-align: left; float: left; clear: both; }
 
-	.slick { margin:0; padding:0; }
+	.sleek { margin:0; padding:0; }
 	.center { text-align: center; }
 
 	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; margin-top: 10px; }
@@ -105,10 +105,6 @@
 	.auditcell.ref { width: 90px; }
 	.auditcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
 
-	/*.cellaudit { display: table-cell; height: 14px; text-align: left; font: normal 12px Arial, sans-serif; padding: 0; margin: 0; vertical-align: middle;}
-	.cellaudit.date { width: 120px; }
-	.cellaudit.title { font: bold 12px Arial, sans-serif;}*/
-
         #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
         #health2 { display: table-cell; text-align: right; }
 
@@ -124,14 +120,9 @@
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
         #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
 
-        //#tagbox { display: table-cell; float: left; text-align: right; vertical-align: top; width: 725px; border: 0px solid red; }
-
 	.messagelink { border-bottom: 1px solid gray; color: #850505; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
 	#results a:hover { color: black; }
-
-        //.restore_to_mailbox { font: normal 12px Arial, sans-serif; color: #850505; padding: 0; margin:0; height: 18px; border: 0px; background: #eee; vertical-align: middle; }
-
 
 
 	input[type=textarea] { height:80px; }
@@ -143,17 +134,12 @@
 	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
 	#restorebox { position: absolute; top: 20px; left: 15%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
 
-	//#note { width: 500px; padding: 0; margin: 0px; color: #000000; }
-	//.mynote { height: 10px; font: 9px Arial, sans-serif; }
-
 	.domainrow { display: table-row; border: 2px solid gray; padding: 10px; }
 	.domaincell { display: table-cell; font: bold 12px Arial, sans-serif; border: 1px solid gray; padding: 5px; vertical-align: top; }
 	.logincell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
 	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
 
-	//p.error { margin-bottom: 20px; color: red; font-weight: bold; }
-
-	.extra_folder { color: #850505; font-weight: bold; border: none; width: 70%; background: transparent; }
+	.folder { margin: 0 0 5px 10px; }
 
 	.bold { font-weight: bold; }
 	.left { text-align: left; }

@@ -16,7 +16,7 @@
 
          <div class="row">
             <div class="cell1">&nbsp;</div>
-            <div class="cell2"><input type="submit" value="<?php print $text_add; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></div>
+            <div class="cell2"><input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
          </div>
 
       </div>

@@ -302,7 +302,9 @@ class ModelSearchSearch extends Model {
          if(count($__folders) > 0) {
             $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
          }
-
+         else {
+            $folders = "folder IN (" . implode(",", $_SESSION['folders']) . ") AND ";
+         }
       }
 
 

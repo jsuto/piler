@@ -39,6 +39,9 @@
 <?php } else { ?>
 
              <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php"><?php print $text_search; ?></a></li>
+          <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
+             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "folders.php")){ ?> class="active"<?php } ?>><a href="folders.php"><?php print $text_folder; ?></a></li>
+          <?php } ?>
 
 <?php } ?>
 

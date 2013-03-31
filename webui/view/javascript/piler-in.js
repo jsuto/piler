@@ -12,6 +12,10 @@ var Piler =
     piler_ui_lang: '<?php LANG == 'en' ? print 'en-GB' : print LANG; ?>',
     prev_message_id: 0,
     pos: -1,
+    current_message_id: 0,
+    folders: '',
+    extra_folders: '',
+
 
     /*
      * variables used at search listing
@@ -125,7 +129,7 @@ var Piler =
         Piler.Shared.type == 'search' ? url = '/search-helper.php' : url = '/audit-helper.php';
 
         Piler.log("[load_search_results]", url); 
-        
+
         Piler.spinner('start');
 
         jQuery.ajax( url, {
@@ -401,6 +405,7 @@ var Piler =
         Piler.Messages = u;
         Piler.pos = -1;
         Piler.prev_message_id = 0;
+        Piler.current_message_id = 0;
     },   
 
 
@@ -469,11 +474,15 @@ var Piler =
         
         Piler.Shared.page = 0;
         Piler.Shared.type = 'search';
-        
+
+        Piler.assemble_folder_restrictions();
+
         Piler.Searches.Expert = {
             search : $('input#_search').val().trim(),
             searchtype : 'expert',
-            ref: $('#ref').val()
+            ref: $('#ref').val(),
+            folders: Piler.folders,
+            extra_folders: Piler.extra_folders
         }
    
         $('#ref').val('');
@@ -495,14 +504,16 @@ var Piler =
 
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
-        
+
         var z = $('div#searchpopup1');
-        
+
         Piler.search = 'Complex';
         
         Piler.Shared.page = 0;
         Piler.Shared.type = 'search';
-    
+
+        Piler.assemble_folder_restrictions();
+
         Piler.Searches.Complex = {
             from : $('input#xfrom', z).val().trim(),
             to : $('input#xto', z).val().trim(),
@@ -515,7 +526,7 @@ var Piler =
             date2 : $('input#date2', z).val().trim(),
             searchtype : 'simple'
         }
-        
+
         Piler.load_search_results();//, Piler.assemble_search_term( count ), 0);
 
         $('#searchpopup1').hide();
@@ -758,6 +769,81 @@ var Piler =
 
         });
 
+    },
+
+
+    assemble_folder_restrictions: function()
+    {
+       Piler.log("[assemble_folder_restrictions]");
+
+       Piler.folders = '';
+       Piler.extra_folders = '';
+
+       a = document.getElementById('folders');
+       if(!a) { return false; }
+
+       childNodeArray = a.getElementsByTagName('*');
+
+       if(childNodeArray) {
+          for(i=0; i<childNodeArray.length; i++) {
+             b = childNodeArray[i];
+             if(b.name && b.name.substring(0, 7) == 'folder_' && b.checked) {
+                Piler.folders = Piler.folders + " " + b.name.substring(7);
+             }
+
+             if(b.name && b.name.substring(0, 13) == 'extra_folder_' && b.checked) {
+                Piler.extra_folders = Piler.extra_folders + " " + b.name.substring(13);
+             }
+
+          }
+       }
+
+       if(Piler.folders) {
+          Piler.folders = Piler.folders.substring(1);
+       }
+
+       if(Piler.extra_folders) {
+          Piler.extra_folders = Piler.extra_folders.substring(1);
+       }
+
+       Piler.log("[folder/extra_folders]", Piler.folders, Piler.extra_folders);
+    },
+
+
+    copy_message_to_folder: function(folder_id, id, msg)
+    {
+        Piler.log("[copy_message_to_folder]", folder_id, id);
+
+        if(id <= 0) { return 0; }
+
+        var folder_copy_url = '<?php print SITE_URL; ?>/index.php?route=folder/copy'
+
+        jQuery.ajax('index.php?route=folder/copy', {
+           data: { folder_id: folder_id, id: id },
+           type: "POST"
+        })
+        .done( function(a) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', msg, 0.85);
+ 
+        Piler.current_message_id = 0;
+    },
+
+
+    open_folder: function(id)
+    {
+       $('#fldr_' + id).show();
+       $('#fldr_collapse_' + id).show();
+       $('#fldr_open_' + id).hide();
+    },
+
+
+    close_folder: function(id)
+    {
+       $('#fldr_' + id).hide();
+       $('#fldr_collapse_' + id).hide();
+       $('#fldr_open_' + id).show();
     }
 
 

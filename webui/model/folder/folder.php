@@ -188,6 +188,11 @@ class ModelFolderFolder extends Model {
       if($name == '') { return -1; }
 
       $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_EXTRA . " (uid, name) VALUES(?,?)", array($_SESSION['uid'], $name));
+
+      $last_id = $this->db->getLastId();
+
+      if(!isset($_SESSION['extra_folders'][$last_id])) { array_push($_SESSION['extra_folders'], $last_id); }
+
       return $this->db->countAffected();
    }
 
