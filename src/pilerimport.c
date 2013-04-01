@@ -11,6 +11,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -31,10 +34,10 @@ int quiet=0;
 int remove_after_successful_import = 0;
 
 
-int connect_to_imap_server(int sd, int *seq, char *server, char *username, char *password, int port, struct __data *data, int use_ssl);
+int connect_to_imap_server(int sd, int *seq, char *username, char *password, int port, struct __data *data, int use_ssl);
 int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data);
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg);
-int connect_to_pop3_server(int sd, char *server, char *username, char *password, int port, struct __data *data, int use_ssl);
+int connect_to_pop3_server(int sd, char *username, char *password, int port, struct __data *data, int use_ssl);
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg);
 void close_connection(int sd, struct __data *data, int use_ssl);
 
@@ -254,19 +257,39 @@ int import_from_imap_server(char *server, char *username, char *password, int po
    char *p, puf[SMALLBUFSIZE];
    char muf[SMALLBUFSIZE];
    char folders[MAXBUFSIZE];
+   char port_string[6];
+   struct addrinfo hints, *res;
 
+   snprintf(port_string, sizeof(port_string)-1, "%d", port);
+
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+
+   if((rc = getaddrinfo(server, port_string, &hints, &res)) != 0){
+      printf("getaddrinfo for '%s': %s\n", server, gai_strerror(rc));
+      return ERR;
+   }
 
    if(port == 993) use_ssl = 1;
 
 
-   if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
       printf("cannot create socket\n");
-      return ERR;
+      ret = ERR;
+      goto ENDE_IMAP;
    }
 
-   if(connect_to_imap_server(sd, &seq, server, username, password, port, data, use_ssl) == ERR){
+   if(connect(sd, res->ai_addr, res->ai_addrlen) == -1){
+      printf("connect()\n");
+      ret = ERR;
+      goto ENDE_IMAP;
+   }
+
+   if(connect_to_imap_server(sd, &seq, username, password, port, data, use_ssl) == ERR){
       close(sd);
-      return ERR;
+      ret = ERR;
+      goto ENDE_IMAP;
    }
 
 
@@ -294,37 +317,63 @@ int import_from_imap_server(char *server, char *username, char *password, int po
 
       if(quiet == 0) printf("processing folder: %s... ", puf);
 
-      rc = process_imap_folder(sd, &seq, puf, sdata, data, use_ssl, cfg);
-      if(rc == ERR) ret = ERR;
+      if(process_imap_folder(sd, &seq, puf, sdata, data, use_ssl, cfg) == ERR) ret = ERR;
 
    } while(p);
 
 
    close_connection(sd, data, use_ssl);
 
+ENDE_IMAP:
+   freeaddrinfo(res);
+
    return ret;
 }
 
 
 int import_from_pop3_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, use_ssl=0;
+   int rc, ret=OK, sd, use_ssl=0;
+   char port_string[6];
+   struct addrinfo hints, *res;
+
+   snprintf(port_string, sizeof(port_string)-1, "%d", port);
+
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+
+   if((rc = getaddrinfo(server, port_string, &hints, &res)) != 0){
+      printf("getaddrinfo for '%s': %s\n", server, gai_strerror(rc));
+      return ERR;
+   }
 
    if(port == 995) use_ssl = 1;
 
-   if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
       printf("cannot create socket\n");
-      return ERR;
+      ret = ERR;
+      goto ENDE_POP3;
    }
 
-   if(connect_to_pop3_server(sd, server, username, password, port, data, use_ssl) == ERR){
+   if(connect(sd, res->ai_addr, res->ai_addrlen) == -1){
+      printf("connect()\n");
+      ret = ERR;
+      goto ENDE_POP3;
+   }
+
+
+   if(connect_to_pop3_server(sd, username, password, port, data, use_ssl) == ERR){
       close(sd);
-      return ERR;
+      ret = ERR;
+      goto ENDE_POP3;
    }
 
-   rc = process_pop3_emails(sd, sdata, data, use_ssl, cfg);
-   if(rc == ERR) ret = ERR;
+   if(process_pop3_emails(sd, sdata, data, use_ssl, cfg) == ERR) ret = ERR;
 
    close_connection(sd, data, use_ssl);
+
+ENDE_POP3:
+   freeaddrinfo(res);
 
    return ret;
 }

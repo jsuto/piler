@@ -39,8 +39,6 @@ void init_session_data(struct session_data *sdata, struct __config *cfg);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
 
-unsigned long resolve_host(char *host);
-
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);
 #endif

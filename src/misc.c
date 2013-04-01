@@ -533,22 +533,6 @@ void strtolower(char *s){
 }
 
 
-unsigned long resolve_host(char *host){
-   struct hostent *h;
-   struct in_addr addr;
-
-   if(!host) return 0;
-
-   if((addr.s_addr = inet_addr(host)) == -1){
-       if((h = gethostbyname(host)) == NULL){
-          return 0;
-       }
-       else return *(unsigned long*)h->h_addr;
-   }
-   else return addr.s_addr;
-}
-
-
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;

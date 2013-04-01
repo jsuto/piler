@@ -33,25 +33,11 @@ int is_last_complete_pop3_packet(char *s, int len){
 }
 
 
-int connect_to_pop3_server(int sd, char *server, char *username, char *password, int port, struct __data *data, int use_ssl){
+int connect_to_pop3_server(int sd, char *username, char *password, int port, struct __data *data, int use_ssl){
    int n;
    char buf[MAXBUFSIZE];
-   unsigned long host=0;
-   struct sockaddr_in remote_addr;
    X509* server_cert;
    char *str;
-
-   host = resolve_host(server);
-
-   remote_addr.sin_family = AF_INET;
-   remote_addr.sin_port = htons(port);
-   remote_addr.sin_addr.s_addr = host;
-   bzero(&(remote_addr.sin_zero),8);
-
-   if(connect(sd, (struct sockaddr *)&remote_addr, sizeof(struct sockaddr)) == -1){
-      printf("connect()\n");
-      return ERR;
-   }
 
 
    if(use_ssl == 1){
