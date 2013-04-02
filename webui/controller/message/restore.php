@@ -24,6 +24,12 @@ class ControllerMessageRestore extends Controller {
 
       $rcpt = array();
 
+      if(ENABLE_IMAP_AUTH == 1) {
+         require_once 'Zend/Mail/Protocol/Imap.php';
+         require_once 'Zend/Mail/Storage/Imap.php';
+      }
+
+
       if(Registry::get('auditor_user') == 1) {
          $this->data['id'] = @$this->request->post['id'];
          $rcpt = preg_split("/\s/", $this->request->post['rcpt']);
@@ -61,8 +67,20 @@ class ControllerMessageRestore extends Controller {
          $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
          $this->model_search_message->remove_journal($msg);
 
-         $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+         if(ENABLE_IMAP_AUTH == 1) {
+            if($this->model_mail_mail->connect_imap()) {
+               $x = $this->imap->append('INBOX',  $msg);
+               $this->model_mail_mail->disconnect_imap();
+            }
+            else {
+               $x = 0;
+            }
+         }
+         else {
+
+            $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
                "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $msg );
+         }
 
          if($x == 1) { $this->data['data'] = $this->data['text_restored']; }
       }

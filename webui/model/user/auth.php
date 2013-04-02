@@ -178,6 +178,8 @@ class ModelUserAuth extends Model {
 
          $this->add_session_vars($username, $username, array($username));
 
+         $_SESSION['password'] = $password;
+
          return 1;
       }
 

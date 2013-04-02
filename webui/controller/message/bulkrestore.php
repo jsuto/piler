@@ -12,12 +12,15 @@ class ControllerMessageBulkrestore extends Controller {
       $request = Registry::get('request');
       $db = Registry::get('db');
 
+      $imap_ok = 0;
+
       $this->load->model('search/search');
       $this->load->model('search/message');
       $this->load->model('message/restore');
 
       $this->load->model('user/user');
       $this->load->model('mail/mail');
+
 
       $this->document->title = $this->data['text_message'];
 
@@ -40,6 +43,14 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->data['restored'] = 0;
 
+      if(ENABLE_IMAP_AUTH == 1) {
+         require_once 'Zend/Mail/Protocol/Imap.php';
+         require_once 'Zend/Mail/Storage/Imap.php';
+
+         $imap_ok = $this->model_mail_mail->connect_imap();
+      }
+
+
       foreach($idlist as $id) {
 
          AUDIT(ACTION_RESTORE_MESSAGE, '', '', $id, '');
@@ -61,12 +72,24 @@ class ControllerMessageBulkrestore extends Controller {
             $msg = $this->model_search_message->get_raw_message($piler_id);
             $this->model_search_message->remove_journal($msg);
 
-            $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
-               "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $msg );
+            if(ENABLE_IMAP_AUTH == 1) {
+               if($imap_ok) {
+                  $x = $this->imap->append('INBOX',  $msg);
+               }
+               else { $x = 0; }
+            }
+            else {
+
+               $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+                       "Received: by piler" . EOL . PILER_HEADER_FIELD . $id . EOL . $msg );
+            }
 
             if($x == 1) { $this->data['restored']++; }
          }
       }
+
+
+      if(ENABLE_IMAP_AUTH == 1) { $this->model_mail_mail->disconnect_imap(); }
 
 
       $this->render();

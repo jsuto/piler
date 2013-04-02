@@ -50,6 +50,23 @@ class ModelMailMail extends Model {
       return $ok;
    }
 
+
+   public function connect_imap() {
+      $this->imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
+
+      if($this->imap) {
+         if($this->imap->login($_SESSION['username'], $_SESSION['password'])) { return 1; }
+      }   
+
+      return 0;
+   }
+
+
+   public function disconnect_imap() {
+      $this->imap->logout;
+   }
+
+
 }
 
 ?>
