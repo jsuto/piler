@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -77,10 +78,10 @@ int clamd_scan(char *tmpfile, char *engine, char *avinfo, struct __config *cfg){
 
 
 int clamd_net_scan(char *tmpfile, char *engine, char *avinfo, struct __config *cfg){
-   int n, psd;
+   int n, psd, rc, ret=AV_OK;
    char *p, *q, buf[MAXBUFSIZE], scan_cmd[SMALLBUFSIZE];
-   struct in_addr addr;
-   struct sockaddr_in clamd_addr;
+   char port_string[6];
+   struct addrinfo hints, *res;
 
    memset(avinfo, 0, SMALLBUFSIZE);
 
@@ -88,21 +89,29 @@ int clamd_net_scan(char *tmpfile, char *engine, char *avinfo, struct __config *c
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to pass to clamd", tmpfile);
 
-   if((psd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
+   snprintf(port_string, sizeof(port_string)-1, "%d", cfg->clamd_port);
+
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+
+   if((rc = getaddrinfo(cfg->clamd_addr, port_string, &hints, &res)) != 0){
+      syslog(LOG_PRIORITY, "%s: getaddrinfo for '%s': %s\n", tmpfile, cfg->clamd_addr, gai_strerror(rc));
+      return AV_ERROR;
+   }
+
+   if((psd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
       syslog(LOG_PRIORITY, "%s: ERR: create socket", tmpfile);
-      return AV_ERROR;
+      ret = AV_ERROR;
+      goto ENDE_CLAMD;
    }
 
-   clamd_addr.sin_family = AF_INET;
-   clamd_addr.sin_port = htons(cfg->clamd_port);
-   inet_aton(cfg->clamd_addr, &addr);
-   clamd_addr.sin_addr.s_addr = addr.s_addr;
-   bzero(&(clamd_addr.sin_zero), 8);
-
-   if(connect(psd, (struct sockaddr *)&clamd_addr, sizeof(struct sockaddr)) == -1){
+   if(connect(psd, res->ai_addr, res->ai_addrlen) == -1){
       syslog(LOG_PRIORITY, "%s: CLAMD ERR: connect to %s %d", tmpfile, cfg->clamd_addr, cfg->clamd_port);
-      return AV_ERROR;
+      ret = AV_ERROR;
+      goto ENDE_CLAMD;
    }
+
 
    memset(scan_cmd, 0, SMALLBUFSIZE);
    snprintf(scan_cmd, SMALLBUFSIZE-1, "SCAN %s/%s\r\n", cfg->workdir, tmpfile);
@@ -127,9 +136,13 @@ int clamd_net_scan(char *tmpfile, char *engine, char *avinfo, struct __config *c
          }
       }
 
-      return AV_VIRUS;
+      ret = AV_VIRUS;
    }
 
-   return AV_OK;
+
+ENDE_CLAMD:
+   freeaddrinfo(res);
+
+   return ret;
 }
 

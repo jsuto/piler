@@ -8,6 +8,7 @@
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
@@ -117,10 +118,17 @@ static void child_sighup_handler(int sig){
 }
 
 
+void *get_in_addr(struct sockaddr *sa){
+   if(sa->sa_family == AF_INET) return &(((struct sockaddr_in*)sa)->sin_addr);
+   return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+
 static void child_main(struct child *ptr){
    int new_sd;
-   unsigned int clen;
-   struct sockaddr_in client_addr;
+   char s[INET6_ADDRSTRLEN];
+   struct sockaddr_storage client_addr;
+   socklen_t addr_size;
 
    ptr->messages = 0;
 
@@ -134,15 +142,17 @@ static void child_main(struct child *ptr){
 
       ptr->status = READY;
 
-      clen = sizeof(client_addr);
-
-      new_sd = accept(sd, (struct sockaddr *)&client_addr, &clen);
+      addr_size = sizeof(client_addr);
+      new_sd = accept(sd, (struct sockaddr *)&client_addr, &addr_size);
 
       if(new_sd == -1) continue;
 
       ptr->status = BUSY;
 
-      syslog(LOG_PRIORITY, "connection from %s", inet_ntoa(client_addr.sin_addr));
+      inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof(s));
+
+      syslog(LOG_PRIORITY, "connection from %s", s);
+
 
       sig_block(SIGHUP);
       ptr->messages += handle_smtp_session(new_sd, &data, &cfg);
@@ -357,9 +367,10 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int i, yes=1, daemonise=0;
-   struct sockaddr_in serv_addr;
-   struct in_addr addr;
+   int i, rc, yes=1, daemonise=0;
+   char port_string[6];
+   struct addrinfo hints, *res;
+
 
    while((i = getopt(argc, argv, "c:dvVh")) > 0){
       switch(i){
@@ -401,23 +412,32 @@ int main(int argc, char **argv){
    if(read_key(&cfg)) fatal(ERR_READING_KEY);
 
 
-   if((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-      fatal(ERR_OPEN_SOCKET);
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
 
-   serv_addr.sin_family = AF_INET;
-   serv_addr.sin_port = htons(cfg.listen_port);
-   inet_aton(cfg.listen_addr, &addr);
-   serv_addr.sin_addr.s_addr = addr.s_addr;
-   bzero(&(serv_addr.sin_zero), 8);
+   snprintf(port_string, sizeof(port_string)-1, "%d", cfg.listen_port);
+
+   if((rc = getaddrinfo(cfg.listen_addr, port_string, &hints, &res)) != 0){
+      fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg.listen_addr, gai_strerror(rc));
+      return 1;
+   }
+
+
+   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1)
+      fatal(ERR_OPEN_SOCKET);
 
    if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
       fatal(ERR_SET_SOCK_OPT);
 
-   if(bind(sd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr)) == -1)
+   if(bind(sd, res->ai_addr, res->ai_addrlen) == -1)
       fatal(ERR_BIND_TO_PORT);
 
    if(listen(sd, cfg.backlog) == -1)
       fatal(ERR_LISTEN);
+
+
+   freeaddrinfo(res);
 
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);

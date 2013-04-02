@@ -382,19 +382,6 @@ int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl
 }
 
 
-/*
- * is it a valid dotted IPv4 address
- */
-
-int isDottedIPv4Address(char *s){
-   struct in_addr addr;
-
-   if(inet_aton(s, &addr) == 0) return 0;
-
-   return 1;
-}
-
-
 void write_pid_file(char *pidfile){
    FILE *f;
 
