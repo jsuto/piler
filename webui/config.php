@@ -19,6 +19,49 @@ $config['THEME'] = 'default';
 $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
+$config['TIMEZONE'] = 'Europe/Budapest';
+
+
+
+// authentication against an ldap directory (disabled by default)
+// with zimbra specific settings
+
+$config['ENABLE_LDAP_AUTH'] = 0;
+$config['LDAP_HOST'] = 'zimbra.yourdomain.com';
+$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
+$config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
+$config['LDAP_MAIL_ATTR'] = 'mail';
+$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
+$config['LDAP_BASE_DN'] = '';
+$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
+$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
+
+// Lotus Notes specific settings for ldap authentication
+//
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'dominoPerson';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
+
+
+
+// enable authentication against an imap server (disabled by default)
+
+$config['ENABLE_IMAP_AUTH'] = 0;
+$config['IMAP_HOST'] = 'mail.yourdomain.com';
+$config['IMAP_PORT'] =  993;
+$config['IMAP_SSL'] = true;
+
+
+// enable authentication against google (disabled by default)
+// see http://www.mailpiler.org/en/google-apps-free.html for details
+
+$config['ENABLE_GOOGLE_LOGIN'] = 0;
+$config['GOOGLE_CLIENT_ID'] = 'xxxxxxxxxxx';
+$config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
+$config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
+$config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
+
+
 $config['ENABLE_AUDIT'] = 1;
 $config['MEMCACHED_ENABLED'] = 0;
 $config['PASSWORD_CHANGE_ENABLED'] = 0;
@@ -28,20 +71,11 @@ $config['ENABLE_REMOTE_IMAGES'] = '0';
 $config['ENABLE_ON_THE_FLY_VERIFICATION'] = 1;
 $config['ENABLE_LDAP_IMPORT_FEATURE'] = 0;
 $config['ENABLE_FOLDER_RESTRICTIONS'] = 0;
-$config['ENABLE_GOOGLE_LOGIN'] = 0;
 $config['SEARCH_RESULT_CHECKBOX_CHECKED'] = 1;
 $config['HELPER_URL'] = '';
-$config['ENABLE_SYSLOG'] = 0;
+$config['ENABLE_SYSLOG'] = 1;
 $config['REWRITE_MESSAGE_ID'] = 0;
 $config['RESTRICTED_AUDITOR'] = 0;
-$config['GOOGLE_CLIENT_ID'] = 'xxxxxxxxxxx';
-$config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
-$config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
-$config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
-$config['ENABLE_IMAP_AUTH'] = 0;
-$config['IMAP_HOST'] = 'mail.yourdomain.com';
-$config['IMAP_PORT'] =  993;
-$config['IMAP_SSL'] = true;
 
 $config['MAX_CGI_FROM_SUBJ_LEN'] = 34;
 $config['PAGE_LEN'] = 20;
@@ -94,16 +128,6 @@ $config['USE_EMAIL_AS_USERNAME'] = 1;
 $config['LDAP_IMPORT_MINIMUM_NUMBER_OF_USERS_TO_HEALTH_OK'] = 100;
 
 
-$config['ENABLE_LDAP_AUTH'] = 0;
-$config['LDAP_HOST'] = 'zimbra.yourdomain.com';
-$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
-$config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
-$config['LDAP_MAIL_ATTR'] = 'mail';
-$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
-$config['LDAP_BASE_DN'] = '';
-$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
-$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
-
 $config['SIZE_X'] = 430;
 $config['SIZE_Y'] = 250;
 
@@ -111,7 +135,6 @@ $config['AUDIT_DATE_FORMAT'] = 'Y.m.d H:i';
 $config['SEARCH_HIT_DATE_FORMAT'] = 'Y.m.d';
 
 $config['DATE_FORMAT'] = '(Y.m.d.)';
-$config['TIMEZONE'] = 'Europe/Budapest';
 
 $config['FROM_LENGTH_TO_SHOW'] = 28;
 
