@@ -36,6 +36,8 @@ class LDAP {
 
       $results = ldap_get_entries($this->link, $sr);
 
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("ldap query: base dn='%s', filter='%s', attr='%s', %d hits", $basedn, $filter, implode(" ", $justthese), $results['count'])); }
+
       for($i=0; $i < $results['count']; $i++) {
          for($k=0; $k < $results[$i]['count']; $k++) {
             $attr = $results[$i][$k];

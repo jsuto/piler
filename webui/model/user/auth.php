@@ -73,6 +73,8 @@ class ModelUserAuth extends Model {
 
             $ldap_auth = new LDAP(LDAP_HOST, $a['dn'], $password);
 
+            if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "ldap auth against '" . LDAP_HOST . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
+
             if($ldap_auth->is_bind_ok()) {
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
