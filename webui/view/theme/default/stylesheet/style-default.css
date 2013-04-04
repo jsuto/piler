@@ -152,7 +152,7 @@
 	#mainscreen { position: absolute; top: 90px; right: 20px; bottom: 20px; left: 20px; }
 
 	#mailleftcontainer { position: absolute; top: 0; left: 0; bottom: 0; width: 195px; }
-	#mailboxlist-container { position: absolute; top: 0; left: 0; width: 100%; bottom: 0; border: 1px solid #999; background-color: #F9F9F9; overflow: hidden; }
+	#mailboxlist-container { position: absolute; top: 0; left: 0; width: 100%; bottom: 0; border: 1px solid #999; background-color: #F9F9F9; overflow-y: auto; overflow-x: hidden; }
 	#mailboxlist { position:relative; height: auto; margin: 0px; padding: 0px; list-style-image: none; list-style-type: none; overflow: hidden; white-space: nowrap; background-color: #FFF; }
 	#mailrightcontainer { position: absolute; top: 0; left: 170px; bottom: 0; right: 0; min-width: 400px; }
 	#mailrightcontent { position: absolute; top: 0px; left: 0; right: 0; bottom: 0; }
