@@ -7,7 +7,6 @@
 
 	.mybody { background-color: #6D6D6D; color: #3d3d3d; }
 
-	/*#piler1 { width: 1200px; min-height: 830px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; padding-top: 0px; }*/
 	#piler1 { min-height: 860px; background: #ffffff; border: 3px solid black; position: relative; margin-left: auto; margin-right: auto; height: auto; padding-top: 0px; }
 
 	#messagebox1 { position: absolute; top: 0px; left: 50%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
@@ -54,8 +53,6 @@
 	#search { float: left; width: 990px; margin-top: 5px; margin-bottom: 20px; }
 
 	#search1 { float: left; width: 490px; margin: 0; border: 0px solid green; }
-
-	/*#search2 { float: right; width: 490px; margin: 0; text-align: right; border: 0px solid green; }*/
 
 	#ss1 { display: table; border-collapse: collapse; margin: 0; padding: 0; margin-top: 10px; clear: both; }
 

@@ -4,7 +4,7 @@
        <div class="navbar-inner">
 
        <?php if(BRANDING_TEXT) { ?>
-          <a class="brand" href="<?php if(BRANDING_URL) { print BRANDING_URL; } else { ?>#<?php } ?>"><?php print BRANDING_TEXT; ?></a>'
+          <a class="brand" href="<?php if(BRANDING_URL) { print BRANDING_URL; } else { ?>#<?php } ?>"><?php print BRANDING_TEXT; ?></a>
        <?php } ?>
 
           <ul class="nav pull-left">
