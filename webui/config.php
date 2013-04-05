@@ -61,6 +61,11 @@ $config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
 $config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
 $config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
 
+$config['PROVIDED_BY'] = 'Provided by piler';
+$config['SITE_LOGO_LG'] = 'view/theme/default/assets/images/archive-logo-lg.png';
+$config['SITE_LOGO_SM'] = 'view/theme/default/assets/images/archive-logo-sm.png';
+$config['COMPATIBILITY'] = 'Which browsers are supported, etc';
+
 
 $config['ENABLE_AUDIT'] = 1;
 $config['MEMCACHED_ENABLED'] = 0;
@@ -170,7 +175,8 @@ $langs = array(
 
 
 $themes = array(
-                'default'
+                'default',
+                'orig'
                );
 
 
@@ -185,6 +191,8 @@ define('NOW', time());
  */
 
 require_once 'config-site.php';
+
+if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme'])) { $config['THEME'] = $_SESSION['theme']; }
 
 foreach ($config as $k => $v) {
    define($k, $v);

@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
+
+<head>
+   <title>piler<?php if(isset($title) && $title) { ?> | <?php print $title; } ?></title>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta http-equiv="Content-Language" content="en" />
+   <meta name="keywords" content="piler email archiver" />
+   <meta name="description" content="piler email archiver" />
+   <meta name="rating" content="general" />
+   <meta name="robots" content="all" />
+
+   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
+
+   <script type="text/javascript">
+
+    function append_value_from_slider(id, value)
+    {
+        var prefix = '\n';
+
+        a = opener.document.getElementById(id);
+        if(a && a.value == '') prefix = '';
+
+        a.value += prefix + value;
+    }
+
+   </script>
+
+</head>
+
+<body class="email">
+
+<div id="wrapemail">
+
+<?php if(isset($title) && $title) { ?><h3><?php print $title; ?></h3><?php } ?>
+
+<?php print $content; ?>
+
+
+</div> <!-- wrap -->
+
+</body>
+</html>

@@ -14,7 +14,7 @@
         #popupx { position: absolute; right: 10px; top: 5px; margin: 10px; }
 
 	.aoo { cursor: pointer; position: absolute; left: 570px; top: 0px; width: 10px; margin-left: -5px; }
-	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/default/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
+	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/orig/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
 
 
 	/*#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }*/
@@ -136,6 +136,8 @@
 	.logincell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
 	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
 
+	.login { text-align: center; margin-top:20%; }
+
 	.folder { margin: 0 0 5px 10px; }
 
 	.bold { font-weight: bold; }
@@ -159,7 +161,7 @@
 	.boxlistcontent { position: absolute; top: 5px; bottom: 50px; left: 0; right: 0; width: 100%; overflow-y: auto; overflow-x: hidden; height: auto; }
 	.boxfooter { position: absolute; bottom: 0px; left: 0px; right: 0px; overflow: hidden; border-top: 1px solid #999; }
 
-	.splitter { user-select: none; -moz-user-select: none; -khtml-user-select: none; position: absolute; background: url(/view/theme/default/images/dimple.png) center no-repeat; }
+	.splitter { user-select: none; -moz-user-select: none; -khtml-user-select: none; position: absolute; background: url(/view/theme/orig/images/dimple.png) center no-repeat; }
 	.splitter-h { cursor: n-resize; cursor: row-resize; background-position: center 2px; }
 	.splitter-v { cursor: e-resize; cursor: col-resize; background-position: 2px center; }
 

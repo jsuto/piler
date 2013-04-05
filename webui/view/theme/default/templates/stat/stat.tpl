@@ -1,6 +1,3 @@
-
-<p>&nbsp;</p>
-
 <p>
 
 <?php if($timespan == "daily"){ ?>

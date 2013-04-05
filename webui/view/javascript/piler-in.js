@@ -508,7 +508,7 @@ var Piler =
         var z = $('div#searchpopup1');
 
         Piler.search = 'Complex';
-        
+
         Piler.Shared.page = 0;
         Piler.Shared.type = 'search';
 
@@ -534,7 +534,7 @@ var Piler =
         $('#searchpopup1').hide();
     },
 
-   
+
     /*
      * paging function
      * 

@@ -2,41 +2,45 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
 
 <head>
-   <title>piler | <?php print $title; ?></title>
-   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-   <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="piler email archiver" />
-   <meta name="description" content="piler email archiver" />
-   <meta name="rating" content="general" />
-   <meta name="robots" content="all" />
+    <title><?php print $title; ?> | <?php print SITE_NAME; ?> | <?php print PROVIDED_BY; ?></title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="en" />
+    <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
+    <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
+    <meta name="author" content="<?php print PROVIDED_BY; ?>" />
+    <meta name="rating" content="general" />
+    <meta name="robots" content="all" />
 
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet" />
 
-   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-   <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/jquery-ui-custom.min.css" />
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
-
-   <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-   <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
-   <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
-   <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
-   <script type="text/javascript" src="/view/javascript/piler.js"></script>
-
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
+    <!--[if lt IE 9]>
+      <script src="/view/theme/default/assets/js/html5.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
+    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
+    <script type="text/javascript" src="/view/theme/default/assets/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/view/javascript/piler.js"></script>
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="/view/theme/default/assets/ico/favicon.png">
 </head>
 
-<body class="mybody"<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php } ?>>
+<body<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php } ?>>
 
 <div id="piler1" class="container">
 
-   <div id="menu">
-      <?php print $menu; ?>
-   </div>
+   <div id="menu"><?php print $menu; ?></div>
 
-   <div id="main" align="center">
+   <div id="main">
 
-      <?php if($title) { ?><h3 class="title"><?php print $title; ?></h3><?php } ?>
+      <?php if($title) { ?><h3><?php print $title; ?></h3><?php } ?>
 
       <?php print $content; ?>
 

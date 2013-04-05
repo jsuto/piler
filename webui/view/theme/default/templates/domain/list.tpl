@@ -1,23 +1,27 @@
-
 <h4><?php print $text_add_new_domain; ?></h4>
 
-<form method="post" name="add1" action="index.php?route=domain/domain" class="formbottom">
+<?php if(isset($x)){ ?>
+    <div class="alert alert-info"><?php print $x; ?></div>
+<?php } ?>
 
-   <div id="ss1">
-      <div class="row">
-         <div class="domaincell"><?php print $text_domain; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="domain" /></div>
-      </div>
-      <div class="row">
-         <div class="domaincell"><?php print $text_mapped_domain; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="mapped" /></div>
-      </div>
-      <div class="row">
-         <div class="domaincell">&nbsp;</div>
-         <div class="domaincell"><input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
-      </div>
+<form method="post" name="add1" action="index.php?route=domain/domain" class="form-horizontal">
 
-   </div>
+    <div class="control-group">
+		<label class="control-label" for="domain"><?php print $text_domain; ?>:</label>
+        <div class="controls">
+            <input type="text" class="text" name="domain" placeholder="Domain" />
+        </div>
+    </div>
+    <div class="control-group">
+		<label class="control-label" for="mapped"><?php print $text_mapped_domain; ?>:</label>
+        <div class="controls">
+            <input type="text" class="text" name="mapped" placeholder="Mapped Domain" />
+        </div>
+    </div>
+    <div class="form-actions">
+        <input type="submit" value="<?php print $text_add; ?>" class="btn btn-primary" />
+        <input type="reset" value="<?php print $text_clear; ?>" class="btn" />
+    </div>
 
 </form>
 
@@ -27,25 +31,27 @@
 
 <?php if(isset($domains)){ ?>
 
-   <div id="ss1">
-      <div class="domainrow">
-         <div class="domaincell"><?php print $text_domain; ?></div>
-         <div class="domaincell"><?php print $text_mapped_domain; ?></div>
-         <div class="domaincell">&nbsp;</div>
-      </div>
+   <table id="ss1" class="table table-striped table-condensed">
+      <tr>
+         <th class="domaincell"><?php print $text_domain; ?></th>
+         <th class="domaincell"><?php print $text_mapped_domain; ?></th>
+         <th class="domaincell">&nbsp;</th>
+      </tr>
 
 <?php foreach($domains as $domain) { ?>
-      <div class="domainrow">
-         <div class="domaincell"><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></div>
-         <div class="domaincell"><?php print $domain['mapped']; ?></div>
-         <div class="domaincell"><a href="index.php?route=domain/remove&amp;confirmed=1&amp;domain=<?php print urlencode($domain['domain']); ?>" onclick="if(confirm('<?php print $text_remove_domain; ?>: ' + '\'<?php print $domain['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
-      </div>
+      <tr>
+         <td class="domaincell"><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></td>
+         <td class="domaincell"><?php print $domain['mapped']; ?></td>
+         <td class="domaincell"><a href="index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>" onclick="javascript:confirm('Delete Domain','Delete','Cancel','<?php print urlencode($domain['domain']); ?>')"><?php print $text_remove; ?></a></td>
+      </tr>
 <?php } ?>
 
    </div>
 
 <?php } else { ?>
-<?php print $text_not_found; ?>
+    <div class="alert alert-error lead">
+    <?php print $text_not_found; ?>
+    </div>
 <?php } ?>
 
 </div>

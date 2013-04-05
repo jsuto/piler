@@ -1,79 +1,89 @@
-<p>&nbsp;</p>
+<form method="post" name="search1" action="index.php?route=accounting/accounting&view=<?php echo $view; ?>" class="form-inline pull-right">
+    <div class="input-append">
+        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
+        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+    </div>
+</form>
 
 <p>
 <?php if ($view == 'email') { echo '<strong>'.$text_accounting_email.'</strong>'; } else { echo '<a href="index.php?route=accounting/accounting&amp;view=email">'.$text_accounting_email.'</a>'; } ?> | 
 <?php if ($view == 'domain') { echo '<strong>'.$text_accounting_domain.'</strong>'; } else { echo '<a href="index.php?route=accounting/accounting&amp;view=domain">'.$text_accounting_domain.'</a>'; } ?>
 </p>
 
-
-
 <?php if ( $accounting ) { ?>
 
-    <div id="pagenav">
-        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &laquo; <?php if($page > 0){ ?></a><?php } ?>
-        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $prev_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &lsaquo; <?php if($page > 0){ ?></a><?php } ?>
+    <div class="pagenav container">
+        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-left icon-large"></i><?php if($page > 0){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $prev_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-left icon-large"></i><?php if($page > 0){ ?></a><?php } ?>
+        &nbsp;
         <?php if(count($accounting) > 0) { print $accounting[0]['display']; ?> - <?php print $accounting[count($accounting)-1]['display']; } ?>
-        <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $next_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &rsaquo; <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?></a><?php } ?>
-        <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $next_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-right icon-large"></i><?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-right icon-large"></i><?php if($page < $total_pages){ ?></a><?php } ?>
     </div>
 
-    <div id="ss1" style="margin-top: 10px;">
-        <div class="domainrow">
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell"><?php print $text_sent; ?></div>
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell"><?php print $text_received; ?></div>
-            <div class="domaincell">&nbsp;</div>
-            <div class="domaincell">&nbsp;</div>
-        </div>
-        <div class="domainrow">
-            <div class="domaincell"><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_oldest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_newest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_items; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_average_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_items; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-            <div class="domaincell"><?php print $text_average_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=1"><i class="icon-chevron-down"></i></a></div>
-        </div>
+    <table class="table table-striped table-condensed">
+
+        <tr>
+            <th colspan="3">&nbsp;</th>
+            <th colspan="3">Sent</th>
+            <th colspan="3">Received</th>
+        </tr>
+        <tr>
+            <th><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Oldest Record <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Newest Record <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Items <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Avg Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Items <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>Avg Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+        </tr>
         
         <?php foreach($accounting as $details) {?>
-            <div class="domainrow">
-                <div class="domaincell"><?php echo $details['item']; ?></div>
-                <div class="domaincell"><?php echo date("d M Y",$details['oldest']); ?></div>
-                <div class="domaincell"><?php echo date("d M Y",$details['newest']); ?></div>
-                <div class="domaincell">
-                    <?php echo $details['sent']; ?>
-                </div>
-                <div class="domaincell">
-                    <?php echo nice_size($details['sentsize']); ?>
-                </div>
-                <div class="domaincell">
-                    <?php echo nice_size($details['sentavg']); ?>
-                </div>
-                <div class="domaincell">
-                    <?php echo $details['recd']; ?>
-                </div>
-                <div class="domaincell">
-                    <?php echo nice_size($details['recdsize']); ?>
-                </div>
-                <div class="domaincell">
-                    <?php echo nice_size($details['recdavg']); ?>
-                </div>
-            </div>
+        <tr>
+            <td><?php echo $details['item']; ?></td>
+            <td><?php echo date("d M Y",$details['oldest']); ?></td>
+            <td><?php echo date("d M Y",$details['newest']); ?></td>
+            <td>
+                <?php echo $details['sent']; ?>
+            </td>
+            <td>
+                <?php echo nice_size($details['sentsize']); ?>
+            </td>
+            <td>
+                <?php echo nice_size($details['sentavg']); ?>
+            </td>
+            <td>
+                <?php echo $details['recd']; ?>
+            </td>
+            <td>
+                <?php echo nice_size($details['recdsize']); ?>
+            </td>
+            <td>
+                <?php echo nice_size($details['recdavg']); ?>
+            </td>
+        </tr>
         <?php } ?>
-    </div>
-    <div id="pagenav">
-        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &laquo; <?php if($page > 0){ ?></a><?php } ?>
-        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $prev_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &lsaquo; <?php if($page > 0){ ?></a><?php } ?>
+    </table>
+    
+    <div class="pagenav container">
+        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-left icon-large"></i><?php if($page > 0){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $prev_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-left icon-large"></i><?php if($page > 0){ ?></a><?php } ?>
+        &nbsp;
         <?php if(count($accounting) > 0) { print $accounting[0]['display']; ?> - <?php print $accounting[count($accounting)-1]['display']; } ?>
-        <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $next_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &rsaquo; <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?></a><?php } ?>
-        <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $next_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-right icon-large"></i><?php if($total_records >= $page_len*($page+1) && $total_records > $page_len){ ?></a><?php } ?>
+        &nbsp;
+        <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-right icon-large"></i><?php if($page < $total_pages){ ?></a><?php } ?>
     </div>
+    
 <?php } else { ?>
-    <p><?php $s = 'text_no_' . $view . '_found'; print $$s; ?></p>
+<tr>
+    <td colspan='6'>No Emails Found</td>
+</tr>
 <?php } ?>

@@ -1,28 +1,30 @@
-
-        <div id="messagelistcontainer" class="boxlistcontent">
+<div id="messagelistcontainer" class="boxlistcontent" style="top:0">
 
    <div id="results">
-
-         <div class="resultrow">
+         
 <?php if(count($terms) > 0){ ?>
-
-<?php } else if(count($terms) == 0) { ?>
-    <div class="alert">
-       <strong><?php print $text_empty_search_result; ?></strong>
-    </div>
-<?php } ?>
-         </div>
-
+        <table class="table table-striped">
+            <thead><tr><th>Query Name</th><th>D?</th></thead>
 <?php foreach($terms as $term) {
          parse_str($term['term'], $s);
-         if(isset($s['search']) && $s['search']) {
+         if(isset($s['search'])) {
 ?>
-         <div class="resultrow center">
-            <a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></br />
-         </div>
+         <tr>
+            <td><a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></td>
+            <td>&nbsp;</td>
+         </tr>
 <?php } } ?>
+
+        </table>
+
+<?php } else if(count($terms) == 0) { ?>
+            <div class="alert alert-error"><?php print $text_empty_search_result; ?></div>
+<?php } ?>
 
        </div>
    </div>
 
 
+<?php
+
+?>

@@ -2,15 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
 
 <head>
-   <title>piler<?php if(isset($title) && $title) { ?> | <?php print $title; } ?></title>
+   <title><?php print $title; ?> | <?php print SITE_NAME; ?> | <?php print PROVIDED_BY; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="piler email archiver" />
-   <meta name="description" content="piler email archiver" />
+   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
+   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
+   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
+    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
+    <!--[if lt IE 9]>
+      <script src="/view/theme/default/assets/js/html5.js"></script>
+    <![endif]-->
+	
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="/view/theme/default/assets/ico/favicon.png">
 
    <script type="text/javascript">
 
@@ -35,7 +49,6 @@
 <?php if(isset($title) && $title) { ?><h3><?php print $title; ?></h3><?php } ?>
 
 <?php print $content; ?>
-
 
 </div> <!-- wrap -->
 
