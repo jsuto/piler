@@ -21,6 +21,9 @@ $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
 $config['TIMEZONE'] = 'Europe/Budapest';
 
+$config['PROVIDED_BY'] = 'www.mailpiler.org';
+$config['SITE_KEYWORDS'] = 'piler email archiver';
+$config['SITE_DESCRIPTION'] = 'piler email archiver';
 
 
 // authentication against an ldap directory (disabled by default)
@@ -61,7 +64,6 @@ $config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
 $config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
 $config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
 
-$config['PROVIDED_BY'] = 'Provided by piler';
 $config['SITE_LOGO_LG'] = 'view/theme/default/assets/images/archive-logo-lg.png';
 $config['SITE_LOGO_SM'] = 'view/theme/default/assets/images/archive-logo-sm.png';
 $config['COMPATIBILITY'] = 'Which browsers are supported, etc';

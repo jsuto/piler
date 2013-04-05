@@ -17,8 +17,6 @@
 	.aoq { height: 4px; padding: 11px 5px; width: 7px; background: url("/view/theme/orig/images/dark-grey-disclosure-arrow-down.png") no-repeat scroll center center transparent; }
 
 
-	/*#wrap { position: relative; margin: 0 auto; padding: 0; width: 1270px; background-color: white; border: 3px solid black; text-align: left; }*/
-
 	#wrapemail { margin-left: 20px; background-color: white; width:200px; height: 300px; }
         .email { background-color: white; }
 
@@ -56,10 +54,7 @@
 
 	#ss1 { display: table; border-collapse: collapse; margin: 0; padding: 0; margin-top: 10px; clear: both; }
 
-	/*#resultscontainer { float: left; width: 990px; padding: 0; padding-bottom: 5px; height: auto; margin-top: 0px; margin-bottom: 0px; border-top: 3px solid black; border-bottom: 3px solid black; overflow:auto; }
-	#resultscontainer.empty { border-bottom: 0px solid black; height: auto; overflow:auto; width: 990px; }*/
-
-	#results { float: left; width: 1140px; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
+	#results { float: left; width: 100%; margin-top: 0px; margin-bottom: 0px; border-collapse: collapse; display: table; clear: both; }
 
 	#mailpreviewframe { text-align: left; overflow:auto; }
 
@@ -69,9 +64,6 @@
 	#download_icon { margin: 0px 0 -2px 0; border: 0px solid black; }
 
 	#sspinner { position: relative; width: 60%; border: 0px solid #999999; color: #000000; font-weight: bold; vertical-align: middle; text-align: left; padding: 15px; z-index: 1; display: none; margin: auto; margin-top: 150px; }
-
-	//.text { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px; }
-	//.autocompletetext { font: normal 12px Arial, sans-serif; font-style: italic; color: gray; font-weight: bold; text-align:left; width: 408px; }
 
 	.row { display: table-row; }
 	.row.savedsearch { display: table-row; text-align: right; }
@@ -88,8 +80,6 @@
 	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }
 
 	.cell2 { display: table-cell; width: 410px; height: 15px; }
-        //.left { text-align: left; }
-	//.100px { width: 100px; }
 	.top20px { margin-top: 20px; }
 	.listarea { overflow:auto; height: 500px; }
 
@@ -124,7 +114,6 @@
 
 	input[type=textarea] { height:80px; }
 
-	//input[type=checkbox].attachmenttype { margin: 0; vertical-align: middle; }
 	input[type=checkbox].restorebox { margin: 0; vertical-align: middle; }
 	input[type=checkbox].popup { margin: 0; vertical-align: middle; }
 

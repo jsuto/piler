@@ -5,8 +5,9 @@
    <title><?php print $title; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="piler email archiver" />
-   <meta name="description" content="piler email archiver" />
+   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
+   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
+   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
