@@ -29,7 +29,7 @@ class ControllerSearchTag extends Controller {
             for($i=0; $i<count($ids); $i++) { $q .= ",?"; }
             $q = preg_replace("/^\,/", "", $q);
 
-            $this->model_search_message->bulk_add_message_tag($ids, $_SESSION['uid'], $this->request->post['tag'], $q);
+            $this->model_search_message->bulk_add_message_tag($ids, $_SESSION['uid'], urldecode($this->request->post['tag']), $q);
          }
       }
    }

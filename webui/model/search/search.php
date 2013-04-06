@@ -521,8 +521,8 @@ class ModelSearchSearch extends Model {
             if(isset($tag[$m['id']])) { $m['tag'] = $tag[$m['id']]; } else { $m['tag'] = ''; }
             if(isset($note[$m['id']])) { $m['note'] = $note[$m['id']]; } else { $m['note'] = ''; }
 
-            $m['note'] = strip_tags(urldecode($m['note']));
-            $m['tag'] = strip_tags(urldecode($m['tag']));
+            $m['note'] = preg_replace("/\"/", "*", strip_tags($m['note']));
+            $m['tag'] = preg_replace("/\"/", "*", strip_tags($m['tag']));
 
             array_push($messages, $m);
          }

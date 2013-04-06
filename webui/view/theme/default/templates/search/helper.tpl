@@ -53,8 +53,8 @@
             <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
             <td id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?><i class="spam icon-warning-sign icon-large" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
             <td id="c9_r<?php print $i; ?>" class="resultcell end"><?php if($message['attachments'] > 0) { ?><i class="attachment icon-paper-clip icon-large" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-            <td id="c10_r<?php print $i; ?>" class="resultcell end"><?php if($message['note']) { ?><i class="note icon-file-alt icon-large" title="<?php print $text_notes_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-            <td id="c11_r<?php print $i; ?>" class="resultcell end"><?php if($message['tag']) { ?><i class="tag icon-tags icon-large" title="<?php print $text_tag_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+            <td id="c10_r<?php print $i; ?>" class="resultcell end"><?php if($message['note']) { ?><i class="note icon-file-alt icon-large" title="<?php print $message['note']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+            <td id="c11_r<?php print $i; ?>" class="resultcell end"><?php if($message['tag']) { ?><i class="tag icon-tags icon-large" title="<?php print $message['tag']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
          <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { if ($message['verification'] == 1) {?>
             <td id="c12_r<?php print $i; ?>" class="resultcell end"><i class="verified icon-ok-sign icon-large" title="<?php print $text_verified_flag; ?>"></i></td>
          <?php } else { ?>
