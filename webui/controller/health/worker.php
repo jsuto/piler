@@ -29,6 +29,9 @@ class ControllerHealthWorker extends Controller {
          die("go away");
       }
 
+      ini_set("default_socket_timeout", 5);
+
+
       foreach (Registry::get('health_smtp_servers') as $smtp) {
          $this->data['health'][] = $this->model_health_health->checksmtp($smtp, $lang->data['text_error']);
       }

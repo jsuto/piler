@@ -35,7 +35,7 @@
       <?php print $menu; ?>
    </div>
 
-   <div id="main" align="center">
+   <div id="mainscreen">
 
       <?php if($title) { ?><h3 class="title"><?php print $title; ?></h3><?php } ?>
 

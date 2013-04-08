@@ -46,10 +46,7 @@
 
          <input type="text" id="_search" name="_search" class="input-medium search-query span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
-         <div class="aoo" onclick="$('#searchpopup1').show();">
-            <div class="aoq"></div>
-         </div>
-
+         <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>
 
          <button id="button_search" class="btn btn-danger" onclick="Piler.expert(this); return false;"><?php print $text_search; ?></button>
 

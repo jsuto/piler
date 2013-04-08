@@ -10,10 +10,11 @@
 #include "params.h"
 
 #define PROGNAME "piler"
+#define PILERGETD_PROGNAME "pilergetd"
 
-#define VERSION "0.1.23-master-branch"
+#define VERSION "0.1.23"
 
-#define BUILD 785
+#define BUILD 789
 
 #define HOSTID "mailarchiver"
 
@@ -24,6 +25,7 @@
 #define CLAMD_SOCKET "/tmp/clamd"
 
 #define PIDFILE "/var/run/piler/piler.pid"
+#define PILERGETD_PIDFILE "/var/run/piler/pilergetd.pid"
 #define QUARANTINELEN 255
 #define TIMEOUT 60
 #define TIMEOUT_USEC 500000
