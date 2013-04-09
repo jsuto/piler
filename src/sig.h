@@ -11,5 +11,6 @@ void sig_catch(int sig, void (*f)());
 void sig_uncatch(int sig);
 void sig_pause();
 int wait_nohang(int *wstat);
+signal_func *set_signal_handler(int signo, signal_func * func);
 
 #endif

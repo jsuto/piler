@@ -1,5 +1,5 @@
 /*
- * piler.c, SJ
+ * pilergetd.c, SJ
  */
 
 #include <stdio.h>
@@ -74,8 +74,6 @@ static void takesig(int sig){
         case SIGCHLD:
                 while((pid = waitpid (-1, &status, WNOHANG)) > 0){
 
-                   //syslog(LOG_PRIORITY, "child (pid: %d) has died", pid);
-
                    if(quit == 0){
                       i = search_slot_by_pid(pid);
                       if(i >= 0){
@@ -131,7 +129,7 @@ static void child_main(struct child *ptr){
 
 
       sig_block(SIGHUP);
-      ptr->messages += handle_smtp_session(new_sd, &data, &cfg);
+      ptr->messages += handle_pilerget_request(new_sd, &data, &cfg);
       sig_unblock(SIGHUP);
 
       close(new_sd);
@@ -228,19 +226,14 @@ void p_clean_exit(){
 
    kill_children(SIGTERM);
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   syslog(LOG_PRIORITY, "%s has been terminated", PILERGETD_PROGNAME);
 
-   syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
+   unlink(cfg.pilergetd_pidfile);
 
-   unlink(cfg.pidfile);
-
-#ifdef HAVE_STARTTLS
    if(data.ctx){
       SSL_CTX_free(data.ctx);
       ERR_free_strings();
    }
-#endif
 
    exit(1);
 }
@@ -252,7 +245,6 @@ void fatal(char *s){
 }
 
 
-#ifdef HAVE_STARTTLS
 int init_ssl(){
 
    SSL_library_init();
@@ -270,11 +262,9 @@ int init_ssl(){
 
    return OK;
 }
-#endif
 
 
 void initialise_configuration(){
-   struct session_data sdata;
 
    cfg = read_config(configfile);
 
@@ -299,40 +289,6 @@ void initialise_configuration(){
 
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
-
-
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
-
-   data.folder = 0;
-   data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-
-   memset(data.starttls, 0, sizeof(data.starttls));
-
-#ifdef HAVE_STARTTLS
-   if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
-      snprintf(data.starttls, sizeof(data.starttls)-1, "250-STARTTLS\r\n");
-   }
-#endif
-
-   mysql_init(&(sdata.mysql));
-   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
-   if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
-      syslog(LOG_PRIORITY, "cannot connect to mysql server");
-      return;
-   }
-
-   load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
-
-   load_mydomains(&sdata, &data, &cfg);
-
-   if(cfg.server_id > 0) insert_offset(&sdata, cfg.server_id);
-
-   mysql_close(&(sdata.mysql));
-
 
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);
 
@@ -361,7 +317,7 @@ int main(int argc, char **argv){
 
         case 'v' :
         case 'V' :
-                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\n\n", PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS);
+                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\n\n", PILERGETD_PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS);
                    return 0;
 
         case 'h' :
@@ -370,17 +326,14 @@ int main(int argc, char **argv){
       }
    }
 
-   (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
+   (void) openlog(PILERGETD_PROGNAME, LOG_PID, LOG_MAIL);
 
-   data.folder = 0;
-   data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
    data.ctx = NULL;
    data.ssl = NULL;
 
-
    initialise_configuration();
+
+   if(init_ssl() == ERR) fatal("cannot init ssl");
 
    set_signal_handler (SIGPIPE, SIG_IGN);
 
@@ -392,10 +345,10 @@ int main(int argc, char **argv){
    hints.ai_family = AF_UNSPEC;
    hints.ai_socktype = SOCK_STREAM;
 
-   snprintf(port_string, sizeof(port_string)-1, "%d", cfg.listen_port);
+   snprintf(port_string, sizeof(port_string)-1, "%d", cfg.pilergetd_listen_port);
 
-   if((rc = getaddrinfo(cfg.listen_addr, port_string, &hints, &res)) != 0){
-      fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg.listen_addr, gai_strerror(rc));
+   if((rc = getaddrinfo(cfg.pilergetd_listen_addr, port_string, &hints, &res)) != 0){
+      fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg.pilergetd_listen_addr, gai_strerror(rc));
       return 1;
    }
 
@@ -419,14 +372,14 @@ int main(int argc, char **argv){
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
 
 
-   syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
+   syslog(LOG_PRIORITY, "%s %s, build %d starting", PILERGETD_PROGNAME, VERSION, get_build());
 
 
 #if HAVE_DAEMON == 1
    if(daemonise == 1) i = daemon(1, 0);
 #endif
 
-   write_pid_file(cfg.pidfile);
+   write_pid_file(cfg.pilergetd_pidfile);
 
 
    child_pool_create();

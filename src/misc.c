@@ -302,13 +302,13 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 }
 
 
-int write1(int sd, char *buf, int use_ssl, SSL *ssl){
+int write1(int sd, void *buf, int buflen, int use_ssl, SSL *ssl){
    int n;
 
    if(use_ssl == 1)
-      n = SSL_write(ssl, buf, strlen(buf));
+      n = SSL_write(ssl, buf, buflen);
    else
-      n = send(sd, buf, strlen(buf), 0);
+      n = send(sd, buf, buflen, 0);
 
    return n;
 }
@@ -517,6 +517,12 @@ int read_from_stdin(struct session_data *sdata){
 
 void strtolower(char *s){
    for(; *s; s++) *s = tolower(*s);
+}
+
+
+void *get_in_addr(struct sockaddr *sa){
+   if(sa->sa_family == AF_INET) return &(((struct sockaddr_in*)sa)->sin_addr);
+   return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
 

@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <piler.h>
+
 
 void sig_block(int sig){
   sigset_t ss;
@@ -41,5 +43,17 @@ void sig_pause(){
 
 int wait_nohang(int *wstat){
    return waitpid(-1, wstat, WNOHANG);
+}
+
+signal_func *set_signal_handler(int signo, signal_func * func){
+   struct sigaction act, oact;
+
+   act.sa_handler = func;
+   sigemptyset (&act.sa_mask);
+   act.sa_flags = 0;
+
+   if(sigaction(signo, &act, &oact) < 0) return SIG_ERR;
+
+   return oact.sa_handler;
 }
 

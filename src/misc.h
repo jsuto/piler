@@ -28,7 +28,7 @@ void create_id(char *id, unsigned char server_id);
 int get_random_bytes(unsigned char *buf, int len, unsigned char server_id);
 int readFromEntropyPool(int fd, void *_s, size_t n);
 int recvtimeout(int s, char *buf, int len, int timeout);
-int write1(int sd, char *buf, int use_ssl, SSL *ssl);
+int write1(int sd, void *buf, int buflen, int use_ssl, SSL *ssl);
 int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl);
 
 void write_pid_file(char *pidfile);
@@ -38,6 +38,8 @@ int is_email_address_on_my_domains(char *email, struct __data *data);
 void init_session_data(struct session_data *sdata, struct __config *cfg);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
+
+void *get_in_addr(struct sockaddr *sa);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);

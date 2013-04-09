@@ -154,8 +154,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   for(i=0; i<sdata.num_of_rcpt_to; i++){
                #endif
 
-                     //send(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), 0);
-                     write1(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, sdata.tls, data->ssl);
+                     write1(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, data->ssl);
 
                #ifdef HAVE_LMTP
                   }
@@ -250,8 +249,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   if(inj == ERR) snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rctptoemail);
 
-                  //send(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), 0);
-                  write1(new_sd, sdata.acceptbuf, sdata.tls, data->ssl);
+                  write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
 
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, sdata.acceptbuf);
 
@@ -506,8 +504,7 @@ AFTER_PERIOD:
       /* now we can send our buffered response */
 
       if(strlen(resp) > 0){
-         //send(new_sd, resp, strlen(resp), 0);
-         write1(new_sd, resp, sdata.tls, data->ssl);
+         write1(new_sd, resp, strlen(resp), sdata.tls, data->ssl);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, resp);
          memset(resp, 0, MAXBUFSIZE);
@@ -547,8 +544,7 @@ AFTER_PERIOD:
 
    if(state < SMTP_STATE_QUIT && inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
-      //send(new_sd, buf, strlen(buf), 0);
-      write1(new_sd, buf, sdata.tls, data->ssl);
+      write1(new_sd, buf, strlen(buf), sdata.tls, data->ssl);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 

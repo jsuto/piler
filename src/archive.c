@@ -209,6 +209,82 @@ CLEANUP:
 }
 
 
+int file_from_archive_to_network(char *filename, int sd, struct __data *data, struct __config *cfg){
+   int n, olen, tlen, len, fd=-1;
+   unsigned char *s=NULL, *addr=NULL, inbuf[REALLYBIGBUFSIZE];
+   struct stat st;
+   EVP_CIPHER_CTX ctx;
+
+
+   if(filename == NULL) return 1;
+
+
+   fd = open(filename, O_RDONLY);
+   if(fd == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open()", filename);
+      return 1;
+   }
+
+
+   if(fstat(fd, &st)){
+      syslog(LOG_PRIORITY, "%s: cannot fstat()", filename);
+      close(fd);
+      return 1;
+   }
+
+
+   if(cfg->encrypt_messages == 1){
+      EVP_CIPHER_CTX_init(&ctx);
+      EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+
+      len = st.st_size+EVP_MAX_BLOCK_LENGTH;
+
+      s = malloc(len);
+
+      if(!s){
+         syslog(LOG_PRIORITY, "error: malloc(), '%s'", filename);
+         goto CLEANUP2;
+      }
+
+      tlen = 0;
+
+      while((n = read(fd, inbuf, sizeof(inbuf)))){
+
+         if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
+            syslog(LOG_PRIORITY, "%s: EVP_DecryptUpdate()", filename);
+            goto CLEANUP2;
+         }
+
+         tlen += olen;
+      }
+
+
+      if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
+         syslog(LOG_PRIORITY, "%s: EVP_DecryptFinal()", filename);
+         goto CLEANUP2;
+      }
+
+
+      tlen += olen;
+      write1(sd, s, tlen, 1, data->ssl);
+
+   }
+   else {
+      addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+      write1(sd, addr, st.st_size, 1, data->ssl);
+      munmap(addr, st.st_size);
+   }
+
+
+CLEANUP2:
+   if(fd != -1) close(fd);
+   if(s) free(s);
+   if(cfg->encrypt_messages == 1) EVP_CIPHER_CTX_cleanup(&ctx);
+
+   return 0;
+}
+
+
 int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg){
    int i, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];

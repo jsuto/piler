@@ -81,7 +81,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s SELECT \"%s\"\r\n", tag, folder);
 
-   n = write1(sd, buf, use_ssl, data->ssl);
+   n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    if(!strstr(buf, tagok)){
@@ -124,7 +124,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       }
 
 
-      n = write1(sd, buf, use_ssl, data->ssl);
+      n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
       readlen = 0;
       pos = 0;
@@ -240,14 +240,14 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s CAPABILITY\r\n", tag);
 
-   write1(sd, buf, use_ssl, data->ssl);
+   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
 
-   write1(sd, buf, use_ssl, data->ssl);
+   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    if(strncmp(buf, tagok, strlen(tagok))){
@@ -281,7 +281,7 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
    //snprintf(puf, sizeof(puf)-1, "%s LIST \"\" %%\r\n", tag);
    snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
 
-   write1(sd, puf, use_ssl, data->ssl);
+   write1(sd, puf, strlen(puf), use_ssl, data->ssl);
 
    while(1){
       n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
