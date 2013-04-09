@@ -23,6 +23,9 @@ Registry::set("request", $request);
 Registry::set('document', new Document());
 
 
+$start = NULL;
+
+
 $loader = new Loader();
 Registry::set('load', $loader);
 

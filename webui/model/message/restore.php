@@ -13,14 +13,19 @@ class ModelMessageRestore extends Model {
 
       if($zip->open($filename, ZIPARCHIVE::CREATE) != true) { exit("cannot open <$filename>\n"); }
 
+      $this->model_search_message->connect_to_pilergetd();
+
       foreach($idlist as $id) {
          $piler_id = $this->model_search_message->get_piler_id_by_id($id);
 
          $rawemail = $this->model_search_message->get_raw_message($piler_id);
+
          $zip->addFromString($piler_id . ".eml",  $rawemail);
 
          AUDIT(ACTION_DOWNLOAD_MESSAGE, '', '', $id, '');
       }
+
+      $this->model_search_message->disconnect_from_pilergetd();
 
 
       $zip->close();

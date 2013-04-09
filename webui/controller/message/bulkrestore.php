@@ -51,6 +51,8 @@ class ControllerMessageBulkrestore extends Controller {
       }
 
 
+      $this->model_search_message->connect_to_pilergetd();
+
       foreach($idlist as $id) {
 
          AUDIT(ACTION_RESTORE_MESSAGE, '', '', $id, '');
@@ -88,6 +90,7 @@ class ControllerMessageBulkrestore extends Controller {
          }
       }
 
+      $this->model_search_message->disconnect_from_pilergetd();
 
       if(ENABLE_IMAP_AUTH == 1) { $this->model_mail_mail->disconnect_imap(); }
 

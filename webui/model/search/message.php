@@ -27,35 +27,131 @@ class ModelSearchMessage extends Model {
    }
 
 
-   public function get_raw_message($id = '') {
-      $data = '';
+   public function get_file_size($sd, $id = '') {
+      fputs($sd, "STAT $id\r\n");
+      $s = fgets($sd, 8192);
 
-      if($id == '' || !preg_match("/^([0-9a-f]+)$/", $id)) { return $data; }
+      $a = explode(" ", $s);
+      if(isset($a[2]) && $a[2] > 0) { return $a[2]; }
 
-      $handle = popen(DECRYPT_BINARY . " $id", "r");
+      return 0;
+   }
 
-      while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
-         $data .= $buf;
+
+   public function read_file($sd, $f = '', $size = 0) {
+      global $start;
+      $s = '';
+      $len = 0;
+
+      if($size <= 0) { return $s; }
+
+      fputs($sd, "RETR $f\r\n");
+
+      while(!safe_feof($sd, $start) && (microtime(true) - $start) < PILERGETD_TIMEOUT) {
+         $s .= fread($sd, PILERGETD_READ_LENGTH);
+         $len += PILERGETD_READ_LENGTH;
+         if($len >= $size) break;
       }
 
-      pclose($handle);
+      return $s;
+   }
 
-      return $data;
+
+   public function connect_to_pilergetd() {
+      if(PILERGETD_HOST) {
+         $sd = fsockopen(PILERGETD_HOST, PILERGETD_PORT);
+         if(!$sd) { return FALSE; }
+
+         $l = fgets($sd, 4096);
+
+         Registry::set('sd', $sd);
+      }
+   }
+
+
+   public function disconnect_from_pilergetd() {
+      if(PILERGETD_HOST) {
+         $sd = Registry::get('sd');
+
+         fputs($sd, "QUIT\r\n");
+
+         fclose($sd);
+      }
+   }
+
+
+   public function get_raw_message($id = '') {
+      $s = '';
+
+      if($id == '' || !preg_match("/^([0-9a-f]+)$/", $id)) { return $s; }
+
+      if(PILERGETD_HOST) {
+
+         $sd = Registry::get('sd');
+
+         fputs($sd, "MESSAGE $id\r\n");
+
+         $l = fgets($sd, 8192);
+         $message = explode(" ", rtrim($l));
+
+         while(list($k, $v) = each($message)) {
+            if($k == 0) {
+               $size = $this->get_file_size($sd, $v);
+
+               $s = $this->read_file($sd, $v, $size);
+               $s = gzuncompress($s);
+            }
+            else {
+               $size = $this->get_file_size($sd, $v);
+               $a = $this->read_file($sd, $v, $size);
+               $a = gzuncompress($a);
+
+               $repl = "ATTACHMENT_POINTER_" . $id . ".a" . $k . "_XXX_PILER";
+
+               $s = preg_replace("/$repl/", $a, $s);
+
+               $a = '';
+            }
+         }
+      }
+      else {
+         $handle = popen(DECRYPT_BINARY . " $id", "r");
+         while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
+            $s .= $buf;
+         }
+         pclose($handle);
+      }
+
+
+      return $s;
    }
 
 
    public function get_attachment($piler_id = '', $attachment_id = '') {
       $data = '';
 
-      if($piler_id == '' || $attachment_id == '' || !preg_match("/^([0-9a-f]+)$/", $piler_id) || !preg_match("/^([0-9]+)$/", $attachment_id)) { return $data; }
+      if($piler_id == '' || $attachment_id == '' || !preg_match("/^([0-9a-f]+)$/", $piler_id) || !preg_match("/^([0-9m]+)$/", $attachment_id)) { return $data; }
 
-      $handle = popen(DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id", "r");
+      if(PILERGETD_HOST) {
+         $sd = fsockopen(PILERGETD_HOST, PILERGETD_PORT);
+         if(!$sd) { return $data; }
 
-      while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
-         $data .= $buf;
+         $l = fgets($sd, 4096);
+
+         $size = $this->get_file_size($sd, $piler_id . ".a" . $attachment_id);
+
+         $data = $this->read_file($sd, $piler_id . ".a" . $attachment_id, $size);
+         $data = gzuncompress($data);
+
+         fclose($sd);
       }
-
-      pclose($handle);
+      else {
+         $handle = popen(DECRYPT_BINARY . " $id", "r");
+         while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
+            $data .= $buf;
+         }
+         pclose($handle);
+      }
 
       /* check if it's a base64 encoded stuff */
 
@@ -73,7 +169,9 @@ class ModelSearchMessage extends Model {
    public function get_message_headers($id = '') {
       $data = '';
 
+      $this->connect_to_pilergetd();
       $msg = $this->get_raw_message($id);
+      $this->disconnect_from_pilergetd();
 
       $this->remove_journal($msg);
 
@@ -143,7 +241,9 @@ class ModelSearchMessage extends Model {
 
       $from = $to = $subject = $date = $message = "";
 
+      $this->connect_to_pilergetd();
       $msg = $this->get_raw_message($id);
+      $this->disconnect_from_pilergetd();
 
       $this->remove_journal($msg);
 

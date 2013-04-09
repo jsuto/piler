@@ -91,7 +91,7 @@ struct _parse_rule config_parse_rules[] =
    { "pidfile", "string", (void*) string_parser, offsetof(struct __config, pidfile), PIDFILE, MAXVAL-1},
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "", MAXVAL-1},
    { "pilergetd_listen_addr", "string", (void*) string_parser, offsetof(struct __config, pilergetd_listen_addr), "127.0.0.1", MAXVAL-1},
-   { "pilergetd_listen_port", "integer", (void*) int_parser, offsetof(struct __config, pilergetd_listen_port), "10026", sizeof(int)},
+   { "pilergetd_listen_port", "integer", (void*) int_parser, offsetof(struct __config, pilergetd_listen_port), "10091", sizeof(int)},
    { "pilergetd_pidfile", "string", (void*) string_parser, offsetof(struct __config, pilergetd_pidfile), PILERGETD_PIDFILE, MAXVAL-1},
    { "queuedir", "string", (void*) string_parser, offsetof(struct __config, queuedir), QUEUE_DIR, MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct __config, server_id), "0", sizeof(int)},

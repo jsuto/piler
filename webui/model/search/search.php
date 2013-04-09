@@ -493,6 +493,9 @@ class ModelSearchSearch extends Model {
 
          $lang = Registry::get('language');
 
+
+         $this->model_search_message->connect_to_pilergetd();
+
          foreach($query->rows as $m) {
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
@@ -526,6 +529,9 @@ class ModelSearchSearch extends Model {
 
             array_push($messages, $m);
          }
+
+         $this->model_search_message->disconnect_from_pilergetd();
+
       }
 
       if(MEMCACHED_ENABLED) {

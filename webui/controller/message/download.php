@@ -40,8 +40,10 @@ class ControllerMessageDownload extends Controller {
       header("Content-Disposition: attachment; filename=" . $this->data['piler_id'] . ".eml");
       header("Content-Transfer-Encoding: binary\n");
 
-
+      $this->model_search_message->connect_to_pilergetd();
       $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
+      $this->model_search_message->disconnect_from_pilergetd();
+
       $this->model_search_message->remove_journal($msg);
       print $msg;
    }

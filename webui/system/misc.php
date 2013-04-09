@@ -484,4 +484,11 @@ function fix_evolution_mime_name_crap($s = '') {
 }
 
 
+function safe_feof($fp, &$start = NULL) {
+   $start = microtime(true);
+   return feof($fp);
+}
+
+
+
 ?>
