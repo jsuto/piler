@@ -12,6 +12,7 @@ $config['PILERGETD_HOST'] = '';
 $config['PILERGETD_PORT'] = 10091;
 $config['PILERGETD_READ_LENGTH'] = 8192;
 $config['PILERGETD_TIMEOUT'] = 5;
+$config['PILERGETD_PASSWORD'] = '';
 
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';

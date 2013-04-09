@@ -65,7 +65,7 @@ int stat_message(struct session_data *sdata, struct __data *data, char **buf, in
 
 
 int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cfg){
-   int len, n, ssl_ok=0, n_files=0;
+   int len, n, ssl_ok=0, auth_ok=0, n_files=0;
    char *q, buf[MAXBUFSIZE], puf[MAXBUFSIZE], muf[TINYBUFSIZE], resp[MAXBUFSIZE];
    char ssl_error[SMALLBUFSIZE];
    struct session_data sdata;
@@ -169,7 +169,7 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
 
    while((n = recvtimeoutssl(new_sd, puf, MAXBUFSIZE, TIMEOUT, sdata.tls, data->ssl)) > 0){
 
-      if(strncasecmp(puf, "MESSAGE ", strlen("MESSAGE ")) == 0){
+      if(strncasecmp(puf, "MESSAGE ", strlen("MESSAGE ")) == 0 && auth_ok == 1){
          trimBuffer(puf);
          q = &resp[0];
 
@@ -184,7 +184,25 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
       }
 
 
-      if(strncasecmp(puf, "STAT ", strlen("STAT ")) == 0){
+      if(strncasecmp(puf, "AUTH ", strlen("AUTH ")) == 0){
+         trimBuffer(puf);
+         q = &muf[0];
+
+         if(strcmp(&puf[5], cfg->pilergetd_password))
+            snprintf(resp, sizeof(resp)-1, "550 AUTH FAILED\r\n");
+         }
+         else {
+            snprintf(resp, sizeof(resp)-1, "250 AUTH\r\n");
+            auth_ok = 1;
+         }
+ 
+         write1(new_sd, resp, strlen(resp), sdata.tls, data->ssl);
+
+         continue;
+      }
+
+
+      if(strncasecmp(puf, "STAT ", strlen("STAT ")) == 0 && auth_ok == 1){
          trimBuffer(puf);
          q = &muf[0];
 
@@ -198,7 +216,7 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
       }
 
  
-      if(strncasecmp(puf, "RETR ", strlen("RETR ")) == 0){
+      if(strncasecmp(puf, "RETR ", strlen("RETR ")) == 0 && auth_ok == 1){
 
          trimBuffer(puf);
          q = &muf[0];
@@ -226,7 +244,7 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
          break;
       }
 
-      snprintf(resp, sizeof(resp)-1, "ERR\r\n");
+      snprintf(resp, sizeof(resp)-1, "550 ERR INVALID COMMAND\r\n");
       write1(new_sd, resp, strlen(resp), sdata.tls, data->ssl);
 
    }

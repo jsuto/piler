@@ -21,6 +21,8 @@ struct __config {
    char pilergetd_listen_addr[MAXVAL];
    int pilergetd_listen_port;
 
+   char pilergetd_password[MAXVAL];
+
    char clamd_addr[MAXVAL];
    int clamd_port;
    char clamd_socket[MAXVAL];
