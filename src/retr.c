@@ -188,7 +188,7 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
          trimBuffer(puf);
          q = &muf[0];
 
-         if(strcmp(&puf[5], cfg->pilergetd_password))
+         if(strcmp(&puf[5], cfg->pilergetd_password)){
             snprintf(resp, sizeof(resp)-1, "550 AUTH FAILED\r\n");
          }
          else {

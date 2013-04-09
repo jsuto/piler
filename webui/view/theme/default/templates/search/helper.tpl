@@ -132,7 +132,7 @@
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
             <span id="tagbox" class="input-prepend input-append">
-                <span class="add-on"><i class="icon-tags icon-large" title="Tag"></i>&nbsp;<?php print $text_tag_search_results; ?>:</span>
+                <span class="add-on"><i class="icon-tags icon-large" title="Tag"></i>&nbsp;<?php print $text_tag_selected_messages; ?>:</span>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
                 <input type="button" class="btn btn-info" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" value="Tag" />
             </span>
