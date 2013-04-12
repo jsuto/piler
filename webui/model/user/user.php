@@ -294,9 +294,9 @@ class ModelUserUser extends Model {
    }
 
 
-   public function get_next_uid() {
+   public function get_next_uid($table = TABLE_USER) {
 
-      $query = $this->db->query("SELECT MAX(uid) AS last_id FROM " . TABLE_USER);
+      $query = $this->db->query("SELECT MAX(uid) AS last_id FROM " . $table);
 
       if(isset($query->row['last_id']) && $query->row['last_id'] > 0) {
          return (int)$query->row['last_id'] + 1;
