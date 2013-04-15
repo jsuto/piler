@@ -154,9 +154,8 @@ class ModelHealthHealth extends Model {
    }
 
 
-   public function get_sphinx_size() {
+   public function get_sphinx_size($directory = DIR_SPHINX) {
       $dirSize=0;
-      $directory = DIR_SPHINX;
 
       if(!$dh=opendir($directory)) {
          return false;
@@ -171,7 +170,7 @@ class ModelHealthHealth extends Model {
             $dirSize += filesize($directory."/".$file);
          }
          if(is_dir($directory."/".$file)) {
-            $dirSize += getDirectorySize($directory."/".$file);
+            $dirSize += $this->get_sphinx_size($directory."/".$file);
          }
       }
 
