@@ -33,6 +33,16 @@ extract($language->data);
 Registry::set('admin_user', 1);
 
 
+if(MEMCACHED_ENABLED) {
+   $memcache = new Memcache();
+   foreach ($memcached_servers as $m){
+      $memcache->addServer($m[0], $m[1]);
+   }
+
+   Registry::set('memcache', $memcache);
+}
+
+
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
 
