@@ -57,6 +57,7 @@ class LDAP {
 
       $query = new stdClass();
 
+      $query->filter   = $filter;
       $query->row      = isset($data[0]) ? $data[0] : array();
       $query->dn       = isset($results[0]['dn']) ? $results[0]['dn'] : "";
       $query->rows     = $data;

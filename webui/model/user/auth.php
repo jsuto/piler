@@ -66,7 +66,8 @@ class ModelUserAuth extends Model {
       $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
-         $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . "))", array());
+
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
 
          if(isset($query->row)) {
             $a = $query->row;
@@ -76,6 +77,9 @@ class ModelUserAuth extends Model {
             if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "ldap auth against '" . LDAP_HOST . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
             if($ldap_auth->is_bind_ok()) {
+
+               $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . $a['dn'] . ")))", array());
+
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
                $this->add_session_vars($a['cn'], $username, $emails);

@@ -44,6 +44,13 @@ $config['LDAP_BASE_DN'] = '';
 $config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
 $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 
+
+// AD specific settings
+//
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'user';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'group';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
+
 // Lotus Notes specific settings for ldap authentication
 //
 //$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'dominoPerson';
