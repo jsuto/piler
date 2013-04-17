@@ -20,24 +20,24 @@ class ControllerUserSettings extends Controller {
       $this->load->model('group/group');
 
       $this->document->title = $this->data['text_settings'];
-	  
+  
       $d = $r = '';
       $auditemails = $auditdomains = $auditgroups = $auditfolders = '';
-	  
-      $auditemails = $this->model_user_user->get_emails_by_uid($_SESSION['uid']);
-	  
+
+      $auditemails = implode(", ", $_SESSION['emails']);
+  
       foreach($_SESSION['auditdomains'] as $d) {
          $auditdomains .= ', '.$d;
       }
       $auditdomains = preg_replace("/^,\s/", "", $auditdomains);
-	  
+  
       $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_uid($_SESSION['uid']));
-	  
+  
       foreach ($_SESSION['folders'] as $r) {
          $auditfolders .= ', '.$r;
       }
       $auditfolders = preg_replace("/^,\s/", "", $auditfolders);	  
-	  
+  
       if($auditemails) { $this->data['emails'] = $auditemails; } else { $this->data['emails'] = $this->data['text_none_found']; }
       if($auditdomains) { $this->data['domains'] = $auditdomains; } else { $this->data['domains'] = $this->data['text_none_found']; }
       if($auditgroups) { $this->data['groups'] = $auditgroups; } else { $this->data['groups'] = $this->data['text_none_found']; }
