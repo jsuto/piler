@@ -23,12 +23,13 @@ class ControllerPolicyApply extends Controller {
       system('sudo -n /etc/init.d/rc.piler reload', $val);
 
       if($val === 0) {
-         print $lang->data['text_applied'];
+         $this->data['x'] = $lang->data['text_applied'];
       } else {
-         print $lang->data['text_install_sudo_apply'];
+         $this->data['x'] = $lang->data['text_install_sudo_apply'];
       }
 
 
+      $this->render();
    }
 
 }
