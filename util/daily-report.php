@@ -43,6 +43,8 @@ if(MEMCACHED_ENABLED) {
 }
 
 
+Registry::set('counters', $counters);
+
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
 
