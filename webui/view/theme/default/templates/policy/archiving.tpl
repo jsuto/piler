@@ -59,7 +59,7 @@
          </div>
       </div>
       <div class="form-actions">
-          <input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /><input type="reset" class="btn" value="<?php print $text_cancel; ?>" />
+          <input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" />
       </div>
 </form>
 
@@ -105,3 +105,8 @@
 </div>
 <?php } ?>
 
+
+<div>
+   <p><input type="button" class="btn btn-danger" onclick="Piler.reload_piler();" value="<?php print $text_apply_changes; ?>" /></p>
+   <span id="applyChangesOutput"></span>
+</div>

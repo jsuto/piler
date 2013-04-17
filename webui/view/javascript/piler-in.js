@@ -774,6 +774,18 @@ var Piler =
     },
 
 
+    reload_piler:function()
+    {
+        Piler.log("[reload_piler]");
+
+        jQuery.ajax('index.php?route=policy/apply', { cache: true })
+        .done( function(a) {
+           $('#applyChangesOutput').html(a);
+        })
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+    },
+
+
     assemble_folder_restrictions: function()
     {
        Piler.log("[assemble_folder_restrictions]");

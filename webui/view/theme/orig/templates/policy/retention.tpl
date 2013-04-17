@@ -110,3 +110,10 @@
 <?php } ?>
 
 
+
+<div>
+   <p><input type="button" class="btn btn-danger" onclick="Piler.reload_piler();" value="<?php print $text_apply_changes; ?>" /></p>
+   <span id="applyChangesOutput"></span>
+</div>
+
+

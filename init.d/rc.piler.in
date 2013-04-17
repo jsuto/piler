@@ -44,7 +44,11 @@ case "$1" in
 		start;
    	;;
 
+	reload)
+		kill -HUP $PID_NUMBER
+	;;
+
 	*)
-		echo "Usage: $0 start|stop|restart|status"
+		echo "Usage: $0 start|stop|restart|reload|status"
 esac
 
