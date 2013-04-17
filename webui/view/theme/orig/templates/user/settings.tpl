@@ -9,7 +9,7 @@
 
 	 <div class="row">
 		<div class="logincell"><?php print $text_email_addresses; ?>:</div>
-		<div class="cell2">
+		<div class="tcell">
 			<?php print $emails; ?>
 		</div>
 	 </div>   
@@ -18,7 +18,7 @@
    
 	 <div class="row">
 		<div class="logincell"><?php print $text_domains; ?>:</div>
-		<div class="cell2">
+		<div class="tcell">
 			<?php print $domains; ?>
 		</div>
 	 </div>
@@ -29,7 +29,7 @@
 	 
 	 <div class="row">
 		<div class="logincell"><?php print $text_groups; ?>:</div>
-		<div class="cell2">
+		<div class="tcell">
 			<?php print $groups; ?>
 		</div>
 	 </div>
@@ -40,7 +40,7 @@
 	 
 	 <div class="row">
 		<div class="logincell"><?php print $text_folders; ?>:</div>
-		<div class="cell2">
+		<div class="tcell">
 			<?php print $folders; ?>
 		</div>
 	 </div>
@@ -59,7 +59,7 @@
 
          <div class="row">
             <div class="logincell"><?php print $text_page_length; ?>:</div>
-            <div class="cell2">
+            <div class="tcell">
                <select name="pagelen">
                   <option value="10"<?php if($page_len == 10) { ?> selected="selected"<?php } ?>>10
                   <option value="20"<?php if($page_len == 20) { ?> selected="selected"<?php } ?>>20
@@ -71,7 +71,7 @@
 
          <div class="row">
             <div class="logincell"><?php print $text_theme; ?>:</div>
-            <div class="cell2">
+            <div class="tcell">
                <select name="theme">
             <?php foreach(Registry::get('themes') as $t) { ?>
                   <option value="<?php print $t; ?>"<?php if(isset($_SESSION['theme']) && $_SESSION['theme'] == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
@@ -82,7 +82,7 @@
 
          <div class="row">
             <div class="logincell"><?php print $text_language; ?>:</div>
-            <div class="cell2">
+            <div class="tcell">
                <select name="lang">
                   <option value=""><?php print $text_use_browser_settings; ?></option>
             <?php foreach(Registry::get('langs') as $t) { ?>
@@ -95,7 +95,7 @@
 
          <div class="row">
             <div class="logincell">&nbsp;</div>
-            <div class="cell2"><input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
+            <div class="tcell"><input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
          </div>
 
 
