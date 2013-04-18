@@ -82,16 +82,6 @@
 							  <td><?php print $v; ?></td>
 						   </tr>
 						<?php } } ?>
-		  <?php if(Registry::get('admin_user') == 1) { ?>
-			 <tr>
-				<td colspan="2">
-				   <form action="index.php?route=health/worker" method="post">
-					  <input type="hidden" name="resetcounters" value="1" />
-					  <input type="submit" name="submit" class="btn" value="<?php print $text_reset_counters; ?>" />
-				   </form>
-				</td>
-			 </tr>
-		  <?php } ?>
 		  
 		  </table>
           
