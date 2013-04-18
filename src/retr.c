@@ -64,10 +64,50 @@ int stat_message(struct session_data *sdata, struct __data *data, char **buf, in
 }
 
 
-int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cfg){
-   int len, n, ssl_ok=0, auth_ok=0, n_files=0;
-   char *q, buf[MAXBUFSIZE], puf[MAXBUFSIZE], muf[TINYBUFSIZE], resp[MAXBUFSIZE];
+int do_ssl_handshake(struct session_data *sdata, struct __data *data, int new_sd, struct __config *cfg){
+   int ssl_ok=0, rc;
    char ssl_error[SMALLBUFSIZE];
+
+   if(data->ctx){
+      data->ssl = SSL_new(data->ctx);
+
+      if(data->ssl){
+         if(SSL_set_fd(data->ssl, new_sd) == 1){
+            ssl_ok = 1;
+         }
+         else syslog(LOG_PRIORITY, "SSL_set_fd() failed");
+      }
+      else syslog(LOG_PRIORITY, "SSL_new() failed");
+   }
+   else syslog(LOG_PRIORITY, "SSL ctx is null!");
+
+
+   if(ssl_ok == 0){
+      send(new_sd, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
+      return ERR;
+   }
+
+
+   rc = SSL_accept(data->ssl);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "SSL_accept() finished");
+
+   if(rc == 1){
+      sdata->tls = 1;
+      return OK;
+   }
+   else {
+      ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
+      syslog(LOG_PRIORITY, "SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", rc, SSL_get_error(data->ssl, rc), ssl_error);
+      return ERR;
+   }
+
+}
+
+
+int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cfg){
+   int len, n, auth_ok=0, n_files=0;
+   char *q, buf[MAXBUFSIZE], puf[MAXBUFSIZE], muf[TINYBUFSIZE], resp[MAXBUFSIZE];
    struct session_data sdata;
    int db_conn=0;
    int rc;
@@ -131,33 +171,11 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
    gettimeofday(&tv1, &tz);
 
 
-   if(data->ctx){
-      data->ssl = SSL_new(data->ctx);
-      if(data->ssl){
-         if(SSL_set_fd(data->ssl, new_sd) == 1){
-            ssl_ok = 1;
-         } else syslog(LOG_PRIORITY, "SSL_set_fd() failed");
-      } else syslog(LOG_PRIORITY, "SSL_new() failed");
-   } else syslog(LOG_PRIORITY, "SSL ctx is null!");
-
-
-   if(ssl_ok == 0){
-      send(new_sd, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
-      return 0;
-   }
-
-
-   rc = SSL_accept(data->ssl);
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "SSL_accept() finished");
-
-   if(rc == 1){
-      sdata.tls = 1;
+   if(cfg->tls_enable > 0){
+      if(do_ssl_handshake(&sdata, data, new_sd, cfg) == ERR) goto QUITTING;
    }
    else {
-      ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-      syslog(LOG_PRIORITY, "SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", rc, SSL_get_error(data->ssl, rc), ssl_error);
-      goto QUITTING;
+      auth_ok = 1;
    }
 
 
@@ -223,7 +241,7 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
 
          if(strlen(&puf[5]) >= RND_STR_LEN){
             len = stat_file(&sdata, &puf[5], &q, sizeof(muf)-2, cfg);
-            file_from_archive_to_network(muf, new_sd, data, cfg);
+            file_from_archive_to_network(muf, new_sd, sdata.tls, data, cfg);
             n_files++;
          }
          else {

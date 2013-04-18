@@ -209,7 +209,7 @@ CLEANUP:
 }
 
 
-int file_from_archive_to_network(char *filename, int sd, struct __data *data, struct __config *cfg){
+int file_from_archive_to_network(char *filename, int sd, int tls_enable, struct __data *data, struct __config *cfg){
    int n, olen, tlen, len, fd=-1;
    unsigned char *s=NULL, *addr=NULL, inbuf[REALLYBIGBUFSIZE];
    struct stat st;
@@ -266,12 +266,12 @@ int file_from_archive_to_network(char *filename, int sd, struct __data *data, st
 
 
       tlen += olen;
-      write1(sd, s, tlen, 1, data->ssl);
+      write1(sd, s, tlen, tls_enable, data->ssl);
 
    }
    else {
       addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-      write1(sd, addr, st.st_size, 1, data->ssl);
+      write1(sd, addr, st.st_size, tls_enable, data->ssl);
       munmap(addr, st.st_size);
    }
 

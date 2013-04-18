@@ -333,7 +333,7 @@ int main(int argc, char **argv){
 
    initialise_configuration();
 
-   if(init_ssl() == ERR) fatal("cannot init ssl");
+   if(cfg.tls_enable > 0 && init_ssl() == ERR) fatal("cannot init ssl");
 
    set_signal_handler (SIGPIPE, SIG_IGN);
 

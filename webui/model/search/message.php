@@ -64,9 +64,10 @@ class ModelSearchMessage extends Model {
 
          $l = fgets($sd, 4096);
 
-         fputs($sd, "AUTH " . PILERGETD_PASSWORD . "\r\n");
-
-         $l = fgets($sd, 4096);
+         if(substr(PILERGETD_HOST, 0, 6) == 'ssl://') {
+            fputs($sd, "AUTH " . PILERGETD_PASSWORD . "\r\n");
+            $l = fgets($sd, 4096);
+         }
 
          Registry::set('sd', $sd);
       }
