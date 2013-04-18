@@ -221,15 +221,13 @@ var Piler =
 
     view_message_by_pos:function(pos)
     {
-        Piler.log("[view_message]", pos, Piler.Messages[pos]);
+        Piler.log("[view_message_by_pos]", pos, Piler.Messages[pos]);
 
 	if(pos == -1) return false;
 
         id = Piler.Messages[pos];
 
         Piler.pos = pos;
-
-        Piler.log("[view_message]", id);
 
         if(Piler.prev_message_id > 0) { $('#e_' + Piler.prev_message_id).attr('class', 'resultrow'); }
 
