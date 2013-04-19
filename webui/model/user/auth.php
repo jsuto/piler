@@ -200,22 +200,29 @@ class ModelUserAuth extends Model {
 
       if(!isset($u[1])) { return 0; }
 
-      $query = $this->db->query("SELECT username, uid, realname, dn, isadmin, domain FROM " . TABLE_USER . " WHERE samaccountname=?", array($u[1]));
+      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
-      if($query->num_rows == 1) {
-         $_SESSION['username'] = $query->row['username'];
-         $_SESSION['uid'] = $query->row['uid'];
-         $_SESSION['admin_user'] = $query->row['isadmin'];
-         $_SESSION['email'] = $this->model_user_user->get_primary_email_by_domain($query->row['uid'], $query->row['domain']);
-         $_SESSION['domain'] = $query->row['domain'];
-         $_SESSION['realname'] = $query->row['realname'];
+      if($ldap->is_bind_ok()) {
 
-         $_SESSION['auditdomains'] = $this->model_user_user->get_users_all_domains($query->row['uid']);
-         $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
-         $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
-         $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(samaccountname=" . $u[1] . "))", array());
 
-         return 1;
+         if(isset($query->row['dn'])) {
+            $a = $query->row;
+
+            if(isset($a['mail']['count'])) { $username = $a['mail'][0]; } else { $username = $a['mail']; }
+            $username = strtolower(preg_replace("/^smtp\:/i", "", $username));
+
+            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . $a['dn'] . ")))", array());
+
+            $emails = $this->get_email_array_from_ldap_attr($query->rows);
+
+            $this->add_session_vars($a['cn'], $username, $emails);
+
+            AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
+
+            return 1;
+         }
+
       }
 
       return 0; 
