@@ -60,13 +60,6 @@
             </div> 
 
             <div class="control-group">
-                <label class="control-label" for="xis_spam"><?php print $text_spam; ?>:</label>
-                <div class="controls">
-                  <input type="checkbox" name="xis_spam" id="xis_spam" <?php if(isset($is_spam) && $is_spam == 1) { ?>checked="checked"<?php } ?> />
-                </div>
-            </div> 
-            
-            <div class="control-group">
                 <label class="control-label" for="date1"><?php print $text_from; ?> <?php print $text_date; ?>:</label>
                 <div class="controls">
                   <input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" />

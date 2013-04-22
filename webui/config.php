@@ -58,9 +58,6 @@ $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
 
 
-// enable SSO against an Active Directory
-$config['ENABLE_SSO_LOGIN'] = 0;
-
 // enable authentication against an imap server (disabled by default)
 
 $config['ENABLE_IMAP_AUTH'] = 0;
