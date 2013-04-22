@@ -138,6 +138,7 @@ class ModelHealthHealth extends Model {
 
    }
 
+
    public function get_database_size() {
       $data = array();
 
@@ -147,10 +148,27 @@ class ModelHealthHealth extends Model {
 								WHERE table_schema = '".DB_DATABASE."'
 								GROUP BY table_schema;");
       if(isset($query->rows)) {
-		  $data = array_pop($query->rows);
+         $data = array_pop($query->rows);
+      } else {
+         $data['size'] = 0;
       }
 
       return $data['size'];
+   }
+
+
+   public function get_oldest_record_ts() {
+      $data = array();
+
+      $query = $this->db->query("SELECT MIN(`arrived`) AS `oldest_record_ts` FROM " . TABLE_META);
+      
+      if(isset($query->rows)) {
+         $data = array_pop($query->rows);
+      } else {
+         $data['oldest_record_ts'] = 0;
+      }
+
+      return $data['oldest_record_ts'];
    }
 
 

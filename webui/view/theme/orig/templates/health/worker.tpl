@@ -73,6 +73,12 @@
             <div class="cellhealthright"><span class="bold <?php if($options['enable_purge'] == 1) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a><?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?> </span></div>
          </div>
 
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_oldest_record; ?></div>
+            <div class="cellhealthright">
+               <?php print date("d M Y", $oldestmessagets); ?>
+            </div>
+         </div>
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_counters; ?></div>

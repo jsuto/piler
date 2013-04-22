@@ -68,6 +68,10 @@
 				<tr>
 					<th colspan="2">Cumulative Counts</th>
 				</tr>
+                                <tr>
+                                        <td><?php print $text_oldest_record; ?></td>
+                                        <td><?php print date("d M Y", $oldestmessagets); ?></td>
+                                </tr>                
 				<tr>
 					<td><?php print $text_processed_emails; ?></td>
 					<td><?php print $processed_emails[0]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_30_days; ?>)</td>
