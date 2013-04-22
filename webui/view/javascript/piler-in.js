@@ -488,13 +488,13 @@ var Piler =
         Piler.assemble_folder_restrictions();
 
         Piler.Searches.Expert = {
-            search : $('input#_search').val().trim(),
-            searchtype : 'expert',
-            ref: $('#ref').val(),
+            search: $.trim($('input#_search').val()),
+            searchtype: 'expert',
+            ref: $.trim($('#ref').val()),
             folders: Piler.folders,
             extra_folders: Piler.extra_folders
         }
-   
+
         $('#ref').val('');
  
         Piler.load_search_results();
@@ -525,21 +525,21 @@ var Piler =
         Piler.assemble_folder_restrictions();
 
         Piler.Searches.Complex = {
-            from : $('input#xfrom', z).val().trim(),
-            to : $('input#xto', z).val().trim(),
-            subject : $('input#xsubject', z).val().trim(),
-            body : $('input#xbody', z).val().trim(),
-            tag : $('input#xtag', z).val().trim(),
-            note : $('input#xnote', z).val().trim(),
+            from : $.trim($('input#xfrom', z).val()),
+            to : $.trim($('input#xto', z).val()),
+            subject : $.trim($('input#xsubject', z).val()),
+            body : $.trim($('input#xbody', z).val()),
+            tag : $.trim($('input#xtag', z).val()),
+            note : $.trim($('input#xnote', z).val()),
             attachment_type : $('input#xhas_attachment', z)[0].checked ? 'any' : '',
-            date1 : $('input#date1', z).val().trim(),
-            date2 : $('input#date2', z).val().trim(),
+            date1 : $.trim($('input#date1', z).val()),
+            date2 : $.trim($('input#date2', z).val()),
             searchtype : 'simple',
             folders: Piler.folders,
             extra_folders: Piler.extra_folders
         }
 
-        Piler.load_search_results();//, Piler.assemble_search_term( count ), 0);
+        Piler.load_search_results();
 
         $('#searchpopup1').hide();
     },
