@@ -51,5 +51,7 @@
 
 <?php } ?>
 
+<!-- <?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?> -->
+
   </body>
 </html>

@@ -30,7 +30,7 @@ var Piler =
     /*
      * search data
      */
-    Searches:{},
+    Searches: {},
 
     /*
      * message meta ids
@@ -138,7 +138,13 @@ var Piler =
         })
         .done( function( a )// data, textStatus, jqXHR
         {
-            $('#mailcontframe').html( a );
+
+            if(a.indexOf('<?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?>') > 0) {
+               document.location.href = '<?php print SITE_URL; ?>';
+               return true;
+            }
+
+            $('#mailcontframe').html(a);
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
             $('#resultsheader').show();
@@ -244,6 +250,12 @@ var Piler =
 
         jQuery.ajax('/message.php/' + id, { cache: true })
         .done( function(a) {
+
+           if(a.indexOf('<?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?>') > 0) {
+              document.location.href = '<?php print SITE_URL; ?>';
+              return true;
+           }
+
            $('#mailpreviewframe').html(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });

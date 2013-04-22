@@ -58,6 +58,8 @@ $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
 
 
+// enable SSO against an Active Directory
+$config['ENABLE_SSO_LOGIN'] = 0;
 
 // enable authentication against an imap server (disabled by default)
 
@@ -145,6 +147,9 @@ $config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
 $config['DN_MAX_LEN'] = 255;
 $config['USE_EMAIL_AS_USERNAME'] = 1;
 $config['LDAP_IMPORT_MINIMUM_NUMBER_OF_USERS_TO_HEALTH_OK'] = 100;
+
+
+define('PILER_LOGIN_HELPER_PLACEHOLDER', 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE');
 
 
 $config['SIZE_X'] = 430;
