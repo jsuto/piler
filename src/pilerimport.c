@@ -542,6 +542,10 @@ int main(int argc, char **argv){
 
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
+#ifdef HAVE_MEMCACHED
+   memcached_init(&(data.memc), cfg.memcached_servers, 11211);
+#endif
+
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
 
