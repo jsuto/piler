@@ -17,6 +17,7 @@
     <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
     <!--[if lt IE 9]>
       <script src="/view/theme/default/assets/js/html5.js"></script>
+      <style>body{padding-top:70px;}</style>
     <![endif]-->
     
     <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
