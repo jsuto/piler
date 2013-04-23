@@ -86,15 +86,6 @@ if(Registry::get('username')) {
 else {
    if(ENABLE_GOOGLE_LOGIN == 1 && isset($request->get['route']) && $request->get['route'] == 'login/google') {
       $action = new Router('login/google');
-   } 
-   else if(ENABLE_SSO_LOGIN == 1) {
-      if(isset($request->get['route']) && $request->get['route'] == 'login/login') {
-         $action = new Router('login/login');
-      }
-      else {
-         header("Location: " . SITE_URL . 'sso.php');
-         exit;
-     }
    }
    else {
       $action = new Router('login/login');
