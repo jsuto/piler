@@ -48,7 +48,6 @@ class ControllerHealthWorker extends Controller {
       list($this->data['totalmem'], $this->data['meminfo'], $this->data['totalswap'], $this->data['swapinfo']) = $this->model_health_health->meminfo();
       $this->data['shortdiskinfo'] = $this->model_health_health->diskinfo();
 
-
       if(ENABLE_LDAP_IMPORT_FEATURE == 1) {
          $this->data['adsyncinfo'] = @file_get_contents(AD_SYNC_STAT);
 
@@ -61,17 +60,14 @@ class ControllerHealthWorker extends Controller {
 
 
       /* counter related stuff */
-
+      
       $db = Registry::get('db');
       $db->select_db($db->database);
 
-
       list($archivesizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
-  
+	  
       $oldest_record_timestamp = $this->model_health_health->get_oldest_record_ts();
       $total_number_days = round( (time() - $oldest_record_timestamp) / 86400 );
-      
-      echo("Total Days: ".date("d M Y",time())." - ".date("d M Y",$oldest_record_timestamp)." = $total_number_days<br/>"); 
       
       $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
 
@@ -81,11 +77,11 @@ class ControllerHealthWorker extends Controller {
       $this->data['sysinfo'] = $this->model_health_health->sysinfo();
 
       $this->data['options'] = $this->model_health_health->get_options();
-  
+	  
       $sqlsizeraw = $this->model_health_health->get_database_size();
-  
+	  
       $sphinxsizeraw = $this->model_health_health->get_sphinx_size();
-  
+	  
       /* message count variables */
       $averagemessagesweekraw = ($this->data['processed_emails'][1]) / 7;                       //average messages per day, computed over the past week
       $averagemessagesmonthraw = ($this->data['processed_emails'][2]) / 30;                     //average messages per day, computed over the past month
@@ -101,7 +97,7 @@ class ControllerHealthWorker extends Controller {
       foreach($this->data['shortdiskinfo'] as $part) {
          if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }    // if the partition is the selected storage partition, record freespace on that partition
       }
-
+	  
       $this->data['oldestmessagets'] = $oldest_record_timestamp;							    // date of the oldest record in the db
       $this->data['averagemessages'] = round($averagemessagesweekraw);							// rounded average of messages over the past week
       $this->data['averagemessagesize'] = nice_size($averagemessagesizeraw,' ');    			// formatted average message size on disk
@@ -116,7 +112,7 @@ class ControllerHealthWorker extends Controller {
       } else {
          $this->data['usagetrend'] = 0;
       }
-  
+	  
       $this->render();
    }
 
