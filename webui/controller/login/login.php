@@ -11,6 +11,12 @@ class ControllerLoginLogin extends Controller {
       $this->layout = "common/layout-empty";
 
 
+      if(Registry::get('username')) {
+         header("Location: search.php");
+         exit;
+      }
+
+
       $request = Registry::get('request');
 
       $db = Registry::get('db');
