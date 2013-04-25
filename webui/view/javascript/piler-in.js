@@ -448,11 +448,14 @@ var Piler =
     {
         Piler.log("[load_search_results_for_saved_query]", terms);
 
+        terms = decodeURIComponent(terms);
+
         var pairs = terms.split('&');
         $.each(pairs, function(i, v){
            var pair = v.split('=');
            if(pair[0] == 'search') {
-              $("input#_search").val(pair[1]);
+              var search = decodeURIComponent(pair[1]);
+              $("input#_search").val(search.replace(/\+/g, " "));
            }
         });
 

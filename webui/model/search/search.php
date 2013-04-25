@@ -794,6 +794,7 @@ class ModelSearchSearch extends Model {
       if($s == '') { return $s; }
 
       $s = preg_replace("/\'/", ' ', $s);
+      $s = preg_replace("/\./", ' ', $s);
 
       return $s;
    }

@@ -18,7 +18,7 @@
          if(isset($s['search']) && $s['search']) {
 ?>
          <div class="resultrow center">
-            <a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></br />
+            <a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urlencode($term['term']); ?>');"><?php print $s['search']; ?></a></br />
          </div>
 <?php } } ?>
 

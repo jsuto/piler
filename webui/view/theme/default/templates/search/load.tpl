@@ -10,7 +10,7 @@
          if(isset($s['search'])) {
 ?>
          <tr>
-            <td><a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urldecode($term['term']); ?>');"><?php print $s['search']; ?></a></td>
+            <td><a href="#" onclick="Piler.load_search_results_for_saved_query('<?php print urlencode($term['term']); ?>');"><?php print $s['search']; ?></a></td>
             <td>&nbsp;</td>
          </tr>
 <?php } } ?>
