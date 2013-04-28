@@ -65,15 +65,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    db_conn = 0;
 
 #ifdef NEED_MYSQL
-   rc = 1;
-   mysql_init(&(sdata.mysql));
-   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg->mysql_connect_timeout);
-   mysql_options(&(sdata.mysql), MYSQL_OPT_RECONNECT, (const char*)&rc);
-
-   if(mysql_real_connect(&(sdata.mysql), cfg->mysqlhost, cfg->mysqluser, cfg->mysqlpwd, cfg->mysqldb, cfg->mysqlport, cfg->mysqlsocket, 0)){
+   if(open_database(&sdata, cfg) == OK){
       db_conn = 1;
-      mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
-      mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
    }
    else
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);
@@ -81,7 +74,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
    if(db_conn == 1 && create_prepared_statements(&sdata, data) == ERR){
       close_prepared_statements(data);
-      mysql_close(&(sdata.mysql));
+      close_database(&sdata);
       db_conn = 0;
    }
 
@@ -567,7 +560,7 @@ QUITTING:
 
 #ifdef NEED_MYSQL
    close_prepared_statements(data);
-   mysql_close(&(sdata.mysql));
+   close_database(&sdata);
 #endif
 
 #ifdef HAVE_STARTTLS

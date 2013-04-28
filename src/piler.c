@@ -317,9 +317,7 @@ void initialise_configuration(){
    }
 #endif
 
-   mysql_init(&(sdata.mysql));
-   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
-   if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
+   if(open_database(&sdata, &cfg) == ERR){
       syslog(LOG_PRIORITY, "cannot connect to mysql server");
       return;
    }
@@ -331,7 +329,7 @@ void initialise_configuration(){
 
    if(cfg.server_id > 0) insert_offset(&sdata, cfg.server_id);
 
-   mysql_close(&(sdata.mysql));
+   close_database(&sdata);
 
 
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);

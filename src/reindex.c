@@ -215,14 +215,10 @@ int main(int argc, char **argv){
    init_session_data(&sdata, &cfg);
 
 
-   mysql_init(&(sdata.mysql));
-   mysql_options(&(sdata.mysql), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg.mysql_connect_timeout);
-   if(mysql_real_connect(&(sdata.mysql), cfg.mysqlhost, cfg.mysqluser, cfg.mysqlpwd, cfg.mysqldb, cfg.mysqlport, cfg.mysqlsocket, 0) == 0){
+   if(open_database(&sdata, &cfg) == ERR){
       p_clean_exit("cannot connect to mysql server", 1);
    }
 
-   mysql_real_query(&(sdata.mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
-   mysql_real_query(&(sdata.mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -235,7 +231,7 @@ int main(int argc, char **argv){
 
    printf("put %llu messages to %s table for reindexing\n", n, SQL_SPHINX_TABLE);
 
-   mysql_close(&(sdata.mysql));
+   close_database(&sdata);
 
    return 0;
 }
