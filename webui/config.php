@@ -57,6 +57,8 @@ $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
 
+// enable single sign-on (disabled by default)
+$config['ENABLE_SSO_LOGIN'] = 0;
 
 // enable authentication against an imap server (disabled by default)
 
