@@ -141,13 +141,13 @@ class ModelUserAuth extends Model {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
                      if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
                         $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i]));
-                        if(!in_array($email, $data) && strchr($email, '@')) { array_push($data, $email); }
+                        if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:') { array_push($data, $email); }
                      }
                   }
                }
                else {
                   $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr]));
-                  if(!in_array($email, $data) && strchr($email, '@')) { array_push($data, $email); }
+                  if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:') { array_push($data, $email); }
                }
             }
          }
