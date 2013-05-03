@@ -80,9 +80,11 @@ class ModelUserAuth extends Model {
 
                $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . $a['dn'] . ")))", array());
 
+               $is_auditor = $this->check_ldap_membership($query->rows);
+
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-               $this->add_session_vars($a['cn'], $username, $emails);
+               $this->add_session_vars($a['cn'], $username, $emails, $is_auditor);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
@@ -95,6 +97,33 @@ class ModelUserAuth extends Model {
       }
       else if(ENABLE_SYSLOG == 1) {
          syslog(LOG_INFO, "cannot bind to '" . LDAP_HOST . "' as '" . LDAP_HELPER_DN . "'");
+      }
+
+      return 0;
+   }
+
+
+   private function check_ldap_membership($e = array()) {
+      if(LDAP_AUDITOR_MEMBER_DN == '') { return 0; }
+
+      foreach($e as $a) {
+         foreach (array("member", "memberof") as $memberattr) {
+            if(isset($a[$memberattr])) {
+
+               if(isset($a[$memberattr]['count'])) {
+                  for($i = 0; $i < $a[$memberattr]['count']; $i++) {
+                     if($a[$memberattr][$i] == LDAP_AUDITOR_MEMBER_DN) {
+                        return 1;
+                     }
+                  }
+               }
+               else {
+                  if($a[$memberattr] == LDAP_AUDITOR_MEMBER_DN) {
+                     return 1;
+                  }
+               }
+            }
+         }
       }
 
       return 0;
@@ -128,7 +157,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function add_session_vars($name = '', $email = '', $emails = array()) {
+   private function add_session_vars($name = '', $email = '', $emails = array(), $is_auditor = 0) {
       $a = explode("@", $email);
 
       $uid = $this->model_user_user->get_uid_by_email($email);
@@ -139,7 +168,13 @@ class ModelUserAuth extends Model {
 
       $_SESSION['username'] = $name;
       $_SESSION['uid'] = $uid;
-      $_SESSION['admin_user'] = 0;
+
+      if($is_auditor == 1) {
+         $_SESSION['admin_user'] = 2;
+      } else {
+         $_SESSION['admin_user'] = 0;
+      }
+
       $_SESSION['email'] = $email;
       $_SESSION['domain'] = $a[1];
       $_SESSION['realname'] = $name;
@@ -182,7 +217,7 @@ class ModelUserAuth extends Model {
       if($imap->login($username, $password)) {
          $imap->logout();
 
-         $this->add_session_vars($username, $username, array($username));
+         $this->add_session_vars($username, $username, array($username), 0);
 
          $_SESSION['password'] = $password;
 
@@ -216,7 +251,7 @@ class ModelUserAuth extends Model {
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-            $this->add_session_vars($a['cn'], $username, $emails);
+            $this->add_session_vars($a['cn'], $username, $emails, 0);
 
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 

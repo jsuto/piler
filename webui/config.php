@@ -43,6 +43,7 @@ $config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
 $config['LDAP_BASE_DN'] = '';
 $config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
 $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
+$config['LDAP_AUDITOR_MEMBER_DN'] = '';
 
 
 // AD specific settings
