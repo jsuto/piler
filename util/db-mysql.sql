@@ -85,7 +85,7 @@ create table if not exists `attachment` (
    `type` varchar(128) default null,
    `sig` char(64) not null,
    `size` int default 0,
-   `ptr` int default 0,
+   `ptr` bigint unsigned default 0,
    `deleted` tinyint(1) default 0,
    primary key (`id`)
 ) Engine=InnoDB;
