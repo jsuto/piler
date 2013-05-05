@@ -11,7 +11,7 @@
 #include <piler.h>
 
 
-struct __counters loadCounters(struct session_data *sdata, struct __config *cfg){
+struct __counters load_counters(struct session_data *sdata, struct __data *data, struct __config *cfg){
    char buf[SMALLBUFSIZE];
    struct __counters counters;
 
@@ -19,26 +19,28 @@ struct __counters loadCounters(struct session_data *sdata, struct __config *cfg)
 
    snprintf(buf, SMALLBUFSIZE-1, "SELECT `rcvd`, `virus`, `duplicate`, `ignore`, `size` FROM `%s`", SQL_COUNTER_TABLE);
 
-#ifdef NEED_MYSQL
-   MYSQL_RES *res;
-   MYSQL_ROW row;
 
-   if(mysql_real_query(&(sdata->mysql), buf, strlen(buf)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res != NULL){
-         row = mysql_fetch_row(res);
-         if(row){
-            counters.c_rcvd = strtoull(row[0], NULL, 10);
-            counters.c_virus = strtoull(row[1], NULL, 10);
-            counters.c_duplicate = strtoull(row[2], NULL, 10);
-            counters.c_ignore = strtoull(row[3], NULL, 10);
-            counters.c_size = strtoull(row[4], NULL, 10);
-         }
-         mysql_free_result(res);
-      }
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf) == ERR) return counters;
+
+
+   p_bind_init(data);
+
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+
+      p_bind_init(data);
+
+      data->sql[data->pos] = (char *)&counters.c_rcvd; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      data->sql[data->pos] = (char *)&counters.c_virus; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      data->sql[data->pos] = (char *)&counters.c_duplicate; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      data->sql[data->pos] = (char *)&counters.c_ignore; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      data->sql[data->pos] = (char *)&counters.c_size; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+
+      p_store_results(sdata, data->stmt_generic, data);
+      p_fetch_results(data->stmt_generic);
+      p_free_results(data->stmt_generic);
    }
 
-#endif
+   close_prepared_statement(data->stmt_generic);
 
    return counters;
 }
@@ -87,14 +89,14 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
  
                //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
 
-               goto EXEC_SQL;
+               p_query(sdata, buf);
             }
          }
 
       }
       else {
 
-         c = loadCounters(sdata, cfg);
+         c = load_counters(sdata, data, cfg);
 
          snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
 
@@ -109,16 +111,7 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
    else {
 #endif
       snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=`rcvd`+%llu, `virus`=`virus`+%llu, `duplicate`=`duplicate`+%llu, `ignore`=`ignore`+%llu, `size`=`size`+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore, counters->c_size);
-
-      //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
-
-#ifdef HAVE_MEMCACHED
-EXEC_SQL:
-#endif
-
-   #ifdef NEED_MYSQL
-      mysql_real_query(&(sdata->mysql), buf, strlen(buf));
-   #endif
+      p_query(sdata, buf);
 
 #ifdef HAVE_MEMCACHED
    }

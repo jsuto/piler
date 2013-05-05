@@ -42,34 +42,39 @@ void p_clean_exit(char *msg, int rc){
 }
 
 
-uint64 get_max_meta_id(struct session_data *sdata){
-   MYSQL_RES *res;
-   MYSQL_ROW row;
+uint64 get_max_meta_id(struct session_data *sdata, struct __data *data){
    char s[SMALLBUFSIZE];
-   int rc;
    uint64 id=0;
 
    snprintf(s, sizeof(s)-1, "SELECT MAX(`id`) FROM %s", SQL_METADATA_TABLE);
 
-   rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
 
-   if(rc == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         row = mysql_fetch_row(res);
-         if(row){
-            id = strtoull(row[0], NULL, 10);
-         }
-         mysql_free_result(res);
-      }
-   }
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return id;
+
+
+   p_bind_init(data);
+
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+
+
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+
+   p_store_results(sdata, data->stmt_generic, data);
+   p_fetch_results(data->stmt_generic);
+   p_free_results(data->stmt_generic);
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
+
+
    return id;
 }
 
 
 uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *data, uint64 from_id, uint64 to_id, struct __config *cfg){
-   MYSQL_RES *res;
-   MYSQL_ROW row;
    FILE *f;
    char filename[SMALLBUFSIZE];
    char s[SMALLBUFSIZE];
@@ -80,55 +85,65 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
    snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
-   rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return reindexed;
 
-   if(rc == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         while((row = mysql_fetch_row(res))){
+   p_bind_init(data);
 
-            stored_id = strtoull(row[0], NULL, 10);
-            if(stored_id > 0){
-               snprintf(sdata->ttmpfile, SMALLBUFSIZE-1, "%s", (char*)row[1]);
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
 
-               snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
+   p_bind_init(data);
 
-               f = fopen(filename, "w");
-               if(f){
-                  rc = retrieve_email_from_archive(sdata, data, f, cfg);
-                  fclose(f);
+   data->sql[data->pos] = (char *)&stored_id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN+2; data->pos++;
+   data->sql[data->pos] = (char *)&(sdata->now); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+   data->sql[data->pos] = (char *)&(sdata->sent); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
 
-                  if(rc){
-                     printf("cannot retrieve: %s\n", filename);
-                     unlink(filename);
-                     continue;
-                  }
+   p_store_results(sdata, data->stmt_generic, data);
 
-                  snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+   while(p_fetch_results(data->stmt_generic) == OK){
 
-                  state = parse_message(sdata, 0, data, cfg);
-                  post_parse(sdata, &state, cfg);
+      if(stored_id > 0){
 
-                  sdata->now = strtoul(row[2], NULL, 10);
-                  sdata->sent = strtoul(row[3], NULL, 10);
+         snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
 
-                  rc = store_index_data(sdata, &state, data, stored_id, cfg);
+         f = fopen(filename, "w");
+         if(f){
+            rc = retrieve_email_from_archive(sdata, data, f, cfg);
+            fclose(f);
 
-                  if(rc == OK) reindexed++;
-                  else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
-
-                  unlink(filename);
-
-                  if(progressbar && reindexed % 100 == 0) printf(".");
-               }
-               else printf("cannot open: %s\n", filename);
-
+            if(rc){
+               printf("cannot retrieve: %s\n", filename);
+               unlink(filename);
+               continue;
             }
+
+            snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+            state = parse_message(sdata, 0, data, cfg);
+            post_parse(sdata, &state, cfg);
+
+            rc = store_index_data(sdata, &state, data, stored_id, cfg);
+
+            if(rc == OK) reindexed++;
+            else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
+
+            unlink(filename);
+
+            if(progressbar && reindexed % 100 == 0) printf(".");
          }
-         mysql_free_result(res);
+         else printf("cannot open: %s\n", filename);
+
       }
-      else rc = 1;
+
    }
+
+
+   p_free_results(data->stmt_generic);
+
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
+
 
    if(progressbar) printf("\n");
 
@@ -224,7 +239,7 @@ int main(int argc, char **argv){
 
    if(all == 1){
       from_id = 1;
-      to_id = get_max_meta_id(&sdata);
+      to_id = get_max_meta_id(&sdata, &data);
    }
 
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);

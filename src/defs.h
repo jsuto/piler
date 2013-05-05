@@ -55,6 +55,13 @@
 #define READY 1
 #define BUSY 2
 
+#define MAX_SQL_VARS 20
+
+#define TYPE_UNDEF 0
+#define TYPE_TINY 1
+#define TYPE_LONG 2
+#define TYPE_LONGLONG 3
+#define TYPE_STRING 4
 
 #define MAXCHILDREN 64
 
@@ -247,6 +254,7 @@ struct __data {
    char mydomains[MAXBUFSIZE];
 
 #ifdef NEED_MYSQL
+   MYSQL_STMT *stmt_generic;
    MYSQL_STMT *stmt_get_meta_id_by_message_id;
    MYSQL_STMT *stmt_insert_into_rcpt_table;
    MYSQL_STMT *stmt_insert_into_sphinx_table;
@@ -258,7 +266,14 @@ struct __data {
    MYSQL_STMT *stmt_get_folder_id;
    MYSQL_STMT *stmt_insert_into_folder_table;
    MYSQL_STMT *stmt_update_metadata_reference;
+   MYSQL_STMT *stmt_select_from_meta_table;
+   MYSQL_STMT *stmt_select_non_referenced_attachments;
 #endif
+
+   char *sql[MAX_SQL_VARS];
+   int type[MAX_SQL_VARS];
+   int len[MAX_SQL_VARS];
+   int pos;
 
 #ifdef HAVE_TRE
    struct rule *archiving_rules;

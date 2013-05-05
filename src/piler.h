@@ -18,6 +18,7 @@
 #include <sig.h>
 #include <av.h>
 #include <rules.h>
+#include <sql.h>
 #include <config.h>
 #include <unistd.h>
 
@@ -53,10 +54,6 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
 int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg);
 int file_from_archive_to_network(char *filename, int sd, int tls_enable, struct __data *data, struct __config *cfg);
 
-int open_database(struct session_data *sdata, struct __config *cfg);
-void close_database(struct session_data *sdata);
-int prepare_a_mysql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s);
-
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg);
 unsigned long get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
 unsigned long add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
@@ -68,9 +65,6 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg);
 
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
-
-int create_prepared_statements(struct session_data *sdata, struct __data *data);
-void close_prepared_statements(struct __data *data);
 
 #endif /* _PILER_H */
 

@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.24-master-branch"
 
-#define BUILD 793
+#define BUILD 811
 
 #define HOSTID "mailarchiver"
 
@@ -89,6 +89,7 @@
 #define SQL_MESSAGES_VIEW "v_messages"
 #define SQL_ATTACHMENTS_VIEW "v_attachment"
 
+#define SQL_PREPARED_STMT_GET_DOMAINS                "SELECT `domain` FROM `" SQL_DOMAIN_TABLE "`"
 #define SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID  "SELECT id FROM " SQL_METADATA_TABLE " WHERE message_id=?"
 #define SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE     "INSERT INTO " SQL_RECIPIENT_TABLE " (`id`,`to`,`todomain`) VALUES(?,?,?)"
 #define SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE   "INSERT INTO " SQL_SPHINX_TABLE " (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"

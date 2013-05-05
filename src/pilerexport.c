@@ -136,62 +136,72 @@ int append_string_to_buffer(char **buffer, char *str){
 
 
 int export_emails_matching_to_query(struct session_data *sdata, struct __data *data, char *s, struct __config *cfg){
-   MYSQL_RES *res;
-   MYSQL_ROW row;
    FILE *f;
    uint64 id, n=0;
-   char *digest=NULL, *bodydigest=NULL;
+   char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    int rc=0;
 
 
-   rc = mysql_real_query(&(sdata->mysql), s, strlen(s));
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return ERR;
 
-   if(rc == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         while((row = mysql_fetch_row(res))){
 
-            id = strtoull(row[0], NULL, 10);
-            if(id > 0){
-               snprintf(sdata->ttmpfile, SMALLBUFSIZE-1, "%s", (char*)row[1]);
-               digest = (char*)row[2];
-               bodydigest = (char*)row[3];
+   p_bind_init(data);
 
-               if(dryrun == 0){
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
 
-                  snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
 
-                  f = fopen(filename, "w");
-                  if(f){
-                     rc = retrieve_email_from_archive(sdata, data, f, cfg);
-                     fclose(f);
 
-                     n++;
+   p_bind_init(data);
 
-                     snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
+   data->sql[data->pos] = &digest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(digest)-2; data->pos++;
+   data->sql[data->pos] = &bodydigest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(bodydigest)-2; data->pos++;
 
-                     make_digests(sdata, cfg);
+   p_store_results(sdata, data->stmt_generic, data);
 
-                     if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
-                        printf("exported: %10llu\r", n); fflush(stdout);
-                     }
-                     else
-                        printf("verification FAILED. %s\n", filename);
+   while(p_fetch_results(data->stmt_generic) == OK){
 
-                  }
-                  else printf("cannot open: %s\n", filename);
+      if(id > 0){
+
+         if(dryrun == 0){
+
+            snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
+
+            f = fopen(filename, "w");
+            if(f){
+               rc = retrieve_email_from_archive(sdata, data, f, cfg);
+               fclose(f);
+
+               n++;
+
+               snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+               make_digests(sdata, cfg);
+
+               if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
+                  printf("exported: %10llu\r", n); fflush(stdout);
                }
-               else {
-                  printf("id:%llu\n", id);
-               }
+               else
+                  printf("verification FAILED. %s\n", filename);
 
             }
+            else printf("cannot open: %s\n", filename);
          }
-         mysql_free_result(res);
+         else {
+            printf("id:%llu\n", id);
+         }
+
       }
-      else rc = 1;
+
    }
+
+   p_free_results(data->stmt_generic);
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
+
 
    printf("\n");
 

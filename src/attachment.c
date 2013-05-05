@@ -19,12 +19,10 @@
 int store_attachments(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    uint64 id=0;
    int i, rc=1, found, affected_rows;
-   MYSQL_BIND bind[7];
-   unsigned long len[7];
 
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_attachment_table), SQL_PREPARED_STMT_INSERT_INTO_ATTACHMENT_TABLE) == ERR) return rc;
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_attachment_id_by_signature), SQL_PREPARED_STMT_GET_ATTACHMENT_ID_BY_SIGNATURE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_attachment_table), SQL_PREPARED_STMT_INSERT_INTO_ATTACHMENT_TABLE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_id_by_signature), SQL_PREPARED_STMT_GET_ATTACHMENT_ID_BY_SIGNATURE) == ERR) return rc;
 
 
    for(i=1; i<=state->n_attachments; i++){
@@ -33,43 +31,20 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
 
       if(state->attachments[i].size > 0){
 
-         memset(bind, 0, sizeof(bind));
+         p_bind_init(data);
 
-         bind[0].buffer_type = MYSQL_TYPE_STRING;
-         bind[0].buffer = state->attachments[i].digest;
-         bind[0].is_null = 0;
-         len[0] = strlen(state->attachments[i].digest); bind[0].length = &len[0];
+         data->sql[data->pos] = state->attachments[i].digest; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-         if(mysql_stmt_bind_param(data->stmt_get_attachment_id_by_signature, bind)){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error for get attachment id: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(data->stmt_get_attachment_id_by_signature));
-            goto NOT_FOUND;
-         }
-
-         if(mysql_stmt_execute(data->stmt_get_attachment_id_by_signature)){
-            syslog(LOG_PRIORITY, "%s get attachment id execute error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-            goto NOT_FOUND;
-         }
+         if(p_exec_query(sdata, data->stmt_get_attachment_id_by_signature, data) == ERR) goto NOT_FOUND;
 
 
-         memset(bind, 0, sizeof(bind));
+         p_bind_init(data);
 
-         bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
-         bind[0].buffer = (char *)&id;
-         bind[0].is_null = 0;
-         bind[0].length = 0;
+         data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-         if(mysql_stmt_bind_result(data->stmt_get_attachment_id_by_signature, bind)){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_result() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(data->stmt_get_attachment_id_by_signature));
-            goto NOT_FOUND;
-         }
-
-         if(mysql_stmt_store_result(data->stmt_get_attachment_id_by_signature)){
-            goto NOT_FOUND;
-         }
-
-         if(!mysql_stmt_fetch(data->stmt_get_attachment_id_by_signature)){
-            found = 1;
-         }
+         p_store_results(sdata, data->stmt_get_attachment_id_by_signature, data);
+         if(p_fetch_results(data->stmt_get_attachment_id_by_signature) == OK) found = 1;
+         p_free_results(data->stmt_get_attachment_id_by_signature);
 
 NOT_FOUND:
 
@@ -81,56 +56,20 @@ NOT_FOUND:
          }
 
 
-         memset(bind, 0, sizeof(bind));
+         p_bind_init(data);
 
-         bind[0].buffer_type = MYSQL_TYPE_STRING;
-         bind[0].buffer = sdata->ttmpfile;
-         bind[0].is_null = 0;
-         len[0] = strlen(sdata->ttmpfile); bind[0].length = &len[0];
+         data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = (char *)&i; data->type[data->pos] = TYPE_LONG; data->pos++;
+         data->sql[data->pos] = state->attachments[i].digest; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = state->attachments[i].filename; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = state->attachments[i].type; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = (char *)&(state->attachments[i].size); data->type[data->pos] = TYPE_LONG; data->pos++;
+         data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
 
-         bind[1].buffer_type = MYSQL_TYPE_LONG;
-         bind[1].buffer = (char *)&i;
-         bind[1].is_null = 0;
-         bind[1].length = 0;
-
-         bind[2].buffer_type = MYSQL_TYPE_STRING;
-         bind[2].buffer = state->attachments[i].digest;
-         bind[2].is_null = 0;
-         len[2] = strlen(state->attachments[i].digest); bind[2].length = &len[2];
-
-         bind[3].buffer_type = MYSQL_TYPE_STRING;
-         bind[3].buffer = state->attachments[i].filename;
-         bind[3].is_null = 0;
-         len[3] = strlen(state->attachments[i].filename); bind[3].length = &len[3];
-
-         bind[4].buffer_type = MYSQL_TYPE_STRING;
-         bind[4].buffer = state->attachments[i].type;
-         bind[4].is_null = 0;
-         len[4] = strlen(state->attachments[i].type); bind[4].length = &len[4];
-
-         bind[5].buffer_type = MYSQL_TYPE_LONG;
-         bind[5].buffer = (char *)&(state->attachments[i].size);
-         bind[5].is_null = 0;
-         bind[5].length = 0;
-
-         bind[6].buffer_type = MYSQL_TYPE_LONGLONG;
-         bind[6].buffer = (char *)&id;
-         bind[6].is_null = 0;
-         bind[6].length = 0;
+         if(p_exec_query(sdata, data->stmt_insert_into_attachment_table, data) == ERR) goto CLOSE;
 
 
-         if(mysql_stmt_bind_param(data->stmt_insert_into_attachment_table, bind)){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_ATTACHMENT_TABLE, mysql_stmt_error(data->stmt_insert_into_attachment_table));
-            goto CLOSE;
-         }
-
-
-         if(mysql_stmt_execute(data->stmt_insert_into_attachment_table)){
-            syslog(LOG_PRIORITY, "%s attachment sql error: *%s*", sdata->ttmpfile, mysql_error(&(sdata->mysql)));
-            goto CLOSE;
-         }
-
-         affected_rows = mysql_stmt_affected_rows(data->stmt_insert_into_attachment_table);
+         affected_rows = p_get_affected_rows(data->stmt_insert_into_attachment_table);
          if(affected_rows != 1){
             syslog(LOG_PRIORITY, "%s attachment sql error: affected rows: %d", sdata->ttmpfile, affected_rows);
             goto CLOSE;
@@ -146,8 +85,8 @@ NOT_FOUND:
    rc = 0;
 
 CLOSE:
-   mysql_stmt_close(data->stmt_insert_into_attachment_table);
-   mysql_stmt_close(data->stmt_get_attachment_id_by_signature);
+   close_prepared_statement(data->stmt_insert_into_attachment_table);
+   close_prepared_statement(data->stmt_get_attachment_id_by_signature);
 
    return rc;
 }
@@ -155,64 +94,30 @@ CLOSE:
 
 int query_attachment_pointers(struct session_data *sdata, struct __data *data, uint64 ptr, char *piler_id, int *id, struct __config *cfg){
    int rc=0;
-   MYSQL_BIND bind[2];
-   my_bool is_null[2];
-   unsigned long len=0;
+
+   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_pointer), SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER) == ERR) return rc;
 
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_attachment_pointer), SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER) == ERR) goto ENDE;
+   p_bind_init(data);
 
-   memset(bind, 0, sizeof(bind));
+   data->sql[data->pos] = (char *)&ptr; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
 
-   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
-   bind[0].buffer = (char *)&ptr;
-   bind[0].is_null = 0;
-   len = sizeof(uint64); bind[0].length = &len;
+   if(p_exec_query(sdata, data->stmt_get_attachment_pointer, data) == ERR) goto ENDE;
 
 
-   if(mysql_stmt_bind_param(data->stmt_get_attachment_pointer, bind)){
-      goto CLOSE;
-   }
 
+   p_bind_init(data);
 
-   if(mysql_stmt_execute(data->stmt_get_attachment_pointer)){
-      goto CLOSE;
-   }
+   data->sql[data->pos] = piler_id; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
+   data->sql[data->pos] = (char *)id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
+   p_store_results(sdata, data->stmt_get_attachment_pointer, data);
 
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = piler_id;
-   bind[0].buffer_length = RND_STR_LEN;
-   bind[0].is_null = &is_null[0];
-   bind[0].length = &len;
-
-   bind[1].buffer_type = MYSQL_TYPE_LONG;
-   bind[1].buffer = (char *)id;
-   bind[1].is_null = 0;
-   bind[1].length = 0;
-
-
-   if(mysql_stmt_bind_result(data->stmt_get_attachment_pointer, bind)){
-      goto CLOSE;
-   }
-
-
-   if(mysql_stmt_store_result(data->stmt_get_attachment_pointer)){
-      goto CLOSE;
-   }
-
-   if(!mysql_stmt_fetch(data->stmt_get_attachment_pointer)){
-      if(is_null[0] == 0){
-         rc = 1;
-      }
-   }
-
-CLOSE:
-   mysql_stmt_close(data->stmt_get_attachment_pointer);
+   if(p_fetch_results(data->stmt_get_attachment_pointer) == OK) rc = 1;
+   p_free_results(data->stmt_get_attachment_pointer);
 
 ENDE:
+   close_prepared_statement(data->stmt_get_attachment_pointer);
 
    return rc;
 }
@@ -221,59 +126,25 @@ ENDE:
 int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr, struct __config *cfg){
    int i, rc, id, attachments=0;
    uint64 ptr;
-   MYSQL_BIND bind[2];
-   my_bool is_null[2];
-   unsigned long len=0;
-
 
    for(i=0; i<MAX_ATTACHMENTS; i++) memset((char*)&ptr_arr[i], 0, sizeof(struct ptr_array));
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT) == ERR) goto ENDE;
+   if(prepare_sql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT) == ERR) goto ENDE;
 
+   p_bind_init(data);
 
-   memset(bind, 0, sizeof(bind));
+   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = sdata->ttmpfile;
-   bind[0].is_null = 0;
-   len = strlen(sdata->ttmpfile); bind[0].length = &len;
+   if(p_exec_query(sdata, data->stmt_query_attachment, data) == ERR) goto CLOSE;
 
-   if(mysql_stmt_bind_param(data->stmt_query_attachment, bind)){
-      goto CLOSE;
-   }
+   p_bind_init(data);
 
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = (char *)&ptr; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-   if(mysql_stmt_execute(data->stmt_query_attachment)){
-      goto CLOSE;
-   }
+   p_store_results(sdata, data->stmt_query_attachment, data);
 
-
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_LONG;
-   bind[0].buffer = (char *)&id;
-   bind[0].is_null = &is_null[0];
-   bind[0].length = 0;
-
-   bind[1].buffer_type = MYSQL_TYPE_LONGLONG;
-   bind[1].buffer = (char *)&ptr;
-   bind[1].is_null = &is_null[1];
-   bind[1].length = 0;
-
-
-
-   if(mysql_stmt_bind_result(data->stmt_query_attachment, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_query_attachment));
-      goto CLOSE;
-   }
-
-
-   if(mysql_stmt_store_result(data->stmt_query_attachment)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_store_result() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_query_attachment));
-      goto CLOSE;
-   }
-
-   while(!mysql_stmt_fetch(data->stmt_query_attachment)){
+   while(p_fetch_results(data->stmt_query_attachment) == OK){
 
       if(id > 0 && id < MAX_ATTACHMENTS){
          if(ptr > 0){
@@ -293,8 +164,10 @@ int query_attachments(struct session_data *sdata, struct __data *data, struct pt
       }
    }
 
+   p_free_results(data->stmt_query_attachment);
+
 CLOSE:
-   mysql_stmt_close(data->stmt_query_attachment);
+   close_prepared_statement(data->stmt_query_attachment);
 
 ENDE:
 
