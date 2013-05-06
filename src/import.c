@@ -102,6 +102,7 @@ ENDE:
    switch(rc) {
       case OK:
                         bzero(&counters, sizeof(counters));
+                        counters.c_rcvd = 1; 
                         counters.c_size += sdata->tot_len;
                         update_counters(sdata, data, &counters, cfg);
 
@@ -109,6 +110,11 @@ ENDE:
 
       case ERR_EXISTS:
                         rc = OK;
+
+                        bzero(&counters, sizeof(counters));
+                        counters.c_duplicate = 1;
+                        update_counters(sdata, data, &counters, cfg);
+
                         printf("duplicate: %s (id: %s)\n", filename, sdata->ttmpfile);
                         break;
 
