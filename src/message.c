@@ -21,8 +21,8 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    int rc=ERR;
    char *subj;
 
-   MYSQL_BIND bind[14];
-   unsigned long len[14];
+   MYSQL_BIND bind[15];
+   unsigned long len[15];
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
@@ -108,6 +108,14 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    bind[13].buffer = sdata->attachments;
    bind[13].is_null = 0;
    len[13] = strlen(sdata->attachments); bind[13].length = &len[13];
+
+
+#ifdef HAVE_MULTITENANCY
+   bind[14].buffer_type = MYSQL_TYPE_SHORT;
+   bind[14].buffer = (char *)&sdata->customer_id;
+   bind[14].is_null = 0;
+   bind[14].length = 0;
+#endif
 
 
    if(mysql_stmt_bind_param(data->stmt_insert_into_sphinx_table, bind)){
@@ -270,8 +278,8 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    int rc, ret=ERR;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
 
-   MYSQL_BIND bind[17];
-   unsigned long len[17];
+   MYSQL_BIND bind[18];
+   unsigned long len[18];
 
    my_ulonglong id=0;
 
@@ -396,6 +404,12 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    bind[16].is_null = 0;
    len[16] = strlen(vcode); bind[16].length = &len[16];
 
+#ifdef HAVE_MULTITENANCY
+   bind[17].buffer_type = MYSQL_TYPE_SHORT;
+   bind[17].buffer = (char *)&sdata->customer_id;
+   bind[17].is_null = 0;
+   bind[17].length = 0;
+#endif
 
 
    if(mysql_stmt_bind_param(data->stmt_insert_into_meta_table, bind)){

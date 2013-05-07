@@ -181,6 +181,7 @@ struct session_data {
    char attachments[SMALLBUFSIZE];
    char internal_sender, internal_recipient, external_recipient;
    int direction;
+   short int customer_id;
    int tls;
    int spam_message;
    int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
@@ -271,6 +272,11 @@ struct __data {
 
    SSL_CTX *ctx;
    SSL *ssl;
+
+#ifdef HAVE_MULTITENANCY
+   struct list *customers;
+#endif
+
 };
 
 

@@ -476,6 +476,8 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
 
    sdata->spam_message = 0;
 
+   sdata->customer_id = 0;
+
    sdata->__acquire = sdata->__parsed = sdata->__av = sdata->__store = sdata->__compress = sdata->__encrypt = 0;
 
 

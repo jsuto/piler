@@ -68,6 +68,8 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg);
 
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
+void load_customers(struct session_data *sdata, struct __data *data, struct __config *cfg);
+unsigned char get_customer_id_by_rcpt_to_email(char *rcpttoemail, struct __data *data);
 
 int create_prepared_statements(struct session_data *sdata, struct __data *data);
 void close_prepared_statements(struct __data *data);

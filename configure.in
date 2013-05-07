@@ -43,6 +43,7 @@ have_zlib="no"
 have_starttls="no"
 have_tcpwrappers="no"
 have_tweak_sent_time="no"
+have_multitenancy="no"
 
 pdftotext="no"
 catdoc="no"
@@ -123,6 +124,11 @@ if test "$want_tcpwrappers" = "yes"; then
       exit 1;
    fi
 fi
+
+
+AC_ARG_ENABLE(multitenancy,
+	[  --enable-multitenancy   build piler with multitenancy support (!!!EXPERIMENTAL!!!)], have_multitenancy=$enableval, have_multitenancy="no")
+
 
 
 AC_ARG_ENABLE(tweak-sent-time,
@@ -344,12 +350,18 @@ if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
    mysql_libs="$mysql_libs -lguide"
 fi
 
+if test "$have_multitenancy" = "yes"; then
+   echo "multitenancy support: yes"
+   defs="$defs -DHAVE_MULTITENANCY"
+   objs="$objs multitenancy.o"
+else
+   echo "multitenancy support: no"
+fi
 
 if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`
    AC_DEFINE_UNQUOTED(HAVE_PDFTOTEXT, "$pdftotext", [path to pdftotext])
 fi
-
 
 if test z`which catdoc 2>/dev/null` != "z"; then
    catdoc=`which catdoc`
