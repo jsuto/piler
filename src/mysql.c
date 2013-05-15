@@ -64,8 +64,8 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
 
 
          switch(data->type[i]) {
-             case TYPE_TINY:
-                                  bind[i].buffer_type = MYSQL_TYPE_TINY;
+             case TYPE_SHORT:
+                                  bind[i].buffer_type = MYSQL_TYPE_SHORT;
                                   bind[i].length = 0;
                                   break;
 
@@ -134,7 +134,7 @@ int p_store_results(struct session_data *sdata, MYSQL_STMT *stmt, struct __data 
       if(data->type[i] > TYPE_UNDEF){
 
          switch(data->type[i]) {
-             case TYPE_TINY:      bind[i].buffer_type = MYSQL_TYPE_TINY;
+             case TYPE_SHORT:     bind[i].buffer_type = MYSQL_TYPE_SHORT;
                                   break;
 
 

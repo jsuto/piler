@@ -58,7 +58,7 @@
 #define MAX_SQL_VARS 20
 
 #define TYPE_UNDEF 0
-#define TYPE_TINY 1
+#define TYPE_SHORT 1
 #define TYPE_LONG 2
 #define TYPE_LONGLONG 3
 #define TYPE_STRING 4
