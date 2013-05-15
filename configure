@@ -697,6 +697,7 @@ enable_clamd
 enable_memcached
 enable_starttls
 enable_tcpwrappers
+enable_multitenancy
 enable_tweak_sent_time
 with_piler_user
 '
@@ -1321,6 +1322,7 @@ Optional Features:
   --enable-memcached      build memcached support
   --enable-starttls       build starttls support
   --enable-tcpwrappers    build tcpwrappers support
+  --enable-multitenancy   build piler with multitenancy support (!!!EXPERIMENTAL!!!)
   --tweak-sent-time       tweak sent time
 
 Optional Packages:
@@ -3440,6 +3442,7 @@ have_zlib="no"
 have_starttls="no"
 have_tcpwrappers="no"
 have_tweak_sent_time="no"
+have_multitenancy="no"
 
 pdftotext="no"
 catdoc="no"
@@ -3636,6 +3639,16 @@ ac_cv_lib_wrap=ac_cv_lib_wrap_main
       exit 1;
    fi
 fi
+
+
+# Check whether --enable-multitenancy was given.
+if test "${enable_multitenancy+set}" = set; then :
+  enableval=$enable_multitenancy; have_multitenancy=$enableval
+else
+  have_multitenancy="no"
+fi
+
+
 
 
 # Check whether --enable-tweak-sent-time was given.
@@ -4545,6 +4558,13 @@ if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
    mysql_libs="$mysql_libs -lguide"
 fi
 
+if test "$have_multitenancy" = "yes"; then
+   echo "multitenancy support: yes"
+   defs="$defs -DHAVE_MULTITENANCY"
+   objs="$objs multitenancy.o"
+else
+   echo "multitenancy support: no"
+fi
 
 if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`
@@ -4554,7 +4574,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
-
 
 if test z`which catdoc 2>/dev/null` != "z"; then
    catdoc=`which catdoc`

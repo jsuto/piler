@@ -22,7 +22,7 @@
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char rctptoemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
+   char rcpttoemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
    char *arule = NULL;
    struct session_data sdata;
    struct _state sstate;
@@ -175,7 +175,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){
                   gettimeofday(&tv1, &tz);
-                  sdata.rav = do_av_check(&sdata, rctptoemail, &virusinfo[0], data, cfg);
+                  sdata.rav = do_av_check(&sdata, rcpttoemail, &virusinfo[0], data, cfg);
                   gettimeofday(&tv2, &tz);
                   sdata.__av = tvdiff(tv2, tv1);
                }
@@ -190,7 +190,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #endif
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata.ttmpfile, i);
 
-                  extractEmail(sdata.rcptto[i], rctptoemail);
+                  extractEmail(sdata.rcptto[i], rcpttoemail);
 
                   /* copy default config to enable policy support */
                   //memcpy(&my_cfg, cfg, sizeof(struct __config));
@@ -238,9 +238,9 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   /* set the accept buffer */
 
-                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rctptoemail);
+                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
 
-                  if(inj == ERR) snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rctptoemail);
+                  if(inj == ERR) snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
 
                   write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
 
@@ -408,7 +408,11 @@ AFTER_PERIOD:
 
                /* check against blackhole addresses */
 
-               extractEmail(buf, rctptoemail);
+               extractEmail(buf, rcpttoemail);
+
+            #ifdef HAVE_MULTITENANCY
+               if(sdata.customer_id == 0) sdata.customer_id = get_customer_id_by_rcpt_to_email(rcpttoemail, data);
+            #endif
 
 
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;

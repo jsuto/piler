@@ -18,6 +18,7 @@ create table if not exists `sph_index` (
   `body` text,
   `size` int default '0',
   `direction` int default 0,
+  `customer` tinyint unsigned default 0,
   `folder` int default 0,
   `attachments` int default 0,
   `attachment_types` text(512) default null,
@@ -38,6 +39,7 @@ create table if not exists `metadata` (
   `size` int default 0,
   `hlen` int default 0,
   `direction` int default 0,
+  `customer` tinyint unsigned default 0,
   `attachments` int default 0,
   `piler_id` char(36) not null,
   `message_id` varchar(128) not null,
@@ -55,6 +57,7 @@ create index metadata_idx4 on metadata(`bodydigest`);
 create index metadata_idx5 on metadata(`deleted`); 
 create index metadata_idx6 on metadata(`arrived`); 
 create index metadata_idx7 on metadata(`retained`); 
+create index metadata_idx8 on metadata(`customer`); 
 
 
 create table if not exists `rcpt` (
@@ -344,4 +347,14 @@ CREATE TABLE IF NOT EXISTS `counter_stats` (
   KEY `domain` (`domain`)
 ) ENGINE=InnoDB;
 
+
+CREATE TABLE IF NOT EXISTS `customer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customername` varchar(255) NOT NULL,
+  `customerdesc` text NOT NULL,
+  `customerpoc` int(11) NOT NULL,
+  `guid` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `guid` (`guid`)
+) ENGINE=InnoDB;
 
