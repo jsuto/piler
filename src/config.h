@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.24-dbfix-branch"
 
-#define BUILD 815
+#define BUILD 816
 
 #define HOSTID "mailarchiver"
 

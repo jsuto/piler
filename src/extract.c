@@ -111,7 +111,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
          snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
 
-         fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+         fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
          if(fd != -1){
             zf = zip_fopen_index(z, i, 0);
             if(zf){
