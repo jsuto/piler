@@ -24,9 +24,9 @@ AC_SUBST(OBJS)
 AC_SUBST(RUNNING_USER)
 AC_SUBST(SUBDIRS)
 AC_SUBST(MAKE)
-AC_SUBST(mysql_includes)
-AC_SUBST(mysql_libs)
-AC_SUBST(mysql_obj)
+AC_SUBST(sql_includes)
+AC_SUBST(sql_libs)
+AC_SUBST(sql_obj)
 AC_SUBST(libclamav_extra_libs)
 AC_SUBST(id_bin)
 AC_SUBST(iv)
@@ -37,6 +37,7 @@ have_clamd="no"
 
 have_antivirus="no"
 have_mysql="no"
+have_psql="no"
 have_tre="no"
 have_zip="no"
 have_zlib="no"
@@ -59,7 +60,7 @@ antispam_libs="-lz -lm -ldl -lcrypto -lssl"
 defs=""
 objs=""
 user_obj=""
-mysql_obj=""
+sql_obj=""
 os=`uname -s`
 
 id_bin="id"
@@ -182,23 +183,57 @@ if test "$have_zlib" = "no"; then
 fi
 
 
-AC_CHECK_PROG(MYSQL_CONFIG, mysql_config, yes)
+AC_ARG_WITH(database,
+[  --with-database[[=mysql|psql]]  use either mysql or psql database for storing data (default: none)],[
+   if test "$withval" != "no" -a "$withval" != "yes"; then
+      DATABASE=$withval
+   fi
 
-if test x$MYSQL_CONFIG = xyes; then
-   have_mysql="yes"
-fi
 
-if test "$have_mysql" = "yes"; then
+   if test "$withval" = "mysql"; then
 
-   mysql_includes=`mysql_config --cflags`
-   mysql_libs=`mysql_config --libs_r`
+      AC_CHECK_PROG(MYSQL_CONFIG, mysql_config, yes)
 
-   AC_CHECK_LIB([guide],[main],[AC_CHECK_LIB(guide, _intel_fast_memset, have_icc_guide=yes, have_icc_guide=no)],[],[])ac_cv_lib_guide=ac_cv_lib_guide_main
+      if test x$MYSQL_CONFIG = xyes; then
+         have_mysql="yes"
+      fi
 
-else
-   echo "MySQL support is not found"
-   exit 1;
-fi
+      if test "$have_mysql" = "yes"; then
+
+         sql_includes=`mysql_config --cflags`
+         sql_libs=`mysql_config --libs_r`
+         sql_obj="mysql.o"
+
+         AC_CHECK_LIB([guide],[main],[AC_CHECK_LIB(guide, _intel_fast_memset, have_icc_guide=yes, have_icc_guide=no)],[],[])ac_cv_lib_guide=ac_cv_lib_guide_main
+
+      else
+         echo "MySQL support is not found"
+         exit 1;
+      fi
+   fi
+
+
+   if test "$withval" = "psql"; then
+
+      AC_CHECK_PROG(PSQL_CONFIG, pg_config, yes)
+
+      if test x$PSQL_CONFIG = xyes; then
+         have_psql="yes"
+      fi
+
+      if test "$have_psql" = "yes"; then
+
+         sql_includes="-I`pg_config --includedir`"
+         sql_libs="-L`pg_config --libdir`"
+         sql_obj="psql.o"
+
+      else
+         echo "PSQL support is not found"
+         exit 1;
+      fi
+   fi
+
+])
 
 
 
@@ -257,6 +292,12 @@ AC_DEFINE_UNQUOTED(VIRUS_TEMPLATE, "$my_prefix/share/clapf/template.virus", [whe
 AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "$my_prefix/share/clapf/zombienets.regex", [where the virus template is])
 
 
+if test "$have_mysql" = "no" && test "$have_psql" = "no"; then
+   echo
+   echo "please specify the used database with --with-database=..."
+   echo
+   exit 1
+fi
 
 
 dnl let us know if we are building on FreeBSD
@@ -301,6 +342,15 @@ else
 fi
 
 echo
+
+if test "$have_mysql" = "yes"; then
+   echo "database: mysql"
+fi
+
+if test "$have_psql" = "yes"; then
+   echo "database: psql"
+fi
+
 
 if test "$have_tre" = "yes"; then
    echo "tre library: yes"
@@ -347,7 +397,7 @@ if test "$have_mysql" = "yes"; then
 fi
 
 if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
-   mysql_libs="$mysql_libs -lguide"
+   sql_libs="$sql_libs -lguide"
 fi
 
 if test "$have_multitenancy" = "yes"; then
@@ -417,7 +467,7 @@ echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
-OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o pop3.o extract.o mydomains.o retr.o mysql.o $objs"
+OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o list.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o pop3.o extract.o mydomains.o retr.o $objs"
 
 AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile test/Makefile contrib/imap/Makefile])
 AC_OUTPUT

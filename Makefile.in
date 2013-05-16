@@ -16,9 +16,9 @@ localstatedir = @localstatedir@
 CC = @CC@
 CFLAGS = @CFLAGS@ @CPPFLAGS@
 DEFS = @defs@
-INCDIR = -I. @INCDIR@ @mysql_includes@
+INCDIR = -I. @INCDIR@ @sql_includes@
 LIBDIR = -L. @LIBDIR@ @LDFLAGS@
-LIBS = @LIBS@ @mysql_libs@
+LIBS = @LIBS@ @sql_libs@
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
