@@ -13,31 +13,42 @@
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg){
    int clen=0, len=0, size=sizeof(data->mydomains);
    char s[SMALLBUFSIZE];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
 
    memset(data->mydomains, 0, size);
+   memset(s, 0, sizeof(s));
 
-   snprintf(s, sizeof(s)-1, "SELECT `domain` FROM `%s`", SQL_DOMAIN_TABLE);
 
-   if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res != NULL){
-         while((row = mysql_fetch_row(res))){
-            snprintf(s, sizeof(s)-1, "%s,", (char*)row[0]);
-            len = strlen(s);
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS) == ERR) return;
 
-            if(clen + len + 1 < size){
-               memcpy(data->mydomains+clen, s, len);
-               clen += len;
-            }
-            else break;
-         }
 
-         mysql_free_result(res);
+   p_bind_init(data);
+
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+
+
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+
+   p_store_results(sdata, data->stmt_generic, data);
+
+   while(p_fetch_results(data->stmt_generic) == OK){
+      len = strlen(s);
+
+      if(clen + len + 1 < size){
+         memcpy(data->mydomains+clen, s, len);
+         clen += len;
       }
+      else break;
 
+      memset(s, 0, sizeof(s));
    }
+
+   p_free_results(data->stmt_generic);
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "mydomains: '%s'", data->mydomains);
 }

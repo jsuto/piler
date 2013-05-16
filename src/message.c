@@ -21,14 +21,11 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    int rc=ERR;
    char *subj;
 
-   MYSQL_BIND bind[15];
-   unsigned long len[15];
-
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_sphinx_table), SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_sphinx_table), SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
 
 
    fix_email_address_for_sphinx(state->b_from);
@@ -37,102 +34,29 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    fix_email_address_for_sphinx(state->b_to_domain);
 
 
-   memset(bind, 0, sizeof(bind));
+   p_bind_init(data);
 
-   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
-   bind[0].buffer = (char *)&id;
-   bind[0].is_null = 0;
-   bind[0].length = 0;
-
-   bind[1].buffer_type = MYSQL_TYPE_STRING;
-   bind[1].buffer = state->b_from;
-   bind[1].is_null = 0;
-   len[1] = strlen(state->b_from); bind[1].length = &len[1];
-
-   bind[2].buffer_type = MYSQL_TYPE_STRING;
-   bind[2].buffer = state->b_to;
-   bind[2].is_null = 0;
-   len[2] = strlen(state->b_to); bind[2].length = &len[2];
-
-   bind[3].buffer_type = MYSQL_TYPE_STRING;
-   bind[3].buffer = state->b_from_domain;
-   bind[3].is_null = 0;
-   len[3] = strlen(state->b_from_domain); bind[3].length = &len[3];
-
-   bind[4].buffer_type = MYSQL_TYPE_STRING;
-   bind[4].buffer = state->b_to_domain;
-   bind[4].is_null = 0;
-   len[4] = strlen(state->b_to_domain); bind[4].length = &len[4];
-
-   bind[5].buffer_type = MYSQL_TYPE_STRING;
-   bind[5].buffer = subj;
-   bind[5].is_null = 0;
-   len[5] = strlen(subj); bind[5].length = &len[5];
-
-   bind[6].buffer_type = MYSQL_TYPE_STRING;
-   bind[6].buffer = state->b_body;
-   bind[6].is_null = 0;
-   len[6] = strlen(state->b_body); bind[6].length = &len[6];
-
-   bind[7].buffer_type = MYSQL_TYPE_LONG;
-   bind[7].buffer = (char *)&sdata->now;
-   bind[7].is_null = 0;
-   bind[7].length = 0;
-
-   bind[8].buffer_type = MYSQL_TYPE_LONG;
-   bind[8].buffer = (char *)&sdata->sent;
-   bind[8].is_null = 0;
-   bind[8].length = 0;
-
-   bind[9].buffer_type = MYSQL_TYPE_LONG;
-   bind[9].buffer = (char *)&sdata->tot_len;
-   bind[9].is_null = 0;
-   bind[9].length = 0;
-
-   bind[10].buffer_type = MYSQL_TYPE_LONG;
-   bind[10].buffer = (char *)&sdata->direction;
-   bind[10].is_null = 0;
-   bind[10].length = 0;
-
-   bind[11].buffer_type = MYSQL_TYPE_LONG;
-   bind[11].buffer = (char *)&data->folder;
-   bind[11].is_null = 0;
-   bind[11].length = 0;
-
-   bind[12].buffer_type = MYSQL_TYPE_LONG;
-   bind[12].buffer = (char *)&state->n_attachments;
-   bind[12].is_null = 0;
-   bind[12].length = 0;
-
-   bind[13].buffer_type = MYSQL_TYPE_STRING;
-   bind[13].buffer = sdata->attachments;
-   bind[13].is_null = 0;
-   len[13] = strlen(sdata->attachments); bind[13].length = &len[13];
-
-
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
+   data->sql[data->pos] = state->b_from; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->b_to; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->b_from_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->b_to_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = subj; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->b_body; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->now; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = sdata->attachments; data->type[data->pos] = TYPE_STRING; data->pos++;
 #ifdef HAVE_MULTITENANCY
-   bind[14].buffer_type = MYSQL_TYPE_SHORT;
-   bind[14].buffer = (char *)&sdata->customer_id;
-   bind[14].is_null = 0;
-   bind[14].length = 0;
+   data->sql[data->pos] = (char *)&sdata->customer_id; data->type[data->pos] = TYPE_SHORT; data->pos++;
 #endif
 
+   if(p_exec_query(sdata, data->stmt_insert_into_sphinx_table, data) == OK) rc = OK;
 
-   if(mysql_stmt_bind_param(data->stmt_insert_into_sphinx_table, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_stmt_error(data->stmt_insert_into_sphinx_table));
-      goto CLOSE;
-   }
-
-
-   if(mysql_stmt_execute(data->stmt_insert_into_sphinx_table)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_SPHINX_TABLE, mysql_error(&(sdata->mysql)));
-      goto CLOSE;
-   }
-
-   rc = OK;
-
-CLOSE:
-   mysql_stmt_close(data->stmt_insert_into_sphinx_table);
+   close_prepared_statement(data->stmt_insert_into_sphinx_table);
 
 
    return rc;
@@ -140,46 +64,25 @@ CLOSE:
 
 
 uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, char *message_id, struct __config *cfg){
-   unsigned long len=0;
    uint64 id=0;
-   MYSQL_BIND bind[1];
-
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = message_id;
-   bind[0].is_null = 0;
-   len = strlen(message_id); bind[0].length = &len;
-
-   if(mysql_stmt_bind_param(data->stmt_get_meta_id_by_message_id, bind)){
-      goto CLOSE;
-   }
-
-   if(mysql_stmt_execute(data->stmt_get_meta_id_by_message_id)){
-      goto CLOSE;
-   }
-
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
-   bind[0].buffer = (char *)&id;
-   bind[0].is_null = 0;
-   bind[0].length = 0;
 
 
-   if(mysql_stmt_bind_result(data->stmt_get_meta_id_by_message_id, bind)){
-      goto CLOSE;
-   }
+   p_bind_init(data);
+   data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
+
+   if(p_exec_query(sdata, data->stmt_get_meta_id_by_message_id, data) == ERR) goto CLOSE;
 
 
-   if(mysql_stmt_store_result(data->stmt_get_meta_id_by_message_id)){
-      goto CLOSE;
-   }
+   p_bind_init(data);
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-   mysql_stmt_fetch(data->stmt_get_meta_id_by_message_id);
+   p_store_results(sdata, data->stmt_get_meta_id_by_message_id, data);
+
+   p_fetch_results(data->stmt_get_meta_id_by_message_id);
+
+   p_free_results(data->stmt_get_meta_id_by_message_id);
 
 CLOSE:
-
    return id;
 }
 
@@ -187,10 +90,6 @@ CLOSE:
 int store_recipients(struct session_data *sdata, struct __data *data, char *to, uint64 id, int log_errors, struct __config *cfg){
    int ret=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
-
-   MYSQL_BIND bind[3];
-   unsigned long len[3];
-
 
    p = to;
    do {
@@ -201,32 +100,14 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
       if(q && strlen(q) > 3 && does_it_seem_like_an_email_address(puf) == 1){
          q++;
 
-         memset(bind, 0, sizeof(bind));
+         p_bind_init(data);
 
-         bind[0].buffer_type = MYSQL_TYPE_LONGLONG;
-         bind[0].buffer = (char *)&id;
-         bind[0].is_null = 0;
-         bind[0].length = 0;
-
-         bind[1].buffer_type = MYSQL_TYPE_STRING;
-         bind[1].buffer = &puf[0];
-         bind[1].is_null = 0;
-         len[1] = strlen(puf); bind[1].length = &len[1];
-
-         bind[2].buffer_type = MYSQL_TYPE_STRING;
-         bind[2].buffer = q;
-         bind[2].is_null = 0;
-         len[2] = strlen(q); bind[2].length = &len[2];
-
-         if(mysql_stmt_bind_param(data->stmt_insert_into_rcpt_table, bind)){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_stmt_error(data->stmt_insert_into_rcpt_table));
-            ret = ERR;
-            goto CLOSE;
-         }
+         data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
+         data->sql[data->pos] = &puf[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = q; data->type[data->pos] = TYPE_STRING; data->pos++;
 
 
-         if(mysql_stmt_execute(data->stmt_insert_into_rcpt_table) && log_errors == 1){
-            syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
+         if(p_exec_query(sdata, data->stmt_insert_into_rcpt_table, data) == ERR){
             ret = ERR;
          }
          else n++;
@@ -235,7 +116,6 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
    } while(p);
 
 
-CLOSE:
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
 
    return ret;
@@ -243,33 +123,18 @@ CLOSE:
 
 
 int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
-   int rc, ret = ERR;
-   MYSQL_BIND bind[2];
-   unsigned long len[2];
+   int ret = ERR;
 
-   memset(bind, 0, sizeof(bind));
 
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = ref;
-   bind[0].is_null = 0;
-   len[0] = strlen(ref); bind[0].length = &len[0];
+   p_bind_init(data);
 
-   bind[1].buffer_type = MYSQL_TYPE_STRING;
-   bind[1].buffer = state->reference;
-   bind[1].is_null = 0;
-   len[1] = strlen(state->reference); bind[1].length = &len[1];
+   data->sql[data->pos] = ref; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->reference; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-   if(mysql_stmt_bind_param(data->stmt_update_metadata_reference, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_update_metadata_reference));
-      goto CLOSE;
-   }
+   if(p_exec_query(sdata, data->stmt_update_metadata_reference, data) == OK) ret = OK;
 
-   rc = mysql_stmt_execute(data->stmt_update_metadata_reference);
-   if(rc == 0) ret = OK;
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->reference, ret);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->reference, rc);
-
-CLOSE:
    return ret;
 }
 
@@ -277,11 +142,7 @@ CLOSE:
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int rc, ret=ERR;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
-
-   MYSQL_BIND bind[18];
-   unsigned long len[18];
-
-   my_ulonglong id=0;
+   uint64 id=0;
 
 
    subj = state->b_subject;
@@ -298,7 +159,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    }
 
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
 
    memset(s2, 0, sizeof(s2));
 
@@ -317,115 +178,35 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
       snprintf(state->b_to, SMALLBUFSIZE-1, "undisclosed-recipients@no.domain");
    }
 
-   memset(bind, 0, sizeof(bind));
 
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = &s2[0];
-   bind[0].is_null = 0;
-   len[0] = strlen(s2); bind[0].length = &len[0];
+   p_bind_init(data);
 
-   bind[1].buffer_type = MYSQL_TYPE_STRING;
-   bind[1].buffer = state->b_from_domain;
-   bind[1].is_null = 0;
-   len[1] = strlen(state->b_from_domain); bind[1].length = &len[1];
-
-   bind[2].buffer_type = MYSQL_TYPE_STRING;
-   bind[2].buffer = subj;
-   bind[2].is_null = 0;
-   len[2] = strlen(subj); bind[2].length = &len[2];
-
-   bind[3].buffer_type = MYSQL_TYPE_LONG;
-   bind[3].buffer = (char *)&sdata->spam_message;
-   bind[3].is_null = 0;
-   bind[3].length = 0;
-
-   bind[4].buffer_type = MYSQL_TYPE_LONG;
-   bind[4].buffer = (char *)&sdata->now;
-   bind[4].is_null = 0;
-   bind[4].length = 0;
-
-   bind[5].buffer_type = MYSQL_TYPE_LONG;
-   bind[5].buffer = (char *)&sdata->sent;
-   bind[5].is_null = 0;
-   bind[5].length = 0;
-
-   bind[6].buffer_type = MYSQL_TYPE_LONG;
-   bind[6].buffer = (char *)&sdata->retained;
-   bind[6].is_null = 0;
-   bind[6].length = 0;
-
-   bind[7].buffer_type = MYSQL_TYPE_LONG;
-   bind[7].buffer = (char *)&sdata->tot_len;
-   bind[7].is_null = 0;
-   bind[7].length = 0;
-
-   bind[8].buffer_type = MYSQL_TYPE_LONG;
-   bind[8].buffer = (char *)&sdata->hdr_len;
-   bind[8].is_null = 0;
-   bind[8].length = 0;
-
-   bind[9].buffer_type = MYSQL_TYPE_LONG;
-   bind[9].buffer = (char *)&sdata->direction;
-   bind[9].is_null = 0;
-   bind[9].length = 0;
-
-   bind[10].buffer_type = MYSQL_TYPE_LONG;
-   bind[10].buffer = (char *)&state->n_attachments;
-   bind[10].is_null = 0;
-   bind[10].length = 0;
-
-   bind[11].buffer_type = MYSQL_TYPE_STRING;
-   bind[11].buffer = sdata->ttmpfile;
-   bind[11].is_null = 0;
-   len[11] = strlen(sdata->ttmpfile); bind[11].length = &len[11];
-
-   bind[12].buffer_type = MYSQL_TYPE_STRING;
-   bind[12].buffer = state->message_id;
-   bind[12].is_null = 0;
-   len[12] = strlen(state->message_id); bind[12].length = &len[12];
-
-   bind[13].buffer_type = MYSQL_TYPE_STRING;
-   bind[13].buffer = &ref[0];
-   bind[13].is_null = 0;
-   len[13] = strlen(ref); bind[13].length = &len[13];
-
-   bind[14].buffer_type = MYSQL_TYPE_STRING;
-   bind[14].buffer = sdata->digest;
-   bind[14].is_null = 0;
-   len[14] = strlen(sdata->digest); bind[14].length = &len[14];
-
-   bind[15].buffer_type = MYSQL_TYPE_STRING;
-   bind[15].buffer = sdata->bodydigest;
-   bind[15].is_null = 0;
-   len[15] = strlen(sdata->bodydigest); bind[15].length = &len[15];
-
-   bind[16].buffer_type = MYSQL_TYPE_STRING;
-   bind[16].buffer = &vcode[0];
-   bind[16].is_null = 0;
-   len[16] = strlen(vcode); bind[16].length = &len[16];
-
+   data->sql[data->pos] = &s2[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->b_from_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = subj; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->spam_message; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->now; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->retained; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->hdr_len; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = &ref[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = sdata->digest; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = sdata->bodydigest; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = &vcode[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
 #ifdef HAVE_MULTITENANCY
-   bind[17].buffer_type = MYSQL_TYPE_SHORT;
-   bind[17].buffer = (char *)&sdata->customer_id;
-   bind[17].is_null = 0;
-   bind[17].length = 0;
+   data->sql[data->pos] = (char *)&sdata->customer_id; data->type[data->pos] = TYPE_SHORT; data->pos++;
 #endif
 
-
-   if(mysql_stmt_bind_param(data->stmt_insert_into_meta_table, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_stmt_error(data->stmt_insert_into_meta_table));
-      goto CLOSE;
-   }
-
-
-   rc = mysql_stmt_execute(data->stmt_insert_into_meta_table);
-
-   if(rc){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute() error: *%s*", sdata->ttmpfile, SQL_METADATA_TABLE, mysql_error(&(sdata->mysql)));
+   if(p_exec_query(sdata, data->stmt_insert_into_meta_table, data) == ERR){
       ret = ERR_EXISTS;
    }
    else {
-      id = mysql_stmt_insert_id(data->stmt_insert_into_meta_table);
+      id = p_get_insert_id(data->stmt_insert_into_meta_table);
 
       rc = store_recipients(sdata, data, state->b_to, id, 1, cfg);
 
@@ -442,8 +223,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
       }
    }
 
-CLOSE:
-   mysql_stmt_close(data->stmt_insert_into_meta_table);
+   close_prepared_statement(data->stmt_insert_into_meta_table);
 
    return ret;
 }

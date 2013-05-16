@@ -333,8 +333,8 @@ void initialise_configuration(){
       return;
    }
 
-   load_rules(&sdata, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -392,7 +392,6 @@ int main(int argc, char **argv){
 #ifdef HAVE_MULTITENANCY
    data.customers = NULL;
 #endif
-
    data.ctx = NULL;
    data.ssl = NULL;
 

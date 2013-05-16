@@ -10,24 +10,64 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct rule **rules, char *table){
+void load_rules(struct session_data *sdata, struct __data *data, struct rule **rules, char *table){
    char s[SMALLBUFSIZE];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
+   char from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
+   int size=0, attachment_size=0, spam=0, days=0;
+
+   memset(from, 0, sizeof(from));
+   memset(to, 0, sizeof(to));
+   memset(subject, 0, sizeof(subject));
+   memset(_size, 0, sizeof(_size));
+   memset(attachment_type, 0, sizeof(attachment_type));
+   memset(_attachment_size, 0, sizeof(_attachment_size));
+
 
    snprintf(s, sizeof(s)-1, "SELECT `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
 
-   if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res != NULL){
-         while((row = mysql_fetch_row(res))){
-            append_rule(rules, (char*)row[0], (char*)row[1], (char*)row[2], (char*)row[3], atoi(row[4]), (char*)row[5], (char*)row[6], atoi(row[7]), atoi(row[8]), atoi(row[9]));
-         }
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
 
-         mysql_free_result(res);
-      }
 
+   p_bind_init(data);
+
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+
+
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = &from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(from)-2; data->pos++;
+   data->sql[data->pos] = &to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(to)-2; data->pos++;
+   data->sql[data->pos] = &subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(subject)-2; data->pos++;
+   data->sql[data->pos] = &_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_size)-2; data->pos++;
+   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(size); data->pos++;
+   data->sql[data->pos] = &attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(attachment_type)-2; data->pos++;
+   data->sql[data->pos] = &_attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_attachment_size)-2; data->pos++;
+   data->sql[data->pos] = (char *)&attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(attachment_size); data->pos++;
+   data->sql[data->pos] = (char *)&spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(spam); data->pos++;
+   data->sql[data->pos] = (char *)&days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(days); data->pos++;
+
+
+
+   p_store_results(sdata, data->stmt_generic, data);
+
+   while(p_fetch_results(data->stmt_generic) == OK){
+      append_rule(rules, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+
+      memset(from, 0, sizeof(from));
+      memset(to, 0, sizeof(to));
+      memset(subject, 0, sizeof(subject));
+      memset(_size, 0, sizeof(_size));
+      memset(attachment_type, 0, sizeof(attachment_type));
+      memset(_attachment_size, 0, sizeof(_attachment_size));
+
+      size=0, attachment_size=0, spam=0, days=0;
    }
+
+   p_free_results(data->stmt_generic);
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
 
 }
 

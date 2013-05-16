@@ -1,5 +1,4 @@
 
-drop table if exists `sph_counter`;
 create table if not exists `sph_counter` (
   `counter_id` int not null,
   `max_doc_id` int not null,
@@ -7,7 +6,6 @@ create table if not exists `sph_counter` (
 );
 
 
-drop table if exists `sph_index`;
 create table if not exists `sph_index` (
   `id` bigint not null,
   `from` char(255) default null,
@@ -28,7 +26,6 @@ create table if not exists `sph_index` (
 ) Engine=InnoDB;
 
 
-drop table if exists `metadata`;
 create table if not exists `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` varchar(128) not null,
@@ -63,7 +60,6 @@ create index metadata_idx7 on metadata(`retained`);
 create index metadata_idx8 on metadata(`customer`); 
 
 
-drop table if exists `rcpt`;
 create table if not exists `rcpt` (
    `id` bigint unsigned not null,
    `to` varchar(128) not null,
@@ -79,7 +75,6 @@ drop view if exists `v_messages`;
 create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`arrived` AS `arrived`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 
-drop table if exists `attachment`;
 create table if not exists `attachment` (
    `id` bigint unsigned not null auto_increment,
    `piler_id` char(36) not null,
@@ -101,7 +96,6 @@ drop view if exists `v_attachment`;
 create view `v_attachment` AS select `id` as `i`, `piler_id`, `attachment_id`, `ptr`, (select count(*) from `attachment` where `ptr`=`i`) as `refcount` from `attachment`;
 
 
-drop table if exists `tag`;
 create table if not exists `tag` (
    `_id` bigint unsigned auto_increment not null,
    `id` bigint not null,
@@ -112,7 +106,6 @@ create table if not exists `tag` (
 ) ENGINE=InnoDB;
 
 
-drop table if exists `archiving_rule`;
 create table if not exists `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
    `from` char(128) default null,
@@ -130,7 +123,6 @@ create table if not exists `archiving_rule` (
 ) ENGINE=InnoDB;
 
 
-drop table if exists `retention_rule`;
 create table if not exists `retention_rule` (
    `id` bigint unsigned not null auto_increment,
    `from` char(128) default null,
@@ -148,7 +140,6 @@ create table if not exists `retention_rule` (
 ) ENGINE=InnoDB;
 
 
-drop table if exists `counter`;
 create table if not exists `counter` (
    `rcvd` bigint unsigned default 0,
    `virus` bigint unsigned default 0,
@@ -160,7 +151,6 @@ create table if not exists `counter` (
 insert into `counter` values(0, 0, 0, 0, 0);
 
 
-drop table if exists `option`;
 create table if not exists `option` (
    `key` char(64) not null,
    `value` char(32) not null
@@ -169,7 +159,6 @@ create table if not exists `option` (
 insert into `option` (`key`, `value`) values('enable_purge', '1');
 
 
-drop table if exists `search`;
 create table if not exists `search` (
    `email` char(128) not null,
    `ts` int default 0,
@@ -179,7 +168,6 @@ create table if not exists `search` (
 create index `search_idx` on `search`(`email`);
 
 
-drop table if exists `user_settings`;
 create table if not exists `user_settings` (
    `username` char(64) not null unique,
    `pagelen` int default 20,
@@ -190,7 +178,6 @@ create table if not exists `user_settings` (
 create index `user_settings_idx` on `user_settings`(`username`);
 
 
-drop table if exists `user`;
 create table if not exists `user` (
    `uid` int unsigned not null primary key,
    `username` char(64) not null unique,
@@ -204,7 +191,6 @@ create table if not exists `user` (
 
 insert into `user` (`uid`, `username`, `realname`, `samaccountname`, `password`, `isadmin`, `domain`) values (0, 'admin', 'built-in piler admin', '', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 1, 'local');
 
-drop table if exists `email`;
 create table if not exists `email` (
    `uid` int unsigned not null,
    `email` char(128) not null primary key
@@ -302,7 +288,6 @@ create table if not exists `remote` (
 ) ENGINE=InnoDB;
 
 
-drop table if exists `domain`;
 create table if not exists `domain` (
    `domain` char(64) not null primary key,
    `mapped` char(64) not null
@@ -311,7 +296,6 @@ create table if not exists `domain` (
 insert into `domain` (`domain`, `mapped`) values('local', 'local');
 
 
-drop table if exists `audit`;
 create table if not exists `audit` (
    `id` bigint unsigned not null auto_increment,
    `ts` int not null,
@@ -331,7 +315,6 @@ create index `audit_idx4` on `audit`(`ts`);
 
 
 
-drop table if exists `google`;
 create table if not exists `google` (
    `id` bigint unsigned not null primary key,
    `email` char(128) not null unique,
@@ -341,7 +324,6 @@ create table if not exists `google` (
 ) ENGINE=InnoDB;
 
 
-drop table if exists `google_imap`;
 create table if not exists `google_imap` (
    `id` bigint unsigned not null,
    `email` char(128) not null,

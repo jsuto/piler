@@ -86,14 +86,12 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    if(rule){
       printf("discarding %s by archiving policy: %s\n", filename, rule);
       rc = OK;
-      goto ENDE;
+   }
+   else {
+      make_digests(sdata, cfg);
+      rc = process_message(sdata, &state, data, cfg);
    }
 
-   make_digests(sdata, cfg);
-
-   rc = process_message(sdata, &state, data, cfg);
-
-ENDE:
    unlink(sdata->tmpframe);
 
    if(strcmp(filename, "-") == 0) unlink(sdata->ttmpfile);
@@ -102,7 +100,6 @@ ENDE:
    switch(rc) {
       case OK:
                         bzero(&counters, sizeof(counters));
-                        counters.c_rcvd = 1; 
                         counters.c_size += sdata->tot_len;
                         update_counters(sdata, data, &counters, cfg);
 
@@ -110,11 +107,6 @@ ENDE:
 
       case ERR_EXISTS:
                         rc = OK;
-
-                        bzero(&counters, sizeof(counters));
-                        counters.c_duplicate = 1;
-                        update_counters(sdata, data, &counters, cfg);
-
                         printf("duplicate: %s (id: %s)\n", filename, sdata->ttmpfile);
                         break;
 
@@ -129,54 +121,23 @@ ENDE:
 
 unsigned long get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    unsigned long id=0;
-   MYSQL_BIND bind[2];
-   unsigned long len[2];
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) goto ENDE;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) return id;
 
-   memset(bind, 0, sizeof(bind));
+   p_bind_init(data);
+   data->sql[data->pos] = foldername; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = (char *)&parent_id; data->type[data->pos] = TYPE_LONG; data->pos++;
 
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = foldername;
-   bind[0].is_null = 0;
-   len[0] = strlen(foldername); bind[0].length = &len[0];
+   if(p_exec_query(sdata, data->stmt_get_folder_id, data) == OK){
 
-   bind[1].buffer_type = MYSQL_TYPE_LONG;
-   bind[1].buffer = (char *)&parent_id;
-   bind[1].is_null = 0;
-   bind[1].length = 0;
+      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
 
-   if(mysql_stmt_bind_param(data->stmt_get_folder_id, bind)){
-      goto CLOSE;
+      p_store_results(sdata, data->stmt_get_folder_id, data);
+      p_fetch_results(data->stmt_get_folder_id);
+      p_free_results(data->stmt_get_folder_id);
    }
 
-
-   if(mysql_stmt_execute(data->stmt_get_folder_id)){
-      goto CLOSE;
-   }
-
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_LONG;
-   bind[0].buffer = (char *)&id;
-   bind[0].is_null = 0;
-   bind[0].length = 0;
-
-   if(mysql_stmt_bind_result(data->stmt_get_folder_id, bind)){
-      goto CLOSE;
-   }
-
-
-   if(mysql_stmt_store_result(data->stmt_get_folder_id)){
-      goto CLOSE;
-   }
-
-   mysql_stmt_fetch(data->stmt_get_folder_id);
-
-CLOSE:
-   mysql_stmt_close(data->stmt_get_folder_id);
-
-ENDE:
+   close_prepared_statement(data->stmt_get_folder_id);
 
    return id;
 }
@@ -184,41 +145,18 @@ ENDE:
 
 unsigned long add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    unsigned long id=0;
-   MYSQL_BIND bind[2];
-   unsigned long len[2];
 
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) return id;
 
-   if(prepare_a_mysql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) goto ENDE;
+   p_bind_init(data);
+   data->sql[data->pos] = foldername; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = (char *)&parent_id; data->type[data->pos] = TYPE_LONG; data->pos++;
 
-   memset(bind, 0, sizeof(bind));
-
-   bind[0].buffer_type = MYSQL_TYPE_STRING;
-   bind[0].buffer = foldername;
-   bind[0].is_null = 0;
-   len[0] = strlen(foldername); bind[0].length = &len[0];
-
-   bind[1].buffer_type = MYSQL_TYPE_LONG;
-   bind[1].buffer = (char *)&parent_id;
-   bind[1].is_null = 0;
-   bind[1].length = 0;
-
-   if(mysql_stmt_bind_param(data->stmt_insert_into_folder_table, bind)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_bind_param() error: %s", sdata->ttmpfile, SQL_FOLDER_TABLE, mysql_stmt_error(data->stmt_insert_into_folder_table));
-      goto CLOSE;
+   if(p_exec_query(sdata, data->stmt_insert_into_folder_table, data) == OK){
+      id = p_get_insert_id(data->stmt_insert_into_folder_table);
    }
 
-   if(mysql_stmt_execute(data->stmt_insert_into_folder_table)){
-      syslog(LOG_PRIORITY, "%s: %s.mysql_stmt_execute error: *%s*", sdata->ttmpfile, SQL_RECIPIENT_TABLE, mysql_error(&(sdata->mysql)));
-      goto CLOSE;
-   }
-
-
-   id = mysql_stmt_insert_id(data->stmt_insert_into_folder_table);
-
-CLOSE:
-   mysql_stmt_close(data->stmt_insert_into_folder_table);
-
-ENDE:
+   close_prepared_statement(data->stmt_get_folder_id);
 
    return id;
 }

@@ -29,22 +29,28 @@ int dryrun = 0;
 #define SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE "DELETE FROM `" SQL_ATTACHMENT_TABLE "` WHERE `id` IN ("
 
 
-int is_purge_allowed(struct session_data *sdata, struct __config *cfg){
+int is_purge_allowed(struct session_data *sdata, struct __data *data, struct __config *cfg){
    int rc=0;
-   MYSQL_RES *res;
-   MYSQL_ROW row;
 
-   if(mysql_real_query(&(sdata->mysql), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE, strlen(SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         row = mysql_fetch_row(res);
-         if(row[0]){
-            rc = atoi(row[0]);
-         }
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE) == ERR) return rc;
 
-         mysql_free_result(res);
-      }
-   }
+
+   p_bind_init(data);
+
+   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+
+
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = (char *)&rc; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+
+   p_store_results(sdata, data->stmt_generic, data);
+   p_fetch_results(data->stmt_generic);
+   p_free_results(data->stmt_generic);
+
+ENDE:
+   close_prepared_statement(data->stmt_generic);
 
    return rc;
 }
@@ -83,7 +89,7 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
    if(dryrun == 1){
       printf("running sql query: *%s*\n\n", update_meta_sql);
    } else {
-      mysql_real_query(&(sdata->mysql), update_meta_sql, strlen(update_meta_sql));
+      p_query(sdata, update_meta_sql);
    }
 
 
@@ -91,12 +97,11 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
 }
 
 
-int remove_attachments(char *in, struct session_data *sdata, struct __config *cfg){
+int remove_attachments(char *in, struct session_data *sdata, struct __data *data, struct __config *cfg){
    char filename[SMALLBUFSIZE];
    char *a, buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE], delete_attachment_stmt[BIGBUFSIZE];
-   int n=0, len;
-   MYSQL_RES *res;
-   MYSQL_ROW row;
+   char piler_id[SMALLBUFSIZE], i[BUFLEN];
+   int n=0, len, attachment_id;
    struct stat st;
 
 
@@ -113,6 +118,8 @@ int remove_attachments(char *in, struct session_data *sdata, struct __config *cf
    in[strlen(in)-1] = '\0';
    snprintf(a, len-1, "%s%s", SQL_STMT_SELECT_NON_REFERENCED_ATTACHMENTS, in);
 
+   if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a) == ERR){ free(a); return n; }
+
    if(dryrun == 1) printf("running sql query: *%s*\n\n", a);
 
 
@@ -123,70 +130,75 @@ int remove_attachments(char *in, struct session_data *sdata, struct __config *cf
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
    snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
 
-   if(mysql_real_query(&(sdata->mysql), a, strlen(a)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         while((row = mysql_fetch_row(res))){
-            if(!row[0]) continue;
 
-            snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, row[0][8], row[0][9], row[0][10], row[0][RND_STR_LEN-4], row[0][RND_STR_LEN-3], row[0][RND_STR_LEN-2], row[0][RND_STR_LEN-1], row[0], atoi(row[1]));
-            if(stat(filename, &st)){
-               snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, row[0][RND_STR_LEN-6], row[0][RND_STR_LEN-5], row[0][RND_STR_LEN-4], row[0][RND_STR_LEN-3], row[0][RND_STR_LEN-2], row[0][RND_STR_LEN-1], row[0], atoi(row[1]));
+   p_bind_init(data);
+   if(p_exec_query(sdata, data->stmt_select_non_referenced_attachments, data) == ERR) goto ENDE;
+
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = &piler_id[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(piler_id)-2; data->pos++;
+   data->sql[data->pos] = (char *)&attachment_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = &i[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(i)-2; data->pos++;
+
+   p_store_results(sdata, data->stmt_select_non_referenced_attachments, data);
+
+   while(p_fetch_results(data->stmt_select_non_referenced_attachments) == OK){
+
+      snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, piler_id[8], piler_id[9], piler_id[10], piler_id[RND_STR_LEN-4], piler_id[RND_STR_LEN-3], piler_id[RND_STR_LEN-2], piler_id[RND_STR_LEN-1], piler_id, attachment_id);
+      if(stat(filename, &st)){
+         snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, piler_id[RND_STR_LEN-6], piler_id[RND_STR_LEN-5], piler_id[RND_STR_LEN-4], piler_id[RND_STR_LEN-3], piler_id[RND_STR_LEN-2], piler_id[RND_STR_LEN-1], piler_id, attachment_id);
+      }
+
+      if(dryrun == 1){
+         printf("removing attachment: *%s*\n", filename);
+      } else {
+         unlink(filename);
+      }
+
+
+      if(strlen(i) > 0){
+         memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], i, strlen(i));
+         memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], ",", 1);
+      }
+
+      if(attachment_id == 1){
+
+         memcpy(&update_meta_sql[strlen(update_meta_sql)], piler_id, strlen(piler_id));
+         memcpy(&update_meta_sql[strlen(update_meta_sql)], "','", 3);
+
+         if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
+            if(strlen(update_meta_sql) > 10){
+               update_meta_sql[strlen(update_meta_sql)-2] = ')';
+               update_meta_sql[strlen(update_meta_sql)-1] = '\0';
             }
 
-            if(dryrun == 1){
-               printf("removing attachment: *%s*\n", filename);
-            } else {
-               unlink(filename);
-            }
+            n += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
 
-
-            if(row[2]){
-               memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], row[2], strlen(row[2]));
-               memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], ",", 1);
-            }
-
-            if(atoi(row[1]) == 1){
-
-               memcpy(&update_meta_sql[strlen(update_meta_sql)], row[0], strlen(row[0]));
-               memcpy(&update_meta_sql[strlen(update_meta_sql)], "','", 3);
-
-               if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
-                  if(strlen(update_meta_sql) > 10){
-                     update_meta_sql[strlen(update_meta_sql)-2] = ')';
-                     update_meta_sql[strlen(update_meta_sql)-1] = '\0';
-                  }
-
-                  n += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
-
-                  if(strlen(delete_attachment_stmt) > strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE)){
-                     delete_attachment_stmt[strlen(delete_attachment_stmt)-1] = ')';
-                     if(dryrun == 1){
-                        printf("delete sql: *%s*\n", delete_attachment_stmt);
-                     } else {
-                        mysql_real_query(&(sdata->mysql), delete_attachment_stmt, strlen(delete_attachment_stmt));
-                     }
-                  }
-
-                  memset(buf, 0, sizeof(buf));
-                  memset(update_meta_sql, 0, sizeof(update_meta_sql));
-                  memset(delete_attachment_stmt, 0, sizeof(delete_attachment_stmt));
-
-                  snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
-                  snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+            if(strlen(delete_attachment_stmt) > strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE)){
+               delete_attachment_stmt[strlen(delete_attachment_stmt)-1] = ')';
+               if(dryrun == 1){
+                  printf("delete sql: *%s*\n", delete_attachment_stmt);
+               } else {
+                  p_query(sdata, delete_attachment_stmt);
                }
-
-               memcpy(&buf[strlen(buf)], row[0], strlen(row[0]));
-               memcpy(&buf[strlen(buf)], " ", 1);
-
             }
+
+            memset(buf, 0, sizeof(buf));
+            memset(update_meta_sql, 0, sizeof(update_meta_sql));
+            memset(delete_attachment_stmt, 0, sizeof(delete_attachment_stmt));
+
+            snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
+            snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
          }
 
-         mysql_free_result(res);
+         memcpy(&buf[strlen(buf)], piler_id, strlen(piler_id));
+         memcpy(&buf[strlen(buf)], " ", 1);
       }
+
    }
 
-   free(a);
+   p_free_results(data->stmt_select_non_referenced_attachments);
 
 
    if(strlen(buf) > 5 && strlen(update_meta_sql) > strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+10){
@@ -201,21 +213,23 @@ int remove_attachments(char *in, struct session_data *sdata, struct __config *cf
       if(dryrun == 1){
          printf("delete sql: *%s*\n", delete_attachment_stmt);
       } else {
-         mysql_real_query(&(sdata->mysql), delete_attachment_stmt, strlen(delete_attachment_stmt));
+         p_query(sdata, delete_attachment_stmt);
       }
 
    }
 
+ENDE:
+   free(a);
+
+   close_prepared_statement(data->stmt_select_non_referenced_attachments);
 
    return n;
 }
 
 
-int purge_messages_without_attachment(struct session_data *sdata, struct __config *cfg){
+int purge_messages_without_attachment(struct session_data *sdata, struct __data *data, struct __config *cfg){
    int purged=0;
-   char s[SMALLBUFSIZE], buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
+   char id[BUFLEN], s[SMALLBUFSIZE], buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE];
 
    memset(buf, 0, sizeof(buf));
    memset(update_meta_sql, 0, sizeof(update_meta_sql));
@@ -226,50 +240,56 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __confi
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
-   if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         while((row = mysql_fetch_row(res))){
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
 
-            if((char *)row[0] && (char *)row[1]){
+   p_bind_init(data);
 
-               memcpy(&update_meta_sql[strlen(update_meta_sql)], row[0], strlen(row[0]));
-               memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
+   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == ERR) goto ENDE;
 
-               if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
 
-                  purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
+   p_bind_init(data);
 
-                  memset(buf, 0, sizeof(buf));
-                  memset(update_meta_sql, 0, sizeof(update_meta_sql));
+   data->sql[data->pos] = &id[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(id)-2; data->pos++;
+   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
 
-                  snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
-               }
+   p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
-               memcpy(&buf[strlen(buf)], row[1], strlen(row[1]));
-               memcpy(&buf[strlen(buf)], " ", 1);
+   while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
 
-            }
+      memcpy(&update_meta_sql[strlen(update_meta_sql)], id, strlen(id));
+      memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
 
-         }
+      if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
 
-         mysql_free_result(res);
+         purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
+
+         memset(buf, 0, sizeof(buf));
+         memset(update_meta_sql, 0, sizeof(update_meta_sql));
+
+         snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
       }
+
+      memcpy(&buf[strlen(buf)], s, strlen(s));
+      memcpy(&buf[strlen(buf)], " ", 1);
+
    }
+
+   p_free_results(data->stmt_select_from_meta_table);
 
    if(strlen(buf) > 5 && strlen(update_meta_sql) > strlen(SQL_STMT_DELETE_FROM_META_TABLE)+5){
       purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
    }
 
+ENDE:
+   close_prepared_statement(data->stmt_select_from_meta_table);
+
    return purged;
 }
 
 
-int purge_messages_with_attachments(struct session_data *sdata, struct __config *cfg){
+int purge_messages_with_attachments(struct session_data *sdata, struct __data *data, struct __config *cfg){
    int purged=0;
    char s[SMALLBUFSIZE], idlist[BIGBUFSIZE];
-   MYSQL_RES *res;
-   MYSQL_ROW row;
 
    memset(idlist, 0, sizeof(idlist));
 
@@ -277,28 +297,37 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __config 
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
-   if(mysql_real_query(&(sdata->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata->mysql));
-      if(res){
-         while((row = mysql_fetch_row(res))){
-            if((char *)row[0]){
-               memcpy(&idlist[strlen(idlist)], row[0], strlen(row[0]));
-               memcpy(&idlist[strlen(idlist)], "','", 3);
-            }
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
 
-            if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
-               purged += remove_attachments(idlist, sdata, cfg);
-               memset(idlist, 0, sizeof(idlist));
-            }
-         }
+   p_bind_init(data);
+   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == ERR) goto ENDE;
 
-         mysql_free_result(res);
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+
+   p_store_results(sdata, data->stmt_select_from_meta_table, data);
+
+   while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
+      memcpy(&idlist[strlen(idlist)], s, strlen(s));
+      memcpy(&idlist[strlen(idlist)], "','", 3);
+
+      if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
+         purged += remove_attachments(idlist, sdata, data, cfg);
+         memset(idlist, 0, sizeof(idlist));
       }
    }
 
+   p_free_results(data->stmt_select_from_meta_table);
+
+
    if(strlen(idlist) > 5){
-      purged += remove_attachments(idlist, sdata, cfg);
+      purged += remove_attachments(idlist, sdata, data, cfg);
    }
+
+ENDE:
+   close_prepared_statement(data->stmt_select_from_meta_table);
 
    return purged;
 }
@@ -308,6 +337,7 @@ int main(int argc, char **argv){
    int i, purged=0;
    char *configfile=CONFIG_FILE;
    struct session_data sdata;
+   struct __data data;
    struct __config cfg;
 
 
@@ -343,10 +373,10 @@ int main(int argc, char **argv){
 
    init_session_data(&sdata, &cfg);
 
-   i = is_purge_allowed(&sdata, &cfg);
+   i = is_purge_allowed(&sdata, &data, &cfg);
    if(i == 1){
-      purged += purge_messages_without_attachment(&sdata, &cfg);
-      purged += purge_messages_with_attachments(&sdata, &cfg);
+      purged += purge_messages_without_attachment(&sdata, &data, &cfg);
+      purged += purge_messages_with_attachments(&sdata, &data, &cfg);
 
       printf("purged: %d\n", purged);
    }

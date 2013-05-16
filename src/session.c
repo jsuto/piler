@@ -414,6 +414,7 @@ AFTER_PERIOD:
                if(sdata.customer_id == 0) sdata.customer_id = get_customer_id_by_rcpt_to_email(rcpttoemail, data);
             #endif
 
+
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;
 
 
