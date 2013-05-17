@@ -70,6 +70,7 @@
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.new { font-style: normal; }
 	.resultrow.new a { color: #850505; }
+	.resultrow.new a.spam { color: #aaa; }
 	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
 
