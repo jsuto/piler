@@ -151,7 +151,7 @@ class ModelSearchMessage extends Model {
          fclose($sd);
       }
       else {
-         $handle = popen(DECRYPT_BINARY . " $id", "r");
+         $handle = popen(DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id", "r");
          while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
             $data .= $buf;
          }
