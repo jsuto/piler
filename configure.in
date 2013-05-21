@@ -400,6 +400,11 @@ if test "$have_icc_guide" = "yes" && test "$have_mysql" = "yes"; then
    sql_libs="$sql_libs -lguide"
 fi
 
+if test "$have_psql" = "yes"; then
+   defs="$defs -DNEED_PSQL"
+fi
+
+
 if test "$have_multitenancy" = "yes"; then
    echo "multitenancy support: yes"
    defs="$defs -DHAVE_MULTITENANCY"

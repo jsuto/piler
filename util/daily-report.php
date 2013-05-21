@@ -97,6 +97,7 @@ $mail = new ModelMailMail();
 	  $averagesqlsizeraw = $sqlsizeraw / $counters['rcvd'];
 	  $averagesphinxsizeraw = $sphinxsizeraw / $counters['rcvd'];
 	  $averagesizedayraw = ($averagemessagesizeraw+$averagesqlsizeraw+$averagesphinxsizeraw) * $averagemessagesweekraw;
+          $datapart = 0;
 	  foreach($shortdiskinfo as $part) {
 		if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }
 	  }
