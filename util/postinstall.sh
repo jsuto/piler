@@ -99,7 +99,7 @@ make_cron_entries() {
 
    echo ""
    echo "### PILERSTART" >> $CRON_TMP
-   echo "*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > $LOCALSTATEDIR/piler/stat/cpu.stat" >> $CRON_TMP
+   echo "*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print \$11}' > $LOCALSTATEDIR/piler/stat/cpu.stat" >> $CRON_TMP
    echo "5,35 * * * * $INDEXER --quiet delta1 --rotate && sleep 2 && $INDEXER --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
