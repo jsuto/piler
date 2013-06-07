@@ -137,7 +137,7 @@ $config['DB_DATABASE'] = 'piler';
 $config['SPHINX_DRIVER'] = 'sphinx';
 $config['SPHINX_DATABASE'] = 'sphinx';
 $config['SPHINX_HOSTNAME'] = '127.0.0.1:9306';
-$config['SPHINX_MAIN_INDEX'] = 'main1';
+$config['SPHINX_MAIN_INDEX'] = 'main1,main2,main3,main4';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
 
