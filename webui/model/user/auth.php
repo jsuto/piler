@@ -78,7 +78,7 @@ class ModelUserAuth extends Model {
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . $a['dn'] . ")))", array());
+               $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . stripslashes($a['dn']) . ")))", array());
 
                $is_auditor = $this->check_ldap_membership($query->rows);
 
