@@ -58,6 +58,16 @@ $config['LDAP_AUDITOR_MEMBER_DN'] = '';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
 
+
+// iredmail specific settings
+//$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=yourdomain,dc=com';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'mailUser';
+//$config['LDAP_BASE_DN'] = 'o=domains,dc=yourdomain,dc=com';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'mailList';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
+
+
 // enable single sign-on (disabled by default)
 $config['ENABLE_SSO_LOGIN'] = 0;
 
