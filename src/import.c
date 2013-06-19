@@ -162,7 +162,7 @@ unsigned long add_new_folder(struct session_data *sdata, struct __data *data, ch
       id = p_get_insert_id(data->stmt_insert_into_folder_table);
    }
 
-   close_prepared_statement(data->stmt_get_folder_id);
+   close_prepared_statement(data->stmt_insert_into_folder_table);
 
    return id;
 }
