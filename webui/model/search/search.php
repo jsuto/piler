@@ -212,7 +212,7 @@ class ModelSearchSearch extends Model {
       if($o_to) { $o_t = "@to $o_to"; }
 
 
-      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t == '') { return "@to $all_your_addresses"; }
+      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t == '') { return "(@from $all_your_addresses | @to $all_your_addresses)"; }
       if($f_f == '' && $o_f == '' && $f_t == '' && $o_t      ) { return "$o_t"; }
       if($f_f == '' && $o_f == '' && $f_t       && $o_t == '') { return "(@from $all_your_addresses & $f_t)"; }
       if($f_f == '' && $o_f == '' && $f_t       && $o_t      ) { return "($o_t | (@from $all_your_addresses & $f_t))"; }
