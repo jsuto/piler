@@ -125,8 +125,8 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 }
 
 
-unsigned long get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
-   unsigned long id=0;
+int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
+   int id=-1;
 
    if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) return id;
 
@@ -149,8 +149,8 @@ unsigned long get_folder_id(struct session_data *sdata, struct __data *data, cha
 }
 
 
-unsigned long add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
-   unsigned long id=0;
+int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
+   int id=0;
 
    if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) return id;
 

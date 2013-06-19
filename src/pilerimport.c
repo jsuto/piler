@@ -543,11 +543,11 @@ int main(int argc, char **argv){
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
 
-      if(data.folder == 0){
+      if(data.folder == -1){
          data.folder = add_new_folder(&sdata, &data, folder, 0);
       }
 
-      if(data.folder == 0){
+      if(data.folder == -1){
          printf("error: cannot get/add folder '%s'\n", folder);
          close_database(&sdata);
          return 0;
