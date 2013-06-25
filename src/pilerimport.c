@@ -132,10 +132,10 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
                   folder = get_folder_id(sdata, data, fname, data->folder);
-                  if(folder == 0){
+                  if(folder == -1){
                      folder = add_new_folder(sdata, data, fname, data->folder);
 
-                     if(folder == 0){
+                     if(folder == -1){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);
                         return ERR;
                      }
@@ -208,10 +208,10 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                   }
 
                   folder = get_folder_id(sdata, data, p, data->folder);
-                  if(folder == 0){
+                  if(folder == -1){
                      folder = add_new_folder(sdata, data, p, data->folder);
 
-                     if(folder == 0){
+                     if(folder == -1){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
                         return ERR;
                      }
