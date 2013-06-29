@@ -15,7 +15,6 @@ require_once("config.php");
 
 require(DIR_SYSTEM . "/startup.php");
 
-
 $request = new Request();
 Registry::set("request", $request);
 

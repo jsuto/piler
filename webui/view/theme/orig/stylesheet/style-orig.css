@@ -73,6 +73,7 @@
 	.resultrow.new a.spam { color: #aaa; }
 	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
+	.resultrow.sent { background: lightblue; }
 
 	.tcell { display: table-cell; }
 

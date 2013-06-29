@@ -513,6 +513,8 @@ class ModelSearchSearch extends Model {
             $m['date'] = date(SEARCH_HIT_DATE_FORMAT, $m['sent']);
             $m['size'] = nice_size($m['size']);
 
+            in_array($m['from'], $_SESSION['emails']) ? $m['yousent'] = 1 : $m['yousent'] = 0;
+
             /*
              * verifying 20 messages takes some time, still it's useful
              */
