@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.24-master-branch"
 
-#define BUILD 817
+#define BUILD 818
 
 #define HOSTID "mailarchiver"
 
@@ -116,6 +116,7 @@
 #define OK 0
 #define ERR 1
 #define ERR_EXISTS 2
+#define ERR_FOLDER -1
 
 #define AVIR_OK 0
 #define AVIR_VIRUS 1

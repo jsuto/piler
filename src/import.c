@@ -72,6 +72,11 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
+   if(sdata->hdr_len < 10){
+      printf("invalid message, hdr_len: %d\n", sdata->hdr_len);
+      return ERR;
+   }
+
    if(sdata->sent <= 0 && sdata->delivered > 0) sdata->sent = sdata->delivered;
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
@@ -126,7 +131,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
 
 int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
-   int id=-1;
+   int id=ERR_FOLDER;
 
    if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) return id;
 
@@ -136,6 +141,7 @@ int get_folder_id(struct session_data *sdata, struct __data *data, char *foldern
 
    if(p_exec_query(sdata, data->stmt_get_folder_id, data) == OK){
 
+      p_bind_init(data);
       data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
 
       p_store_results(sdata, data->stmt_get_folder_id, data);
@@ -150,7 +156,9 @@ int get_folder_id(struct session_data *sdata, struct __data *data, char *foldern
 
 
 int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
-   int id=0;
+   int id=ERR_FOLDER;
+
+   if(foldername == NULL) return id;
 
    if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) return id;
 

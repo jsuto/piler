@@ -104,7 +104,7 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
-   unsigned long folder;
+   int folder;
    char fname[SMALLBUFSIZE];
    struct stat st;
 
@@ -132,10 +132,10 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
                   folder = get_folder_id(sdata, data, fname, data->folder);
-                  if(folder == -1){
+                  if(folder == ERR_FOLDER){
                      folder = add_new_folder(sdata, data, fname, data->folder);
 
-                     if(folder == -1){
+                     if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);
                         return ERR;
                      }
@@ -173,7 +173,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
-   unsigned long folder;
+   int folder;
    char *p, fname[SMALLBUFSIZE];
    struct stat st;
 
@@ -208,10 +208,10 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                   }
 
                   folder = get_folder_id(sdata, data, p, data->folder);
-                  if(folder == -1){
+                  if(folder == ERR_FOLDER){
                      folder = add_new_folder(sdata, data, p, data->folder);
 
-                     if(folder == -1){
+                     if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
                         return ERR;
                      }
@@ -543,11 +543,11 @@ int main(int argc, char **argv){
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
 
-      if(data.folder == -1){
+      if(data.folder == ERR_FOLDER){
          data.folder = add_new_folder(&sdata, &data, folder, 0);
       }
 
-      if(data.folder == -1){
+      if(data.folder == ERR_FOLDER){
          printf("error: cannot get/add folder '%s'\n", folder);
          close_database(&sdata);
          return 0;
