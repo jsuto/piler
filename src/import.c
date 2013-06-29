@@ -72,11 +72,6 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
-   if(sdata->hdr_len < 10){
-      printf("invalid message, hdr_len: %d\n", sdata->hdr_len);
-      return ERR;
-   }
-
    if(sdata->sent <= 0 && sdata->delivered > 0) sdata->sent = sdata->delivered;
 
    if(sdata->sent > sdata->now) sdata->sent = sdata->now;
@@ -94,6 +89,12 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    }
    else {
       make_digests(sdata, cfg);
+
+      if(sdata->hdr_len < 10){
+         printf("%s: invalid message, hdr_len: %d\n", filename, sdata->hdr_len);
+         return ERR;
+      }
+
       rc = process_message(sdata, &state, data, cfg);
    }
 

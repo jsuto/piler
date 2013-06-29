@@ -146,13 +146,6 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);
 #endif
 
-   if(db_conn == 1 && create_prepared_statements(&sdata, data) == ERR){
-      close_prepared_statements(data);
-      close_database(&sdata);
-      db_conn = 0;
-   }
-
-
    if(db_conn == 0){
       send(new_sd, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
       syslog(LOG_PRIORITY, "cannot make prepared statement");
@@ -264,7 +257,6 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
 QUITTING:
 
 #ifdef NEED_MYSQL
-   close_prepared_statements(data);
    close_database(&sdata);
 #endif
 

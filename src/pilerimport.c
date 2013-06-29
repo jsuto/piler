@@ -527,11 +527,6 @@ int main(int argc, char **argv){
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
 
-   if(create_prepared_statements(&sdata, &data) == ERR){
-      rc = ERR;
-      goto ENDE;
-   }
-
    setlocale(LC_CTYPE, cfg.locale);
 
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
@@ -575,9 +570,6 @@ int main(int argc, char **argv){
 
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
-
-ENDE:
-   close_prepared_statements(&data);
 
    close_database(&sdata);
 

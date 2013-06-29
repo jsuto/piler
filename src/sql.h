@@ -18,8 +18,6 @@ void p_bind_init(struct __data *data);
 uint64 p_get_insert_id(MYSQL_STMT *stmt);
 int p_get_affected_rows(MYSQL_STMT *stmt);
 void close_prepared_statement(MYSQL_STMT *stmt);
-int create_prepared_statements(struct session_data *sdata, struct __data *data);
-void close_prepared_statements(struct __data *data);
 
 
 #endif /* _PILER_H */

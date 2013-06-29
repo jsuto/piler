@@ -66,6 +66,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
 uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, char *message_id, struct __config *cfg){
    uint64 id=0;
 
+   if(prepare_sql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
 
    p_bind_init(data);
    data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
@@ -83,6 +84,8 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, 
    p_free_results(data->stmt_get_meta_id_by_message_id);
 
 CLOSE:
+   mysql_stmt_close(data->stmt_get_meta_id_by_message_id);
+
    return id;
 }
 
@@ -90,6 +93,8 @@ CLOSE:
 int store_recipients(struct session_data *sdata, struct __data *data, char *to, uint64 id, int log_errors, struct __config *cfg){
    int ret=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
+
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ret;
 
    p = to;
    do {
@@ -115,6 +120,7 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 
    } while(p);
 
+   mysql_stmt_close(data->stmt_insert_into_rcpt_table);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
 
@@ -125,6 +131,7 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
    int ret = ERR;
 
+   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata_reference), SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE) == ERR) return ret;
 
    p_bind_init(data);
 
@@ -132,6 +139,8 @@ int update_metadata_reference(struct session_data *sdata, struct _state *state, 
    data->sql[data->pos] = state->reference; data->type[data->pos] = TYPE_STRING; data->pos++;
 
    if(p_exec_query(sdata, data->stmt_update_metadata_reference, data) == OK) ret = OK;
+
+   mysql_stmt_close(data->stmt_update_metadata_reference);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->reference, ret);
 
