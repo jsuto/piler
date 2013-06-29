@@ -21,14 +21,15 @@ class ControllerMessageView extends Controller {
       $this->document->title = $this->data['text_message'];
 
       $this->data['id'] = '';
+      $this->data['search'] = '';
       $this->data['rcpt'] = array();
 
       if(isset($_SERVER['REQUEST_URI'])) { $a = preg_split("/\//", $_SERVER['REQUEST_URI']); $this->data['id'] = $a[count($a)-1]; }
 
       if($this->request->server['REQUEST_METHOD'] == 'POST') {
          $this->data['id'] = $this->request->post['id'];
+         $this->data['search'] = $this->request->post['search'];
       }
-
 
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown id: ' . $this->data['id']);
@@ -54,7 +55,7 @@ class ControllerMessageView extends Controller {
       }
 
 
-      if($this->request->server['REQUEST_METHOD'] == 'POST') {
+      if($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['tag'])) {
          $this->model_search_message->add_message_tag($this->data['id'], $_SESSION['uid'], $this->request->post['tag']);
          header("Location: " . $_SERVER['HTTP_REFERER']);
          exit;
@@ -64,7 +65,7 @@ class ControllerMessageView extends Controller {
 
       $this->data['attachments'] = $this->model_search_message->get_attachment_list($this->data['piler_id']);
 
-      $this->data['message'] = $this->model_search_message->extract_message($this->data['piler_id']);
+      $this->data['message'] = $this->model_search_message->extract_message($this->data['piler_id'], $this->data['search']);
       $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $_SESSION['uid']);
       $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $_SESSION['uid']);
 

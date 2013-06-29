@@ -154,6 +154,7 @@
 	.splitter-h { cursor: n-resize; cursor: row-resize; background-position: center 2px; }
 	.splitter-v { cursor: e-resize; cursor: col-resize; background-position: 2px center; }
 
+	.message_highlight { background: lightblue; }
 
 
 }

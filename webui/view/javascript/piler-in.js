@@ -246,9 +246,14 @@ var Piler =
 
     view_message:function(id)
     {
-        Piler.log("[view_message]");
+        var search = $('#_search').val();
 
-        jQuery.ajax('/message.php/' + id, { cache: true })
+        Piler.log("[view_message]", id, search);
+
+        jQuery.ajax('/message.php', {
+           data: { id: id, search: search },
+           type: "POST"
+        })
         .done( function(a) {
 
            if(a.indexOf('<?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?>') > 0) {

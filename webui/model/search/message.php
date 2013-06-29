@@ -229,7 +229,7 @@ class ModelSearchMessage extends Model {
    }
 
 
-   public function extract_message($id = '') {
+   public function extract_message($id = '', $terms = '') {
       $header = "";
       $body_chunk = "";
       $is_header = 1;
@@ -363,10 +363,23 @@ class ModelSearchMessage extends Model {
 
       return array('from' => $this->decode_my_str($from),
                    'to' => $this->decode_my_str($to),
-                   'subject' => $this->decode_my_str($subject),
+                   'subject' => $this->highlight_search_terms($this->decode_my_str($subject), $terms),
                    'date' => $this->decode_my_str($date),
-                   'message' => $message
+                   'message' => $this->highlight_search_terms($message, $terms)
             );
+   }
+
+
+   private function highlight_search_terms($s = '', $terms = array()) {
+      $terms = explode(" ", $terms);
+
+      if(count($terms) <= 0) { return $s; }
+
+      while(list($k, $v) = each($terms)) {
+         $s = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $s);
+      }
+
+      return $s;
    }
 
 
