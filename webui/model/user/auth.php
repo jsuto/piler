@@ -69,7 +69,7 @@ class ModelUserAuth extends Model {
 
          $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
 
-         if(isset($query->row['dn'])) {
+         if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
 
             $ldap_auth = new LDAP(LDAP_HOST, $a['dn'], $password);

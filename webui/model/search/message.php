@@ -370,7 +370,7 @@ class ModelSearchMessage extends Model {
    }
 
 
-   private function highlight_search_terms($s = '', $terms = array()) {
+   private function highlight_search_terms($s = '', $terms = '') {
       $terms = preg_replace("/(\'|\")/", "", $terms);
 
       $terms = explode(" ", $terms);
@@ -378,7 +378,7 @@ class ModelSearchMessage extends Model {
       if(count($terms) <= 0) { return $s; }
 
       while(list($k, $v) = each($terms)) {
-         if($v == '') { continue; }
+         if(strlen($v) < 3) { continue; }
 
          $s = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $s);
       }
