@@ -14,13 +14,20 @@ class ControllerDomainDomain extends Controller {
       $request = Registry::get('request');
       $db = Registry::get('db');
 
+      $ldap_id = 0;
+
+
       $this->load->model('domain/domain');
+      if(ENABLE_SAAS == 1) {
+         $this->load->model('saas/ldap');
+         $this->data['ldap'] = $this->model_saas_ldap->get();
+         $ldap_id = $this->request->post['ldap_id'];
+      }
 
       $this->document->title = $this->data['text_domain'];
 
 
       $this->data['username'] = Registry::get('username');
-
 
       $this->data['page'] = 0;
       $this->data['page_len'] = get_page_length();
@@ -54,7 +61,7 @@ class ControllerDomainDomain extends Controller {
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
             if($this->validate() == true) {
 
-               if($this->model_domain_domain->addDomain($this->request->post['domain'], $this->request->post['mapped']) == 1) {
+               if($this->model_domain_domain->addDomain($this->request->post['domain'], $this->request->post['mapped'], $ldap_id) == 1) {
                   $this->data['x'] = $this->data['text_successfully_added'];
                } else {
                   $this->template = "common/error.tpl";

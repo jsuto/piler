@@ -63,22 +63,36 @@ class ModelUserAuth extends Model {
 
    private function checkLoginAgainstLDAP($username = '', $password = '') {
 
-      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+      $ldap_host = LDAP_HOST;
+      $ldap_base_dn = LDAP_BASE_DN;
+      $ldap_helper_dn = LDAP_HELPER_DN;
+      $ldap_helper_password = LDAP_HELPER_PASSWORD;
+
+      if(ENABLE_SAAS == 1) {
+         $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
+
+         $ldap_host = $a[0];
+         $ldap_base_dn = $a[1];
+         $ldap_helper_dn = $a[2];
+         $ldap_helper_password = $a[3];
+      }
+
+      $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
+         $query = $ldap->query($ldap_base_dn, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
 
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
 
-            $ldap_auth = new LDAP(LDAP_HOST, $a['dn'], $password);
+            $ldap_auth = new LDAP($ldap_host, $a['dn'], $password);
 
-            if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "ldap auth against '" . LDAP_HOST . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
+            if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . stripslashes($a['dn']) . ")))", array());
+               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . stripslashes($a['dn']) . ")))", array());
 
                $is_auditor = $this->check_ldap_membership($query->rows);
 
@@ -96,7 +110,7 @@ class ModelUserAuth extends Model {
          }
       }
       else if(ENABLE_SYSLOG == 1) {
-         syslog(LOG_INFO, "cannot bind to '" . LDAP_HOST . "' as '" . LDAP_HELPER_DN . "'");
+         syslog(LOG_INFO, "cannot bind to '" . $ldap_host . "' as '" . $ldap_helper_dn . "'");
       }
 
       return 0;

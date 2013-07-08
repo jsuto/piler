@@ -24,6 +24,8 @@ $config['THEME'] = 'default';
 $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
+$config['ENABLE_SAAS'] = 0;
+
 $config['TIMEZONE'] = 'Europe/Budapest';
 
 $config['PROVIDED_BY'] = 'www.mailpiler.org';
@@ -147,7 +149,7 @@ $config['DB_DATABASE'] = 'piler';
 $config['SPHINX_DRIVER'] = 'sphinx';
 $config['SPHINX_DATABASE'] = 'sphinx';
 $config['SPHINX_HOSTNAME'] = '127.0.0.1:9306';
-$config['SPHINX_MAIN_INDEX'] = 'main1,main2,main3,main4';
+$config['SPHINX_MAIN_INDEX'] = 'dailydelta1,main1,main2,main3,main4';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
 
@@ -255,6 +257,7 @@ define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');
 define('TABLE_OPTION', 'option');
+define('TABLE_LDAP', 'ldap');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('VIEW_MESSAGES', 'v_messages');

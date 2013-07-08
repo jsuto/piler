@@ -3,12 +3,26 @@
 class ModelDomainDomain extends Model {
 
    public function getDomains() {
+      $data = array();
 
-      $query = $this->db->query("SELECT domain, mapped FROM " . TABLE_DOMAIN . " ORDER BY domain ASC");
+      $query = $this->db->query("SELECT domain, mapped, ldap_id FROM " . TABLE_DOMAIN . " ORDER BY domain ASC");
 
-      if(isset($query->rows)) { return $query->rows; }
+      if(isset($query->rows)) {
+         foreach($query->rows as $q) {
 
-      return array();
+            $ldap = '';
+
+            if($q['ldap_id'] > 0) {
+               $query2 = $this->db->query("SELECT description FROM " . TABLE_LDAP . " WHERE id=?", array($q['ldap_id']));
+               if(isset($query2->row)) { $ldap = $query2->row['description']; }
+            }
+
+            $data[] = array('domain' => $q['domain'], 'mapped' => $q['mapped'], 'ldap' => $ldap);
+
+         }
+      }
+
+      return $data;
    }
 
 
@@ -38,14 +52,14 @@ class ModelDomainDomain extends Model {
    }
 
 
-   public function addDomain($domain = '', $mapped = '') {
+   public function addDomain($domain = '', $mapped = '', $ldap_id = 0) {
       if($domain == "" || $mapped == "") { return 0; }
 
       $domains = explode("\n", $domain);
 
       foreach ($domains as $domain) {
          $domain = rtrim($domain);
-         $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped) VALUES (?,?)", array($domain, $mapped));
+         $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($domain, $mapped, $ldap_id));
 
          $rc = $this->db->countAffected();
 

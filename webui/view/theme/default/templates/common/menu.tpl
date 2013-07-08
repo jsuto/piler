@@ -35,6 +35,9 @@
                                           <li><a href="index.php?route=user/list"><i class="icon-user"></i>&nbsp;<?php print $text_users; ?></a></li>
                                           <li><a href="index.php?route=group/list"><i class="icon-group"></i>&nbsp;<?php print $text_groups; ?></a></li>
                                           <li><a href="index.php?route=domain/domain"><i class="icon-globe"></i>&nbsp;<?php print $text_domain; ?></a></li>
+                                       <?php if(ENABLE_SAAS == 1) { ?>
+                                          <li><a href="index.php?route=ldap/list"><i class="icon-key"></i>&nbsp;<?php print $text_ldap; ?></a></li>
+                                       <?php } ?>
                                           <li><a href="index.php?route=policy/archiving"><i class="icon-folder-open"></i>&nbsp;<?php print $text_archiving_rules; ?></a></li>
                                           <li><a href="index.php?route=policy/retention"><i class="icon-time"></i>&nbsp;<?php print $text_retention_rules; ?></a></li>
                                    </ul>

@@ -26,6 +26,10 @@ class ControllerLoginLogin extends Controller {
       $this->load->model('user/prefs');
       $this->load->model('folder/folder');
 
+      if(ENABLE_SAAS == 1) {
+         $this->load->model('saas/ldap');
+      }
+
       $this->document->title = $this->data['text_login'];
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {

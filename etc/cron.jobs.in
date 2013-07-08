@@ -16,8 +16,9 @@ piler's crontab:
 
 ### mandatory
 
-*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
-*/15 * * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate
+*/5  * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
+5,35 2-23 * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge dailydelta1 delta1 --merge-dst-range deleted 0 0 --rotate
+15   0 * * * /usr/local/bin/indexer --quiet --merge main1 dailydelta1 --merge-dst-range deleted 0 0 --rotate && sleep 2 && /usr/local/bin/indexer --quiet dailydelta1 --rotate
 */15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 */15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
 

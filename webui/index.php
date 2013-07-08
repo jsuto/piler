@@ -1,13 +1,5 @@
 <?php
 
-function go_to_setup() {
-   Header("Location: setup/setup.php");
-   exit;
-}
-
-$stat = stat("config.php") or go_to_setup();
-if($stat[7] < 15){ go_to_setup(); }
-
 session_start();
 
 

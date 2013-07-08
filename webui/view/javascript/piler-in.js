@@ -876,7 +876,35 @@ var Piler =
        $('#fldr_' + id).hide();
        $('#fldr_collapse_' + id).hide();
        $('#fldr_open_' + id).show();
+    },
+
+
+    test_ldap_connection:function()
+    {
+       Piler.log("[test_ldap_connection]");
+ 
+       jQuery.ajax('index.php?route=ldap/test', {
+           data: {
+              description: $('#description').val(),
+              ldap_host: $('#ldap_host').val(),
+              ldap_base_dn: $('#ldap_base_dn').val(),
+              ldap_bind_dn: $('#ldap_bind_dn').val(),
+              ldap_bind_pw: $('#ldap_bind_pw').val()
+           },
+           type: "POST"
+       })
+       .done( function(a) {
+          $('#LDAPTEST').html(a);
+       })
+       .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+    },
+
+
+    clear_ldap_test: function()
+    {
+        $('#LDAPTEST').html('');
     }
+
 
 
 }
