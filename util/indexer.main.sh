@@ -1,8 +1,8 @@
 #!/bin/bash
 
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 MAINTMPFILE=/var/run/piler/main.indexer.tmp
-#MAINTMPFILE=/tmp/main.indexer.tmp
-INDEXER=`which indexer`
+INDEXER=indexer
 PRIORITY=mail.error
 
 if [ -f $MAINTMPFILE ]; then echo "INDEXER ERROR: indexer merging to main index is already running. It started at "`cat $MAINTMPFILE` | logger -p $PRIORITY ; exit 1; fi
