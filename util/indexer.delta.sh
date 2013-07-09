@@ -19,8 +19,6 @@ trap finish EXIT
 
 echo "INDEXER INFO: indexing delta1 started" | logger -p $PRIORITY
 
-5,35 2-23 * * * /usr/local/bin/indexer --quiet delta1 --rotate && sleep 2 && /usr/local/bin/indexer --quiet --merge dailydelta1 delta1 --merge-dst-range deleted 0 0 --rotate
-
 $INDEXER --quiet delta1 --rotate
 
 echo "INDEXER INFO: indexing delta1 finished" | logger -p $PRIORITY
