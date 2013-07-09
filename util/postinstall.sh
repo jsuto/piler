@@ -75,7 +75,7 @@ gather_smtp_relay_data() {
    ask "Please enter smtp relay" "$SMARTHOST"
    SMARTHOST=$response
 
-   askNonBlankNoEcho "Please enter smtp relay port" "$SMARTHOST_PORT"
+   ask "Please enter smtp relay port" "$SMARTHOST_PORT"
    SMARTHOST_PORT=$response
 }
 
@@ -100,7 +100,9 @@ make_cron_entries() {
    echo ""
    echo "### PILERSTART" >> $CRON_TMP
    echo "*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print \$11}' > $LOCALSTATEDIR/piler/stat/cpu.stat" >> $CRON_TMP
-   echo "5,35 * * * * $INDEXER --quiet delta1 --rotate && sleep 2 && $INDEXER --quiet --merge main1 delta1 --merge-dst-range deleted 0 0 --rotate" >> $CRON_TMP
+
+   echo "5,35 * * * * $LIBEXECDIR/piler/indexer.delta.sh" >> $CRON_TMP
+   echo "15   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
    echo "### PILEREND" >> $CRON_TMP
@@ -255,7 +257,7 @@ PILERUSER=$1
 PILERGROUP=$2
 SYSCONFDIR=$3
 LOCALSTATEDIR=$4
-
+LIBEXECDIR=$5
 
 #LOGFILE="/tmp/piler-install.log.$$"
 #touch $LOGFILE

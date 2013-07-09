@@ -11,6 +11,7 @@ load_default_values() {
    PILERUSER="piler"
    SYSCONFDIR="/usr/local/etc"
    LOCALSTATEDIR="/var"
+   LIBEXECDIR="/usr/local/libexec"
 
    KEYTMPFILE="piler.key"
    KEYFILE="$SYSCONFDIR/piler.key"

@@ -110,7 +110,7 @@ key:
 	dd if=/dev/urandom bs=56 count=1 of=piler.key
 
 postinstall:
-	@sh util/postinstall.sh $(RUNNING_USER) $(RUNNING_GROUP) $(sysconfdir) $(localstatedir)
+	@sh util/postinstall.sh $(RUNNING_USER) $(RUNNING_GROUP) $(sysconfdir) $(localstatedir) $(libexecdir)
 
 
 
