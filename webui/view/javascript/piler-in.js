@@ -879,6 +879,17 @@ var Piler =
     },
 
 
+    stop_propagation: function(event) {
+       Piler.log("[stop_propagation]");
+       try {
+          event.stopPropagation();
+       }
+       catch ( e ) {
+          Piler.log("[stop_propagation]", e );
+       }
+    },
+
+
     test_ldap_connection:function()
     {
        Piler.log("[test_ldap_connection]");
