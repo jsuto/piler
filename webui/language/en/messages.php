@@ -345,6 +345,7 @@ $_['text_users_quarantine'] = "User's quarantine";
 $_['text_view_formatted_email'] = "View formatted email";
 $_['text_view_header'] = "view header";
 $_['text_view_headers'] = "View headers";
+$_['text_view_journal_envelope'] = "View envelope";
 $_['text_view_message'] = "View message";
 $_['text_view_message2'] = "view message";
 $_['text_view_raw_email'] = "View raw email";

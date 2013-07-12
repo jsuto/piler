@@ -1,12 +1,12 @@
 <?php
 
 
-class ControllerMessageHeaders extends Controller {
+class ControllerMessageJournal extends Controller {
 
    public function index(){
 
       $this->id = "content";
-      $this->template = "message/headers.tpl";
+      $this->template = "message/journal.tpl";
       $this->layout = "common/layout-empty";
 
       $request = Registry::get('request');
@@ -37,7 +37,7 @@ class ControllerMessageHeaders extends Controller {
 
       $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
-      $this->data['message'] = $this->model_search_message->get_message_headers($this->data['piler_id']);
+      $this->data['data'] = $this->model_search_message->get_message_journal($this->data['piler_id']);
 
       $this->render();
    }

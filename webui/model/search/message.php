@@ -178,7 +178,7 @@ class ModelSearchMessage extends Model {
       $msg = $this->get_raw_message($id);
       $this->disconnect_from_pilergetd();
 
-      $this->remove_journal($msg);
+      $has_journal = $this->remove_journal($msg);
 
       $pos = strpos($msg, "\n\r\n");
       if($pos == false) {
@@ -193,6 +193,55 @@ class ModelSearchMessage extends Model {
       $data = preg_replace("/\</", "&lt;", $data);
       $data = preg_replace("/\>/", "&gt;", $data);
 
+      return array('headers' => $data, 'has_journal' => $has_journal);
+   }
+
+
+   public function get_message_journal($id = '') {
+      $data = '&lt; &gt;';
+      $boundary = '';
+
+      $this->connect_to_pilergetd();
+      $msg = $this->get_raw_message($id);
+      $this->disconnect_from_pilergetd();
+
+      $hdr = substr($msg, 0, 8192);
+
+      $s = preg_split("/\n/", $hdr);
+      while(list($k, $v) = each($s)) {
+         if(preg_match("/boundary\s{0,}=\s{0,}\"{0,}([\w\_\-\@\.]+)\"{0,}/i", $v, $m)) {
+            if(isset($m[1])) { $boundary = $m[1]; break; }
+         }
+      }
+
+
+      $p = strstr($msg, "\nX-MS-Journal-Report:");
+      $msg = '';
+
+      if($p) {
+
+         $s = preg_split("/\n/", $p);
+
+         $i=0; $j=0; $data = '';
+
+         while(list($k, $v) = each($s)) {
+            if(strstr($v, $boundary)) { $i++; }
+            if($i > 0 && preg_match("/^\s{1,}$/", $v)) { $j++; }
+
+            if($j == 1) {
+               $data .= "$v\n";
+            }
+
+            if($i >= 2) { break; } 
+         }
+
+         $p = '';
+
+         $data = preg_replace("/\</", "&lt;", $data);
+         $data = preg_replace("/\>/", "&gt;", $data);
+
+      }
+
       return $data;
    }
 
@@ -200,6 +249,7 @@ class ModelSearchMessage extends Model {
    public function remove_journal(&$msg = '') {
       $p = $q = '';
       $boundary = '';
+      $has_journal = 0;
 
       $hdr = substr($msg, 0, 4096);
 
@@ -212,6 +262,8 @@ class ModelSearchMessage extends Model {
 
       $p = strstr($msg, "\nX-MS-Journal-Report:");
       if($p) {
+         $has_journal = 1;
+
          $msg = '';
          $q = strstr($p, "Received: from");
          if($q) {
@@ -225,7 +277,11 @@ class ModelSearchMessage extends Model {
          }
       }
 
-      if($boundary) { $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6); }
+      if($boundary) {
+         $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
+      }
+
+      return $has_journal;
    }
 
 
@@ -250,7 +306,7 @@ class ModelSearchMessage extends Model {
       $msg = $this->get_raw_message($id);
       $this->disconnect_from_pilergetd();
 
-      $this->remove_journal($msg);
+      $has_journal = $this->remove_journal($msg);
 
       $a = explode("\n", $msg); $msg = "";
 
@@ -365,7 +421,8 @@ class ModelSearchMessage extends Model {
                    'to' => $this->decode_my_str($to),
                    'subject' => $this->highlight_search_terms($this->decode_my_str($subject), $terms),
                    'date' => $this->decode_my_str($date),
-                   'message' => $this->highlight_search_terms($message, $terms)
+                   'message' => $this->highlight_search_terms($message, $terms),
+                   'has_journal' => $has_journal
             );
    }
 

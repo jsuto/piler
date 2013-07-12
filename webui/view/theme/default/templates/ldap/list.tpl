@@ -7,6 +7,17 @@
 <form method="post" name="add1" action="index.php?route=ldap/list" class="form-horizontal">
 
     <div class="control-group">
+       <label class="control-label" for="ldap_type"><?php print $text_ldap_type; ?>:</label>
+       <div class="controls">
+          <select name="ldap_type" id="ldap_type">
+          <option value="AD">AD</option>
+          <option value="iredmail">iredmail</option>
+          <option value="lotus">lotus</option>
+          <option value="zimbra">zimbra</option>
+          </select>
+       </div>
+    </div>
+    <div class="control-group">
 		<label class="control-label" for="description"><?php print $text_description; ?>:</label>
         <div class="controls">
             <input type="text" class="text" name="description" id="description" placeholder="" />
@@ -53,6 +64,7 @@
    <table id="ss1" class="table table-striped table-condensed">
       <tr>
          <th class="domaincell"><?php print $text_description; ?></th>
+         <th class="domaincell"><?php print $text_ldap_type; ?></th>
          <th class="domaincell"><?php print $text_ldap_host; ?></th>
          <td class="domaincell"><?php print $text_ldap_base_dn; ?></td>
          <td class="domaincell"><?php print $text_ldap_bind_dn; ?></td>
@@ -62,6 +74,7 @@
 <?php foreach($entries as $e) { ?>
       <tr>
          <td class="domaincell"><?php print $e['description']; ?></td>
+         <td class="domaincell"><?php print $e['ldap_type']; ?></td>
          <td class="domaincell"><?php print $e['ldap_host']; ?></td>
          <td class="domaincell"><?php print $e['ldap_base_dn']; ?></td>
          <td class="domaincell"><?php print $e['ldap_bind_dn']; ?></td>

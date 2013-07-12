@@ -68,20 +68,59 @@ class ModelUserAuth extends Model {
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
 
+      $ldap_mail_attr = LDAP_MAIL_ATTR;
+      $ldap_account_objectclass = LDAP_ACCOUNT_OBJECTCLASS;
+      $ldap_distributionlist_attr = LDAP_DISTRIBUTIONLIST_ATTR;
+      $ldap_distributionlist_objectclass = LDAP_DISTRIBUTIONLIST_OBJECTCLASS;
+
       if(ENABLE_SAAS == 1) {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
 
-         $ldap_host = $a[0];
-         $ldap_base_dn = $a[1];
-         $ldap_helper_dn = $a[2];
-         $ldap_helper_password = $a[3];
+         $ldap_type = $a[0];
+         $ldap_host = $a[1];
+         $ldap_base_dn = $a[2];
+         $ldap_helper_dn = $a[3];
+         $ldap_helper_password = $a[4];
+
+         switch ($ldap_type) {
+
+            case 'AD':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'user';
+                       $ldap_distributionlist_attr = 'member';
+                       $ldap_distributionlist_objectclass = 'group';
+                       break;
+
+            case 'zimbra':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'zimbraAccount';
+                       $ldap_distributionlist_attr = 'zimbraMailForwardingAddress';
+                       $ldap_distributionlist_objectclass = 'zimbraDistributionList';
+                       break;
+
+            case 'iredmail':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'mailUser';
+                       $ldap_distributionlist_attr = 'memberOfGroup';
+                       $ldap_distributionlist_objectclass = 'mailList';
+                       break;
+
+            case 'lotus':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'dominoPerson';
+                       $ldap_distributionlist_attr = 'mail';
+                       $ldap_distributionlist_objectclass = 'dominoGroup';
+                       break;
+
+            
+         }
       }
 
       $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query($ldap_base_dn, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))", array());
+         $query = $ldap->query($ldap_base_dn, "(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))", array());
 
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
@@ -92,7 +131,7 @@ class ModelUserAuth extends Model {
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . stripslashes($a['dn']) . ")))", array());
+               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array("mail", "mailalternateaddress", "proxyaddresses", $ldap_distributionlist_attr));
 
                $is_auditor = $this->check_ldap_membership($query->rows);
 
@@ -148,7 +187,7 @@ class ModelUserAuth extends Model {
       $data = array();
 
       foreach($e as $a) {
-         foreach (array("mail", "mailalternateaddress", "proxyaddresses", LDAP_MAIL_ATTR, LDAP_DISTRIBUTIONLIST_ATTR) as $mailattr) {
+         //foreach (array("mail", "mailalternateaddress", "proxyaddresses", LDAP_MAIL_ATTR, LDAP_DISTRIBUTIONLIST_ATTR) as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(isset($a[$mailattr]['count'])) {
@@ -164,7 +203,7 @@ class ModelUserAuth extends Model {
                   if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:') { array_push($data, $email); }
                }
             }
-         }
+         //}
       }
 
       return $data;
@@ -243,6 +282,11 @@ class ModelUserAuth extends Model {
 
 
    public function check_ntlm_auth() {
+      $ldap_mail_attr = 'mail';
+      $ldap_account_objectclass = 'user';
+      $ldap_distributionlist_attr = 'member';
+      $ldap_distributionlist_objectclass = 'group';
+
       if(!isset($_SERVER['REMOTE_USER'])) { return 0; }
 
       $u = explode("\\", $_SERVER['REMOTE_USER']);
@@ -253,7 +297,7 @@ class ModelUserAuth extends Model {
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(samaccountname=" . $u[1] . "))", array());
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=$ldap_account_objectclass)(samaccountname=" . $u[1] . "))", array());
 
          if(isset($query->row['dn'])) {
             $a = $query->row;
@@ -261,7 +305,7 @@ class ModelUserAuth extends Model {
             if(isset($a['mail']['count'])) { $username = $a['mail'][0]; } else { $username = $a['mail']; }
             $username = strtolower(preg_replace("/^smtp\:/i", "", $username));
 
-            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=$username))(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=$username)" . ")(&(objectClass=" . LDAP_DISTRIBUTIONLIST_OBJECTCLASS . ")(" . LDAP_DISTRIBUTIONLIST_ATTR . "=" . $a['dn'] . ")))", array());
+            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . $a['dn'] . ")))", array());
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 

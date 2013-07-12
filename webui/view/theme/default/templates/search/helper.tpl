@@ -137,6 +137,8 @@
                 <input type="button" class="btn btn-info" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" value="Tag" />
             </span>
             <input type="button" class="btn btn-custom btn-inverse" value="<?php print $text_bulk_restore_selected_emails; ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " />&nbsp;
+         <?php if(Registry::get('auditor_user') == 1 || BULK_DOWNLOAD_FOR_USERS == 1) { ?>
             <input type="button" class="btn btn-custom btn-inverse" value="<?php print $text_bulk_download; ?>" onclick="Piler.download_messages();" />
+         <?php } ?>
        </div>
 </div>

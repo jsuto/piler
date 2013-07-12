@@ -345,6 +345,7 @@ $_['text_users_quarantine'] = "Quarantäne des Benutzers";
 $_['text_view_formatted_email'] = "Nachricht formatiert ansehen";
 $_['text_view_header'] = "Kopfzeilen anzeigen";
 $_['text_view_headers'] = "Kopfzeilen anzeigen";
+$_['text_view_journal_envelope'] = "Envelope anzeigen";
 $_['text_view_message'] = "Nachrichtentext anzeigen";
 $_['text_view_message2'] = "Nachricht anzeigen";
 $_['text_view_raw_email'] = "Quelltext anzeigen";

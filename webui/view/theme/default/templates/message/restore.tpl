@@ -9,3 +9,4 @@
 <div class="messagecontents">
 <?php print $data; ?>
 </div>
+

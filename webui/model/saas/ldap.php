@@ -5,7 +5,7 @@ class ModelSaasLdap extends Model
 
    public function get() {
 
-      $query = $this->db->query("SELECT id, description, ldap_host, ldap_base_dn, ldap_bind_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
+      $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
 
       if($query->num_rows > 0) { return $query->rows; }
 
@@ -29,11 +29,11 @@ class ModelSaasLdap extends Model
    public function add($arr = array()) {
       if(!isset($arr['description']) || !isset($arr['ldap_host'])) { return 0; }
 
-      $query = $this->db->query("INSERT INTO " . TABLE_LDAP . " (description, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw) VALUES (?,?,?,?,?)", array($arr['description'], $arr['ldap_host'], $arr['ldap_base_dn'], $arr['ldap_bind_dn'], $arr['ldap_bind_pw']));
+      $query = $this->db->query("INSERT INTO " . TABLE_LDAP . " (description, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_type) VALUES (?,?,?,?,?,?)", array($arr['description'], $arr['ldap_host'], $arr['ldap_base_dn'], $arr['ldap_bind_dn'], $arr['ldap_bind_pw'], $arr['ldap_type']));
 
       $rc = $this->db->countAffected();
 
-      LOGGER("add ldap entry: " . $arr['description'] . " / " . $arr['ldap_host'] . " / " . $arr['ldap_base_dn'] . " (rc=$rc)");
+      LOGGER("add ldap entry: " . $arr['description'] . " / " . $arr['ldap_type'] . " / " . $arr['ldap_host'] . " / " . $arr['ldap_base_dn'] . " (rc=$rc)");
 
       if($rc == 1){ return 1; }
 
@@ -48,9 +48,9 @@ class ModelSaasLdap extends Model
 
       list($l,$d) = explode("@", $email);
 
-      $query = $this->db->query("SELECT ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw from " . TABLE_DOMAIN . " as d, " . TABLE_LDAP . " as l where d.ldap_id=l.id and d.domain=?", array($d));
+      $query = $this->db->query("SELECT ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw from " . TABLE_DOMAIN . " as d, " . TABLE_LDAP . " as l where d.ldap_id=l.id and d.domain=?", array($d));
 
-      if($query->num_rows > 0) { return array($query->row['ldap_host'], $query->row['ldap_base_dn'], $query->row['ldap_bind_dn'], $query->row['ldap_bind_pw']); }
+      if($query->num_rows > 0) { return array($query->row['ldap_type'], $query->row['ldap_host'], $query->row['ldap_base_dn'], $query->row['ldap_bind_dn'], $query->row['ldap_bind_pw']); }
 
       return array();
    }

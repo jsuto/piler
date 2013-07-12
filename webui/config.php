@@ -110,6 +110,9 @@ $config['ENABLE_SYSLOG'] = 1;
 $config['REWRITE_MESSAGE_ID'] = 0;
 $config['RESTRICTED_AUDITOR'] = 0;
 
+$config['SHOW_ENVELOPE_JOURNAL'] = 0;
+$config['BULK_DOWNLOAD_FOR_USERS'] = 1;
+
 $config['MAX_CGI_FROM_SUBJ_LEN'] = 34;
 $config['PAGE_LEN'] = 20;
 $config['MAX_NUMBER_OF_FROM_ITEMS'] = 5;
@@ -149,7 +152,7 @@ $config['DB_DATABASE'] = 'piler';
 $config['SPHINX_DRIVER'] = 'sphinx';
 $config['SPHINX_DATABASE'] = 'sphinx';
 $config['SPHINX_HOSTNAME'] = '127.0.0.1:9306';
-$config['SPHINX_MAIN_INDEX'] = 'dailydelta1,main1,main2,main3,main4';
+$config['SPHINX_MAIN_INDEX'] = 'dailydelta1,main1';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
 
@@ -224,6 +227,9 @@ define('NOW', time());
 require_once 'config-site.php';
 
 if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme'])) { $config['THEME'] = $_SESSION['theme']; }
+
+// make sure auditors are restricted in a saas environment
+if($config['ENABLE_SAAS'] == 1 && $_SESSION['username'] != 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 1; }
 
 foreach ($config as $k => $v) {
    define($k, $v);

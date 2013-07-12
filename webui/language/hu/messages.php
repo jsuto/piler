@@ -346,6 +346,7 @@ $_['text_users_quarantine'] = "Felhasználók karanténja";
 $_['text_view_formatted_email'] = "Formázott levél megtekintése";
 $_['text_view_header'] = "fejléc megtekintése";
 $_['text_view_headers'] = "Levél fejléce";
+$_['text_view_journal_envelope'] = "Journal envelope";
 $_['text_view_message'] = "Levél megtekintése";
 $_['text_view_message2'] = "levél megtekintése";
 $_['text_view_raw_email'] = "Formázatlan levél megtekintése";

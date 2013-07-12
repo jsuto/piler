@@ -274,6 +274,13 @@ var Piler =
     },
 
 
+    view_journal:function(id)
+    {
+         Piler.log("[view_journal]");
+         Piler.load_url_to_preview_pane('/index.php?route=message/journal&id=' + id);
+    },
+
+
     restore_message:function(id)
     {
         Piler.log("[restore_message]");

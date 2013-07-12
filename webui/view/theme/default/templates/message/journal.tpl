@@ -19,14 +19,12 @@
 <?php } else { ?>
    <a class="messagelink" href="#" onclick="Piler.restore_message(<?php print $id; ?>);"><i class="icon-reply"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a> |
 <?php } ?>
-   <a class="messagelink" href="#" onclick="Piler.view_message(<?php print $id; ?>);"><i class="icon-envelope"></i>&nbsp;<?php print $text_view_message; ?></a>
-<?php if($message['has_journal'] == 1 && Registry::get('auditor_user') == 1 && SHOW_ENVELOPE_JOURNAL == 1) { ?>
-   | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="icon-envelope-alt"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
-<?php } ?>
+   <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><i class="icon-envelope"></i>&nbsp;<?php print $text_view_headers; ?></a>
+   <a class="messagelink" href="#" onclick="Piler.view_message(<?php print $id; ?>);"><i class="icon-envelope-alt"></i>&nbsp;<?php print $text_view_message; ?></a>
 
 </p>
 
 </div>
 
-<pre class="messagesmtpheaders"><?php print $message['headers']; ?></pre>
+<pre class="messagesmtpheaders"><?php print $data; ?></pre>
 
