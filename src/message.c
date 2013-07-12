@@ -246,7 +246,7 @@ void remove_stripped_attachments(struct _state *state){
 
 
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
-   int i, rc;
+   int rc;
    uint64 id=0;
 
    /* discard if existing message_id */
@@ -270,9 +270,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
    if(state->n_attachments > 0){
       rc = store_attachments(sdata, state, data, cfg);
 
-      for(i=1; i<=state->n_attachments; i++){
-         unlink(state->attachments[i].internalname);
-      }
+      remove_stripped_attachments(state);
 
       if(rc) return ERR;
    }
