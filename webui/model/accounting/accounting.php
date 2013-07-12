@@ -77,7 +77,7 @@ class ModelAccountingAccounting extends Model
                 
                 $parts = explode('@',$username);
                 
-                if ( isset($accepteddomains[ $parts[1] ]) ) {
+                if ( isset($parts[1]) && isset($accepteddomains[ $parts[1] ]) ) {
                    $addusers = $this->db->query("INSERT INTO " . TABLE_STAT_COUNTER . " (`date`,`email`,`domain`,`sent`,`recd`,`sentsize`,`recdsize`) VALUES($date,'$username','".$parts[1]."',$sent,$recd,$sizesent,$sizerecd);");
                    $return['addedstats'] = $return['addedstats'] + $this->db->countAffected();
                 }
