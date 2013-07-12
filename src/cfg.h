@@ -76,6 +76,8 @@ struct __config {
 
    int archive_emails_not_having_message_id;
 
+   int archive_only_mydomains;
+
    int min_word_len;
 
    int tweak_sent_time_offset;

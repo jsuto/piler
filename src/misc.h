@@ -34,7 +34,6 @@ int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl
 void write_pid_file(char *pidfile);
 int drop_privileges(struct passwd *pwd);
 
-int is_email_address_on_my_domains(char *email, struct __data *data);
 void init_session_data(struct session_data *sdata, struct __config *cfg);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);

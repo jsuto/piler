@@ -11,10 +11,9 @@
 
 
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int clen=0, len=0, size=sizeof(data->mydomains);
+   int rc;
    char s[SMALLBUFSIZE];
 
-   memset(data->mydomains, 0, size);
    memset(s, 0, sizeof(s));
 
 
@@ -34,13 +33,9 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      len = strlen(s);
-
-      if(clen + len + 1 < size){
-         memcpy(data->mydomains+clen, s, len);
-         clen += len;
-      }
-      else break;
+      rc = append_list(&(data->mydomains), s);
+      if(rc == -1) syslog(LOG_PRIORITY, "failed to append mydomain: '%s'", s);
+      else if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "added mydomain: '%s'", s);
 
       memset(s, 0, sizeof(s));
    }
@@ -49,7 +44,38 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
 
 ENDE:
    close_prepared_statement(data->stmt_generic);
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "mydomains: '%s'", data->mydomains);
 }
+
+
+int is_email_address_on_my_domains(char *email, struct __data *data){
+   int rc=0;
+   char *q, *s;
+   struct list *p;
+
+   if(email == NULL) return rc;
+
+   q = strchr(email, '@');
+   if(!q || strlen(q) < 3) return rc;
+
+   s = strrchr(q+1, ' ');
+
+   if(s) *s = '\0';
+
+
+   p = data->mydomains;
+
+   while(p != NULL){
+      if(strcasecmp(p->s, q+1) == 0){
+         rc = 1;
+         break;
+      }
+
+      p = p->r;
+   }
+
+   if(s) *s = ' ';
+
+   return rc;
+}
+
 

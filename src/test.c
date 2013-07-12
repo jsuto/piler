@@ -48,6 +48,7 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.mydomains = NULL;
 
    load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
    load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
@@ -95,6 +96,8 @@ int main(int argc, char **argv){
 
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
+
+   free_list(data.mydomains);
 
    for(i=1; i<=state.n_attachments; i++){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);

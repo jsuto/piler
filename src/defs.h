@@ -246,7 +246,7 @@ struct __data {
    int folder;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
-   char mydomains[MAXBUFSIZE];
+   struct list *mydomains;
 
 #ifdef NEED_MYSQL
    MYSQL_STMT *stmt_generic;

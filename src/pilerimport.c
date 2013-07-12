@@ -399,6 +399,7 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.mydomains = NULL;
 
    while(1){
 
@@ -570,6 +571,8 @@ int main(int argc, char **argv){
 
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
+
+   free_list(data.mydomains);
 
    close_database(&sdata);
 

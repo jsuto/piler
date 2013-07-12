@@ -231,6 +231,8 @@ void p_clean_exit(){
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
 
+   free_list(data.mydomains);
+
 #ifdef HAVE_MULTITENANCY
    free_list(data.customers);
 #endif
@@ -308,6 +310,8 @@ void initialise_configuration(){
    free_rule(data.archiving_rules);
    free_rule(data.retention_rules);
 
+   free_list(data.mydomains);
+
 #ifdef HAVE_MULTITENANCY
    free_list(data.customers);
 #endif
@@ -316,6 +320,8 @@ void initialise_configuration(){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.mydomains = NULL;
+
 #ifdef HAVE_MULTITENANCY
    data.customers = NULL;
 #endif
@@ -389,6 +395,7 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.mydomains = NULL;
 #ifdef HAVE_MULTITENANCY
    data.customers = NULL;
 #endif

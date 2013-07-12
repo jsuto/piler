@@ -218,6 +218,7 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.archiving_rules = NULL;
    data.retention_rules = NULL;
+   data.mydomains = NULL;
 
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
@@ -245,6 +246,8 @@ int main(int argc, char **argv){
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);
 
    printf("put %llu messages to %s table for reindexing\n", n, SQL_SPHINX_TABLE);
+
+   free_list(data.mydomains);
 
    close_database(&sdata);
 

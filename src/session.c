@@ -161,6 +161,18 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata.ttmpfile);
 
+               if(cfg->archive_only_mydomains == 1 && sdata.internal_sender == 0 && sdata.internal_recipient == 0){
+                  remove_stripped_attachments(&sstate);
+                  inj = ERR_MYDOMAINS;
+
+                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                  write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
+
+                  syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata.ttmpfile, sdata.fromemail, sstate.message_id);
+
+                  goto END_OF_PROCESSING;
+               }
+
                sdata.need_scan = 1;
 
                make_digests(&sdata, cfg);
@@ -194,7 +206,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   if(db_conn == 1){
 
                      if(sdata.restored_copy == 1){
-                        syslog(LOG_PRIORITY, "%s: discarding restored copy", sdata.ttmpfile);
+                        syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata.ttmpfile);
                         inj = OK;
                      }
                      else if(AVIR_VIRUS == sdata.rav){
@@ -212,7 +224,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         arule = check_againt_ruleset(data->archiving_rules, &sstate, sdata.tot_len, sdata.spam_message);
 
                         if(arule){
-                           syslog(LOG_PRIORITY, "%s: discarding message by archiving policy: *%s*", sdata.ttmpfile, arule);
+                           syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
                            counters.c_ignore++;
 
@@ -242,7 +254,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   counters.c_rcvd++;
 
                   if(inj == ERR_EXISTS){
-                     syslog(LOG_PRIORITY, "%s: discarding duplicate message", sdata.ttmpfile);
+                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message", sdata.ttmpfile);
                      counters.c_duplicate++;
                   }
 
@@ -257,6 +269,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #ifdef HAVE_LMTP
                } /* for */
             #endif
+
+            END_OF_PROCESSING:
 
                unlink(sdata.ttmpfile);
                unlink(sdata.tmpframe);
