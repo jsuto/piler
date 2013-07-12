@@ -131,7 +131,7 @@ class ModelUserAuth extends Model {
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array("mail", "mailalternateaddress", "proxyaddresses", $ldap_distributionlist_attr));
+               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup"));
 
                $is_auditor = $this->check_ldap_membership($query->rows);
 
@@ -187,7 +187,7 @@ class ModelUserAuth extends Model {
       $data = array();
 
       foreach($e as $a) {
-         //foreach (array("mail", "mailalternateaddress", "proxyaddresses", LDAP_MAIL_ATTR, LDAP_DISTRIBUTIONLIST_ATTR) as $mailattr) {
+         foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(isset($a[$mailattr]['count'])) {
@@ -203,7 +203,7 @@ class ModelUserAuth extends Model {
                   if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:') { array_push($data, $email); }
                }
             }
-         //}
+         }
       }
 
       return $data;
