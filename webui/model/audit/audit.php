@@ -40,6 +40,19 @@ class ModelAuditAudit extends Model {
          $where .= " AND meta_id IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
       }
 
+      if(Registry::get('admin_user') == 0) {
+         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+            if($q) { $q .= ","; }
+            $q .= "?";
+            array_push($arr, $v);
+         }
+
+         $where .= " AND domain IN ($q) ";
+
+         reset($_SESSION['auditdomains']);
+      }
+
+
       if(isset($data['date1'])) { $date1 = $data['date1']; }
       if(isset($data['date2'])) { $date2 = $data['date2']; }
 

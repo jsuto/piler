@@ -48,6 +48,11 @@
 
               <li><a href="search.php"><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
 
+          <?php if(ENABLE_AUDIT == 1 && $auditor_user == 1) { ?>
+              <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
+          <?php } ?>
+
+
 	  <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
               <li><a href="/folders.php"><i class="icon-folder-close"></i>&nbsp;<?php print $text_folders; ?></a></li>
           <?php } ?>

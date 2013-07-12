@@ -297,6 +297,7 @@ create table if not exists `audit` (
    `id` bigint unsigned not null auto_increment,
    `ts` int not null,
    `email` varchar(128) not null,
+   `domain` varchar(128) not null,
    `action` int not null,
    `ipaddr` char(15) not null,
    `meta_id` bigint unsigned not null,
@@ -309,6 +310,7 @@ create index `audit_idx` on `audit`(`email`);
 create index `audit_idx2` on `audit`(`action`);
 create index `audit_idx3` on `audit`(`ipaddr`);
 create index `audit_idx4` on `audit`(`ts`);
+create index `audit_idx5` on `audit`(`domain`);
 
 
 
@@ -343,5 +345,16 @@ CREATE TABLE IF NOT EXISTS `counter_stats` (
   KEY `email` (`email`),
   KEY `domain` (`domain`)
 ) ENGINE=InnoDB;
+
+
+create table if not exists `ldap` (
+   `id` int not null auto_increment primary key,
+   `description` varchar(255) not null,
+   `ldap_type` varchar(255) not null,
+   `ldap_host` varchar(255) not null,
+   `ldap_base_dn` varchar(255) not null,
+   `ldap_bind_dn` varchar(255) not null,
+   `ldap_bind_pw` varchar(255) not null
+) Engine=InnoDB;
 
 

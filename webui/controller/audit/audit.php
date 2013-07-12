@@ -14,7 +14,7 @@ class ControllerAuditAudit extends Controller {
 
       $this->load->model('audit/audit');
 
-      if(Registry::get('admin_user') == 0) {
+      if(Registry::get('admin_user') == 0 && Registry::get('auditor_user') == 0) {
          die("go away");
       }
 

@@ -26,9 +26,11 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
    if($ipaddr == '' && isset($_SERVER['REMOTE_ADDR'])) { $ipaddr = $_SERVER['REMOTE_ADDR']; }
    if($email == '') { $email = $_SESSION['email']; }
 
+   $a = explode("@", $email);
+
    $db = Registry::get('db');
 
-   $query = $db->query("INSERT INTO " . TABLE_AUDIT . " (ts, email, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?)", array(time(), $email, $action, $ipaddr, $id, $description));
+   $query = $db->query("INSERT INTO " . TABLE_AUDIT . " (ts, email, domain, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?,?)", array(time(), $email, $a[1], $action, $ipaddr, $id, $description));
 
    return $db->countAffected();
 }

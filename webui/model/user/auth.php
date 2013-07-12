@@ -232,7 +232,7 @@ class ModelUserAuth extends Model {
       $_SESSION['domain'] = $a[1];
       $_SESSION['realname'] = $name;
 
-      $_SESSION['auditdomains'] = array();
+      $_SESSION['auditdomains'] = $this->model_domain_domain->get_your_all_domains_by_email($email);
       $_SESSION['emails'] = $emails;
       $_SESSION['folders'] = array();
       $_SESSION['extra_folders'] = array();

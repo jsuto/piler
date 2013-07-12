@@ -39,6 +39,25 @@ class ModelDomainDomain extends Model {
    }
 
 
+   public function get_your_all_domains_by_email($email = '') {
+      $data = array();
+
+      if($email == '') { return $data; }
+
+      $a = explode("@", $email);
+
+      $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN . " WHERE mapped IN (SELECT mapped FROM " . TABLE_DOMAIN . " WHERE domain=?)", array($a[1]));
+
+      if(isset($query->rows)) {
+         foreach ($query->rows as $q) {
+            array_push($data, $q['domain']);
+         }
+      }
+
+      return $data;
+   }
+
+
    public function deleteDomain($domain = '') {
       if($domain == "") { return 0; }
 

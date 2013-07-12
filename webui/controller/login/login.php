@@ -24,6 +24,7 @@ class ControllerLoginLogin extends Controller {
       $this->load->model('user/auth');
       $this->load->model('user/user');
       $this->load->model('user/prefs');
+      $this->load->model('domain/domain');
       $this->load->model('folder/folder');
 
       if(ENABLE_SAAS == 1) {

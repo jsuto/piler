@@ -229,7 +229,10 @@ require_once 'config-site.php';
 if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme'])) { $config['THEME'] = $_SESSION['theme']; }
 
 // make sure auditors are restricted in a saas environment
-if($config['ENABLE_SAAS'] == 1 && $_SESSION['username'] != 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 1; }
+if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
+if(isset($_SESSION['username']) && $_SESSION['username'] == 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 0; }
+
+
 
 foreach ($config as $k => $v) {
    define($k, $v);
