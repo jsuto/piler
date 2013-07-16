@@ -42,6 +42,7 @@ $_['text_compressed'] = "tömörített";
 $_['text_confirm_to_reset_counters'] = "Számlálók nullázásának megerõsítése";
 $_['text_connection_failed'] = "Sikertelen kapcsolat";
 $_['text_connection_ok'] = "Sikeres kapcsolat";
+$_['text_contact_support'] = "Segítég";
 $_['text_content_filter'] = "Tartalomszûrõ";
 $_['text_conversation_available'] = "Levélváltás elérhetõ";
 $_['text_copied'] = "Átmásolva";

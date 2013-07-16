@@ -41,6 +41,7 @@ $_['text_close'] = "Schließen";
 $_['text_compressed'] = "komprimiert";
 $_['text_confirm_to_reset_counters'] = "Zurücksetzen des Zählers bestätigen";
 $_['text_connection_failed'] = "Connection failed";
+$_['text_contact_support'] = "Contact support";
 $_['text_connection_ok'] = "Connection OK";
 $_['text_content_filter'] = "Inhaltsfilter";
 $_['text_conversation_available'] = "Zugehörige Nachrichten vorhanden";

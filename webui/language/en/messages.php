@@ -42,6 +42,7 @@ $_['text_compressed'] = "compressed";
 $_['text_confirm_to_reset_counters'] = "Confirm to reset counters";
 $_['text_connection_failed'] = "Connection failed";
 $_['text_connection_ok'] = "Connection OK";
+$_['text_contact_support'] = "Contact support";
 $_['text_content_filter'] = "Content filter";
 $_['text_conversation_available'] = "Conversation available";
 $_['text_copied'] = "Copied";

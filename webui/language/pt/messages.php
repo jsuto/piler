@@ -39,6 +39,7 @@ $_['text_clienthost'] = "Client host";
 $_['text_close'] = "Fechar";
 $_['text_compressed'] = "comprimido";
 $_['text_confirm_to_reset_counters'] = "Confirme para resetar os contadores";
+$_['text_contact_support'] = "Contact support";
 $_['text_content_filter'] = "Filtro de conteúdo";
 $_['text_conversation_available'] = "Conversão disponível";
 $_['text_copied'] = "Copiado";

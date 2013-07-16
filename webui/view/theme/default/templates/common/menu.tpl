@@ -2,7 +2,7 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container-fluid"<?php if($settings['colour']) { ?> style="background: <?php print $settings['colour']; ?>;"<?php } ?>>
         
           <!-- <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
           </a> -->
         
-          <a class="brand" href="/" title="<?php print SITE_NAME; ?>"><img src="<?php print SITE_LOGO_SM; ?>" alt="<?php print SITE_NAME; ?>" /></a>
+          <a class="brand" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"><img src="<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>" /></a>
           
           
           <!-- <div class="nav-collapse"> -->
@@ -52,6 +52,9 @@
               <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
           <?php } ?>
 
+          <?php if($settings['support_link']) { ?>
+              <li><a href="<?php print $settings['support_link']; ?>"><?php print $text_contact_support; ?></a></li>
+          <?php } ?>
 
 	  <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
               <li><a href="/folders.php"><i class="icon-folder-close"></i>&nbsp;<?php print $text_folders; ?></a></li>
@@ -59,9 +62,12 @@
 
 <?php } ?>
 
+
             </ul>
             
             <ul class="nav pull-right">
+		<li><a href="<?php print $settings['branding_url']; ?>" target="_blank" <?php if($settings['colour']) { ?>style="background: <?php print $settings['colour']; ?>;"<?php } ?>><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li>
+
 				<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>&nbsp;<?php if(isset($_SESSION['realname'])) { print $_SESSION['realname']; ?>&nbsp;<?php } ?><b class="caret"></b></a>
 					<ul class="dropdown-menu">

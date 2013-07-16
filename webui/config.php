@@ -16,6 +16,7 @@ $config['PILERGETD_PASSWORD'] = '';
 
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
+$config['SUPPORT_LINK'] = '';
 
 $config['DEFAULT_LANG'] = 'en';
 
@@ -267,6 +268,7 @@ define('TABLE_ARCHIVING_RULE', 'archiving_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');
 define('TABLE_OPTION', 'option');
 define('TABLE_LDAP', 'ldap');
+define('TABLE_CUSTOMER_SETTINGS', 'customer_settings');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('VIEW_MESSAGES', 'v_messages');
