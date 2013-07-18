@@ -66,7 +66,7 @@
             </ul>
             
             <ul class="nav pull-right">
-		<li><a href="<?php print $settings['branding_url']; ?>" target="_blank" <?php if($settings['colour']) { ?>style="background: <?php print $settings['colour']; ?>;"<?php } ?>><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li>
+		<?php if(SHOW_COMPANY_LINK == 1) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li><?php } ?>
 
 				<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>&nbsp;<?php if(isset($_SESSION['realname'])) { print $_SESSION['realname']; ?>&nbsp;<?php } ?><b class="caret"></b></a>

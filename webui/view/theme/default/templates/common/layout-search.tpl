@@ -25,7 +25,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
-    <link rel="shortcut icon" href="/view/theme/default/assets/ico/favicon.png">
+    <link rel="shortcut icon" href="/view/theme/default/assets/ico/favicon.png" />
     
     <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
     <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>

@@ -7,7 +7,7 @@ class ModelSaasCustomer extends Model
        $data = array(
                       'branding_text' => BRANDING_TEXT,
                       'branding_url' => BRANDING_URL,
-                      'branding_logo' => SITE_LOGO_SM,
+                      'branding_logo' => BRANDING_LOGO,
                       'support_link' => SUPPORT_LINK,
                       'colour' => ''
                     );

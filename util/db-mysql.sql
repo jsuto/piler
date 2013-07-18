@@ -362,6 +362,7 @@ create table if not exists `customer_settings` (
    `domain` varchar(255) not null unique,
    `branding_text` varchar(255) default null,
    `branding_url` varchar(255) default null,
+   `branding_logo` varchar(255) default null,
    `support_link` varchar(255) default null,
    `colour` varchar(255) default null
 ) Engine=InnoDB;

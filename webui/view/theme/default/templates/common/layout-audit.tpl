@@ -35,52 +35,76 @@
 
 <body onload="Piler.add_shortcuts();">
 
-<div id="messagebox1" class="audit audit-info"></div>
 
-<div id="piler1" class="container">
 
-<div id="menu"><?php print $menu; ?></div>
+   <div id="messagebox1" class="audit audit-info"></div>
 
-<div id="searchcontainer">
+   <div id="piler1" class="container">
 
-    <input type="hidden" name="searchtype" id="searchtype" value="expert" />
-    <input type="hidden" name="sort" id="sort" value="date" />
-    <input type="hidden" name="order" id="order" value="0" />
+      <div id="menu"><?php print $menu; ?></div>
 
-    <div class="control-group">
-        <div class="controls">
+      <div id="searchcontainer">
+
+         <input type="hidden" name="searchtype" id="searchtype" value="expert" />
+         <input type="hidden" name="sort" id="sort" value="date" />
+         <input type="hidden" name="order" id="order" value="0" />
+
+         <div class="control-group">
+         <div class="controls">
             <label for="_search">Search</label>
             <div class="input-append">            
                 <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
                 <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
             </div>
-        </div>
-    </div>
-</div>
+         </div>
+      </div>
+   </div>
 
-<div id="mainscreen">
 
-  <div id="mailleftcontainer">
-  </div>
 
-  <div id="mailrightcontainer<?php if(ENABLE_FOLDER_RESTRICTIONS == 0) { ?>nofolder<?php } ?>">
+   <div id="mainscreen">
 
-    <div id="mailrightcontent">
-
-      <div id="mailcontframe">
-        <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-        <div id="resultscontainer" class="boxlistcontent"> 
-
-              <?php print $content; ?>
-
-        </div>
+      <div id="mailleftcontainer">
       </div>
 
-  </div>
+      <div id="mailrightcontainernofolder">
 
-</div>
+         <div id="mailrightcontent">
 
-</div>
+            <div id="mailcontframe">
+               <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
+               <div id="resultscontainer" class="boxlistcontent"> 
+                  <?php print $content; ?>
+               </div>
+            </div>
+
+<?php if(Registry::get('auditor_user') == 1) { ?>
+
+            <script type="text/javascript">
+               var mailviewsplit = new rcube_splitter({id:'splitter2', p1: 'mailcontframe', p2: 'mailpreviewframe', orientation: 'h', relative: true, start: 341});
+               split.add_onload('mailviewsplit.init()');
+            </script>
+
+            <div id="mailpreviewframe"></div>
+
+<?php } ?>
+
+         </div>
+
+      </div>
+
+   </div>
+
+<?php if(Registry::get('auditor_user') == 1) { ?>
+
+<script type="text/javascript">
+   $(document).ready(function(){
+      split.init();
+   });
+</script>
+
+<?php } ?>
+
 
 </body>
 </html>
