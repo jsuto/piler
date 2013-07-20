@@ -28,24 +28,34 @@
 
         <tr>
             <th colspan="3">&nbsp;</th>
-            <th colspan="3">Sent</th>
-            <th colspan="3">Received</th>
+            <th colspan="3"><?php print $text_sent; ?></th>
+            <th colspan="3"><?php print $text_received; ?></th>
         </tr>
         <tr>
             <th><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Oldest Record <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Newest Record <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Items <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Avg Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Items <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-            <th>Avg Size <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+
+        <?php if(ENABLE_SAAS == 1) { ?>
+            <th><?php print $text_users; ?></th>
+        <?php } ?>
+
+            <th><?php print $text_oldest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_newest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_items; ?>  <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sent&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_average_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=sentavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_items; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recd&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_average_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=1"><i class="icon-chevron-down"></i></a></th>
         </tr>
         
         <?php foreach($accounting as $details) {?>
         <tr>
             <td><?php echo $details['item']; ?></td>
+
+        <?php if(ENABLE_SAAS == 1) { ?>
+            <td><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></td>
+        <?php } ?>
+
             <td><?php echo date("d M Y",$details['oldest']); ?></td>
             <td><?php echo date("d M Y",$details['newest']); ?></td>
             <td>
@@ -84,6 +94,6 @@
     
 <?php } else { ?>
 <tr>
-    <td colspan='6'>No Emails Found</td>
+    <td colspan='6'><?php print $text_no_email_found; ?></td>
 </tr>
 <?php } ?>

@@ -492,5 +492,48 @@ function safe_feof($fp, &$start = NULL) {
 }
 
 
+function get_ldap_attribute_names($ldap_type = '') {
+
+   $ldap_mail_attr = LDAP_MAIL_ATTR;
+   $ldap_account_objectclass = LDAP_ACCOUNT_OBJECTCLASS;
+   $ldap_distributionlist_attr = LDAP_DISTRIBUTIONLIST_ATTR;
+   $ldap_distributionlist_objectclass = LDAP_DISTRIBUTIONLIST_OBJECTCLASS;
+
+   switch ($ldap_type) {
+
+            case 'AD':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'user';
+                       $ldap_distributionlist_attr = 'member';
+                       $ldap_distributionlist_objectclass = 'group';
+                       break;
+
+            case 'zimbra':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'zimbraAccount';
+                       $ldap_distributionlist_attr = 'zimbraMailForwardingAddress';
+                       $ldap_distributionlist_objectclass = 'zimbraDistributionList';
+                       break;
+
+            case 'iredmail':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'mailUser';
+                       $ldap_distributionlist_attr = 'memberOfGroup';
+                       $ldap_distributionlist_objectclass = 'mailList';
+                       break;
+
+            case 'lotus':
+                       $ldap_mail_attr = 'mail';
+                       $ldap_account_objectclass = 'dominoPerson';
+                       $ldap_distributionlist_attr = 'mail';
+                       $ldap_distributionlist_objectclass = 'dominoGroup';
+                       break;
+
+
+   }
+
+   return array($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass);
+}
+
 
 ?>

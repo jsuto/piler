@@ -62,59 +62,27 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstLDAP($username = '', $password = '') {
-
+      $ldap_type = '';
       $ldap_host = LDAP_HOST;
       $ldap_base_dn = LDAP_BASE_DN;
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
 
-      $ldap_mail_attr = LDAP_MAIL_ATTR;
-      $ldap_account_objectclass = LDAP_ACCOUNT_OBJECTCLASS;
-      $ldap_distributionlist_attr = LDAP_DISTRIBUTIONLIST_ATTR;
-      $ldap_distributionlist_objectclass = LDAP_DISTRIBUTIONLIST_OBJECTCLASS;
-
       if(ENABLE_SAAS == 1) {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
 
-         $ldap_type = $a[0];
-         $ldap_host = $a[1];
-         $ldap_base_dn = $a[2];
-         $ldap_helper_dn = $a[3];
-         $ldap_helper_password = $a[4];
-
-         switch ($ldap_type) {
-
-            case 'AD':
-                       $ldap_mail_attr = 'mail';
-                       $ldap_account_objectclass = 'user';
-                       $ldap_distributionlist_attr = 'member';
-                       $ldap_distributionlist_objectclass = 'group';
-                       break;
-
-            case 'zimbra':
-                       $ldap_mail_attr = 'mail';
-                       $ldap_account_objectclass = 'zimbraAccount';
-                       $ldap_distributionlist_attr = 'zimbraMailForwardingAddress';
-                       $ldap_distributionlist_objectclass = 'zimbraDistributionList';
-                       break;
-
-            case 'iredmail':
-                       $ldap_mail_attr = 'mail';
-                       $ldap_account_objectclass = 'mailUser';
-                       $ldap_distributionlist_attr = 'memberOfGroup';
-                       $ldap_distributionlist_objectclass = 'mailList';
-                       break;
-
-            case 'lotus':
-                       $ldap_mail_attr = 'mail';
-                       $ldap_account_objectclass = 'dominoPerson';
-                       $ldap_distributionlist_attr = 'mail';
-                       $ldap_distributionlist_objectclass = 'dominoGroup';
-                       break;
-
-            
+         if(count($a) >= 5) {
+            $ldap_type = $a[0];
+            $ldap_host = $a[1];
+            $ldap_base_dn = $a[2];
+            $ldap_helper_dn = $a[3];
+            $ldap_helper_password = $a[4];
          }
       }
+
+      list($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass) = get_ldap_attribute_names($ldap_type);
+
+      if($ldap_host == '' || $ldap_helper_password == '') { return 0; }
 
       $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 

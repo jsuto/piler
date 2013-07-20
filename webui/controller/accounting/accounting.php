@@ -15,7 +15,9 @@ class ControllerAccountingAccounting extends Controller {
       $this->load->model('user/user');
       $this->load->model('group/group');
       $this->load->model('accounting/accounting');
-      $counters = new ModelAccountingAccounting();
+      if(ENABLE_SAAS == 1) {
+         $this->load->model('saas/ldap');
+      }
 
       $this->data['page'] = 0;
       $this->data['page_len'] = get_page_length();
@@ -58,17 +60,32 @@ class ControllerAccountingAccounting extends Controller {
       if(@$this->request->get['view'] == "email") {
         $this->data['view'] = 'email';
         $this->data['viewname'] = $this->data['text_email'];
-        $this->data['accounting'] = $counters->get_accounting('email',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
-        $this->data['total_records'] = $counters->count_accounting('email',$this->data['search']);
+        $this->data['accounting'] = $this->model_accounting_accounting->get_accounting('email',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
+        $this->data['total_records'] = $this->model_accounting_accounting->count_accounting('email',$this->data['search']);
       }
       
       if(@$this->request->get['view'] == "domain") {
         $this->data['view'] = 'domain';
         $this->data['viewname'] = $this->data['text_domain'];
-        $this->data['accounting'] = $counters->get_accounting('domain',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
-        $this->data['total_records'] = $counters->count_accounting('domain',$this->data['search']);
+        $this->data['accounting'] = $this->model_accounting_accounting->get_accounting('domain',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
+        $this->data['total_records'] = $this->model_accounting_accounting->count_accounting('domain',$this->data['search']);
+
+        if(ENABLE_SAAS == 1) {
+           $this->data['accounts'] = array();
+
+           foreach($this->data['accounting'] as $a) {
+              $this->data['accounts'][$a['item']] = $this->model_saas_ldap->get_accounts_in_domain($a['item']);
+           }
+        }
       }   
-      
+
+      if(@$this->request->get['view'] == "accounts" && isset($this->request->get['domain'])) {
+        $this->template = "accounting/accounts.tpl";
+        $this->data['domain'] = $this->request->get['domain'];
+        $this->data['accounts'] = $this->model_saas_ldap->get_accounts_in_domain($this->request->get['domain']); 
+      }
+
+
       if($this->data['accounting']) {
           foreach($this->data['accounting'] as $id=>$row) {
             if($this->data['sorttype'] == 0){

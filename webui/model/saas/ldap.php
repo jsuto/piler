@@ -55,6 +55,42 @@ class ModelSaasLdap extends Model
       return array();
    }
 
+
+   public function get_accounts_in_domain($domain = '') {
+      $ldap_type = '';
+      $ldap_host = LDAP_HOST;
+      $ldap_base_dn = LDAP_BASE_DN;
+      $ldap_helper_dn = LDAP_HELPER_DN;
+      $ldap_helper_password = LDAP_HELPER_PASSWORD;
+
+      if(ENABLE_SAAS == 1) {
+         $a = $this->model_saas_ldap->get_ldap_params_by_email("aaa@" . $domain);
+
+         if(count($a) >= 5) {
+            $ldap_type = $a[0];
+            $ldap_host = $a[1];
+            $ldap_base_dn = $a[2];
+            $ldap_helper_dn = $a[3];
+            $ldap_helper_password = $a[4];
+         }
+      }
+
+      list($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass) = get_ldap_attribute_names($ldap_type);
+
+      if($ldap_host == '' || $ldap_helper_password == '') { return array(); }
+
+      $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
+
+      if($ldap->is_bind_ok()) {
+
+         $query = $ldap->query($ldap_base_dn, "(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=*@$domain))", array($ldap_mail_attr));
+
+         if($query->num_rows > 0) { asort($query->rows); return $query->rows; }
+      }
+
+      return array();
+   }
+
 }
 
 ?>
