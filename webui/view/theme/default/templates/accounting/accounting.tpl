@@ -34,7 +34,7 @@
         <tr>
             <th><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></th>
 
-        <?php if(ENABLE_SAAS == 1) { ?>
+        <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
             <th><?php print $text_users; ?></th>
         <?php } ?>
 
@@ -52,7 +52,7 @@
         <tr>
             <td><?php echo $details['item']; ?></td>
 
-        <?php if(ENABLE_SAAS == 1) { ?>
+        <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
             <td><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></td>
         <?php } ?>
 
