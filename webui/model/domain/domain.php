@@ -26,6 +26,21 @@ class ModelDomainDomain extends Model {
    }
 
 
+   public function get_mapped_domains() {
+      $data = array();
+
+      $query = $this->db->query("SELECT DISTINCT mapped FROM " . TABLE_DOMAIN . " ORDER BY mapped ASC");
+
+      if(isset($query->rows)) {
+         foreach($query->rows as $q) {
+            array_push($data, $q['mapped']);
+         }
+      }
+
+      return $data;
+   }
+
+
    public function get_domains_by_string($s = '', $page = 0, $page_len = PAGE_LEN) {
       $from = (int)$page * (int)$page_len;
 

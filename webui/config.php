@@ -341,6 +341,7 @@ define('ACTION_REMOVE_MESSAGE', 13);
 define('ACTION_UNAUTHORIZED_REMOVE_MESSAGE', 14);
 define('ACTION_DOWNLOAD_ATTACHMENT', 15);
 define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
+define('ACTION_VIEW_JOURNAL', 17);
 
 $actions = array(
                   'unknown' => 1,
@@ -353,7 +354,8 @@ $actions = array(
                   'download' => 9,
                   'search' => 10,
                   'save_search' => 11,
-                  'download_attachment' => 15
+                  'download_attachment' => 15,
+                  'journal' => 17
                 );
 
 

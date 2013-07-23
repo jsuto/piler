@@ -67,16 +67,18 @@ class ModelUserAuth extends Model {
       $ldap_base_dn = LDAP_BASE_DN;
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
+      $ldap_auditor_member_dn = LDAP_AUDITOR_MEMBER_DN;
 
       if(ENABLE_SAAS == 1) {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
 
-         if(count($a) >= 5) {
+         if(count($a) >= 6) {
             $ldap_type = $a[0];
             $ldap_host = $a[1];
             $ldap_base_dn = $a[2];
             $ldap_helper_dn = $a[3];
             $ldap_helper_password = $a[4];
+            $ldap_auditor_member_dn = $a[5];
          }
       }
 
@@ -101,7 +103,7 @@ class ModelUserAuth extends Model {
 
                $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup"));
 
-               $is_auditor = $this->check_ldap_membership($query->rows);
+               $is_auditor = $this->check_ldap_membership($ldap_auditor_member_dn, $query->rows);
 
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
@@ -124,8 +126,8 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function check_ldap_membership($e = array()) {
-      if(LDAP_AUDITOR_MEMBER_DN == '') { return 0; }
+   private function check_ldap_membership($ldap_auditor_member_dn = '', $e = array()) {
+      if($ldap_auditor_member_dn == '') { return 0; }
 
       foreach($e as $a) {
          foreach (array("memberof") as $memberattr) {
@@ -133,13 +135,13 @@ class ModelUserAuth extends Model {
 
                if(isset($a[$memberattr]['count'])) {
                   for($i = 0; $i < $a[$memberattr]['count']; $i++) {
-                     if($a[$memberattr][$i] == LDAP_AUDITOR_MEMBER_DN) {
+                     if($a[$memberattr][$i] == $ldap_auditor_member_dn) {
                         return 1;
                      }
                   }
                }
                else {
-                  if($a[$memberattr] == LDAP_AUDITOR_MEMBER_DN) {
+                  if($a[$memberattr] == $ldap_auditor_member_dn) {
                      return 1;
                   }
                }

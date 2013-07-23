@@ -31,7 +31,7 @@ class ControllerMessageJournal extends Controller {
          die("no permission for " . $this->data['id']);
       }
 
-      AUDIT(ACTION_VIEW_HEADER, '', '', $this->data['id'], '');
+      AUDIT(ACTION_VIEW_JOURNAL, '', '', $this->data['id'], '');
 
       if(Registry::get('auditor_user') == 1) { $this->data['rcpt'] = $this->model_search_search->get_message_addresses_in_my_domain($this->data['id']); }
 

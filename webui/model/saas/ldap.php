@@ -3,9 +3,14 @@
 class ModelSaasLdap extends Model
 {
 
-   public function get() {
+   public function get($id = -1) {
 
-      $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
+      if($id >= 0) {
+         $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_auditor_member_dn FROM " . TABLE_LDAP . " WHERE id=?", array($id));
+         if($query->num_rows > 0) { return $query->row; }
+      }
+
+      $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_auditor_member_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
 
       if($query->num_rows > 0) { return $query->rows; }
 
@@ -29,7 +34,7 @@ class ModelSaasLdap extends Model
    public function add($arr = array()) {
       if(!isset($arr['description']) || !isset($arr['ldap_host'])) { return 0; }
 
-      $query = $this->db->query("INSERT INTO " . TABLE_LDAP . " (description, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_type) VALUES (?,?,?,?,?,?)", array($arr['description'], $arr['ldap_host'], $arr['ldap_base_dn'], $arr['ldap_bind_dn'], $arr['ldap_bind_pw'], $arr['ldap_type']));
+      $query = $this->db->query("INSERT INTO " . TABLE_LDAP . " (description, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_type, ldap_auditor_member_dn) VALUES (?,?,?,?,?,?,?)", array($arr['description'], $arr['ldap_host'], $arr['ldap_base_dn'], $arr['ldap_bind_dn'], $arr['ldap_bind_pw'], $arr['ldap_type'], $arr['ldap_auditor_member_dn']));
 
       $rc = $this->db->countAffected();
 
@@ -41,6 +46,15 @@ class ModelSaasLdap extends Model
    }
 
 
+   public function update($arr = array()) {
+      if(!isset($arr['id']) || !isset($arr['description']) || !isset($arr['ldap_host'])) { return 0; }
+
+      $query = $this->db->query("UPDATE " . TABLE_LDAP . " SET description=?, ldap_host=?, ldap_base_dn=?, ldap_bind_dn=?, ldap_bind_pw=?, ldap_type=?, ldap_auditor_member_dn=? WHERE id=?", array($arr['description'], $arr['ldap_host'], $arr['ldap_base_dn'], $arr['ldap_bind_dn'], $arr['ldap_bind_pw'], $arr['ldap_type'], $arr['ldap_auditor_member_dn'], $arr['id']));
+
+      return $this->db->countAffected();
+   }
+
+
    public function get_ldap_params_by_email($email = '') {
       $domain = '';
 
@@ -48,9 +62,9 @@ class ModelSaasLdap extends Model
 
       list($l,$d) = explode("@", $email);
 
-      $query = $this->db->query("SELECT ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw from " . TABLE_DOMAIN . " as d, " . TABLE_LDAP . " as l where d.ldap_id=l.id and d.domain=?", array($d));
+      $query = $this->db->query("SELECT ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_auditor_member_dn FROM " . TABLE_DOMAIN . " as d, " . TABLE_LDAP . " as l where d.ldap_id=l.id and d.domain=?", array($d));
 
-      if($query->num_rows > 0) { return array($query->row['ldap_type'], $query->row['ldap_host'], $query->row['ldap_base_dn'], $query->row['ldap_bind_dn'], $query->row['ldap_bind_pw']); }
+      if($query->num_rows > 0) { return array($query->row['ldap_type'], $query->row['ldap_host'], $query->row['ldap_base_dn'], $query->row['ldap_bind_dn'], $query->row['ldap_bind_pw'], $query->row['ldap_auditor_member_dn']); }
 
       return array();
    }

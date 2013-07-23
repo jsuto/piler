@@ -10,7 +10,7 @@
             <span class="icon-bar"></span>
           </a> -->
         
-          <a class="brand" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"><img src="<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>" /></a>
+          <a class="brand" target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"><?php if($settings['branding_logo']) { ?><img src="/images/<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>" /><?php } ?></a>
           
           
           <!-- <div class="nav-collapse"> -->
@@ -37,6 +37,7 @@
                                           <li><a href="index.php?route=domain/domain"><i class="icon-globe"></i>&nbsp;<?php print $text_domain; ?></a></li>
                                        <?php if(ENABLE_SAAS == 1) { ?>
                                           <li><a href="index.php?route=ldap/list"><i class="icon-key"></i>&nbsp;<?php print $text_ldap; ?></a></li>
+                                          <li><a href="index.php?route=customer/list"><i class="icon-wrench"></i>&nbsp;<?php print $text_customers; ?></a></li>
                                        <?php } ?>
                                           <li><a href="index.php?route=policy/archiving"><i class="icon-folder-open"></i>&nbsp;<?php print $text_archiving_rules; ?></a></li>
                                           <li><a href="index.php?route=policy/retention"><i class="icon-time"></i>&nbsp;<?php print $text_retention_rules; ?></a></li>

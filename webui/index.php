@@ -60,7 +60,7 @@ Registry::set('counters', $counters);
 Registry::set('langs', $langs);
 Registry::set('themes', $themes);
 Registry::set('letters', $letters);
-
+Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra"));
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
 

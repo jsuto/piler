@@ -63,6 +63,7 @@ class ControllerAuditHelper extends Controller {
       $this->data['actions'][ACTION_UNAUTHORIZED_REMOVE_MESSAGE] = $this->data['text_unauthorized_remove_message'];
       $this->data['actions'][ACTION_DOWNLOAD_ATTACHMENT] = $this->data['text_download_attachment2'];
       $this->data['actions'][ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT] = $this->data['text_unauthorized_download_attachment'];
+      $this->data['actions'][ACTION_VIEW_JOURNAL] = $this->data['text_view_journal'];
 
 
 
@@ -98,7 +99,7 @@ class ControllerAuditHelper extends Controller {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if(preg_match("/(login|loginfailed|logout|view|download|search|restore)$/", $v) && isset($actions[$v])) { $this->a['action'] .= '*' . $actions[$v]; }
+         if(preg_match("/(login|loginfailed|logout|view|download|search|restore|journal)$/", $v) && isset($actions[$v])) { $this->a['action'] .= '*' . $actions[$v]; }
          if(preg_match("/\@/", $v)) { $this->a['user'] .= '*' . $v; }
          if(preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $v)) { $this->a['ipaddr'] .= '*' . $v; }
          if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= '*' . $v; }

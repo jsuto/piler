@@ -354,11 +354,13 @@ create table if not exists `ldap` (
    `ldap_host` varchar(255) not null,
    `ldap_base_dn` varchar(255) not null,
    `ldap_bind_dn` varchar(255) not null,
-   `ldap_bind_pw` varchar(255) not null
+   `ldap_bind_pw` varchar(255) not null,
+   `ldap_auditor_member_dn` varchar(255) default null
 ) Engine=InnoDB;
 
 
 create table if not exists `customer_settings` (
+   `id` int not null auto_increment primary key,
    `domain` varchar(255) not null unique,
    `branding_text` varchar(255) default null,
    `branding_url` varchar(255) default null,

@@ -1,22 +1,23 @@
 <?php
 
 
-class ControllerLdapList extends Controller {
+class ControllerCustomerList extends Controller {
    private $error = array();
 
    public function index(){
 
       $this->id = "content";
-      $this->template = "ldap/list.tpl";
+      $this->template = "customer/list.tpl";
       $this->layout = "common/layout";
 
 
       $request = Registry::get('request');
       $db = Registry::get('db');
 
-      $this->load->model('saas/ldap');
+      $this->load->model('saas/customer');
+      $this->load->model('domain/domain');
 
-      $this->document->title = $this->data['text_ldap'];
+      $this->document->title = $this->data['text_customers'];
 
 
       $this->data['username'] = Registry::get('username');
@@ -31,8 +32,6 @@ class ControllerLdapList extends Controller {
 
       $this->data['id'] = -1;
 
-      $this->data['ldap_types'] = Registry::get('ldap_types');
-
       if(isset($this->request->get['id'])) { $this->data['id'] = $this->request->get['id']; }
 
       /* check if we are admin */
@@ -43,7 +42,7 @@ class ControllerLdapList extends Controller {
             if($this->validate() == true) {
 
                if(isset($this->request->post['id'])) {
-                  if($this->model_saas_ldap->update($this->request->post) == 1) {
+                  if($this->model_saas_customer->update($this->request->post) == 1) {
                      $this->data['x'] = $this->data['text_successfully_modified'];
                   } else {
                      $this->template = "common/error.tpl";
@@ -51,7 +50,7 @@ class ControllerLdapList extends Controller {
                   }
                }
                else {
-                  if($this->model_saas_ldap->add($this->request->post) == 1) {
+                  if($this->model_saas_customer->add($this->request->post) == 1) {
                      $this->data['x'] = $this->data['text_successfully_added'];
                   } else {
                      $this->template = "common/error.tpl";
@@ -65,11 +64,13 @@ class ControllerLdapList extends Controller {
             } 
          }
 
+         $this->data['domains'] = $this->model_domain_domain->get_mapped_domains();
+
          if(isset($this->request->get['id'])) {
-            $this->data['a'] = $this->model_saas_ldap->get($this->request->get['id']);
+            $this->data['a'] = $this->model_saas_customer->get($this->request->get['id']);
          }
          else {
-            $this->data['entries'] = $this->model_saas_ldap->get();
+            $this->data['entries'] = $this->model_saas_customer->get();
          }
 
       }
@@ -85,24 +86,12 @@ class ControllerLdapList extends Controller {
 
    private function validate() {
 
-      if(!isset($this->request->post['description']) || strlen($this->request->post['description']) < 1) {
-         $this->error['description'] = $this->data['text_invalid_data'];
+      if(!isset($this->request->post['domain']) || strlen($this->request->post['domain']) < 1) {
+         $this->error['domain'] = $this->data['text_invalid_data'];
       }
 
-      if(!isset($this->request->post['ldap_host']) || strlen($this->request->post['ldap_host']) < 1) {
-         $this->error['ldap_host'] = $this->data['text_invalid_data'];
-      }
-
-      if(!isset($this->request->post['ldap_base_dn']) || strlen($this->request->post['ldap_base_dn']) < 1) {
-         $this->error['ldap_base_dn'] = $this->data['text_invalid_data'];
-      }
-
-      if(!isset($this->request->post['ldap_bind_dn']) || strlen($this->request->post['ldap_bind_dn']) < 1) {
-         $this->error['ldap_bind_dn'] = $this->data['text_invalid_data'];
-      }
-
-      if(!isset($this->request->post['ldap_bind_pw']) || strlen($this->request->post['ldap_bind_pw']) < 1) {
-         $this->error['ldap_bind_pw'] = $this->data['text_invalid_data'];
+      if(!isset($this->request->post['branding_text']) || strlen($this->request->post['branding_text']) < 1) {
+         $this->error['branding_text'] = $this->data['text_invalid_data'];
       }
 
       if (!$this->error) {

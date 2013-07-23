@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
 
 <head>
-    <title><?php print $title; ?> | <?php print SITE_NAME; ?> | <?php print PROVIDED_BY; ?></title>
+    <title><?php print $title; ?> | <?php print SITE_NAME; ?> <?php if(PROVIDED_BY) { print PROVIDED_BY; } ?></title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en" />
     <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
