@@ -226,6 +226,7 @@ $_['text_number_of_spam_messages_in_quarantine'] = "Number of spam messages in t
 
 $_['text_off'] = "off";
 $_['text_on'] = "on";
+$_['text_online_users'] = "Online users";
 $_['text_other'] = "other";
 $_['text_outbound'] = "outbound";
 

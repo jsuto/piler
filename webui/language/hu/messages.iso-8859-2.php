@@ -226,6 +226,7 @@ $_['text_number_of_spam_messages_in_quarantine'] = "A keresési feltételnek megfe
 
 $_['text_off'] = "ki";
 $_['text_on'] = "be";
+$_['text_online_users'] = "Online felhasználók";
 $_['text_other'] = "egyéb";
 $_['text_outbound'] = "kimenõ";
 

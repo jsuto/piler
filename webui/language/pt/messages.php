@@ -221,6 +221,7 @@ $_['text_number_of_spam_messages_in_quarantine'] = "Número de mensagens spam na
 
 $_['text_off'] = "desligado";
 $_['text_on'] = "ligado";
+$_['text_online_users'] = "Online users";
 $_['text_other'] = "outros";
 $_['text_outbound'] = "saida";
 

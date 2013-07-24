@@ -1,6 +1,6 @@
 alter table `domain` add column `ldap_id` int default 0;
 
-alter table `audit` add column `domain` varchar(128) not null,
+alter table `audit` add column `domain` varchar(128) not null;
 
 create index `audit_idx5` on `audit`(`domain`);
 
