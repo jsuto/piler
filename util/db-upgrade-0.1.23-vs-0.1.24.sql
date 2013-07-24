@@ -23,6 +23,12 @@ create table if not exists `customer_settings` (
    `branding_logo` varchar(255) default null,
    `support_link` varchar(255) default null,
    `colour` varchar(255) default null
-) Engine=InnoDB;                                                                                                                                                                                                                                                                                                               
+) Engine=InnoDB;
 
+create table if not exists `online` (
+   `username` varchar(255) not null unique,
+   `ts` int default 0,
+   `last_activity` int default 0,
+   `ipaddr` varchar(255) default null
+) Engine=InnoDB;
 

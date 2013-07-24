@@ -167,6 +167,7 @@ $_['text_ipaddr'] = "IP cím";
 
 $_['text_language'] = "Nyelv";
 $_['text_last'] = "Utolsó";
+$_['text_last_activity'] = "Utolsó aktivitás";
 $_['text_latest_emails'] = "Legfrissebb emailek";
 $_['text_last_update'] = "Utolsó frissítés";
 $_['text_ldap'] = "LDAP";
@@ -178,6 +179,7 @@ $_['text_ldap_host'] = "LDAP kiszolgáló";
 $_['text_ldap_type'] = "LDAP típus";
 $_['text_load'] = "Betöltés";
 $_['text_loading'] = "töltõdik";
+$_['text_logged_in'] = "Bejelentkezés";
 $_['text_logged_out'] = "Ön kijelentkezett";
 $_['text_login'] = "Bejelentkezés";
 $_['text_login2'] = "bejelentkezés";

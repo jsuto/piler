@@ -73,6 +73,15 @@ if(Registry::get('username')) {
    else {
       $action = new Router('search/search');
    }
+
+   if(ENABLE_SAAS == 1) {
+      $query = $db->query("UPDATE " . TABLE_ONLINE . " SET last_activity=? WHERE username=?", array(NOW, Registry::get('username')));
+
+      if($db->countAffected() == 0) {
+         $query = $db->query("INSERT INTO " . TABLE_ONLINE . " (username, ts, last_activity, ipaddr) VALUES(?,?,?,?)", array(Registry::get('username'), NOW, NOW, $_SERVER['REMOTE_ADDR']));
+      }
+   }
+
 }
 else {
    if(ENABLE_GOOGLE_LOGIN == 1 && isset($request->get['route']) && $request->get['route'] == 'login/google') {

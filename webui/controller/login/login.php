@@ -29,6 +29,7 @@ class ControllerLoginLogin extends Controller {
 
       if(ENABLE_SAAS == 1) {
          $this->load->model('saas/ldap');
+         $this->load->model('saas/customer');
       }
 
       $this->document->title = $this->data['text_login'];
@@ -38,6 +39,10 @@ class ControllerLoginLogin extends Controller {
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
 
             $this->model_user_prefs->get_user_preferences($_SESSION['username']);
+
+            if(ENABLE_SAAS == 1) {
+               $this->model_saas_customer->online($_SESSION['username']);
+            }
 
             LOGGER('logged in');
 

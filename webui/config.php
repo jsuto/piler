@@ -272,6 +272,7 @@ define('TABLE_RETENTION_RULE', 'retention_rule');
 define('TABLE_OPTION', 'option');
 define('TABLE_LDAP', 'ldap');
 define('TABLE_CUSTOMER_SETTINGS', 'customer_settings');
+define('TABLE_ONLINE', 'online');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('VIEW_MESSAGES', 'v_messages');

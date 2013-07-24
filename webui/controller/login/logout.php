@@ -18,6 +18,11 @@ class ControllerLoginLogout extends Controller {
 
       $this->document->title = $this->data['text_logout'];
 
+      if(ENABLE_SAAS == 1) {
+         $this->load->model('saas/customer');
+         $this->model_saas_customer->offline(Registry::get('username'));
+      }
+
       logout();
 
       $this->render();

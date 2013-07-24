@@ -26,6 +26,13 @@
 					<th><?php print $text_swap_usage; ?>:</th>
                     <td><div class="progress <?php if($swapinfo < HEALTH_RATIO) { ?>progress-success<?php } else { ?>progress-danger<?php } ?>"><div class="bar" style="width: <?php print $swapinfo; ?>%"></div>&nbsp;<?php print $swapinfo; ?>% / <?php print $totalswap; ?> MB</div></td>
 				</tr>
+
+<?php if(ENABLE_SAAS == 1) { ?>
+                <tr>
+                    <th class="span4"><?php print $text_online_users; ?>:</th>
+                    <td class="span8"><a href="index.php?route=stat/online"><?php print $num_of_online_users; ?></a></td>
+                </tr>
+<?php } ?>
                 
             </table>
             

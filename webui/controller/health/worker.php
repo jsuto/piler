@@ -18,6 +18,9 @@ class ControllerHealthWorker extends Controller {
 
       $this->load->model('health/health');
       $this->load->model('stat/counter');
+      if(ENABLE_SAAS == 1) {
+         $this->load->model('saas/customer');
+      }
 
       $request = Registry::get('request');
 
@@ -37,6 +40,9 @@ class ControllerHealthWorker extends Controller {
          $this->data['health'][] = $this->model_health_health->checksmtp($smtp, $lang->data['text_error']);
       }
 
+      if(ENABLE_SAAS == 1) {
+         $this->data['num_of_online_users'] = $this->model_saas_customer->count_online();
+      }
 
       $this->data['processed_emails'] = $this->model_health_health->count_processed_emails();
 

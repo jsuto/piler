@@ -163,6 +163,7 @@ $_['text_ipaddr'] = "Endereço IP";
 
 $_['text_language'] = "Idioma";
 $_['text_last'] = "Último";
+$_['text_last_activity'] = "Last activity";
 $_['text_last_update'] = "Última atualização";
 $_['text_latest_emails'] = "Emails mais recentes";
 $_['text_ldap_auditor_member_dn'] = "Auditor member DN";
@@ -173,6 +174,7 @@ $_['text_ldap_host'] = "LDAP host";
 $_['text_ldap_type'] = "LDAP type";
 $_['text_load'] = "Carregar";
 $_['text_loading'] = "carregando";
+$_['text_logged_in'] = "Logged in";
 $_['text_logged_out'] = "Você não está logado";
 $_['text_login'] = "Login";
 $_['text_login2'] = "login";
