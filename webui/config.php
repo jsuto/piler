@@ -19,8 +19,6 @@ $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = '';
 $config['SUPPORT_LINK'] = '';
 
-$config['SHOW_COMPANY_LINK'] = 1;
-
 $config['DEFAULT_LANG'] = 'en';
 
 $config['THEME'] = 'default';
