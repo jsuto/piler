@@ -29,6 +29,7 @@ $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
 $config['ENABLE_SAAS'] = 0;
+$config['DEMO_MODE'] = 0;
 
 $config['TIMEZONE'] = 'Europe/Budapest';
 

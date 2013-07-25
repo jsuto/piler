@@ -92,7 +92,7 @@ class ModelAuditAudit extends Model {
                                     'action' => $a['action'],
                                     'email' => $a['email'],
                                     'date' => date(AUDIT_DATE_FORMAT, $a['ts']),
-                                    'ipaddr' => $a['ipaddr'],
+                                    'ipaddr' => DEMO_MODE == 1 ? anonimize_ip_addr($a['ipaddr']) : $a['ipaddr'],
                                     'description' => $a['description'],
                                     'shortdescription' => make_short_string($a['description'], MAX_CGI_FROM_SUBJ_LEN)
                                   );

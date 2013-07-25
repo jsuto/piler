@@ -492,6 +492,18 @@ function safe_feof($fp, &$start = NULL) {
 }
 
 
+function anonimize_ip_addr($ip = '') {
+   $ip = explode(".", $ip);
+   if(count($ip) == 4) {
+      $ip[0] = $ip[1] = 'x';
+
+      $ip = implode(".", $ip);
+   }
+
+   return $ip;
+}
+
+
 function get_ldap_attribute_names($ldap_type = '') {
 
    $ldap_mail_attr = LDAP_MAIL_ATTR;
