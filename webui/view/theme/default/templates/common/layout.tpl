@@ -32,7 +32,14 @@
     <link rel="shortcut icon" href="/view/theme/default/assets/ico/favicon.png">
 </head>
 
-<body<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php } ?>>
+<body<?php
+
+if(isset($this->request->get['route'])) {
+
+   if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php }
+   if($this->request->get['route'] == 'stat/online') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
+
+} ?>>
 
 <div id="piler1" class="container">
 

@@ -921,8 +921,13 @@ var Piler =
     clear_ldap_test: function()
     {
         $('#LDAPTEST').html('');
-    }
+    },
 
+
+    reload_page: function()
+    {
+        location.reload(true);
+    }
 
 
 }
