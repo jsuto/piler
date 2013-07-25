@@ -1,5 +1,5 @@
 
-<h4><?php print $text_online_users; ?></h4>
+<h4><?php print $text_online_users; ?>, <?php print $text_refresh_period; ?>: <?php print HEALTH_REFRESH; ?> sec</h4>
 
 <div class="listarea">
 
