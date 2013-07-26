@@ -51,14 +51,7 @@ class ControllerLoginLogin extends Controller {
                exit;
             }
 
-            if(isset($_POST['relocation']) && $_POST['relocation']) {
-               header("Location: " . SITE_URL . $_POST['relocation']);
-            } else {
-               header("Location: " . SITE_URL . "search.php");
-            }
-
-            //header("Location: " . SITE_URL . "search.php");
-
+            header("Location: " . SITE_URL . "search.php");
             exit;
          }
 
