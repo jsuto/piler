@@ -287,7 +287,8 @@ create table if not exists `remote` (
 
 create table if not exists `domain` (
    `domain` char(64) not null primary key,
-   `mapped` char(64) not null
+   `mapped` char(64) not null,
+   `ldap_id` int default 0
 ) ENGINE=InnoDB;
 
 insert into `domain` (`domain`, `mapped`) values('local', 'local');
