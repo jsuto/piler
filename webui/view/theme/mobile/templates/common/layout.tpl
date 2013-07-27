@@ -5,9 +5,9 @@
    <title>piler | <?php print $title; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
-   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
-   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
+   <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
+   <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
+   <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
@@ -27,7 +27,14 @@
 
 </head>
 
-<body class="mybody"<?php if(isset($this->request->get['route']) && $this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php } ?>>
+<body<?php
+
+if(isset($this->request->get['route'])) {
+
+   if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php }
+   if($this->request->get['route'] == 'stat/online') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
+
+} ?>>
 
 <div id="piler1" class="container">
 

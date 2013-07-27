@@ -22,6 +22,13 @@
             <div class="cellhealthright"><?php print $uptime; ?></div>
          </div>
 
+<?php if(ENABLE_SAAS == 1) { ?>
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_online_users; ?>:</div>
+            <div class="cellhealthright"><a href="index.php?route=stat/online"><?php print $num_of_online_users; ?></a></div>
+         </div>
+<?php } ?>
+
          <div class="row">
             <div class="cellhealthleft"><?php print $text_archive_size; ?>:</div>
             <div class="cellhealthright"><?php print $archive_size; ?>B</div>

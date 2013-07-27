@@ -5,9 +5,9 @@
    <title>piler<?php if(isset($title) && $title) { ?> | <?php print $title; } ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
-   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
-   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
+   <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
+   <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
+   <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 

@@ -221,6 +221,20 @@ var Piler =
     },
 
 
+    remove_saved_search_terms:function(msg)
+    {
+        Piler.log("[load_saved_search_terms]");
+
+        jQuery.ajax('/index.php?route=search/remove', {})
+        .done(function(a) {
+            $('#mailcontframe').html(a);
+        })
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', msg, 0.85);
+    },
+
+
     /*
      * load the selected message by position to preview area
      */

@@ -1,11 +1,10 @@
 <?php if(Registry::get('username')) { ?>
 
     <div class="navbar">
-       <div class="navbar-inner">
+       <div class="navbar-inner"<?php if($settings['colour']) { ?> style="background: <?php print $settings['colour']; ?>;"<?php } ?>>
 
-       <?php if(BRANDING_TEXT) { ?>
-          <a class="brand" href="<?php if(BRANDING_URL) { print BRANDING_URL; } else { ?>#<?php } ?>"><?php print BRANDING_TEXT; ?></a>
-       <?php } ?>
+
+       <a class="brand" target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"><?php if($settings['branding_logo']) { ?><img src="/images/<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>" /><?php } ?></a>
 
           <ul class="nav pull-left">
 
@@ -31,6 +30,10 @@
                     <li><a href="index.php?route=user/list"><?php print $text_users; ?></a></li>
                     <li><a href="index.php?route=group/list"><?php print $text_groups; ?></a></li>
                     <li><a href="index.php?route=domain/domain"><?php print $text_domain; ?></a></li>
+     <?php if(ENABLE_SAAS == 1) { ?>
+                    <li><a href="index.php?route=ldap/list"><i class="icon-key"></i>&nbsp;<?php print $text_ldap; ?></a></li>
+                    <li><a href="index.php?route=customer/list"><i class="icon-wrench"></i>&nbsp;<?php print $text_customers; ?></a></li>
+     <?php } ?>
                     <li><a href="index.php?route=policy/archiving"><?php print $text_archiving_rules; ?></a></li>
                     <li><a href="index.php?route=policy/retention"><?php print $text_retention_rules; ?></a></li>
                  </ul>
@@ -38,9 +41,18 @@
 
 <?php } else { ?>
 
-             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php"><?php print $text_search; ?></a></li>
+             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php"><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
+
           <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
              <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "folders.php")){ ?> class="active"<?php } ?>><a href="folders.php"><?php print $text_folder; ?></a></li>
+          <?php } ?>
+
+          <?php if(ENABLE_AUDIT == 1 && $auditor_user == 1) { ?>
+              <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
+          <?php } ?>
+
+          <?php if($settings['support_link']) { ?>
+              <li><a href="<?php print $settings['support_link']; ?>"><?php print $text_contact_support; ?></a></li>
           <?php } ?>
 
 <?php } ?>
@@ -48,6 +60,9 @@
           </ul>
 
           <ul class="nav pull-right">
+
+             <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li><?php } ?>
+
              <li class="divider-vertical"></li>
              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $_SESSION['realname']; ?> <i class="icon-user"></i> <b class="caret"></b></a>

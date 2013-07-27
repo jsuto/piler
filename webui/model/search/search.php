@@ -759,7 +759,7 @@ class ModelSearchSearch extends Model {
 
    public function get_search_terms() {
 
-      $query = $this->db->query("SELECT term FROM " . TABLE_SEARCH . " where email=? ORDER BY ts DESC", array($_SESSION['email']));
+      $query = $this->db->query("SELECT term FROM " . TABLE_SEARCH . " WHERE email=? ORDER BY ts DESC", array($_SESSION['email']));
       if(isset($query->rows)) { return $query->rows; }
 
       return array();
@@ -789,6 +789,11 @@ class ModelSearchSearch extends Model {
       $query = $this->db->query("UPDATE " . TABLE_SEARCH . " SET ts=? WHERE term=? AND email=?", array(time(), $term, $_SESSION['email']));
 
       return $this->db->countAffected();
+   }
+
+
+   public function remove_search_terms() {
+      $query = $this->db->query("DELETE FROM " . TABLE_SEARCH . " WHERE email=?", array($_SESSION['email']));
    }
 
 

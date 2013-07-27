@@ -5,9 +5,9 @@
    <title><?php print $title; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
-   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
-   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
+   <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
+   <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
+   <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
@@ -49,9 +49,10 @@
          <input type="button" class="btn" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />
 
          <div id="sspinner">
-            <img src="/view/theme/<?php print THEME; ?>/images/spinner.gif" id="spinner" alt="spinner" />
+            <div class="progress progress-striped active">
+               <div class="bar" style="width: 100%;"></div>
+            </div>
          </div>
-
 </div>
 
 <div id="resultsheader">
@@ -90,11 +91,10 @@
 
 
 <div id="mainscreen">
-
   <div id="mailleftcontainer">
   </div>
 
-  <div id="mailrightcontainer<?php if(ENABLE_FOLDER_RESTRICTIONS == 0) { ?>nofolder<?php } ?>">
+  <div id="mailrightcontainernofolder">
 
     <div id="mailrightcontent">
 
@@ -102,18 +102,43 @@
 
         <div id="messagelistcontainer" class="boxlistcontent"> 
 
-              <?php print $content; ?>
+<?php print $content; ?>
 
         </div>
       </div>
 
+<?php if(Registry::get('auditor_user') == 1) { ?>
+
+<script type="text/javascript">
+  var mailviewsplit = new rcube_splitter({id:'splitter2', p1: 'mailcontframe', p2: 'mailpreviewframe', orientation: 'h', relative: true, start: 205});
+  split.add_onload('mailviewsplit.init()');
+</script>
+
+      <div id="mailpreviewframe"></div>
+
+<?php } ?>
+
+
+
   </div>
 
 
+
 </div>
 
 
 </div>
+
+<?php if(Registry::get('auditor_user') == 1) { ?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+   split.init();
+});
+</script>
+
+<?php } ?>
+
 
 </body>
 </html>

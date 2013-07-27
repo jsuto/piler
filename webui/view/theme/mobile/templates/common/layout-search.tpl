@@ -5,9 +5,9 @@
    <title><?php print $title; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="en" />
-   <meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" />
-   <meta name="description" content="<?php print SITE_DESCRIPTION; ?>" />
-   <meta name="author" content="<?php print PROVIDED_BY; ?>" />
+   <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
+   <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
+   <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
@@ -53,16 +53,15 @@
          <button class="btn" onclick="Piler.cancel(); return false;"><?php print $text_cancel; ?></button>
          <button class="btn " onclick="Piler.saved_search_terms('<?php print $text_saved; ?>'); return false;"><?php print $text_save; ?></button>
          <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>
-
+         <button class="btn btn-warning" onclick="Piler.remove_saved_search_terms('<?php print $text_successfully_removed; ?>'); return false;"><?php print $text_remove; ?></button>
 
          <?php print $popup; ?>
 
          <div id="sspinner">
-    <div class="progress progress-striped active">
-    <div class="bar" style="width: 100%;"></div>
-    </div>
+            <div class="progress progress-striped active">
+               <div class="bar" style="width: 100%;"></div>
+            </div>
          </div>
-
 </div>
 
 

@@ -213,7 +213,7 @@ $langs = array(
 
 $themes = array(
                 'default',
-                'orig'
+                'mobile'
                );
 
 
