@@ -73,16 +73,36 @@ int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *po
 }
 
 
+int read_response(int sd, char *buf, int buflen, char *tagok, struct __data *data, int use_ssl){
+   int n, len=0;
+   char puf[MAXBUFSIZE];
+
+   memset(buf, 0, buflen);
+
+   while(!strstr(buf, tagok)){
+      n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+      if(n + len < buflen) strncat(buf, puf, n);
+      else return 0;
+
+      len += n;
+   }
+
+   return 1;
+}
+
+
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg){
    int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
+   /* imap cmd: SELECT */
+
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s SELECT \"%s\"\r\n", tag, folder);
 
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
 
    if(!strstr(buf, tagok)){
       trimBuffer(buf);
@@ -236,19 +256,22 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
 
    n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
+   /* imap cmd: CAPABILITY */
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s CAPABILITY\r\n", tag);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
 
+
+   /* imap cmd: LOGIN */
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
 
    if(strncmp(buf, tagok, strlen(tagok))){
       printf("login failed, server reponse: %s\n", buf);
