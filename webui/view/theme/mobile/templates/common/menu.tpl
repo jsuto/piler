@@ -11,7 +11,7 @@
 <?php if($admin_user == 1) { ?>
 
              <li class="dropdown<?php if(strstr($_SERVER['QUERY_STRING'], "stat/") || strstr($_SERVER['QUERY_STRING'], "health/") || strstr($_SERVER['QUERY_STRING'], "audit/") ) { ?> active<?php } ?>">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $text_monitor; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open"></i>&nbsp;<?php print $text_monitor; ?> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                    <li><a href="index.php?route=stat/stat&timespan=daily"><?php print $text_statistics; ?></a></li>
                    <li><a href="index.php?route=health/health"><?php print $text_health; ?></a></li>
@@ -25,14 +25,14 @@
              <li class="divider-vertical"></li>
 
              <li class="dropdown<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || $_SERVER['QUERY_STRING'] == "route=user/list" || strstr($_SERVER['QUERY_STRING'], "group/") || strstr($_SERVER['QUERY_STRING'], "policy/") ) { ?> active<?php } ?>">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $text_administration; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i>&nbsp;<?php print $text_administration; ?> <b class="caret"></b></a>
                  <ul class="dropdown-menu">
                     <li><a href="index.php?route=user/list"><?php print $text_users; ?></a></li>
                     <li><a href="index.php?route=group/list"><?php print $text_groups; ?></a></li>
                     <li><a href="index.php?route=domain/domain"><?php print $text_domain; ?></a></li>
      <?php if(ENABLE_SAAS == 1) { ?>
-                    <li><a href="index.php?route=ldap/list"><i class="icon-key"></i>&nbsp;<?php print $text_ldap; ?></a></li>
-                    <li><a href="index.php?route=customer/list"><i class="icon-wrench"></i>&nbsp;<?php print $text_customers; ?></a></li>
+                    <li><a href="index.php?route=ldap/list"><?php print $text_ldap; ?></a></li>
+                    <li><a href="index.php?route=customer/list"><?php print $text_customers; ?></a></li>
      <?php } ?>
                     <li><a href="index.php?route=policy/archiving"><?php print $text_archiving_rules; ?></a></li>
                     <li><a href="index.php?route=policy/retention"><?php print $text_retention_rules; ?></a></li>
@@ -61,7 +61,7 @@
 
           <ul class="nav pull-right">
 
-             <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li><?php } ?>
+             <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><?php print $settings['branding_text']; ?></a></li><?php } ?>
 
              <li class="divider-vertical"></li>
              <li class="dropdown">
