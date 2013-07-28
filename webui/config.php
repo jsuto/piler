@@ -173,18 +173,16 @@ $config['PILER_LOGIN_HELPER_PLACEHOLDER'] = 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_T
 $config['SIZE_X'] = 430;
 $config['SIZE_Y'] = 250;
 
-$config['AUDIT_DATE_FORMAT'] = 'Y.m.d H:i';
-$config['SEARCH_HIT_DATE_FORMAT'] = 'Y.m.d';
+$config['DATE_TEMPLATE'] = 'Y.m.d';
+$config['DATE_FORMAT'] = 'YYYY-MM-DD';
+$config['JQUERY_DATE_FORMAT'] = 'yy-mm-dd';
 
-$config['DATE_FORMAT'] = '(Y.m.d.)';
 
 $config['FROM_LENGTH_TO_SHOW'] = 28;
 
 $config['HISTORY_REFRESH'] = 60;
 $config['HEALTH_REFRESH'] = 60;
 $config['HEALTH_RATIO'] = 80;
-
-$config['LOG_DATE_FORMAT'] = 'd-M-Y H:i:s';
 
 $config['MAX_AUDIT_HITS'] = 1000;
 
@@ -364,5 +362,6 @@ $counters = array(MEMCACHED_PREFIX . 'rcvd', MEMCACHED_PREFIX . 'virus', MEMCACH
 if(!isset($health_smtp_servers)) {
    $health_smtp_servers = array( array(PILER_HOST, PILER_PORT, "piler"), array(SMARTHOST, SMARTHOST_PORT, "smarthost") );
 }
+
 
 ?>

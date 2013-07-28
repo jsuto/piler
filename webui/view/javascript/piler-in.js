@@ -1037,8 +1037,8 @@ $.datepicker.setDefaults($.datepicker.regional[Piler.piler_ui_lang]);
     });
 
 
-    $("#date1").datepicker( {dateFormat: 'yy-mm-dd' });
-    $("#date2").datepicker( {dateFormat: 'yy-mm-dd' });
+    $("#date1").datepicker( {dateFormat: '<?php print JQUERY_DATE_FORMAT; ?>' });
+    $("#date2").datepicker( {dateFormat: '<?php print JQUERY_DATE_FORMAT; ?>' });
 
 
   });

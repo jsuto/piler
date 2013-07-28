@@ -510,7 +510,7 @@ class ModelSearchSearch extends Model {
             $m['subject'] = escape_gt_lt_quote_symbols($m['subject']);
             $m['shortsubject'] = make_short_string($m['subject'], MAX_CGI_FROM_SUBJ_LEN);
 
-            $m['date'] = date(SEARCH_HIT_DATE_FORMAT, $m['sent']);
+            $m['date'] = date(DATE_TEMPLATE, $m['sent']);
             $m['size'] = nice_size($m['size']);
 
             in_array($m['from'], $_SESSION['emails']) ? $m['yousent'] = 1 : $m['yousent'] = 0;

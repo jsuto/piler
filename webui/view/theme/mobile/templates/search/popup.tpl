@@ -52,12 +52,12 @@
 
          <div class="row">
             <div class="cell1"><?php print $text_date; ?>: </div>
-            <div class="cell2"><input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="YYYY-MM-DD" /></div>
+            <div class="cell2"><input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="<?php print DATE_FORMAT; ?>" /></div>
          </div>
 
          <div class="row">
             <div class="cell1">&nbsp;</div>
-            <div class="cell2"><input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" placeholder="YYYY-MM-DD" /></div>
+            <div class="cell2"><input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" placeholder="<?php print DATE_FORMAT; ?>" /></div>
          </div>  
 
          <div class="row">

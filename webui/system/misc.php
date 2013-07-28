@@ -8,14 +8,7 @@ function LOGGER($event = '', $username = '') {
       else { $username = 'unknown'; }
    }
 
-   $log_entry = sprintf("[%s]: %s, %s, '%s'\n", date(LOG_DATE_FORMAT), $username, $_SERVER['REMOTE_ADDR'], $event);
-
-   if($fp = @fopen(LOG_FILE, 'a')) {
-      fwrite($fp, $log_entry);
-      fflush($fp);
-      fclose($fp);
-    }
-
+   syslog(LOG_INFO, "username=$username, event='$event'");
 }
 
 
@@ -267,33 +260,6 @@ function my_qp_encode($s){
 }
 
 
-function format_qshape($desc = '', $filename = '') {
-   $leadingspaces = 999;
-
-   if($filename == '' || !file_exists($filename) ) { return array(); }
-
-   $stat = stat($filename);
-
-   $s = file_get_contents($filename);
-
-   $a = explode("\n", $s);
-   while(list($k, $v) = each($a)){
-      $len1 = strlen($v);
-      $v = preg_replace("/^\ {0,}/", "", $v);
-      $delta = $len1 - strlen($v);
-      if($len1 > 5 && $delta < $leadingspaces) { $leadingspaces = $delta; }
-   }
-
-   reset($a); $s="";
-
-   while(list($k, $v) = each($a)){
-      $s .= substr($v, $leadingspaces, strlen($v)) . "\n";
-   }
-   
-   return array('desc' => $desc, 'date' => date(LOG_DATE_FORMAT, $stat['ctime']), 'lines' => $s);
-}
-
-
 function nice_size($size = 0, $space = '') {
    if($size < 1000) return "1k";
    if($size < 100000) return round($size/1000) . $space . "k";
@@ -436,14 +402,20 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
    $date = "";
 
    if($date1) {
-      list($y,$m,$d) = preg_split("/(\.|\-)/", $date1);
+      list($y,$m,$d) = preg_split("/(\.|\-|\/)/", $date1);
+
+      if(DATE_TEMPLATE == 'd/m/Y') { $a = $y; $y = $d; $d = $a; }
+
       $date1 = mktime(0, 0, 0, $m, $d, $y);
 
       if($date1 > 0) { $date .= "$field >= $date1 "; }
    }
 
    if($date2) {
-      list($y,$m,$d) = preg_split("/(\.|\-)/", $date2);
+      list($y,$m,$d) = preg_split("/(\.|\-|\/)/", $date2);
+
+      if(DATE_TEMPLATE == 'd/m/Y') { $a = $y; $y = $d; $d = $a; }
+
       $date2 = mktime(23, 59, 59, $m, $d, $y);
 
       if($date2 > 0) {

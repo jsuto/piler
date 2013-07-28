@@ -91,7 +91,7 @@ class ModelAuditAudit extends Model {
                                     'piler_id' => isset($m[$a['meta_id']]) ? $m[$a['meta_id']] : '',
                                     'action' => $a['action'],
                                     'email' => $a['email'],
-                                    'date' => date(AUDIT_DATE_FORMAT, $a['ts']),
+                                    'date' => date(DATE_TEMPLATE . " H:i", $a['ts']),
                                     'ipaddr' => DEMO_MODE == 1 ? anonimize_ip_addr($a['ipaddr']) : $a['ipaddr'],
                                     'description' => $a['description'],
                                     'shortdescription' => make_short_string($a['description'], MAX_CGI_FROM_SUBJ_LEN)

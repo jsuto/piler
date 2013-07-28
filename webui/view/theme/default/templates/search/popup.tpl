@@ -62,14 +62,14 @@
             <div class="control-group">
                 <label class="control-label" for="date1"><?php print $text_from; ?> <?php print $text_date; ?>:</label>
                 <div class="controls">
-                  <input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" />
+                  <input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="<?php print DATE_FORMAT; ?>" />
                 </div>
             </div>            
             
             <div class="control-group">
                 <label class="control-label" for="date2"><?php print $text_to; ?> <?php print $text_date; ?>:</label>
                 <div class="controls">
-                  <input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" />
+                  <input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" placeholder="<?php print DATE_FORMAT; ?>" />
                 </div>
             </div>
 

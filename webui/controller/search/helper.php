@@ -120,7 +120,7 @@ class ControllerSearchHelper extends Controller {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v)) {
+         if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
             $ndate++;
             $this->a["date$ndate"] = $v;
          }
@@ -164,7 +164,7 @@ class ControllerSearchHelper extends Controller {
          else if($v == 'note:') { $token = 'note'; continue; }
          else if($v == 'ref:') { $token = 'ref'; continue; }
          else {
-            if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v)) {
+            if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
                $ndate++;
                $this->a["date$ndate"] = $v;
             }
