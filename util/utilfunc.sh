@@ -2,7 +2,7 @@
 
 
 usage() {
-   echo "usage: $0 <username> <group> <sysconfdir> <localstatedir>";
+   echo "usage: $0 <username> <group> <sysconfdir> <localstatedir> <libexecdir>";
    exit 1;
 }
 

@@ -251,7 +251,7 @@ clean_up_temp_stuff() {
 load_default_values
 
 
-if [ $# -ne 4 ]; then usage; fi
+if [ $# -ne 5 ]; then usage; fi
 
 PILERUSER=$1
 PILERGROUP=$2
