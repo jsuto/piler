@@ -9,7 +9,7 @@ class ModelMailMail extends Model {
       if($to == "" || strlen($msg) < 30){ return $ok; }
 
       if(REWRITE_MESSAGE_ID == 1) {
-         $msg = preg_replace("/Message-ID:([\s\w\W\r]+)\n/i", "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">\n", $msg);
+         $msg = preg_replace("/Message-ID:([^\n]+)\n/i", "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">\n", $msg);
       }
 
       $r = fsockopen($smtphost, $smtpport);
