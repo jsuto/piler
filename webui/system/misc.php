@@ -262,9 +262,10 @@ function my_qp_encode($s){
 
 function nice_size($size = 0, $space = '') {
    if($size < 1000) return "1k";
-   if($size < 100000) return round($size/1000) . $space . "k";
+   if($size < 1000000) return round($size/1000) . $space . "k";
+   if($size < 1000000000) return round($size/1000000) . $space . "M";
 
-   return sprintf("%.1f", $size/1000000) . $space . "M";
+   return sprintf("%.1f", $size/1000000000) . $space . "G";
 }
 
 

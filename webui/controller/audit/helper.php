@@ -103,7 +103,7 @@ class ControllerAuditHelper extends Controller {
          if(preg_match("/\@/", $v)) { $this->a['user'] .= '*' . $v; }
          if(preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $v)) { $this->a['ipaddr'] .= '*' . $v; }
          if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= '*' . $v; }
-         if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{4}\.\d{1,2}\.\d{1,2}/", $v)) {
+         if(preg_match("/\d{4}(\-|\.)\d{1,2}(\-|\.)\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
             $ndate++;
             $this->a["date$ndate"] = $v;
          }

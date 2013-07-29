@@ -90,7 +90,9 @@ class ModelHealthHealth extends Model {
             if(isset($p[5]) && in_array($p[5], $partitions)) {
                $shortinfo[] = array(
                                     'partition' => $p[5],
-                                    'freespace' => $p[3],
+                                    'freespace' => nice_size(1000*$p[3]),
+                                    'total' => nice_size(1000*$p[1]),
+                                    'used' => nice_size(1000*$p[2]),
                                     'utilization' => preg_replace("/\%/", "", $p[4])
                               );
             }
