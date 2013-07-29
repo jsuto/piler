@@ -48,7 +48,12 @@ class ControllerUserSettings extends Controller {
 
          AUDIT(ACTION_CHANGE_USER_SETTINGS, '', '', '', 'pagelen:' . $this->request->post['pagelen'] . ', theme:' . $this->request->post['theme'] . ', lang:' . $this->request->post['lang']);
 
-         Header("Location: settings.php");
+         if(isAdminUser() == 1) {
+            header("Location: " . SITE_URL . "index.php?route=health/health");
+            return;
+         }
+
+         header("Location: " . SITE_URL . "search.php");
          return;
       }
 
