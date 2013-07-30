@@ -2,13 +2,15 @@
 ##
 ##
 
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
 NAME=searchd
 PID_FILE=/var/run/piler/searchd.pid
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
 
 start() {
 	echo "starting searchd . . ."
-	su piler -c 'BINDIR/searchd'
+	su piler -c searchd
 }
 
 stop() {
