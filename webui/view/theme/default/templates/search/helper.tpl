@@ -4,7 +4,7 @@
     <table id="results" class="table table-striped table-condensed">
       <thead>
         <tr>
-          <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check();" /></th>
+          <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
           <th id="id-header">&nbsp;</th>
           <th id="date-header">
              <?php print $text_date; ?>
@@ -67,7 +67,7 @@
       
       <tfoot>
         <tr>
-          <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check();" /></th>
+          <th id="restore-header"><input type="checkbox" id="bulkcheck2" name="bulkcheck2" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('2');" /></th>
           <th id="id-header">&nbsp;</th>
           <th id="date-header">
              <?php print $text_date; ?>

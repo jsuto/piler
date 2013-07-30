@@ -325,16 +325,24 @@ var Piler =
      * bulk toggle all the checkboxes for the result set
      */
 
-    toggle_bulk_check:function()
+    toggle_bulk_check:function(i)
     {
         Piler.log("[toggle_bulk_check]", Piler.Messages.length);
 
-        $('#bulkcheck').prop('checked') ? bulkcheck = 1 : bulkcheck = 0;
+        $('#bulkcheck' + i).prop('checked') ? bulkcheck = 1 : bulkcheck = 0;
 
         Piler.log("[toggle_bulk_check], bulkcheck=", bulkcheck);
 
         for(i=0; i<Piler.Messages.length; i++) {
            bulkcheck == 1 ? $("#r_" + Piler.Messages[i]).prop('checked', true) : $("#r_" + Piler.Messages[i]).prop('checked', false);
+        }
+
+        if(bulkcheck == 1) {
+           $("#bulkcheck").prop('checked', true);
+           $("#bulkcheck2").prop('checked', true);
+        } else {
+           $("#bulkcheck").prop('checked', false);
+           $("#bulkcheck2").prop('checked', false);
         }
     },
 

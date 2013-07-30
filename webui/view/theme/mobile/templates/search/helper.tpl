@@ -8,7 +8,7 @@
           <thead>
 
     <tr>
-      <td><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> onclick="Piler.toggle_bulk_check();" /></td>
+      <td><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> onclick="Piler.toggle_bulk_check('');" /></td>
       <td>
       <?php if(Registry::get('auditor_user') == 1 || BULK_DOWNLOAD_FOR_USERS == 1) { ?>
           <a href="#"><img class="download_icon" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0" onclick="Piler.download_messages();" /></a></td>
