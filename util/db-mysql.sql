@@ -105,6 +105,7 @@ create table if not exists `tag` (
 
 create table if not exists `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
+   `domain` varchar(255) default null,
    `from` char(128) default null,
    `to` char(255) default null,
    `subject` char(255) default null,
@@ -122,6 +123,7 @@ create table if not exists `archiving_rule` (
 
 create table if not exists `retention_rule` (
    `id` bigint unsigned not null auto_increment,
+   `domain` varchar(255) default null,
    `from` char(128) default null,
    `to` char(255) default null,
    `subject` char(255) default null,

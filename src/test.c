@@ -35,6 +35,8 @@ int main(int argc, char **argv){
       return 0;
    }
 
+   (void) openlog("test", LOG_PID, LOG_MAIL);
+
    cfg = read_config(CONFIG_FILE);
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
@@ -90,7 +92,7 @@ int main(int argc, char **argv){
 
    printf("rules check: %s\n", rule);
 
-   sdata.retained = sdata.now + query_retain_period(data.retention_rules, &state, st.st_size, sdata.spam_message, &cfg);
+   sdata.retained = sdata.now + query_retain_period(&data, &state, st.st_size, sdata.spam_message, &cfg);
 
    printf("retention period: %ld\n", sdata.retained);
 

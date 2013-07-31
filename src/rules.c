@@ -12,9 +12,10 @@
 
 void load_rules(struct session_data *sdata, struct __data *data, struct rule **rules, char *table){
    char s[SMALLBUFSIZE];
-   char from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
+   char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
    int size=0, attachment_size=0, spam=0, days=0;
 
+   memset(domain, 0, sizeof(domain));
    memset(from, 0, sizeof(from));
    memset(to, 0, sizeof(to));
    memset(subject, 0, sizeof(subject));
@@ -23,7 +24,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct rule **r
    memset(_attachment_size, 0, sizeof(_attachment_size));
 
 
-   snprintf(s, sizeof(s)-1, "SELECT `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
+   snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
 
    if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
 
@@ -36,6 +37,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct rule **r
 
    p_bind_init(data);
 
+   data->sql[data->pos] = &domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(domain)-2; data->pos++;
    data->sql[data->pos] = &from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(from)-2; data->pos++;
    data->sql[data->pos] = &to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(to)-2; data->pos++;
    data->sql[data->pos] = &subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(subject)-2; data->pos++;
@@ -52,8 +54,9 @@ void load_rules(struct session_data *sdata, struct __data *data, struct rule **r
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(rules, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+      append_rule(rules, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
 
+      memset(domain, 0, sizeof(domain));
       memset(from, 0, sizeof(from));
       memset(to, 0, sizeof(to));
       memset(subject, 0, sizeof(subject));
@@ -72,7 +75,7 @@ ENDE:
 }
 
 
-int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
+int append_rule(struct rule **rule, char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
    struct rule *q, *t, *u=NULL;
 
    q = *rule;
@@ -82,7 +85,7 @@ int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_
       q = q->r;
    }
 
-   t = create_rule_item(from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+   t = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
    if(t){
       if(*rule == NULL)
          *rule = t;
@@ -96,7 +99,7 @@ int append_rule(struct rule **rule, char *from, char *to, char *subject, char *_
 }
 
 
-struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
+struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -106,6 +109,18 @@ struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, 
 
 
    h->compiled = 1;
+
+   h->domain = NULL;
+   h->domainlen = strlen(domain);
+
+   if(h->domainlen > 2){
+      h->domain = malloc(h->domainlen+2);
+      if(h->domain) snprintf(h->domain, h->domainlen, "%s", domain);
+      else {
+         h->compiled = 0;
+         syslog(LOG_INFO, "malloc error in create_rule_item() for '%s'", domain);
+      }
+   }
 
    if(!from) from = &empty;
    if(regcomp(&(h->from), from, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
@@ -134,12 +149,12 @@ struct rule *create_rule_item(char *from, char *to, char *subject, char *_size, 
    if(!_attachment_size) _attachment_size = &empty;
    snprintf(h->_attachment_size, 3, "%s", _attachment_size);
 
-   len = strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 8 + 15 + 15;
+   len = strlen(domain)+8 + strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 9 + 15 + 15;
    h->rulestr = malloc(len);
 
 
 
-   if(h->rulestr) snprintf(h->rulestr, len-1, "from=%s,to=%s,subject=%s,size%s%d,att.type=%s,att.size%s%d,spam=%d", from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam);
+   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,size%s%d,att.type=%s,att.size%s%d,spam=%d", domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam);
    else h->compiled = 0;
 
    h->r = NULL;
@@ -175,15 +190,21 @@ char *check_againt_ruleset(struct rule *rule, struct _state *state, int size, in
 }
 
 
-unsigned long query_retain_period(struct rule *rule, struct _state *state, int size, int spam, struct __config *cfg){
+unsigned long query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
    size_t nmatch=0;
    struct rule *p;
 
-   p = rule;
+   p = data->retention_rules;
 
    while(p != NULL){
 
-      if(
+      if(p->domainlen > 2){
+         if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
+            if(cfg->verbosity >= _LOG_INFO) syslog(LOG_INFO, "from domain: '%s', to domain: '%s', retention days: %d", state->b_from_domain, state->b_to_domain, p->days);
+            return p->days * 86400;
+         }
+      }
+      else if (
          p->compiled == 1 &&
          regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
          regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
@@ -192,6 +213,7 @@ unsigned long query_retain_period(struct rule *rule, struct _state *state, int s
          check_attachment_rule(state, p) == 1 &&
          check_spam_rule(spam, p->spam) == 1
       ){
+         if(cfg->verbosity >= _LOG_INFO) syslog(LOG_INFO, "from domain: '%s', to domain: '%s', retention days: %d", state->b_from_domain, state->b_to_domain, p->days);
          return p->days * 86400;
       }
 
@@ -254,6 +276,8 @@ void free_rule(struct rule *rule){
          regfree(&(p->attachment_type));
 
          free(p->rulestr);
+
+         if(p->domain) free(p->domain);
 
          free(p);
       }

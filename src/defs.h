@@ -107,6 +107,9 @@ struct rule {
    int attachment_size;
    char _attachment_size[4];
 
+   char *domain;
+   int domainlen;
+
    int days;
 
    char *rulestr;

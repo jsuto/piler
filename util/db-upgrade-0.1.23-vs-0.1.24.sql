@@ -4,6 +4,10 @@ alter table `audit` add column `domain` varchar(128) not null;
 
 create index `audit_idx5` on `audit`(`domain`);
 
+alter table archiving_rule add column domain varchar(255) default null;
+alter table retention_rule add column domain varchar(255) default null;
+
+
 create table if not exists `ldap` (
    `id` int not null auto_increment primary key,
    `description` varchar(255) not null,

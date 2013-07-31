@@ -283,7 +283,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
    }
 
 
-   sdata->retained += query_retain_period(data->retention_rules, state, sdata->tot_len, sdata->spam_message, cfg);
+   sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
 
    rc = store_meta_data(sdata, state, data, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
