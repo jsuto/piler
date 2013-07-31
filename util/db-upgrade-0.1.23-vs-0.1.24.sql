@@ -7,6 +7,8 @@ create index `audit_idx5` on `audit`(`domain`);
 alter table archiving_rule add column domain varchar(255) default null;
 alter table retention_rule add column domain varchar(255) default null;
 
+alter table retention_rule drop index `from`; 
+create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
 create table if not exists `ldap` (
    `id` int not null auto_increment primary key,

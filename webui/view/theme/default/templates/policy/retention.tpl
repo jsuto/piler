@@ -2,6 +2,16 @@
 <h4><?php print $text_add_new_rule; ?></h4>
 
 <form method="post" id="add1" name="add1" action="index.php?route=policy/retention" class="form-horizontal">
+
+<?php if(ENABLE_SAAS == 1) { ?>
+      <div class="control-group">
+                <label class="control-label" for="domain"><?php print $text_domain; ?>:</label>
+        <div class="controls">
+            <input type="text" class="text" name="domain" />
+         </div>
+      </div>
+<?php } ?>
+
       <div class="control-group">
 		<label class="control-label" for="from"><?php print $text_from; ?>:</label>
         <div class="controls">
@@ -76,6 +86,9 @@
 
    <table id="ss1" class="table table-striped table-condensed">
       <tr class="domainrow">
+<?php if(ENABLE_SAAS == 1) { ?>
+         <th><?php print $text_domain; ?></th>
+<?php } ?>
          <th><?php print $text_from; ?></th>
          <th><?php print $text_to; ?></th>
          <th><?php print $text_subject; ?></th>
@@ -89,6 +102,9 @@
 
 <?php foreach($rules as $rule) { ?>
       <tr class="domainrow">
+<?php if(ENABLE_SAAS == 1) { ?>
+         <td><?php print $rule['domain']; ?></td>
+<?php } ?>
          <td><?php print $rule['from']; ?></td>
          <td><?php print $rule['to']; ?></td>
          <td><?php print $rule['subject']; ?></td>

@@ -105,7 +105,7 @@ create table if not exists `tag` (
 
 create table if not exists `archiving_rule` (
    `id` bigint unsigned not null auto_increment,
-   `domain` varchar(255) default null,
+   `domain` varchar(128) default null,
    `from` char(128) default null,
    `to` char(255) default null,
    `subject` char(255) default null,
@@ -123,7 +123,7 @@ create table if not exists `archiving_rule` (
 
 create table if not exists `retention_rule` (
    `id` bigint unsigned not null auto_increment,
-   `domain` varchar(255) default null,
+   `domain` varchar(128) default null,
    `from` char(128) default null,
    `to` char(255) default null,
    `subject` char(255) default null,
@@ -135,7 +135,7 @@ create table if not exists `retention_rule` (
    `spam` tinyint(1) default -1,
    `days` int default 0,
    primary key (`id`),
-   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`)
+   unique (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`)
 ) ENGINE=InnoDB;
 
 

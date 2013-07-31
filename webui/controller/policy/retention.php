@@ -52,6 +52,7 @@ class ControllerPolicyRetention extends Controller {
          $this->request->post['attachment_type'] == '' && $this->request->post['attachment_size'] == '' &&
          $this->request->post['spam'] == -1
       ) {
+         if(ENABLE_SAAS == 1 && strlen($this->request->post['domain']) > 3) { return true; }
          return false;
       }
 

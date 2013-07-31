@@ -5,6 +5,12 @@
 
    <div id="ss1">
 
+<?php if(ENABLE_SAAS == 1) { ?>
+      <div class="row">
+         <div class="domaincell"><?php print $text_domain; ?>:</div>
+         <div class="domaincell"><input type="text" name="domain" class="input-medium span5" /></div>
+      </div>
+<?php } ?>
       <div class="row">
          <div class="domaincell"><?php print $text_from; ?>:</div>
          <div class="domaincell"><input type="text" name="from" class="input-medium span5" /></div>
@@ -78,6 +84,9 @@
 
    <div id="ss1">
       <div class="domainrow">
+<?php if(ENABLE_SAAS == 1) { ?>
+         <div class="domaincell"><?php print $text_domain; ?></div>
+<?php } ?>
          <div class="domaincell"><?php print $text_from; ?></div>
          <div class="domaincell"><?php print $text_to; ?></div>
          <div class="domaincell"><?php print $text_subject; ?></div>
@@ -91,6 +100,9 @@
 
 <?php foreach($rules as $rule) { ?>
       <div class="domainrow">
+<?php if(ENABLE_SAAS == 1) { ?>
+         <div class="domaincell"><?php print $rule['domain']; ?></div>
+<?php } ?>
          <div class="domaincell"><?php print $rule['from']; ?></div>
          <div class="domaincell"><?php print $rule['to']; ?></div>
          <div class="domaincell"><?php print $rule['subject']; ?></div>

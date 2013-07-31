@@ -22,8 +22,12 @@ class ModelPolicyRetention extends Model {
 
 
    public function add_new_rule($data = array()) {
+      $domain = '';
 
-      $query = $this->db->query("INSERT INTO " . TABLE_RETENTION_RULE . " (`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`,`days`) VALUES(?,?,?,?,?,?,?,?,?,?)", array($data['from'], $data['to'], $data['subject'], $data['_size'], $data['size'], $data['attachment_type'], $data['_attachment_size'], $data['attachment_size'], $data['spam'], $data['days']) );
+      if(isset($data['domain'])) { $domain = $data['domain']; }
+
+      $query = $this->db->query("INSERT INTO " . TABLE_RETENTION_RULE . " (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`,`days`) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array($domain, $data['from'], $data['to'], $data['subject'], $data['_size'], $data['size'], $data['attachment_type'], $data['_attachment_size'], $data['attachment_size'], $data['spam'], $data['days']) );
+
       return $this->db->countAffected();
    }
 
