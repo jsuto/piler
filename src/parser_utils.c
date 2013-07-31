@@ -97,6 +97,8 @@ void init_state(struct _state *state){
    state->tolen = 0;
    state->bodylen = 0;
    state->journaltolen = 0;
+
+   state->retention = 0;
 }
 
 

@@ -262,7 +262,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                                (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
                                    sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
 
-                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, reference=%s, message-id=%s, %s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sstate.reference, sstate.message_id, delay);
+                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, reference=%s, message-id=%s, retention=%d, %s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sstate.reference, sstate.message_id, sstate.retention, delay);
 
 
 

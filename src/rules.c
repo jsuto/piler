@@ -200,7 +200,7 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
 
       if(p->domainlen > 2){
          if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
-            if(cfg->verbosity >= _LOG_INFO) syslog(LOG_INFO, "from domain: '%s', to domain: '%s', retention days: %d", state->b_from_domain, state->b_to_domain, p->days);
+            state->retention = p->days;
             return p->days * 86400;
          }
       }
@@ -213,12 +213,14 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
          check_attachment_rule(state, p) == 1 &&
          check_spam_rule(spam, p->spam) == 1
       ){
-         if(cfg->verbosity >= _LOG_INFO) syslog(LOG_INFO, "from domain: '%s', to domain: '%s', retention days: %d", state->b_from_domain, state->b_to_domain, p->days);
+         state->retention = p->days;
          return p->days * 86400;
       }
 
       p = p->r;
    }
+
+   state->retention = cfg->default_retention_days;
 
    return cfg->default_retention_days * 86400;
 }

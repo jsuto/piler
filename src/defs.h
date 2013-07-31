@@ -172,6 +172,8 @@ struct _state {
    int bodylen;
    int tolen;
    int journaltolen;
+
+   int retention;
 };
 
 
