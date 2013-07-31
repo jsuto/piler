@@ -19,6 +19,8 @@ $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = '';
 $config['SUPPORT_LINK'] = '';
 
+$config['BOOTSTRAP_THEME'] = '-cosmo';
+
 $config['DEFAULT_LANG'] = 'en';
 
 $config['THEME'] = 'default';

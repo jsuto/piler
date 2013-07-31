@@ -11,7 +11,7 @@
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
 
-   <link rel="stylesheet" type="text/css" href="/view/theme/default/stylesheet/style-<?php print THEME; ?>.css" />
+   <link rel="stylesheet" type="text/css" href="/view/theme/<?php print THEME; ?>/stylesheet/style-<?php print THEME; ?>.css" />
 
    <script type="text/javascript">
 

@@ -13,7 +13,7 @@
 
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+   <link href="/bootstrap/css/bootstrap<?php print BOOTSTRAP_THEME; ?>.min.css" rel="stylesheet" media="screen">
    <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
 
    <link rel="stylesheet" type="text/css" href="/view/theme/<?php print THEME; ?>/stylesheet/jquery-ui-custom.min.css" />
@@ -38,13 +38,15 @@
 
 <div id="expertsearch">
 
+      <form class="well form-search sleek">
+
          <input type="hidden" name="searchtype" id="searchtype" value="expert" />
          <input type="hidden" name="sort" id="sort" value="date" />
          <input type="hidden" name="order" id="order" value="0" />
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="input-medium search-query span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
+         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
 
          <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>
 
@@ -54,6 +56,8 @@
          <button class="btn " onclick="Piler.saved_search_terms('<?php print $text_saved; ?>'); return false;"><?php print $text_save; ?></button>
          <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>
          <button class="btn btn-warning" onclick="Piler.remove_saved_search_terms('<?php print $text_successfully_removed; ?>'); return false;"><?php print $text_remove; ?></button>
+
+      </form>
 
          <?php print $popup; ?>
 

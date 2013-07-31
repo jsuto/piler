@@ -19,14 +19,14 @@
         .email { background-color: white; }
 
 	#menu { height: 40px; border: 0px solid red; }
-	#menu a:hover, #menu a:active { color: #850505; }
+	#menu a:hover, #menu a:active { color: #fff; }
 
         #main { margin: 0px 40px 20px 40px; width: 100%; text-align: left; float: left; clear: both; }
 
 	.sleek { margin:0; padding:0; }
 	.center { text-align: center; }
 
-	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; margin-top: 10px; }
+	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; margin-top: 18px; }
 
 	#resultsheader { display: none; }
 	#resultstop { position: absolute; width: 1140px; border: 0px solid #999; top: 120px; right: 20px; left: 20px; text-align: right; display: table; padding-right: 0px; margin-right: 20px; }
@@ -137,7 +137,7 @@
 	/* rc splitter stuff */
 
 
-	#mainscreen { position: absolute; top: 90px; right: 20px; bottom: 20px; left: 20px; }
+	#mainscreen { position: absolute; top: 90px; right: 20px; bottom: 20px; left: 20px; margin-top: 5px; }
 
 	#mailleftcontainer { position: absolute; top: 0; left: 0; bottom: 0; width: 195px; }
 	#mailboxlist-container { position: absolute; top: 0; left: 0; width: 100%; bottom: 0; border: 1px solid #999; background-color: #F9F9F9; overflow-y: auto; overflow-x: hidden; }
@@ -150,7 +150,7 @@
 	.boxlistcontent { position: absolute; top: 5px; bottom: 50px; left: 0; right: 0; width: 100%; overflow-y: auto; overflow-x: hidden; height: auto; }
 	.boxfooter { position: absolute; bottom: 0px; left: 0px; right: 0px; overflow: hidden; border-top: 1px solid #999; }
 
-	.splitter { user-select: none; -moz-user-select: none; -khtml-user-select: none; position: absolute; background: url(/view/theme/orig/images/dimple.png) center no-repeat; }
+	.splitter { user-select: none; -moz-user-select: none; -khtml-user-select: none; position: absolute; background: url(/view/theme/mobile/images/dimple.png) center no-repeat; }
 	.splitter-h { cursor: n-resize; cursor: row-resize; background-position: center 2px; }
 	.splitter-v { cursor: e-resize; cursor: col-resize; background-position: 2px center; }
 

@@ -79,7 +79,7 @@ class ModelSaasCustomer extends Model
                       'branding_url' => BRANDING_URL,
                       'branding_logo' => BRANDING_LOGO,
                       'support_link' => SUPPORT_LINK,
-                      'colour' => ''
+                      'colour' => BRANDING_COLOUR
                     );
 
 

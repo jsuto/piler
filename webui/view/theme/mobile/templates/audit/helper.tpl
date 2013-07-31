@@ -1,5 +1,5 @@
 
-<div id="resultscontainer"<?php if($n <= 0) { ?> class="empty"<?php } ?>>
+<div id="messagelistcontainer" class="boxlistcontent">
 
    <div id="results">
 
@@ -23,7 +23,6 @@
 
    </div>
 
-</div>
 
 
 
@@ -48,4 +47,6 @@
    </div>
 </div>
 
+
+</div>
 

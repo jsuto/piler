@@ -1,6 +1,6 @@
 <?php if(Registry::get('username')) { ?>
 
-    <div class="navbar">
+    <div class="navbar navbar-inverse">
        <div class="navbar-inner"<?php if($settings['colour']) { ?> style="background: <?php print $settings['colour']; ?>;"<?php } ?>>
 
 
@@ -11,7 +11,7 @@
 <?php if($admin_user == 1) { ?>
 
              <li class="dropdown<?php if(strstr($_SERVER['QUERY_STRING'], "stat/") || strstr($_SERVER['QUERY_STRING'], "health/") || strstr($_SERVER['QUERY_STRING'], "audit/") ) { ?> active<?php } ?>">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open"></i>&nbsp;<?php print $text_monitor; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-eye-open icon-white"></i>&nbsp;<?php print $text_monitor; ?> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                    <li><a href="index.php?route=stat/stat&timespan=daily"><?php print $text_statistics; ?></a></li>
                    <li><a href="index.php?route=health/health"><?php print $text_health; ?></a></li>
@@ -25,7 +25,7 @@
              <li class="divider-vertical"></li>
 
              <li class="dropdown<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || $_SERVER['QUERY_STRING'] == "route=user/list" || strstr($_SERVER['QUERY_STRING'], "group/") || strstr($_SERVER['QUERY_STRING'], "policy/") ) { ?> active<?php } ?>">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench"></i>&nbsp;<?php print $text_administration; ?> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-wrench icon-white"></i>&nbsp;<?php print $text_administration; ?> <b class="caret"></b></a>
                  <ul class="dropdown-menu">
                     <li><a href="index.php?route=user/list"><?php print $text_users; ?></a></li>
                     <li><a href="index.php?route=group/list"><?php print $text_groups; ?></a></li>
@@ -41,14 +41,14 @@
 
 <?php } else { ?>
 
-             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php"><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
+             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php"><i class="icon-search icon-white"></i>&nbsp;<?php print $text_search; ?></a></li>
 
           <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
              <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "folders.php")){ ?> class="active"<?php } ?>><a href="folders.php"><?php print $text_folder; ?></a></li>
           <?php } ?>
 
           <?php if(ENABLE_AUDIT == 1 && $auditor_user == 1) { ?>
-              <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
+              <li<?php if(strstr($_SERVER['REQUEST_URI'], "audit/audit")){ ?> class="active"<?php } ?>><a href="index.php?route=audit/audit"><i class="icon-book icon-white"></i>&nbsp;<?php print $text_audit; ?></a></li>
           <?php } ?>
 
           <?php if($settings['support_link']) { ?>
@@ -61,15 +61,15 @@
 
           <ul class="nav pull-right">
 
-             <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><?php print $settings['branding_text']; ?></a></li><?php } ?>
+             <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><i class="icon-share-alt icon-white"></i> <?php print $settings['branding_text']; ?></a></li><?php } ?>
 
              <li class="divider-vertical"></li>
              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $_SESSION['realname']; ?> <i class="icon-user"></i> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php print $_SESSION['realname']; ?> <i class="icon-user icon-white"></i> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                   <li><a href="settings.php"><?php print $text_settings; ?></a></li>
+                   <li><a href="settings.php"><i class="icon-cog"></i>&nbsp;<?php print $text_settings; ?></a></li>
                    <li class="divider"></li>
-                   <li><a href="logout.php"><?php print $text_logout; ?></a></li>
+                   <li><a href="logout.php"><i class="icon-off"></i>&nbsp;<?php print $text_logout; ?></a></li>
                 </ul>
              </li>
           </ul>
