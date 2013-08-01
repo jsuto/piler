@@ -87,7 +87,7 @@
 
     <div class="control-group">
         <div class="controls">
-            <input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" value="<?php print $text_cancel; ?>" class="btn btn" />
+            <input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" value="<?php print $text_cancel; ?>" class="btn btn" onclick="Piler.go_to_default_page();" />
         </div>
     </div>
     

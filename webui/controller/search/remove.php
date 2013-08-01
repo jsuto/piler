@@ -19,7 +19,9 @@ class ControllerSearchRemove extends Controller {
       $this->load->model('search/message');
       $this->load->model('user/user');
 
-      $this->data['terms'] = $this->model_search_search->remove_search_terms();
+      if(isset($this->request->get['ts'])) {
+         $this->data['terms'] = $this->model_search_search->remove_search_term($this->request->get['ts']);
+      }
    }
 
 }

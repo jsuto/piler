@@ -55,8 +55,6 @@
          <button class="btn" onclick="Piler.cancel(); return false;"><?php print $text_cancel; ?></button>
          <button class="btn " onclick="Piler.saved_search_terms('<?php print $text_saved; ?>'); return false;"><?php print $text_save; ?></button>
          <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>
-         <button class="btn" onclick="Piler.remove_saved_search_terms('<?php print $text_successfully_removed; ?>'); return false;"><?php print $text_remove; ?></button>
-
       </form>
 
          <?php print $popup; ?>

@@ -63,7 +63,6 @@
                     <ul class="dropdown-menu">
                         <li><a href="#" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');"><?php print $text_save; ?></a></li>
                         <li><a href="#" onclick="Piler.load_saved_search_terms();"><?php print $text_load; ?></a></li>
-                        <li><a href="#" onclick="Piler.remove_saved_search_terms('<?php print $text_successfully_removed; ?>');"><?php print $text_remove; ?></a></li>
                     </ul>
                 </div>
               </div>

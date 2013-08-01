@@ -221,17 +221,15 @@ var Piler =
     },
 
 
-    remove_saved_search_terms:function(msg)
+    remove_saved_search_term:function(ts)
     {
-        Piler.log("[load_saved_search_terms]");
+        Piler.log("[remove_saved_search_term]");
 
-        jQuery.ajax('/index.php?route=search/remove', {})
-        .done(function(a) {
-            $('#mailcontframe').html(a);
-        })
+        jQuery.ajax('/index.php?route=search/remove&ts=' + ts, {})
+        .done(function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        Piler.load_saved_search_terms();
     },
 
 
@@ -949,6 +947,19 @@ var Piler =
     reload_page: function()
     {
         location.reload(true);
+    },
+
+
+    go_to_default_page: function()
+    {
+       document.location.href = 'search.php';
+    },
+
+
+    change_box_colour: function()
+    {
+       var colour = $('#colour').val();
+       $('#cp').css('background', colour);
     }
 
 

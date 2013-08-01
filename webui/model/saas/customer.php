@@ -142,6 +142,8 @@ class ModelSaasCustomer extends Model
 
 
    public function get_online_users() {
+      $query = $this->db->query("DELETE FROM " . TABLE_ONLINE . " WHERE last_activity < ?", array(NOW - 3600));
+
       $query = $this->db->query("SELECT * FROM " . TABLE_ONLINE . " ORDER BY username ASC");
 
       return $query->rows;

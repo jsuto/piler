@@ -95,7 +95,7 @@
 
          <div class="row">
             <div class="logincell">&nbsp;</div>
-            <div class="tcell"><input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" /></div>
+            <div class="tcell"><input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" class="btn" value="<?php print $text_cancel; ?>" onclick="Piler.go_to_default_page();" /></div>
          </div>
 
 

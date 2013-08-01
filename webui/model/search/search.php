@@ -269,7 +269,7 @@ class ModelSearchSearch extends Model {
          $data['any'] = $this->fixup_sphinx_operators($data['any']);
          $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
          $fields = '';
-         if($match) { $match = "($match) & "; $fields = '@subject,@body '; } $match .= "($fields " . $data['any'] . ") ";
+         if($match) { $match = "($match) & "; } $match .= "(@subject " . $data['any'] . " | @body " . $data['any'] . ") ";
       }
 
 
@@ -759,7 +759,7 @@ class ModelSearchSearch extends Model {
 
    public function get_search_terms() {
 
-      $query = $this->db->query("SELECT term FROM " . TABLE_SEARCH . " WHERE email=? ORDER BY ts DESC", array($_SESSION['email']));
+      $query = $this->db->query("SELECT term, ts FROM " . TABLE_SEARCH . " WHERE email=? ORDER BY ts DESC", array($_SESSION['email']));
       if(isset($query->rows)) { return $query->rows; }
 
       return array();
@@ -792,8 +792,8 @@ class ModelSearchSearch extends Model {
    }
 
 
-   public function remove_search_terms() {
-      $query = $this->db->query("DELETE FROM " . TABLE_SEARCH . " WHERE email=?", array($_SESSION['email']));
+   public function remove_search_term($ts = 0) {
+      $query = $this->db->query("DELETE FROM " . TABLE_SEARCH . " WHERE email=? AND ts=?", array($_SESSION['email'], $ts));
    }
 
 

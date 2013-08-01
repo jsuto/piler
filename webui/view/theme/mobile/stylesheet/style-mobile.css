@@ -70,6 +70,7 @@
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.new { font-style: normal; }
 	.resultrow.new a { color: #0072e6; }
+	.resultrow.center a { color: #0072e6; }
 	.resultrow.new a.spam { color: #aaa; }
 	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
@@ -93,6 +94,7 @@
 	.auditcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
 
 	a.auditlink { color: #0072e6; }
+	.menulink { color: #0072e6; }
 
         #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
         #health2 { display: table-cell; text-align: right; }

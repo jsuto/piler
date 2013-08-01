@@ -47,7 +47,7 @@
     <div class="control-group">
        <label class="control-label" for="colour"><?php print $text_colour; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="colour" id="colour" placeholder="" value="<?php if(isset($a['colour'])) { print $a['colour']; } ?>" /> <?php if(isset($a['colour'])) { ?><span style="background: <?php print $a['colour']; ?>;">&nbsp;&nbsp;&nbsp;</span><?php } ?>
+          <input type="text" class="text" name="colour" id="colour" placeholder="" value="<?php if(isset($a['colour'])) { print $a['colour']; } ?>" oninput="Piler.change_box_colour();" /> <span id="cp" style="<?php if(isset($a['colour'])) { ?>background: <?php print $a['colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
        </div>
     </div>
 
