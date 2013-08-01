@@ -36,8 +36,8 @@
          <a xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up"></i></a>
          <a xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down"></i></a>
       </td>
-      <td><i class="attachment icon-paper-clip icon-large" title="<?php print $text_attachment_flag; ?>"></i></div>
-      <td>&nbsp;</div>
+      <td><i class="icon-file"></i></div>
+      <td><i class="icon-bookmark"></i></div>
       <td><i class="icon-tag"></i></div>
    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { ?>
       <td>&nbsp;</td>
@@ -57,11 +57,11 @@
             <td><a href="#" <?php if($message['spam'] == 1) { ?>class="spam"<?php } ?> <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php print $message['subject']; ?>"<?php } ?> onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php if($message['subject'] != $message['shortsubject']) { print $message['shortsubject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
 
             <td><?php print $message['size']; ?></td>
-            <td><?php if($message['attachments'] > 0) { ?><img src="<?php print ICON_ATTACHMENT; ?>" alt="" width="16" height="18" /><?php } else { ?>&nbsp;<?php } ?></td>
-            <td><?php if($message['note']) { ?><a href="#" title="<?php print $message['note']; ?>"><img src="<?php print ICON_NOTES; ?>" alt="akakaka" width="16" height="16" /></a><?php } else { ?>&nbsp;<?php } ?></td>
-            <td><?php if($message['tag']) { ?><a href="#" title="<?php print $message['tag']; ?>"><img src="<?php print ICON_TAG; ?>" alt="" /></a><?php } else { ?>&nbsp;<?php } ?></td>
+            <td><?php if($message['attachments'] > 0) { ?><i class="icon-file"></i><?php } ?></td>
+            <td><?php if($message['note']) { ?><i class="icon-bookmark" title="<?php print $message['note']; ?>"></i><?php } ?></td>
+            <td><?php if($message['tag']) { ?><i class="icon-tag" title="<?php print $message['tag']; ?>"></i><?php } ?></td>
          <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { ?>
-            <td><img src="<?php if($message['verification'] == 1){ print ICON_GREEN_OK; } else { print ICON_RED_X; } ?>" alt="verification status" /></td>
+            <td><i class="icon-<?php if($message['verification'] == 1){ ?>ok<?php } else { ?>remove<?php } ?>-sign" title="verification status"></i></td>
          <?php } ?>
          </tr>
 
@@ -97,6 +97,7 @@
          <?php if($next_page <= $total_pages){ ?><a href="#" onclick="Piler.navigation(<?php print $next_page; ?>);">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
          <?php if($page < $total_pages) { ?> &nbsp; <a href="#" onclick="Piler.navigation(<?php print $total_pages; ?>);"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
    </span>
+
 <?php } else { ?>&nbsp;<?php } ?>
 
               <button class="btn piler-right-margin" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>

@@ -1,7 +1,7 @@
 
 @media screen {
 
-        a { color: #850505; text-decoration: none; }
+        a { color: #0072e6; text-decoration: none; }
 
         p { margin: 0 0 10px 0; }
 
@@ -35,7 +35,7 @@
 
 	#A1 { text-align: right; }
 
-        h3.title { color: #850505; }
+        h3.title { color: #0072e6; }
 
 	.formbottom { margin-bottom: 30px; }
 
@@ -69,7 +69,7 @@
 	.resultrow a { color: #3d3d3d; }
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.new { font-style: normal; }
-	.resultrow.new a { color: #850505; }
+	.resultrow.new a { color: #0072e6; }
 	.resultrow.new a.spam { color: #aaa; }
 	.resultrow.selected { border: 2px solid black; }
 	.resultrow.spam { color: #aaa; }
@@ -92,6 +92,8 @@
 	.auditcell.ref { width: 90px; }
 	.auditcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
 
+	a.auditlink { color: #0072e6; }
+
         #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
         #health2 { display: table-cell; text-align: right; }
 
@@ -101,13 +103,13 @@
 	#pagenav { float: left; margin-top: 0px; margin-bottom: 0px; text-align: left; width: 990px; border: 0px solid red; }
 	.navrow { display: table-row; }
 	.navlink { color: #bbb; font: bold 12px Arial, sans-serif; }
-	#pagenav a.navlink { color: #850505; font: bold 12px Arial, sans-serif; }
+	#pagenav a.navlink { color: #0072e6; font: bold 12px Arial, sans-serif; }
 
         #pagingleft { display: table-cell; float: left; text-align: left; width: 60px;  border: 0px solid red; }
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
         #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
 
-	.messagelink { border-bottom: 1px solid gray; color: #850505; }
+	.messagelink { border-bottom: 1px solid gray; color: #0072e6; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
 	#results a:hover { color: black; }
 

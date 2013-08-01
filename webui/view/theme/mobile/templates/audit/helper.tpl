@@ -11,7 +11,7 @@
             <div class="auditcell ip"><?php print $message['ipaddr']; ?></div>
             <div class="auditcell action"><?php print $actions[$message['action']]; ?></div>
             <div class="auditcell description"><?php if($message['description'] != $message['shortdescription']) { ?><span title="<?php print $message['description']; ?>"><?php print $message['shortdescription']; ?></span><?php } else { print $message['description']; } ?></div>
-            <div class="auditcell ref"><?php if(Registry::get('auditor_user') == 1 && $message['id'] > 0) { ?><a href="#" onclick="Piler.view_message(<?php print $message['id']; ?>);"><?php } ?><?php print $message['id']; ?><?php if(Registry::get('auditor_user') == 1 && $message['id'] > 0) { ?></a><?php } ?></div>
+            <div class="auditcell ref"><?php if(Registry::get('auditor_user') == 1 && $message['id'] > 0) { ?><a href="#" class="auditlink" onclick="Piler.view_message(<?php print $message['id']; ?>);"><?php print $message['id']; ?></a><?php } ?></div>
          </div>
 
 <?php } } else { ?>
