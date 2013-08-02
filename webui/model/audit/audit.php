@@ -79,7 +79,10 @@ class ModelAuditAudit extends Model {
       if($n > 0) {
          if($n > MAX_AUDIT_HITS) { $n = MAX_AUDIT_HITS; }
 
+         
          $query = $this->db->query("SELECT * FROM " . TABLE_AUDIT . " $where $sortorder LIMIT $from," . $data['page_len'], $arr);
+
+         $this->session->set("audit_query", array('where' => $where, 'sortorder' => $sortorder, 'arr' => $arr));
 
          if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("audit query: '%s', param: '%s' in %.2f s, %d hits", $query->query, implode(' ', $arr), $query->exec_time, $query->num_rows)); }
 
@@ -102,6 +105,24 @@ class ModelAuditAudit extends Model {
       }
 
       return array($n, $results);
+   }
+
+
+   public function print_audit_to_csv() {
+      $actions = array_flip(Registry::get('actions'));
+
+      $a = $this->session->get("audit_query");
+
+      if(isset($a['where']) && isset($a['sortorder']) && isset($a['arr'])) {
+         print "Date" . DELIMITER . "ID" . DELIMITER . "User" . DELIMITER . "IP-address" . DELIMITER . "Action" . DELIMITER . "Piler ID" . DELIMITER . "Description\n";
+
+         $query = $this->db->query("SELECT * FROM " . TABLE_AUDIT . " " . $a['where'] . " " . $a['sortorder'], $a['arr']);
+         foreach($query->rows as $q) {
+            if(DEMO_MODE == 1) { $q['ipaddr'] = anonimize_ip_addr($q['ipaddr']); }
+
+            print date(DATE_TEMPLATE . " H:i:s", $q['ts']) . DELIMITER . $q['id'] . DELIMITER . $q['email'] . DELIMITER . $q['ipaddr'] . DELIMITER . $actions[$q['action']] . DELIMITER . $q['piler_id'] . DELIMITER . $q['description'] . "\n";
+         }
+      }
    }
 
 

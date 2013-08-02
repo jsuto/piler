@@ -23,4 +23,28 @@ class Request {
 
 }
 
+
+class Session {
+
+   public function __construct() {
+      //session_start();
+   }
+
+
+   public function get($s = '') {
+      if($s && isset($_SESSION[$s])) { return $_SESSION[$s]; }
+
+      return '';
+   }
+
+
+   public function set($k = '', $v = '') {
+
+      if($k) { $_SESSION[$k] = $v; }
+
+   }
+
+}
+
+
 ?>

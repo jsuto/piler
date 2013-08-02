@@ -7,6 +7,9 @@ require_once("config.php");
 
 require(DIR_SYSTEM . "/startup.php");
 
+$session = new Session();
+Registry::set("session", $session);
+
 $request = new Request();
 Registry::set("request", $request);
 
@@ -63,6 +66,7 @@ Registry::set('letters', $letters);
 Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra"));
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
+Registry::set('actions', $actions);
 
 
 if(Registry::get('username')) {

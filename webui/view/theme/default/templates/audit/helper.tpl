@@ -101,6 +101,11 @@
             <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large"></i></span><?php } ?>
             &nbsp;
     <?php } else { print $text_none_found; } ?>
+
+<?php if($n > 0) { ?>
+   &nbsp; <a href="index.php?route=audit/download"><button class="btn btn-small btn-inverse">Export CSV</button></a>
+<?php } ?>
+
     </div>
 </div>
 

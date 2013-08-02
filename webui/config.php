@@ -205,6 +205,8 @@ $memcached_servers = array(
 $partitions_to_monitor = array('/', '/home', '/var', '/tmp');
 $config['DATA_PARTITION'] = '/var';
 
+$config['DELIMITER'] = "\t";
+
 $langs = array(
                 'hu',
                 'en',
