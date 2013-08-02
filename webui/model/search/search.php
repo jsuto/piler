@@ -261,7 +261,7 @@ class ModelSearchSearch extends Model {
          if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") ";
       }
 
-      if($data['attachment_type'] && $data['attachment_type'] != "any") { if($match) { $match .= " & "; } $match .= "(@attachment_types " . $data['attachment_type'] . ") "; }
+      if($data['attachment_type'] && !strstr($data['attachment_type'], "any")) { if($match) { $match .= " & "; } $match .= "(@attachment_types " . preg_replace("/\,/", "|", $data['attachment_type']) . ") "; }
 
 
       if($data['any']) {
@@ -287,7 +287,7 @@ class ModelSearchSearch extends Model {
          if(preg_match("/^(\>|\<)\={0,}\d{1,}$/", $data['size'])) { $size = "size " . $data['size'] . " AND "; }
       }
 
-      if(isset($data['attachment_type']) && $data['attachment_type'] == 'any') { $a = "attachments > 0 AND "; }
+      if(isset($data['attachment_type']) && strstr($data['attachment_type'], 'any')) { $a = "attachments > 0 AND "; }
       else if(isset($data['has_attachment']) && $data['has_attachment'] == 1) { $attachment = "attachments > 0 AND "; }
 
 

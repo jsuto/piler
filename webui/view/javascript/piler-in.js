@@ -559,6 +559,16 @@ var Piler =
 
         Piler.assemble_folder_restrictions();
 
+        var attachments_type = '';
+
+        if($('input#xhas_attachment_any', z)[0].checked) { attachments_type += ',any'; }
+        if($('input#xhas_attachment_doc', z)[0].checked) { attachments_type += ',word'; }
+        if($('input#xhas_attachment_xls', z)[0].checked) { attachments_type += ',excel'; }
+        if($('input#xhas_attachment_pdf', z)[0].checked) { attachments_type += ',pdf'; }
+        if($('input#xhas_attachment_image', z)[0].checked) { attachments_type += ',image'; }
+
+        if(attachments_type) { attachments_type = attachments_type.substring(1, attachments_type.length); }
+
         Piler.Searches.Complex = {
             from : $.trim($('input#xfrom', z).val()),
             to : $.trim($('input#xto', z).val()),
@@ -566,7 +576,7 @@ var Piler =
             body : $.trim($('input#xbody', z).val()),
             tag : $.trim($('input#xtag', z).val()),
             note : $.trim($('input#xnote', z).val()),
-            attachment_type : $('input#xhas_attachment', z)[0].checked ? 'any' : '',
+            attachment_type : attachments_type,
             date1 : $.trim($('input#date1', z).val()),
             date2 : $.trim($('input#date2', z).val()),
             searchtype : 'simple',

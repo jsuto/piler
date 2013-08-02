@@ -60,6 +60,18 @@
             </div> 
 
             <div class="control-group">
+                <label class="control-label" for="xhas_attachment"><?php print $text_attachment; ?>:</label>
+                <div class="controls">
+                    <img src="view/theme/default/assets/images/fileicons/doc.png" alt="Word" title="Word" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_doc" id="xhas_attachment_doc" <?php if(isset($has_attachment_doc) && $has_attachment_doc == 1) { ?>checked="checked"<?php } ?> />
+                    <img src="view/theme/default/assets/images/fileicons/xls.png" alt="Excel" title="Excel" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_xls" id="xhas_attachment_xls" <?php if(isset($has_attachment_xls) && $has_attachment_xls == 1) { ?>checked="checked"<?php } ?> />
+                    <img src="view/theme/default/assets/images/fileicons/pdf.png" alt="PDF" title=PDF"" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_pdf" id="xhas_attachment_pdf" <?php if(isset($has_attachment_pdf) && $has_attachment_pdf == 1) { ?>checked="checked"<?php } ?> />
+                    <img src="view/theme/default/assets/images/fileicons/image.png" alt="image" title="image" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_image" id="xhas_attachment_image" <?php if(isset($has_attachment_image) && $has_attachment_image == 1) { ?>checked="checked"<?php } ?> />
+                    <img src="view/theme/default/assets/images/fileicons/file.png" alt="any" title="any" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_any" id="xhas_attachment_any" <?php if(isset($has_attachment_any) && $has_attachment_any == 1) { ?>checked="checked"<?php } ?> />
+                </div>
+            </div>
+
+
+            <div class="control-group">
                 <label class="control-label" for="date1"><?php print $text_from; ?> <?php print $text_date; ?>:</label>
                 <div class="controls">
                   <input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="<?php print DATE_FORMAT; ?>" />
