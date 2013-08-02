@@ -120,7 +120,7 @@ class ModelAuditAudit extends Model {
          foreach($query->rows as $q) {
             if(DEMO_MODE == 1) { $q['ipaddr'] = anonimize_ip_addr($q['ipaddr']); }
 
-            print date(DATE_TEMPLATE . " H:i:s", $q['ts']) . DELIMITER . $q['id'] . DELIMITER . $q['email'] . DELIMITER . $q['ipaddr'] . DELIMITER . $actions[$q['action']] . DELIMITER . $q['piler_id'] . DELIMITER . $q['description'] . "\n";
+            print date(DATE_TEMPLATE . " H:i:s", $q['ts']) . DELIMITER . $q['id'] . DELIMITER . $q['email'] . DELIMITER . $q['ipaddr'] . DELIMITER . $actions[$q['action']] . DELIMITER . $q['meta_id'] . DELIMITER . $q['description'] . "\n";
          }
       }
    }
