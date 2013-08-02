@@ -72,7 +72,7 @@
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_disk_usage; ?></div>
-            <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="bold <?php if($partition['utilization'] < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $partition['partition']; ?> =&gt; <?php print nice_size(1000*$partition['used']); ?> / <?php print nice_size($partition['total']); ?> (<?php print $partition['utilization']; ?>%)</span><br /><?php } ?></div>
+            <div class="cellhealthright"><?php foreach($shortdiskinfo as $partition) { ?><span class="bold <?php if($partition['utilization'] < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $partition['partition']; ?> =&gt; <?php print nice_size(1000*$partition['used']); ?> / <?php print nice_size(1000*$partition['total']); ?> (<?php print $partition['utilization']; ?>%)</span><br /><?php } ?></div>
          </div>
 
          <div class="row">

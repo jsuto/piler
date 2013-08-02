@@ -34,6 +34,25 @@ class ModelPolicyRetention extends Model {
 
    public function remove_rule($id = 0) {
       $query = $this->db->query("DELETE FROM " .  TABLE_RETENTION_RULE . " WHERE id=?", array($id));
+
+      return $this->db->countAffected();
+   }
+
+
+   public function update_retention_time($data = array()) {
+      if(DEFAULT_RETENTION <= 0) { return 0; }
+
+      if(!isset($data['domain']) || !isset($data['days']) || $data['domain'] == '' || $data['days'] < 1) { return 0; }
+
+      $default_retention = DEFAULT_RETENTION * 86400;
+
+      $delta = NOW + 86400 * $data['days'] - $default_retention;
+      $start_ts = NOW - $default_retention;
+
+      $query = $this->db->query("UPDATE " . VIEW_MESSAGES . " SET retained=? WHERE arrived > ? AND (todomain=? OR fromdomain=?)", array($delta, $start_ts, $data['domain'], $data['domain']));
+
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("update retention date: domain='%s', days=%d, hits=%d, exec time=%.2f sec", $data['domain'], $data['days'], $this->db->countAffected(), $query->exec_time)); }
+
       return $this->db->countAffected();
    }
 

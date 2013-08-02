@@ -96,6 +96,9 @@
          <div class="domaincell"><?php print $text_attachment_size; ?></div>
          <div class="domaincell"><?php print $text_days; ?></div>
          <div class="domaincell">&nbsp;</div>
+<?php if(ENABLE_SAAS == 1) { ?>
+         <div class="domaincell">&nbsp;</div>
+<?php } ?>
       </div>
 
 <?php foreach($rules as $rule) { ?>
@@ -112,6 +115,9 @@
          <div class="domaincell"><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></div>
          <div class="domaincell"><?php print $rule['days']; ?></div>
          <div class="domaincell"><a href="index.php?route=policy/removeretention&amp;confirmed=1&amp;id=<?php print $rule['id']; ?>" onclick="if(confirm('<?php print $text_remove_rule; ?>: ' + '#<?php print $rule['id']; ?>')) return true; return false;"><?php print $text_remove; ?></a></div>
+<?php if(ENABLE_SAAS == 1) { ?>
+         <div class="domaincell"><?php if($rule['domain']) { ?><a href="index.php?route=policy/updateretention&domain=<?php print $rule['domain']; ?>&days=<?php print $rule['days']; ?>"><?php print $text_update_retention_within_this_domain; ?></a><?php } else { ?>&nbsp;<?php } ?></div>
+<?php } ?>
       </div>
 <?php } ?>
 
