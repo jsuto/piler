@@ -99,23 +99,20 @@ class ControllerAuditHelper extends Controller {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if(preg_match("/(login|loginfailed|logout|view|download|search|restore|journal)$/", $v) && isset($actions[$v])) { $this->a['action'] .= '*' . $actions[$v]; }
-         if(preg_match("/\@/", $v)) { $this->a['user'] .= '*' . $v; }
-         if(preg_match("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $v)) { $this->a['ipaddr'] .= '*' . $v; }
-         if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= '*' . $v; }
-         if(preg_match("/\d{4}(\-|\.)\d{1,2}(\-|\.)\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
+         if(preg_match("/(login|loginfailed|logout|view|download|search|restore|journal)$/", $v) && isset($actions[$v])) { $this->a['action'] .= "\t" . $actions[$v]; }
+         if(preg_match("/\@/", $v)) { $this->a['user'] .= "\t" . $v; }
+         if(preg_match("/\d{1,3}\.\d{1,3}\.(\d{1,3}|\*)\.(\d{1,3}|\*)/", $v)) { $this->a['ipaddr'] .= "\t" . $v; }
+         if(preg_match("/^\d{1,}$/", $v)) { $this->a['ref'] .= "\t" . $v; }
+         if(preg_match("/\d{4}(\-|\.)(\d{1,2}|\*)(\-|\.)(\d{1,2}|\*)/", $v) || preg_match("/(\d{1,2}|\*)\/(\d{1,2}|\*)\/\d{4}/", $v)) {
             $ndate++;
             $this->a["date$ndate"] = $v;
          }
       }
 
-
-      $this->a['user'] = preg_replace("/^\*/", "", $this->a['user']);
-      $this->a['ipaddr'] = preg_replace("/^\*/", "", $this->a['ipaddr']);
-      $this->a['ref'] = preg_replace("/^\*/", "", $this->a['ref']);
-      $this->a['action'] = preg_replace("/^\*/", "", $this->a['action']);
-
-      //if(isset($data['action'])) { $arr['action'] = $data['action']; }
+      $this->a['user'] = preg_replace("/^\t/", "", $this->a['user']);
+      $this->a['ipaddr'] = preg_replace("/^\t/", "", $this->a['ipaddr']);
+      $this->a['ref'] = preg_replace("/^\t/", "", $this->a['ref']);
+      $this->a['action'] = preg_replace("/^\t/", "", $this->a['action']);
 
       if(isset($data['sort'])) { $this->a['sort'] = $data['sort']; }
       if(isset($data['order'])) { $this->a['order'] = $data['order']; }

@@ -24,20 +24,19 @@ class ModelAuditAudit extends Model {
       $sortorder = "ORDER BY `$sort` $order";
 
       if(isset($data['action']) && $data['action'] != ACTION_ALL) {
-         $where .= " AND action=?";
-         array_push($arr, $data['action']);
+         $where .= " AND ( " . $this->append_search_criteria("action", $data['action'], $arr) . " )";
       }
 
       if(isset($data['ipaddr']) && $data['ipaddr']) {
-         $where .= " AND ipaddr IN (" . $this->append_search_criteria($data['ipaddr'], $arr) . ")";
+         $where .= " AND ( " . $this->append_search_criteria("ipaddr", $data['ipaddr'], $arr) . " )";
       }
 
       if(isset($data['user']) && $data['user']) {
-         $where .= " AND email IN (" . $this->append_search_criteria($data['user'], $arr) . ")";
+         $where .= " AND ( " . $this->append_search_criteria("email", $data['user'], $arr) . " )";
       }
 
       if(isset($data['ref']) && $data['ref']) {
-         $where .= " AND meta_id IN (" . $this->append_search_criteria($data['ref'], $arr) . ")";
+         $where .= " AND ( " . $this->append_search_criteria("meta_id", $data['ref'], $arr) . " )";
       }
 
       if(Registry::get('admin_user') == 0) {
@@ -66,6 +65,7 @@ class ModelAuditAudit extends Model {
       }
 
       $from = $data['page_len'] * $data['page'];
+
 
       if($where) {
          $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_AUDIT . " $where", $arr);
@@ -126,21 +126,26 @@ class ModelAuditAudit extends Model {
    }
 
 
-   private function append_search_criteria($s = '', &$arr = array()) {
-      $q = "";
+   private function append_search_criteria($var = '', $s = '', &$arr = array()) {
+      $str = "";
 
-      $a = explode("*", $s);
+      $a = explode("\t", $s);
 
       for($i=0; $i<count($a); $i++) {
          if($a[$i]) {
-            array_push($arr, $a[$i]);
-            $q .= ",?";
+            $p = strchr($a[$i], '*');
+            if($p) {
+               $str .= "OR $var LIKE ? ";
+               array_push($arr, preg_replace("/\*.{0,}/", "%", $a[$i]));
+            }
+            else {
+               $str .= "OR $var = ? ";
+               array_push($arr, $a[$i]);
+            }
          }
       }
 
-      $q = substr($q, 1, strlen($q));
-
-      return $q;
+      return substr($str, 2, strlen($str));
    }
 
 

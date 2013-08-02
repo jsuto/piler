@@ -407,6 +407,9 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
 
       if(DATE_TEMPLATE == 'd/m/Y') { $a = $y; $y = $d; $d = $a; }
 
+      if($m == '*') { $m = 0; }
+      if($d == '*') { $d = 0; }
+
       $date1 = mktime(0, 0, 0, $m, $d, $y);
 
       if($date1 > 0) { $date .= "$field >= $date1 "; }
