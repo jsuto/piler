@@ -114,6 +114,8 @@ int main(int argc, char **argv){
 
    printf("spam: %d\n", sdata.spam_message);
 
+   if(sdata.internal_sender == 0 && sdata.internal_recipient == 0) printf("NOT IN mydomains\n");
+
    printf("\n\n");
 
    close_database(&sdata);

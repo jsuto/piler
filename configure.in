@@ -184,7 +184,7 @@ fi
 
 
 AC_ARG_WITH(database,
-[  --with-database[[=mysql|psql]]  use either mysql or psql database for storing data (default: none)],[
+[  --with-database[[=mysql]]  select the used database, currently mysql only (default: none)],[
    if test "$withval" != "no" -a "$withval" != "yes"; then
       DATABASE=$withval
    fi

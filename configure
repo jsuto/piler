@@ -1330,7 +1330,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-database[=mysql|psql]  use either mysql or psql database for storing data (default: none)
+  --with-database[=mysql]  select the used database, currently mysql only (default: none)
   --with-piler-user=username      what user the piler daemon shall be run as
 
 Some influential environment variables:
