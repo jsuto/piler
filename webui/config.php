@@ -39,25 +39,26 @@ $config['SITE_DESCRIPTION'] = 'piler email archiver';
 
 
 // authentication against an ldap directory (disabled by default)
-// with zimbra specific settings
 
 $config['ENABLE_LDAP_AUTH'] = 0;
-$config['LDAP_HOST'] = 'zimbra.yourdomain.com';
-$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
+$config['LDAP_HOST'] = 'ldap.yourdomain.com';
+$config['LDAP_HELPER_DN'] = 'cn=....';
 $config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
 $config['LDAP_MAIL_ATTR'] = 'mail';
-$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
-$config['LDAP_BASE_DN'] = '';
-$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
-$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 $config['LDAP_AUDITOR_MEMBER_DN'] = '';
-
+$config['LDAP_BASE_DN'] = '';
 
 // AD specific settings
 //
-//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'user';
-//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'group';
-//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
+$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'user';
+$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'group';
+$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
+
+// zimbra specific settings
+//$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
 
 // Lotus Notes specific settings for ldap authentication
 //
@@ -65,14 +66,14 @@ $config['LDAP_AUDITOR_MEMBER_DN'] = '';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
 
-
 // iredmail specific settings
 //$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=yourdomain,dc=com';
-//$config['LDAP_MAIL_ATTR'] = 'mail';
 //$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'mailUser';
 //$config['LDAP_BASE_DN'] = 'o=domains,dc=yourdomain,dc=com';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'mailList';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
+
+
 
 
 // enable single sign-on (disabled by default)

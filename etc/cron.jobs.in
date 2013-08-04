@@ -3,15 +3,6 @@
 ### be sure to review it and adjust it for your needs ###
 #########################################################
 
-root's crontab:
-
-### optional: query postfix queue statistics
-*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape > LOCALSTATEDIR/piler/stat/active+incoming
-*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape -s > LOCALSTATEDIR/piler/stat/active+incoming-sender
-*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape deferred > LOCALSTATEDIR/piler/stat/deferred
-*/5 * * * * PATH=$PATH:/usr/sbin:/usr/local/sbin /usr/sbin/qshape -s deferred > LOCALSTATEDIR/piler/stat/deferred-sender
-
-
 piler's crontab:
 
 ### mandatory
@@ -23,13 +14,10 @@ piler's crontab:
 */15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
 
 ### optional: the same report you can see on the health page
-30 7 * * * /usr/local/libexec/piler/daily-report.php /srv/www/webui.yourdomain.com
+30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php /srv/www/webui.yourdomain.com
 
 ### optional: populate accouting data
-30 6 * * * /usr/local/libexec/piler/generate_stats.php /srv/www/webui.yourdomain.com
-
-### optional: regular AD sync
-0 8 * * * /usr/bin/php LIBEXECDIR/piler/ldap_sync.php /srv/www/webui.yourdomain.com > LOCALSTATEDIR/piler/stat/adsync.stat
+30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php /srv/www/webui.yourdomain.com
 
 ### optional: purge aged emails
 2 0 * * * /usr/local/bin/pilerpurge

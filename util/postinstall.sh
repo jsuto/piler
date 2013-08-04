@@ -105,6 +105,8 @@ make_cron_entries() {
    echo "30   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
+   echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php $$DOCROOT" >> $CRON_TMP
+
    echo "### PILEREND" >> $CRON_TMP
 }
 
@@ -193,12 +195,14 @@ execute_post_install_tasks() {
    rm -f $KEYTMPFILE
    echo "Done."
 
+   chmod 755 $LOCALSTATEDIR/piler/stat
+
    echo -n "Copying www files to $DOCROOT... "
    mkdir -p $DOCROOT || exit 1
 
    cp -R webui/* $DOCROOT
    cp -R webui/.htaccess $DOCROOT
-   chmod 770 $DOCROOT/tmp
+   chmod 770 $DOCROOT/tmp $DOCROOT/images
    chgrp $WWWGROUP $DOCROOT/tmp
 
    echo "<?php" > $DOCROOT/config-site.php
