@@ -237,7 +237,7 @@ require_once 'config-site.php';
 
 if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme'])) { $config['THEME'] = $_SESSION['theme']; }
 
-include("/system/helper/detectmobilebrowser.php");
+include("system/helper/detectmobilebrowser.php");
 
 if(MOBILE_DEVICE == 1) { $config['THEME'] = 'mobile'; }
 
