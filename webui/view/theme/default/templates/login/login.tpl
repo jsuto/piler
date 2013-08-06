@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title><?php print SITE_NAME; ?> | <?php print PROVIDED_BY; ?></title>
+    <title><?php print $title; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
     <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>

@@ -17,7 +17,7 @@ class ControllerGroupEmail extends Controller {
 
       $this->load->model('group/group');
 
-      //$this->document->title = $language->get('text_group_management');
+      $this->document->title = '';
 
       $this->data['page'] = 0;
       $this->data['page_len'] = get_page_length();
