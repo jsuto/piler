@@ -27,6 +27,8 @@
 
    </script>
 
+   <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
+
 </head>
 
 <body class="email">

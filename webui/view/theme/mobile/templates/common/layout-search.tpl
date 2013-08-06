@@ -24,6 +24,8 @@
    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
+
+   <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
 </head>
 
 <body class="mybody" onload="Piler.add_shortcuts();">

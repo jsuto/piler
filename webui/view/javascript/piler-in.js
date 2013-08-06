@@ -633,11 +633,38 @@ var Piler =
         $('input#xbody').val('');
         $('input#xtag').val('');
         $('input#xnote').val('');
-        $('input#xhas_attachment')[0].checked = 0;
+        $('input#xhas_attachment_doc')[0].checked = 0;
+        $('input#xhas_attachment_xls')[0].checked = 0;
+        $('input#xhas_attachment_pdf')[0].checked = 0;
+        $('input#xhas_attachment_image')[0].checked = 0;
+        $('input#xhas_attachment_any')[0].checked = 0;
         $('input#date1').val('');
         $('input#date2').val('');
 
         Piler.Searches.Complex = {};
+    },
+
+
+    /*
+     * when clicked on the "any" attachment type, clear the other types
+     */
+
+    clear_attachment_others: function()
+    {
+        $('input#xhas_attachment_doc')[0].checked = 0;
+        $('input#xhas_attachment_xls')[0].checked = 0;
+        $('input#xhas_attachment_pdf')[0].checked = 0;
+        $('input#xhas_attachment_image')[0].checked = 0;
+    },
+
+
+    /*
+     * when clicked on any of the named attachment types, clear the "any" type
+     */
+
+    clear_attachment_any: function()
+    {
+        $('input#xhas_attachment_any')[0].checked = 0;       
     },
 
 

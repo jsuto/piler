@@ -39,7 +39,7 @@ class ModelAuditAudit extends Model {
          $where .= " AND ( " . $this->append_search_criteria("meta_id", $data['ref'], $arr) . " )";
       }
 
-      if(Registry::get('admin_user') == 0) {
+      if(Registry::get('admin_user') == 0 && RESTRICTED_AUDITOR == 1) {
          while(list($k, $v) = each($_SESSION['auditdomains'])) {
             if($q) { $q .= ","; }
             $q .= "?";

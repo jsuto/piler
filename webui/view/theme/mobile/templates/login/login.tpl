@@ -12,7 +12,7 @@
 
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+   <link href="/bootstrap/css/bootstrap<?php print BOOTSTRAP_THEME; ?>.min.css" rel="stylesheet" media="screen">
    <link href="/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
 
    <link rel="stylesheet" type="text/css" href="/view/theme/<?php print THEME; ?>/stylesheet/jquery-ui-custom.min.css" />
@@ -24,42 +24,40 @@
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 
+   <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
 </head>
 
-<body class="mybody">
-
-<div id="piler1" class="container">
-
-
+<body class="loginpage">
+   
 <?php if(!isset($_SESSION['username'])){ ?>
 
-<div class="login">
+    <div id="logincontainer" class="container">
+        <div id="logo-lg"><img src="<?php print SITE_URL; ?><?php print SITE_LOGO_LG; ?>" alt="Archive Logo Image" title="<?php print $text_login; ?>" /></div>
 
-   <?php if(ENABLE_GOOGLE_LOGIN == 1) { ?>
-      <p><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></p>
-   <?php } else { ?>
+        <form name="login" action="login.php" method="post" class="form-signin">
+            <h2 class="form-signin-heading"><?php print $text_login; ?></h2>
+            <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
+            <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
-      <form name="login" action="login.php" method="post" class="form-inline">
-         <input type="text" class="input-medium" name="username" placeholder="<?php print $text_email; ?>" />
-         <input type="password" class="input-medium" name="password" placeholder="<?php print $text_password; ?>" />
-         <input type="submit" class="btn btn-primary" value="<?php print $text_submit; ?>" />
-      </form>
-   <?php } ?>
+           <?php if(ENABLE_GOOGLE_LOGIN == 1) { ?>
+                 <div class="info"><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></div>
+        <?php } else { ?>
+                <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>">
+                <input type="password" class="input-block-level" name="password" placeholder="<?php print $text_password; ?>">
+                <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
+        <?php } ?>
 
+        </form>
 
-<?php if(isset($x)){ ?>
-    <p class="text-error bold"><?php print $x; ?></p>
+        <div id="compatibility" class="well well-large"><?php print COMPATIBILITY; ?></div>
+
+   </div>
+
 <?php } ?>
-
-
-</div>
-
-<?php } ?>
-
-
-</div>
 
 <!-- <?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?> -->
+
+
 
 </body>
 </html>

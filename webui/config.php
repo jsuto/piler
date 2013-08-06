@@ -17,6 +17,7 @@ $config['PILERGETD_PASSWORD'] = '';
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = '';
+$config['BRANDING_FAVICON'] = '';
 $config['SUPPORT_LINK'] = '';
 
 $config['BOOTSTRAP_THEME'] = '-cosmo';

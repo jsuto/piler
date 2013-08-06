@@ -48,11 +48,11 @@
          <div class="row">
             <div class="cell1"><?php print $text_attachment; ?>:</div>
             <div class="cell2 left">
-               <img src="view/theme/mobile/images/fileicons/doc.png" alt="Word" title="Word" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_doc" id="xhas_attachment_doc" <?php if(isset($has_attachment_doc) && $has_attachment_doc == 1) { ?>checked="checked"<?php } ?> />
-               <img src="view/theme/mobile/images/fileicons/xls.png" alt="Excel" title="Excel" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_xls" id="xhas_attachment_xls" <?php if(isset($has_attachment_xls) && $has_attachment_xls == 1) { ?>checked="checked"<?php } ?> />
-               <img src="view/theme/mobile/images/fileicons/pdf.png" alt="PDF" title=PDF"" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_pdf" id="xhas_attachment_pdf" <?php if(isset($has_attachment_pdf) && $has_attachment_pdf == 1) { ?>checked="checked"<?php } ?> />
-               <img src="view/theme/mobile/images/fileicons/image.png" alt="image" title="image" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_image" id="xhas_attachment_image" <?php if(isset($has_attachment_image) && $has_attachment_image == 1) { ?>checked="checked"<?php } ?> />
-               <img src="view/theme/mobile/images/fileicons/file.png" alt="any" title="any" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_any" id="xhas_attachment_any" <?php if(isset($has_attachment_any) && $has_attachment_any == 1) { ?>checked="checked"<?php } ?> />
+               <img src="view/theme/mobile/images/fileicons/doc.png" alt="Word" title="Word" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_doc" id="xhas_attachment_doc" <?php if(isset($has_attachment_doc) && $has_attachment_doc == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+               <img src="view/theme/mobile/images/fileicons/xls.png" alt="Excel" title="Excel" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_xls" id="xhas_attachment_xls" <?php if(isset($has_attachment_xls) && $has_attachment_xls == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+               <img src="view/theme/mobile/images/fileicons/pdf.png" alt="PDF" title=PDF"" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_pdf" id="xhas_attachment_pdf" <?php if(isset($has_attachment_pdf) && $has_attachment_pdf == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+               <img src="view/theme/mobile/images/fileicons/image.png" alt="image" title="image" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_image" id="xhas_attachment_image" <?php if(isset($has_attachment_image) && $has_attachment_image == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+               <img src="view/theme/mobile/images/fileicons/file.png" alt="any" title="any" /> <input type="checkbox" class="checkbox popup" name="xhas_attachment_any" id="xhas_attachment_any" <?php if(isset($has_attachment_any) && $has_attachment_any == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_others();" />
             </div>
          </div>
 

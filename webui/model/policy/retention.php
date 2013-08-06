@@ -47,7 +47,7 @@ class ModelPolicyRetention extends Model {
       $default_retention = DEFAULT_RETENTION * 86400;
 
       $delta = NOW + 86400 * $data['days'] - $default_retention;
-      $start_ts = NOW - $default_retention;
+      $start_ts = NOW - 2*$default_retention;
 
       $query = $this->db->query("UPDATE " . VIEW_MESSAGES . " SET retained=? WHERE arrived > ? AND (todomain=? OR fromdomain=?)", array($delta, $start_ts, $data['domain'], $data['domain']));
 
