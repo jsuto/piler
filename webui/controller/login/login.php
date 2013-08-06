@@ -32,7 +32,7 @@ class ControllerLoginLogin extends Controller {
          $this->load->model('saas/customer');
       }
 
-      $this->document->title = $this->data['text_login'];
+      $this->data['title'] = $this->data['text_login'];
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {
 
