@@ -135,6 +135,8 @@ class ModelSaasCustomer extends Model
 
 
    public function count_online() {
+      $query = $this->db->query("DELETE FROM " . TABLE_ONLINE . " WHERE last_activity < ?", array(NOW - 3600));
+
       $query = $this->db->query("SELECT COUNT(*) AS num FROM " . TABLE_ONLINE);
 
       return $query->row['num'];
