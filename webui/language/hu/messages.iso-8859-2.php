@@ -151,6 +151,7 @@ $_['text_import'] = "Import";
 $_['text_import_users'] = "Felhasználók importálása";
 $_['text_import_users_from_LDAP'] = "Felhasználók importálása LDAP-ból";
 $_['text_inbound'] = "bejövõ";
+$_['text_indexer_job'] = "Indexer futás";
 $_['text_install_sudo_apply'] = "Adja az alábbi sort a /etc/sudoers file-hoz: 'www-data ALL=NOPASSWD: /etc/init.d/rc.piler reload'";
 $_['text_internal'] = "belsõ";
 $_['text_invalid_data'] = "Érvénytelen adat(ok)";

@@ -151,6 +151,7 @@ $_['text_import'] = "Import";
 $_['text_import_users'] = "Import users";
 $_['text_import_users_from_LDAP'] = "Import users from LDAP";
 $_['text_inbound'] = "inbound";
+$_['text_indexer_job'] = "Indexer job";
 $_['text_install_sudo_apply'] = "Add the following to /etc/sudoers: 'www-data ALL=NOPASSWD: /etc/init.d/rc.piler reload'";
 $_['text_internal'] = "internal";
 $_['text_invalid_data'] = "Invalid data";

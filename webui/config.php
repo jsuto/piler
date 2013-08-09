@@ -39,6 +39,7 @@ $config['PROVIDED_BY'] = 'www.mailpiler.org';
 $config['SITE_KEYWORDS'] = 'piler email archiver';
 $config['SITE_DESCRIPTION'] = 'piler email archiver';
 
+$config['INDEXER_BEACON'] = '/var/piler/stat/indexer';
 
 // authentication against an ldap directory (disabled by default)
 

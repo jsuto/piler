@@ -5,12 +5,15 @@ MAINTMPFILE=/var/run/piler/main.indexer.tmp
 DELTATMPFILE=/var/run/piler/delta.indexer.tmp
 INDEXER=indexer
 PRIORITY=mail.error
+TOUCHFILE=/var/piler/stat/indexer
 
 if [ -f $MAINTMPFILE ]; then echo "INDEXER ERROR: indexer merging to main index is already running. It started at "`cat $MAINTMPFILE` | logger -p $PRIORITY ; exit 1; fi
 
 if [ -f $DELTATMPFILE ]; then echo "INDEXER ERROR: delta indexing and merging is already running. It started at "`cat $DELTATMPFILE` | logger -p $PRIORITY ; exit 1; fi
 
 date > $DELTATMPFILE
+
+touch $TOUCHFILE
 
 function finish {
    rm -f $DELTATMPFILE

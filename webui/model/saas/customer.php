@@ -118,7 +118,7 @@ class ModelSaasCustomer extends Model
       $query = $this->db->query("INSERT INTO " . TABLE_ONLINE . " (username, ts, last_activity, ipaddr) VALUES(?,?,?,?)", array($username, NOW, NOW, $_SERVER['REMOTE_ADDR']));
 
       if($this->db->countAffected() == 0) {
-         $query = $this->db->query("UPDATE " . TABLE_ONLINE . " SET ts=?, last_activity=? WHERE username=? AND ipaddr=?", array(NOW, $username, $_SERVER['REMOTE_ADDR']));
+         $query = $this->db->query("UPDATE " . TABLE_ONLINE . " SET ts=?, last_activity=? WHERE username=? AND ipaddr=?", array(NOW, NOW, $username, $_SERVER['REMOTE_ADDR']));
       }
 
       return 1;

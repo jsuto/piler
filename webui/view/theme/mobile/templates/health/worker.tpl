@@ -126,6 +126,13 @@
             </div>
          </div>
 
+      <?php if($indexer_stat[0]) { ?>
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_indexer_job; ?></div>
+            <div class="cellhealthright"><?php print $text_last; ?>: <?php print $indexer_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $indexer_stat[1]; ?></div>
+         </div>
+      <?php } ?>
+
       </div>
 
 

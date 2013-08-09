@@ -146,6 +146,10 @@ class ControllerHealthWorker extends Controller {
          $this->data['usagetrend'] = 0;
       }
 
+
+      $this->data['indexer_stat'] = $this->model_health_health->indexer_stat();
+
+
       $this->render();
    }
 

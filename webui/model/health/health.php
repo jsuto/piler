@@ -198,6 +198,23 @@ class ModelHealthHealth extends Model {
       return $dirSize;
    }
 
+
+   public function indexer_stat() {
+      $data = array('', '');
+
+      if(file_exists(INDEXER_BEACON)) {
+
+         $st = stat(INDEXER_BEACON);
+         $t1 = date(DATE_TEMPLATE . " H:i", $st['mtime']);
+         $t2 = date(DATE_TEMPLATE . " H:i", $st['mtime']+30*60);
+
+         $data = array($t1, $t2);
+      }
+
+      return $data;
+   }
+
+
 }
 
 

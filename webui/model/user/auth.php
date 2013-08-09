@@ -130,7 +130,7 @@ class ModelUserAuth extends Model {
       if($ldap_auditor_member_dn == '') { return 0; }
 
       foreach($e as $a) {
-         foreach (array("memberof") as $memberattr) {
+         foreach (array("memberof", "dn") as $memberattr) {
             if(isset($a[$memberattr])) {
 
                if(isset($a[$memberattr]['count'])) {
