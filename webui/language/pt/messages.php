@@ -28,6 +28,7 @@ $_['text_attachment_type'] = "Tipo de anexo";
 $_['text_audit'] = "Auditoria";
 
 $_['text_back'] = "Voltar";
+$_['text_background_colour'] = "Background colour";
 $_['text_branding_logo'] = "Branding logo";
 $_['text_branding_text'] = "Branding text";
 $_['text_branding_url'] = "Branding URL";
@@ -318,6 +319,7 @@ $_['text_tag_selected_messages'] = "Marcar(Tag) resultados de pesquisa";
 $_['text_tagged'] = "Marcados";
 $_['text_tags'] = "Tags";
 $_['text_text'] = "Texto";
+$_['text_text_colour'] = "Text colour";
 $_['text_text2'] = "texto";
 $_['text_theme'] = "Tema";
 $_['text_time'] = "Hora";

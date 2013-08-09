@@ -29,6 +29,7 @@ $_['text_attachment_type'] = "Melléklet típus";
 $_['text_audit'] = "Audit";
 
 $_['text_back'] = "Vissza";
+$_['text_background_colour'] = "Háttérszín";
 $_['text_branding_logo'] = "Brand logo";
 $_['text_branding_text'] = "Brand szöveg";
 $_['text_branding_url'] = "Brand URL";
@@ -325,6 +326,7 @@ $_['text_tagged'] = "Címkézve";
 $_['text_tags'] = "Címkék";
 $_['text_test_connection'] = "Kapcsolat tesztelése";
 $_['text_text'] = "Szöveg";
+$_['text_text_colour'] = "Szövegszín";
 $_['text_text2'] = "szöveg";
 $_['text_theme'] = "Stílus";
 $_['text_time'] = "Időpont";

@@ -2,7 +2,7 @@
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
-        <div class="container-fluid"<?php if($settings['colour']) { ?> style="background: <?php print $settings['colour']; ?>;"<?php } ?>>
+        <div class="container-fluid"<?php if($settings['background_colour']) { ?> style="background: <?php print $settings['background_colour']; ?>;"<?php } ?>>
         
           <!-- <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -19,7 +19,7 @@
 <?php if($admin_user == 1) { ?>
 
                                 <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-desktop"></i>&nbsp;<?php print $text_monitor; ?>&nbsp;<b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-desktop"></i>&nbsp;<?php print $text_monitor; ?>&nbsp;<b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                                 <li><a href="index.php?route=stat/stat&timespan=daily"><i class="icon-bar-chart"></i>&nbsp;Statistics</a></li>
                         <li><a href="index.php?route=accounting/accounting&view=email"><i class="icon-tasks"></i>&nbsp;Accounting</a></li>
@@ -30,7 +30,7 @@
                                         </ul>
                                 </li>
                                 <li class="dropdown"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>>
-                                   <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cogs"></i>&nbsp;<?php print $text_administration; ?>&nbsp;<b class="caret"></b></a>
+                                   <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-cogs"></i>&nbsp;<?php print $text_administration; ?>&nbsp;<b class="caret"></b></a>
                                    <ul class="dropdown-menu">
                                           <li><a href="index.php?route=user/list"><i class="icon-user"></i>&nbsp;<?php print $text_users; ?></a></li>
                                           <li><a href="index.php?route=group/list"><i class="icon-group"></i>&nbsp;<?php print $text_groups; ?></a></li>
@@ -47,18 +47,18 @@
 
 <?php } else { ?>
 
-              <li><a href="search.php"><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
+              <li><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
 
           <?php if(ENABLE_AUDIT == 1 && $auditor_user == 1) { ?>
-              <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
+              <li><a href="index.php?route=audit/audit" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
           <?php } ?>
 
           <?php if($settings['support_link']) { ?>
-              <li><a href="<?php print $settings['support_link']; ?>"><?php print $text_contact_support; ?></a></li>
+              <li><a href="<?php print $settings['support_link']; ?>" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $text_contact_support; ?></a></li>
           <?php } ?>
 
 	  <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
-              <li><a href="/folders.php"><i class="icon-folder-close"></i>&nbsp;<?php print $text_folders; ?></a></li>
+              <li><a href="/folders.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-folder-close"></i>&nbsp;<?php print $text_folders; ?></a></li>
           <?php } ?>
 
 <?php } ?>
@@ -67,10 +67,10 @@
             </ul>
             
             <ul class="nav pull-right">
-		<?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li><?php } ?>
+		<?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li><?php } ?>
 
 				<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>&nbsp;<?php if(isset($_SESSION['realname'])) { print $_SESSION['realname']; ?>&nbsp;<?php } ?><b class="caret"></b></a>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-user"></i>&nbsp;<?php if(isset($_SESSION['realname'])) { print $_SESSION['realname']; ?>&nbsp;<?php } ?><b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a href="settings.php"><i class="icon-cog"></i>&nbsp;Settings</a></li>
 						<li class="divider"></li>

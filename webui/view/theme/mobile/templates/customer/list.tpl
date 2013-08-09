@@ -45,9 +45,15 @@
        </div>
     </div>
     <div class="control-group">
-       <label class="control-label" for="colour"><?php print $text_colour; ?>:</label>
+       <label class="control-label" for="colour"><?php print $text_background_colour; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="colour" id="colour" placeholder="" value="<?php if(isset($a['colour'])) { print $a['colour']; } ?>" oninput="Piler.change_box_colour();" /> <span id="cp" style="<?php if(isset($a['colour'])) { ?>background: <?php print $a['colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
+          <input type="text" class="text" name="background_colour" id="background_colour" placeholder="" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } ?>" oninput="Piler.change_box_colour('background_colour', 'cp');" /> <span id="cp" style="<?php if(isset($a['background_colour'])) { ?>background: <?php print $a['background_colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
+       </div>
+    </div>
+    <div class="control-group">
+       <label class="control-label" for="colour"><?php print $text_text_colour; ?>:</label>
+       <div class="controls">
+          <input type="text" class="text" name="text_colour" id="text_colour" placeholder="" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } ?>" oninput="Piler.change_box_colour('text_colour', 'cp2');" /> <span id="cp2" style="<?php if(isset($a['text_colour'])) { ?>background: <?php print $a['text_colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
        </div>
     </div>
 
@@ -72,7 +78,8 @@
          <div class="domaincell"><?php print $text_branding_text; ?></div>
          <div class="domaincell"><?php print $text_branding_url; ?></div>
          <div class="domaincell"><?php print $text_branding_logo; ?></div>
-         <div class="domaincell"><?php print $text_colour; ?></div>
+         <div class="domaincell"><?php print $text_background_colour; ?></div>
+         <div class="domaincell"><?php print $text_text_colour; ?></div>
          <div class="domaincell">&nbsp;</div>
          <div class="domaincell">&nbsp;</div>
       </div>
@@ -83,7 +90,8 @@
          <div class="domaincell"><?php print $e['branding_text']; ?></div>
          <div class="domaincell"><?php print $e['branding_url']; ?></div>
          <div class="domaincell"><?php if($e['branding_logo']) { ?><img src="/images/<?php print $e['branding_logo']; ?>" /><?php } ?></div>
-         <div class="domaincell"><?php print $e['colour']; ?></div>
+         <div class="domaincell"><?php print $e['background_colour']; ?></div>
+         <div class="domaincell"><?php print $e['text_colour']; ?></div>
          <div class="domaincell"><a href="index.php?route=customer/list&amp;id=<?php print $e['id']; ?>"><?php print $text_edit; ?></a></div>
          <div class="domaincell"><a href="index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;domain=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" onclick="if(confirm('<?php print $text_remove; ?>: ' + '\'<?php print $e['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>

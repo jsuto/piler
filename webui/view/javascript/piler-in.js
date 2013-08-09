@@ -993,10 +993,10 @@ var Piler =
     },
 
 
-    change_box_colour: function()
+    change_box_colour: function(srcid, dstid)
     {
-       var colour = $('#colour').val();
-       $('#cp').css('background', colour);
+       var colour = $('#' + srcid).val();
+       $('#' + dstid).css('background', colour);
     }
 
 

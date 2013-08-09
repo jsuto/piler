@@ -29,6 +29,7 @@ $_['text_attachment_type'] = "Attachment type";
 $_['text_audit'] = "Audit";
 
 $_['text_back'] = "Back";
+$_['text_background_colour'] = "Background colour";
 $_['text_body'] = "Body";
 $_['text_branding_logo'] = "Branding logo";
 $_['text_branding_text'] = "Branding text";
@@ -325,6 +326,7 @@ $_['text_tagged'] = "Tagged";
 $_['text_tags'] = "Tags";
 $_['text_test_connection'] = "Test connection";
 $_['text_text'] = "Text";
+$_['text_text_colour'] = "Text colour";
 $_['text_text2'] = "text";
 $_['text_theme'] = "Theme";
 $_['text_time'] = "Time";

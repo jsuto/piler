@@ -41,7 +41,7 @@ class ModelSaasCustomer extends Model
          move_uploaded_file($_FILES['branding_logo']['tmp_name'], DIR_BASE . "/images/" . $_FILES['branding_logo']['name']);
       }
 
-      $query = $this->db->query("INSERT INTO " . TABLE_CUSTOMER_SETTINGS . " (domain, branding_text, branding_url, branding_logo, support_link, colour) VALUES (?,?,?,?,?,?)", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $branding_logo, $arr['support_link'], $arr['colour']));
+      $query = $this->db->query("INSERT INTO " . TABLE_CUSTOMER_SETTINGS . " (domain, branding_text, branding_url, branding_logo, support_link, background_colour, text_colour) VALUES (?,?,?,?,?,?,?)", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $branding_logo, $arr['support_link'], $arr['background_colour'], $arr['text_colour']));
 
       $rc = $this->db->countAffected();
 
@@ -62,10 +62,10 @@ class ModelSaasCustomer extends Model
          $branding_logo = $_FILES['branding_logo']['name'];
          move_uploaded_file($_FILES['branding_logo']['tmp_name'], DIR_BASE . "/images/" . $_FILES['branding_logo']['name']);
 
-         $query = $this->db->query("UPDATE " . TABLE_CUSTOMER_SETTINGS . " SET domain=?, branding_text=?, branding_url=?, branding_logo=?, support_link=?, colour=? WHERE id=?", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $branding_logo, $arr['support_link'], $arr['colour'], $arr['id']));
+         $query = $this->db->query("UPDATE " . TABLE_CUSTOMER_SETTINGS . " SET domain=?, branding_text=?, branding_url=?, branding_logo=?, support_link=?, background_colour=?, text_colour=? WHERE id=?", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $branding_logo, $arr['support_link'], $arr['background_colour'], $arr['text_colour'], $arr['id']));
       }
       else {
-         $query = $this->db->query("UPDATE " . TABLE_CUSTOMER_SETTINGS . " SET domain=?, branding_text=?, branding_url=?, support_link=?, colour=? WHERE id=?", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $arr['support_link'], $arr['colour'], $arr['id']));
+         $query = $this->db->query("UPDATE " . TABLE_CUSTOMER_SETTINGS . " SET domain=?, branding_text=?, branding_url=?, support_link=?, background_colour=?, text_colour=? WHERE id=?", array($arr['domain'], $arr['branding_text'], $arr['branding_url'], $arr['support_link'], $arr['background_colour'], $arr['text_colour'], $arr['id']));
       }
 
 
@@ -79,7 +79,8 @@ class ModelSaasCustomer extends Model
                       'branding_url' => BRANDING_URL,
                       'branding_logo' => BRANDING_LOGO,
                       'support_link' => SUPPORT_LINK,
-                      'colour' => BRANDING_COLOUR
+                      'background_colour' => BRANDING_BACKGROUND_COLOUR,
+                      'text_colour' => BRANDING_TEXT_COLOUR
                     );
 
 
@@ -101,7 +102,8 @@ class ModelSaasCustomer extends Model
          if($query->row['branding_url']) { $data['branding_url'] = $query->row['branding_url']; }
          if($query->row['branding_logo']) { $data['branding_logo'] = $query->row['branding_logo']; }
          if($query->row['support_link']) { $data['support_link'] = $query->row['support_link']; }
-         if($query->row['colour']) { $data['colour'] = $query->row['colour']; }
+         if($query->row['background_colour']) { $data['background_colour'] = $query->row['background_colour']; }
+         if($query->row['text_colour']) { $data['text_colour'] = $query->row['text_colour']; }
       }
 
       if(MEMCACHED_ENABLED && $cache_key) {
