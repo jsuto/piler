@@ -58,7 +58,7 @@ class ModelSaasCustomer extends Model
 
       if(!isset($arr['id']) || !isset($arr['domain']) || !isset($arr['branding_text'])) { return 0; }
 
-      if(isset($_FILES['branding_logo']['name'])) {
+      if(isset($_FILES['branding_logo']['name']) && $_FILES['branding_logo']['name']) {
          $branding_logo = $_FILES['branding_logo']['name'];
          move_uploaded_file($_FILES['branding_logo']['tmp_name'], DIR_BASE . "/images/" . $_FILES['branding_logo']['name']);
 
