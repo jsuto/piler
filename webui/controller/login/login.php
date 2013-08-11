@@ -33,6 +33,7 @@ class ControllerLoginLogin extends Controller {
       }
 
       $this->data['title'] = $this->data['text_login'];
+      $this->data['title_prefix'] = TITLE_PREFIX;
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {
 

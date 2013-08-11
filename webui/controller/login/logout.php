@@ -8,7 +8,7 @@ class ControllerLoginLogout extends Controller {
 
       $this->id = "content";
       $this->template = "login/logout.tpl";
-      $this->layout = "common/layout";
+      $this->layout = "common/layout-empty";
 
       $request = Registry::get('request');
 
@@ -16,7 +16,8 @@ class ControllerLoginLogout extends Controller {
 
       $this->load->model('user/auth');
 
-      $this->document->title = $this->data['text_logout'];
+      $this->data['title'] = $this->data['text_logout'];
+      $this->data['title_prefix'] = TITLE_PREFIX;
 
       if(ENABLE_SAAS == 1) {
          $this->load->model('saas/customer');

@@ -21,6 +21,7 @@ $config['BRANDING_BACKGROUND_COLOUR'] = '';
 $config['BRANDING_TEXT_COLOUR'] = '';
 $config['BRANDING_FAVICON'] = '';
 $config['SUPPORT_LINK'] = '';
+$config['TITLE_PREFIX'] = '';
 
 $config['BOOTSTRAP_THEME'] = '-cosmo';
 

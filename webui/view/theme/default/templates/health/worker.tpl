@@ -65,21 +65,18 @@
 
 				 <tr>
 					<th><?php print $text_periodic_purge; ?></th>
-					<td><span class="<?php if($options['enable_purge'] == 1) { ?>ok<?php } else { ?>error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a><?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?> </span></td>
+					<td>
+                                           <span class="<?php if($options['enable_purge'] == 1) { ?>ok<?php } else { ?>error<?php } ?>"><?php if($options['enable_purge'] == 1) { print $text_enabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_disable; ?></a>
+                                              <?php if($purge_stat[0]) { print $text_last; ?>: <?php print $purge_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $purge_stat[1]; } ?>
+                                           <?php } else { print $text_disabled; ?>. <a href="<?php print HEALTH_URL; ?>&toggle_enable_purge"><?php print $text_enable; ?></a><?php } ?>
+                                           </span>
+                                        </td>
 				 </tr>
 
                          <?php if($indexer_stat[0]) { ?>
                                  <tr>
                                         <th><?php print $text_indexer_job; ?></th>
                                         <td><?php print $text_last; ?>: <?php print $indexer_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $indexer_stat[1]; ?></td>
-
-                                 </tr>
-                         <?php } ?>
-
-                         <?php if($purge_stat[0]) { ?>
-                                 <tr>
-                                        <th><?php print $text_periodic_purge; ?></th>
-                                        <td><?php print $text_last; ?>: <?php print $purge_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $purge_stat[1]; ?></td>
 
                                  </tr>
                          <?php } ?>
