@@ -3,39 +3,39 @@
       <div id="health1">
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_refresh_period; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_refresh_period; ?></div>
             <div class="cellhealthright"><?php print HEALTH_REFRESH; ?> sec</div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_server_name; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_server_name; ?></div>
             <div class="cellhealthright"><?php print $sysinfo[0]; ?></div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_server_operating_system; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_server_operating_system; ?></div>
             <div class="cellhealthright"><?php print $sysinfo[1]; ?></div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_uptime; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_uptime; ?></div>
             <div class="cellhealthright"><?php print $uptime; ?></div>
          </div>
 
 <?php if(ENABLE_SAAS == 1) { ?>
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_online_users; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_online_users; ?></div>
             <div class="cellhealthright"><a href="index.php?route=stat/online"><?php print $num_of_online_users; ?></a></div>
          </div>
 <?php } ?>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_archive_size; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_archive_size; ?></div>
             <div class="cellhealthright"><?php print $archive_size; ?>B</div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_smtp_status; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_smtp_status; ?></div>
             <div class="cellhealthright">
                <?php foreach($health as $h) {
                         if(preg_match("/^220/", $h[1])) {
@@ -51,17 +51,17 @@
 
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_processed_emails; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_processed_emails; ?></div>
             <div class="cellhealthright"><?php print $processed_emails[0]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_30_days; ?>)</div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_cpu_usage; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_cpu_usage; ?></div>
             <div class="cellhealthright"><span class="bold <?php if($cpuinfo < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $cpuinfo; ?>% <?php print $cpuload; ?></span></div>
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_memory_usage; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_memory_usage; ?></div>
             <div class="cellhealthright"><span class="bold <?php if($meminfo < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $meminfo; ?>% / <?php print $totalmem; ?> MB</span></div>
          </div>
 
