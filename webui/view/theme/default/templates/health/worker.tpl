@@ -76,6 +76,13 @@
                                  </tr>
                          <?php } ?>
 
+                         <?php if($purge_stat[0]) { ?>
+                                 <tr>
+                                        <th><?php print $text_periodic_purge; ?></th>
+                                        <td><?php print $text_last; ?>: <?php print $purge_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $purge_stat[1]; ?></td>
+
+                                 </tr>
+                         <?php } ?>
 
 			 </table>
 		</div>

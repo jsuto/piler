@@ -41,6 +41,7 @@ $config['SITE_KEYWORDS'] = 'piler email archiver';
 $config['SITE_DESCRIPTION'] = 'piler email archiver';
 
 $config['INDEXER_BEACON'] = '/var/piler/stat/indexer';
+$config['PURGE_BEACON'] = '/var/piler/stat/purge';
 
 // authentication against an ldap directory (disabled by default)
 

@@ -133,6 +133,13 @@
          </div>
       <?php } ?>
 
+      <?php if($purge_stat[0]) { ?>
+         <div class="row">
+            <div class="cellhealthleft"><?php print $text_periodic_purge; ?></div>
+            <div class="cellhealthright"><?php print $text_last; ?>: <?php print $purge_stat[0]; ?>, <?php print $text_next; ?>:  <?php print $purge_stat[1]; ?></div>
+         </div>
+      <?php } ?>
+
       </div>
 
 

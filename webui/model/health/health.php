@@ -215,6 +215,21 @@ class ModelHealthHealth extends Model {
    }
 
 
+   public function purge_stat() {
+      $data = array('', '');
+
+      if(file_exists(PURGE_BEACON)) {
+
+         $st = stat(PURGE_BEACON);
+         $t1 = date(DATE_TEMPLATE . " H:i", $st['mtime']);
+         $t2 = date(DATE_TEMPLATE . " H:i", $st['mtime']+86400);
+
+         $data = array($t1, $t2);
+      }
+
+      return $data;
+   }
+
 }
 
 

@@ -148,6 +148,7 @@ class ControllerHealthWorker extends Controller {
 
 
       $this->data['indexer_stat'] = $this->model_health_health->indexer_stat();
+      $this->data['purge_stat'] = $this->model_health_health->purge_stat();
 
 
       $this->render();
