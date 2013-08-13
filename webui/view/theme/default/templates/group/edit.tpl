@@ -23,7 +23,7 @@
     <div class="control-group">
 	  <label class="control-label" for="s_piler_email"><?php print $text_search_emails; ?>*:</label>
 	  <div class="controls">
-	    <input type="text" id="s_piler_email" name="s_piler_email" value="<?php print $text_search_email_to_add; ?>" class="autocompletetext" onfocus="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 1);" onblur="javascript:toggle_hint('s_piler_email', '<?php print $text_search_email_to_add; ?>', 0);" />
+            <input type="text" id="s_piler_email" name="s_piler_email" placeholder="<?php print $text_search_email_to_add; ?>" class="autocompletetext" /></div>
 	  </div>
     </div>
 
