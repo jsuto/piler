@@ -4,7 +4,7 @@
          
 <?php if(count($terms) > 0){ ?>
         <table class="table table-striped">
-            <thead><tr><th>Query Name</th><th>D?</th></thead>
+            <thead><tr><th>Query Name</th><th>&nbsp;</th></thead>
 <?php foreach($terms as $term) {
          parse_str($term['term'], $s);
          if(isset($s['search'])) {

@@ -21,7 +21,11 @@ class ControllerDomainDomain extends Controller {
       if(ENABLE_SAAS == 1) {
          $this->load->model('saas/ldap');
          $this->data['ldap'] = $this->model_saas_ldap->get();
-         $ldap_id = $this->request->post['ldap_id'];
+         if ( isset($this->request->post['ldap_id']) ) {
+            $ldap_id = $this->request->post['ldap_id'];
+         } else {
+            $ldap_id = 0;
+         }
       }
 
       $this->document->title = $this->data['text_domain'];
@@ -64,18 +68,17 @@ class ControllerDomainDomain extends Controller {
                if($this->model_domain_domain->addDomain($this->request->post['domain'], $this->request->post['mapped'], $ldap_id) == 1) {
                   $this->data['x'] = $this->data['text_successfully_added'];
                } else {
-                  $this->template = "common/error.tpl";
                   $this->data['errorstring'] = $this->data['text_failed_to_add'];
                }
             }
             else {
-               $this->template = "common/error.tpl";
-               $this->data['errorstring'] = array_pop($this->error);
+               $this->data['errorstring'] = $this->data['text_error_message'];
+               $this->data['errors'] = $this->error;
+               $this->data['post'] = $this->request->post;
             } 
          }
 
-         /* get list of current policies */
-
+         /* get list of domains */
          $this->data['domains'] = $this->model_domain_domain->getDomains();
 
       }
@@ -98,20 +101,24 @@ class ControllerDomainDomain extends Controller {
    private function validate() {
 
       if(!isset($this->request->post['domain']) || strlen($this->request->post['domain']) < 3) {
-         $this->error['email'] = $this->data['text_invalid_data'];
+         $this->data['text_field_length'] = str_replace("?",3,$this->data['text_field_length']);
+         $this->error['domain'] = $this->data['text_field_length'];
       }
       else {
          $domains = explode("\n", $this->request->post['domain']);
          foreach ($domains as $domain) {
             $domain = rtrim($domain);
             if(!preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$/', $domain) ) {
-               $this->error['email'] = $this->data['text_invalid_data'] . ": $domain";
+               $this->error['domain'] = $this->data['text_field_domain'];
             }
          }
       }
 
-      if(!isset($this->request->post['mapped']) || strlen($this->request->post['mapped']) < 3 || !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$/', $this->request->post['mapped']) ) {
-         $this->error['domain'] = $this->data['text_invalid_data'] . ": " . $this->request->post['mapped'];
+      if(!isset($this->request->post['mapped']) || strlen($this->request->post['mapped']) < 3) {
+         $this->data['text_field_length'] = str_replace("?",3,$this->data['text_field_length']);
+         $this->error['mapped'] = $this->data['text_field_length'];
+      } elseif( !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$/', $this->request->post['mapped']) ) {
+         $this->error['mapped'] = $this->data['text_field_domain'];
       }
 
       if (!$this->error) {

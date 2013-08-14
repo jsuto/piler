@@ -1,8 +1,8 @@
-
+<table class="table table-striped table-condensed">
 <?php foreach($domains as $domain) { ?>
-   <a href="#" onclick="append_value_from_slider('domains', '<?php print $domain['domain']; ?>');"><?php print $domain['domain']; ?></a><br />
+   <tr><td><a href="#" onclick="append_value_from_slider('domains', '<?php print $domain['domain']; ?>');"><?php print $domain['domain']; ?></a></td></tr>
 <?php } ?>
-
+</table>
 
 <div id="pagenav">
    <?php if($page > 0){ ?><a href="index.php?route=domain/domains&amp;page=0&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &laquo; <?php if($page > 0){ ?></a><?php } ?>
@@ -16,4 +16,4 @@
    <?php if($page < $total_pages){ ?><a href="index.php?route=domain/domains&amp;page=<?php print $total_pages; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?> &raquo; <?php if($page < $total_pages){ ?></a><?php } ?>
 </div>
 
-<div class="top20px"><a href="#" onclick="window.close();">close</a></div>
+<div class="top20px"><a href="#" onclick="window.close();"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_close;?></a></div>

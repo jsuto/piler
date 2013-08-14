@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print DEFAULT_LANG; ?>" lang="<?php print DEFAULT_LANG; ?>">
 
 <head>
     <title><?php print $title; ?></title>
@@ -35,13 +35,13 @@
 
 <body onload="Piler.add_shortcuts();">
 
-
+    <div id="menu">
+        <?php print $menu; ?>
+    </div>
 
    <div id="messagebox1" class="audit audit-info"></div>
 
    <div id="piler1" class="container">
-
-      <div id="menu"><?php print $menu; ?></div>
 
       <div id="searchcontainer">
 
@@ -50,18 +50,17 @@
          <input type="hidden" name="order" id="order" value="0" />
 
          <div class="control-group">
-         <div class="controls">
-            <label for="_search">Search</label>
-            <div class="input-append">            
-                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
-                <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+            <div class="controls row-fluid">
+                <div id="input-span" class="span8">
+                    <label for="_search">Search</label>
+                    <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
+                </div>
+                <div class="span4 input-append">
+                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+                </div>
             </div>
-         </div>
-      </div>
+        </div>
    </div>
-
-
-
    <div id="mainscreen">
 
       <div id="mailleftcontainer">

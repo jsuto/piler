@@ -1,11 +1,13 @@
 
-<p>
+<div>
 
 <?php if($confirmed){ ?>
 
-<?php print $x; ?>. <a href="index.php?route=customer/list"><?php print $text_back; ?></a>
+<div class="alert alert-success"><?php print $x; ?>.</div>
 
 <?php } ?>
 
-</p>
+<p><a href="index.php?route=customer/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
+
+</div>
 

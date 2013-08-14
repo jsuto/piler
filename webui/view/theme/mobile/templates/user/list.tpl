@@ -46,7 +46,7 @@
             ?>
          </div>
          <div class="domaincell"><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><?php print $text_edit_or_view; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=user/remove&amp;confirmed=1&amp;uid=<?php print $user['uid']; ?>" onclick="if(confirm('<?php print $text_remove_this_user; ?>: ' + '\'<?php print $user['realname']; ?> / <?php print $user['email']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=user/remove&amp;confirmed=1&amp;id=<?php print $user['uid']; ?>" onclick="if(confirm('<?php print $text_remove_this_user; ?>: ' + '\'<?php print $user['realname']; ?> / <?php print $user['email']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

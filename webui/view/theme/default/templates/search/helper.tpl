@@ -113,7 +113,8 @@
 </div>
 
 <div id="messagelistfooter" class="boxfooter">
-       <div id="pagingrow" class="pull-left">
+    <div class="row-fluid">
+       <div id="pagingrow" class="span2">
     <?php if($n > 0){ ?>
             &nbsp;
             <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="icon-double-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-double-angle-left icon-large muted"></i></span><?php } ?>
@@ -128,17 +129,16 @@
             &nbsp;
     <?php } else { print $text_none_found; } ?>
         </div>
-        <div id="functionrow" class="pull-right">
+<div id="functionrow" class="span10">
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
-            <span id="tagbox" class="input-prepend input-append">
-                <span class="add-on"><i class="icon-tags icon-large" title="Tag"></i>&nbsp;<?php print $text_tag_selected_messages; ?>:</span>
+            <div id="tagbox" class="input-prepend input-append pull-right">
+                <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
+                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
+                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
-                <input type="button" class="btn btn-info" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" value="Tag" />
-            </span>
-            <input type="button" class="btn btn-custom btn-inverse" value="<?php print $text_bulk_restore_selected_emails; ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " />&nbsp;
-         <?php if(Registry::get('auditor_user') == 1 || BULK_DOWNLOAD_FOR_USERS == 1) { ?>
-            <input type="button" class="btn btn-custom btn-inverse" value="<?php print $text_bulk_download; ?>" onclick="Piler.download_messages();" />
-         <?php } ?>
-       </div>
+                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>
+            </div>
+        </div>
+    </div>
 </div>

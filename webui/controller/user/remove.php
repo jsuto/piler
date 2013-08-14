@@ -23,7 +23,7 @@ class ControllerUserRemove extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $this->data['uid'] = (int)@$this->request->get['uid'];
+      $this->data['uid'] = (int)@$this->request->get['id'];
       $this->data['user'] = @$this->request->get['user'];
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
@@ -57,7 +57,7 @@ class ControllerUserRemove extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['uid']) || !is_numeric($this->request->get['uid']) || $this->request->get['uid'] < 1 ) {
+      if(!isset($this->request->get['id']) || !is_numeric($this->request->get['id']) || $this->request->get['id'] < 1 ) {
          $this->error['username'] = $this->data['text_invalid_uid'];
       }
 
@@ -69,7 +69,6 @@ class ControllerUserRemove extends Controller {
       }
 
    }
-
 
 }
 

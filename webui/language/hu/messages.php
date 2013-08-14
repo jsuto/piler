@@ -435,4 +435,19 @@ $_['text_newest_record'] = 'Legújabb rekord';
 $_['text_items'] = 'Tételek';
 $_['text_average_size'] = 'Átlag méret';
 
+$_['text_return_to'] = 'Return to';
+$_['text_error_message'] = 'Please correct the below errors and re-submit.';
+$_['text_field_required'] = 'This field is required.';
+$_['text_field_length'] = 'This field is required to be longer than ? characters.';
+$_['text_field_domain'] = 'This field must be a valid domain (ie - domain.com).';
+$_['text_field_colour'] = 'This field must be a valid color code (ie - #fcfcfc).';
+$_['text_delete'] = 'Delete';
+$_['text_confirm'] = 'Confirm';
+$_['text_user_delete_confirm_message'] = 'Do you wish to delete the user';
+$_['text_domain_delete_confirm_message'] = 'Do you wish to delete the domain';
+$_['text_group_delete_confirm_message'] = 'Do you wish to delete the group';
+$_['text_ldap_delete_confirm_message'] = 'Do you wish to delete the LDAP entry';
+$_['text_customer_delete_confirm_message'] = 'Do you wish to delete the customer';
+$_['text_with_selected'] = 'With Selected';
+
 ?>

@@ -66,11 +66,11 @@ class ControllerUserEdit extends Controller {
                $__username = $this->request->post['username'];
             }
             else {
-               $this->template = "common/error.tpl";
-               $this->data['errorstring'] = array_pop($this->error);
+               $this->data['errorstring'] = $this->data['text_error_message'];
+               $this->data['errors'] = $this->error;
             }
          }
-         else {
+         //else {
             $this->data['user'] = $this->model_user_user->get_user_by_uid($this->data['uid']);
 
             $this->data['user']['domains'] = $this->model_user_user->get_domains_by_uid($this->data['uid']);
@@ -80,15 +80,12 @@ class ControllerUserEdit extends Controller {
 
             $this->data['emails'] = $this->model_user_user->get_emails($this->data['user']['username']);
 
-         }
+         //}
       }
       else {
          $this->template = "common/error.tpl";
          $this->data['errorstring'] = $this->data['text_you_are_not_admin'];
       }
-
-
-
 
       $this->render();
    }
@@ -96,6 +93,15 @@ class ControllerUserEdit extends Controller {
 
    private function validate() {
 
+      //if provided, the password must be greater than the MIN_PASSWORD_LENGTH
+      if(isset($this->request->post['password']) && strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH) {
+         $this->error['password'] = $this->data['text_too_short_password'];
+      }
+      //if provided, the password2 must be greater than the MIN_PASSWORD_LENGTH
+      if(isset($this->request->post['password2']) && strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {
+         $this->error['password2'] = $this->data['text_too_short_password'];
+      }
+      
       if(isset($this->request->post['password']) && strlen(@$this->request->post['password']) > 1) {
 
          if(strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH || strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {

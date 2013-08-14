@@ -1,3 +1,16 @@
+<div id="deleteconfirm-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+  </div>
+  <div class="modal-body">
+    <p><?php print $text_group_delete_confirm_message; ?> <span id="name">ERROR</span>?</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="index.php?route=group/remove&amp;id=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+  </div>
+</div>
 
 <?php if(isset($errorstring)){ ?><div class="alert alert-danger"><?php print $text_error; ?>: <?php print $errorstring; ?></div><?php } ?>
 
@@ -8,8 +21,8 @@
 
 <?php } elseif(isset($group)) { ?>
 
-<p><a href="index.php?route=group/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a> | <a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;group=<?php print $group['groupname']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove_this_group; ?>: <?php print $group['groupname']; ?></a></p>
-
+<p><a href="index.php?route=group/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a> | 
+<a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;name=<?php print urlencode($group['groupname']); ?>" class="confirm-delete" data-id="<?php print $group['id']; ?>" data-name="<?php print $group['groupname']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove_this_group; ?></a></p>
 <form action="index.php?route=group/edit" name="addgroup" method="post" autocomplete="off" class="form-horizontal">
    <input type="hidden" name="id" value="<?php print $id; ?>" />
 
@@ -23,7 +36,7 @@
     <div class="control-group">
 	  <label class="control-label" for="s_piler_email"><?php print $text_search_emails; ?>*:</label>
 	  <div class="controls">
-            <input type="text" id="s_piler_email" name="s_piler_email" placeholder="<?php print $text_search_email_to_add; ?>" class="autocompletetext" /></div>
+            <input type="text" id="s_piler_email" name="s_piler_email" placeholder="<?php print $text_search_email_to_add; ?>" class="autocompletetext" />
 	  </div>
     </div>
 

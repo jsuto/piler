@@ -50,7 +50,8 @@ class ControllerUserAdd extends Controller {
                }
             }
             else {
-               $this->data['errorstring'] = array_pop($this->error);
+               $this->data['errorstring'] = $this->data['text_error_message'];
+               $this->data['errors'] = $this->error;
             }
 
             if($ret == 0) {
@@ -62,6 +63,7 @@ class ControllerUserAdd extends Controller {
          }
          else {
             $this->data['next_user_id'] = $this->model_user_user->get_next_uid();
+            // not sure these are needed
             $this->data['groups'] = $this->model_group_group->get_groups();
             $this->data['folders'] = $this->model_folder_folder->get_folders();
          }
@@ -71,31 +73,32 @@ class ControllerUserAdd extends Controller {
          $this->data['errorstring'] = $this->data['text_you_are_not_admin'];
       }
 
-
-
-
       $this->render();
    }
 
 
-   private function validate() {
-
-      if(!isset($this->request->post['password']) || !isset($this->request->post['password2']) ) {
+private function validate() {
+      //password is required and must be greater than the MIN_PASSWORD_LENGTH
+      if(!isset($this->request->post['password'])) {
          $this->error['password'] = $this->data['text_missing_password'];
-      }
-
-      if(strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH || strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {
+      } elseif (strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH) {
          $this->error['password'] = $this->data['text_too_short_password'];
       }
-
-      if($this->request->post['password'] != $this->request->post['password2']) {
-         $this->error['password'] = $this->data['text_password_mismatch'];
+      //password2 is required and must be greater than the MIN_PASSWORD_LENGTH
+      if(!isset($this->request->post['password2'])) {
+         $this->error['password2'] = $this->data['text_missing_password'];
+      } elseif (strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {
+         $this->error['password2'] = $this->data['text_too_short_password'];
       }
-
+      //passwords must match (put here to override the password2 missing message, if also present)
+      if($this->request->post['password'] != $this->request->post['password2']) {
+         $this->error['password2'] = $this->data['text_password_mismatch'];
+      }
+      //uid is required and must be numeric & 0 or greater
       if(!isset($this->request->post['uid']) || !is_numeric($this->request->post['uid']) || $this->request->post['uid'] < 0) {
          $this->error['uid'] = $this->data['text_invalid_uid'];
       }
-
+      //email address is required and must be in the proper format
       if(!isset($this->request->post['email']) || strlen($this->request->post['email']) < 3) {
          $this->error['email'] = $this->data['text_invalid_email'];
       }
@@ -114,15 +117,15 @@ class ControllerUserAdd extends Controller {
             }
          }
       }
-
+      //username is required and must be greater than 2 chars
       if(!isset($this->request->post['username']) || strlen($this->request->post['username']) < 2) {
          $this->error['username'] = $this->data['text_invalid_username'];
       }
-
+      //username is required and must be unique
       if(isset($this->request->post['username']) && $this->model_user_user->get_uid_by_name($this->request->post['username']) > 0) {
          $this->error['username'] = $this->data['text_existing_user'];
       }
-
+      //primary domain is required
       if(!isset($this->request->post['domain'])) {
          $this->error['domain'] = $this->data['text_missing_data'];
       }

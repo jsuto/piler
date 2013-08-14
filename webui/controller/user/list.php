@@ -91,6 +91,9 @@ class ControllerUserList extends Controller {
 
       $this->data['total_pages'] = floor($this->data['total_users'] / $this->data['page_len']);
 
+      $this->data['querystring'] = '';
+      if ($this->data['page'] != 1) { $this->data['querystring'] .= "&amp;page=".$this->data['page']; }
+      if (strlen($this->data['search']) > 0) { $this->data['querystring'] .= "&amp;search=".$this->data['search']; }
 
       $this->render();
    }

@@ -93,7 +93,7 @@
          <div class="domaincell"><?php print $e['ldap_bind_dn']; ?></div>
          <div class="domaincell"><?php print $e['ldap_auditor_member_dn']; ?></div>
          <div class="domaincell"><a href="index.php?route=ldap/list&amp;id=<?php print $e['id']; ?>"><?php print $text_edit; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=ldap/remove&amp;id=<?php print $e['id']; ?>&amp;description=<?php print urlencode($e['description']); ?>&amp;confirmed=1" onclick="if(confirm('<?php print $text_remove; ?>: ' + '\'<?php print $e['description']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=ldap/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['description']); ?>&amp;confirmed=1" onclick="if(confirm('<?php print $text_remove; ?>: ' + '\'<?php print $e['description']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

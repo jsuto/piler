@@ -1,13 +1,14 @@
-
-<p>
+<div>
 
 <?php if($confirmed){ ?>
 
-<?php print $x; ?>. <a href="index.php?route=domain/domain"><?php print $text_back; ?></a>
+<div class="alert alert-success"><?php print $x; ?>.</div>
+<p><a href="index.php?route=domain/domain"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
 
 <?php } else { ?>
-<a href="index.php?route=domain/remove&amp;domain=<?php print $domain; ?>&amp;confirmed=1"><?php print $text_remove_domain; ?>: <?php print $domain; ?></a>
+
+<p><a href="index.php?route=domain/domain"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a> | <a href="index.php?route=domain/remove&amp;domain=<?php print $domain; ?>&amp;confirmed=1"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove_this_user; ?>: <?php print $user; ?></a></p>
+
 <?php } ?>
 
-</p>
-
+</div>

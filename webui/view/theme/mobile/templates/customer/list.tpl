@@ -93,7 +93,7 @@
          <div class="domaincell"><?php print $e['background_colour']; ?></div>
          <div class="domaincell"><?php print $e['text_colour']; ?></div>
          <div class="domaincell"><a href="index.php?route=customer/list&amp;id=<?php print $e['id']; ?>"><?php print $text_edit; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;domain=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" onclick="if(confirm('<?php print $text_remove; ?>: ' + '\'<?php print $e['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" onclick="if(confirm('<?php print $text_remove; ?>: ' + '\'<?php print $e['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

@@ -24,7 +24,7 @@ class ControllerLdapRemove extends Controller {
       $this->data['username'] = Registry::get('username');
 
       $this->data['id'] = $this->request->get['id'];
-      $this->data['description'] = $this->request->get['description'];
+      $this->data['description'] = $this->request->get['name'];
       $this->data['confirmed'] = (int)$this->request->get['confirmed'];
 
 
@@ -57,7 +57,7 @@ class ControllerLdapRemove extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['description']) || strlen($this->request->get['description']) < 1) {
+      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 1) {
          $this->error['description'] = $this->data['text_invalid_data'];
       }
 

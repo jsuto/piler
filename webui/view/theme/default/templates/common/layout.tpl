@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="hu" lang="hu">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print DEFAULT_LANG; ?>" lang="<?php print DEFAULT_LANG; ?>">
 
 <head>
     <title><?php print $title; ?></title>
@@ -41,9 +41,12 @@ if(isset($this->request->get['route'])) {
 
 } ?>>
 
+<div id="menu">
+    <?php print $menu; ?>
+</div>
+
 <div id="piler1" class="container">
 
-   <div id="menu"><?php print $menu; ?></div>
 
    <div id="main">
 

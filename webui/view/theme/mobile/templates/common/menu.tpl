@@ -52,7 +52,7 @@
           <?php } ?>
 
           <?php if($settings['support_link']) { ?>
-              <li><a href="<?php print $settings['support_link']; ?>" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $text_contact_support; ?></a></li>
+              <li><a href="<?php print $settings['support_link']; ?>" target="_blank" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $text_contact_support; ?></a></li>
           <?php } ?>
 
 <?php } ?>
@@ -63,7 +63,6 @@
 
              <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-share-alt icon-white"></i> <?php print $settings['branding_text']; ?></a></li><?php } ?>
 
-             <li class="divider-vertical"></li>
              <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $_SESSION['realname']; ?> <i class="icon-user icon-white"></i> <b class="caret"></b></a>
                 <ul class="dropdown-menu">

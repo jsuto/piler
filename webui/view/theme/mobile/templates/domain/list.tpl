@@ -58,7 +58,7 @@
       <?php if(ENABLE_SAAS == 1) { ?>
          <div class="domaincell"><?php print $domain['ldap']; ?></div>
       <?php } ?>
-         <div class="domaincell"><a href="index.php?route=domain/remove&amp;confirmed=1&amp;domain=<?php print urlencode($domain['domain']); ?>" onclick="if(confirm('<?php print $text_remove_domain; ?>: ' + '\'<?php print $domain['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=domain/remove&amp;confirmed=1&amp;name=<?php print urlencode($domain['domain']); ?>" onclick="if(confirm('<?php print $text_remove_domain; ?>: ' + '\'<?php print $domain['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

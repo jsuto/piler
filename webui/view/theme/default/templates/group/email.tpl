@@ -16,4 +16,4 @@
    <?php if($page < $total_pages){ ?><a href="index.php?route=group/email&amp;page=<?php print $total_pages; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-right"></i><?php if($page < $total_pages){ ?></a><?php } ?>
 </div>
 
-<div style="margin-top: 20px;"><a href="#" onclick="window.close();"><i class="icon-remove-sign"></i>&nbsp;close</a></div>
+<div style="margin-top: 20px;"><a href="#" onclick="window.close();"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_close;?></a></div>
