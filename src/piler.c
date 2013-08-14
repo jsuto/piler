@@ -228,10 +228,10 @@ void p_clean_exit(){
 
    kill_children(SIGTERM);
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
-   free_list(data.mydomains);
+   clearhash(data.mydomains);
 
 #ifdef HAVE_MULTITENANCY
    free_list(data.customers);
@@ -307,10 +307,10 @@ void initialise_configuration(){
    setlocale(LC_CTYPE, cfg.locale);
 
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
-   free_list(data.mydomains);
+   clearhash(data.mydomains);
 
 #ifdef HAVE_MULTITENANCY
    free_list(data.customers);
@@ -318,9 +318,9 @@ void initialise_configuration(){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-   data.mydomains = NULL;
+   inithash(data.mydomains);
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
 #ifdef HAVE_MULTITENANCY
    data.customers = NULL;
@@ -339,8 +339,8 @@ void initialise_configuration(){
       return;
    }
 
-   load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -393,9 +393,9 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-   data.mydomains = NULL;
+   inithash(data.mydomains);
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 #ifdef HAVE_MULTITENANCY
    data.customers = NULL;
 #endif

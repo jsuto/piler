@@ -66,10 +66,10 @@ void init_state(struct _state *state){
    state->writebufpos = 0;
    state->abufpos = 0;
 
-   state->boundaries = NULL;
-   state->rcpt = NULL;
-   state->rcpt_domain = NULL;
-   state->journal_recipient = NULL;
+   inithash(state->boundaries);
+   inithash(state->rcpt);
+   inithash(state->rcpt_domain);
+   inithash(state->journal_recipient);
 
    state->n_attachments = 0;
 
@@ -229,7 +229,7 @@ int extract_boundary(char *p, struct _state *state){
       q = strrchr(p, '\n');
       if(q) *q = '\0';
 
-      append_list(&(state->boundaries), p);
+      addnode(state->boundaries, p);
 
       return 1;
    }

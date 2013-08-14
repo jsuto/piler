@@ -306,8 +306,8 @@ int main(int argc, char **argv){
 
 
    data.folder = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
 
    while(1){
@@ -422,8 +422,8 @@ int main(int argc, char **argv){
 
    (void) openlog("pilerimport", LOG_PID, LOG_MAIL);
 
-   load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -440,8 +440,8 @@ int main(int argc, char **argv){
 
    if(quiet == 0) printf("\n");
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
    mysql_close(&(sdata.mysql));
 

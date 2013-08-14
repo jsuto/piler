@@ -10,7 +10,7 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct __data *data, struct rule **rules, char *table){
+void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
    int size=0, attachment_size=0, spam=0, days=0;
@@ -54,7 +54,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct rule **r
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(rules, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+      append_rule(xhash, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
 
       memset(domain, 0, sizeof(domain));
       memset(from, 0, sizeof(from));
@@ -75,27 +75,40 @@ ENDE:
 }
 
 
-int append_rule(struct rule **rule, char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
-   struct rule *q, *t, *u=NULL;
+int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
+   struct node *q, *Q=NULL, *node;
+   struct rule *rule;
+   int rc=0;
 
-   q = *rule;
+   if((node = malloc(sizeof(struct node))) == NULL) return rc;
 
-   while(q){
-      u = q;
+   memset(node, 0, sizeof(struct node));
+   node->r = NULL;
+
+   rule = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+
+   if(rule == NULL){
+      free(node);
+      return rc;
+   }
+
+   node->str = rule;
+
+   q = xhash[0];
+
+   while(q != NULL){
+      Q = q;
       q = q->r;
    }
 
-   t = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
-   if(t){
-      if(*rule == NULL)
-         *rule = t;
-      else if(u)
-         u->r = t;
-
-      return 1;
+   if(Q == NULL) xhash[0] = node;
+   else {
+      Q->r = node;
    }
 
-   return -1;
+   rc = 1;
+
+   return rc;
 }
 
 
@@ -163,27 +176,35 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
 }
 
 
-char *check_againt_ruleset(struct rule *rule, struct _state *state, int size, int spam){
+char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size, int spam){
    size_t nmatch=0;
    struct rule *p;
+   struct node *q;
 
-   p = rule;
+   q = xhash[0];
 
-   while(p != NULL){
+   while(q != NULL){
 
-      if(
-         p->compiled == 1 &&
-         regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
-         regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
-         regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
-         check_size_rule(size, p->size, p->_size) == 1 &&
-         check_attachment_rule(state, p) == 1 &&
-         check_spam_rule(spam, p->spam) == 1
-      ){
-         return p->rulestr;
+      if(q->str){
+         p = q->str;
+
+         if(p){
+            if(
+               p->compiled == 1 &&
+               regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
+               regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
+               regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
+               check_size_rule(size, p->size, p->_size) == 1 &&
+               check_attachment_rule(state, p) == 1 &&
+               check_spam_rule(spam, p->spam) == 1
+            ){
+               return p->rulestr;
+            }
+
+         }
       }
 
-      p = p->r;
+      q = q->r;
    }
 
    return NULL;
@@ -193,32 +214,39 @@ char *check_againt_ruleset(struct rule *rule, struct _state *state, int size, in
 unsigned long query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
    size_t nmatch=0;
    struct rule *p;
+   struct node *q;
 
-   p = data->retention_rules;
+   q = data->retention_rules[0];
 
-   while(p != NULL){
+   while(q != NULL){
 
-      if(p->domainlen > 2){
-         if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
+      if(q->str){
+         p = q->str;
+
+         if(p->domainlen > 2){
+            if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
+               state->retention = p->days;
+               return p->days * 86400;
+            }
+         }
+         else if (
+            p->compiled == 1 &&
+            regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
+            regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
+            regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
+            check_size_rule(size, p->size, p->_size) == 1 &&
+            check_attachment_rule(state, p) == 1 &&
+            check_spam_rule(spam, p->spam) == 1
+         ){
             state->retention = p->days;
             return p->days * 86400;
          }
-      }
-      else if (
-         p->compiled == 1 &&
-         regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
-         regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
-         regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
-         check_size_rule(size, p->size, p->_size) == 1 &&
-         check_attachment_rule(state, p) == 1 &&
-         check_spam_rule(spam, p->spam) == 1
-      ){
-         state->retention = p->days;
-         return p->days * 86400;
+
       }
 
-      p = p->r;
+      q = q->r;
    }
+
 
    state->retention = cfg->default_retention_days;
 
@@ -264,29 +292,39 @@ int check_attachment_rule(struct _state *state, struct rule *rule){
 }
 
 
-void free_rule(struct rule *rule){
-   struct rule *p, *q;
-
-   p = rule;
-
-   while(p != NULL){
-      q = p->r;
-
-      if(p){
-         regfree(&(p->from));
-         regfree(&(p->to));
-         regfree(&(p->attachment_type));
-
-         free(p->rulestr);
-
-         if(p->domain) free(p->domain);
-
-         free(p);
-      }
-
-      p = q;
-   }
+void initrules(struct node *xhash[]){
+   xhash[0] = NULL;
 }
 
 
+void clearrules(struct node *xhash[]){
+   struct node *p, *q;
+   struct rule *rule;
+
+   q = xhash[0];
+
+   while(q != NULL){
+      p = q;
+      q = q->r;
+
+      if(p){
+         if(p->str){
+            rule = (struct rule*)p->str;
+
+            regfree(&(rule->from));
+            regfree(&(rule->to));
+            regfree(&(rule->attachment_type));
+
+            free(rule->rulestr);
+
+            if(rule->domain) free(rule->domain);
+
+            free(rule);
+         }
+         free(p);
+      }
+   }
+
+   xhash[0] = NULL;
+}
 

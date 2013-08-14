@@ -216,9 +216,9 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-   data.mydomains = NULL;
+   inithash(data.mydomains);
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
@@ -247,7 +247,7 @@ int main(int argc, char **argv){
 
    printf("put %llu messages to %s table for reindexing\n", n, SQL_SPHINX_TABLE);
 
-   free_list(data.mydomains);
+   clearhash(data.mydomains);
 
    close_database(&sdata);
 

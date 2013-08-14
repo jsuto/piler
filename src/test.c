@@ -48,14 +48,17 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-   data.mydomains = NULL;
 
-   load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+   inithash(data.mydomains);
+
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
    load_mydomains(&sdata, &data, &cfg);
+
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+
 
    init_session_data(&sdata, &cfg);
  
@@ -96,10 +99,10 @@ int main(int argc, char **argv){
 
    printf("retention period: %ld\n", sdata.retained);
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
-   free_list(data.mydomains);
+   clearhash(data.mydomains);
 
    for(i=1; i<=state.n_attachments; i++){
       printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);

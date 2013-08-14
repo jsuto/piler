@@ -50,8 +50,8 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing rcpt to address: *%s*", sdata->ttmpfile, puf);
 
                   if(state.tolen < MAXBUFSIZE-len-1){
-                     if(is_string_on_list(state.rcpt, puf) == 0){
-                        append_list(&(state.rcpt), puf);
+                     if(findnode(state.rcpt, puf) == NULL){
+                        addnode(state.rcpt, puf);
                         memcpy(&(state.b_to[state.tolen]), puf, len);
                         state.tolen += len;
 
@@ -103,10 +103,10 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    int i, len, rec=0;
    char *p;
 
-   free_list(state->boundaries);
-   free_list(state->rcpt);
-   free_list(state->rcpt_domain);
-   free_list(state->journal_recipient);
+   clearhash(state->boundaries);
+   clearhash(state->rcpt);
+   clearhash(state->rcpt_domain);
+   clearhash(state->journal_recipient);
 
    trimBuffer(state->b_subject);
    fixupEncodedHeaderLine(state->b_subject);
@@ -211,7 +211,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
    if(take_into_pieces == 1){
-      if(state->message_state == MSG_BODY && state->fd != -1 && is_item_on_string(state->boundaries, buf) == 0){
+      if(state->message_state == MSG_BODY && state->fd != -1 && findnode(state->boundaries, buf) == NULL){
          //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
             write(state->fd, abuffer, state->abufpos); 
@@ -473,7 +473,9 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
    /* boundary check, and reset variables */
 
-   boundary_line = is_item_on_string(state->boundaries, buf);
+   if(findnode(state->boundaries, buf)) boundary_line = 1;
+
+
 
    if(!strstr(buf, "boundary=") && !strstr(buf, "boundary =") && boundary_line == 1){
       state->is_header = 1;
@@ -616,16 +618,16 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
          strtolower(puf);
 
-         if(state->message_state == MSG_RECIPIENT && is_string_on_list(state->journal_recipient, puf) == 0){
-            append_list(&(state->journal_recipient), puf);
+         if(state->message_state == MSG_RECIPIENT && findnode(state->journal_recipient, puf) == NULL){
+            addnode(state->journal_recipient, puf);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
          }
 
 
-         if(is_string_on_list(state->rcpt, puf) == 0){
-            append_list(&(state->rcpt), puf);
+         if(findnode(state->rcpt, puf) == NULL){
+            addnode(state->rcpt, puf);
             memcpy(&(state->b_to[state->tolen]), puf, len);
             state->tolen += len;
 
@@ -635,8 +637,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
                q = strchr(puf, '@');
                if(q){
-                  if(is_string_on_list(state->rcpt_domain, q+1) == 0){
-                     append_list(&(state->rcpt_domain), q+1);
+                  if(findnode(state->rcpt_domain, q+1) == NULL){
+                     addnode(state->rcpt_domain, q+1);
                      memcpy(&(state->b_to_domain[strlen(state->b_to_domain)]), q+1, strlen(q+1));
                   }
                }

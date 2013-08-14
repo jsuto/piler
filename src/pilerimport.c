@@ -397,9 +397,9 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
-   data.mydomains = NULL;
+   inithash(data.mydomains);
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
    while(1){
 
@@ -551,8 +551,8 @@ int main(int argc, char **argv){
 
    }
 
-   load_rules(&sdata, &data, &(data.archiving_rules), SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, &(data.retention_rules), SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -569,10 +569,10 @@ int main(int argc, char **argv){
    if(pop3server && username && password) rc = import_from_pop3_server(pop3server, username, password, port, &sdata, &data, &cfg);
 
 
-   free_rule(data.archiving_rules);
-   free_rule(data.retention_rules);
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
-   free_list(data.mydomains);
+   clearhash(data.mydomains);
 
    close_database(&sdata);
 

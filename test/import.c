@@ -233,14 +233,16 @@ int main(int argc, char **argv){
 
    setlocale(LC_CTYPE, cfg.locale);
 
-   data.archiving_rules = NULL;
-   data.retention_rules = NULL;
+   initrules(data.archiving_rules);
+   initrules(data.retention_rules);
 
    if(emlfile) rc = import_message2(emlfile, &sdata, &data, &cfg);
    if(mailbox) rc = import_from_mailbox(mailbox, &sdata, &data, &cfg);
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, &sdata, &data, &cfg);
 
+   clearrules(data.archiving_rules);
+   clearrules(data.retention_rules);
 
    return rc;
 }

@@ -6,12 +6,11 @@
  #define _PILER_H
 
 #include <misc.h>
-#include <list.h>
 #include <parser.h>
 #include <errmsg.h>
 #include <smtpcodes.h>
 #include <decoder.h>
-#include <list.h>
+#include <hash.h>
 #include <rules.h>
 #include <defs.h>
 #include <tai.h>

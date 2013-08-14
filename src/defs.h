@@ -38,7 +38,7 @@
 #define MSG_REFERENCES 10
 #define MSG_RECIPIENT 11
 
-#define MAXHASH 8171
+#define MAXHASH 277
 
 #define BASE64_RATIO 1.33333333
 
@@ -88,9 +88,10 @@ struct ptr_array {
 };
 
 
-struct list {
-   char s[SMALLBUFSIZE];
-   struct list *r;
+struct node {
+   void *str;
+   unsigned int key;
+   struct node *r;
 };
 
 
@@ -156,10 +157,10 @@ struct _state {
    char filename[TINYBUFSIZE];
    char type[TINYBUFSIZE];
 
-   struct list *boundaries;
-   struct list *rcpt;
-   struct list *rcpt_domain;
-   struct list *journal_recipient;
+   struct node *boundaries[MAXHASH];
+   struct node *rcpt[MAXHASH];
+   struct node *rcpt_domain[MAXHASH];
+   struct node *journal_recipient[MAXHASH];
 
    int n_attachments;
    struct attachment attachments[MAX_ATTACHMENTS];
@@ -251,7 +252,7 @@ struct __data {
    int folder;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
-   struct list *mydomains;
+   struct node *mydomains[MAXHASH];
 
 #ifdef NEED_MYSQL
    MYSQL_STMT *stmt_generic;
@@ -276,8 +277,8 @@ struct __data {
    int pos;
 
 #ifdef HAVE_TRE
-   struct rule *archiving_rules;
-   struct rule *retention_rules;
+   struct node *archiving_rules[1];
+   struct node *retention_rules[1];
 #endif
 
 #ifdef HAVE_MEMCACHED
