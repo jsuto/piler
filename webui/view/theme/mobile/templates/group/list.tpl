@@ -1,3 +1,16 @@
+<div id="deleteconfirm-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+  </div>
+  <div class="modal-body">
+    <p><?php print $text_group_delete_confirm_message; ?> <span id="name">ERROR</span>?</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="index.php?route=group/remove&amp;id=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+  </div>
+</div>
 
 <p/>
 
@@ -35,7 +48,7 @@
       <div class="domainrow">
          <div class="domaincell"><?php print $group['groupname']; ?></div>
          <div class="domaincell"><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><?php print $text_edit_or_view; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=group/remove&amp;confirmed=1&amp;id=<?php print $group['id']; ?>" onclick="if(confirm('<?php print $text_remove_this_group; ?>: ' + '\'<?php print $group['groupname']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;name=<?php print urlencode($group['groupname']); ?>" class="confirm-delete" data-id="<?php print $group['id']; ?>" data-name="<?php print $group['groupname']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

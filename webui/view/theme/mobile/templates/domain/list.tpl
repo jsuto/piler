@@ -1,3 +1,16 @@
+<div id="deleteconfirm-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+  </div>
+  <div class="modal-body">
+    <p><?php print $text_domain_delete_confirm_message; ?> <span id="name">ERROR</span>?</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="index.php?route=domain/remove&amp;id=-1&amp;domain=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+  </div>
+</div>
 
 <h4><?php print $text_add_new_domain; ?></h4>
 
@@ -58,7 +71,7 @@
       <?php if(ENABLE_SAAS == 1) { ?>
          <div class="domaincell"><?php print $domain['ldap']; ?></div>
       <?php } ?>
-         <div class="domaincell"><a href="index.php?route=domain/remove&amp;confirmed=1&amp;name=<?php print urlencode($domain['domain']); ?>" onclick="if(confirm('<?php print $text_remove_domain; ?>: ' + '\'<?php print $domain['domain']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=domain/remove&amp;id=1&amp;domain=<?php print urlencode($domain['domain']); ?>" class="confirm-delete" data-id="1" data-name="<?php print urlencode($domain['domain']); ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 

@@ -1,3 +1,16 @@
+<div id="deleteconfirm-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+  </div>
+  <div class="modal-body">
+    <p><?php print $text_user_delete_confirm_message; ?> <span id="name">ERROR</span>?</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="index.php?route=user/remove&amp;uid=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+  </div>
+</div>
 
 <p/>
 
@@ -46,7 +59,7 @@
             ?>
          </div>
          <div class="domaincell"><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><?php print $text_edit_or_view; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=user/remove&amp;confirmed=1&amp;id=<?php print $user['uid']; ?>" onclick="if(confirm('<?php print $text_remove_this_user; ?>: ' + '\'<?php print $user['realname']; ?> / <?php print $user['email']; ?>\'')) return true; return false;"><?php print $text_remove; ?></a></div>
+         <div class="domaincell"><a href="index.php?route=user/remove&amp;id=<?php print $user['uid']; ?>&amp;user=<?php print $user['username']; ?>" class="confirm-delete" data-id="<?php print $user['uid']; ?>" data-name="<?php print $user['realname']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></div>
       </div>
 <?php } ?>
 
