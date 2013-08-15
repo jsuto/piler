@@ -719,23 +719,6 @@ var Piler =
 
 
     /*
-     * toggle the class of the main search field
-     */
-
-    toggle_search_class:function()
-    {
-        Piler.log("[toggle_search_class]");
-
-        if(Piler.expsrc == 0) {
-
-           $('#_search').val('');
-           $('#_search').css('color', 'black');
-           Piler.expsrc++;
-        }
-    },
-
-
-    /*
      * assemble a space separated list of the selected email addresses of the given message
      */
 
@@ -806,6 +789,8 @@ var Piler =
 
            document.body.appendChild(form);
            form.submit();
+
+           document.body.removeChild(form);
        }
     },
 

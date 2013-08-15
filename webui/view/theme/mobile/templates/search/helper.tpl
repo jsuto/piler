@@ -4,15 +4,16 @@
    <div id="results">
 
 <?php if($n > 0) { ?>
-       <table class="table table-condensed" style="border: 0px solid blue; width: 98%;">
+       <table class="table table-condensed" style="width: 98%;">
           <thead>
 
     <tr>
       <td><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> onclick="Piler.toggle_bulk_check('');" /></td>
       <td>
       <?php if(Registry::get('auditor_user') == 1 || BULK_DOWNLOAD_FOR_USERS == 1) { ?>
-          <a href="#"><img class="download_icon" src="<?php print ICON_DOWNLOAD; ?>" width="18" height="18" alt="aaa" border="0" onclick="Piler.download_messages();" /></a></td>
-      <?php } ?>
+          <a href="#" onclick="Piler.download_messages(); return false;" title="Download"><i class="icon-download-alt download_icon"></i></a>
+      <?php } else { ?>&nbsp;<?php } ?>
+      </td>
       <td>
          <strong><?php print $text_date; ?></strong>
          <a xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up"></i></a>

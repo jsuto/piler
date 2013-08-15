@@ -41,4 +41,4 @@
 <?php } ?>
 
 <hr />
-<?php print $message['message']; ?><br />
+<div class="messagecontents"><?php print $message['message']; ?></div>

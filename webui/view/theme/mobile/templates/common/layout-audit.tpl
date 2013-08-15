@@ -47,7 +47,7 @@
          <input type="hidden" name="sort" id="sort" value="date" />
          <input type="hidden" name="order" id="order" value="0" />
 
-         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
+         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
 
          <button id="button_search" class="btn btn-danger" onclick="Piler.auditexpert(this); return false;"><?php print $text_search; ?></button>
          <input type="button" class="btn" onclick="Piler.cancel();" value="<?php print $text_cancel; ?>" />

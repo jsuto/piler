@@ -16,7 +16,7 @@
 
 	#piler1 { width: 100%; height: 100%; background: #ffffff; border: 0px solid black; position: absolute; margin-left: auto; margin-right: auto; padding-top: 0px; }
 
-	#messagebox1 { position: absolute; top: 0px; left: 50%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
+	#messagebox1 { position: absolute; top: 200px; left: 30%; right: 30%; text-align: center; border: 0px solid red; display: none; background: #82caff; color: #ffffff; font-weight: bold; padding: 15px; z-index: 1; }
 	#searchpopup1 { position: absolute; top: 30px; left: 0px; border: 1px solid #999999; display: none; background: #f8f8f8; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
         #popupx { position: absolute; right: 10px; top: 5px; margin: 10px; }
 
@@ -66,20 +66,20 @@
 	#auditresultscontainer { float: left; width: 1180px; padding: 0; margin: 0; border-top: 0px solid black; border-bottom: 0px solid black; height: 580px; overflow: auto; }
 	#auditresultscontainer.empty { border-bottom: 0px solid black; height: 580px; }
 
-	#download_icon { margin: 0px 0 -2px 0; border: 0px solid black; }
+	.download_icon { margin: 0px 0 -15px 0; border: 0px solid black; }
 
 	#sspinner { position: relative; width: 60%; border: 0px solid #999999; color: #000000; font-weight: bold; vertical-align: middle; text-align: left; padding: 15px; z-index: 1; display: none; margin: auto; margin-top: 150px; }
 
 	.row { display: table-row; }
 	.row.savedsearch { display: table-row; text-align: right; }
-	.resultrow { display: table-row; height: 18px; font-style: italic; }
+	.resultrow { display: table-row; height: 18px; font-style: italic; font-size:12px; }
 	.resultrow a { color: #3d3d3d; }
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.new { font-style: normal; }
 	.resultrow.new a { color: #0072e6; }
 	.resultrow.center a { color: #0072e6; }
 	.resultrow.new a.spam { color: #aaa; }
-	.resultrow.selected { border: 2px solid black; }
+	.resultrow.selected { border: 2px solid black; background-color:#ffffdd; }
 	.resultrow.spam { color: #aaa; }
 	.resultrow.sent { background: lightblue; }
 
@@ -118,7 +118,7 @@
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
         #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
 
-	.messagelink { border-bottom: 1px solid gray; color: #0072e6; }
+	.messagelink { border-bottom: 1px solid gray; color: #0072e6; font-size:12px; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
 	#results a:hover { color: black; }
 
@@ -127,6 +127,7 @@
 
 	input[type=checkbox].restorebox { margin: 0; vertical-align: middle; }
 	input[type=checkbox].popup { margin: 0; vertical-align: middle; }
+	input[type=text] { font-size:12px; font-style: normal; }
 
 	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
 	#restorebox { position: absolute; top: 20px; left: 15%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
@@ -143,6 +144,7 @@
 	.bold { font-weight: bold; }
 	.left { text-align: left; }
 
+	.messagecontents {background-color:#fff; padding:8px; font-size:12px; }
 
 
 	/* rc splitter stuff */

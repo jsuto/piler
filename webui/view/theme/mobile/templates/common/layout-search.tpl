@@ -48,7 +48,7 @@
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" onclick="Piler.toggle_search_class();" />
+         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
 
          <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>
 
