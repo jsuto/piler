@@ -191,6 +191,7 @@ create table if not exists `user` (
 ) Engine=InnoDB;
 
 insert into `user` (`uid`, `username`, `realname`, `samaccountname`, `password`, `isadmin`, `domain`) values (0, 'admin', 'built-in piler admin', '', '$1$PItc7d$zsUgON3JRrbdGS11t9JQW1', 1, 'local');
+insert into `user` (`uid`, `username`, `realname`, `samaccountname`, `password`, `isadmin`, `domain`) values (1, 'auditor', 'built-in piler auditor', '', '$1$SLIIIS$JMBwGqQg4lIir2P2YU1y.0', 2, 'local');
 
 create table if not exists `email` (
    `uid` int unsigned not null,
@@ -198,6 +199,7 @@ create table if not exists `email` (
 ) ENGINE=InnoDB;
 
 insert into `email` (`uid`, `email`) values(0, 'admin@local');
+insert into `email` (`uid`, `email`) values(1, 'auditor@local');
 
 
 create table if not exists `email_groups` (
