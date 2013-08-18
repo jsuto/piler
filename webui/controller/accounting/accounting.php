@@ -92,7 +92,7 @@ class ControllerAccountingAccounting extends Controller {
                 $this->data['accounting'][$id]['display'] = $row[$this->data['sort']];
             }
             if($this->data['sorttype'] == 1){
-                $this->data['accounting'][$id]['display'] = date("d M Y",$row[$this->data['sort']]);
+                $this->data['accounting'][$id]['display'] = date(DATE_TEMPLATE, $row[$this->data['sort']]);
             }
             if($this->data['sorttype'] == 2){
                 $this->data['accounting'][$id]['display'] = nice_size($row[$this->data['sort']]);

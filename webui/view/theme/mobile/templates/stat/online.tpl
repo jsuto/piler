@@ -17,8 +17,8 @@
       <div class="domainrow">
          <div class="domaincell"><?php print $user['username']; ?></div>
          <div class="domaincell"><?php if(DEMO_MODE == 1) { print anonimize_ip_addr($user['ipaddr']); } else { print $user['ipaddr']; } ?></div>
-         <div class="domaincell"><?php print date("Y.m.d. G:i:s", $user['ts']); ?></div>
-         <div class="domaincell"><?php print date("Y.m.d. G:i:s", $user['last_activity']); ?></div>
+         <div class="domaincell"><?php print date(DATE_TEMPLATE . " H:i:s", $user['ts']); ?></div>
+         <div class="domaincell"><?php print date(DATE_TEMPLATE . " H:i:s", $user['last_activity']); ?></div>
       </div>
 <?php } ?>
 

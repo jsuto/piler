@@ -53,8 +53,8 @@
                 <div><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></div>
              <?php } ?>
 
-                <div class="domaincell"><?php echo date("d M Y",$details['oldest']); ?></div>
-                <div class="domaincell"><?php echo date("d M Y",$details['newest']); ?></div>
+                <div class="domaincell"><?php echo date(DATE_TEMPLATE, $details['oldest']); ?></div>
+                <div class="domaincell"><?php echo date(DATE_TEMPLATE, $details['newest']); ?></div>
                 <div class="domaincell">
                     <?php echo $details['sent']; ?>
                 </div>

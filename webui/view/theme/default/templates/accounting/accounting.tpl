@@ -56,8 +56,8 @@
             <td><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></td>
         <?php } ?>
 
-            <td><?php echo date("d M Y",$details['oldest']); ?></td>
-            <td><?php echo date("d M Y",$details['newest']); ?></td>
+            <td><?php echo date(DATE_TEMPLATE, $details['oldest']); ?></td>
+            <td><?php echo date(DATE_TEMPLATE, $details['newest']); ?></td>
             <td>
                 <?php echo $details['sent']; ?>
             </td>
