@@ -3,16 +3,17 @@
 
         a { color: #0072e6; text-decoration: none; }
 
-        p { margin: 0 0 10px 0; }
+        p { margin: 0 0 10px 0; font-family: "Trebuchet MS", Arial, Verdana; }
 
-	.mybody { background-color: #6D6D6D; color: #3d3d3d; }
 
-	.loginpage {background-color: #fcfcfc; padding-top: 40px; padding-bottom: 40px;}
+	.mybody { background-color: #6D6D6D; color: #3d3d3d; font-family: "Trebuchet MS", Arial, Verdana; }
+	.loginpage {background-color: #fcfcfc; padding-top: 40px; padding-bottom: 40px; font-family: "Trebuchet MS", Arial, Verdana; }
+
 	#logo-lg {width: 300px; margin: 0 auto 20px;}
 	#compatibility { max-width: 300px; margin:0 auto; color:#444; text-align: justify; }
 	.form-signin{ max-width:300px; padding:19px 29px 29px; margin:0 auto 20px; background-color:#fff; border:1px solid #e5e5e5; -webkit-border-radius:5px; -moz-border-radius:5px; border-radius:5px; -webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.05); -moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.05); box-shadow:0 1px 2px rgba(0, 0, 0, 0.05); }
-	.form-signin .form-signin-heading,.form-signin .checkbox{ margin-bottom: 10px; }
-	.form-signin input[type="text"], .form-signin input[type="password"]{ font-size:16px; height:auto; margin-bottom:15px; padding:7px 9px; }
+	.form-signin .form-signin-heading,.form-signin .checkbox{ margin-bottom: 10px; font-family: "Trebuchet MS", Arial, Verdana; }
+	.form-signin input[type="text"], .form-signin input[type="password"]{ font-family: "Trebuchet MS", Arial, Verdana; font-size:16px; height:auto; margin-bottom:15px; padding:7px 9px; }
 
 	#piler1 { width: 100%; height: 100%; background: #ffffff; border: 0px solid black; position: absolute; margin-left: auto; margin-right: auto; padding-top: 0px; }
 
@@ -33,7 +34,7 @@
 	.sleek { margin:0; padding:0; }
 	.center { text-align: center; }
 
-	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font: normal 19px Arial, sans-serif; margin-top: 18px; }
+	#expertsearch { position: absolute; border: 0px solid black; right: 20px; left: 20px; text-align: left; font-family: normal 19px "Trebuchet MS", Arial, Verdana; margin-top: 18px; }
 
 	#resultsheader { display: none; }
 	#resultstop { position: absolute; width: 1140px; border: 0px solid #999; top: 120px; right: 20px; left: 20px; text-align: right; display: table; padding-right: 0px; margin-right: 20px; }
@@ -43,12 +44,11 @@
 	#A1 { text-align: right; }
 
         h3.title { color: #0072e6; }
+        h4 { font-family: "Trebuchet MS", Arial, Verdana; }
 
 	.formbottom { margin-bottom: 30px; }
 
 	input#date1,input#date2{background-image:url(../images/calendar.png);background-position:right center;background-repeat:no-repeat;color:#000; text-align:left; text-indent:6px; cursor:pointer; }
-
-        input#savedsearch{background-image:url(../images/search.png);background-position:right center;background-repeat:no-repeat;color:#000;font: bold 12px Arial, sans-serif;text-align:left;text-indent:6px;width:400px;height:15px; }
 
 	.piler-right-margin { margin-right: 30px; }
 
@@ -63,16 +63,13 @@
 
 	#mailpreviewframe { text-align: left; overflow:auto; }
 
-	#auditresultscontainer { float: left; width: 1180px; padding: 0; margin: 0; border-top: 0px solid black; border-bottom: 0px solid black; height: 580px; overflow: auto; }
-	#auditresultscontainer.empty { border-bottom: 0px solid black; height: 580px; }
-
 	.download_icon { margin: 0px 0 -15px 0; border: 0px solid black; }
 
 	#sspinner { position: relative; width: 60%; border: 0px solid #999999; color: #000000; font-weight: bold; vertical-align: middle; text-align: left; padding: 15px; z-index: 1; display: none; margin: auto; margin-top: 150px; }
 
 	.row { display: table-row; }
 	.row.savedsearch { display: table-row; text-align: right; }
-	.resultrow { display: table-row; height: 18px; font-style: italic; font-size:12px; }
+	.resultrow { display: table-row; height: 18px; font-style: italic; font-size:14px; font-family: "Trebuchet MS", Arial, Verdana; }
 	.resultrow a { color: #3d3d3d; }
 	.resultrow.odd { background: #f5f5f5; }
 	.resultrow.new { font-style: normal; }
@@ -83,9 +80,9 @@
 	.resultrow.spam { color: #aaa; }
 	.resultrow.sent { background: lightblue; }
 
-	.tcell { display: table-cell; }
+	.tcell { display: table-cell; font-family: "Trebuchet MS", Arial, Verdana; }
 
-	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; width: 80px; }
+	.cell1 { display: table-cell; height: 25px; text-align: left; padding: 3px; font-family: bold 14px "Trebuchet MS", Arial, Verdana; width: 80px; }
 
 	.cell2 { display: table-cell; width: 410px; height: 15px; }
 	.top20px { margin-top: 20px; }
@@ -98,7 +95,7 @@
 	.auditcell.ip { width: 75px; }
 	.auditcell.description { width: 325px; }
 	.auditcell.ref { width: 90px; }
-	.auditcell.header { height: 30px; font: bold 12px Arial, sans-serif; color: black; }
+	.auditcell.header { height: 30px; font-family: bold 14px "Trebuchet MS", Arial, Verdana; color: black; }
 
 	a.auditlink { color: #0072e6; }
 	.menulink { color: #0072e6; }
@@ -106,19 +103,19 @@
         #health1 { display: table-cell; margin-top: 10px; margin-bottom: 0; }
         #health2 { display: table-cell; text-align: right; }
 
-	.cellhealthleft { display: table-cell; height: 25px; text-align: left; padding: 3px; font: bold 12px Arial, sans-serif; }
-	.cellhealthright { display: table-cell; height: 25px; text-align: left; padding: 3px; font: normal 12px Arial, sans-serif; }
+	.cellhealthleft { display: table-cell; height: 25px; text-align: left; padding: 3px; font-family: "Trebuchet MS", Arial, Verdana; }
+	.cellhealthright { display: table-cell; height: 25px; text-align: left; padding: 3px; font-family: "Trebuchet MS", Arial, Verdana; }
 
 	#pagenav { float: left; margin-top: 0px; margin-bottom: 0px; text-align: left; width: 990px; border: 0px solid red; }
 	.navrow { display: table-row; }
-	.navlink { color: #bbb; font: bold 12px Arial, sans-serif; }
-	#pagenav a.navlink { color: #0072e6; font: bold 12px Arial, sans-serif; }
+	.navlink { color: #bbb; font-family: bold 14px "Trebuchet MS", Arial, Verdana; }
+	#pagenav a.navlink { color: #0072e6; font-family: bold 14px "Trebuchet MS", Arial, Verdana; }
 
         #pagingleft { display: table-cell; float: left; text-align: left; width: 60px;  border: 0px solid red; }
         #pagingcenter { display: table-cell; float: left; text-align: center; width: 145px; border: 0px solid red; }
         #pagingright { display: table-cell; float: left; text-align: right; width: 60px; border: 0px solid red; }
 
-	.messagelink { border-bottom: 1px solid gray; color: #0072e6; font-size:12px; }
+	.messagelink { border-bottom: 1px solid gray; color: #0072e6; }
 	.messagelink.spam { border-bottom: 1px solid gray; color: #aaa; }
 	#results a:hover { color: black; }
 
@@ -127,15 +124,16 @@
 
 	input[type=checkbox].restorebox { margin: 0; vertical-align: middle; }
 	input[type=checkbox].popup { margin: 0; vertical-align: middle; }
-	input[type=text] { font-size:12px; font-style: normal; }
+	input[type=text] { font-family: "Trebuchet MS", Arial, Verdana; font-weight: bold; }
+	select { font-family: "Trebuchet MS", Arial, Verdana; }
 
 	#messagepopup { margin: 10px 20px 10px 20px; padding: 0; background-color: white; text-align: left; }
 	#restorebox { position: absolute; top: 20px; left: 15%; border: 3px solid red; display: none; background: orange; color: #000000; font-weight: bold; padding: 15px; z-index: 1; }
 
 	.domainrow { display: table-row; border: 2px solid gray; padding: 10px; }
-	.domaincell { display: table-cell; font: bold 12px Arial, sans-serif; border: 1px solid gray; padding: 5px; vertical-align: top; }
-	.logincell { display: table-cell; font: bold 12px Arial, sans-serif; padding: 5px; vertical-align: top; }
-	.domain { font: normal 12px Arial, sans-serif; font-weight: bold; text-align:left; width: 408px;}
+	.domaincell { display: table-cell; font-family: "Trebuchet MS", Arial, Verdana; border: 1px solid gray; padding: 5px; vertical-align: top; }
+	.logincell { display: table-cell; font-family: "Trebuchet MS", Arial, Verdana; padding: 5px; vertical-align: top; }
+	.domain { font-family: "Trebuchet MS", Arial, Verdana; font-weight: bold; text-align:left; width: 408px;}
 
 	.login { text-align: center; margin-top:20%; }
 
@@ -144,7 +142,7 @@
 	.bold { font-weight: bold; }
 	.left { text-align: left; }
 
-	.messagecontents {background-color:#fff; padding:8px; font-size:12px; }
+	.messagecontents {background-color:#fff; padding:8px; font-size:14px; font-family: "Trebuchet MS", Arial, Verdana; }
 
 
 	/* rc splitter stuff */
