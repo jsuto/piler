@@ -19,6 +19,7 @@ class ControllerLoginSSO extends Controller {
       $this->load->model('user/user');
       $this->load->model('user/prefs');
       $this->load->model('folder/folder');
+      $this->load->model('domain/domain');
 
       $this->document->title = $this->data['text_login'];
 
