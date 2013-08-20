@@ -79,6 +79,7 @@ class ModelHealthHealth extends Model {
 
    public function diskinfo() {
       $shortinfo = array();
+      $a = array();
 
       $s = exec("df", $output);
 
@@ -87,7 +88,9 @@ class ModelHealthHealth extends Model {
       while(list($k, $v) = each($output)) {
          if($k > 0) {
             $p = preg_split("/\ {1,}/", $v);
-            if(isset($p[5]) && in_array($p[5], $partitions)) {
+            if(isset($p[5]) && in_array($p[5], $partitions) && !isset($a[$p[5]])) {
+               $a[$p[5]] = 1;
+
                $shortinfo[] = array(
                                     'partition' => $p[5],
                                     'freespace' => $p[3],
