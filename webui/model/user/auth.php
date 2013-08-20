@@ -68,6 +68,9 @@ class ModelUserAuth extends Model {
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
       $ldap_auditor_member_dn = LDAP_AUDITOR_MEMBER_DN;
+      $ldap_admin_member_dn = LDAP_ADMIN_MEMBER_DN;
+
+      $role = 0;
 
       if(ENABLE_SAAS == 1) {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
@@ -103,11 +106,12 @@ class ModelUserAuth extends Model {
 
                $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup"));
 
-               $is_auditor = $this->check_ldap_membership($ldap_auditor_member_dn, $query->rows);
+               if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
+               if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-               $this->add_session_vars($a['cn'], $username, $emails, $is_auditor);
+               $this->add_session_vars($a['cn'], $username, $emails, $role);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
@@ -180,7 +184,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function add_session_vars($name = '', $email = '', $emails = array(), $is_auditor = 0) {
+   private function add_session_vars($name = '', $email = '', $emails = array(), $role = 0) {
       $a = explode("@", $email);
 
       $uid = $this->model_user_user->get_uid_by_email($email);
@@ -192,8 +196,8 @@ class ModelUserAuth extends Model {
       $_SESSION['username'] = $name;
       $_SESSION['uid'] = $uid;
 
-      if($is_auditor == 1) {
-         $_SESSION['admin_user'] = 2;
+      if($role > 0) {
+         $_SESSION['admin_user'] = $role;
       } else {
          $_SESSION['admin_user'] = 0;
       }
@@ -256,6 +260,10 @@ class ModelUserAuth extends Model {
       $ldap_account_objectclass = 'user';
       $ldap_distributionlist_attr = 'member';
       $ldap_distributionlist_objectclass = 'group';
+      $ldap_auditor_member_dn = LDAP_AUDITOR_MEMBER_DN;
+      $ldap_admin_member_dn = LDAP_ADMIN_MEMBER_DN;
+
+      $role = 0;
 
       if(!isset($_SERVER['REMOTE_USER'])) { return 0; }
 
@@ -279,7 +287,10 @@ class ModelUserAuth extends Model {
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-            $this->add_session_vars($a['cn'], $username, $emails, 0);
+            if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
+            if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
+
+            $this->add_session_vars($a['cn'], $username, $emails, $role);
 
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 

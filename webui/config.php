@@ -52,6 +52,7 @@ $config['LDAP_HELPER_DN'] = 'cn=....';
 $config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
 $config['LDAP_MAIL_ATTR'] = 'mail';
 $config['LDAP_AUDITOR_MEMBER_DN'] = '';
+$config['LDAP_ADMIN_MEMBER_DN'] = '';
 $config['LDAP_BASE_DN'] = '';
 
 // AD specific settings
