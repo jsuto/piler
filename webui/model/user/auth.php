@@ -265,17 +265,20 @@ class ModelUserAuth extends Model {
 
       $role = 0;
 
-      if(!isset($_SERVER['REMOTE_USER'])) { return 0; }
+      if(!isset($_SERVER['REMOTE_USER']) || $_SERVER['REMOTE_USER'] == '') { return 0; }
 
       $u = explode("\\", $_SERVER['REMOTE_USER']);
 
-      if(!isset($u[1])) { return 0; }
+      if(isset($u[1])) { $username = $u[1]; }
+      else { $username = $_SERVER['REMOTE_USER']; }
+
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "sso login: $username"); }
 
       $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=$ldap_account_objectclass)(samaccountname=" . $u[1] . "))", array());
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=$ldap_account_objectclass)(samaccountname=" . $username . "))", array());
 
          if(isset($query->row['dn'])) {
             $a = $query->row;
