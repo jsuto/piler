@@ -6,6 +6,7 @@ $verbose = 0;
 $archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
 $averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
    
+$_SERVER['HTTP_USER_AGENT'] = "daily/cron";
 
 if(isset($_SERVER['argv'][1])) { $webuidir = $_SERVER['argv'][1]; }
 
@@ -56,7 +57,7 @@ Registry::set('db', $db);
 
 Registry::set('DB_DRIVER', DB_DRIVER);
 
-$date = date(AUDIT_DATE_FORMAT, NOW);
+$date = date(DATE_TEMPLATE, NOW);
 
 $fp = fopen(LOCK_FILE, "r");
 if(!$fp) { die("cannot open: " . LOCK_FILE . "\n"); }
