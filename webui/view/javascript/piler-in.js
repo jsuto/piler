@@ -148,6 +148,10 @@ var Piler =
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
             $('#resultsheader').show();
+
+            /*$("table").resizableColumns({
+               store: store
+            });*/
         })
         .fail(function( a, b )// jqXHR, textStatus, errorThrown
         {

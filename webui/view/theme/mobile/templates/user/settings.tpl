@@ -9,7 +9,7 @@
 
 	 <div class="row">
 		<div class="logincell"><?php print $text_email_addresses; ?>:</div>
-		<div class="tcell">
+		<div class="logincell">
 			<?php print $emails; ?>
 		</div>
 	 </div>   
@@ -18,7 +18,7 @@
    
 	 <div class="row">
 		<div class="logincell"><?php print $text_domains; ?>:</div>
-		<div class="tcell">
+		<div class="logincell">
 			<?php print $domains; ?>
 		</div>
 	 </div>
@@ -29,7 +29,7 @@
 	 
 	 <div class="row">
 		<div class="logincell"><?php print $text_groups; ?>:</div>
-		<div class="tcell">
+		<div class="logincell">
 			<?php print $groups; ?>
 		</div>
 	 </div>
@@ -40,7 +40,7 @@
 	 
 	 <div class="row">
 		<div class="logincell"><?php print $text_folders; ?>:</div>
-		<div class="tcell">
+		<div class="logincell">
 			<?php print $folders; ?>
 		</div>
 	 </div>
