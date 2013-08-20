@@ -114,7 +114,7 @@
 
 <div id="messagelistfooter" class="boxfooter">
     <div class="row-fluid">
-       <div id="pagingrow" class="span2">
+       <div id="pagingrow" class="span3">
     <?php if($n > 0){ ?>
             &nbsp;
             <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="icon-double-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-double-angle-left icon-large muted"></i></span><?php } ?>
@@ -129,7 +129,7 @@
             &nbsp;
     <?php } else { print $text_none_found; } ?>
         </div>
-<div id="functionrow" class="span10">
+<div id="functionrow" class="span9">
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
             <div id="tagbox" class="input-prepend input-append pull-right">
