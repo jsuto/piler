@@ -4,7 +4,7 @@
 class ModelPolicyRetention extends Model {
 
    public function get_rules() {
-      $query = $this->db->query("SELECT * FROM " . TABLE_RETENTION_RULE . " ORDER BY id");
+      $query = $this->db->query("SELECT * FROM " . TABLE_RETENTION_RULE . " ORDER BY domain, id");
 
       if(isset($query->rows)) { return $query->rows; }
 
