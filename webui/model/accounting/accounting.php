@@ -3,14 +3,14 @@
 class ModelAccountingAccounting extends Model
 {
 
-    public function run_counters( $start=NULL, $end = NULL )
+    public function run_counters( $start=NULL, $stop = NULL )
     {	
         $now = time();
         $counter = array();
         $accepteddomains = array_flip( $this->__getAcceptedDomains() );
         $return = array(
             'starttimestamp' => 0,
-            'endtimestamp' => 0,
+            'stoptimestamp' => 0,
             'addedstats' => 0,
             'deletedstats' => 0,
             );
@@ -24,23 +24,23 @@ class ModelAccountingAccounting extends Model
             $start = $this->__decodeDate( "00:00:00" );
         }
 
-        if ( !is_null($end) )
+        if ( !is_null($stop) )
         {
-            $end = $this->__decodeDate( $end );
-            $end = $end + 86400;            
-        } elseif ( is_null($end) )
+            $stop = $this->__decodeDate( $stop );
+            $stop = $stop + 86400;            
+        } elseif ( is_null($stop) )
         {
             //if we are passed nothing, operate on today
-            $end = $this->__decodeDate( "00:00:00" );
-            $end = $end + 86400;
+            $stop = $this->__decodeDate( "00:00:00" );
+            $stop = $stop + 86400;
         }
         
         $return['starttimestamp'] = $start;
-        $return['endtimestamp'] = $end;
+        $return['stoptimestamp'] = $stop;
         
         // run query to return all messages
-        $tousers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`to`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$end.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `to`;');
-        $fromusers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`from`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$end.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `from`;');
+        $tousers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`to`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `to`;');
+        $fromusers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`from`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `from`;');
         
         // process results from above four queries
         if($tousers->num_rows > 0)
@@ -85,7 +85,7 @@ class ModelAccountingAccounting extends Model
         
         }
         
-		if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("processed %s to %s: %d records deleted, %d records added",date(DATE_TEMPLATE, $return['starttimestamp']),date(DATE_TEMPLATE, $return['endtimestamp']),$return['deletedstats'],$return['addedstats'])); }
+		if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("processed %s to %s: %d records deleted, %d records added",date(DATE_TEMPLATE, $return['starttimestamp']),date(DATE_TEMPLATE, $return['stoptimestamp']),$return['deletedstats'],$return['addedstats'])); }
 		
         return $return;
     }

@@ -3,7 +3,7 @@
 $webuidir = '';
 $process_all = false;
 $start = NULL;
-$end = NULL;
+$stop = NULL;
 $timestart = microtime(true);
 
 // get options from command line
@@ -11,7 +11,7 @@ $opts = 'h::';
 $lopts = array(
     'webui:',
     'start::',
-    'end::',
+    'stop::',
     );
     
 if ( $options = getopt( $opts, $lopts ) )
@@ -31,12 +31,14 @@ if ( $options = getopt( $opts, $lopts ) )
     {
         display_help();
         exit;
-    } elseif ( isset($options['start']) )
+    }
+    if ( isset($options['start']) )
     {
         $start = $options['start'];
-    } elseif ( isset($options['end']) )
+    }
+    if ( isset($options['stop']) )
     {
-        $end = $options['end'];
+        $stop = $options['stop'];
     }
 } else {
     display_help();
@@ -72,16 +74,15 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 extract($language->data);
 
-//$day_to_process = strtotime($day_to_process);
-$records = $messagestats->run_counters($start,$end);
+$records = $messagestats->run_counters($start,$stop);
 
 $timeend = microtime(true);
 $timegone = $timeend - $timestart;
 
 echo("\nFinished Executing Statistics Generation\n");
 echo("*************************************************\n");
-echo("Start Date: ".date("d M Y",$records['starttimestamp'])."\n");
-echo("Stop Date: ".date("d M Y",$records['endtimestamp'])."\n");
+echo("Start Date: ".date(DATE_TEMPLATE,$records['starttimestamp'])."\n");
+echo("Stop Date: ".date(DATE_TEMPLATE,$records['stoptimestamp'])."\n");
 echo("Removed ".$records['deletedstats']." records\n");
 echo("Added ".$records['addedstats']." records\n");
 echo("Completed Run in ".$timegone." seconds\n\n");
