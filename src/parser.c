@@ -473,8 +473,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
    /* boundary check, and reset variables */
 
-   if(findnode(state->boundaries, buf)) boundary_line = 1;
-
+   boundary_line = is_substr_in_hash(state->boundaries, buf);
 
 
    if(!strstr(buf, "boundary=") && !strstr(buf, "boundary =") && boundary_line == 1){

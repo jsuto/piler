@@ -131,6 +131,23 @@ struct node *findnode(struct node *xhash[], char *s){
 }
 
 
+int is_substr_in_hash(struct node *xhash[], char *s){
+   int i;
+   struct node *q;
+
+   for(i=0;i<MAXHASH;i++){
+      q = xhash[i];
+      while(q != NULL){
+         if(q->str && strstr(s, q->str)) return 1;
+
+         q = q->r;
+      }
+   }
+
+   return 0;
+}
+
+
 inline int hash(unsigned int key){
    return key % MAXHASH;
 }
