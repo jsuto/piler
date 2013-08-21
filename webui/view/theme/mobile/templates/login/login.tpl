@@ -44,7 +44,7 @@
                  <div class="info"><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></div>
         <?php } else { ?>
                 <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>">
-                <input type="password" class="input-block-level" name="password" placeholder="<?php print $text_password; ?>">
+                <input type="password" class="input-block-level bold" name="password" placeholder="<?php print $text_password; ?>">
                 <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
         <?php } ?>
 
