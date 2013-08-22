@@ -5,7 +5,7 @@
 
 <?php if($n > 0) { ?>
 
-       <table class="table table-condensed" data-resizable-columns-id="search-table">
+       <table class="table table-condensed<?php if(ENABLE_TABLE_RESIZE == 1) { ?> table-bordered<?php } ?>" data-resizable-columns-id="search-table">
 
           <thead>
 

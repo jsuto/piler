@@ -1,5 +1,7 @@
 <?php
 
+$_['text_60_minutes'] = "60 Minuten";
+
 $_['text_action'] = "Aktion";
 $_['text_active_incoming_queue'] = "Aktive + Eingangswarteschlange";
 $_['text_active_incoming_queue_sender'] = "Aktive + Eingangswarteschlange zu Absender";

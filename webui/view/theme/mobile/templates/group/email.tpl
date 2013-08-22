@@ -1,6 +1,6 @@
 
 <?php foreach($emails as $email) { ?>
-   <a href="#" onclick="append_value_from_slider('email', '<?php print $email['email']; ?>');"><?php print $email['email']; ?></a><br />
+   <a href="#" onclick="append_value_from_slider('email', '<?php print $email; ?>');"><?php print $email; ?></a><br />
 <?php } ?>
 
 

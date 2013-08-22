@@ -16,6 +16,7 @@ class ControllerGroupEmail extends Controller {
       $language = Registry::get('language');
 
       $this->load->model('group/group');
+      $this->load->model('user/auth');
 
       $this->document->title = '';
 
@@ -50,7 +51,7 @@ class ControllerGroupEmail extends Controller {
 
             foreach($emails as $email) {
                $i++;
-               $s .= '{ "id": "' . $i . '", "value": "' . $email['email'] . '" },';
+               $s .= '{ "id": "' . $i . '", "value": "' . $email . '" },';
             }
 
             $s = preg_replace("/,$/", "", $s) . " ]";

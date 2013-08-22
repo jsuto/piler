@@ -39,6 +39,10 @@
                  </ul>
              </li>
 
+     <?php if(LDAP_ADMIN_MEMBER_DN) { ?>
+             <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search icon-white"></i>&nbsp;<?php print $text_search; ?></a></li>
+     <?php } ?>
+
 <?php } else { ?>
 
              <li<?php if($_SERVER['REQUEST_URI'] == '/' || strstr($_SERVER['REQUEST_URI'], "search.php")){ ?> class="active"<?php } ?>><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search icon-white"></i>&nbsp;<?php print $text_search; ?></a></li>

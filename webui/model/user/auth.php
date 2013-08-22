@@ -157,7 +157,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function get_email_array_from_ldap_attr($e = array()) {
+   public function get_email_array_from_ldap_attr($e = array()) {
       $data = array();
 
       foreach($e as $a) {

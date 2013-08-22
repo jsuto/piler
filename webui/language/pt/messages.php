@@ -1,5 +1,7 @@
 <?php
 
+$_['text_60_minutes'] = "60 mins";
+
 $_['text_action'] = "Ação";
 $_['text_active_incoming_queue'] = "fila activo + incoming";
 $_['text_active_incoming_queue_sender'] = "fila activo + incoming queue x remetentes";

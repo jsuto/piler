@@ -1,5 +1,7 @@
 <?php
 
+$_['text_60_minutes'] = "60 perc";
+
 $_['text_action'] = "Mûvelet";
 $_['text_active_incoming_queue'] = "aktív + bejövõ üzenetsor";
 $_['text_active_incoming_queue_sender'] = "aktív + bejövõ üzenetsor (feladó szerint)";

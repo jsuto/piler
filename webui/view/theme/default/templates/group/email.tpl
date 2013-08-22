@@ -1,6 +1,6 @@
 <table class="table table-striped table-condensed">
 <?php foreach($emails as $email) { ?>
-   <tr><td><a href="#" onclick="append_value_from_slider('email', '<?php print $email['email']; ?>');"><?php print $email['email']; ?></a></td></tr>
+   <tr><td><a href="#" onclick="append_value_from_slider('email', '<?php print $email; ?>');"><?php print $email; ?></a></td></tr>
 <?php } ?>
 </table>
 

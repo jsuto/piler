@@ -16,6 +16,7 @@ class ControllerGroupList extends Controller {
       $language = Registry::get('language');
 
       $this->load->model('group/group');
+      $this->load->model('user/auth');
 
       $this->document->title = $language->get('text_group_management');
 

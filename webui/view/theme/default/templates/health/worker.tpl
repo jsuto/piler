@@ -95,7 +95,7 @@
                                 </tr>                
 				<tr>
 					<td><?php print $text_processed_emails; ?></td>
-					<td><?php print $processed_emails[0]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_30_days; ?>)</td>
+					<td><?php print $processed_emails[0]; ?> (<?php print $text_60_minutes; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[3]; ?> (<?php print $text_30_days; ?>)</td>
 				</tr>
 				<tr>
 					<th colspan="2">Message Disposition</th>

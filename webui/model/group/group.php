@@ -141,15 +141,34 @@ class ModelGroupGroup extends Model {
 
 
    public function get_emails_by_string($s = '', $page = 0, $page_len = PAGE_LEN) {
+      $emails = array();
+
       $from = (int)$page * (int)$page_len;
 
       if(strlen($s) < 1) { return array(); }
 
-       $query = $this->db->query("SELECT email FROM `" . TABLE_EMAIL . "` WHERE email LIKE ? ORDER BY email ASC  LIMIT " . (int)$from . ", " . (int)$page_len, array($s . "%") );
+      if(ENABLE_LDAP_AUTH == 1) {
+         $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+         if($ldap->is_bind_ok()) {
 
-       if(isset($query->rows)) { return $query->rows; }
+            $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=" . $s . "*))", array());
 
-       return array();
+            if(isset($query->rows)) {
+               $emails = $this->model_user_auth->get_email_array_from_ldap_attr($query->rows);
+            }
+         }
+      }
+
+
+      $query = $this->db->query("SELECT email FROM `" . TABLE_EMAIL . "` WHERE email LIKE ? ORDER BY email ASC  LIMIT " . (int)$from . ", " . (int)$page_len, array($s . "%") );
+
+      if(isset($query->rows)) {
+         foreach($query->rows as $q) {
+            array_push($emails, $q['email']);
+         }
+      }
+
+      return $emails;
    }
 
 

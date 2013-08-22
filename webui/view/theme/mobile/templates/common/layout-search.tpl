@@ -24,8 +24,10 @@
    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
 
+<?php if(ENABLE_TABLE_RESIZE == 1) { ?>
    <script type="text/javascript" src="/view/javascript/store.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery.resizableColumns.min.js"></script>
+<?php } ?>
 
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 

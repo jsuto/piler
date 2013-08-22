@@ -149,9 +149,14 @@ var Piler =
             Piler.spinner('stop');
             $('#resultsheader').show();
 
-            /*$("table").resizableColumns({
+<?php if(ENABLE_TABLE_RESIZE == 1) { ?>
+
+            $("table").resizableColumns({
                store: store
-            });*/
+            });
+
+<?php } ?>
+
         })
         .fail(function( a, b )// jqXHR, textStatus, errorThrown
         {

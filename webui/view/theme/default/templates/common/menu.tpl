@@ -43,6 +43,10 @@
                         </ul>
                     </li>
 
+        <?php if(LDAP_ADMIN_MEMBER_DN) { ?>
+                    <li><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
+        <?php } ?>
+
     <?php } else { ?>
 
                     <li><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>

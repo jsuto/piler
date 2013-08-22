@@ -38,6 +38,10 @@ class ModelHealthHealth extends Model {
       $today = $last_7_days = $last_30_days = 0;
       $now = time();
 
+      $ts = $now - 3600;
+      $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
+      if(isset($query->row['count'])) { $last_60_mins = $query->row['count']; }
+
       $ts = $now - 86400;
       $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
       if(isset($query->row['count'])) { $today = $query->row['count']; }
@@ -50,7 +54,7 @@ class ModelHealthHealth extends Model {
       $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
       if(isset($query->row['count'])) { $last_30_days = $query->row['count']; }
 
-      return array($today, $last_7_days, $last_30_days);
+      return array($last_60_mins, $today, $last_7_days, $last_30_days);
    }
 
 

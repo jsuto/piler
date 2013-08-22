@@ -16,6 +16,7 @@ class ControllerGroupGroup extends Controller {
       $language = Registry::get('language');
 
       $this->load->model('group/group');
+      $this->load->model('user/auth');
 
 
       $this->data['term'] = '';
