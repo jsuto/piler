@@ -168,16 +168,38 @@ class ModelGroupGroup extends Model {
          }
       }
 
+      sort($emails);
+
+      if(strlen($s) == 1 && ENABLE_LDAP_AUTH == 1) {
+         $emails = array_slice($emails, $page * $page_len, $page_len);
+      }
+
       return $emails;
    }
 
 
    public function count_emails($s = '') {
-      if(strlen($s) < 1) { return 0; }
+      $count = 0;
+
+      if(strlen($s) < 1) { return $count; }
+
+      if(ENABLE_LDAP_AUTH == 1) {
+         $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+         if($ldap->is_bind_ok()) {
+
+            $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=" . $s . "*))", array());
+
+            if(isset($query->rows)) {
+               $count = $query->num_rows;
+            }
+         }
+      }
 
       $query = $this->db->query("SELECT COUNT(*) AS num FROM `" . TABLE_EMAIL . "` WHERE email LIKE ?", array($s . "%") );
 
-      return $query->row['num'];
+      $count += $query->row['num'];
+
+      return $count;
    }
 
 

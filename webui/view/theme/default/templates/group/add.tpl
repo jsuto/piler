@@ -30,7 +30,7 @@
 	  <label class="control-label" for="throwaway"><?php print $text_select_letter; ?>:</label>
 	  <div class="controls">
 	<?php foreach(Registry::get('letters') as $letter) { ?>
-         <a href="#" onclick="window.open('<?php print SITE_URL; ?>index.php?route=group/email&term=<?php print $letter; ?>', 'aaa', 'width=300,height=400');" ><?php print $letter; ?></a>
+         <a href="#" onclick="window.open('<?php print SITE_URL; ?>index.php?route=group/email&term=<?php print $letter; ?>', 'aaa', 'width=300,height=400,scroll=yes');" ><?php print $letter; ?></a>
 <?php } ?>
 	  </div>
     </div>
