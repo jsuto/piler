@@ -289,6 +289,7 @@ define('TABLE_OPTION', 'option');
 define('TABLE_LDAP', 'ldap');
 define('TABLE_CUSTOMER_SETTINGS', 'customer_settings');
 define('TABLE_ONLINE', 'online');
+define('TABLE_IMPORT', 'import');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('VIEW_MESSAGES', 'v_messages');
@@ -374,6 +375,13 @@ $actions = array(
                   'download_attachment' => 15,
                   'journal' => 17
                 );
+
+
+$import_status = array(
+                         0 => 'PENDING',
+                         1 => 'RUNNING',
+                         2 => 'FINISHED'
+                 );
 
 
 $counters = array(MEMCACHED_PREFIX . 'rcvd', MEMCACHED_PREFIX . 'virus', MEMCACHED_PREFIX . 'duplicate', MEMCACHED_PREFIX . 'ignore', MEMCACHED_PREFIX . 'counters_last_update');

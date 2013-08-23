@@ -248,11 +248,21 @@ struct memcached_server {
 #endif
 
 
+struct import {
+   int status;
+   int total_messages;
+   int processed_messages;
+   int import_job_id;
+   time_t started, updated, finished;
+};
+
+
 struct __data {
    int folder;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
    struct node *mydomains[MAXHASH];
+   struct import *import;
 
 #ifdef NEED_MYSQL
    MYSQL_STMT *stmt_generic;

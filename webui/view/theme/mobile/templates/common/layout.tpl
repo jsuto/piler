@@ -35,6 +35,7 @@ if(isset($this->request->get['route'])) {
 
    if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php }
    if($this->request->get['route'] == 'stat/online') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
+   if($this->request->get['route'] == 'import/jobs') { ?> onload="setInterval('Piler.reload_page()', 10 * 1000);"<?php }
 
 } ?>>
 

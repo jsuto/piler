@@ -151,6 +151,7 @@ $_['text_group_membership'] = "Csoport tagság";
 
 $_['text_image'] = "kép";
 $_['text_import'] = "Import";
+$_['text_import_job_delete_confirm_message'] = "Törölni akarja ezt az import job-ot?";
 $_['text_import_users'] = "Felhasználók importálása";
 $_['text_import_users_from_LDAP'] = "Felhasználók importálása LDAP-ból";
 $_['text_inbound'] = "bejövõ";
@@ -245,6 +246,7 @@ $_['text_policy_group'] = "Házirend azonosító";
 $_['text_policy_name'] = "Házirend neve";
 $_['text_previous'] = "Elõzõ";
 $_['text_processed_emails'] = "Feldolgozott levelek";
+$_['text_progress'] = "Státusz";
 $_['text_purge_all_messages_from_quarantine'] = "Összes saját üzenet törlése a karanténból";
 $_['text_purge_selected_messages'] = "Kiválasztott üzenetek eltávolítása";
 $_['text_purged'] = "Eltávolítva";
@@ -339,6 +341,7 @@ $_['text_total'] = "összes";
 $_['text_total_ratio'] = "összes arány";
 $_['text_total_query_time'] = "SQL lekérdezések összideje";
 $_['text_total_users'] = "összes";
+$_['text_type'] = "Típus";
 
 $_['text_uids'] = "Felhasználó azonosítók";
 $_['text_unknown'] = "ismeretlen";
@@ -370,6 +373,7 @@ $_['text_view_journal'] = "journal";
 $_['text_view_journal_envelope'] = "Journal envelope";
 $_['text_view_message'] = "Levél megtekintése";
 $_['text_view_message2'] = "levél megtekintése";
+$_['text_view_progress'] = "folyamatban lévõ importálások";
 $_['text_view_raw_email'] = "Formázatlan levél megtekintése";
 $_['text_view_user_quarantine'] = "Felhasználó karantén megtekintése";
 

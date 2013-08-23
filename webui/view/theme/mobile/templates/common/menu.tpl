@@ -33,6 +33,7 @@
      <?php if(ENABLE_SAAS == 1) { ?>
                     <li><a href="index.php?route=ldap/list"><?php print $text_ldap; ?></a></li>
                     <li><a href="index.php?route=customer/list"><?php print $text_customers; ?></a></li>
+                    <li><a href="index.php?route=import/list"><?php print $text_import; ?></a></li>
      <?php } ?>
                     <li><a href="index.php?route=policy/archiving"><?php print $text_archiving_rules; ?></a></li>
                     <li><a href="index.php?route=policy/retention"><?php print $text_retention_rules; ?></a></li>

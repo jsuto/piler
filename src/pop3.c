@@ -23,6 +23,9 @@
 #include <piler.h>
 
 
+void update_import_job_stat(struct __data *data);
+
+
 int is_last_complete_pop3_packet(char *s, int len){
 
    if(*(s+len-5) == '\r' && *(s+len-4) == '\n' && *(s+len-3) == '.' && *(s+len-2) == '\r' && *(s+len-1) == '\n'){
@@ -90,10 +93,13 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
 }
 
 
-int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg){
-   int i, rc=ERR, n, messages=0, processed_messages=0, pos, readlen, fd, lastpos, nreads;
+int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
+   int i=0, rc=ERR, n, pos, readlen, fd, lastpos, nreads;
    char *p, buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
+
+   data->import->processed_messages = 0;
+   data->import->total_messages = 0;
 
    snprintf(buf, sizeof(buf)-1, "STAT\r\n");
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
@@ -104,19 +110,19 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
       p = strchr(&buf[4], ' ');
       if(p){
          *p = '\0';
-         messages = atoi(&buf[4]);
+         data->import->total_messages = atoi(&buf[4]);
       }
    }
    else return ERR;
 
 
-   printf("found %d messages\n", messages);
+   printf("found %d messages\n", data->import->total_messages);
 
-   if(messages <= 0) return rc;
+   if(data->import->total_messages <= 0) return rc;
 
-   for(i=1; i<=messages; i++){
-      processed_messages++;
-      printf("processed: %7d\r", processed_messages); fflush(stdout);
+   for(i=1; i<=data->import->total_messages; i++){
+      data->import->processed_messages++;
+      printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
 
 
       snprintf(buf, sizeof(buf)-1, "RETR %d\r\n", i);
@@ -188,7 +194,13 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
       close(fd);
 
-      rc = import_message(filename, sdata, data, cfg);
+      if(dryrun == 0) rc = import_message(filename, sdata, data, cfg);
+      else rc = OK;
+
+      if(i % 100 == 0){
+         time(&(data->import->updated));
+         update_import_job_stat(data);
+      }
 
       unlink(filename);
    }
@@ -198,6 +210,11 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
    printf("\n");
+
+   time(&(data->import->finished));
+   data->import->status = 2;
+   update_import_job_stat(data);
+
 
    return OK;
 }

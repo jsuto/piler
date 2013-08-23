@@ -969,6 +969,26 @@ var Piler =
     },
 
 
+    test_pop3_connection:function()
+    {
+       Piler.log("[test_pop3_connection]");
+
+       jQuery.ajax('index.php?route=import/test', {
+           data: {
+              type: $('#type').val(),
+              server: $('#server').val(),
+              username: $('#username').val(),
+              password: $('#password').val()
+           },
+           type: "POST"
+       })
+       .done( function(a) {
+          $('#LDAPTEST').html(a);
+       })
+       .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+    },
+
+
     clear_ldap_test: function()
     {
         $('#LDAPTEST').html('');

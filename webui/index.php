@@ -67,6 +67,7 @@ Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra"));
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
 Registry::set('actions', $actions);
+Registry::set('import_status', $import_status);
 
 
 if(Registry::get('username')) {

@@ -151,6 +151,7 @@ $_['text_home'] = "Startseite";
 
 $_['text_image'] = "Bild";
 $_['text_import'] = "Import";
+$_['text_import_job_delete_confirm_message'] = "Do you wish to delete import job";
 $_['text_import_users'] = "Benutzer importieren";
 $_['text_import_users_from_LDAP'] = "Benutzer aus LDAP importieren";
 $_['text_inbound'] = "eingehend";
@@ -245,6 +246,7 @@ $_['text_policy_group'] = "Methodengruppe";
 $_['text_policy_name'] = "Methodenname";
 $_['text_previous'] = "Vorherige";
 $_['text_processed_emails'] = "Bearbeitete Nachrichten";
+$_['text_progress'] = "Progress";
 $_['text_purge_all_messages_from_quarantine'] = "Alle eigenen Nachrichten im Quarantänebereich löschen";
 $_['text_purge_selected_messages'] = "Ausgewählte Nachrichten löschen";
 $_['text_purged'] = "Gelöscht";
@@ -339,6 +341,7 @@ $_['text_total'] = "insgesamt";
 $_['text_total_ratio'] = "Verhältnis (insgesamt)";
 $_['text_total_query_time'] = "Dauer SQL-Abfrage";
 $_['text_total_users'] = "insgesamt";
+$_['text_type'] = "Type";
 
 $_['text_uids'] = "Benutzerkennungen";
 $_['text_unauthorized_domain'] = "Unauthorized domain";
@@ -370,6 +373,7 @@ $_['text_view_journal'] = "Envelope";
 $_['text_view_journal_envelope'] = "Envelope anzeigen";
 $_['text_view_message'] = "Nachrichtentext anzeigen";
 $_['text_view_message2'] = "Nachricht anzeigen";
+$_['text_view_progress'] = "view progress";
 $_['text_view_raw_email'] = "Quelltext anzeigen";
 $_['text_view_user_quarantine'] = "Quarantänebereich Benutzer anzeigen";
 

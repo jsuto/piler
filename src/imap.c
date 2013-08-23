@@ -91,7 +91,7 @@ int read_response(int sd, char *buf, int buflen, char *tagok, struct __data *dat
 }
 
 
-int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, struct __config *cfg){
+int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
    int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
@@ -199,7 +199,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       close(fd);
 
-      rc = import_message(filename, sdata, data, cfg);
+      if(dryrun == 0) rc = import_message(filename, sdata, data, cfg);
+      else rc = OK;
 
       if(rc == ERR) printf("error importing '%s'\n", filename);
       else unlink(filename);

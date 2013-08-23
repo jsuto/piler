@@ -177,3 +177,13 @@ int add_new_folder(struct session_data *sdata, struct __data *data, char *folder
 }
 
 
+void update_import_job_stat(struct __data *data){
+   char buf[SMALLBUFSIZE];
+
+   snprintf(buf, sizeof(buf)-1, "update import set status=%d, started=%ld, updated=%ld, finished=%ld, total=%d, imported=%d where id=%d", data->import->status, data->import->started, data->import->updated, data->import->finished, data->import->total_messages, data->import->processed_messages, data->import->import_job_id);
+
+   p_query(sdata, buf);
+}
+
+
+

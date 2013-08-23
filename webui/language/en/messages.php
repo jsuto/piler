@@ -151,6 +151,7 @@ $_['text_home'] = "Home";
 
 $_['text_image'] = "image";
 $_['text_import'] = "Import";
+$_['text_import_job_delete_confirm_message'] = "Do you wish to delete import job";
 $_['text_import_users'] = "Import users";
 $_['text_import_users_from_LDAP'] = "Import users from LDAP";
 $_['text_inbound'] = "inbound";
@@ -245,6 +246,7 @@ $_['text_policy_group'] = "Policy group";
 $_['text_policy_name'] = "Policy name";
 $_['text_previous'] = "Previous";
 $_['text_processed_emails'] = "Processed emails";
+$_['text_progress'] = "Progress";
 $_['text_purge_all_messages_from_quarantine'] = "Purge all your own messages from quarantine";
 $_['text_purge_selected_messages'] = "Purge selected messages";
 $_['text_purged'] = "Purged";
@@ -339,6 +341,7 @@ $_['text_total'] = "total";
 $_['text_total_ratio'] = "total ratio";
 $_['text_total_query_time'] = "Total SQL query time";
 $_['text_total_users'] = "total";
+$_['text_type'] = "Type";
 
 $_['text_uids'] = "uids";
 $_['text_unauthorized_domain'] = "Unauthorized domain";
@@ -370,6 +373,7 @@ $_['text_view_journal'] = "journal";
 $_['text_view_journal_envelope'] = "View envelope";
 $_['text_view_message'] = "View message";
 $_['text_view_message2'] = "view message";
+$_['text_view_progress'] = "view progress";
 $_['text_view_raw_email'] = "View raw email";
 $_['text_view_user_quarantine'] = "View user's quarantine";
 
