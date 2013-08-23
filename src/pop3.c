@@ -23,7 +23,7 @@
 #include <piler.h>
 
 
-void update_import_job_stat(struct __data *data);
+void update_import_job_stat(struct session_data *sdata, struct __data *data);
 
 
 int is_last_complete_pop3_packet(char *s, int len){
@@ -89,7 +89,7 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
 
    if(strncmp(buf, "+OK", 3) == 0) return OK;
 
-   return OK;
+   return ERR;
 }
 
 
@@ -199,7 +199,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
       if(i % 100 == 0){
          time(&(data->import->updated));
-         update_import_job_stat(data);
+         update_import_job_stat(sdata, data);
       }
 
       unlink(filename);
@@ -213,7 +213,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
    time(&(data->import->finished));
    data->import->status = 2;
-   update_import_job_stat(data);
+   update_import_job_stat(sdata, data);
 
 
    return OK;

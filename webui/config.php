@@ -380,7 +380,8 @@ $actions = array(
 $import_status = array(
                          0 => 'PENDING',
                          1 => 'RUNNING',
-                         2 => 'FINISHED'
+                         2 => 'FINISHED',
+                         3 => 'ERROR'
                  );
 
 

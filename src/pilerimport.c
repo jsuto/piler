@@ -43,7 +43,7 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
 void close_connection(int sd, struct __data *data, int use_ssl);
 
-void update_import_job_stat(struct __data *data);
+void update_import_job_stat(struct session_data *sdata, struct __data *data);
 
 
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
@@ -422,10 +422,16 @@ ENDE:
 
    time(&(data->import->started));
    data->import->status = 1;
-   update_import_job_stat(data);  
+   update_import_job_stat(sdata, data);  
 
    if(strcmp(s_type, "pop3") == 0){
-      import_from_pop3_server(s_server, s_username, s_password, 110, sdata, data, dryrun, cfg);
+      rc = import_from_pop3_server(s_server, s_username, s_password, 110, sdata, data, dryrun, cfg);
+
+      if(rc == ERR){
+         data->import->status = 3;
+         update_import_job_stat(sdata, data);
+      }
+
    }
 
 
