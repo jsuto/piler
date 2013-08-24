@@ -37,7 +37,9 @@ class ControllerHealthWorker extends Controller {
 
 
       foreach (Registry::get('health_smtp_servers') as $smtp) {
-         $this->data['health'][] = $this->model_health_health->checksmtp($smtp, $lang->data['text_error']);
+         if($smtp[0]) {
+            $this->data['health'][] = $this->model_health_health->checksmtp($smtp, $lang->data['text_error']);
+         }
       }
 
       if(ENABLE_SAAS == 1) {
