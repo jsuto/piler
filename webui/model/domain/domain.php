@@ -2,10 +2,14 @@
 
 class ModelDomainDomain extends Model {
 
-   public function getDomains() {
+   public function getDomains($s = '') {
       $data = array();
 
-      $query = $this->db->query("SELECT domain, mapped, ldap_id FROM " . TABLE_DOMAIN . " ORDER BY domain ASC");
+      if($s) {
+         $query = $this->db->query("SELECT domain, mapped, ldap_id FROM " . TABLE_DOMAIN . " WHERE domain LIKE ? ORDER BY domain ASC", array('%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT domain, mapped, ldap_id FROM " . TABLE_DOMAIN . " ORDER BY domain ASC");
+      }
 
       if(isset($query->rows)) {
          foreach($query->rows as $q) {

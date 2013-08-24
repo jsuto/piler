@@ -24,6 +24,11 @@ class ControllerPolicyArchiving extends Controller {
 
       $this->data['error'] = '';
 
+      $this->data['search'] = '';
+
+      if(isset($this->request->post['search'])) { $this->data['search'] = $this->request->post['search']; }
+      else if(isset($this->request->get['search'])) { $this->data['search'] = $this->request->get['search']; }
+
       if(Registry::get('admin_user') == 0) {
          die("go away");
       }
@@ -36,7 +41,7 @@ class ControllerPolicyArchiving extends Controller {
          }
       }
 
-      $this->data['rules'] = $this->model_policy_archiving->get_rules();
+      $this->data['rules'] = $this->model_policy_archiving->get_rules($this->data['search']);
 
 
       $this->render();

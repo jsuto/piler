@@ -12,6 +12,13 @@
   </div>
 </div>
 
+<form method="get" name="search1" action="customer.php" class="form-inline pull-right">
+    <div class="input-append">
+        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
+        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+    </div>
+</form>
+
 <h4><?php if(isset($a['domain'])) { print $text_edit_entry; } else { print $text_add_new_entry; } ?></h4>
 
 <?php if(isset($x)){ ?>

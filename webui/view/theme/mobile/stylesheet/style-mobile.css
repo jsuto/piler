@@ -142,6 +142,7 @@
 	.left { text-align: left; }
 	.center { text-align: center; }
 	.sleek { margin:0; padding:0; }
+	.with20margin{ margin-left:20%; margin-right:20%; }
 
 	.messagecontents {background-color:#fff; padding:8px; font-size:14px; font-family: "Trebuchet MS", Arial, Verdana; }
 

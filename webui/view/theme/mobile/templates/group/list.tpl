@@ -12,19 +12,16 @@
   </div>
 </div>
 
-<p/>
+<form method="post" name="search1" action="index.php?route=group/list" class="form-inline pull-right">
+    <div class="input-append">
+        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
+        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+    </div>
+</form>
 
 <p><a href="index.php?route=group/add"><?php print $text_add_new_group; ?></a></p>
 
 <h4><?php print $text_existing_groups; ?></h4>
-
-<form method="post" name="search1" class="form-search" action="index.php?route=group/list">
-   <input type="text" name="search" value="<?php print $search; ?>" />
-   <input type="submit" class="btn btn-primary" value="<?php print $text_search; ?>" />
-</form>
-
-
-<p>&nbsp;</p>
 
 <?php if(isset($groups) && count($groups) > 0){ ?>
 

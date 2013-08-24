@@ -5,12 +5,21 @@ class ModelSaasLdap extends Model
 
    public function get($id = -1) {
 
-      if($id >= 0) {
+      if(is_numeric($id) && $id >= 0) {
          $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_bind_pw, ldap_auditor_member_dn FROM " . TABLE_LDAP . " WHERE id=?", array($id));
          if($query->num_rows > 0) { return $query->row; }
       }
 
-      $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_auditor_member_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
+      return array();
+   }
+
+
+   public function search($s = '') {
+      if($s) {
+         $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_auditor_member_dn FROM " . TABLE_LDAP . " WHERE description LIKE ? ORDER BY description ASC", array('%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT id, description, ldap_type, ldap_host, ldap_base_dn, ldap_bind_dn, ldap_auditor_member_dn FROM " . TABLE_LDAP . " ORDER BY description ASC");
+      }
 
       if($query->num_rows > 0) { return $query->rows; }
 

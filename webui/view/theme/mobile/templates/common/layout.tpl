@@ -45,7 +45,7 @@ if(isset($this->request->get['route'])) {
       <?php print $menu; ?>
    </div>
 
-   <div id="mainscreen">
+   <div id="mainscreen" class="with20margin">
 
       <?php if($title) { ?><h3 class="title"><?php print $title; ?></h3><?php } ?>
 

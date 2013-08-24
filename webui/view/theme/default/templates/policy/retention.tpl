@@ -1,3 +1,9 @@
+<form method="get" name="search1" action="retention.php" class="form-inline pull-right">
+    <div class="input-append">
+        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
+        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+    </div>
+</form>
 
 <h4><?php print $text_add_new_rule; ?></h4>
 

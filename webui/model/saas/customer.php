@@ -10,7 +10,16 @@ class ModelSaasCustomer extends Model
          if($query->num_rows > 0) { return $query->row; }
       }
 
-      $query = $this->db->query("SELECT * FROM " . TABLE_CUSTOMER_SETTINGS . " ORDER BY domain ASC");
+      return array();
+   }
+
+
+   public function search($s = '') {
+      if($s) {
+         $query = $this->db->query("SELECT * FROM " . TABLE_CUSTOMER_SETTINGS . " WHERE domain LIKE ? ORDER BY domain ASC", array('%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT * FROM " . TABLE_CUSTOMER_SETTINGS . " ORDER BY domain ASC");
+      }
 
       if($query->num_rows > 0) { return $query->rows; }
 

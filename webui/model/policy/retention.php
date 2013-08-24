@@ -3,8 +3,12 @@
 
 class ModelPolicyRetention extends Model {
 
-   public function get_rules() {
-      $query = $this->db->query("SELECT * FROM " . TABLE_RETENTION_RULE . " ORDER BY domain, id");
+   public function get_rules($s = '') {
+      if($s) {
+         $query = $this->db->query("SELECT * FROM " . TABLE_RETENTION_RULE . " WHERE domain LIKE ? OR `from` LIKE ? OR subject LIKE ? ORDER BY domain, id", array('%' . $s . '%', '%' . $s . '%', '%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT * FROM " . TABLE_RETENTION_RULE . " ORDER BY domain, id");
+      }
 
       if(isset($query->rows)) { return $query->rows; }
 

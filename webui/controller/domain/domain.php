@@ -42,12 +42,11 @@ class ControllerDomainDomain extends Controller {
 
       /* get search term if there's any */
 
-      if($this->request->server['REQUEST_METHOD'] == 'POST'){
-         $this->data['search'] = @$this->request->post['search'];
-      }
-      else {
-         $this->data['search'] = @$this->request->get['search'];
-      }
+      $this->data['search'] = '';
+
+      if(isset($this->request->post['search'])) { $this->data['search'] = $this->request->post['search']; }
+      else if(isset($this->request->get['search'])) { $this->data['search'] = $this->request->get['search']; }
+
 
 
       /* get page */
@@ -64,7 +63,6 @@ class ControllerDomainDomain extends Controller {
 
          if($this->request->server['REQUEST_METHOD'] == 'POST') {
             if($this->validate() == true) {
-
                if($this->model_domain_domain->addDomain($this->request->post['domain'], $this->request->post['mapped'], $ldap_id) == 1) {
                   $this->data['x'] = $this->data['text_successfully_added'];
                } else {
@@ -75,11 +73,11 @@ class ControllerDomainDomain extends Controller {
                $this->data['errorstring'] = $this->data['text_error_message'];
                $this->data['errors'] = $this->error;
                $this->data['post'] = $this->request->post;
-            } 
+            }
          }
 
          /* get list of domains */
-         $this->data['domains'] = $this->model_domain_domain->getDomains();
+         $this->data['domains'] = $this->model_domain_domain->getDomains($this->data['search']);
 
       }
       else {

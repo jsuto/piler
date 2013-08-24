@@ -34,6 +34,12 @@ class ControllerCustomerList extends Controller {
 
       if(isset($this->request->get['id'])) { $this->data['id'] = $this->request->get['id']; }
 
+      $this->data['search'] = '';
+
+      if(isset($this->request->post['search'])) { $this->data['search'] = $this->request->post['search']; }
+      else if(isset($this->request->get['search'])) { $this->data['search'] = $this->request->get['search']; }
+
+
       /* check if we are admin */
       
       if(Registry::get('admin_user') == 1) {
@@ -72,7 +78,7 @@ class ControllerCustomerList extends Controller {
             $this->data['a'] = $this->model_saas_customer->get($this->data['id']);  
          }
          else {
-            $this->data['entries'] = $this->model_saas_customer->get();
+            $this->data['entries'] = $this->model_saas_customer->search($this->data['search']);
          }
          
          if ( isset($this->data['errorstring']) ) {

@@ -12,6 +12,13 @@
   </div>
 </div>
 
+<form method="get" name="search1" action="domain.php" class="form-inline pull-right">
+    <div class="input-append">
+        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
+        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+    </div>
+</form>
+
 <h4><?php print $text_add_new_domain; ?></h4>
 
 <?php if(isset($errorstring)){ ?><div class="alert alert-danger"><?php print $text_error; ?>: <?php print $errorstring; ?></div><?php } ?>

@@ -3,8 +3,12 @@
 
 class ModelPolicyArchiving extends Model {
 
-   public function get_rules() {
-      $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " ORDER BY id");
+   public function get_rules($s = '') {
+      if($s) {
+         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " WHERE `from` LIKE ? OR `to` LIKE ? OR subject LIKE ? ORDER BY domain, id", array('%' . $s . '%', '%' . $s . '%', '%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " ORDER BY id");
+      }
 
       if(isset($query->rows)) { return $query->rows; }
 
