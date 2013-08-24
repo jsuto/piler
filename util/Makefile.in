@@ -32,6 +32,7 @@ install:
 	$(INSTALL) -m 0755 $(srcdir)/generate_stats.php $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/indexer.delta.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/indexer.main.sh $(DESTDIR)$(libexecdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/import.sh $(DESTDIR)$(libexecdir)/piler
 
 clean:
 

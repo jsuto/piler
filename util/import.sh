@@ -14,6 +14,8 @@ function finish {
 
 trap finish EXIT
 
+cd /var/piler/imap
+
 pilerimport -G >/dev/null
 
 
