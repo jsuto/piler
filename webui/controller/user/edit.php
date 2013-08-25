@@ -93,23 +93,14 @@ class ControllerUserEdit extends Controller {
 
    private function validate() {
 
-      //if provided, the password must be greater than the MIN_PASSWORD_LENGTH
-      if(isset($this->request->post['password']) && strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH) {
-         $this->error['password'] = $this->data['text_too_short_password'];
-      }
-      //if provided, the password2 must be greater than the MIN_PASSWORD_LENGTH
-      if(isset($this->request->post['password2']) && strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {
-         $this->error['password2'] = $this->data['text_too_short_password'];
-      }
-      
-      if(isset($this->request->post['password']) && strlen(@$this->request->post['password']) > 1) {
+      if(isset($this->request->post['password']) && strlen($this->request->post['password']) > 1) {
 
          if(strlen(@$this->request->post['password']) < MIN_PASSWORD_LENGTH || strlen(@$this->request->post['password2']) < MIN_PASSWORD_LENGTH) {
             $this->error['password'] = $this->data['text_invalid_password'];
          }
 
          if($this->request->post['password'] != $this->request->post['password2']) {
-            $this->error['password'] = $this->data['text_password_mismatch'];
+            $this->error['password2'] = $this->data['text_password_mismatch'];
          }
       }
 
