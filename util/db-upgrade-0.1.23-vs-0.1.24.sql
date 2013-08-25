@@ -45,3 +45,21 @@ create table if not exists `online` (
    unique(`username`,`ipaddr`)
 ) Engine=InnoDB;
 
+create table if not exists `import` (
+   `id` int not null auto_increment primary key,
+   `type` varchar(255) not null,
+   `username` varchar(255) not null,
+   `password` varchar(255) not null,
+   `server` varchar(255) not null,
+   `created` int default 0,
+   `started` int default 0,
+   `finished` int default 0,
+   `updated` int default 0,
+   `status` int default 0,
+   `total` int default 0,
+   `imported` int default 0,
+   `duplicate` int default 0,
+   `error` int default 0,
+   `cleared` int default 0
+) Engine=InnoDB;
+

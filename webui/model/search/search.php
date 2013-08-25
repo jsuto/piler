@@ -269,7 +269,7 @@ class ModelSearchSearch extends Model {
          $data['any'] = $this->fixup_sphinx_operators($data['any']);
          $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
          $fields = '';
-         if($match) { $match = "($match) & "; } $match .= "(@subject " . $data['any'] . " | @body " . $data['any'] . ") ";
+         if($match) { $match = "($match) & "; } $match .= "(@(subject,body) " . $data['any'] . ") ";
       }
 
 
