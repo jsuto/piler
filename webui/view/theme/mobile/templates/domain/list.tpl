@@ -37,6 +37,7 @@
          <div class="domaincell"><?php print $text_ldap; ?>:</div>
          <div class="domaincell">
             <select name="ldap_id" id="ldap_id">
+               <option value="0"></option>
        <?php foreach ($ldap as $l) { ?>
                <option value="<?php print $l['id']; ?>"><?php print $l['description']; ?></option>
        <?php } ?>

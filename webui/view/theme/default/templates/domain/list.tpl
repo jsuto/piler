@@ -48,6 +48,7 @@
        <label class="control-label" for="ldap_id"><?php print $text_ldap; ?>:</label>
        <div class="controls">
 <select name="ldap_id" id="ldap_id">
+          <option value="0"></option>
        <?php foreach ($ldap as $l) { ?>
           <option value="<?php print $l['id']; ?>"><?php print $l['description']; ?></option>
        <?php } ?>
