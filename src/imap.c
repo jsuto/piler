@@ -272,7 +272,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
 
    if(strncmp(buf, tagok, strlen(tagok))){
       printf("login failed, server reponse: %s\n", buf);
