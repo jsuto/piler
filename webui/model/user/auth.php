@@ -164,7 +164,7 @@ class ModelUserAuth extends Model {
          foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
             if(isset($a[$mailattr])) {
 
-               if(isset($a[$mailattr]['count'])) {
+               if(is_array($a[$mailattr])) {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
                      if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
                         $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i]));
