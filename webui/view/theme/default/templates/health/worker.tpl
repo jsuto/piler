@@ -91,7 +91,7 @@
 				</tr>
                                 <tr>
                                         <td><?php print $text_oldest_record; ?></td>
-                                        <td><?php print date("d M Y", $oldestmessagets); ?></td>
+                                        <td><?php print date(DATE_TEMPLATE, $oldestmessagets); ?></td>
                                 </tr>                
 				<tr>
 					<td><?php print $text_processed_emails; ?></td>

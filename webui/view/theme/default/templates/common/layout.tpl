@@ -21,6 +21,8 @@
     
     <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
     <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+    <script type="text/javascript" src="/view/javascript/jscolor.js"></script>
+    <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
     <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
     <script type="text/javascript" src="/view/theme/default/assets/js/bootstrap.js"></script>
     <script type="text/javascript" src="/view/javascript/piler.js"></script>

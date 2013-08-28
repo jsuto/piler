@@ -298,6 +298,7 @@ $_['text_search_group_to_add'] = "Hinzuzufügende Gruppe suchen";
 $_['text_search_terms'] = "Suchkriterien";
 $_['text_select_action'] = "Aktion wählen";
 $_['text_select_all'] = "Alles auswählen";
+$_['text_select_image'] = "Select image";
 $_['text_select_recipients'] = "Empfänger auswählen";
 $_['text_sender'] = "Absender";
 $_['text_sending_domains'] = "Absenderdomäne";

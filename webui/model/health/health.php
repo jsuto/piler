@@ -169,7 +169,7 @@ class ModelHealthHealth extends Model {
    public function get_oldest_record_ts() {
       $data = array();
 
-      $query = $this->db->query("SELECT MIN(`arrived`) AS `oldest_record_ts` FROM " . TABLE_META);
+      $query = $this->db->query("SELECT `sent` AS `oldest_record_ts` FROM " . TABLE_META . " WHERE deleted=0 ORDER BY `arrived` ASC LIMIT 1");
       
       if(isset($query->rows)) {
          $data = array_pop($query->rows);

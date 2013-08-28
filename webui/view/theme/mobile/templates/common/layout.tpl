@@ -22,6 +22,8 @@
    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
+   <script type="text/javascript" src="/view/javascript/jscolor.js"></script>
+   <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
 
@@ -45,7 +47,7 @@ if(isset($this->request->get['route'])) {
       <?php print $menu; ?>
    </div>
 
-   <div id="mainscreen" class="with20margin">
+   <div id="mainscreen">
 
       <?php if($title) { ?><h3 class="title"><?php print $title; ?></h3><?php } ?>
 

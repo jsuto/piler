@@ -88,7 +88,7 @@
          <div class="row">
             <div class="cellhealthleft"><?php print $text_oldest_record; ?></div>
             <div class="cellhealthright">
-               <?php print date("d M Y", $oldestmessagets); ?>
+               <?php print date(DATE_TEMPLATE, $oldestmessagets); ?>
             </div>
          </div>
 

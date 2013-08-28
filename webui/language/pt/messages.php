@@ -292,6 +292,7 @@ $_['text_search_group_to_add'] = "Pesquisar grupos para adicionar";
 $_['text_search_terms'] = "Pesquisar strings";
 $_['text_select_action'] = "Selecionar ação";
 $_['text_select_all'] = "Selcionar todos";
+$_['text_select_image'] = "Select image";
 $_['text_select_recipients'] = "Selcionar recipiente";
 $_['text_sender'] = "Remetente";
 $_['text_sending_domains'] = "envio de domínios";

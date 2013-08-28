@@ -298,6 +298,7 @@ $_['text_search_group_to_add'] = "Search group to add";
 $_['text_search_terms'] = "Search terms";
 $_['text_select_action'] = "Select action";
 $_['text_select_all'] = "Select all";
+$_['text_select_image'] = "Select image";
 $_['text_select_recipients'] = "Select recipients";
 $_['text_sender'] = "Sender";
 $_['text_sending_domains'] = "sending domains";

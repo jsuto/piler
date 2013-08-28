@@ -53,12 +53,22 @@
           <input type="text" class="text" name="branding_url" id="branding_url" placeholder="" value="<?php if(isset($a['branding_url'])) { print $a['branding_url']; } ?>" />
        </div>
     </div>
-    <div class="control-group">
+
+    <div class="control-group<?php if(isset($errors['branding_logo'])){ print " error"; } ?>">
        <label class="control-label" for="branding_logo"><?php print $text_branding_logo; ?>:</label>
        <div class="controls">
-          <input type="file" class="text" name="branding_logo" id="branding_logo" placeholder="" /> <?php if(isset($a['branding_logo'])) { ?><img src="/images/<?php print $a['branding_logo']; ?>" /><?php } ?>
+          <div class="fileupload fileupload-new" data-provides="fileupload">
+            <div class="fileupload-new thumbnail" style="width: 50px; height: 50px;">
+                <?php if(isset($a['branding_logo'])) { ?><img src="/images/<?php print $a['branding_logo']; ?>" style="max-height: 50px;" /><?php } else { ?><img src="http://www.placehold.it/50x50/EFEFEF/AAAAAA" /><?php } ?>
+            </div>
+            <div class="fileupload-preview fileupload-exists thumbnail" style="width: 50px; height: 50px;"></div>
+            <span class="btn btn-file"><span class="fileupload-new"><?php print $text_select_image; ?></span><span class="fileupload-exists"><?php print $text_modify; ?></span><input type="file" name="branding_logo" id="branding_logo" /></span>
+            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><?php print $text_remove; ?></a>
+          </div>
+          <?php if ( isset($errors['branding_logo']) ) { ?><span class="help-inline"><?php print $errors['branding_logo']; ?></span><?php } ?>
        </div>
     </div>
+
     <div class="control-group">
        <label class="control-label" for="support_link"><?php print $text_support_link; ?>:</label>
        <div class="controls">
@@ -68,13 +78,13 @@
     <div class="control-group">
        <label class="control-label" for="colour"><?php print $text_background_colour; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="background_colour" id="background_colour" placeholder="" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } ?>" oninput="Piler.change_box_colour('background_colour', 'cp');" /> <span id="cp" style="<?php if(isset($a['background_colour'])) { ?>background: <?php print $a['background_colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
+          <input type="text" class="text color {hash:true}" name="background_colour" id="background_colour" placeholder="" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } ?>" />
        </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="colour"><?php print $text_text_colour; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="text_colour" id="text_colour" placeholder="" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } ?>" oninput="Piler.change_box_colour('text_colour', 'cp2');" /> <span id="cp2" style="<?php if(isset($a['text_colour'])) { ?>background: <?php print $a['text_colour']; ?>;<?php } ?>">&nbsp;&nbsp;&nbsp;</span>
+          <input type="text" class="text color {hash:true}" name="text_colour" id="text_colour" placeholder="" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } ?>" />
        </div>
     </div>
 
@@ -93,32 +103,32 @@
 
 <?php if(isset($entries)){ ?>
 
-   <id="ss1">
-      <div class="domainrow">
-         <div class="domaincell"><?php print $text_domain; ?></div>
-         <div class="domaincell"><?php print $text_branding_text; ?></div>
-         <div class="domaincell"><?php print $text_branding_url; ?></div>
-         <div class="domaincell"><?php print $text_branding_logo; ?></div>
-         <div class="domaincell"><?php print $text_background_colour; ?></div>
-         <div class="domaincell"><?php print $text_text_colour; ?></div>
-         <div class="domaincell">&nbsp;</div>
-         <div class="domaincell">&nbsp;</div>
-      </div>
+   <table id="ss1" class="table table-striped table-condensed">
+      <tr>
+         <th><?php print $text_domain; ?></th>
+         <th><?php print $text_branding_text; ?></th>
+         <th><?php print $text_branding_url; ?></th>
+         <th><?php print $text_branding_logo; ?></th>
+         <th><?php print $text_background_colour; ?></th>
+         <th><?php print $text_text_colour; ?></th>
+         <th>&nbsp;</th>
+         <th>&nbsp;</th>
+      </tr>
 
 <?php foreach($entries as $e) { ?>
-      <div class="domainrow">
-         <div class="domaincell"><?php print $e['domain']; ?></div>
-         <div class="domaincell"><?php print $e['branding_text']; ?></div>
-         <div class="domaincell"><?php print $e['branding_url']; ?></div>
-         <div class="domaincell"><?php if($e['branding_logo']) { ?><img src="/images/<?php print $e['branding_logo']; ?>" /><?php } ?></div>
-         <div class="domaincell"><?php print $e['background_colour']; ?></div>
-         <div class="domaincell"><?php print $e['text_colour']; ?></div>
-         <div class="domaincell"><a href="index.php?route=customer/list&amp;id=<?php print $e['id']; ?>"><?php print $text_edit; ?></a></div>
-         <div class="domaincell"><a href="index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" class="confirm-delete" data-id="<?php print $e['id']; ?>" data-name="<?php print $e['domain']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></div>
-      </div>
+      <tr>
+         <td><?php print $e['domain']; ?></td>
+         <td><?php print $e['branding_text']; ?></td>
+         <td><?php print $e['branding_url']; ?></td>
+         <td><?php if($e['branding_logo']) { ?><img src="/images/<?php print $e['branding_logo']; ?>" style="height: 50px;" /><?php } ?></td>
+         <td><?php print $e['background_colour']; ?></td>
+         <td><?php print $e['text_colour']; ?></td>
+         <td><a href="index.php?route=customer/list&amp;id=<?php print $e['id']; ?>"><?php print $text_edit; ?></a></td>
+         <td><a href="index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" class="confirm-delete" data-id="<?php print $e['id']; ?>" data-name="<?php print $e['domain']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
+      </tr>
 <?php } ?>
 
-   </div>
+   </table>
 
 <?php } else { ?>
     <div class="alert alert-error lead">

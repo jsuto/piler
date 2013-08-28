@@ -298,6 +298,7 @@ $_['text_search_group_to_add'] = "írja be a csoport nevének elejét";
 $_['text_search_terms'] = "Keresési feltételek";
 $_['text_select_action'] = "Művelet választás";
 $_['text_select_all'] = "Mindegyik kijelölése";
+$_['text_select_image'] = "Válasszon képet";
 $_['text_select_recipients'] = "Címzettek kijelölése";
 $_['text_sender'] = "Feladó";
 $_['text_sending_domains'] = "küldő domain";

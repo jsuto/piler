@@ -49,7 +49,11 @@
             <td id="c3_r<?php print $i; ?>" class="resultcell date"><?php print $message['date']; ?></td>
             <td id="c4_r<?php print $i; ?>" class="resultcell from"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
             <td id="c5_r<?php print $i; ?>" class="resultcell to"><?php if($message['to'] != $message['shortto']) { ?><span title="<?php print $message['to']; ?>"><?php print $message['shortto']; ?>&nbsp;<i class=" muted icon-group"></i></span><?php } else { print $message['to']; } ?></td>
-            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><?php if($message['subject'] != $message['shortsubject']) { print $message['subject']; } else { print $message['subject']; } ?> <?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
+
+            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php $message['subject']; ?>"<?php } ?> onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php if($message['subject'] != $message['shortsubject']) { print $message['subject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
+
+            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php print $message['subject']; ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
+
             <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
             <td id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?><i class="spam icon-warning-sign icon-large" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
             <td id="c9_r<?php print $i; ?>" class="resultcell end"><?php if($message['attachments'] > 0) { ?><i class="attachment icon-paper-clip icon-large" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
@@ -114,7 +118,8 @@
 
 <div id="messagelistfooter" class="boxfooter">
     <div class="row-fluid">
-       <div id="pagingrow" class="span3">
+       <div id="pagingrow" class="span4">
+            <div id="pagingbox">
     <?php if($n > 0){ ?>
             &nbsp;
             <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="icon-double-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-double-angle-left icon-large muted"></i></span><?php } ?>
@@ -128,11 +133,12 @@
             <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large muted"></i></span><?php } ?>
             &nbsp;
     <?php } else { print $text_none_found; } ?>
+            </div>
         </div>
-<div id="functionrow" class="span9">
+        <div id="functionrow" class="span8">
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
-            <div id="tagbox" class="input-prepend input-append pull-right">
+            <div id="functionbox" class="input-prepend input-append pull-right">
                 <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
