@@ -219,10 +219,11 @@ $config['DATA_PARTITION'] = '/var';
 $config['DELIMITER'] = "\t";
 
 $langs = array(
-                'hu',
+                'de',
                 'en',
-                'pt',
-                'de'
+                'es',
+                'hu',
+                'pt'
                );
 
 

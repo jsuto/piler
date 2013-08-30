@@ -275,7 +275,6 @@ $_['text_restore'] = "Restore";
 $_['text_restored'] = "Restored";
 $_['text_restore_message'] = "restore message";
 $_['text_restore_to_mailbox'] = "Restore message to mailbox";
-$_['text_restored'] = "Restored";
 $_['text_result'] = "Result";
 $_['text_retention_days'] = "Retention days";
 $_['text_retention_rules'] = "Retention rules";
