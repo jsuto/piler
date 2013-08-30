@@ -33,6 +33,8 @@ $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
 $config['ENABLE_SAAS'] = 0;
+$config['CAPTCHA_FAILED_LOGIN_COUNT'] = 0;
+
 $config['ENABLE_TABLE_RESIZE'] = 0;
 $config['DEMO_MODE'] = 0;
 

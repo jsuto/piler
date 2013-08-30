@@ -35,6 +35,9 @@ class ControllerLoginLogin extends Controller {
       $this->data['title'] = $this->data['text_login'];
       $this->data['title_prefix'] = TITLE_PREFIX;
 
+      $this->data['failed_login_count'] = $this->model_user_auth->get_failed_login_count();
+
+
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
@@ -54,6 +57,10 @@ class ControllerLoginLogin extends Controller {
 
             header("Location: " . SITE_URL . "search.php");
             exit;
+         }
+         else {
+            $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
+            $this->data['failed_login_count']++;
          }
 
          $this->data['x'] = $this->data['text_invalid_email_or_password'];
@@ -88,6 +95,16 @@ class ControllerLoginLogin extends Controller {
 
       if(strlen($this->request->post['username']) < 2){
          $this->error['username'] = $this->data['text_invalid_username'];
+      }
+
+
+      if(CAPTCHA_FAILED_LOGIN_COUNT > 0 && $this->data['failed_login_count'] > CAPTCHA_FAILED_LOGIN_COUNT) {
+         require_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+         $image = new Securimage();
+
+         if($image->check($this->request->post['captcha']) != true) {
+            $this->error['captcha'] = 'captcha error';
+         }
       }
 
 

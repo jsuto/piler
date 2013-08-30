@@ -45,6 +45,12 @@
         <?php } else { ?>
                 <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>">
                 <input type="password" class="input-block-level bold" name="password" placeholder="<?php print $text_password; ?>">
+
+            <?php if(CAPTCHA_FAILED_LOGIN_COUNT > 0 && $failed_login_count > CAPTCHA_FAILED_LOGIN_COUNT) { ?>
+                <img src="securimage/securimage_show.php" alt="captcha image" id="captcha" />
+                <input type="text" class="input-block-level" name="captcha" placeholder="CAPTCHA" />
+            <?php } ?>
+
                 <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
         <?php } ?>
 

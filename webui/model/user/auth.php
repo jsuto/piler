@@ -306,6 +306,24 @@ class ModelUserAuth extends Model {
    }
 
 
+   public function get_failed_login_count() {
+      $session = Registry::get('session');
+
+      $n = $session->get('failed_logins');
+      if($n == '') { $n = 0; }
+
+      return $n;
+   }
+
+
+   public function increment_failed_login_count($n = 0) {
+      $session = Registry::get('session');
+
+      $n = $session->get('failed_logins') + 1;
+      $session->set('failed_logins', $n);
+   }
+
+
    public function change_password($username = '', $password = '') {
       if($username == "" || $password == ""){ return 0; }
 
