@@ -52,8 +52,6 @@
 
             <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" <?php if($message['subject'] != $message['shortsubject']) { ?>title="<?php $message['subject']; ?>"<?php } ?> onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php if($message['subject'] != $message['shortsubject']) { print $message['subject']; } else { print $message['subject']; } ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
 
-            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php print $message['subject']; ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
-
             <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
             <td id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?><i class="spam icon-warning-sign icon-large" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
             <td id="c9_r<?php print $i; ?>" class="resultcell end"><?php if($message['attachments'] > 0) { ?><i class="attachment icon-paper-clip icon-large" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
