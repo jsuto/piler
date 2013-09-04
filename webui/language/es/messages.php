@@ -1,4 +1,4 @@
-<?php header('Content-Type: text/html; charset=ISO-8859-1');
+<?php
 
 $_['text_60_minutes'] = "60 mins";
 
