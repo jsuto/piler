@@ -262,6 +262,7 @@ struct __data {
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
    struct node *mydomains[MAXHASH];
+   struct node *imapfolders[MAXHASH];
    struct import *import;
 
 #ifdef NEED_MYSQL

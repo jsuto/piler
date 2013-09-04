@@ -134,7 +134,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
 
-      snprintf(filename, sizeof(filename)-1, "%s-%d.txt", folder, i);
+      snprintf(filename, sizeof(filename)-1, "imap-%d.txt", i);
       unlink(filename);
 
       fd = open(filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
@@ -272,7 +272,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
 
    if(strncmp(buf, tagok, strlen(tagok))){
       printf("login failed, server reponse: %s\n", buf);
@@ -295,11 +295,14 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 }
 
 
-int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data){
-   char *p, *q, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[3*MAXBUFSIZE+3], puf[MAXBUFSIZE];
-   int len=0, n;
+int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
+   char *p, *q, *buf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
+   int len=MAXBUFSIZE+3, pos=0, n, rc=ERR;;
 
-   memset(buf, 0, sizeof(buf));
+   buf = malloc(len);
+   if(!buf) return rc;
+
+   memset(buf, 0, len);
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
    //snprintf(puf, sizeof(puf)-1, "%s LIST \"\" %%\r\n", tag);
@@ -309,16 +312,27 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
 
    while(1){
       n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
-      if(len + n < sizeof(buf)){
-         memcpy(&buf[len], puf, n);
-         len += n;
+
+      if(pos + n >= len){
+         q = realloc(buf, len+MAXBUFSIZE+1);
+         if(!q){
+            printf("realloc failure: %d bytes\n", pos+MAXBUFSIZE+1);
+            goto ENDE_FOLDERS;
+         }
+
+         buf = q;
+         memset(buf+pos, 0, MAXBUFSIZE+1);
+         len += MAXBUFSIZE+1;
       }
-      else break;
+
+      memcpy(buf + pos, puf, n);
+      pos += n;
 
       if(strstr(buf, tagok)) break;
    }
+
  
-   p = &buf[0];
+   p = buf;
    do {
       memset(puf, 0, sizeof(puf));
       p = split(p, '\n', puf, sizeof(puf)-1);
@@ -335,9 +349,7 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
 
             if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
 
-            strncat(folders, "\n", foldersize-1);
-            strncat(folders, q, foldersize-1);
-
+            addnode(data->imapfolders, q);
          }
       }
       else {
@@ -346,7 +358,14 @@ int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, s
 
    } while(p);
 
-   return 0;
+
+   rc = OK;
+
+ENDE_FOLDERS:
+
+   free(buf);
+
+   return rc;
 }
 
 

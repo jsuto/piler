@@ -37,7 +37,7 @@ int import_from_gui=0;
 
 
 int connect_to_imap_server(int sd, int *seq, char *username, char *password, int port, struct __data *data, int use_ssl);
-int list_folders(int sd, int *seq, char *folders, int foldersize, int use_ssl, struct __data *data);
+int list_folders(int sd, int *seq, int use_ssl, struct __data *data);
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
 int connect_to_pop3_server(int sd, char *username, char *password, int port, struct __data *data, int use_ssl);
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
@@ -257,12 +257,11 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 
 int import_from_imap_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, char *skiplist, int dryrun, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
-   char *p, puf[SMALLBUFSIZE];
-   char muf[SMALLBUFSIZE];
-   char folders[MAXBUFSIZE];
+   int i, rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
    char port_string[6];
    struct addrinfo hints, *res;
+   struct node *q;
+
 
    snprintf(port_string, sizeof(port_string)-1, "%d", port);
 
@@ -297,39 +296,47 @@ int import_from_imap_server(char *server, char *username, char *password, int po
    }
 
 
-   list_folders(sd, &seq, &folders[0], sizeof(folders), use_ssl, data);
+   inithash(data->imapfolders);
+
+   rc = list_folders(sd, &seq, use_ssl, data);
+   if(rc == ERR) goto ENDE_IMAP;
 
 
-   p = &folders[0];
-   do {
-      memset(puf, 0, sizeof(puf));
-      p = split(p, '\n', puf, sizeof(puf)-1);
+   for(i=0;i<MAXHASH;i++){
+      q = data->imapfolders[i];
+      while(q != NULL){
 
-      if(strlen(puf) < 1) continue;
+         if(q && q->str && strlen(q->str) > 1){
 
-      skipmatch = 0;
+            skipmatch = 0;
 
-      if(skiplist && strlen(skiplist) > 0){
-         snprintf(muf, sizeof(muf)-1, "%s,", puf);
-         if(strstr(skiplist, muf)) skipmatch = 1;
+            if(skiplist && strlen(skiplist) > 0){
+               if(strstr(skiplist, q->str)) skipmatch = 1;
+            }
+
+            if(skipmatch == 1){
+               if(quiet == 0) printf("SKIPPING FOLDER: %s\n", (char *)q->str);
+            }
+            else {
+               if(quiet == 0) printf("processing folder: %s...\n", (char *)q->str);
+
+               if(process_imap_folder(sd, &seq, q->str, sdata, data, use_ssl, dryrun, cfg) == ERR) ret = ERR;
+            }
+
+         }
+
+         q = q->r;
+
       }
-
-      if(skipmatch == 1){
-         if(quiet == 0) printf("SKIPPING FOLDER: %s\n", puf);
-         continue;
-      }
-
-      if(quiet == 0) printf("processing folder: %s... ", puf);
-
-      if(process_imap_folder(sd, &seq, puf, sdata, data, use_ssl, dryrun, cfg) == ERR) ret = ERR;
-
-   } while(p);
+   }
 
 
    close_connection(sd, data, use_ssl);
 
 ENDE_IMAP:
    freeaddrinfo(res);
+
+   clearhash(data->imapfolders);
 
    return ret;
 }
