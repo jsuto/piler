@@ -118,7 +118,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
    printf("found %d messages\n", data->import->total_messages);
 
-   if(data->import->total_messages <= 0) return rc;
+   if(data->import->total_messages <= 0) return OK;
 
    for(i=1; i<=data->import->total_messages; i++){
       data->import->processed_messages++;
