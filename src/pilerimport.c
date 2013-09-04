@@ -390,7 +390,7 @@ ENDE_POP3:
 }
 
 
-int read_gui_import_data(struct session_data *sdata, struct __data *data, int dryrun, struct __config *cfg){
+int read_gui_import_data(struct session_data *sdata, struct __data *data, char *skiplist, int dryrun, struct __config *cfg){
    int rc=ERR;
    char s_type[SMALLBUFSIZE], s_username[SMALLBUFSIZE], s_password[SMALLBUFSIZE], s_server[SMALLBUFSIZE];
 
@@ -426,6 +426,8 @@ int read_gui_import_data(struct session_data *sdata, struct __data *data, int dr
 ENDE:
    close_prepared_statement(data->stmt_generic);
 
+   data->import->processed_messages = 0;
+   data->import->total_messages = 0;
 
    time(&(data->import->started));
    data->import->status = 1;
@@ -433,14 +435,16 @@ ENDE:
 
    if(strcmp(s_type, "pop3") == 0){
       rc = import_from_pop3_server(s_server, s_username, s_password, 110, sdata, data, dryrun, cfg);
-
-      if(rc == ERR){
-         data->import->status = 3;
-         update_import_job_stat(sdata, data);
-      }
-
    }
 
+   if(strcmp(s_type, "imap") == 0){
+      rc = import_from_imap_server(s_server, s_username, s_password, 143, sdata, data, skiplist, dryrun, cfg);
+   }
+
+   if(rc == ERR){
+      data->import->status = 3;
+      update_import_job_stat(sdata, data);
+   }
 
    return rc;
 }
@@ -651,7 +655,7 @@ int main(int argc, char **argv){
    if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
    if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, port, &sdata, &data, skiplist, dryrun, &cfg);
    if(pop3server && username && password) rc = import_from_pop3_server(pop3server, username, password, port, &sdata, &data, dryrun, &cfg);
-   if(import_from_gui == 1) rc = read_gui_import_data(&sdata, &data, dryrun, &cfg);
+   if(import_from_gui == 1) rc = read_gui_import_data(&sdata, &data, skiplist, dryrun, &cfg);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);

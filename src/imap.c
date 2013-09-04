@@ -92,7 +92,7 @@ int read_response(int sd, char *buf, int buflen, char *tagok, struct __data *dat
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads, processed_messages=0;
+   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
@@ -122,11 +122,13 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    printf("found %d messages\n", messages);
 
-   if(messages <= 0) return rc;
+   if(messages <= 0) return OK;
+
+   data->import->total_messages += messages;
 
    for(i=1; i<=messages; i++){
-      processed_messages++;
-      printf("processed: %7d\r", processed_messages); fflush(stdout);
+      data->import->processed_messages++;
+      printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
 
       snprintf(tag, sizeof(tag)-1, "A%d", *seq);
       snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
@@ -134,7 +136,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
 
-      snprintf(filename, sizeof(filename)-1, "imap-%d.txt", i);
+      snprintf(filename, sizeof(filename)-1, "imap-%d.txt", data->import->processed_messages);
       unlink(filename);
 
       fd = open(filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
