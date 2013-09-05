@@ -23,6 +23,9 @@
 #include <piler.h>
 
 
+void update_import_job_stat(struct session_data *sdata, struct __data *data);
+
+
 int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
    char *p, *q;
    int len=0;
@@ -203,6 +206,13 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       if(dryrun == 0) rc = import_message(filename, sdata, data, cfg);
       else rc = OK;
+
+
+      if(data->import->processed_messages % 100 == 0){
+         time(&(data->import->updated));
+         update_import_job_stat(sdata, data);
+      }
+
 
       if(rc == ERR) printf("error importing '%s'\n", filename);
       else unlink(filename);
