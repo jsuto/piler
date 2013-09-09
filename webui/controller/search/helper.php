@@ -18,6 +18,7 @@ class ControllerSearchHelper extends Controller {
                     'ref'             => '',
                     'folders'         => '',
                     'extra_folders'   => '',
+                    'id'              => '',
                     'any'             => ''
                      );
 
@@ -48,7 +49,7 @@ class ControllerSearchHelper extends Controller {
 
       if($this->request->post['searchtype'] == 'expert'){
 
-         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|size|date1|date2|attachment|tag|note)\:/", $this->request->post['search'])) {
+         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|size|date1|date2|attachment|tag|note|id)\:/", $this->request->post['search'])) {
             $this->preprocess_post_expert_request($this->request->post);
          }
          else {
@@ -94,6 +95,7 @@ class ControllerSearchHelper extends Controller {
       if(!isset($this->request->post['tag'])) { $this->request->post['tag'] = ''; }
       if(!isset($this->request->post['note'])) { $this->request->post['note'] = ''; }
       if(!isset($this->request->post['any'])) { $this->request->post['any'] = ''; }
+      if(!isset($this->request->post['id'])) { $this->request->post['id'] = ''; }
       if(!isset($this->request->post['attachment_type'])) { $this->request->post['attachment_type'] = ''; }
       if(!isset($this->request->post['date1'])) { $this->request->post['date1'] = ''; }
       if(!isset($this->request->post['date2'])) { $this->request->post['date2'] = ''; }
@@ -163,6 +165,7 @@ class ControllerSearchHelper extends Controller {
          else if($v == 'tag:') { $token = 'tag'; continue; }
          else if($v == 'note:') { $token = 'note'; continue; }
          else if($v == 'ref:') { $token = 'ref'; continue; }
+         else if($v == 'id:') { $token = 'id'; continue; }
          else {
             if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
                $ndate++;
@@ -189,6 +192,7 @@ class ControllerSearchHelper extends Controller {
          else if($token == 'tag') { $this->a['tag'] .= ' ' . $v; }
          else if($token == 'note') { $this->a['note'] .= ' ' . $v; }
          else if($token == 'ref') { $this->a['ref'] = ' ' . $v; }
+         else if($token == 'id') { $this->a['id'] .= ' ' . $v; }
 
          else if($token == 'direction') {
             if($v == 'inbound') { $this->a['direction'] = "0"; }

@@ -245,6 +245,7 @@ class ModelSearchSearch extends Model {
       $direction = $attachment = $size = $folders = '';
       $tag_id_list = '';
       $a = "";
+      $id = "";
 
 
       $match = $this->assemble_email_address_condition($data['from'], $data['to']);
@@ -291,6 +292,12 @@ class ModelSearchSearch extends Model {
       else if(isset($data['has_attachment']) && $data['has_attachment'] == 1) { $attachment = "attachments > 0 AND "; }
 
 
+      if(isset($data['id'])) {
+         $data['id'] = preg_replace("/ /", "," , substr($data['id'], 1, strlen($data['id'])));
+         $id = " id IN (" . $data['id'] . ") AND ";
+      }
+
+
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
          $s = explode(" ", $data['folders']);
          while(list($k,$v) = each($s)) {
@@ -318,10 +325,10 @@ class ModelSearchSearch extends Model {
       }
       else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && $data['extra_folders']) {
          $ids_in_extra_folders = $this->get_sphinx_id_list_by_extra_folders($data['extra_folders']);
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
 
       if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->num_rows)); }
