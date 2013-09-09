@@ -292,7 +292,7 @@ class ModelSearchSearch extends Model {
       else if(isset($data['has_attachment']) && $data['has_attachment'] == 1) { $attachment = "attachments > 0 AND "; }
 
 
-      if(isset($data['id'])) {
+      if(isset($data['id']) && $data['id']) {
          $data['id'] = preg_replace("/ /", "," , substr($data['id'], 1, strlen($data['id'])));
          $id = " id IN (" . $data['id'] . ") AND ";
       }
