@@ -17,6 +17,7 @@ class ControllerImportTest extends Controller {
       $db = Registry::get('db');
       $lang = Registry::get('language');
 
+
       if($this->request->post['type'] == 'pop3') {
 
          try {
@@ -44,6 +45,26 @@ class ControllerImportTest extends Controller {
 
          }
 
+
+      }
+
+      else if($this->request->post['type'] == 'imap') {
+
+         try {
+
+            $conn = new Zend_Mail_Protocol_Imap($this->request->post['server'], '143', false);
+
+            $login = $conn->login($this->request->post['username'], $this->request->post['password']);
+
+            if($login) {
+               print "<span class=\"text-success\">" . $lang->data['text_connection_ok'] . "</span> ";
+            } else {
+               print "<span class=\"text-error\">" . $this->request->post['username'] . ": " . $lang->data['text_login_failed'] . "</span> ";
+            }
+            
+         } catch (Zend_Mail_Protocol_Exception $e) {
+             print "<span class=\"text-error\">" . $this->request->post['server'] . ": " . $lang->data['text_connection_failed'] . "</span> ";
+         }
 
       }
 

@@ -441,10 +441,12 @@ ENDE:
       rc = import_from_imap_server(s_server, s_username, s_password, 143, sdata, data, skiplist, dryrun, cfg);
    }
 
-   if(rc == ERR){
+   // don't set error in case of a problem, because it
+   // will scare users looking at the gui progressbar
+   /*if(rc == ERR){
       data->import->status = 3;
       update_import_job_stat(sdata, data);
-   }
+   }*/
 
    return rc;
 }

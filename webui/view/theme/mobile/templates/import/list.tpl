@@ -25,7 +25,15 @@
     <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
  <?php } ?>
 
-    <input type="hidden" name="type" id="type" value="pop3" />
+    <div class="control-group">
+       <label class="control-label" for="type"><?php print $text_type; ?>:</label>
+       <div class="controls">
+          <select name="type" id="type">
+                 <option value="pop3"<?php if(isset($a['type']) && $a['type'] == 'pop3') { ?> selected="selected"<?php } ?>>pop3</option>
+                 <option value="imap"<?php if(isset($a['type']) && $a['type'] == 'imap') { ?> selected="selected"<?php } ?>>imap</option>
+          </select>
+       </div>
+    </div>
 
     <div class="control-group<?php if(isset($errors['server'])){ print " error"; } ?>">
        <label class="control-label" for="server"><?php print $text_server_name; ?>:</label>
