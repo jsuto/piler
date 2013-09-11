@@ -3451,6 +3451,7 @@ catppt="no"
 ppthtml="no"
 xls2csv="no"
 unrtf="no"
+tnef="no"
 
 
 have_static_build="no"
@@ -4706,6 +4707,16 @@ _ACEOF
 fi
 
 
+if test z`which tnef 2>/dev/null` != "z"; then
+   tnef=`which tnef`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_TNEF "$tnef"
+_ACEOF
+
+fi
+
+
 if test "$have_tweak_sent_time" = "yes"; then
 
 cat >>confdefs.h <<_ACEOF
@@ -4723,6 +4734,7 @@ echo "catppt: $catppt"
 echo "ppthtml: $ppthtml"
 echo "xls2csv: $xls2csv"
 echo "unrtf: $unrtf"
+echo "tnef: $tnef"
 
 
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null

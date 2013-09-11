@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <piler.h>
 
@@ -87,6 +88,47 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
    zip_close(z);
 
    return 0;
+}
+
+
+int extract_tnef(struct session_data *sdata, struct _state *state, char *filename){
+   int rc=0, n, rec=1;
+   char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
+   struct dirent **namelist;
+
+   memset(tmpdir, 0, sizeof(tmpdir));
+   make_random_string(&tmpdir[0], sizeof(tmpdir)-3);
+
+   memcpy(&tmpdir[sizeof(tmpdir)-3], ".d", 2);
+
+   printf("tmpname: %s, filename: %s\n", tmpdir, filename);
+
+   if(mkdir(tmpdir, 0700)) return rc;
+
+   snprintf(buf, sizeof(buf)-1, "%s -C %s %s", HAVE_TNEF, tmpdir, filename);
+
+   system(buf);
+
+   n = scandir(tmpdir, &namelist, NULL, alphasort);
+   if(n < 0) syslog(LOG_INFO, "error reading %s", tmpdir);
+   else {
+      while(n--){
+         if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
+            snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
+
+            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec);
+
+            unlink(buf);
+         }
+
+         free(namelist[n]);
+      }
+      free(namelist);
+   }
+
+   rmdir(tmpdir);
+
+   return rc;
 }
 
 
@@ -201,6 +243,13 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
    if(strcmp(type, "rtf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s --text %s", HAVE_UNRTF, filename);
 #endif
 
+#ifdef HAVE_TNEF
+   if(strcmp(type, "tnef") == 0){
+      extract_tnef(sdata, state, filename);
+      return;
+   }
+#endif
+
    if(strlen(cmd) > 12){
       read_content_with_popen(sdata, state, cmd);
       return;
@@ -208,6 +257,7 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 
 
 #ifdef HAVE_ZIP
+
    if(strcmp(type, "odf") == 0){
       extract_opendocument(sdata, state, filename, "content.xml");
       return;

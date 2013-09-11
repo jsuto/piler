@@ -111,32 +111,12 @@ inline void pack_4_into_3(char *s, char *s2){
 
 
 int decodeBase64(char *p){
-   int i, len=0;
-   char s[5], s2[3], puf[MAXBUFSIZE];
+   int len=0;
+   unsigned char puf[MAXBUFSIZE];
 
-   if(strlen(p) < 4 || strlen(p) > MAXBUFSIZE/2)
-      return 0;
+   memset(puf, 0, sizeof(puf));
 
-   for(i=0; i<strlen(p); i++){
-      memcpy(s, p+i, 4);
-      s[4] = '\0';
-
-      i += 3;
-
-      /* safety check against abnormally long lines */
-
-      if(len + 3 > sizeof(puf)-1) break;
-
-      if(strlen(s) == 4){
-         pack_4_into_3(s, s2);
-         memcpy(puf+len, s2, 3);
-
-         len += 3;
-      }
-
-   }
-
-   *(puf+len) = '\0';
+   len = decode_base64_to_buffer(p, strlen(p), &puf[0], sizeof(puf)-1);
 
    snprintf(p, MAXBUFSIZE-1, "%s", puf);
 
@@ -145,27 +125,29 @@ int decodeBase64(char *p){
 
 
 int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
-   int i, len=0;
+   int i, len=0, decodedlen;
    char s[5], s2[3];
 
    if(plen < 4 || plen > blen)
       return 0;
 
-   for(i=0; i<plen; i++){
+   for(i=0; i<plen; i+=4){
       memcpy(s, p+i, 4);
       s[4] = '\0';
-
-      i += 3;
+      decodedlen = 3;
 
       /* safety check against abnormally long lines */
 
-      if(len + 3 > blen-1) break;
+      if(len + decodedlen > blen-1) break;
 
       if(strlen(s) == 4){
          pack_4_into_3(s, s2);
-         memcpy(b+len, s2, 3);
+         if(s[3] == '=') decodedlen = 2;
+         if(s[2] == '=') decodedlen = 1;
 
-         len += 3;
+         memcpy(b+len, s2, decodedlen);
+
+         len += decodedlen;
       }
 
    }

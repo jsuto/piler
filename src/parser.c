@@ -211,7 +211,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
    if(take_into_pieces == 1){
-      if(state->message_state == MSG_BODY && state->fd != -1 && findnode(state->boundaries, buf) == NULL){
+      if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
          //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
             write(state->fd, abuffer, state->abufpos); 
@@ -438,8 +438,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          strcasestr(buf, "multipart/report") ||
          strcasestr(buf, "message/delivery-status") ||
          strcasestr(buf, "text/rfc822-headers") ||
-         strcasestr(buf, "message/rfc822") ||
-         strcasestr(buf, "application/ms-tnef")
+         strcasestr(buf, "message/rfc822")
       ){
          state->textplain = 1;
       }

@@ -211,6 +211,19 @@ int extractEmail(char *rawmail, char *email){
 }
 
 
+void make_random_string(char *buf, int buflen){
+   int i, len;
+   static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+   len = strlen(alphanum);
+
+   for(i=0; i<buflen; i++){
+      *(buf+i) = alphanum[rand() % len];
+   }
+
+}
+
+
 void create_id(char *id, unsigned char server_id){
    int i;
    unsigned char buf[RND_STR_LEN/2];

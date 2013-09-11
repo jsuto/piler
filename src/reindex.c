@@ -206,6 +206,7 @@ int main(int argc, char **argv){
 
    (void) openlog("reindex", LOG_PID, LOG_MAIL);
 
+   srand(getpid());
 
    cfg = read_config(configfile);
 

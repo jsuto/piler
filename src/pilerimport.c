@@ -469,6 +469,8 @@ int main(int argc, char **argv){
 
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
+   srand(getpid());
+
    data.folder = 0;
    data.recursive_folder_names = 0;
 

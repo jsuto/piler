@@ -15,6 +15,7 @@
 #undef HAVE_XLS2CSV
 #undef HAVE_PPTHTML
 #undef HAVE_UNRTF
+#undef HAVE_TNEF
 #undef HAVE_ZIP
 
 #undef HAVE_STARTTLS

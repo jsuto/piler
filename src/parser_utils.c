@@ -703,7 +703,7 @@ char *determine_attachment_type(char *filename, char *type){
 
    if(strncasecmp(type, "application/pdf", strlen("application/pdf")) == 0) return "pdf,";
 
-   if(strncasecmp(type, "application/ms-tnef", strlen("application/ms-tnef")) == 0) return "winmail,";
+   if(strncasecmp(type, "application/ms-tnef", strlen("application/ms-tnef")) == 0) return "tnef,";
    if(strncasecmp(type, "application/msword", strlen("application/msword")) == 0) return "word,";
 
    // a .csv file has the same type
@@ -759,6 +759,8 @@ char *determine_attachment_type(char *filename, char *type){
 
 char *get_attachment_extractor_by_filename(char *filename){
    char *p;
+
+   if(strcasecmp(filename, "winmail.dat") == 0) return "tnef";
 
    p = strrchr(filename, '.');
    if(!p) return "other";

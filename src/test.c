@@ -24,6 +24,7 @@ int main(int argc, char **argv){
    struct __data data;
    char *rule;
 
+   srand(getpid());
 
    if(argc < 2){
       fprintf(stderr, "usage: %s <message>\n", argv[0]);

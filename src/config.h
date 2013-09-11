@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.25-master-branch"
 
-#define BUILD 839
+#define BUILD 844
 
 #define HOSTID "mailarchiver"
 

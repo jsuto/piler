@@ -24,6 +24,7 @@ char *split(char *row, int ch, char *s, int size);
 char *split_str(char *row, char *what, char *s, int size);
 int trimBuffer(char *s);
 int extractEmail(char *rawmail, char *email);
+void make_random_string(char *buf, int buflen);
 void create_id(char *id, unsigned char server_id);
 int get_random_bytes(unsigned char *buf, int len, unsigned char server_id);
 int readFromEntropyPool(int fd, void *_s, size_t n);
