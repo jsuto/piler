@@ -11,6 +11,7 @@ class ControllerLoginLogout extends Controller {
       $this->layout = "common/layout-empty";
 
       $request = Registry::get('request');
+      $session = Registry::get('session');
 
       $db = Registry::get('db');
 
@@ -21,7 +22,7 @@ class ControllerLoginLogout extends Controller {
 
       if(ENABLE_SAAS == 1) {
          $this->load->model('saas/customer');
-         $this->model_saas_customer->offline(Registry::get('username'));
+         $this->model_saas_customer->offline($session->get('email'));
       }
 
       logout();

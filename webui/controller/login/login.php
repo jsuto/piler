@@ -18,6 +18,7 @@ class ControllerLoginLogin extends Controller {
 
 
       $request = Registry::get('request');
+      $session = Registry::get('session');
 
       $db = Registry::get('db');
 
@@ -42,10 +43,10 @@ class ControllerLoginLogin extends Controller {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
 
-            $this->model_user_prefs->get_user_preferences($_SESSION['username']);
+            $this->model_user_prefs->get_user_preferences($session->get('username'));
 
             if(ENABLE_SAAS == 1) {
-               $this->model_saas_customer->online($_SESSION['username']);
+               $this->model_saas_customer->online($session->get('email'));
             }
 
             LOGGER('logged in');
