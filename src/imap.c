@@ -286,7 +286,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
 
-   if(strncmp(buf, tagok, strlen(tagok))){
+   if(!strstr(buf, tagok)){
       printf("login failed, server reponse: %s\n", buf);
       return ERR;
    }
@@ -310,6 +310,8 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    char *p, *q, *buf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR;;
+
+   printf("List of IMAP folders:\n");
 
    buf = malloc(len);
    if(!buf) return rc;
@@ -362,6 +364,9 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
             if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
 
             addnode(data->imapfolders, q);
+
+            printf("=> '%s'\n", q);
+
          }
       }
       else {
