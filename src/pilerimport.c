@@ -338,6 +338,8 @@ ENDE_IMAP:
 
    clearhash(data->imapfolders);
 
+   data->import->status = 2;
+
    return ret;
 }
 
