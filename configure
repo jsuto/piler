@@ -4384,6 +4384,63 @@ ac_cv_lib_guide=ac_cv_lib_guide_main
    fi
 
 
+   if test "$withval" = "mariadb"; then
+
+      # Extract the first word of "mariadb_config", so it can be a program name with args.
+set dummy mariadb_config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_MYSQL_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$MYSQL_CONFIG"; then
+  ac_cv_prog_MYSQL_CONFIG="$MYSQL_CONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_MYSQL_CONFIG="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+MYSQL_CONFIG=$ac_cv_prog_MYSQL_CONFIG
+if test -n "$MYSQL_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MYSQL_CONFIG" >&5
+$as_echo "$MYSQL_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+      if test x$MYSQL_CONFIG = xyes; then
+         have_mysql="yes"
+      fi
+
+      if test "$have_mysql" = "yes"; then
+
+         sql_includes=`mariadb_config --cflags`
+         sql_libs=`mariadb_config --libs_r`
+         sql_obj="mysql.o"
+
+      else
+         echo "mariadb_config is not found, please install \"MariaDB Client Library for C 1.0.0 Stable\", see https://downloads.mariadb.org/client-native/1.0.0/"
+         exit 1;
+      fi
+   fi
+
+
    if test "$withval" = "psql"; then
 
       # Extract the first word of "pg_config", so it can be a program name with args.

@@ -214,6 +214,27 @@ AC_ARG_WITH(database,
    fi
 
 
+   if test "$withval" = "mariadb"; then
+
+      AC_CHECK_PROG(MYSQL_CONFIG, mariadb_config, yes)
+
+      if test x$MYSQL_CONFIG = xyes; then
+         have_mysql="yes"
+      fi
+
+      if test "$have_mysql" = "yes"; then
+
+         sql_includes=`mariadb_config --cflags`
+         sql_libs=`mariadb_config --libs_r`
+         sql_obj="mysql.o"
+
+      else
+         echo "mariadb_config is not found, please install \"MariaDB Client Library for C 1.0.0 Stable\", see https://downloads.mariadb.org/client-native/1.0.0/"
+         exit 1;
+      fi
+   fi
+
+
    if test "$withval" = "psql"; then
 
       AC_CHECK_PROG(PSQL_CONFIG, pg_config, yes)
