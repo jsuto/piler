@@ -19,7 +19,7 @@ $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = '';
 $config['BRANDING_BACKGROUND_COLOUR'] = '';
 $config['BRANDING_TEXT_COLOUR'] = '';
-$config['BRANDING_FAVICON'] = '';
+$config['BRANDING_FAVICON'] = '/view/theme/default/assets/ico/favicon.png';
 $config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
