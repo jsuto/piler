@@ -2,6 +2,9 @@
 
 class ModelGoogleGoogle extends Model {
 
+   //Holds the Zend Storage
+   private $storage;
+
    private function constructAuthString($email, $accessToken) {
       return base64_encode("user=$email\1auth=Bearer $accessToken\1\1");
    }
@@ -43,21 +46,13 @@ class ModelGoogleGoogle extends Model {
       }
    }
 
+   // Save all Messages from selected folder
 
-
-   public function download_users_emails($email, $accessToken) {
-      $last_msg_id = -1;
-      $from = 1;
-      $downloaded = 0;
-
-      if(!$email || !$accessToken) { return 0; }
-
-      $imap = $this->try_imap_login($email, $accessToken);
-
-      if($imap) {
-
-         $storage = new Zend_Mail_Storage_Imap($imap);
-         $storage->selectFolder('[Gmail]/All Mail');
+   private function saveMessages($email) {
+       $last_msg_id = -1;
+       $from = 1;
+       $downloaded = 0;
+       $storage = $this->storage;
 
          $from = $this->get_last_message_id_by_unique_id($email, $storage) + 1;
 
@@ -102,7 +97,34 @@ class ModelGoogleGoogle extends Model {
          }
 
 
-        syslog(LOG_INFO, "downloaded $downloaded messages for $email");
+        syslog(LOG_INFO, "downloaded $downloaded messages for $email");   
+
+   }
+
+
+   public function download_users_emails($email, $accessToken) {
+
+
+      if(!$email || !$accessToken) { return 0; }
+
+      $imap = $this->try_imap_login($email, $accessToken);
+
+      if($imap) {
+
+         $this->storage = new Zend_Mail_Storage_Imap($imap);
+
+         //$storage->selectFolder('[Gmail]/INBOX');
+         $folders = new RecursiveIteratorIterator($this->storage->getFolders(),
+                                         RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ($folders as $localName => $folder) {
+
+            if ($folder->isSelectable()) {
+               $this->storage->selectFolder($folder);
+               $this->saveMessages($email);
+            }
+
+        }
      }
 
    }
