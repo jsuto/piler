@@ -22,17 +22,20 @@
             <div class="domaincell">&nbsp;</div>
             <div class="domaincell">&nbsp;</div>
             <div class="domaincell">&nbsp;</div>
+        <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
+            <div class="domaincell">&nbsp;</div>
+        <?php } ?>
+            <div class="domaincell">&nbsp;</div>
             <div class="domaincell"><?php print $text_sent; ?></div>
             <div class="domaincell">&nbsp;</div>
             <div class="domaincell">&nbsp;</div>
             <div class="domaincell"><?php print $text_received; ?></div>
             <div class="domaincell">&nbsp;</div>
-            <div class="domaincell">&nbsp;</div>
         </div>
         <div class="domainrow">
-            <div class="domaincell"><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></div>
+            <div class="domaincell"><?php echo $viewname; ?> <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>(<?php print $mydomain_count; ?>)<?php } ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></div>
         <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
-            <div class="domaincell"><?php print $text_users; ?></div>
+            <div class="domaincell"><?php print $text_users; ?> (<?php print $user_count; ?>)</div>
         <?php } ?>
             <div class="domaincell"><?php print $text_oldest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></div>
             <div class="domaincell"><?php print $text_newest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=newest&amp;order=1"><i class="icon-chevron-down"></i></a></div>
@@ -50,7 +53,7 @@
                 <div class="domaincell"><?php echo $details['item']; ?></div>
 
              <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
-                <div><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></div>
+                <div class="domaincell center"><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></div>
              <?php } ?>
 
                 <div class="domaincell"><?php echo date(DATE_TEMPLATE, $details['oldest']); ?></div>

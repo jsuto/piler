@@ -2,6 +2,12 @@
 
 class ModelDomainDomain extends Model {
 
+   public function count_mydomains() {
+      $query = $this->db->query("SELECT count(*) AS num FROM " . TABLE_DOMAIN);
+      return $query->row['num'];
+   }
+
+
    public function getDomains($s = '') {
       $data = array();
 

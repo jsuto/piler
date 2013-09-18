@@ -27,15 +27,15 @@
     <table class="table table-striped table-condensed">
 
         <tr>
-            <th colspan="3">&nbsp;</th>
+            <th colspan="<?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>5<?php } else { ?>4<?php } ?>">&nbsp;</th>
             <th colspan="3"><?php print $text_sent; ?></th>
             <th colspan="3"><?php print $text_received; ?></th>
         </tr>
         <tr>
-            <th><?php echo $viewname; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th><?php echo $viewname; ?> <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>(<?php print $mydomain_count; ?>)<?php } ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="icon-chevron-down"></i></a></th>
 
         <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
-            <th><?php print $text_users; ?></th>
+            <th><?php print $text_users; ?> (<?php print $user_count; ?>)</th>
         <?php } ?>
 
             <th><?php print $text_oldest_record; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=0"><i class="icon-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=oldest&amp;order=1"><i class="icon-chevron-down"></i></a></th>

@@ -14,6 +14,7 @@ class ControllerAccountingAccounting extends Controller {
 
       $this->load->model('user/user');
       $this->load->model('group/group');
+      $this->load->model('domain/domain');
       $this->load->model('accounting/accounting');
       if(ENABLE_SAAS == 1) {
          $this->load->model('saas/ldap');
@@ -70,12 +71,18 @@ class ControllerAccountingAccounting extends Controller {
         $this->data['accounting'] = $this->model_accounting_accounting->get_accounting('domain',$this->data['search'], $this->data['page'], $this->data['page_len'], $this->data['sort'], $this->data['order']);
         $this->data['total_records'] = $this->model_accounting_accounting->count_accounting('domain',$this->data['search']);
 
+        $this->data['mydomain_count'] = $this->model_domain_domain->count_mydomains();
+        $this->data['user_count'] = 0;
+
         if(ENABLE_SAAS == 1) {
            $this->data['accounts'] = array();
 
            foreach($this->data['accounting'] as $a) {
               $this->data['accounts'][$a['item']] = $this->model_saas_ldap->get_accounts_in_domain($a['item']);
+
+              $this->data['user_count'] += count($this->data['accounts'][$a['item']]);
            }
+
         }
       }   
 
