@@ -20,6 +20,7 @@ extern char *optarg;
 extern int optind;
 
 int dryrun = 0;
+unsigned long purged_size=0;
 
 
 #define SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE "SELECT `value` FROM `" SQL_OPTION_TABLE "` WHERE `key`='enable_purge'"
@@ -228,7 +229,7 @@ ENDE:
 
 
 int purge_messages_without_attachment(struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int purged=0;
+   int purged=0, size;
    char id[BUFLEN], s[SMALLBUFSIZE], buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE];
 
    memset(buf, 0, sizeof(buf));
@@ -236,7 +237,7 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __data 
 
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments=0", SQL_METADATA_TABLE, sdata->now);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments=0", SQL_METADATA_TABLE, sdata->now);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
@@ -251,6 +252,7 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __data 
 
    data->sql[data->pos] = &id[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(id)-2; data->pos++;
    data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
    p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
@@ -262,6 +264,7 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __data 
       if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
 
          purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
+         purged_size += size;
 
          memset(buf, 0, sizeof(buf));
          memset(update_meta_sql, 0, sizeof(update_meta_sql));
@@ -288,12 +291,12 @@ ENDE:
 
 
 int purge_messages_with_attachments(struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int purged=0;
+   int purged=0, size;
    char s[SMALLBUFSIZE], idlist[BIGBUFSIZE];
 
    memset(idlist, 0, sizeof(idlist));
 
-   snprintf(s, sizeof(s)-1, "SELECT `piler_id` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments > 0", SQL_METADATA_TABLE, sdata->now);
+   snprintf(s, sizeof(s)-1, "SELECT `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments > 0", SQL_METADATA_TABLE, sdata->now);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
@@ -306,6 +309,7 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
    p_bind_init(data);
 
    data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
    p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
@@ -315,6 +319,8 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
 
       if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
          purged += remove_attachments(idlist, sdata, data, cfg);
+         purged_size += size;
+
          memset(idlist, 0, sizeof(idlist));
       }
    }
@@ -335,7 +341,7 @@ ENDE:
 
 int main(int argc, char **argv){
    int i, purged=0;
-   char *configfile=CONFIG_FILE;
+   char *configfile=CONFIG_FILE, buf[SMALLBUFSIZE];
    struct session_data sdata;
    struct __data data;
    struct __config cfg;
@@ -378,9 +384,18 @@ int main(int argc, char **argv){
       purged += purge_messages_without_attachment(&sdata, &data, &cfg);
       purged += purge_messages_with_attachments(&sdata, &data, &cfg);
 
-      printf("purged: %d\n", purged);
+      printf("purged: %d, %ld bytes\n", purged, purged_size);
    }
    else printf("purge is not allowed by configuration, enable_purge=%d\n", i);
+
+   
+   if(purged_size > 100){
+      snprintf(buf, sizeof(buf)-1, "UPDATE `%s` SET size = size - %ld", SQL_ATTACHMENT_TABLE, purged_size);
+      printf("archive size is decreased by %ld bytes\n", purged_size);
+
+      if(dry_run == 0) p_query(&sdata, buf);
+   }
+
 
    close_database(&sdata);
 
