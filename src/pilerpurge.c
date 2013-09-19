@@ -386,14 +386,13 @@ int main(int argc, char **argv){
       purged += purge_messages_without_attachment(&sdata, &data, &cfg);
       purged += purge_messages_with_attachments(&sdata, &data, &cfg);
 
-      printf("purged: %d, %ld bytes\n", purged, purged_size);
+      syslog(LOG_INFO, "purged %d messages, %ld bytes", purged, purged_size);
    }
    else printf("purge is not allowed by configuration, enable_purge=%d\n", i);
 
    
    if(purged_size > 100){
-      snprintf(buf, sizeof(buf)-1, "UPDATE `%s` SET size = size - %ld", SQL_ATTACHMENT_TABLE, purged_size);
-      printf("archive size is decreased by %ld bytes\n", purged_size);
+      snprintf(buf, sizeof(buf)-1, "UPDATE `%s` SET size = size - %ld", SQL_COUNTER_TABLE, purged_size);
 
       if(dry_run == 0) p_query(&sdata, buf);
    }
