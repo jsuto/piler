@@ -261,10 +261,11 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __data 
       memcpy(&update_meta_sql[strlen(update_meta_sql)], id, strlen(id));
       memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
 
+      purged_size += size;
+
       if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
 
          purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
-         purged_size += size;
 
          memset(buf, 0, sizeof(buf));
          memset(update_meta_sql, 0, sizeof(update_meta_sql));
@@ -317,9 +318,10 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
       memcpy(&idlist[strlen(idlist)], s, strlen(s));
       memcpy(&idlist[strlen(idlist)], "','", 3);
 
+      purged_size += size;
+
       if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
          purged += remove_attachments(idlist, sdata, data, cfg);
-         purged_size += size;
 
          memset(idlist, 0, sizeof(idlist));
       }
