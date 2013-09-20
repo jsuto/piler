@@ -5,7 +5,7 @@ INDEXER=`which indexer 2>/dev/null`
 SEARCHD=`which searchd 2>/dev/null`
 CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
-
+PILERCONF_TMP="/tmp/config.piler.88"
 
 . ./util/utilfunc.sh
 
@@ -194,6 +194,10 @@ execute_post_install_tasks() {
    chmod 640 $KEYFILE
    rm -f $KEYTMPFILE
    echo "Done."
+
+   sed "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
+   cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
+   rm -f $PILERCONF_TMP
 
    chmod 755 $LOCALSTATEDIR/piler/stat
 
