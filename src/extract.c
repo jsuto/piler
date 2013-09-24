@@ -91,47 +91,6 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
-int extract_tnef(struct session_data *sdata, struct _state *state, char *filename){
-   int rc=0, n, rec=1;
-   char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
-   struct dirent **namelist;
-
-   memset(tmpdir, 0, sizeof(tmpdir));
-   make_random_string(&tmpdir[0], sizeof(tmpdir)-3);
-
-   memcpy(&tmpdir[sizeof(tmpdir)-3], ".d", 2);
-
-   printf("tmpname: %s, filename: %s\n", tmpdir, filename);
-
-   if(mkdir(tmpdir, 0700)) return rc;
-
-   snprintf(buf, sizeof(buf)-1, "%s -C %s %s", HAVE_TNEF, tmpdir, filename);
-
-   system(buf);
-
-   n = scandir(tmpdir, &namelist, NULL, alphasort);
-   if(n < 0) syslog(LOG_INFO, "error reading %s", tmpdir);
-   else {
-      while(n--){
-         if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
-            snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
-
-            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec);
-
-            unlink(buf);
-         }
-
-         free(namelist[n]);
-      }
-      free(namelist);
-   }
-
-   rmdir(tmpdir);
-
-   return rc;
-}
-
-
 int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec){
    int errorp, i=0, len=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
@@ -184,6 +143,51 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
    zip_close(z);
 
    return 0;
+}
+
+#endif
+
+
+#ifdef HAVE_TNEF
+
+int extract_tnef(struct session_data *sdata, struct _state *state, char *filename){
+   int rc=0, n, rec=1;
+   char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
+   struct dirent **namelist;
+
+   memset(tmpdir, 0, sizeof(tmpdir));
+   make_random_string(&tmpdir[0], sizeof(tmpdir)-3);
+
+   memcpy(&tmpdir[sizeof(tmpdir)-3], ".d", 2);
+
+   printf("tmpname: %s, filename: %s\n", tmpdir, filename);
+
+   if(mkdir(tmpdir, 0700)) return rc;
+
+   snprintf(buf, sizeof(buf)-1, "%s -C %s %s", HAVE_TNEF, tmpdir, filename);
+
+   system(buf);
+
+   n = scandir(tmpdir, &namelist, NULL, alphasort);
+   if(n < 0) syslog(LOG_INFO, "error reading %s", tmpdir);
+   else {
+      while(n--){
+         if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
+            snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
+
+            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec);
+
+            unlink(buf);
+         }
+
+         free(namelist[n]);
+      }
+      free(namelist);
+   }
+
+   rmdir(tmpdir);
+
+   return rc;
 }
 
 #endif
