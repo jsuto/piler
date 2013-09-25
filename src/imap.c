@@ -80,7 +80,7 @@ int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, 
    int i=0, n, len=0, rc=0;
    char puf[MAXBUFSIZE], tagok[SMALLBUFSIZE], tagno[SMALLBUFSIZE];
 
-   snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", *seq);
+   snprintf(tagok, sizeof(tagok)-1, "A%d OK", *seq);
    snprintf(tagno, sizeof(tagno)-1, "A%d NO", *seq);
 
    memset(buf, 0, buflen);
