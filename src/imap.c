@@ -87,7 +87,6 @@ int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, 
 
    while(!strstr(buf, tagok)){
       n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
-printf("rcvd: %s", puf);
 
       if(n + len < buflen) strncat(buf, puf, n);
       else goto END;
