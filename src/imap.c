@@ -76,21 +76,36 @@ int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *po
 }
 
 
-int read_response(int sd, char *buf, int buflen, char *tagok, struct __data *data, int use_ssl){
-   int n, len=0;
-   char puf[MAXBUFSIZE];
+int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, int use_ssl){
+   int i=0, n, len=0, rc=0;
+   char puf[MAXBUFSIZE], tagok[SMALLBUFSIZE], tagno[SMALLBUFSIZE];
+
+   snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", *seq);
+   snprintf(tagno, sizeof(tagno)-1, "A%d NO", *seq);
 
    memset(buf, 0, buflen);
 
    while(!strstr(buf, tagok)){
       n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+printf("rcvd: %s", puf);
+
       if(n + len < buflen) strncat(buf, puf, n);
-      else return 0;
+      else goto END;
+
+      if(i == 0 && strstr(puf, tagno)) goto END;
+
 
       len += n;
+      i++;
    }
 
-   return 1;
+   rc = 1;
+
+END:
+
+   (*seq)++;
+
+   return rc;
 }
 
 
@@ -101,13 +116,10 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    /* imap cmd: SELECT */
 
-   snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s SELECT \"%s\"\r\n", tag, folder);
+   snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, folder);
 
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
-
-   if(!strstr(buf, tagok)){
+   if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
       trimBuffer(buf);
       printf("error: %s\n", buf);
       return rc;
@@ -226,7 +238,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 int connect_to_imap_server(int sd, int *seq, char *username, char *password, int port, struct __data *data, int use_ssl){
    int n;
-   char tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], buf[MAXBUFSIZE];
+   char buf[MAXBUFSIZE];
    X509* server_cert;
    char *str;
 
@@ -271,22 +283,18 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
 
    /* imap cmd: CAPABILITY */
 
-   snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s CAPABILITY\r\n", tag);
+   /*snprintf(buf, sizeof(buf)-1, "A%d CAPABILITY\r\n", *seq);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
+   read_response(sd, buf, sizeof(buf), seq, data, use_ssl);*/
 
 
    /* imap cmd: LOGIN */
 
-   snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   snprintf(buf, sizeof(buf)-1, "%s LOGIN %s \"%s\"\r\n", tag, username, password);
+   snprintf(buf, sizeof(buf)-1, "A%d LOGIN %s \"%s\"\r\n", *seq, username, password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   read_response(sd, buf, sizeof(buf), tagok, data, use_ssl);
-
-   if(!strstr(buf, tagok)){
+   if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
       printf("login failed, server reponse: %s\n", buf);
       return ERR;
    }
@@ -295,9 +303,17 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
 }
 
 
+void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl){
+   char puf[SMALLBUFSIZE];  
+   snprintf(puf, sizeof(puf)-1, "A%d CLOSE\r\n", *seq);
+
+   write1(sd, puf, strlen(puf), use_ssl, data->ssl);
+}
+
+
 void close_connection(int sd, struct __data *data, int use_ssl){
    close(sd);
- 
+
    if(use_ssl == 1){
       SSL_shutdown(data->ssl);
       SSL_free(data->ssl);

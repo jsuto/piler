@@ -41,6 +41,7 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data);
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
 int connect_to_pop3_server(int sd, char *username, char *password, int port, struct __data *data, int use_ssl);
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
+void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl);
 void close_connection(int sd, struct __data *data, int use_ssl);
 
 void update_import_job_stat(struct session_data *sdata, struct __data *data);
@@ -318,7 +319,7 @@ int import_from_imap_server(char *server, char *username, char *password, int po
                if(quiet == 0) printf("SKIPPING FOLDER: %s\n", (char *)q->str);
             }
             else {
-               if(quiet == 0) printf("processing folder: %s...\n", (char *)q->str);
+               if(quiet == 0) printf("processing folder: %s... ", (char *)q->str);
 
                if(process_imap_folder(sd, &seq, q->str, sdata, data, use_ssl, dryrun, cfg) == ERR) ret = ERR;
             }
@@ -330,6 +331,7 @@ int import_from_imap_server(char *server, char *username, char *password, int po
       }
    }
 
+   send_imap_close(sd, &seq, data, use_ssl);
 
    close_connection(sd, data, use_ssl);
 
