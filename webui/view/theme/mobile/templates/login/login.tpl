@@ -40,7 +40,7 @@
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
-           <?php if(ENABLE_GOOGLE_LOGIN == 1) { ?>
+           <?php if(ENABLE_GOOGLE_LOGIN == 1 && $_SERVER['QUERY_STRING'] == '') { ?>
                  <div class="info"><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></div>
         <?php } else { ?>
                 <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>">
