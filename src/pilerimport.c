@@ -264,6 +264,8 @@ int import_from_imap_server(char *server, char *username, char *password, int po
    struct node *q;
 
 
+   inithash(data->imapfolders);
+
    snprintf(port_string, sizeof(port_string)-1, "%d", port);
 
    memset(&hints, 0, sizeof(hints));
@@ -296,8 +298,6 @@ int import_from_imap_server(char *server, char *username, char *password, int po
       goto ENDE_IMAP;
    }
 
-
-   inithash(data->imapfolders);
 
    rc = list_folders(sd, &seq, use_ssl, data);
    if(rc == ERR) goto ENDE_IMAP;
