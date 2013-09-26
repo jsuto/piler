@@ -218,6 +218,8 @@ $config['DATA_PARTITION'] = '/var';
 
 $config['DELIMITER'] = "\t";
 
+$config['TRACKING_CODE'] = '';
+
 $langs = array(
                 'de',
                 'en',

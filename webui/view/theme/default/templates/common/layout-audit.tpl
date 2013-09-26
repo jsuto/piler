@@ -104,6 +104,7 @@
 
 <?php } ?>
 
+<?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
 
 </body>
 </html>

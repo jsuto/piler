@@ -60,5 +60,7 @@ if(isset($this->request->get['route'])) {
 
 </div>
 
+<?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
+
 </body>
 </html>
