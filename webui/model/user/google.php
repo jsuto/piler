@@ -36,6 +36,7 @@ class ModelUserGoogle extends Model {
 
          $this->model_user_user->add_user($user);
 
+         $this->model_domain_domain->addDomain($user['domain'], $user['domain']);
       }
 
       $_SESSION['username'] = $user['username'];

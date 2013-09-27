@@ -19,6 +19,7 @@ class ControllerLoginGoogle extends Controller {
       $this->load->model('user/user');
       $this->load->model('user/prefs');
       $this->load->model('user/google');
+      $this->load->model('domain/domain');
       $this->load->model('folder/folder');
 
       $this->document->title = $this->data['text_login'];
