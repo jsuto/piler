@@ -84,7 +84,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 
    if(rule){
-      printf("discarding %s by archiving policy: %s\n", filename, rule);
+      if(data->quiet == 0) printf("discarding %s by archiving policy: %s\n", filename, rule);
       rc = OK;
    }
    else {
@@ -119,7 +119,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
                         counters.c_duplicate = 1;
                         update_counters(sdata, data, &counters, cfg);
 
-                        printf("duplicate: %s (id: %s)\n", filename, sdata->ttmpfile);
+                        if(data->quiet == 0)printf("duplicate: %s (id: %s)\n", filename, sdata->ttmpfile);
                         break;
 
       default:

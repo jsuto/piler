@@ -258,7 +258,7 @@ struct import {
 
 
 struct __data {
-   int folder;
+   int folder, quiet;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
    struct node *mydomains[MAXHASH];

@@ -30,7 +30,6 @@
 extern char *optarg;
 extern int optind;
 
-int quiet=0;
 int dryrun=0;
 int remove_after_successful_import = 0;
 int import_from_gui=0;
@@ -76,7 +75,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
             }
             else unlink(fname);
 
-            if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
+            if(data->quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
          }
 
          snprintf(fname, sizeof(fname)-1, "%ld-%d", t, tot_msgs);
@@ -96,7 +95,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
       }
       else unlink(fname);
 
-      if(quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
+      if(data->quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
    }
 
    fclose(F);
@@ -238,7 +237,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
                i++;
 
-               if(quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
+               if(data->quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
             }
             else {
                printf("%s is not a file\n", fname);
@@ -316,10 +315,10 @@ int import_from_imap_server(char *server, char *username, char *password, int po
             }
 
             if(skipmatch == 1){
-               if(quiet == 0) printf("SKIPPING FOLDER: %s\n", (char *)q->str);
+               if(data->quiet == 0) printf("SKIPPING FOLDER: %s\n", (char *)q->str);
             }
             else {
-               if(quiet == 0) printf("processing folder: %s... ", (char *)q->str);
+               if(data->quiet == 0) printf("processing folder: %s... ", (char *)q->str);
 
                if(process_imap_folder(sd, &seq, q->str, sdata, data, use_ssl, dryrun, cfg) == ERR) ret = ERR;
             }
@@ -479,6 +478,7 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
+   data.quiet = 0;
 
    import.import_job_id = import.total_messages = import.processed_messages = 0;
    import.started = import.updated = import.finished = 0;
@@ -597,7 +597,7 @@ int main(int argc, char **argv){
                     break;
 
          case 'q' :
-                    quiet = 1;
+                    data.quiet = 1;
                     break;
 
          case 'h' :
@@ -674,7 +674,7 @@ int main(int argc, char **argv){
 
    close_database(&sdata);
 
-   if(quiet == 0) printf("\n");
+   if(data.quiet == 0) printf("\n");
 
    return rc;
 }
