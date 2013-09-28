@@ -25,7 +25,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 INSTALL = @INSTALL@
 
 all:
-	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$($localstatedir)%" -e "s%__LIBEXECDIR%$($libexecdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
+	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$(localstatedir)%" -e "s%__LIBEXECDIR%$(libexecdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
 
 
 install:
