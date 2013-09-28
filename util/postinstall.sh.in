@@ -226,6 +226,8 @@ gather_sphinx_data() {
 
    if [ $INDEXER = "/usr/bin/indexer" ]; then SPHINXCFG="/etc/sphinx.conf"; fi
 
+   if [ -f /etc/sphinxsearch/sphinx.conf || -f /etc/sphinxsearch/sphinx.conf.sample ]; then SPHINXCFG="/etc/sphinxsearch/sphinx.conf"; fi
+
    askNonBlank "Please enter the path of sphinx.conf" "$SPHINXCFG"
    SPHINXCFG=$response
 }
@@ -357,7 +359,7 @@ execute_post_install_tasks() {
 
    make_certificate
 
-   sed "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
+   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
    rm -f $PILERCONF_TMP
 
