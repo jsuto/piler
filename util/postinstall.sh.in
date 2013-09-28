@@ -226,7 +226,7 @@ gather_sphinx_data() {
 
    if [ $INDEXER = "/usr/bin/indexer" ]; then SPHINXCFG="/etc/sphinx.conf"; fi
 
-   if [ -f /etc/sphinxsearch/sphinx.conf || -f /etc/sphinxsearch/sphinx.conf.sample ]; then SPHINXCFG="/etc/sphinxsearch/sphinx.conf"; fi
+   if test -f /etc/sphinxsearch/sphinx.conf || test -f /etc/sphinxsearch/sphinx.conf.sample ; then SPHINXCFG="/etc/sphinxsearch/sphinx.conf"; fi
 
    askNonBlank "Please enter the path of sphinx.conf" "$SPHINXCFG"
    SPHINXCFG=$response
