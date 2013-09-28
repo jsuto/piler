@@ -25,6 +25,8 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 INSTALL = @INSTALL@
 
 all:
+	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$($localstatedir)%" -e "s%__LIBEXECDIR%$($libexecdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
+
 
 install:
 	$(INSTALL) -m 0755 $(srcdir)/daily-report.php $(DESTDIR)$(libexecdir)/piler
@@ -33,6 +35,7 @@ install:
 	$(INSTALL) -m 0755 $(srcdir)/indexer.delta.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/indexer.main.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/import.sh $(DESTDIR)$(libexecdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/postinstall.sh $(DESTDIR)$(libexecdir)/piler
 
 clean:
 

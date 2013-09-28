@@ -310,6 +310,27 @@ DATADIR=$data_dir
 AC_SUBST(DATADIR)
 AC_DEFINE_UNQUOTED(DATADIR,"$data_dir",[where to look for the data files])
 
+
+dnl configure libexec directory
+
+libexec_dir=`echo $libexecdir | grep prefix`
+
+if test -n "$libexec_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        libexec_dir="$ac_default_prefix/libexec"
+    else
+        libexec_dir="$prefix/libexec"
+    fi
+else
+    libexec_dir="$libexecdir"
+fi
+
+LIBEXECDIR=$libexec_dir
+AC_SUBST(LIBEXECDIR)
+AC_DEFINE_UNQUOTED(LIBEXECDIR,"$libexec_dir",[where to look for the piler helpers])
+
+
 AC_DEFINE_UNQUOTED(VIRUS_TEMPLATE, "$my_prefix/share/clapf/template.virus", [where the virus template is])
 AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "$my_prefix/share/clapf/zombienets.regex", [where the virus template is])
 

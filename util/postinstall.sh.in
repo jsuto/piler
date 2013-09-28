@@ -7,7 +7,167 @@ CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
 PILERCONF_TMP="/tmp/config.piler.88"
 
-. ./util/utilfunc.sh
+
+load_default_values() {
+   PILERUSER="piler"
+   PILERGROUP="piler"
+   SYSCONFDIR=__SYSCONFDIR
+   LOCALSTATEDIR=__LOCALSTATEDIR
+   LIBEXECDIR=__LIBEXECDIR
+
+   KEYTMPFILE="piler.key"
+   KEYFILE="$SYSCONFDIR/piler.key"
+
+   HOSTNAME=`hostname --fqdn`
+
+   MYSQL_HOSTNAME="localhost"
+   MYSQL_DATABASE="piler"
+   MYSQL_USERNAME="piler"
+   MYSQL_PASSWORD=""
+   MYSQL_ROOT_PASSWORD=""
+
+   SPHINXCFG="/usr/local/etc/sphinx.conf"
+
+   WWWGROUP="apache"
+   DOCROOT="/var/www/$HOSTNAME"
+
+   SMARTHOST=""
+   SMARTHOST_PORT=25
+
+   SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+}
+
+
+make_certificate() {
+   if [ ! -f $SYSCONFDIR/piler.pem ]; then
+      echo -n "Making an ssl certificate ... "
+      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler.pem -out 1.cert
+      cat 1.cert >> $SYSCONFDIR/piler.pem
+      chmod 600 $SYSCONFDIR/piler.pem
+      rm 1.cert
+   fi
+}
+
+
+display_install_intro() {
+  echo ""
+  echo ""
+  echo "This is the postinstall utility for piler"
+  echo "It should be run only at the first install. DO NOT run on an existing piler installation!"
+  echo ""
+
+  askYN "Continue? [Y/N]" "N"
+  if [ $response != "yes" ]; then
+     echo "Aborted."
+     exit
+  fi
+
+  echo ""
+}
+
+
+check_user() {
+   user=$1
+
+   if [ x`whoami` != x$user ]; then echo "ERROR: postinstaller must be run as $user user"; exit 1; fi
+}
+
+
+isFQDN() {
+  # we need min. 2 dots
+  if [ x"$1" = "xdogfood" ]; then
+    echo 1
+    return
+  fi
+
+  if [ x"$1" = "x" ]; then
+    echo 0
+    return
+  fi
+
+  NF=`echo $1 | awk -F. '{print NF}'`
+  if [ $NF -ge 2 ]; then 
+    echo 1
+  else 
+    echo 0
+  fi
+}
+
+
+ask() {
+  PROMPT=$1
+  DEFAULT=$2
+
+  echo ""
+  echo -n "$PROMPT [$DEFAULT] "
+  read response
+
+  if [ -z $response ]; then
+    response=$DEFAULT
+  fi
+}
+
+
+askNonBlankNoEcho() {
+  PROMPT=$1
+  DEFAULT=$2
+
+  while [ 1 ]; do
+    stty -echo
+    ask "$PROMPT" "$DEFAULT"
+    stty echo
+    echo ""
+    if [ ! -z $response ]; then
+      break
+    fi
+    echo "A non-blank answer is required"
+  done
+}
+
+
+askNonBlank() {
+  PROMPT=$1
+  DEFAULT=$2
+
+  while [ 1 ]; do
+    ask "$PROMPT" "$DEFAULT"
+    if [ ! -z $response ]; then
+      break
+    fi
+    echo "A non-blank answer is required"
+  done
+}
+
+
+askYN() {
+  PROMPT=$1
+  DEFAULT=$2
+
+  if [ "x$DEFAULT" = "xyes" -o "x$DEFAULT" = "xYes" -o "x$DEFAULT" = "xy" -o "x$DEFAULT" = "xY" ]; then
+    DEFAULT="Y"
+  else
+    DEFAULT="N"
+  fi
+  
+  while [ 1 ]; do
+    ask "$PROMPT" "$DEFAULT"
+    response=$(perl -e "print lc(\"$response\");")
+    if [ -z $response ]; then
+      :
+    else
+      if [ $response = "yes" -o $response = "y" ]; then
+        response="yes"
+        break
+      else 
+        if [ $response = "no" -o $response = "n" ]; then
+          response="no"
+          break
+        fi
+      fi
+    fi
+    echo "A Yes/No answer is required"
+  done
+}
 
 
 preinstall_check() {
@@ -195,6 +355,8 @@ execute_post_install_tasks() {
    rm -f $KEYTMPFILE
    echo "Done."
 
+   make_certificate
+
    sed "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
    rm -f $PILERCONF_TMP
@@ -258,14 +420,6 @@ clean_up_temp_stuff() {
 
 load_default_values
 
-
-if [ $# -ne 5 ]; then usage; fi
-
-PILERUSER=$1
-PILERGROUP=$2
-SYSCONFDIR=$3
-LOCALSTATEDIR=$4
-LIBEXECDIR=$5
 
 #LOGFILE="/tmp/piler-install.log.$$"
 #touch $LOGFILE

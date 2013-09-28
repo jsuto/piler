@@ -621,6 +621,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+LIBEXECDIR
 DATADIR
 CFGDIR
 PSQL_CONFIG
@@ -4561,6 +4562,30 @@ DATADIR=$data_dir
 cat >>confdefs.h <<_ACEOF
 #define DATADIR "$data_dir"
 _ACEOF
+
+
+
+
+libexec_dir=`echo $libexecdir | grep prefix`
+
+if test -n "$libexec_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        libexec_dir="$ac_default_prefix/libexec"
+    else
+        libexec_dir="$prefix/libexec"
+    fi
+else
+    libexec_dir="$libexecdir"
+fi
+
+LIBEXECDIR=$libexec_dir
+
+
+cat >>confdefs.h <<_ACEOF
+#define LIBEXECDIR "$libexec_dir"
+_ACEOF
+
 
 
 
