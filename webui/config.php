@@ -174,6 +174,7 @@ $config['SPHINX_MAIN_INDEX'] = 'main1,dailydelta1,delta1';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
 
+$config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 
 $config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
 

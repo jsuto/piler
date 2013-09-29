@@ -20,7 +20,7 @@ class ControllerPolicyApply extends Controller {
          die("go away");
       }
 
-      system('sudo -n /etc/init.d/rc.piler reload', $val);
+      system(RELOAD_COMMAND, $val);
 
       if($val === 0) {
          $this->data['x'] = $lang->data['text_applied'];
