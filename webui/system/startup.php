@@ -16,8 +16,8 @@ require(DIR_SYSTEM . "/db.php");
 require_once(DIR_SYSTEM . "/database/ldap.php");
 
 if(ENABLE_GOOGLE_LOGIN == 1) {
-   require_once 'google-api/apiClient.php';
-   require_once 'google-api/contrib/apiOauth2Service.php';
+   require_once DIR_BASE . 'google-api/apiClient.php';
+   require_once DIR_BASE . 'google-api/contrib/apiOauth2Service.php';
 }
 
 date_default_timezone_set(TIMEZONE);
