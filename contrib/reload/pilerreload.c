@@ -25,7 +25,7 @@ struct __config cfg;
 
 
 void fatal(char *s){
-   printf("pilerctl: fatal: %s\n", s);
+   syslog(LOG_PRIORITY, "fatal: %s", s);
    exit(1);
 }
 
@@ -34,6 +34,8 @@ int main(int argc, char **argv){
    char buf[SMALLBUFSIZE];
    int pid;
    FILE *f;
+
+   (void) openlog("pilerreload", LOG_PID, LOG_MAIL);
 
    cfg = read_config(CONFIG_FILE);
 
@@ -46,7 +48,11 @@ int main(int argc, char **argv){
 
    pid = atoi(buf);
 
-   if(pid > 1) kill(pid, SIGHUP);
+   if(pid > 1){
+      if(kill(pid, SIGHUP) == 0) syslog(LOG_PRIORITY, "reloaded");
+      else syslog(LOG_PRIORITY, "failed to reload");
+   }
+   else fatal("invalid pid");
 
    return 0;
 }

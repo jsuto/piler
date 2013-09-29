@@ -3485,7 +3485,7 @@ fi
 echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
 
 
-SUBDIRS="src etc util init.d test"
+SUBDIRS="src etc util init.d test contrib/reload"
 
 
 
@@ -4830,7 +4830,7 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o session.o message.o attachment.o digest.o store.o archive.o tai.o import.o imap.o pop3.o extract.o mydomains.o retr.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile test/Makefile contrib/imap/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile test/Makefile contrib/imap/Makefile contrib/reload/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5530,6 +5530,7 @@ do
     "init.d/Makefile") CONFIG_FILES="$CONFIG_FILES init.d/Makefile" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "contrib/imap/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/imap/Makefile" ;;
+    "contrib/reload/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/reload/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
