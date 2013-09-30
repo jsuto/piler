@@ -18,6 +18,11 @@ class ModelUserAuth extends Model {
          if($ok == 1) { return $ok; }
       }
 
+      if(ENABLE_POP3_AUTH == 1) {
+         require 'Zend/Mail/Protocol/Pop3.php';
+         $ok = $this->checkLoginAgainstPOP3($username, $password);
+         if($ok == 1) { return $ok; }
+      }
 
       // fallback local auth
 
@@ -252,6 +257,34 @@ class ModelUserAuth extends Model {
       }
 
       return 0;
+   }
+
+
+   private function checkLoginAgainstPOP3($username = '', $password = '') {
+      $user = array();
+      $rc = 0;
+
+      try {
+         $conn = new Zend_Mail_Protocol_Pop3(POP3_HOST, POP3_PORT, POP3_SSL);
+
+         if($conn) {
+            $s = $conn->connect(POP3_HOST);
+
+            if($s) {
+
+               try {
+                  $conn->login($username, $password);
+
+                  $this->add_session_vars($username, $username, array($username), 0);
+                  $rc = 1;
+               }
+               catch (Zend_Mail_Protocol_Exception $e) {}
+            }
+         }
+      }
+      catch (Zend_Mail_Protocol_Exception $e) {}
+
+      return $rc;
    }
 
 

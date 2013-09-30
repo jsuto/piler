@@ -99,6 +99,12 @@ $config['IMAP_HOST'] = 'mail.yourdomain.com';
 $config['IMAP_PORT'] =  993;
 $config['IMAP_SSL'] = true;
 
+// enable authentication against a pop3 server (disabled by default)
+
+$config['ENABLE_POP3_AUTH'] = 0;
+$config['POP3_HOST'] = 'mail.yourdomain.com';
+$config['POP3_PORT'] = 995;
+$config['POP3_SSL'] = true;
 
 // enable authentication against google (disabled by default)
 // see http://www.mailpiler.org/en/google-apps-free.html for details
