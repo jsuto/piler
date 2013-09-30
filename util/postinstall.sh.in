@@ -267,7 +267,7 @@ make_cron_entries() {
    echo "30   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
-   echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php $DOCROOT" >> $CRON_TMP
+   echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php --webui $DOCROOT" >> $CRON_TMP
 
    echo "### PILEREND" >> $CRON_TMP
 }
