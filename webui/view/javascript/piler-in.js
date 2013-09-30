@@ -769,11 +769,9 @@ var Piler =
     },
 
 
-    download_messages:function()
+    download_messages_real:function(idlist)
     {
-        var idlist = Piler.get_selected_messages_list();
-
-        Piler.log("[download_selected_emails]", idlist);
+        Piler.log("[download_messages_real]", idlist);
 
         if(idlist) {
            var form = document.createElement("form");
@@ -801,6 +799,34 @@ var Piler =
 
            document.body.removeChild(form);
        }
+    },
+
+
+    download_messages:function()
+    {
+        var idlist = Piler.get_selected_messages_list();
+        Piler.download_messages_real(idlist);
+    },
+
+
+    download_all_search_hits:function()
+    {
+        var url;
+
+        url = '/index.php?route=message/dl';
+
+        jQuery.ajax( url, {
+            type: "POST"
+        })
+        .done( function( a )// data, textStatus, jqXHR
+        {
+            Piler.download_messages_real(a);
+        })
+        .fail(function( a, b )// jqXHR, textStatus, errorThrown
+        {
+            alert("Problem retrieving XML data:" + b)
+        });
+
     },
 
 

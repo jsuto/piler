@@ -87,6 +87,7 @@ $_['text_dn_asterisk_means_skip_sync'] = "A csillag (*) azt jelenti, hogy ez a f
 $_['text_domain'] = "Domain";
 $_['text_domains'] = "Domain(ek)";
 $_['text_domainname'] = "Domainnév";
+$_['text_download_all_hits'] = "Összes találat letöltése";
 $_['text_download_attachment2'] = "melléklet letöltés";
 $_['text_download_message'] = "Levél letöltése (EML)";
 $_['text_download_message2'] = "levél letöltése";

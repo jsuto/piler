@@ -457,4 +457,6 @@ $_['text_ldap_delete_confirm_message'] = 'Desea borrar la entrada LDAP';
 $_['text_customer_delete_confirm_message'] = 'Desea borrar el cliente';
 $_['text_with_selected'] = 'Con seleccionado';
 
+$_['text_download_all_hits'] = "Download all";
+
 ?>

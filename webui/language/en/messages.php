@@ -87,6 +87,7 @@ $_['text_dn_asterisk_means_skip_sync'] = "Asterisk (*) means this user entry wil
 $_['text_domain'] = "Domain";
 $_['text_domains'] = "Domain(s)";
 $_['text_domainname'] = "Domain name";
+$_['text_download_all_hits'] = "Download all";
 $_['text_download_attachment2'] = "download attachment";
 $_['text_download_message'] = "Download message (EML)";
 $_['text_download_message2'] = "download message";

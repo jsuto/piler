@@ -13,6 +13,8 @@ class ModelSearchSearch extends Model {
       $s = "";
       $all_ids_csv = "";
 
+      $session = Registry::get('session');
+
       while(list($k,$v) = each($data)) {
          if($v) { $s .= '&' . $k . '=' . $v; }
       }
@@ -55,6 +57,12 @@ class ModelSearchSearch extends Model {
 
       $total_hits = count($all_ids);
 
+
+      if($total_hits > 0) {
+         $session->set('last_search', serialize($all_ids));
+      } else {
+         $session->set('last_search', '');
+      }
 
       $data['page_len'] = get_page_length();
 

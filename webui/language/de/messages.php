@@ -457,4 +457,7 @@ $_['text_ldap_delete_confirm_message'] = 'Soll dieser LDAP-Eintrag wirklich gel�
 $_['text_customer_delete_confirm_message'] = 'Soll dieser Kunde wirklich gelöscht werden';
 $_['text_with_selected'] = 'mit ausgewählten';
 
+
+$_['text_download_all_hits'] = "Download all";
+
 ?>

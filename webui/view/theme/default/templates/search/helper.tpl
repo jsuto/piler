@@ -50,7 +50,7 @@
             <td id="c4_r<?php print $i; ?>" class="resultcell from"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
             <td id="c5_r<?php print $i; ?>" class="resultcell to"><?php if($message['to'] != $message['shortto']) { ?><span title="<?php print $message['to']; ?>"><?php print $message['shortto']; ?>&nbsp;<i class=" muted icon-group"></i></span><?php } else { print $message['to']; } ?></td>
 
-            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php print $message['subject']; ?></a><?php if($message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
+            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" onclick="Piler.view_message_by_pos(<?php print $i; ?>);"><?php print $message['subject']; ?></a><?php if(ENABLE_REFERENCES == 1 && $message['reference']) { ?> <a href="#" title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?></td>
 
             <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
             <td id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?><i class="spam icon-warning-sign icon-large" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
@@ -137,6 +137,11 @@
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
             <div id="functionbox" class="input-prepend input-append pull-right">
+
+            <?php if(ENABLE_DOWNLOADING_ALL_SEARCH_HITS == 1) { ?>
+                <button id="download_all_search_hits" name="download_all_search_hits" class="btn btn-custom btn-inverse" onclick="Piler.download_all_search_hits();"><?php print $text_download_all_hits; ?></button>
+            <?php } ?>
+
                 <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
