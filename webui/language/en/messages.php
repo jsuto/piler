@@ -23,6 +23,7 @@ $_['text_any'] = "any";
 $_['text_applied'] = "Applied";
 $_['text_apply_changes'] = "Apply changes";
 $_['text_archive_size'] = "Archive size";
+$_['text_archive_size_before_compression'] = "Archive size before compression";
 $_['text_archived_messages'] = "Archived messages";
 $_['text_archiving_rules'] = "Archiving rules";
 $_['text_attachment'] = "Attachment";

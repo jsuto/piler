@@ -458,5 +458,6 @@ $_['text_customer_delete_confirm_message'] = 'Desea borrar el cliente';
 $_['text_with_selected'] = 'Con seleccionado';
 
 $_['text_download_all_hits'] = "Download all";
+$_['text_archive_size_before_compression'] = "Archive size before compression";
 
 ?>

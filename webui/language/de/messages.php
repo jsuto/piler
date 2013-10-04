@@ -459,5 +459,6 @@ $_['text_with_selected'] = 'mit ausgewählten';
 
 
 $_['text_download_all_hits'] = "Download all";
+$_['text_archive_size_before_compression'] = "Archive size before compression";
 
 ?>

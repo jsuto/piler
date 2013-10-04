@@ -451,5 +451,6 @@ $_['text_customer_delete_confirm_message'] = 'Do you wish to delete the customer
 $_['text_with_selected'] = 'With Selected';
 
 $_['text_download_all_hits'] = "Download all";
+$_['text_archive_size_before_compression'] = "Archive size before compression";
 
 ?>

@@ -23,6 +23,7 @@ $_['text_any'] = "mindegy";
 $_['text_applied'] = "Alkalmazva";
 $_['text_apply_changes'] = "Beállítások alkalmazása";
 $_['text_archive_size'] = "Archívum méret";
+$_['text_archive_size_before_compression'] = "Archívum méret tömörítés nélkül";
 $_['text_archived_messages'] = "Archivált levelek";
 $_['text_archiving_rules'] = "Archiválási szabályok";
 $_['text_attachment'] = "Melléklet";

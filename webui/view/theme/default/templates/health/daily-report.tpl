@@ -46,7 +46,7 @@
          </div>
 
          <div class="row">
-            <div class="cellhealthleft"><?php print $text_archive_size; ?>:</div>
+            <div class="cellhealthleft"><?php print $text_archive_size_before_compression; ?>:</div>
             <div class="cellhealthright"><?php print $archive_size; ?>B</div>
          </div>
 
