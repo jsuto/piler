@@ -16,7 +16,7 @@ class ModelSearchSearch extends Model {
       $session = Registry::get('session');
 
       while(list($k,$v) = each($data)) {
-         if($v) { $s .= '&' . $k . '=' . $v; }
+         if($v) { if(is_array($v)) { $v = implode(" ", $v); } $s .= '&' . $k . '=' . $v; }
       }
 
       if($s) { $s = substr($s, 1, strlen($s)); }
@@ -90,159 +90,30 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function assemble_email_address_condition($from = '', $to = '') {
-      $s = '';
-      $f_from = $f_fromdomain = $f_to = $f_todomain = '';
-      $o_from = $o_fromdomain = $o_to = $o_todomain = '';
-      $f_f = $o_f = $f_t = $o_t = '';
-      $f = $t = $fdomain = $tdomain = '';
+   private function assemble_email_address_filter() {
+      $session = Registry::get('session');
 
-      $session_emails = $this->fix_email_address_for_sphinx($_SESSION['emails']);
-      $session_domains = $this->fix_email_address_for_sphinx($_SESSION['auditdomains']);
+      if(Registry::get('auditor_user') == 1) {
+
+         if(RESTRICTED_AUDITOR == 1) {
+            $session_domains = $this->fix_email_address_for_sphinx($session->get('auditdomains'));
+
+            $sd = $this->fix_email_address_for_sphinx($session->get('domain'));
+
+            foreach ($session_domains as $d) { $sd .= '|' . $d; }
+
+            $sd = preg_replace("/^\|/", "", $sd);
+
+            return " (@todomain $sd . | @fromdomain $sd ) ";
+         }
+
+         else { return ""; }
+      }
+
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
 
       $all_your_addresses = $this->get_all_your_address();
-
-      $from = preg_replace("/OR/", "", $from);
-      $to = preg_replace("/OR/", "", $to);
-
-      if($from) {
-         $e = preg_split("/\s/", $from);
-         foreach ($e as $email) {
-            if($email == '') { continue; }
-
-            $email = $this->fix_email_address_for_sphinx($email);
-
-            $field = 'from';
-            if($email[0] == 'X') {
-               $email = substr($email, 1, strlen($email));
-
-               $field = 'fromdomain';
-               $fdomain .= "|$email";
-            }
-            else {
-               $f .= "|$email";
-            }
-
-
-            if(in_array($email, $session_emails)) {
-               $a = "o_$field";
-            }
-            else {
-               $a = "f_$field";
-            }
-
-            if($$a) { $$a .= "|"; }
-            $$a .= "$email";
-         }
-      }
-
-      if($to) {
-         $e = preg_split("/\s/", $to);
-         foreach ($e as $email) {
-            if($email == '') { continue; }
-
-            $email = $this->fix_email_address_for_sphinx($email);
-
-            $field = 'to';
-            if($email[0] == 'X') {
-               $email = substr($email, 1, strlen($email));
-               $field = 'todomain';
-               $tdomain .= "|$email";
-            }
-            else {
-               $t .= "|$email";
-            }
-
-            if(in_array($email, $session_emails)) {
-               $a = "o_$field";
-            }
-            else {
-               $a = "f_$field";
-            }
-
-            if($$a) { $$a .= "|"; }
-            $$a .= "$email";
-         }
-      }
-
-
-      if($f) { $f = preg_replace("/^\|/", "@from ", $f); }
-
-      if($fdomain) {
-         $fdomain = preg_replace("/^\|/", "@fromdomain ", $fdomain);
-         if($f) { $f = "(($f)|($fdomain))"; }
-         else { $f = "($fdomain)"; }
-      }
-
-      if($t) { $t = preg_replace("/^\|/", "@to ", $t); }
-
-      if($tdomain) {
-         $tdomain = preg_replace("/^\|/", "@todomain ", $tdomain);
-         if($t) { $t = "(($t)|($tdomain))"; }
-         else { $t = "($tdomain)"; }
-      }
-
-
-      if(Registry::get('auditor_user') == 1 || ENABLE_FOLDER_RESTRICTIONS == 1) {
-         $domain_restrictions = '';
-         $sd = $this->fix_email_address_for_sphinx($_SESSION['domain']);
-
-         foreach ($session_domains as $d) {
-            $sd .= '|'.$d;
-         }
-         $sd = preg_replace("/^\|/", "", $sd);
-
-
-         if(RESTRICTED_AUDITOR == 1) {
-            $domain_restrictions = ' (@todomain ' . $sd . ' | @fromdomain '  . $sd . ')';
-         }
-
-         if($from == '' && $to == '') { return $domain_restrictions; }
-
-         if(RESTRICTED_AUDITOR == 1) {
-            $domain_restrictions = " & $domain_restrictions";
-         }
-
-         if($f && $t) { return "($f & $t) $domain_restrictions"; }
-         else if($f) { return "($f) $domain_restrictions"; }
-         else if($t) { return "($t) $domain_restrictions"; }
-      }
-
-
-      if($f_from) { $f_f = "@from $f_from"; }
-      if($f_fromdomain) { if($f_f) { $f_f = "($f_f | @fromdomain $f_fromdomain)"; } else { $f_f = "@fromdomain $f_fromdomain"; } }
-
-      if($o_from) { $o_f = "@from $o_from"; }
-
-      if($f_to) { $f_t = "@to $f_to"; }
-      if($f_todomain) { if($f_t) { $f_t = "($f_t | @todomain $f_todomain)"; } else { $f_t = "@todomain $f_todomain"; } }
-
-      if($o_to) { $o_t = "@to $o_to"; }
-
-
-      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t == '') { return "(@from $all_your_addresses | @to $all_your_addresses)"; }
-      if($f_f == '' && $o_f == '' && $f_t == '' && $o_t      ) { return "$o_t"; }
-      if($f_f == '' && $o_f == '' && $f_t       && $o_t == '') { return "(@from $all_your_addresses & $f_t)"; }
-      if($f_f == '' && $o_f == '' && $f_t       && $o_t      ) { return "($o_t | (@from $all_your_addresses & $f_t))"; }
-
-      if($f_f == '' && $o_f       && $f_t == '' && $o_t == '') { return "$o_f"; }
-      if($f_f == '' && $o_f       && $f_t == '' && $o_t      ) { return "($o_f & $o_t)"; }
-      if($f_f == '' && $o_f       && $f_t       && $o_t == '') { return "($o_f & $f_t)"; }
-      if($f_f == '' && $o_f       && $f_t       && $o_t      ) { return "(($o_f & $f_t) | ($o_f & $o_t))"; }
-
-      if($f_f       && $o_f == '' && $f_t == '' && $o_t == '') { return "($f_f & @to $all_your_addresses)"; }
-      if($f_f       && $o_f == '' && $f_t == '' && $o_t      ) { return "($f_f & $o_t)"; }
-      if($f_f       && $o_f == '' && $f_t       && $o_t == '') { return "@from INVALID"; }
-      if($f_f       && $o_f == '' && $f_t       && $o_t      ) { return "($f_f & $o_t)"; }
-
-      if($f_f       && $o_f       && $f_t == '' && $o_t == '') { return "(($f_f & @to $all_your_addresses)|$o_f)"; }
-      if($f_f       && $o_f       && $f_t == '' && $o_t      ) { return "(($f_f & $o_t)|($o_f & $o_t))"; }
-      if($f_f       && $o_f       && $f_t       && $o_t == '') { return "($o_f & $f_t)"; }
-      if($f_f       && $o_f       && $f_t       && $o_t      ) { return "(($f_f & $o_t)|($o_f & $f_t))"; }
-
-
-      return "(@from $all_your_addresses | @to $all_your_addresses)";
-
+      return " (@from $all_your_addresses | @to $all_your_addresses) ";
    }
 
 
@@ -254,31 +125,44 @@ class ModelSearchSearch extends Model {
       $tag_id_list = '';
       $a = "";
       $id = "";
+      $fields = array("@(subject,body)", "@from", "@to", "@subject", "@body", "@attachment_types");
+
+      $emailfilter = $this->assemble_email_address_filter();
 
 
-      $match = $this->assemble_email_address_condition($data['from'], $data['to']);
 
-      if($data['body']) {
-         $data['body'] = $this->fixup_meta_characters($data['body']);
-         $data['body'] = $this->fixup_sphinx_operators($data['body']);
-         if($match) { $match .= " & "; } $match .= "(@body " . $data['body'] . ") ";
+      $i = 0;
+      while(list($k, $v) = each($data['match'])) {
+         if($v == "@attachment_types") {
+            list($k, $v) = each($data['match']);
+            $i++;
+            if($v == "any") {
+               $data['match'][$i-1] = "";
+               $data['match'][$i] = "";
+               $a = "attachments > 0 AND ";
+            }
+         }
+
+         if(substr($v, 0, 7) == "http://") { $v = preg_replace("/\./", "X", $v); $data['match'][$i] = preg_replace("/http\:\/\//", "__URL__", $v); }
+
+         if(!in_array($v, $fields) && $i > 0 && strchr($v, "@")) {
+
+            if(substr($v, 0, 1) == "@") {
+               $v = substr($v, 1, strlen($v)-1);
+               if($data['match'][$i-1] == "@from") { $data['match'][$i-1] = "@fromdomain"; }
+               if($data['match'][$i-1] == "@to") { $data['match'][$i-1] = "@todomain"; }
+            }
+
+            $data['match'][$i] = $this->fix_email_address_for_sphinx($v);
+         }
+         $i++; 
       }
 
-      if($data['subject']) {
-         $data['subject'] = $this->fixup_meta_characters($data['subject']);
-         $data['subject'] = $this->fixup_sphinx_operators($data['subject']);
-         if($match) { $match .= " & "; } $match .= "(@subject " . $data['subject'] . ") ";
-      }
+      $match = implode(" ", $data['match']);
 
-      if($data['attachment_type'] && !strstr($data['attachment_type'], "any")) { if($match) { $match .= " & "; } $match .= "(@attachment_types " . preg_replace("/\,/", "|", $data['attachment_type']) . ") "; }
-
-
-      if($data['any']) {
-         $data['any'] = $this->fixup_meta_characters($data['any']);
-         $data['any'] = $this->fixup_sphinx_operators($data['any']);
-         $data['any'] = $this->fix_email_address_for_sphinx($data['any']);
-         $fields = '';
-         if($match) { $match = "($match) & "; } $match .= "(@(subject,body) " . $data['any'] . ") ";
+      if($emailfilter) {
+         if(strlen($match) > 2) { $match = "( $match ) & $emailfilter"; }
+         else { $match = $emailfilter; }
       }
 
 

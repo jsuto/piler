@@ -89,6 +89,9 @@ class ModelAuditAudit extends Model {
          if(isset($query->rows)) {
 
             foreach($query->rows as $a) {
+
+               $a['description'] = preg_replace("/\"/", "'", $a['description']);
+
                $results[] = array(
                                     'id' => $a['meta_id'],
                                     'piler_id' => isset($m[$a['meta_id']]) ? $m[$a['meta_id']] : '',

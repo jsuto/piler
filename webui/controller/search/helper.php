@@ -4,10 +4,6 @@
 class ControllerSearchHelper extends Controller {
    private $error = array();
    private $a = array(
-                    'from'            => '',
-                    'to'              => '',
-                    'subject'         => '',
-                    'body'            => '',
                     'date1'           => '',
                     'date2'           => '',
                     'direction'       => '',
@@ -19,7 +15,7 @@ class ControllerSearchHelper extends Controller {
                     'folders'         => '',
                     'extra_folders'   => '',
                     'id'              => '',
-                    'any'             => ''
+                    'match'           => array()
                      );
 
 
@@ -49,7 +45,7 @@ class ControllerSearchHelper extends Controller {
 
       if($this->request->post['searchtype'] == 'expert'){
 
-         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|size|date1|date2|attachment|tag|note|id)\:/", $this->request->post['search'])) {
+         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|d|size|date1|date2|attachment|a|tag|note|id)\:/", $this->request->post['search'])) {
             $this->preprocess_post_expert_request($this->request->post);
          }
          else {
@@ -63,7 +59,7 @@ class ControllerSearchHelper extends Controller {
 
       else {
          $this->fixup_post_simple_request();
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->request->post, $this->data['page']);
+         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
       }
 
 
@@ -88,17 +84,24 @@ class ControllerSearchHelper extends Controller {
 
 
    private function fixup_post_simple_request() {
-      if(!isset($this->request->post['from'])) { $this->request->post['from'] = ''; }
-      if(!isset($this->request->post['to'])) { $this->request->post['to'] = ''; }
-      if(!isset($this->request->post['subject'])) { $this->request->post['subject'] = ''; }
-      if(!isset($this->request->post['body'])) { $this->request->post['body'] = ''; }
-      if(!isset($this->request->post['tag'])) { $this->request->post['tag'] = ''; }
-      if(!isset($this->request->post['note'])) { $this->request->post['note'] = ''; }
-      if(!isset($this->request->post['any'])) { $this->request->post['any'] = ''; }
-      if(!isset($this->request->post['id'])) { $this->request->post['id'] = ''; }
-      if(!isset($this->request->post['attachment_type'])) { $this->request->post['attachment_type'] = ''; }
-      if(!isset($this->request->post['date1'])) { $this->request->post['date1'] = ''; }
-      if(!isset($this->request->post['date2'])) { $this->request->post['date2'] = ''; }
+      $match = '';
+
+      if(isset($this->request->post['from']) && $this->request->post['from']) { $match .= "@from " . $this->request->post['from'] . ' '; }
+      if(isset($this->request->post['to']) && $this->request->post['to']) { $match .= "@to " . $this->request->post['to'] . ' '; }
+      if(isset($this->request->post['subject']) && $this->request->post['subject']) { $match .= "@subject " . $this->request->post['subject'] . ' '; }
+      if(isset($this->request->post['body']) && $this->request->post['body']) { $match .= "@body " . $this->request->post['body'] . ' '; }
+
+      if(isset($this->request->post['tag'])) { $this->a['tag'] = $this->request->post['tag']; }
+      if(isset($this->request->post['note'])) { $this->a['note'] = $this->request->post['note']; }
+      if(isset($this->request->post['attachment_type'])) { $this->a['attachment_type'] = $this->request->post['attachment_type']; }
+
+      if(isset($this->request->post['date1'])) { $this->a['date1'] = $this->request->post['date1']; }
+      if(isset($this->request->post['date2'])) { $this->a['date2'] = $this->request->post['date2']; }
+
+      if($this->a['attachment_type'] && $this->a['attachment_type'] != "any") { $match .= " @attachment_types " . preg_replace("/,/", " OR ", $this->a['attachment_type']); }
+
+      $match = preg_replace("/OR/", "|", $match);
+      $this->a['match'] = preg_split("/ /", $match);
    }
 
 
@@ -114,10 +117,13 @@ class ControllerSearchHelper extends Controller {
 
    private function naive_preprocess_post_expert_request($data = array()) {
       $ndate = 0;
+      $from = $match = '';
+      $prev_token_is_email = 0;
 
       if(!isset($data['search'])) { return; }
 
-      $b = preg_split("/\s/", $data['search']);
+      $s = preg_replace("/OR/", "|", $data['search']);
+      $b = preg_split("/\s/", $s);
 
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
@@ -127,40 +133,63 @@ class ControllerSearchHelper extends Controller {
             $this->a["date$ndate"] = $v;
          }
          else if(strchr($v, '@')) {
-            $this->a['from'] .= " $v";
+            $prev_token_is_email = 1;
+            if($from == '') { $from = "@from"; }
+            $from .= " $v";
          }
-         else { $this->a['any'] .= ' ' . $v; }
+         else {
+            if($prev_token_is_email == 1) {
+               $prev_token_is_email = 0;
+               $from .= " $v";
+            }
+            else {
+               $match .= ' ' . $v;
+            }
+         }
       }
+
+      if($match && $match != ' ' . $this->data['text_enter_search_terms']) {
+         $match = "@(subject,body) $match";
+      }
+
+
+      if($from) { $match = $from . ' ' . $match; }
+
+      $this->a['match'] = preg_split("/ /", $match);
 
       if($this->a['date1'] && $this->a['date2'] == '') { $this->a['date2'] = $this->a['date1']; }
 
-      if($this->a['any'] == ' ' . $this->data['text_enter_search_terms']) { $this->a['any'] = ''; }
    }
 
 
    private function preprocess_post_expert_request($data = array()) {
-      $token = '';
+      $token = 'match';
       $ndate = 0;
+      $match = array();
 
       if(!isset($data['search'])) { return; }
 
       $s = preg_replace("/:/", ": ", $data['search']);
       $s = preg_replace("/,/", " ", $s);
+      $s = preg_replace("/\(/", "( ", $s);
+      $s = preg_replace("/\)/", ") ", $s);
+      $s = preg_replace("/OR/", "|", $s);
+      $s = preg_replace("/AND/", "", $s);
       $s = preg_replace("/\s{1,}/", " ", $s);
       $b = explode(" ", $s);
 
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if($v == 'from:') { $token = 'from'; continue; }
-         else if($v == 'to:') { $token = 'to'; continue; }
-         else if($v == 'subject:') { $token = 'subject'; continue; }
-         else if($v == 'body:') { $token = 'body'; continue; }
+         if($v == 'from:') { $token = 'match'; $this->a['match'][] = '@from'; continue; }
+         else if($v == 'to:') { $token = 'match'; $this->a['match'][] = '@to'; continue; }
+         else if($v == 'subject:') { $token = 'match'; $this->a['match'][] = '@subject'; continue; }
+         else if($v == 'body:') { $token = 'match'; $this->a['match'][] = '@body'; continue; }
          else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }
          else if($v == 'size:') { $token = 'size'; continue; }
          else if($v == 'date1:') { $token = 'date1'; continue; }
          else if($v == 'date2:') { $token = 'date2'; continue; }
-         else if($v == 'attachment:' || $v == 'a:') { $token = 'attachment_type'; continue; }
+         else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $this->a['match'][] = '@attachment_types'; continue; }
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
          else if($v == 'note:') { $token = 'note'; continue; }
@@ -174,21 +203,9 @@ class ControllerSearchHelper extends Controller {
          }
 
 
-         if($token == 'from') {
-            if($v == 'OR') { continue; }
-            $this->a['from'] .= " $v";
-         }
-
-         else if($token == 'to') {
-            if($v == 'OR') { continue; }
-            $this->a['to'] .= " $v";
-         }
-
-         else if($token == 'subject') { $this->a['subject'] .= ' ' . $v; }
-         else if($token == 'body') { $this->a['body'] .= ' ' . $v; }
+         if($token == 'match') { $this->a['match'][] = $v; }
          else if($token == 'date1') { $this->a['date1'] = ' ' . $v; }
          else if($token == 'date2') { $this->a['date2'] = ' ' . $v; }
-         else if($token == 'attachment_type') { $this->a['attachment_type'] .= '|' . $v; }
          else if($token == 'tag') { $this->a['tag'] .= ' ' . $v; }
          else if($token == 'note') { $this->a['note'] .= ' ' . $v; }
          else if($token == 'ref') { $this->a['ref'] = ' ' . $v; }
@@ -223,9 +240,6 @@ class ControllerSearchHelper extends Controller {
 
       }
 
-      if($this->a['any'] == ' ' . $this->data['text_enter_search_terms']) { $this->a['any'] = ''; }
-
-      $this->a['attachment_type'] = substr($this->a['attachment_type'], 1, strlen($this->a['attachment_type']));
    }
 
 
