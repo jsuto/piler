@@ -166,6 +166,7 @@ class ModelSearchSearch extends Model {
       }
 
 
+      if($match == " ") { $match = ""; }
 
       if($data['sort'] == 'from' || $data['sort'] == 'subj') { $sortorder = ''; }
 
