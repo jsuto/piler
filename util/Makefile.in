@@ -25,7 +25,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 INSTALL = @INSTALL@
 
 all:
-	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$(localstatedir)%" -e "s%__LIBEXECDIR%$(libexecdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
+	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$(localstatedir)%" -e "s%__LIBEXECDIR%$(libexecdir)%" -e "s%__DATAROOTDIR%$(datarootdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
 
 
 install:
@@ -37,6 +37,9 @@ install:
 	$(INSTALL) -m 0755 $(srcdir)/import.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/purge.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/postinstall.sh $(DESTDIR)$(libexecdir)/piler
+
+	$(INSTALL) -m 0755 $(srcdir)/db-mysql.sql $(DESTDIR)$(datarootdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/db-mysql-root.sql.in $(DESTDIR)$(datarootdir)/piler
 
 clean:
 	rm -f postinstall.sh
