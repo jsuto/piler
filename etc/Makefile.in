@@ -31,7 +31,7 @@ all:
 
 install:
 	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf; fi
-	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.in $(DESTDIR)$(sysconfdir)/sphinx.conf.dist; fi
+	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.in $(DESTDIR)$(sysconfdir)/sphinx.conf.dist
 
 clean:
 	rm -f piler.conf cron.jobs
