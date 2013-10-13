@@ -19,6 +19,8 @@ generate_key_file() {
 if [ ! -f /usr/local/etc/piler.key ]; then
         echo "generating key file . . ."
 	dd if=/dev/urandom bs=56 count=1 of=/usr/local/etc/piler.key
+	chgrp piler /usr/local/etc/piler.key
+	chmod 640 /usr/local/etc/piler.key
 fi
 
 }
@@ -27,8 +29,8 @@ fi
 fix_permissions() {
    chown piler:piler /usr/local/bin/pilerexport /usr/local/bin/pilerpurge /usr/local/bin/pilerimport /usr/local/bin/pilerget /usr/local/bin/pileraget /usr/local/bin/reindex
    chmod +s /usr/local/bin/pilerexport /usr/local/bin/pilerpurge /usr/local/bin/pilerimport /usr/local/bin/pilerget /usr/local/bin/pileraget /usr/local/bin/reindex
-   chgrp piler /usr/local/etc/piler.conf /usr/local/etc/piler.key
-   chmod 640 /usr/local/etc/piler.conf /usr/local/etc/piler.key
+   chgrp piler /usr/local/etc/piler.conf
+   chmod 640 /usr/local/etc/piler.conf
 }
 
 
@@ -37,7 +39,7 @@ case "$1" in
 	chown piler:piler /var/run/piler /var/piler/store /var/piler/tmp
 
 	generate_pem_file
-	generate_key_file
+	###generate_key_file
 	fix_permissions
 
 	ldconfig

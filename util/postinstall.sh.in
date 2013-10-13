@@ -336,9 +336,8 @@ execute_post_install_tasks() {
    mysql -h $MYSQL_HOSTNAME -u $MYSQL_USERNAME --password=$MYSQL_PASSWORD $MYSQL_DATABASE < $DATAROOTDIR/piler/db-mysql.sql
    echo "Done."
 
-   echo -n "Overwriting sphinx configuration... ";
-   sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" etc/sphinx.conf.in > etc/sphinx.conf
-   cp etc/sphinx.conf $SPHINXCFG
+   echo -n "Writing sphinx configuration... ";
+   sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" $SYSCONFDIR/sphinx.conf.dist > $SPHINXCFG
    echo "Done."
 
    echo -n "Initializing sphinx indices... ";
