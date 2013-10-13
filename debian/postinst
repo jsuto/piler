@@ -31,6 +31,8 @@ fix_permissions() {
    chmod +s /usr/local/bin/pilerexport /usr/local/bin/pilerpurge /usr/local/bin/pilerimport /usr/local/bin/pilerget /usr/local/bin/pileraget /usr/local/bin/reindex
    chgrp piler /usr/local/etc/piler.conf
    chmod 640 /usr/local/etc/piler.conf
+
+   chown piler:piler /var/piler/imap /var/piler/sphinx /var/piler/stat
 }
 
 

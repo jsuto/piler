@@ -365,6 +365,13 @@ execute_post_install_tasks() {
 
    chmod 755 $LOCALSTATEDIR/piler/stat
 
+   if [ -d webui ]; then webui_install; fi
+
+}
+
+
+webui_install() {
+
    echo -n "Copying www files to $DOCROOT... "
    mkdir -p $DOCROOT || exit 1
 
@@ -409,7 +416,6 @@ execute_post_install_tasks() {
    echo "?>" >> $DOCROOT/config-site.php
 
    echo "Done."
-
 }
 
 

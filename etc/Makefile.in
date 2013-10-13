@@ -27,6 +27,7 @@ INSTALL = @INSTALL@
 all:
 	sed -e 's%pidfile=.*%pidfile=$(localstatedir)/run/piler/piler.pid%g' \
 	-e 's%iv=.*%iv=@iv@%g' \
+	-e '%pemfile=%pemfile=$(sysconfdir)/piler.pem%g' \
 	-e 's%workdir=.*%workdir=$(localstatedir)/piler/tmp%g' < $(srcdir)/example.conf | grep -v ^\; | grep '=' | sort > $(srcdir)/piler.conf
 
 install:
