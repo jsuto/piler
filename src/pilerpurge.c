@@ -228,7 +228,7 @@ ENDE:
 }
 
 
-int purge_messages_without_attachment(struct session_data *sdata, struct __data *data, struct __config *cfg){
+int purge_messages_round1(struct session_data *sdata, struct __data *data, char *attachment_condition, struct __config *cfg){
    int purged=0, size;
    char id[BUFLEN], s[SMALLBUFSIZE], buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE];
 
@@ -237,7 +237,7 @@ int purge_messages_without_attachment(struct session_data *sdata, struct __data 
 
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments=0", SQL_METADATA_TABLE, sdata->now);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND %s", SQL_METADATA_TABLE, sdata->now, attachment_condition);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
@@ -383,8 +383,9 @@ int main(int argc, char **argv){
 
    i = is_purge_allowed(&sdata, &data, &cfg);
    if(i == 1){
-      purged += purge_messages_without_attachment(&sdata, &data, &cfg);
+      purged += purge_messages_round1(&sdata, &data, "attachments=0", &cfg);
       purged += purge_messages_with_attachments(&sdata, &data, &cfg);
+      purged += purge_messages_round1(&sdata, &data, "attachments > 0", &cfg);
 
       syslog(LOG_INFO, "purged %d messages, %ld bytes", purged, purged_size);
    }
