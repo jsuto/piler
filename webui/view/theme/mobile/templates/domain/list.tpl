@@ -26,7 +26,7 @@
    <div id="ss1">
       <div class="row">
          <div class="domaincell"><?php print $text_domain; ?>:</div>
-         <div class="domaincell"><input type="text" class="text" name="domain" /></div>
+         <div class="domaincell"><textarea name="domain"></textarea></div>
       </div>
       <div class="row">
          <div class="domaincell"><?php print $text_mapped_domain; ?>:</div>

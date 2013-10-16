@@ -31,7 +31,7 @@
     <div class="control-group<?php if(isset($errors['domain'])){ print " error"; } ?>">
 		<label class="control-label" for="domain"><?php print $text_domain; ?>:</label>
         <div class="controls">
-            <input type="text" class="text" name="domain" placeholder="Domain"<?php if(isset($post['domain'])){ echo " value='".$post['domain']."'"; } ?> />
+            <textarea name="domain" placeholder="Domain"<?php if(isset($post['domain'])){ echo " value='".$post['domain']."'"; } ?> ></textarea>
             <?php if ( isset($errors['domain']) ) { ?><span class="help-inline"><?php print $errors['domain']; ?></span><?php } ?>
         </div>
     </div>

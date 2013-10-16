@@ -99,6 +99,8 @@ class ModelDomainDomain extends Model {
    public function addDomain($domain = '', $mapped = '', $ldap_id = 0) {
       if($domain == "" || $mapped == "") { return 0; }
 
+      $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($mapped, $mapped, $ldap_id));
+
       $domains = explode("\n", $domain);
 
       foreach ($domains as $domain) {
