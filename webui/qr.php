@@ -38,6 +38,6 @@ else if(isset($_GET['toggle'])) {
 
 $ga = $p->get_ga_settings($session->get('username'));
 
-QRcode::png("otpauth://totp/" . SITE_NAME . "?secret=" . $ga['ga_secret'], false, "L", 8, 2);
+QRcode::png("otpauth://totp/" . SITE_NAME . "?secret=" . $ga['ga_secret'], false, "L", 4, 2);
 
 ?>
