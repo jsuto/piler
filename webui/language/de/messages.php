@@ -460,5 +460,12 @@ $_['text_with_selected'] = 'mit ausgewählten';
 
 $_['text_download_all_hits'] = "Download all";
 $_['text_archive_size_before_compression'] = "Archive size before compression";
+$_['text_create_new_secret'] = "Create new secret";
+$_['text_enter_google_authenticator_code'] = "Enter Google Authenticator code";
+$_['text_google_authenticator_code'] = "Google Authenticator code";
+$_['text_google_authenticator_settings'] = "Google Authenticator settings";
+$_['text_invalid_pin_code'] = "Invalid pin code";
+$_['text_qr_code'] = "QR";
+$_['text_refresh_qr_code'] = "Refresh QR code";
 
 ?>

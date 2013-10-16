@@ -57,6 +57,7 @@ $_['text_copied'] = "Átmásolva";
 $_['text_counters'] = "Számlálók";
 $_['text_cpu_load'] = "CPU terhelés";
 $_['text_cpu_usage'] = "CPU használat";
+$_['text_create_new_secret'] = "Új kód";
 $_['text_customers'] = "Ügyfelek";
 
 $_['text_daily_quarantine_report'] = "Napi karantén riport";
@@ -106,6 +107,8 @@ $_['text_empty_search_criteria'] = "'Üres feltétel'";
 $_['text_empty_search_result'] = "Nincs találat a keresésre. Próbáljon meg csillagot (*) tenni a szótöredék után, pl. titkos*, hogy megtalálja a \"titkosítás\", \"titkosított\", stb. szavakat tartalmazó leveleket.";
 $_['text_enable'] = "Engedélyez";
 $_['text_enabled'] = "engedélyezve";
+$_['text_enter_google_authenticator_code'] = "Adja meg a Google Authenticator kódot";
+
 $_['text_enter_one_email_address_per_line'] = "Egy sorba egy email címet írjon";
 $_['text_enter_one_group_per_line'] = "Egy sorba egy csoportnevet írjon";
 $_['text_enter_search_terms'] = "Írja be a keresési feltételeket";
@@ -145,6 +148,8 @@ $_['text_help'] = "Segítség";
 $_['text_history'] = "Történet";
 $_['text_home'] = "Kezdőlap";
 
+$_['text_google_authenticator_code'] = "Google Authenticator kód";
+$_['text_google_authenticator_settings'] = "Google Authenticator beállítások";
 $_['text_group_id'] = "Csoport azonosító";
 $_['text_groupname'] = "Csoportnév";
 $_['text_groups'] = "Csoportok";
@@ -165,6 +170,7 @@ $_['text_invalid_email'] = "Érvénytelen email cím";
 $_['text_invalid_email_or_password'] = "Érvénytelen email cím vagy jelszó";
 $_['text_invalid_gid'] = "Érvénytelen csoportazonosító";
 $_['text_invalid_password'] = "Érvénytelen jelszó";
+$_['text_invalid_pin_code'] = "Érvénytelen pin kód";
 $_['text_invalid_policy_group'] = "Érvénytelen házirend szonosító";
 $_['text_invalid_policy_name'] = "Érvénytelen házirend név";
 $_['text_invalid_policy_setting'] = "Érvénytelen beállítás(ok)";
@@ -253,6 +259,7 @@ $_['text_purge_all_messages_from_quarantine'] = "Összes saját üzenet törlés
 $_['text_purge_selected_messages'] = "Kiválasztott üzenetek eltávolítása";
 $_['text_purged'] = "Eltávolítva";
 
+$_['text_qr_code'] = "QR";
 $_['text_queue_status'] = "Queue státusz";
 $_['text_quick_search'] = "Gyorskeresés";
 
@@ -260,6 +267,7 @@ $_['text_realname'] = "Név";
 $_['text_recipient'] = "Címzett";
 $_['text_ref'] = "Hivatkozás";
 $_['text_refresh_period'] = "Frissítési periódus";
+$_['text_refresh_qr_code'] = "QR kód frissítése";
 $_['text_relay_details'] = "Relay részletek";
 $_['text_relay_status'] = "Relay státusz";
 $_['text_remove'] = "Törlés";

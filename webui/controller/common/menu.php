@@ -9,6 +9,7 @@ class ControllerCommonMenu extends Controller {
       $this->template = "common/menu.tpl";
 
       $db = Registry::get('db');
+      $session = Registry::get('session');
 
       $this->load->model('saas/customer');
 
@@ -17,6 +18,8 @@ class ControllerCommonMenu extends Controller {
       $this->data['readonly_admin'] = Registry::get('readonly_admin');
 
       $this->data['settings'] = $this->model_saas_customer->get_customer_settings_by_email();
+
+      $this->data['realname'] = $session->get('realname');
 
       $this->render();
    }

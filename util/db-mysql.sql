@@ -173,7 +173,9 @@ create table if not exists `user_settings` (
    `username` char(64) not null unique,
    `pagelen` int default 20,
    `theme` char(8) default 'default',
-   `lang` char(2) default NULL
+   `lang` char(2) default null,
+   `ga_enabled` int default 0,
+   `ga_secret` varchar(255) default null
 );
 
 create index `user_settings_idx` on `user_settings`(`username`);

@@ -3,6 +3,7 @@
 class ModelUserAuth extends Model {
 
    public function checkLogin($username = '', $password = '') {
+      $session = Registry::get('session');
       $ok = 0;
 
       if($username == '' || $password == '') { return 0; }
@@ -47,17 +48,19 @@ class ModelUserAuth extends Model {
 
 
       if($ok == 1) {
-         $_SESSION['username'] = $query->row['username'];
-         $_SESSION['uid'] = $query->row['uid'];
-         $_SESSION['admin_user'] = $query->row['isadmin'];
-         $_SESSION['email'] = $username;
-         $_SESSION['domain'] = $query->row['domain'];
-         $_SESSION['realname'] = $query->row['realname'];
+         $session->set("username", $username);
+         $session->set("uid", $query->row['uid']);
+         $session->set("admin_user", $query->row['isadmin']);
+         $session->set("email", $username);
+         $session->set("domain", $query->row['domain']);
+         $session->set("realname", $query->row['realname']);
 
-         $_SESSION['auditdomains'] = $this->model_user_user->get_users_all_domains($query->row['uid']);
-         $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
-         $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
-         $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
+         $session->set("auditdomains", $this->model_user_user->get_users_all_domains($query->row['uid']));
+         $session->set("emails", $this->model_user_user->get_users_all_email_addresses($query->row['uid']));
+         $session->set("folders", $this->model_folder_folder->get_all_folder_ids($query->row['uid']));
+         $session->set("extra_folders", $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']));
+
+         $this->is_ga_code_needed();
 
          return 1;
       }
@@ -190,6 +193,8 @@ class ModelUserAuth extends Model {
 
 
    private function add_session_vars($name = '', $email = '', $emails = array(), $role = 0) {
+      $session = Registry::get('session');
+
       $a = explode("@", $email);
 
       $uid = $this->model_user_user->get_uid_by_email($email);
@@ -198,23 +203,26 @@ class ModelUserAuth extends Model {
          $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array($uid, $email));
       }
 
-      $_SESSION['username'] = $name;
-      $_SESSION['uid'] = $uid;
+
+      $session->set("username", $email);
+      $session->set("uid", $uid);
 
       if($role > 0) {
-         $_SESSION['admin_user'] = $role;
+         $session->set("admin_user", $role);
       } else {
-         $_SESSION['admin_user'] = 0;
+         $session->set("admin_user", 0);
       }
 
-      $_SESSION['email'] = $email;
-      $_SESSION['domain'] = $a[1];
-      $_SESSION['realname'] = $name;
+      $session->set("email", $email);
+      $session->set("domain", $a[1]);
+      $session->set("realname", $name);
 
-      $_SESSION['auditdomains'] = $this->model_domain_domain->get_your_all_domains_by_email($email);
-      $_SESSION['emails'] = $emails;
-      $_SESSION['folders'] = array();
-      $_SESSION['extra_folders'] = array();
+      $session->set("auditdomains", $this->model_domain_domain->get_your_all_domains_by_email($email));
+      $session->set("emails", $emails);
+      $session->set("folders", array());
+      $session->set("extra_folders", array());
+
+      $this->is_ga_code_needed();
    }
 
 
@@ -243,6 +251,8 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstIMAP($username = '', $password = '') {
+      $session = Registry::get('session');
+
       $user = array();
 
       $imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
@@ -251,7 +261,7 @@ class ModelUserAuth extends Model {
 
          $this->add_session_vars($username, $username, array($username), 0);
 
-         $_SESSION['password'] = $password;
+         $session->set("password", $password);
 
          return 1;
       }
@@ -354,6 +364,17 @@ class ModelUserAuth extends Model {
 
       $n = $session->get('failed_logins') + 1;
       $session->set('failed_logins', $n);
+   }
+
+
+   private function is_ga_code_needed() {
+      $session = Registry::get('session');
+
+      $query = $this->db->query("SELECT ga_enabled FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($session->get("username")));
+
+      if(isset($query->row['ga_enabled']) && $query->row['ga_enabled'] == 1) {
+         $session->set("ga_block", 1);
+      }
    }
 
 

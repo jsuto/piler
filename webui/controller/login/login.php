@@ -43,21 +43,27 @@ class ControllerLoginLogin extends Controller {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
 
-            $this->model_user_prefs->get_user_preferences($session->get('username'));
-
-            if(ENABLE_SAAS == 1) {
-               $this->model_saas_customer->online($session->get('email'));
-            }
-
-            LOGGER('logged in');
-
-            if(isAdminUser() == 1) {
-               header("Location: " . SITE_URL . "index.php?route=health/health");
+            if($session->get("ga_block") == 1) {
+               header("Location: " . SITE_URL . "index.php?route=login/ga");
                exit;
             }
+            else {
+               $this->model_user_prefs->get_user_preferences($session->get('username'));
 
-            header("Location: " . SITE_URL . "search.php");
-            exit;
+               if(ENABLE_SAAS == 1) {
+                  $this->model_saas_customer->online($session->get('email'));
+               }
+
+               LOGGER('logged in');
+
+               if(isAdminUser() == 1) {
+                  header("Location: " . SITE_URL . "index.php?route=health/health");
+                  exit;
+               }
+
+               header("Location: " . SITE_URL . "search.php");
+               exit;
+            }
          }
          else {
             $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);

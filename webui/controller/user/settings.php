@@ -12,12 +12,18 @@ class ControllerUserSettings extends Controller {
 
 
       $request = Registry::get('request');
+      $session = Registry::get('session');
+
       $db = Registry::get('db');
 
       $this->load->model('user/auth');
       $this->load->model('user/prefs');
       $this->load->model('user/user');
       $this->load->model('group/group');
+
+      require(DIR_BASE . 'system/helper/PHPGangsta_GoogleAuthenticator.php');
+
+      $this->data['ga'] = $this->model_user_prefs->get_ga_settings($session->get('username'));
 
       $this->document->title = $this->data['text_settings'];
   

@@ -93,6 +93,29 @@
     
 </form>
 
+
+<form method="post" name="setqr" class="form-horizontal">
+
+   <h4><?php print $text_google_authenticator_settings; ?></h4>
+
+    <div class="control-group">
+        <label class="control-label" for="ga_enabled"><?php print $text_enable; ?></label>
+        <div class="controls">
+           <input type="checkbox" name="ga_enabled" id="ga_enabled" onclick="Piler.toggle_ga();" <?php if($ga['ga_enabled'] == 1) { ?>checked="checked"<?php } ?> />
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="ga_secret"><?php print $text_qr_code; ?></label>
+        <div id="QR" class="controls">
+           <?php print $ga['ga_secret']; ?> <a href="#" onclick="Piler.new_qr(); return false;"> <?php print $text_refresh_qr_code; ?></a><br /><img src="qr.php?ts=<?php print time(); ?>" />
+        </div>
+    </div>
+
+</form>
+
+
+
 <p>&nbsp;</p>
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>

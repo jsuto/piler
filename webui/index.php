@@ -70,7 +70,11 @@ Registry::set('actions', $actions);
 Registry::set('import_status', $import_status);
 
 
-if(Registry::get('username')) {
+
+if($session->get("ga_block") == 1 && $request->get['route'] != 'login/logout' ) {
+   $action = new Router('login/ga');
+}
+else if(Registry::get('username')) {
 
    if(isset($request->get['route'])){
       $action = new Router($request->get['route']);

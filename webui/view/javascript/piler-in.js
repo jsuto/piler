@@ -1037,6 +1037,39 @@ var Piler =
     {
        var colour = $('#' + srcid).val();
        $('#' + dstid).css('background', colour);
+    },
+
+
+    new_qr: function()
+    {
+
+        Piler.log("[new_qr]");
+
+        document.body.style.cursor = 'wait';
+
+        jQuery.ajax('qr.php?refresh=1', { cache: true })
+        .done( function(a) {
+           $('#QR').html(a);
+           document.body.style.cursor = 'default';
+        })
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+    },
+
+
+    toggle_ga: function()
+    {
+        var ga = 0;
+
+        if(document.getElementById('ga_enabled').checked == 1){ ga = 1; }
+
+        Piler.log("[toggle GA]", ga);
+
+        jQuery.ajax('qr.php?toggle=' + ga, { cache: true })
+        .done( function(a) {
+        })
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
     }
 
 

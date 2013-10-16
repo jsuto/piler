@@ -69,7 +69,7 @@
              <?php if($settings['branding_url']) { ?><li><a href="<?php print $settings['branding_url']; ?>" target="_blank" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-share-alt icon-white"></i> <?php print $settings['branding_text']; ?></a></li><?php } ?>
 
              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $_SESSION['realname']; ?> <i class="icon-user icon-white"></i> <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><?php print $realname; ?> <i class="icon-user icon-white"></i> <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                    <li><a href="settings.php"><i class="icon-cog"></i>&nbsp;<?php print $text_settings; ?></a></li>
                    <li class="divider"></li>

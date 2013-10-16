@@ -102,11 +102,37 @@
       </div>
 
    </div>
-
 </form>
+
+<p>&nbsp;</p>
+
+
+
+   <div id="search">
+
+      <h4><?php print $text_google_authenticator_settings; ?></h4>
+
+      <div id="search1">
+
+         <div class="row">
+                <div class="logincell"><?php print $text_enable; ?>:</div>
+                <div class="logincell"><input type="checkbox" name="ga_enabled" id="ga_enabled" onclick="Piler.toggle_ga();" <?php if($ga['ga_enabled'] == 1) { ?>checked="checked"<?php } ?> /></div>
+         </div>
+
+         <div class="row">
+                <div class="logincell"><?php print $text_qr_code; ?>:</div>
+                <div id="QR" class="logincell">
+                   <?php print $ga['ga_secret']; ?> <a href="#" onclick="Piler.new_qr(); return false;"><?php print $text_refresh_qr_code; ?></a><br /><img src="qr.php?ts=<?php print time(); ?>" />
+
+                </div>
+         </div>
+   </div>
+
 
 
 <p>&nbsp;</p>
+
+
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
    <div id="search">

@@ -39,6 +39,53 @@ class ModelUserPrefs extends Model {
       return 1;
    }
 
+
+
+   public function get_ga_settings($username = '') {
+      $data = array('ga_enabled' => 0, 'ga_secret' => '');
+
+      if($username == ""){ return $data; }
+
+      $GA = new PHPGangsta_GoogleAuthenticator();
+
+      $query = $this->db->query("SELECT ga_enabled, ga_secret FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($username));
+
+      if(isset($query->row['ga_enabled'])) {
+         $data['ga_enabled'] = $query->row['ga_enabled'];
+         $data['ga_secret'] = $query->row['ga_secret'];
+
+         if($data['ga_secret'] == '') {
+            $data['ga_secret'] = $GA->createSecret();
+            $this->update_ga_secret($username, $data['ga_secret']);
+         }
+      }
+      else {
+         $query = $this->db->query("INSERT INTO " . TABLE_USER_SETTINGS . " (username, ga_enabled, ga_secret) VALUES(?,0,?)", array($username, $GA->createSecret()));
+      }
+
+
+      return $data;
+   }
+
+
+   public function update_ga_secret($username = '', $ga_secret = '') {
+      if($username == "" || $ga_secret == "") { return 0; }
+
+      $query = $this->db->query("UPDATE " . TABLE_USER_SETTINGS . " SET ga_secret=? WHERE username=?", array($ga_secret, $username));
+
+      return 1;
+   }
+
+
+   public function toggle_ga($username = '', $ga_enabled = '') {
+      if($username == "" || $ga_enabled < 0 || $ga_enabled > 1) { return 0; }
+
+      $query = $this->db->query("UPDATE " . TABLE_USER_SETTINGS . " SET ga_enabled=? WHERE username=?", array($ga_enabled, $username));
+
+      return 1;
+   }
+
+
 }
 
 ?>
