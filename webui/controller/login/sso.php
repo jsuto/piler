@@ -12,6 +12,7 @@ class ControllerLoginSSO extends Controller {
 
 
       $request = Registry::get('request');
+      $session = Registry::get('session');
 
       $db = Registry::get('db');
 

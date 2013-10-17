@@ -329,6 +329,11 @@ class ModelUserAuth extends Model {
             if(isset($a['mail']['count'])) { $username = $a['mail'][0]; } else { $username = $a['mail']; }
             $username = strtolower(preg_replace("/^smtp\:/i", "", $username));
 
+            if($username == '') {
+               syslog(LOG_INFO, "no email address found for " . $a['dn']);
+               return 0;
+            }
+
             $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . $a['dn'] . ")))", array());
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);

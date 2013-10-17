@@ -1,24 +1,18 @@
 <?php
 
-function go_to_setup() {
-   Header("Location: setup/setup.php");
-   exit;
-}
-
-$stat = stat("config.php") or go_to_setup();
-if($stat[7] < 15){ go_to_setup(); }
+session_start();
 
 
 require_once("config.php");
 
 require(DIR_SYSTEM . "/startup.php");
 
+$session = new Session();
+Registry::set("session", $session);
 
 $request = new Request();
 Registry::set("request", $request);
 
-
-session_start();
 
 Registry::set('document', new Document());
 
@@ -29,6 +23,8 @@ Registry::set('load', $loader);
 
 $language = new Language();
 Registry::set('language', $language);
+
+if(ENABLE_SYSLOG == 1) { openlog("piler-webui", LOG_PID, LOG_MAIL); }
 
 
 $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PREFIX);
