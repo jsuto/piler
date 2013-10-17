@@ -40,9 +40,11 @@
 
 <div id="piler1" class="container">
 
+<?php if(OUTLOOK == 0) { ?>
 <div id="menu">
    <?php print $menu; ?>
 </div>
+<?php } ?>
 
 <div id="expertsearch">
 
@@ -56,7 +58,9 @@
 
          <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
 
+      <?php if(OUTLOOK == 0) { ?>
          <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>
+      <?php } ?>
 
          <button id="button_search" class="btn btn-danger" onclick="Piler.expert(this); return false;"><?php print $text_search; ?></button>
 
@@ -65,7 +69,7 @@
          <button class="btn btn-inverse" onclick="Piler.load_saved_search_terms(); return false;"><?php print $text_load; ?></button>
       </form>
 
-         <?php print $popup; ?>
+         <?php if(OUTLOOK == 0) { print $popup; } ?>
 
          <div id="sspinner">
             <div class="progress progress-striped active">
@@ -129,6 +133,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
    split.init();
+   Piler.fix_page();
 });
 </script>
 

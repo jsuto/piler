@@ -16,7 +16,6 @@ var Piler =
     folders: '',
     extra_folders: '',
 
-
     /*
      * variables used at search listing
      */
@@ -1047,7 +1046,7 @@ var Piler =
 
         document.body.style.cursor = 'wait';
 
-        jQuery.ajax('qr.php?refresh=1', { cache: true })
+        jQuery.ajax('qr.php?refresh=1', { cache: false })
         .done( function(a) {
            $('#QR').html(a);
            document.body.style.cursor = 'default';
@@ -1065,13 +1064,20 @@ var Piler =
 
         Piler.log("[toggle GA]", ga);
 
-        jQuery.ajax('qr.php?toggle=' + ga, { cache: true })
+        jQuery.ajax('qr.php?toggle=' + ga, { cache: false })
         .done( function(a) {
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-    }
+    },
 
+
+    fix_page: function()
+    {
+<?php if(OUTLOOK == 1) { ?>
+        $('#mainscreen').css('top', '60px');
+<?php } ?>
+    }
 
 }
 
