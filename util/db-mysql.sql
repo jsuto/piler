@@ -56,6 +56,7 @@ create index metadata_idx5 on metadata(`deleted`);
 create index metadata_idx6 on metadata(`arrived`); 
 create index metadata_idx7 on metadata(`retained`); 
 create index metadata_idx8 on metadata(`fromdomain`); 
+create index metadata_idx9 on metadata(`sent`); 
 
 
 create table if not exists `rcpt` (
