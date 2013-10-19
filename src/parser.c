@@ -338,7 +338,24 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
       else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
-      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
+
+      //else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
+
+      /*
+       * in pilerimport:  sdata->sent = 0
+       * in piler daemon: sdata->sent = sdata->now
+       */
+
+      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0){
+         if(sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
+         else {
+            sdata->sent = parse_date_header(buf, cfg);
+
+            /* allow +/-1 week drift in the parsed Date: value */
+            if(sdata->now - sdata->sent > 604800 || sdata->sent - sdata->now > 604800) sdata->sent = sdata->now;
+         }
+      }
+
       else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf, cfg);
       else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
       else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0) state->message_state = MSG_TO;
