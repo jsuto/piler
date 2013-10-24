@@ -395,7 +395,7 @@ int main(int argc, char **argv){
    if(purged_size > 100){
       snprintf(buf, sizeof(buf)-1, "UPDATE `%s` SET size = size - %ld", SQL_COUNTER_TABLE, purged_size);
 
-      if(dry_run == 0) p_query(&sdata, buf);
+      if(dryrun == 0) p_query(&sdata, buf);
    }
 
 
