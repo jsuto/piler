@@ -100,21 +100,24 @@ class ModelDomainDomain extends Model {
       if($domain == "" || $mapped == "") { return 0; }
 
       $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($mapped, $mapped, $ldap_id));
+      $rc = $this->db->countAffected();
+      if($rc == 1) {
+         LOGGER("add domain: $domain (rc=$rc)");
+      }
 
       $domains = explode("\n", $domain);
 
       foreach ($domains as $domain) {
          $domain = rtrim($domain);
-         $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($domain, $mapped, $ldap_id));
+         if($domain != $mapped) {
+            $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($domain, $mapped, $ldap_id));
+            $rc = $this->db->countAffected();
 
-         $rc = $this->db->countAffected();
-
-         LOGGER("add domain: $domain (rc=$rc)");
-
-         if($rc != 1){ return 0; }
+            LOGGER("add domain: $domain (rc=$rc)");
+         }
       }
 
-      return 1;
+      return $rc;
    }
 
 

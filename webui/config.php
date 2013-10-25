@@ -1,5 +1,7 @@
 <?php
 
+define('BUILD', '2013-10-24 846');
+
 $config = array();
 
 
