@@ -30,6 +30,7 @@ all:
 
 install:
 	$(INSTALL) -m 0755 $(srcdir)/rc.piler $(DESTDIR)/etc/init.d/rc.piler
+	$(INSTALL) -m 0755 $(srcdir)/rc.pilergetd $(DESTDIR)/etc/init.d/rc.pilergetd
 	$(INSTALL) -m 0755 $(srcdir)/rc.searchd $(DESTDIR)/etc/init.d/rc.searchd
 
 clean:
