@@ -9,11 +9,10 @@ Release:        %{release}
 License:        gpl
 Group:          Networking/Mail
 Source0:        master.tar.gz
-Source1:        %{name}.init
 URL:            http://www.mailpiler.org/
 Buildroot:      /tmp/aa
 BuildRequires:  openssl-devel, tcp_wrappers, poppler-utils, libzip-devel, catdoc, mysql-devel, tnef, unrtf, tre-devel
-Requires:       mysql, openssl, tcp_wrappers, libzip
+Requires:       mysql, openssl, tcp_wrappers, libzip, poppler-utils, catdoc, tnef, unrtf, tre
 
 %description
 piler is an email archiving application.
@@ -38,7 +37,9 @@ cp /usr/local/lib/libmariadb* /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/usr
 %defattr(-,root,root)
 %dir /var/piler
 %dir /var/piler/tmp
+%dir /var/piler/sphinx
 %dir /var/piler/store
+%dir /var/piler/stat
 %dir /var/run/piler
 %attr(0655,piler,piler) /usr/local/bin/pileraget
 %attr(0655,piler,piler) /usr/local/bin/pilerexport
@@ -49,7 +50,7 @@ cp /usr/local/lib/libmariadb* /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/usr
 /etc/init.d/rc.piler
 /etc/init.d/rc.pilergetd
 /etc/init.d/rc.searchd
-/usr/local/etc/piler.conf
+%attr(0640,root,piler) /usr/local/etc/piler.conf
 /usr/local/etc/sphinx.conf.dist
 /usr/local/sbin/piler
 /usr/local/sbin/pilergetd
@@ -81,8 +82,11 @@ if [ -d /var/piler ]; then chmod 755 /var/piler; fi
 
 
 %post
+chown -R piler:piler /var/run/piler /var/piler
+echo /usr/local/lib > /etc/ld.so.conf.d/piler.conf
+ldconfig
 echo this is the postinstall stuff...
-
+echo run /usr/local/libexec/piler/postinstall.sh manually to configure piler
 
 %postun
 userdel piler
@@ -92,4 +96,5 @@ groupdel piler
 %changelog
 * Fri Oct 25 2013 Janos Suto
   - First release of the rpm package based on build 846
+
 
