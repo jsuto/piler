@@ -733,7 +733,16 @@ class ModelSearchSearch extends Model {
 
 
    private function make_cache_file_name($data = array(), $sortorder = '') {
-      return sha1($_SESSION['email'] . "/" . join("*", $data) . "-" . (NOW - NOW % 3600) . "-" . $sortorder);
+      $s = '';
+
+      while(list($k, $v) = each($data)) {
+         if($v) {
+            if(is_array($v)) { $v = join("*", $v); }
+            $s .= "*$k=$v";
+         }
+      }
+
+      return sha1($_SESSION['email'] . "/" . $s . "-" . (NOW - NOW % 3600) . "-" . $sortorder);
    }
 
 }
