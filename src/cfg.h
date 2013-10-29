@@ -12,6 +12,8 @@ struct __config {
    char username[MAXVAL];
 
    char hostid[MAXVAL];
+   int hostid_len;
+
    char pidfile[MAXVAL];
    char pilergetd_pidfile[MAXVAL];
 

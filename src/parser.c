@@ -636,12 +636,18 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          if(state->message_state == MSG_RECIPIENT && findnode(state->journal_recipient, puf) == NULL){
             addnode(state->journal_recipient, puf);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
-            memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
          }
 
 
          if(findnode(state->rcpt, puf) == NULL){
+
+            /* skip any address matching ...@cfg->hostid, 2013.10.29, SJ */
+            q = strchr(puf, '@');
+            if(q && strncmp(q+1, cfg->hostid, cfg->hostid_len) == 0){
+               continue;
+            }
+
             addnode(state->rcpt, puf);
             memcpy(&(state->b_to[state->tolen]), puf, len);
             state->tolen += len;
@@ -650,7 +656,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
                if(is_email_address_on_my_domains(puf, data) == 1) sdata->internal_recipient = 1;
                else sdata->external_recipient = 1;
 
-               q = strchr(puf, '@');
+               //q = strchr(puf, '@');
                if(q){
                   if(findnode(state->rcpt_domain, q+1) == NULL){
                      addnode(state->rcpt_domain, q+1);

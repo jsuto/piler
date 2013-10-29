@@ -185,6 +185,8 @@ struct __config read_config(char *configfile){
 
    if(parse_config_file(configfile, &cfg, config_parse_rules) == -1) printf("error parsing the configfile: %s\n", configfile);
 
+   cfg.hostid_len = strlen(cfg.hostid);
+
    return cfg;
 }
 
