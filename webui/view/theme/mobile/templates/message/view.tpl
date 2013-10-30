@@ -22,6 +22,9 @@
    | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="icon-envelope"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
 <?php } ?>
 
+    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
+       if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="icon-ok-sign sleek" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified icon-remove-sign sleek" title="<?php print $text_unverified_flag; ?>"></i><?php }
+    } ?>
 
 </p>
 

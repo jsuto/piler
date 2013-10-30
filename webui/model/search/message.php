@@ -3,7 +3,7 @@
 class ModelSearchMessage extends Model {
 
 
-   public function verify_message($id = '') {
+   public function verify_message($id = '', $data = '') {
       if($id == '') { return 0; }
 
       $q = $this->db->query("SELECT `size`, `hlen`, `digest`, `bodydigest`,`attachments` FROM " . TABLE_META . " WHERE piler_id=?", array($id));
@@ -14,12 +14,8 @@ class ModelSearchMessage extends Model {
       $hlen = $q->row['hlen'];
       $attachments = $q->row['attachments'];
 
-      $data = $this->get_raw_message($id);
-
       $_digest = openssl_digest($data, "SHA256");
       $_bodydigest = openssl_digest(substr($data, $hlen), "SHA256");
-
-      $data = '';
 
       if($_digest == $digest && $_bodydigest == $bodydigest) { return 1; }
 
@@ -299,11 +295,17 @@ class ModelSearchMessage extends Model {
       $has_text_plain = 0;
       $rfc822 = 0;
       $_1st_header = 1;
+      $verification = 1;
 
       $from = $to = $subject = $date = $message = "";
 
       $this->connect_to_pilergetd();
       $msg = $this->get_raw_message($id);
+
+      if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
+         $verification = $this->verify_message($id, $msg);
+      }
+
       $this->disconnect_from_pilergetd();
 
       $has_journal = $this->remove_journal($msg);
@@ -422,7 +424,8 @@ class ModelSearchMessage extends Model {
                    'subject' => $this->highlight_search_terms($this->decode_my_str($subject), $terms),
                    'date' => $this->decode_my_str($date),
                    'message' => $this->highlight_search_terms($message, $terms),
-                   'has_journal' => $has_journal
+                   'has_journal' => $has_journal,
+                   'verification' => $verification
             );
    }
 

@@ -420,7 +420,9 @@ class ModelSearchSearch extends Model {
              */
 
             if(ENABLE_ON_THE_FLY_VERIFICATION == 1) {
-               $m['verification'] = $this->model_search_message->verify_message($m['piler_id']);
+               $data = $this->model_search_message->get_raw_message($m['piler_id']);
+               $m['verification'] = $this->model_search_message->verify_message($m['piler_id'], $data);
+               $data = '';
             }
 
             if(isset($tag[$m['id']])) { $m['tag'] = $tag[$m['id']]; } else { $m['tag'] = ''; }

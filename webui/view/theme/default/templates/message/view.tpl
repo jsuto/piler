@@ -23,6 +23,11 @@
     <?php if($message['has_journal'] == 1 && Registry::get('auditor_user') == 1 && SHOW_ENVELOPE_JOURNAL == 1) { ?>
        | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="icon-envelope-alt"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
     <?php } ?>
+
+    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {    
+       if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="verified icon-ok-sign icon-large" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified icon-remove-sign icon-large" title="<?php print $text_unverified_flag; ?>"></i><?php }
+    } ?>
+
     </p>
 
     <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
