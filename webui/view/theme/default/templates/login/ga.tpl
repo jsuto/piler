@@ -41,6 +41,7 @@
             <input type="password" class="input-block-level bold" id="ga_code" name="ga_code" placeholder="<?php print $text_google_authenticator_code; ?>">
 
             <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
+            <button class="btn btn-large" type="reset" value="<?php print $text_cancel; ?>" onclick="document.location.href='logout.php';"><?php print $text_cancel; ?></button>
 
         </form>
 
