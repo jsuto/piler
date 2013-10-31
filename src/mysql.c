@@ -123,9 +123,6 @@ CLOSE:
 
 int p_store_results(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *data){
    MYSQL_BIND bind[MAX_SQL_VARS];
-   my_bool is_null[MAX_SQL_VARS];
-   unsigned long length[MAX_SQL_VARS];
-   my_bool error[MAX_SQL_VARS];
    int i, ret=ERR;
 
    memset(bind, 0, sizeof(bind));
@@ -160,9 +157,9 @@ int p_store_results(struct session_data *sdata, MYSQL_STMT *stmt, struct __data 
 
 
          bind[i].buffer = (char *)data->sql[i];
-         bind[i].is_null = &is_null[i];
-         bind[i].length = &length[i];
-         bind[i].error = &error[i];
+         bind[i].is_null = &(data->is_null[i]);
+         bind[i].length = &(data->length[i]);
+         bind[i].error = &(data->error[i]);
 
       }
       else { break; }

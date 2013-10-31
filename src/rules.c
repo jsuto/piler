@@ -54,7 +54,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(xhash, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+      append_rule(xhash, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days, data);
 
       memset(domain, 0, sizeof(domain));
       memset(from, 0, sizeof(from));
@@ -75,7 +75,7 @@ ENDE:
 }
 
 
-int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
+int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
    struct node *q, *Q=NULL, *node;
    struct rule *rule;
    int rc=0;
@@ -85,7 +85,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
    memset(node, 0, sizeof(struct node));
    node->r = NULL;
 
-   rule = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days);
+   rule = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days, data);
 
    if(rule == NULL){
       free(node);
@@ -112,7 +112,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
 }
 
 
-struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days){
+struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -124,7 +124,7 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
    h->compiled = 1;
 
    h->domain = NULL;
-   h->domainlen = strlen(domain);
+   h->domainlen = data->length[0];
 
    if(h->domainlen > 2){
       h->domain = malloc(h->domainlen+2);

@@ -285,6 +285,9 @@ struct __data {
    char *sql[MAX_SQL_VARS];
    int type[MAX_SQL_VARS];
    int len[MAX_SQL_VARS];
+   unsigned long length[MAX_SQL_VARS];
+   my_bool is_null[MAX_SQL_VARS];
+   my_bool error[MAX_SQL_VARS];
    int pos;
 
 #ifdef HAVE_TRE
