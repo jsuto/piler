@@ -99,6 +99,8 @@ class ModelDomainDomain extends Model {
    public function addDomain($domain = '', $mapped = '', $ldap_id = 0) {
       if($domain == "" || $mapped == "") { return 0; }
 
+      $mapped = strtolower($mapped);
+
       $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($mapped, $mapped, $ldap_id));
       $rc = $this->db->countAffected();
       if($rc == 1) {
@@ -108,7 +110,7 @@ class ModelDomainDomain extends Model {
       $domains = explode("\n", $domain);
 
       foreach ($domains as $domain) {
-         $domain = rtrim($domain);
+         $domain = strtolower(rtrim($domain));
          if($domain != $mapped) {
             $query = $this->db->query("INSERT INTO " . TABLE_DOMAIN . " (domain, mapped, ldap_id) VALUES (?,?,?)", array($domain, $mapped, $ldap_id));
             $rc = $this->db->countAffected();
