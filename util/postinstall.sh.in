@@ -213,7 +213,7 @@ gather_mysql_account() {
    MYSQL_HOSTNAME=$response
 
    if [ $MYSQL_HOSTNAME = "localhost" ]; then
-      askNonBlank "Please enter mysql socket path" "MYSQL_SOCKET"
+      askNonBlank "Please enter mysql socket path" "$MYSQL_SOCKET"
       MYSQL_SOCKET=$response
    else
       MYSQL_SOCKET=""
@@ -381,7 +381,7 @@ execute_post_install_tasks() {
 
    make_certificate
 
-   MYSQL_SOCKET=`echo $MYSQL_SOCKET | sed "s/\//\\\\\//g"`
+   MYSQL_SOCKET=$(sed 's/\//\\\//g' <<< "$MYSQL_SOCKET")
 
    sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
