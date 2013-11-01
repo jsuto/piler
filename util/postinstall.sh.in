@@ -26,6 +26,7 @@ load_default_values() {
    MYSQL_USERNAME="piler"
    MYSQL_PASSWORD=""
    MYSQL_ROOT_PASSWORD=""
+   MYSQL_SOCKET=""
 
    SPHINXCFG="/usr/local/etc/sphinx.conf"
 
@@ -205,8 +206,18 @@ gather_webserver_data() {
 
 gather_mysql_account() {
 
+   if [ -e /var/lib/mysql/mysql.sock ]; then MYSQL_SOCKET="/var/lib/mysql/mysql.sock"; fi
+   if [ -e /var/run/mysqld/mysqld.sock ]; then MYSQL_SOCKET="/var/run/mysqld/mysqld.sock"; fi
+
    askNonBlank "Please enter mysql hostname" "$MYSQL_HOSTNAME"
    MYSQL_HOSTNAME=$response
+
+   if [ $MYSQL_HOSTNAME = "localhost" ]; then
+      askNonBlank "Please enter mysql socket path" "MYSQL_SOCKET"
+      MYSQL_SOCKET=$response
+   else
+      MYSQL_SOCKET=""
+   fi
 
    askNonBlank "Please enter mysql database" "$MYSQL_DATABASE"
    MYSQL_DATABASE=$response
@@ -302,6 +313,7 @@ show_summary() {
    echo
 
    echo "mysql host: $MYSQL_HOSTNAME"
+   echo "mysql socket: $MYSQL_SOCKET"
    echo "mysql database: $MYSQL_DATABASE"
    echo "mysql username: $MYSQL_USERNAME"
    echo "mysql password: *******"
@@ -369,7 +381,9 @@ execute_post_install_tasks() {
 
    make_certificate
 
-   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
+   MYSQL_SOCKET=`echo $MYSQL_SOCKET | sed "s/\//\\\\\//g"`
+
+   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
    rm -f $PILERCONF_TMP
 
