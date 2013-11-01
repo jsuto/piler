@@ -1,6 +1,6 @@
 %define name piler
 %define version 0.1.25
-%define release 1
+%define release 2
 
 Summary:        an email archiving application
 Name:           %{name}
@@ -21,16 +21,15 @@ piler is an email archiving application.
 %setup
 
 %build
-./configure --localstatedir=/var --enable-starttls --enable-tcpwrappers --with-database=mariadb
+./configure --localstatedir=/var --enable-starttls --enable-tcpwrappers --with-database=mysql
 make clean all
 
 %install
 ##mkdir -p /tmp/aa/etc/init.d
 ##make install DESTDIR=/tmp/aa
-mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/etc/init.d
-mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/usr/local/lib
-make install DESTDIR=/root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64
-cp /usr/local/lib/libmariadb* /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/usr/local/lib
+mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/etc/init.d
+mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/usr/local/lib
+make install DESTDIR=/root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64
 
 
 %files
@@ -55,9 +54,6 @@ cp /usr/local/lib/libmariadb* /root/rpmbuild/BUILDROOT/piler-0.1.25-1.x86_64/usr
 /usr/local/sbin/piler
 /usr/local/sbin/pilergetd
 /usr/local/sbin/pilerconf
-/usr/local/lib/libmariadbclient.a
-/usr/local/lib/libmariadb.so
-/usr/local/lib/libmariadb.so.1
 /usr/local/lib/libpiler.a
 /usr/local/lib/libpiler.so
 /usr/local/lib/libpiler.so.0
@@ -94,6 +90,9 @@ groupdel piler
 
 
 %changelog
+* Fri Nov  1 2013 Janos Suto
+  - Fixed a bug causing issues when reading the retention|archiving_rules tables
+
 * Fri Oct 25 2013 Janos Suto
   - First release of the rpm package based on build 846
 

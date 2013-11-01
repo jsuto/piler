@@ -109,6 +109,16 @@ ask() {
 }
 
 
+askNoEcho() {
+  PROMPT=$1
+  DEFAULT=$2
+
+  stty -echo
+  ask "$PROMPT" "$DEFAULT"
+  stty echo
+  echo ""
+}
+
 askNonBlankNoEcho() {
   PROMPT=$1
   DEFAULT=$2
@@ -204,7 +214,7 @@ gather_mysql_account() {
    askNonBlank "Please enter mysql user name" "$MYSQL_USERNAME"
    MYSQL_USERNAME=$response
 
-   askNonBlankNoEcho "Please enter mysql password for $MYSQL_USERNAME" ""
+   askNoEcho "Please enter mysql password for $MYSQL_USERNAME" ""
    MYSQL_PASSWORD=$response
 
    askNonBlankNoEcho "Please enter mysql root password" ""
