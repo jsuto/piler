@@ -107,7 +107,9 @@
               <button id="download_all_search_hits" name="download_all_search_hits" class="btn btn-custom btn-inverse" onclick="Piler.download_all_search_hits();"><?php print $text_download_all_hits; ?></button>
            <?php } ?>
 
+           <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
               <button class="btn piler-right-margin" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
+           <?php } ?>
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
               <button class="btn" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>'); return false;" >OK</button>

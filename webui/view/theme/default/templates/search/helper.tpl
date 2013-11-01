@@ -143,7 +143,9 @@
             <?php } ?>
 
                 <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
+            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); " title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
+            <?php } ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>

@@ -1,6 +1,6 @@
 <?php
 
-define('BUILD', '2013-10-28 846');
+define('BUILD', '2013-11-01 848');
 
 $config = array();
 
