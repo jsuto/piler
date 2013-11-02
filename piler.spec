@@ -1,7 +1,6 @@
 %define name piler
 %define version 0.1.25
 %define release 2
-%define myhostname piler.yourdomain.com
 
 Summary:        an email archiving application
 Name:           %{name}
@@ -26,13 +25,9 @@ piler is an email archiving application.
 make clean all
 
 %install
-##mkdir -p /tmp/aa/etc/init.d
-##make install DESTDIR=/tmp/aa
 mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/etc/init.d
 mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/usr/local/lib
 make install DESTDIR=/root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64
-mkdir -p /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/var/www
-cp -R webui /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/var/www/%{myhostname}
 
 
 %files
@@ -43,7 +38,6 @@ cp -R webui /root/rpmbuild/BUILDROOT/piler-0.1.25-2.x86_64/var/www/%{myhostname}
 %dir /var/piler/store
 %dir /var/piler/stat
 %dir /var/run/piler
-%dir /var/www/%{myhostname}
 %attr(0655,piler,piler) /usr/local/bin/pileraget
 %attr(0655,piler,piler) /usr/local/bin/pilerexport
 %attr(0655,piler,piler) /usr/local/bin/pilerget
