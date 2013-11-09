@@ -2,6 +2,11 @@
 
 class ModelSearchMessage extends Model {
 
+   public $encoding_aliases = array(
+                                     'GB2312'   => 'GBK',
+                                     'GB231280' => 'GBK'
+                                   );
+
 
    public function verify_message($id = '', $data = '') {
       if($id == '') { return 0; }
@@ -117,10 +122,18 @@ class ModelSearchMessage extends Model {
       }
       else {
          $handle = popen(DECRYPT_BINARY . " $id", "r");
-         while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){
+         while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))) {
             $s .= $buf;
          }
          pclose($handle);
+
+         if($s == '') {
+            $handle = popen(DECRYPT_BINARY . " $id nocrypt", "r");
+            while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))) {
+               $s .= $buf;
+            }
+            pclose($handle);
+         }
       }
 
 
@@ -346,7 +359,10 @@ class ModelSearchMessage extends Model {
                         $type = preg_replace("/[\"\'\ ]/", "", $type);
 
                         $x = explode("=", $type);
-                        $charset = $x[1];
+                        $charset = rtrim(strtoupper($x[1]));
+
+                        if(isset($this->encoding_aliases[$charset])) { $charset = $this->encoding_aliases[$charset]; }
+
                      }
                   }
                }
@@ -476,7 +492,7 @@ class ModelSearchMessage extends Model {
       }
 
       if($charset && !preg_match("/utf-8/i", $charset)){
-         $s = @iconv($charset, 'utf-8', $chunk);
+         $s = @iconv($charset, 'utf-8' . '//IGNORE', $chunk);
          if($s) { $chunk = $s; $s = ''; }
       }
 
@@ -599,7 +615,8 @@ class ModelSearchMessage extends Model {
          $what = preg_replace("/^\=\?/", "", $what);
          $what = preg_replace("/\?\=$/", "", $what);
 
-         $encoding = substr($what, 0, strpos($what, '?'));
+         $encoding = strtoupper(substr($what, 0, strpos($what, '?')));
+         if(isset($this->encoding_aliases[$encoding])) { $encoding = $this->encoding_aliases[$encoding]; }
 
          if(preg_match("/\?Q\?/i", $what)){
             $x = preg_replace("/^([\w\-]+)\?Q\?/i", "", $what);
@@ -616,7 +633,7 @@ class ModelSearchMessage extends Model {
          }
 
          if(!preg_match("/utf-8/i", $encoding)){
-            $s = iconv($encoding, 'utf-8', $s);
+            $s = iconv($encoding, 'utf-8' . '//IGNORE', $s);
          }
 
       }
