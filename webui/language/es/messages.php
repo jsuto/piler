@@ -26,6 +26,7 @@ $_['text_archive_size'] = "Tamaño de archivo";
 $_['text_archived_messages'] = "Mensajes archivados";
 $_['text_archiving_rules'] = "Reglas de archivado";
 $_['text_attachment'] = "Adjunto";
+$_['text_attachment_name'] = "Nombre de adjunto";
 $_['text_attachment_size'] = "Tamaño de adjunto";
 $_['text_attachment_type'] = "Tipo de adjunto";
 $_['text_audit'] = "Auditar";

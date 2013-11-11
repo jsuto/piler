@@ -94,6 +94,7 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerexport $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerpurge $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) reindex $(DESTDIR)$(bindir)
+	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilertest $(DESTDIR)$(bindir)
 
 clean:
 	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pilergetd pileraget pilerimport pilerexport pilerpurge pilertest reindex

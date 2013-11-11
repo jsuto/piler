@@ -27,6 +27,7 @@ $_['text_archive_size_before_compression'] = "Archive size before compression";
 $_['text_archived_messages'] = "Archived messages";
 $_['text_archiving_rules'] = "Archiving rules";
 $_['text_attachment'] = "Attachment";
+$_['text_attachment_name'] = "Attachment name";
 $_['text_attachment_size'] = "Attachment size";
 $_['text_attachment_type'] = "Attachment type";
 $_['text_audit'] = "Audit";

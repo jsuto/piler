@@ -41,6 +41,10 @@
          </div>
       </div>
       <div class="row">
+         <div class="domaincell"><?php print $text_attachment_name; ?>:</div>
+         <div class="domaincell"><input type="text" name="attachment_name" class="input-medium span5" /></div>
+      </div>
+      <div class="row">
          <div class="domaincell"><?php print $text_attachment_type; ?>:</div>
          <div class="domaincell"><input type="text" name="attachment_type" class="input-medium span5" /></div>
       </div>
@@ -98,6 +102,7 @@
          <div class="domaincell"><?php print $text_subject; ?></div>
          <div class="domaincell"><?php print $text_spam; ?></div>
          <div class="domaincell"><?php print $text_size; ?></div>
+         <div class="domaincell"><?php print $text_attachment_name; ?></div>
          <div class="domaincell"><?php print $text_attachment_type; ?></div>
          <div class="domaincell"><?php print $text_attachment_size; ?></div>
          <div class="domaincell"><?php print $text_days; ?></div>
@@ -117,6 +122,7 @@
          <div class="domaincell"><?php print $rule['subject']; ?></div>
          <div class="domaincell"><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></div>
          <div class="domaincell"><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></div>
+         <div class="domaincell"><?php print $rule['attachment_name']; ?></div>
          <div class="domaincell"><?php print $rule['attachment_type']; ?></div>
          <div class="domaincell"><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></div>
          <div class="domaincell"><?php print $rule['days']; ?></div>

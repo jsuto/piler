@@ -36,7 +36,13 @@
             </select>
             <input type="text" class="ruletext" name="size" />
          </div>
-      </div>      
+      </div>
+      <div class="control-group">
+                <label class="control-label" for="attachment_name"><?php print $text_attachment_name; ?>:</label>
+        <div class="controls">
+            <input type="text" class="text" name="attachment_name" />
+         </div>
+      </div>
       <div class="control-group">
 		<label class="control-label" for="attachment_type"><?php print $text_attachment_type; ?>:</label>
         <div class="controls">
@@ -85,6 +91,7 @@
          <th><?php print $text_subject; ?></th>
          <th><?php print $text_spam; ?></th>
          <th><?php print $text_size; ?></th>
+         <th><?php print $text_attachment_name; ?></th>
          <th><?php print $text_attachment_type; ?></th>
          <th><?php print $text_attachment_size; ?></th>
          <th>&nbsp;</th>
@@ -97,6 +104,7 @@
          <td><?php print $rule['subject']; ?></td>
          <td><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></td>
          <td><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></td>
+         <td><?php print $rule['attachment_name']; ?></td>
          <td><?php print $rule['attachment_type']; ?></td>
          <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
          <td><a href="index.php?route=policy/removearchiving&amp;id=<?php print $rule['id']; ?>"><?php print $text_remove; ?></a></td>

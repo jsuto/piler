@@ -26,6 +26,7 @@ $_['text_archive_size'] = "Archivgröße";
 $_['text_archived_messages'] = "Archivierte Nachrichten";
 $_['text_archiving_rules'] = "Archivierungsregeln";
 $_['text_attachment'] = "Anhang";
+$_['text_attachment_name'] = "Anhangname";
 $_['text_attachment_size'] = "Größe Anhang";
 $_['text_attachment_type'] = "Typ Anhang";
 $_['text_audit'] = "Revision";

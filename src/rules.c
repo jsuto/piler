@@ -12,7 +12,7 @@
 
 void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
-   char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
+   char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_name[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
    int size=0, attachment_size=0, spam=0, days=0;
 
    memset(domain, 0, sizeof(domain));
@@ -20,11 +20,12 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
    memset(to, 0, sizeof(to));
    memset(subject, 0, sizeof(subject));
    memset(_size, 0, sizeof(_size));
+   memset(attachment_name, 0, sizeof(attachment_name));
    memset(attachment_type, 0, sizeof(attachment_type));
    memset(_attachment_size, 0, sizeof(_attachment_size));
 
 
-   snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `_size`, `size`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
+   snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
 
    if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
 
@@ -43,6 +44,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
    data->sql[data->pos] = &subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(subject)-2; data->pos++;
    data->sql[data->pos] = &_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_size)-2; data->pos++;
    data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(size); data->pos++;
+   data->sql[data->pos] = &attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(attachment_name)-2; data->pos++;
    data->sql[data->pos] = &attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(attachment_type)-2; data->pos++;
    data->sql[data->pos] = &_attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_attachment_size)-2; data->pos++;
    data->sql[data->pos] = (char *)&attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(attachment_size); data->pos++;
@@ -54,13 +56,14 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(xhash, domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days, data);
+      append_rule(xhash, domain, from, to, subject, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam, days, data);
 
       memset(domain, 0, sizeof(domain));
       memset(from, 0, sizeof(from));
       memset(to, 0, sizeof(to));
       memset(subject, 0, sizeof(subject));
       memset(_size, 0, sizeof(_size));
+      memset(attachment_name, 0, sizeof(attachment_name));
       memset(attachment_type, 0, sizeof(attachment_type));
       memset(_attachment_size, 0, sizeof(_attachment_size));
 
@@ -75,7 +78,7 @@ ENDE:
 }
 
 
-int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
+int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_name, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
    struct node *q, *Q=NULL, *node;
    struct rule *rule;
    int rc=0;
@@ -85,7 +88,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
    memset(node, 0, sizeof(struct node));
    node->r = NULL;
 
-   rule = create_rule_item(domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam, days, data);
+   rule = create_rule_item(domain, from, to, subject, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam, days, data);
 
    if(rule == NULL){
       free(node);
@@ -112,7 +115,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
 }
 
 
-struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
+struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *_size, int size, char *attachment_name, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -152,6 +155,8 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
    if(!_size) _size = &empty;
    snprintf(h->_size, 3, "%s", _size);
 
+   if(!attachment_name) attachment_name = &empty;
+   if(regcomp(&(h->attachment_name), attachment_name, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
    if(!attachment_type) attachment_type = &empty;
    if(regcomp(&(h->attachment_type), attachment_type, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
@@ -162,12 +167,12 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
    if(!_attachment_size) _attachment_size = &empty;
    snprintf(h->_attachment_size, 3, "%s", _attachment_size);
 
-   len = strlen(domain)+8 + strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 9 + 15 + 15;
+   len = strlen(domain)+8 + strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(_size)+6 + strlen(attachment_name)+10 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 9 + 15 + 15;
    h->rulestr = malloc(len);
 
 
 
-   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,size%s%d,att.type=%s,att.size%s%d,spam=%d", domain, from, to, subject, _size, size, attachment_type, _attachment_size, attachment_size, spam);
+   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,size%s%d,att.name=%s,att.type=%s,att.size%s%d,spam=%d", domain, from, to, subject, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam);
    else h->compiled = 0;
 
    h->r = NULL;
@@ -281,6 +286,7 @@ int check_attachment_rule(struct _state *state, struct rule *rule){
 
    for(i=1; i<=state->n_attachments; i++){
       if(
+         regexec(&(rule->attachment_name), state->attachments[i].filename, nmatch, NULL, 0) == 0 &&
          regexec(&(rule->attachment_type), state->attachments[i].type, nmatch, NULL, 0) == 0 &&
          check_size_rule(state->attachments[i].size, rule->attachment_size, rule->_attachment_size) == 1
       ){
@@ -313,6 +319,7 @@ void clearrules(struct node *xhash[]){
 
             regfree(&(rule->from));
             regfree(&(rule->to));
+            regfree(&(rule->attachment_name));
             regfree(&(rule->attachment_type));
 
             free(rule->rulestr);

@@ -27,6 +27,7 @@ $_['text_archive_size_before_compression'] = "Archívum méret tömörítés né
 $_['text_archived_messages'] = "Archivált levelek";
 $_['text_archiving_rules'] = "Archiválási szabályok";
 $_['text_attachment'] = "Melléklet";
+$_['text_attachment_name'] = "Melléklet név";
 $_['text_attachment_size'] = "Melléklet méret";
 $_['text_attachment_type'] = "Melléklet típus";
 $_['text_audit'] = "Audit";

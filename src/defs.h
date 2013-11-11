@@ -100,6 +100,7 @@ struct rule {
    regex_t from;
    regex_t to;
    regex_t subject;
+   regex_t attachment_name;
    regex_t attachment_type;
 #endif
    int spam;
