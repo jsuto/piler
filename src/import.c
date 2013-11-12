@@ -119,7 +119,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
                         counters.c_duplicate = 1;
                         update_counters(sdata, data, &counters, cfg);
 
-                        if(data->quiet == 0)printf("duplicate: %s (id: %s)\n", filename, sdata->ttmpfile);
+                        if(data->quiet == 0) printf("duplicate: %s (duplicate id: %llu)\n", filename, sdata->duplicate_id);
                         break;
 
       default:

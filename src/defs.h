@@ -187,6 +187,7 @@ struct session_data {
    char acceptbuf[SMALLBUFSIZE];
    char attachments[SMALLBUFSIZE];
    char internal_sender, internal_recipient, external_recipient;
+   uint64 duplicate_id;
    short int customer_id;
    int direction;
    int tls;

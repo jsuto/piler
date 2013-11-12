@@ -255,7 +255,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   counters.c_rcvd++;
 
                   if(inj == ERR_EXISTS){
-                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message", sdata.ttmpfile);
+                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu", sdata.ttmpfile, sdata.duplicate_id);
                      counters.c_duplicate++;
                   }
 

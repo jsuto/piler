@@ -247,18 +247,17 @@ void remove_stripped_attachments(struct _state *state){
 
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
    int rc;
-   uint64 id=0;
 
    /* discard if existing message_id */
 
-   id = get_metaid_by_messageid(sdata, data, state->message_id, cfg);
+   sdata->duplicate_id = get_metaid_by_messageid(sdata, data, state->message_id, cfg);
 
-   if(id > 0){
+   if(sdata->duplicate_id > 0){
       remove_stripped_attachments(state);
 
       if(strlen(state->b_journal_to) > 0){
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, id, state->message_id);
-         store_recipients(sdata, data, state->b_journal_to, id, 0, cfg);
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, sdata->duplicate_id, state->message_id);
+         store_recipients(sdata, data, state->b_journal_to, sdata->duplicate_id, 0, cfg);
       }
 
       return ERR_EXISTS;

@@ -446,6 +446,8 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
 
    memset(sdata->fromemail, 0, SMALLBUFSIZE);
 
+   sdata->duplicate_id = 0;
+
    sdata->restored_copy = 0;
 
    sdata->internal_sender = sdata->internal_recipient = sdata->external_recipient = 0;
