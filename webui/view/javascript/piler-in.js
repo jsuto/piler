@@ -1077,7 +1077,20 @@ var Piler =
 <?php if(OUTLOOK == 1) { ?>
         $('#mainscreen').css('top', '60px');
 <?php } ?>
+    },
+
+
+    print_div: function(divID) {
+       var divElements = document.getElementById(divID).innerHTML;
+       var oldPage = document.body.innerHTML;
+
+       document.body.innerHTML = "<html><head><title></title></head><body>" + divElements + "</body></html>";
+
+       window.print();
+
+       document.body.innerHTML = oldPage;
     }
+
 
 }
 

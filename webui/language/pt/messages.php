@@ -460,5 +460,6 @@ $_['text_google_authenticator_settings'] = "Google Authenticator settings";
 $_['text_invalid_pin_code'] = "Invalid pin code";
 $_['text_qr_code'] = "QR";
 $_['text_refresh_qr_code'] = "Refresh QR code";
+$_['text_print_message'] = "Print";
 
 ?>
