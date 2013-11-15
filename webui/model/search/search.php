@@ -104,7 +104,7 @@ class ModelSearchSearch extends Model {
 
             $sd = preg_replace("/^\|/", "", $sd);
 
-            return " (@todomain $sd . | @fromdomain $sd ) ";
+            return " (@todomain $sd | @fromdomain $sd ) ";
          }
 
          else { return ""; }
