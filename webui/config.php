@@ -247,6 +247,14 @@ $themes = array(
                );
 
 
+$paging = array(
+                 10,
+                 20,
+                 30,
+                 50
+               );
+
+
 $letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
 

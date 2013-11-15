@@ -55,10 +55,9 @@
         <label class="control-label" for="pagelen"><?php print $text_page_length; ?></label>
         <div class="controls">
            <select name="pagelen">
-              <option value="10"<?php if($page_len == 10) { ?> selected="selected"<?php } ?>>10
-              <option value="20"<?php if($page_len == 20) { ?> selected="selected"<?php } ?>>20
-              <option value="30"<?php if($page_len == 30) { ?> selected="selected"<?php } ?>>30
-              <option value="50"<?php if($page_len == 50) { ?> selected="selected"<?php } ?>>50
+           <?php foreach(Registry::get('paging') as $t) { ?>
+              <option value="<?php print $t; ?>"<?php if($page_len == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
+           <?php } ?>
            </select>
         </div>
     </div>

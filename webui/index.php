@@ -61,6 +61,7 @@ if(MEMCACHED_ENABLED) {
 
 Registry::set('counters', $counters);
 Registry::set('langs', $langs);
+Registry::set('paging', $paging);
 Registry::set('themes', $themes);
 Registry::set('letters', $letters);
 Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra"));
