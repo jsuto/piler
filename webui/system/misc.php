@@ -83,7 +83,7 @@ function isBinary($num = '') {
 function get_page_length() {
    $page_len = PAGE_LEN;
    
-   if(isset($_SESSION['pagelen']) && is_numeric($_SESSION['pagelen']) && $_SESSION['pagelen'] >= 10 && $_SESSION['pagelen'] <= 50) {
+   if(isset($_SESSION['pagelen']) && is_numeric($_SESSION['pagelen']) && $_SESSION['pagelen'] >= 10 && $_SESSION['pagelen'] <= MAX_SEARCH_HITS) {
       $page_len = $_SESSION['pagelen'];
    }
 

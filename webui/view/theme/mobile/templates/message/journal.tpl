@@ -11,14 +11,14 @@
 </div>
 
 <p>
-   <a class="messagelink" href="index.php?route=message/download&amp;id=<?php print $id; ?>"><?php print $text_download_message; ?></a> |
+   <a class="messagelink" href="index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="icon-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
 <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { if(Registry::get('auditor_user') == 1) { ?>
-   <a class="messagelink" href="#" onclick="$('#restorebox').show();"><?php print $text_restore_to_mailbox; ?></a> |
+   <a class="messagelink" href="#" onclick="$('#restorebox').show();"><i class="icon-gift"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a> |
 <?php } else { ?>
-   <a class="messagelink" href="#" onclick="Piler.restore_message(<?php print $id; ?>);"><?php print $text_restore_to_mailbox; ?></a> |
+   <a class="messagelink" href="#" onclick="Piler.restore_message(<?php print $id; ?>);"><i class="icon-gift"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a> |
 <?php } } ?>
-   <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><?php print $text_view_headers; ?></a> |
-   <a class="messagelink" href="#" onclick="Piler.view_message(<?php print $id; ?>);"><?php print $text_view_message; ?></a>
+   <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><i class="icon-envelope"></i>&nbsp;<?php print $text_view_headers; ?></a> |
+   <a class="messagelink" href="#" onclick="Piler.view_message(<?php print $id; ?>);"><i class="icon-envelope"></i>&nbsp;<?php print $text_view_message; ?></a>
 </p>
 
 <pre><?php print $data; ?></pre>

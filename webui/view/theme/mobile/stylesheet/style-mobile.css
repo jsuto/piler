@@ -144,9 +144,9 @@
 	.sleek { margin:0; padding:0; }
 	.with20margin{ margin-left:20%; margin-right:20%; }
 
-	#notesbox { position:absolute; top:8px; right:8px; }
-
-	.messagecontents {background-color:#fff; padding:8px; font-size:14px; font-family: "Trebuchet MS", Arial, Verdana; }
+	#notesbox { position:absolute; top: 8px; right: 8px; }
+	.messageheader { margin-left: 5px; }
+	.messagecontents { background-color:#fff; padding:8px; font-size:14px; font-family: "Trebuchet MS", Arial, Verdana; }
 
 
 	/* rc splitter stuff */
