@@ -825,18 +825,16 @@ var Piler =
 
     download_all_search_hits:function()
     {
-        var url;
+        Piler.log("[download_all_search_hits]");
 
-        url = '/index.php?route=message/dl';
-
-        jQuery.ajax( url, {
+        jQuery.ajax('/index.php?route=message/dl', {
             type: "POST"
         })
-        .done( function( a )// data, textStatus, jqXHR
+        .done( function( a )
         {
             Piler.download_messages_real(a, Piler.bulkrestore_url);
         })
-        .fail(function( a, b )// jqXHR, textStatus, errorThrown
+        .fail(function( a, b )
         {
             alert("Problem retrieving XML data:" + b)
         });
@@ -846,6 +844,8 @@ var Piler =
 
     download_selected_as_pdf:function()
     {
+        Piler.log("[download_selected_as_pdf]");
+
         var idlist = Piler.get_selected_messages_list();
         if(idlist) {
            Piler.download_messages_real(idlist, Piler.bulkpdf_url);
