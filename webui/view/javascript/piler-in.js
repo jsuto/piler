@@ -15,6 +15,8 @@ var Piler =
     current_message_id: 0,
     folders: '',
     extra_folders: '',
+    bulkrestore_url: '/bulkrestore.php',
+    bulkpdf_url: '/bulkpdf.php',
 
     /*
      * variables used at search listing
@@ -427,6 +429,19 @@ var Piler =
     },
 
 
+    get_messages_list:function()
+    {
+        var idlist = '';
+
+        for(i=0; i<Piler.Messages.length; i++) {
+           if(idlist) idlist += ",";
+           idlist += Piler.Messages[i];
+        }
+
+        return idlist;
+    },
+
+
     /*
      * fill Messages array with search results
      */
@@ -768,7 +783,7 @@ var Piler =
     },
 
 
-    download_messages_real:function(idlist)
+    download_messages_real:function(idlist, url)
     {
         Piler.log("[download_messages_real]", idlist);
 
@@ -776,7 +791,7 @@ var Piler =
            var form = document.createElement("form");
 
            form.setAttribute("method", "post");
-           form.setAttribute("action", '/bulkrestore.php');
+           form.setAttribute("action", url);
            form.setAttribute("name", "download");
 
            var hiddenField = document.createElement("input");
@@ -804,7 +819,7 @@ var Piler =
     download_messages:function()
     {
         var idlist = Piler.get_selected_messages_list();
-        Piler.download_messages_real(idlist);
+        Piler.download_messages_real(idlist, Piler.bulkrestore_url);
     },
 
 
@@ -819,13 +834,22 @@ var Piler =
         })
         .done( function( a )// data, textStatus, jqXHR
         {
-            Piler.download_messages_real(a);
+            Piler.download_messages_real(a, Piler.bulkrestore_url);
         })
         .fail(function( a, b )// jqXHR, textStatus, errorThrown
         {
             alert("Problem retrieving XML data:" + b)
         });
 
+    },
+
+
+    download_selected_as_pdf:function()
+    {
+        var idlist = Piler.get_selected_messages_list();
+        if(idlist) {
+           Piler.download_messages_real(idlist, Piler.bulkpdf_url);
+        }
     },
 
 

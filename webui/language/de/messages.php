@@ -459,7 +459,8 @@ $_['text_customer_delete_confirm_message'] = 'Soll dieser Kunde wirklich gelösc
 $_['text_with_selected'] = 'mit ausgewählten';
 
 
-$_['text_download_all_hits'] = "Download all";
+$_['text_download_all_hits_as_eml'] = "Download all as EML";
+$_['text_download_selected_hits_as_pdf'] = "Download selected as PDF";
 $_['text_archive_size_before_compression'] = "Archive size before compression";
 $_['text_create_new_secret'] = "Create new secret";
 $_['text_enter_google_authenticator_code'] = "Enter Google Authenticator code";

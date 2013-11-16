@@ -69,6 +69,24 @@ class ControllerMessageView extends Controller {
       $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $_SESSION['uid']);
       $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $_SESSION['uid']);
 
+      $this->data['images'] = array();
+
+      foreach($this->data['attachments'] as $a) {
+         if(preg_match("/image/", $a['type'])) {
+            $attachment = $this->model_search_message->get_attachment_by_id($a['id']);
+            $fp = fopen(DIR_BASE . 'tmp/' . $a['id'], "w+");
+            if($fp) {
+               fwrite($fp, $attachment['attachment']);
+               fclose($fp);
+
+               $this->data['images'][] = array(
+                                           'name' => $a['id']
+                                         );
+            }
+         }
+      }
+
+
       $this->render();
    }
 

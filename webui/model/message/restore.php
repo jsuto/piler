@@ -42,9 +42,7 @@ class ModelMessageRestore extends Model {
       readfile($filename);
 
       unlink($filename);
-
    }
-
 
 }
 
