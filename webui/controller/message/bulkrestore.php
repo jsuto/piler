@@ -9,6 +9,7 @@ class ControllerMessageBulkrestore extends Controller {
       $this->template = "message/bulkrestore.tpl";
       $this->layout = "common/layout-empty";
 
+      $session = Registry::get('session');
       $request = Registry::get('request');
       $db = Registry::get('db');
 
@@ -65,7 +66,7 @@ class ControllerMessageBulkrestore extends Controller {
             $rcpt = $this->model_search_search->get_message_recipients($id);
          }
          else {
-            array_push($rcpt, $_SESSION['email']);
+            array_push($rcpt, $session->get("email"));
          }
 
          if(count($rcpt) > 0) {

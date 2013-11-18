@@ -5,11 +5,13 @@ class ModelUserPrefs extends Model {
    public function get_user_preferences($username = '') {
       if($username == "") { return 0; }
 
+      $session = Registry::get('session');
+
       $query = $this->db->query("SELECT * FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($username));
 
-      if(isset($query->row['pagelen'])) { $_SESSION['pagelen'] = $query->row['pagelen']; } else { $_SESSION['pagelen'] = PAGE_LEN; }
-      if(isset($query->row['theme'])) { $_SESSION['theme'] = $query->row['theme']; } else { $_SESSION['theme'] = THEME; }
-      if(isset($query->row['lang'])) { $_SESSION['lang'] = $query->row['lang']; } else { $_SESSION['lang'] = DEFAULT_LANG; }
+      if(isset($query->row['pagelen'])) { $session->set("pagelen", $query->row['pagelen']); } else { $session->set("pagelen", PAGE_LEN); }
+      if(isset($query->row['theme'])) { $session->set("theme", $query->row['theme']); } else { $session->set("theme", THEME); }
+      if(isset($query->row['lang'])) { $session->set("lang", $query->row['lang']); } else { $session->set("lang", DEFAULT_LANG); }
 
       return 1;
    }
@@ -19,6 +21,8 @@ class ModelUserPrefs extends Model {
 
       if(!isset($prefs['pagelen']) || !is_numeric($prefs['pagelen']) || $prefs['pagelen'] < 10 || $prefs['pagelen'] > 100
          || !isset($prefs['theme']) || !preg_match("/^([a-zA-Z0-9\-\_]+)$/", $prefs['theme']) || !file_exists(DIR_THEME . $prefs['theme']) ) { return 1; }
+
+      $session = Registry::get('session');
 
       $query = $this->db->query("SELECT COUNT(*) AS num FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($username));
 
@@ -30,9 +34,9 @@ class ModelUserPrefs extends Model {
       }
 
 
-      $_SESSION['pagelen'] = $prefs['pagelen'];
-      $_SESSION['theme'] = $prefs['theme'];
-      $_SESSION['lang'] = $prefs['lang'];
+      $session->set("pagelen", $prefs['pagelen']);
+      $session->set("theme", $prefs['theme']);
+      $session->set("lang", $prefs['lang']);
 
       LOGGER("set user preference", $username);
 

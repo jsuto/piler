@@ -85,7 +85,9 @@ class ModelUserUser extends Model {
    public function get_users_all_domains($uid = 0) {
       $data = array();
 
-      array_push($data, $_SESSION['domain']);
+      $session = Registry::get('session');
+
+      array_push($data, $session->get('domain'));
 
       if($uid > 0) {
          $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));

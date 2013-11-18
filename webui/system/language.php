@@ -8,10 +8,11 @@ class Language {
       global $langs;
 
       $lang = '';
+      $session = Registry::get('session');
 
-      if(isset($_SESSION['lang']) && $_SESSION['lang'] != '') {
-         $file = DIR_LANGUAGE . $_SESSION['lang'] . '/messages.php';
-         define('LANG', $_SESSION['lang']);
+      if($session->get("lang")) {
+         $file = DIR_LANGUAGE . $session->get("lang") . '/messages.php';
+         define('LANG', $session->get("lang"));
       }
       else {
          $pref_langs = $this->get_preferred_languages();
@@ -26,7 +27,7 @@ class Language {
 
          if($lang == '') { $lang = DEFAULT_LANG; }
 
-         $_SESSION['lang'] = $lang;
+         $session->set("lang", $lang);
 
          $file = DIR_LANGUAGE . $lang . '/messages.php';
       }

@@ -86,9 +86,10 @@ class Controller {
 
 
    protected function fetch(){
+      $session = Registry::get('session');
 
-      if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme']) && file_exists(DIR_THEME . $_SESSION['theme']) ) {
-         $file = DIR_THEME . $_SESSION['theme'] . '/templates/' . $this->template;
+      if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme")) && file_exists(DIR_THEME . $session->get("theme")) ) {
+         $file = DIR_THEME . $session->get("theme") . '/templates/' . $this->template;
       } else {
          $file = DIR_THEME . THEME . '/templates/' . $this->template;
       }

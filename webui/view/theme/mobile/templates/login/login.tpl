@@ -30,7 +30,7 @@
 
 <body class="loginpage">
    
-<?php if(!isset($_SESSION['username'])){ ?>
+<?php if(!Registry::get('username')) { ?>
 
     <div id="logincontainer" class="container">
         <div id="logo-lg"><img src="<?php print SITE_URL; ?><?php print SITE_LOGO_LG; ?>" alt="Archive Logo Image" title="<?php print $text_login; ?>" /></div>

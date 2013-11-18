@@ -129,6 +129,7 @@ class ModelSearchSearch extends Model {
 
       $emailfilter = $this->assemble_email_address_filter();
 
+      $session = Registry::get('session');
 
 
       $i = 0;
@@ -194,7 +195,7 @@ class ModelSearchSearch extends Model {
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
          $s = explode(" ", $data['folders']);
          while(list($k,$v) = each($s)) {
-            if(in_array($v, $_SESSION['folders'])) {
+            if(in_array($v, $session->get("folders"))) {
                array_push($__folders, $v);
             }
          }
@@ -203,7 +204,7 @@ class ModelSearchSearch extends Model {
             $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
          }
          else {
-            $folders = "folder IN (" . implode(",", $_SESSION['folders']) . ") AND ";
+            $folders = "folder IN (" . implode(",", $session->get("folders")) . ") AND ";
          }
       }
 
@@ -275,6 +276,8 @@ class ModelSearchSearch extends Model {
 
       if($reference == '') { return $ids; }
 
+      $session = Registry::get('session');
+
       $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id=? OR reference=? ORDER BY id DESC", array($reference, $reference));
 
       foreach($query->rows as $q) {
@@ -285,7 +288,7 @@ class ModelSearchSearch extends Model {
          $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $ids) . ")");
          $ids = array();
          foreach($query->rows as $q) {
-            if(isset($q['folder']) && in_array($q['folder'], $_SESSION['folders'])) { array_push($ids, $q['id']); }
+            if(isset($q['folder']) && in_array($q['folder'], $session->get("folders"))) { array_push($ids, $q['id']); }
          }
       }
 
@@ -302,9 +305,11 @@ class ModelSearchSearch extends Model {
    private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '') {
       $id_list = '';
 
+      $session = Registry::get('session');
+
       $s = $this->fixup_sphinx_operators($s);
 
-      $q = $this->sphx->query("SELECT id FROM $sphx_table WHERE uid=" . $_SESSION['uid'] . " AND MATCH('@$field $s') ");
+      $q = $this->sphx->query("SELECT id FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') ");
 
       foreach($q->rows as $a) {
          $id_list .= "," . $a['id'];
@@ -321,9 +326,11 @@ class ModelSearchSearch extends Model {
       $q = '';
       $__folders = array();
 
+      $session = Registry::get('session');
+
       $s = explode(" ", $extra_folders);
       while(list($k,$v) = each($s)) {
-         if(in_array($v, $_SESSION['extra_folders']) && is_numeric($v)) {
+         if(in_array($v, $session->get("extra_folders")) && is_numeric($v)) {
             array_push($__folders, $v);
             if($q) { $q .= ",?"; }
             else { $q = "?"; }
@@ -358,6 +365,8 @@ class ModelSearchSearch extends Model {
          if(isset($m['meta'])) { return unserialize($m['meta']); }
       }
 
+      $session = Registry::get('session');
+
       $query = $this->db->query("SELECT `id`, `to` FROM `" . TABLE_RCPT . "` WHERE `id` IN ($q)", $ids);
 
       if(isset($query->rows)) {
@@ -377,7 +386,7 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
 
-         array_unshift($ids, (int)$_SESSION['uid']);
+         array_unshift($ids, (int)$session->get("uid"));
 
          $tags = $this->db->query("SELECT `id`, `tag` FROM `" . TABLE_TAG . "` WHERE `uid`=? AND `id` IN ($q)", $ids);
 
@@ -413,7 +422,7 @@ class ModelSearchSearch extends Model {
             $m['date'] = date(DATE_TEMPLATE, $m['sent']);
             $m['size'] = nice_size($m['size']);
 
-            in_array($m['from'], $_SESSION['emails']) ? $m['yousent'] = 1 : $m['yousent'] = 0;
+            in_array($m['from'], $session->get("emails")) ? $m['yousent'] = 1 : $m['yousent'] = 0;
 
             /*
              * verifying 20 messages takes some time, still it's useful
@@ -514,7 +523,11 @@ class ModelSearchSearch extends Model {
    private function get_all_your_address() {
       $s = '';
 
-      while(list($k, $v) = each($_SESSION['emails'])) {
+      $session = Registry::get('session');
+
+      $emails = $session->get("emails");
+
+      while(list($k, $v) = each($emails)) {
          if($s) { $s .= '| ' .  $this->fix_email_address_for_sphinx($v); }
          else { $s = $this->fix_email_address_for_sphinx($v); }
       }
@@ -531,15 +544,19 @@ class ModelSearchSearch extends Model {
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) { return 1; }
 
+      $session = Registry::get('session');
+
       array_push($arr, $id);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
-         if(validdomain($_SESSION['domain']) == 1) {
+         if(validdomain($session->get("domain")) == 1) {
             $q .= ",?";
-            array_push($a, $_SESSION['domain']);
+            array_push($a, $session->get("domain"));
          }
 
-         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+         $auditdomains = $session->get("auditdomains");
+
+         while(list($k, $v) = each($auditdomains)) {
             if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
@@ -547,7 +564,9 @@ class ModelSearchSearch extends Model {
          }
       }
       else {
-         while(list($k, $v) = each($_SESSION['emails'])) {
+         $emails = $session->get("emails");
+
+         while(list($k, $v) = each($emails)) {
             if(validemail($v) == 1) {
                $q .= ",?";
                array_push($a, $v);
@@ -561,7 +580,7 @@ class ModelSearchSearch extends Model {
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
          $query = $this->sphx->query("SELECT folder FROM " . SPHINX_MAIN_INDEX . " WHERE id=" . (int)$id);
-         if(isset($query->row['folder']) && in_array($query->row['folder'], $_SESSION['folders'])) { return 1; }
+         if(isset($query->row['folder']) && in_array($query->row['folder'], $session->get("folders"))) { return 1; }
       }
       else {
          if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
@@ -583,6 +602,8 @@ class ModelSearchSearch extends Model {
 
       if(count($id) < 1) { return $result; }
 
+      $session = Registry::get('session');
+
       $arr = $id;
 
       for($i=0; $i<count($id); $i++) {
@@ -593,12 +614,14 @@ class ModelSearchSearch extends Model {
       $q2 = preg_replace("/^\,/", "", $q2);
 
       if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
-         if(validdomain($_SESSION['domain']) == 1) {
+         if(validdomain($session->get("domain")) == 1) {
             $q .= ",?";
-            array_push($a, $_SESSION['domain']);
+            array_push($a, $session->get("domain"));
          }
 
-         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+         $auditdomains = $session->get("auditdomains");
+
+         while(list($k, $v) = each($auditdomains)) {
             if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
@@ -607,7 +630,9 @@ class ModelSearchSearch extends Model {
       }
       else {
          if(Registry::get('auditor_user') == 0) {
-            while(list($k, $v) = each($_SESSION['emails'])) {
+            $emails = $session->get("emails");
+
+            while(list($k, $v) = each($emails)) {
                if(validemail($v) == 1) {
                   $q .= ",?";
                   array_push($a, $v);
@@ -641,7 +666,7 @@ class ModelSearchSearch extends Model {
       if($query->num_rows > 0) {
          foreach ($query->rows as $q) {
             if(ENABLE_FOLDER_RESTRICTIONS == 1) {
-               if(in_array($q['folder'], $_SESSION['folders'])) { array_push($result, $q['id']); }
+               if(in_array($q['folder'], $session->get("folders"))) { array_push($result, $q['id']); }
             }
             else {
                array_push($result, $q['id']);
@@ -660,8 +685,9 @@ class ModelSearchSearch extends Model {
 
 
    public function get_search_terms() {
+      $session = Registry::get('session');
 
-      $query = $this->db->query("SELECT term, ts FROM " . TABLE_SEARCH . " WHERE email=? ORDER BY ts DESC", array($_SESSION['email']));
+      $query = $this->db->query("SELECT term, ts FROM " . TABLE_SEARCH . " WHERE email=? ORDER BY ts DESC", array($session->get("email")));
       if(isset($query->rows)) { return $query->rows; }
 
       return array();
@@ -671,12 +697,14 @@ class ModelSearchSearch extends Model {
    public function add_search_term($term = '') {
       if($term == '') { return 0; }
 
+      $session = Registry::get('session');
+
       parse_str($term, $s);
       if(!isset($s['search']) || $s['search'] == '') { return 0; }
 
       if($this->update_search_term($term) == 0) {
          AUDIT(ACTION_SAVE_SEARCH, '', '', '', $term);
-         $query = $this->db->query("INSERT INTO " . TABLE_SEARCH . " (email, ts, term) VALUES(?,?,?)", array($_SESSION['email'], time(), $term));
+         $query = $this->db->query("INSERT INTO " . TABLE_SEARCH . " (email, ts, term) VALUES(?,?,?)", array($session->get("email"), time(), $term));
       }
 
       return 1;
@@ -688,14 +716,18 @@ class ModelSearchSearch extends Model {
 
       AUDIT(ACTION_SEARCH, '', '', '', $term);
 
-      $query = $this->db->query("UPDATE " . TABLE_SEARCH . " SET ts=? WHERE term=? AND email=?", array(time(), $term, $_SESSION['email']));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("UPDATE " . TABLE_SEARCH . " SET ts=? WHERE term=? AND email=?", array(time(), $term, $session->get("email")));
 
       return $this->db->countAffected();
    }
 
 
    public function remove_search_term($ts = 0) {
-      $query = $this->db->query("DELETE FROM " . TABLE_SEARCH . " WHERE email=? AND ts=?", array($_SESSION['email'], $ts));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("DELETE FROM " . TABLE_SEARCH . " WHERE email=? AND ts=?", array($session->get("email"), $ts));
    }
 
 
@@ -736,6 +768,7 @@ class ModelSearchSearch extends Model {
 
    private function make_cache_file_name($data = array(), $sortorder = '') {
       $s = '';
+      $session = Registry::get('session');
 
       while(list($k, $v) = each($data)) {
          if($v) {
@@ -744,7 +777,7 @@ class ModelSearchSearch extends Model {
          }
       }
 
-      return sha1($_SESSION['email'] . "/" . $s . "-" . (NOW - NOW % 3600) . "-" . $sortorder);
+      return sha1($session->get("email") . "/" . $s . "-" . (NOW - NOW % 3600) . "-" . $sortorder);
    }
 
 }

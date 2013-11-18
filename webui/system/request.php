@@ -27,12 +27,12 @@ class Request {
 class Session {
 
    public function __construct() {
-      //session_start();
+      session_start();
    }
 
 
-   public function get($s = '') {
-      if($s && isset($_SESSION[$s])) { return $_SESSION[$s]; }
+   public function get($k = '') {
+      if($k && isset($_SESSION[$k])) { return $_SESSION[$k]; }
 
       return '';
    }
@@ -43,6 +43,12 @@ class Session {
       if($k) { $_SESSION[$k] = $v; }
 
    }
+
+
+   public function remove($k = '') {
+      if($k) { unset($_SESSION[$k]); }
+   }
+
 
 }
 

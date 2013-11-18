@@ -73,7 +73,7 @@
             <div class="tcell">
                <select name="theme">
             <?php foreach(Registry::get('themes') as $t) { ?>
-                  <option value="<?php print $t; ?>"<?php if(isset($_SESSION['theme']) && $_SESSION['theme'] == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
+                  <option value="<?php print $t; ?>"<?php if($theme == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
             <?php } ?>
                </select>
             </div>
@@ -85,7 +85,7 @@
                <select name="lang">
                   <option value=""><?php print $text_use_browser_settings; ?></option>
             <?php foreach(Registry::get('langs') as $t) { ?>
-                  <option value="<?php print $t; ?>"<?php if(isset($_SESSION['lang']) && $_SESSION['lang'] == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
+                  <option value="<?php print $t; ?>"<?php if($lang == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
             <?php } ?>
                </select>
             </div>

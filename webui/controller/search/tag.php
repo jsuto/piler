@@ -11,6 +11,7 @@ class ControllerSearchTag extends Controller {
       $this->layout = "common/layout-empty";
 
 
+      $session = Registry::get('session');
       $request = Registry::get('request');
       $db = Registry::get('db');
 
@@ -29,7 +30,7 @@ class ControllerSearchTag extends Controller {
             for($i=0; $i<count($ids); $i++) { $q .= ",?"; }
             $q = preg_replace("/^\,/", "", $q);
 
-            $this->model_search_message->bulk_add_message_tag($ids, $_SESSION['uid'], urldecode($this->request->post['tag']), $q);
+            $this->model_search_message->bulk_add_message_tag($ids, $session->get("uid"), urldecode($this->request->post['tag']), $q);
          }
       }
    }

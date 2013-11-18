@@ -42,7 +42,7 @@
 		<div class="controls">
 		  <select name="domain" id="domain">
                <?php asort($domains); foreach ($domains as $domain) { ?>
-                  <option value="<?php if(is_array($domain)){ print $domain['mapped']; } else { print $domain; } ?>"<?php if( (isset($post) && $domain == $post['domain']) || (!isset($post) && isset($_SESSION['last_domain']) && $domain == $_SESSION['last_domain']) ){ ?> selected="selected"<?php } ?>><?php if(is_array($domain)){ print $domain['mapped']; } else { print $domain; } ?></option>
+                  <option value="<?php if(is_array($domain)){ print $domain['mapped']; } else { print $domain; } ?>"<?php if( (isset($post) && $domain == $post['domain']) || (!isset($post) && $domain == $last_domain) ){ ?> selected="selected"<?php } ?>><?php if(is_array($domain)){ print $domain['mapped']; } else { print $domain; } ?></option>
                <?php } ?>
           </select>
           <?php if ( isset($errors['domain']) ) { ?><span class="help-inline"><?php print $errors['domain']; ?></span><?php } ?>

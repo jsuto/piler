@@ -12,6 +12,7 @@ class ModelAuditAudit extends Model {
       $date1 = $date2 = 0;
       $q = '';
 
+      $session = Registry::get('session');
 
       if($data['sort'] == "user") { $sort = "email"; }
       if($data['sort'] == "ipaddr") { $sort = "ipaddr"; }
@@ -40,7 +41,9 @@ class ModelAuditAudit extends Model {
       }
 
       if(Registry::get('admin_user') == 0 && RESTRICTED_AUDITOR == 1) {
-         while(list($k, $v) = each($_SESSION['auditdomains'])) {
+         $auditdomains = $session->get("auditdomains");
+
+         while(list($k, $v) = each($auditdomains)) {
             if($q) { $q .= ","; }
             $q .= "?";
             array_push($arr, $v);
@@ -48,7 +51,7 @@ class ModelAuditAudit extends Model {
 
          $where .= " AND domain IN ($q) ";
 
-         reset($_SESSION['auditdomains']);
+         reset($session->get("auditdomains"));
       }
 
 

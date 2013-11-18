@@ -196,8 +196,12 @@ class ModelAccountingAccounting extends Model
     
     private function __getEmails() {
         $return = array();
-        array_push($return,$_SESSION['email']);
-        foreach ($_SESSION['emails'] as $e) {
+        $session = Registry::get('session');
+
+        array_push($return, $session->get("email"));
+        $emails = $session->get("emails");
+
+        foreach ($emails as $e) {
             array_push($return,$e);
         }
         
@@ -206,12 +210,15 @@ class ModelAccountingAccounting extends Model
     
     private function __getDomains() {
         $return = array();
-        
+        $session = Registry::get('session');
+
         if(Registry::get('admin_user') >= 1) {
             $return = $this->__getAcceptedDomains();
         }elseif(Registry::get('auditor_user') == 1) {
-            array_push($return,$_SESSION['domain']);
-            foreach ($_SESSION['auditdomains'] as $d) {
+            array_push($return, $session->get("domain"));
+            $auditdomains = $session->get("auditdomains");
+
+            foreach ($auditdomains as $d) {
                 array_push($return,$d);
             }
         }

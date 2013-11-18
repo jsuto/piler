@@ -267,7 +267,14 @@ define('NOW', time());
 
 require_once 'config-site.php';
 
-if(isset($_SESSION['theme']) && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $_SESSION['theme'])) { $config['THEME'] = $_SESSION['theme']; }
+require($config['DIR_BASE'] . "/system/registry.php");
+require($config['DIR_BASE'] . "/system/request.php");
+
+$session = new Session();
+Registry::set("session", $session);
+
+
+if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme"))) { $config['THEME'] = $session->get("theme"); }
 
 include("system/helper/detectmobilebrowser.php");
 
@@ -275,7 +282,7 @@ if(MOBILE_DEVICE == 1 || OUTLOOK == 1) { $config['THEME'] = 'mobile'; }
 
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
-if(isset($_SESSION['username']) && $_SESSION['username'] == 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 0; }
+if($session->get("username") == 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 0; }
 
 
 

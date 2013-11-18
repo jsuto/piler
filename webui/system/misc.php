@@ -3,8 +3,10 @@
 function LOGGER($event = '', $username = '') {
    if($event == "") { return 0; }
 
+   $session = Registry::get('session');
+
    if($username == '') {
-      if(isset($_SESSION['username'])) { $username = $_SESSION['username']; }
+      if($session->get("username")) { $username = $session->get("username"); }
       else { $username = 'unknown'; }
    }
 
@@ -16,8 +18,10 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
 
    if(ENABLE_AUDIT == 0) { return 0; }
 
+   $session = Registry::get('session');
+
    if($ipaddr == '' && isset($_SERVER['REMOTE_ADDR'])) { $ipaddr = $_SERVER['REMOTE_ADDR']; }
-   if($email == '') { $email = $_SESSION['email']; }
+   if($email == '') { $email = $session->get("email"); }
 
    $a = explode("@", $email);
 
@@ -30,42 +34,51 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
 
 
 function getAuthenticatedUsername() {
+   $session = Registry::get('session');
 
-   if(isset($_SESSION['username'])){ return $_SESSION['username']; }
+   if($session->get("username")) { return $session->get("username"); }
 
    return "";
 }
 
 
 function isAdminUser() {
-   if(isset($_SESSION['admin_user']) && $_SESSION['admin_user'] == 1){ return 1; }
+   $session = Registry::get('session');
+
+   if($session->get("admin_user") == 1){ return 1; }
 
    return 0;
 }
 
 
 function isAuditorUser() {
-   if(isset($_SESSION['admin_user']) && $_SESSION['admin_user'] == 2){ return 1; }
+   $session = Registry::get('session');
+
+   if($session->get("admin_user") == 2){ return 1; }
 
    return 0;
 }
 
 
 function isReadonlyAdmin() {
-   if(isset($_SESSION['admin_user']) && $_SESSION['admin_user'] == 3){ return 1; }
+   $session = Registry::get('session');
+
+   if($session->get("admin_user") == 3){ return 1; }
 
    return 0;
 }
 
 
 function logout() {
-   AUDIT(ACTION_LOGOUT, $_SESSION['email'], '', '', '');
+   $session = Registry::get('session');
 
-   $_SESSION['username'] = "";
-   $_SESSION['admin_user'] = 0;
+   AUDIT(ACTION_LOGOUT, $session->get("email"), '', '', '');
 
-   unset($_SESSION['username']);
-   unset($_SESSION['admin_user']);
+   $session->set("username", "");
+   $session->set("admin_user", 0);
+
+   $session->remove("username");
+   $session->remove("admin_user");
 
    Registry::set('username', '');
 
@@ -82,9 +95,10 @@ function isBinary($num = '') {
 
 function get_page_length() {
    $page_len = PAGE_LEN;
-   
-   if(isset($_SESSION['pagelen']) && is_numeric($_SESSION['pagelen']) && $_SESSION['pagelen'] >= 10 && $_SESSION['pagelen'] <= MAX_SEARCH_HITS) {
-      $page_len = $_SESSION['pagelen'];
+   $session = Registry::get('session');
+
+   if($session->get("pagelen") && is_numeric($session->get("pagelen")) && $session->get("pagelen") >= 10 && $session->get("pagelen") <= MAX_SEARCH_HITS) {
+      $page_len = $session->get("pagelen");
    }
 
    return $page_len;

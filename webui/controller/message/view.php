@@ -9,6 +9,7 @@ class ControllerMessageView extends Controller {
       $this->template = "message/view.tpl";
       $this->layout = "common/layout-empty";
 
+      $session = Registry::get('session');
       $request = Registry::get('request');
       $db = Registry::get('db');
 
@@ -56,7 +57,7 @@ class ControllerMessageView extends Controller {
 
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['tag'])) {
-         $this->model_search_message->add_message_tag($this->data['id'], $_SESSION['uid'], $this->request->post['tag']);
+         $this->model_search_message->add_message_tag($this->data['id'], $session->get("uid"), $this->request->post['tag']);
          header("Location: " . $_SERVER['HTTP_REFERER']);
          exit;
       }
@@ -66,8 +67,8 @@ class ControllerMessageView extends Controller {
       $this->data['attachments'] = $this->model_search_message->get_attachment_list($this->data['piler_id']);
 
       $this->data['message'] = $this->model_search_message->extract_message($this->data['piler_id'], $this->data['search']);
-      $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $_SESSION['uid']);
-      $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $_SESSION['uid']);
+      $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $session->get("uid"));
+      $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $session->get("uid"));
 
       $this->data['images'] = array();
 

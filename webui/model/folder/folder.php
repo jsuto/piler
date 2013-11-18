@@ -43,10 +43,12 @@ class ModelFolderFolder extends Model {
 
 
    public function get_folders_for_user() {
-      $q = str_repeat("?,", count($_SESSION['folders']));
+      $session = Registry::get('session');
+
+      $q = str_repeat("?,", count($session->get("folders")));
       $q = preg_replace("/\,$/", "", $q);
 
-      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER . "` WHERE id IN ($q)", $_SESSION['folders']);
+      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER . "` WHERE id IN ($q)", $session->get("folders"));
 
       if(isset($query->rows)) { return $query->rows; }
 
@@ -55,7 +57,9 @@ class ModelFolderFolder extends Model {
 
 
    public function get_extra_folders_for_user() {
-      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? ORDER BY name", array($_SESSION['uid']));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? ORDER BY name", array($session->get("uid")));
 
       if(isset($query->rows)) { return $query->rows; }
 
@@ -64,7 +68,9 @@ class ModelFolderFolder extends Model {
 
 
    private function is_your_extra_folder($folder_id = 0) {
-      $query = $this->db->query("SELECT `id` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? AND id=?", array($_SESSION['uid'], $folder_id));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("SELECT `id` FROM `" . TABLE_FOLDER_EXTRA . "` WHERE uid=? AND id=?", array($session->get("uid"), $folder_id));
       if(isset($query->row['id'])) { return 1; }
 
       return 0;
@@ -187,11 +193,15 @@ class ModelFolderFolder extends Model {
    public function add_extra_folder($name = '') {
       if($name == '') { return -1; }
 
-      $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_EXTRA . " (uid, name) VALUES(?,?)", array($_SESSION['uid'], $name));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_EXTRA . " (uid, name) VALUES(?,?)", array($session->get("uid"), $name));
 
       $last_id = $this->db->getLastId();
 
-      if(!isset($_SESSION['extra_folders'][$last_id])) { array_push($_SESSION['extra_folders'], $last_id); }
+      $extra_folders = $session->get("extra_folders");
+
+      if(!isset($extra_folders[$last_id])) { array_push($extra_folders, $last_id); }
 
       return $this->db->countAffected();
    }
@@ -200,7 +210,9 @@ class ModelFolderFolder extends Model {
    public function remove_extra_folder($id = 0) {
       if($id == 0) { return -1; }
 
-      $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_EXTRA . " WHERE id=? AND uid=?", array($id, $_SESSION['uid']));
+      $session = Registry::get('session');
+
+      $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_EXTRA . " WHERE id=? AND uid=?", array($id, $session->get("uid")));
       if($this->db->countAffected() == 1) {
          $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id=?", array($id));
          return $this->db->countAffected();

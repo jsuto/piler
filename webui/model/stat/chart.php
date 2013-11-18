@@ -7,6 +7,8 @@ class ModelStatChart extends Model {
       $ydata2 = array();
       $dates = array();
 
+      $session = Registry::get('session');
+
       $chart = new LineChart($size_x, $size_y);
 
       $chart->getPlot()->getPalette()->setLineColor(array(
@@ -35,11 +37,13 @@ class ModelStatChart extends Model {
       if(Registry::get('admin_user') == 0) {
 
          $q = '';
-         foreach($_SESSION['auditdomains'] as $a) {
+         $auditdomains = $session->get('auditdomains');
+
+         foreach($auditdomains as $a) {
             if($q) { $q .= ",?"; } else { $q = "?"; }
          }
-         reset($_SESSION['auditdomains']);
-         $query = $this->db->query("select arrived-(arrived%$delta) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $_SESSION['auditdomains']);
+         reset($auditdomains);
+         $query = $this->db->query("select arrived-(arrived%$delta) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $auditdomains);
       } else {
          $query = $this->db->query("select arrived-(arrived%$delta) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $limit");
       }

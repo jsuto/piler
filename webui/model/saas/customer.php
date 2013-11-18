@@ -93,9 +93,12 @@ class ModelSaasCustomer extends Model
                     );
 
 
-      if(!isset($_SESSION['email']) || !strchr($_SESSION['email'], '@') ) { return $data; }
+      $session = Registry::get('session');
 
-      list ($user, $domain) = explode("@", $_SESSION['email']);
+
+      if($session->get("email") == '' || !strchr($session->get("email"), '@') ) { return $data; }
+
+      list ($user, $domain) = explode("@", $session->get("email"));
 
       if(MEMCACHED_ENABLED) {
          $cache_key = sha1("customer_settings:" . $domain);

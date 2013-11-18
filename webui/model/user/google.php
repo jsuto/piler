@@ -4,6 +4,8 @@ class ModelUserGoogle extends Model {
 
    public function check_for_account($google_account = array()) {
 
+      $session = Registry::get('session');
+
       $query = $this->db->query("SELECT " . TABLE_USER . ".username, " . TABLE_USER . ".uid, " . TABLE_USER . ".realname, " . TABLE_USER . ".dn, " . TABLE_USER . ".password, " . TABLE_USER . ".isadmin, " . TABLE_USER . ".domain FROM " . TABLE_USER . ", " . TABLE_EMAIL . " WHERE " . TABLE_EMAIL . ".email=? AND " . TABLE_EMAIL . ".uid=" . TABLE_USER . ".uid", array($google_account['email']));
 
       if($query->num_rows == 1) {
@@ -39,16 +41,16 @@ class ModelUserGoogle extends Model {
          $this->model_domain_domain->addDomain($user['domain'], $user['domain']);
       }
 
-      $_SESSION['username'] = $user['username'];
-      $_SESSION['uid'] = $user['uid'];
-      $_SESSION['admin_user'] = 0;
-      $_SESSION['email'] = $user['username'];
-      $_SESSION['domain'] = $query->row['domain'];
-      $_SESSION['realname'] = $query->row['realname'];
+      $session->set("username", $user['username']);
+      $session->set("uid", $user['uid']);
+      $session->set("admin_user", 0);
+      $session->set("email", $user['username']);
+      $session->set("domain", $query->row['domain']);
+      $session->set("realname", $query->row['realname']);
 
-      $_SESSION['emails'] = $this->model_user_user->get_users_all_email_addresses($user['uid']);
-      $_SESSION['folders'] = $this->model_folder_folder->get_all_folder_ids($user['uid']);
-      $_SESSION['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($user['uid']);
+      $session->set("emails", $this->model_user_user->get_users_all_email_addresses($user['uid']));
+      $session->set("folders", $this->model_folder_folder->get_all_folder_ids($user['uid']));
+      $session->set("extra_folders", $this->model_folder_folder->get_all_extra_folder_ids($user['uid']));
 
       AUDIT(ACTION_LOGIN, $user['username'], '', '', 'successful auth against Google');
 

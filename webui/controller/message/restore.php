@@ -9,6 +9,7 @@ class ControllerMessageRestore extends Controller {
       $this->template = "message/restore.tpl";
       $this->layout = "common/layout-empty";
 
+      $session = Registry::get('session');
       $request = Registry::get('request');
       $db = Registry::get('db');
 
@@ -55,7 +56,7 @@ class ControllerMessageRestore extends Controller {
       /* send the email to all the recipients of the original email if we are admin or auditor users */
 
       if(Registry::get('auditor_user') == 0) {
-         array_push($rcpt, $_SESSION['email']);
+         array_push($rcpt, $session->get("email"));
       }
 
       $this->data['data'] = $this->data['text_failed_to_restore'];

@@ -17,8 +17,6 @@ $request = new Request();
 Registry::set("request", $request);
 
 
-session_start();
-
 Registry::set('document', new Document());
 
 

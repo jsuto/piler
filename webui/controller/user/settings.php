@@ -30,17 +30,21 @@ class ControllerUserSettings extends Controller {
       $d = $r = '';
       $auditemails = $auditdomains = $auditgroups = $auditfolders = '';
 
-      $auditemails = implode(", ", $_SESSION['emails']);
-  
-      foreach($_SESSION['auditdomains'] as $d) {
-         $auditdomains .= ', '.$d;
+      $auditemails = implode(", ", $session->get("emails"));
+ 
+      $_auditdomains = $session->get("auditdomains");
+ 
+      foreach($_auditdomains as $d) {
+         $auditdomains .= ', ' . $d;
       }
       $auditdomains = preg_replace("/^,\s/", "", $auditdomains);
   
-      $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_uid($_SESSION['uid']));
+      $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_uid($session->get("uid")));
+
+      $folders = $session->get("folders");
   
-      foreach ($_SESSION['folders'] as $r) {
-         $auditfolders .= ', '.$r;
+      foreach ($folders as $r) {
+         $auditfolders .= ', ' . $r;
       }
       $auditfolders = preg_replace("/^,\s/", "", $auditfolders);	  
   
@@ -76,6 +80,8 @@ class ControllerUserSettings extends Controller {
 
 
       $this->data['page_len'] = get_page_length();
+      $this->data['theme'] = $session->get("theme");
+      $this->data['lang'] = $session->get("lang");
 
       $this->render();
    }

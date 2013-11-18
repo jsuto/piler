@@ -11,7 +11,7 @@ class ControllerUserAdd extends Controller {
       $this->template = "user/add.tpl";
       $this->layout = "common/layout";
 
-
+      $session = Registry::get('session');
       $request = Registry::get('request');
       $db = Registry::get('db');
 
@@ -40,7 +40,7 @@ class ControllerUserAdd extends Controller {
             if($this->validate() == true){
                $ret = $this->model_user_user->add_user($this->request->post);
 
-               $_SESSION['last_domain'] = $this->request->post['domain'];
+               $session->set("last_domain", $this->request->post['domain']);
 
                if($ret == 1){
                   $this->data['x'] = $this->data['text_successfully_added'];
@@ -72,6 +72,8 @@ class ControllerUserAdd extends Controller {
          $this->template = "common/error.tpl";
          $this->data['errorstring'] = $this->data['text_you_are_not_admin'];
       }
+
+      $this->data['last_domain'] = $session->get("last_domain");
 
       $this->render();
    }

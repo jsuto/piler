@@ -14,6 +14,7 @@ class ControllerLoginGoogle extends Controller {
       $request = Registry::get('request');
 
       $db = Registry::get('db');
+      $session = Registry::get('session');
 
       $this->load->model('user/auth');
       $this->load->model('user/user');
@@ -44,19 +45,19 @@ class ControllerLoginGoogle extends Controller {
 
       if(isset($_GET['code'])) {
          $client->authenticate();
-         $_SESSION['access_token'] = $client->getAccessToken();
+         $session->set("access_token", $client->getAccessToken());
          header('Location: ' . GOOGLE_REDIRECT_URL);
       }
 
-      if(isset($_SESSION['access_token'])) {
-         $client->setAccessToken($_SESSION['access_token']);
+      if($session->get("access_token")) {
+         $client->setAccessToken($session->get("access_token"));
       }
 
 
       if($client->getAccessToken()) {
-         $_SESSION['access_token'] = $client->getAccessToken();
+         $session->set("access_token", $client->getAccessToken());
 
-         $token = json_decode($_SESSION['access_token']);
+         $token = json_decode($session->get("access_token"));
 
          if(isset($token->{'access_token'}) && isset($token->{'refresh_token'})) {
             $account = $oauth2->userinfo->get();
