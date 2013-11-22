@@ -203,11 +203,12 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
    if(sdata->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
+      if(state->is_1st_header == 0) memset(state->b_subject, 0, MAXBUFSIZE);
+
       state->is_1st_header = 1;
       state->is_header = 1;
       memset(state->b_body, 0, BIGBUFSIZE);
       state->bodylen = 0;
-      memset(state->b_subject, 0, MAXBUFSIZE);
    }
 
    if(take_into_pieces == 1){
