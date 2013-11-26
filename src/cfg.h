@@ -84,6 +84,8 @@ struct __config {
 
    int tweak_sent_time_offset;
 
+   int enable_cjk;
+
    int debug;
 };
 
