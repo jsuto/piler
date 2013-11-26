@@ -31,7 +31,6 @@ extern char *optarg;
 extern int optind;
 
 int dryrun=0;
-int remove_after_successful_import = 0;
 int import_from_gui=0;
 
 
@@ -233,7 +232,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                   ret = ERR;
                }
  
-               if(remove_after_successful_import == 1 && ret != ERR) unlink(fname);
+               if(data->import->remove_after_import == 1 && ret != ERR) unlink(fname);
 
                i++;
 
@@ -481,7 +480,7 @@ int main(int argc, char **argv){
    data.quiet = 0;
 
    import.import_job_id = import.total_messages = import.processed_messages = 0;
-   import.started = import.updated = import.finished = 0;
+   import.started = import.updated = import.finished = import.remove_after_import = 0;
 
    data.import = &import;
 
@@ -585,7 +584,7 @@ int main(int argc, char **argv){
                     break;
 
          case 'r' :
-                    remove_after_successful_import = 1;
+                    data.import->remove_after_import = 1;
                     break;
 
          case 'G' :

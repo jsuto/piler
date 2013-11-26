@@ -255,6 +255,7 @@ struct import {
    int total_messages;
    int processed_messages;
    int import_job_id;
+   int remove_after_import;
    time_t started, updated, finished;
 };
 

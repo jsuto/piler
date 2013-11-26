@@ -226,8 +226,26 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 
       if(rc == ERR) printf("error importing '%s'\n", filename);
-      else unlink(filename);
+      else {
+
+         if(data->import->remove_after_import == 1){
+            snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
+            n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+            read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+         }
+
+         unlink(filename);
+      }
+
+
    }
+
+   if(data->import->remove_after_import == 1){
+      snprintf(buf, sizeof(buf)-1, "A%d EXPUNGE\r\n", *seq);
+      n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+      read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+   }
+
 
    printf("\n");
 
