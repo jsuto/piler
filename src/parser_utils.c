@@ -102,10 +102,19 @@ void init_state(struct _state *state){
 }
 
 
+long get_local_timezone_offset(){
+   time_t t = time(NULL);
+   struct tm lt = {0};
+   localtime_r(&t, &lt);
+   return lt.tm_gmtoff;
+}
+
+
 unsigned long parse_date_header(char *datestr, struct __config *cfg){
    int n=0;
-   char *p, *q, *r, s[SMALLBUFSIZE];
+   long offset=0;
    unsigned long ts=0;
+   char *p, *q, *r, s[SMALLBUFSIZE];
    struct tm tm;
 
    datestr += 5;
@@ -174,6 +183,12 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
 
    tm.tm_isdst = -1;
    ts = mktime(&tm);
+
+   if(p && (*p == '+' || *p == '-')){
+      offset = atoi(p) / 100 * 3600;
+      ts += get_local_timezone_offset() - offset;
+   }
+
 
 #ifdef HAVE_TWEAK_SENT_TIME
    if(ts > 631148400) ts += cfg->tweak_sent_time_offset;
