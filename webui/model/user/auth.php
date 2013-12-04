@@ -253,7 +253,7 @@ class ModelUserAuth extends Model {
    private function checkLoginAgainstIMAP($username = '', $password = '') {
       $session = Registry::get('session');
 
-      $user = array();
+      if(!strchr($username, '@')) { return 0; }
 
       $imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
       if($imap->login($username, $password)) {
@@ -271,7 +271,6 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstPOP3($username = '', $password = '') {
-      $user = array();
       $rc = 0;
 
       try {
