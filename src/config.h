@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.25-master-branch"
 
-#define BUILD 854
+#define BUILD 855
 
 #define HOSTID "mailarchiver"
 
@@ -132,6 +132,10 @@
 
 #define WRITE_TO_STDOUT 0
 #define WRITE_TO_BUFFER 1
+
+#define S_STATUS_STORED "stored"
+#define S_STATUS_DUPLICATE "duplicate"
+#define S_STATUS_ERROR "error"
 
 #endif /* _CONFIG_H */
 

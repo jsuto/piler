@@ -24,6 +24,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    char rcpttoemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
    char *arule = NULL;
+   char *status = NULL;
    struct session_data sdata;
    struct _state sstate;
    int db_conn=0;
@@ -246,7 +247,12 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
 
-                  if(inj == ERR) snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                  status = S_STATUS_STORED;
+
+                  if(inj == ERR){
+                     snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                     status = S_STATUS_ERROR;
+                  }
 
                   write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
 
@@ -257,13 +263,14 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   if(inj == ERR_EXISTS){
                      syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu", sdata.ttmpfile, sdata.duplicate_id);
                      counters.c_duplicate++;
+                     status = S_STATUS_DUPLICATE;
                   }
 
                   snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f", 
                                (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
                                    sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
 
-                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, attachments=%d, reference=%s, message-id=%s, retention=%d, %s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sstate.n_attachments, sstate.reference, sstate.message_id, sstate.retention, delay);
+                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d, attachments=%d, reference=%s, message-id=%s, retention=%d, %s, status=%s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sstate.n_attachments, sstate.reference, sstate.message_id, sstate.retention, delay, status);
 
 
 
