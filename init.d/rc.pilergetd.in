@@ -2,6 +2,16 @@
 ##
 ##
 
+### BEGIN INIT INFO
+# Provides:          pilergetd
+# Required-Start:    $remote_fs $syslog $named $network $time mysql
+# Required-Stop:     $remote_fs $syslog $named $network mysql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: pilergetd daemon
+# Description:       pilergetd daemon for remote access
+### END INIT INFO
+
 NAME=pilergetd
 PID_FILE=`SBINDIR/pilerconf -q pilergetd_pidfile | cut -f2 -d=`
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`

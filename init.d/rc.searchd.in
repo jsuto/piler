@@ -2,6 +2,16 @@
 ##
 ##
 
+### BEGIN INIT INFO
+# Provides:          sphinxsearch
+# Required-Start:    $remote_fs $syslog $named $network $time
+# Required-Stop:     $remote_fs $syslog $named $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: sphinxsearch
+# Description:       sphinxsearch
+### END INIT INFO
+
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 NAME=searchd

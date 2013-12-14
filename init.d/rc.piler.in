@@ -2,6 +2,17 @@
 ##
 ##
 
+### BEGIN INIT INFO
+# Provides:          piler
+# Required-Start:    $remote_fs $syslog $named $network $time mysql
+# Required-Stop:     $remote_fs $syslog $named $network mysql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: piler email archiver
+# Description:       piler email archiver
+### END INIT INFO
+
+
 NAME=piler
 PID_FILE=`SBINDIR/pilerconf -q pidfile | cut -f2 -d=`
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
