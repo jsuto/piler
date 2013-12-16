@@ -162,7 +162,7 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
 
    if(mkdir(tmpdir, 0700)) return rc;
 
-   snprintf(buf, sizeof(buf)-1, "%s -C %s %s", HAVE_TNEF, tmpdir, filename);
+   snprintf(buf, sizeof(buf)-1, "%s --unix-paths -C %s %s", HAVE_TNEF, tmpdir, filename);
 
    system(buf);
 
