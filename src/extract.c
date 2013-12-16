@@ -160,8 +160,6 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
 
    memcpy(&tmpdir[sizeof(tmpdir)-3], ".d", 2);
 
-   printf("tmpname: %s, filename: %s\n", tmpdir, filename);
-
    if(mkdir(tmpdir, 0700)) return rc;
 
    snprintf(buf, sizeof(buf)-1, "%s -C %s %s", HAVE_TNEF, tmpdir, filename);
