@@ -29,6 +29,7 @@ class Sphinx {
       $query->error = 1;
       $query->errmsg = "Error";
       $query->query = $sql;
+      $query->total_found = 0;
 
       $time_start = microtime(true);
 
@@ -61,6 +62,11 @@ class Sphinx {
       $time_end = microtime(true);
 
       $query->exec_time = $time_end - $time_start;
+
+      $meta = $this->link->prepare("show meta like 'total_found'");
+      $meta->execute();
+      $R = $meta->fetch();
+      if(isset($R[1])) { $query->total_found = $R[1]; }
 
       return $query;
    }
