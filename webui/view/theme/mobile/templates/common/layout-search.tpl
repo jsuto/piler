@@ -36,6 +36,21 @@
 
 <body class="mybody" onload="Piler.add_shortcuts();">
 
+<div id="deleteconfirm-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_forward_selected_emails_to; ?></h3>
+  </div>
+  <div class="modal-body">
+    <input type="text" id="restore_address" name="restore_address" />
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="#" onclick="var addr =  $('#restore_address').val(); if(addr) { Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); }" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</a>
+  </div>
+</div>
+
+
 <div id="messagebox1"></div>
 
 <div id="piler1" class="container">

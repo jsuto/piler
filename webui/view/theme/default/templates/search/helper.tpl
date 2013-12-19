@@ -1,3 +1,4 @@
+
 <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
 <div id="messagelistcontainer" class="boxlistcontent">
     <?php if($n > 0) { ?>
@@ -130,6 +131,7 @@
             &nbsp;
             <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large muted"></i></span><?php } ?>
             &nbsp;
+
     <?php } else { print $text_none_found; } ?>
             </div>
         </div>
@@ -145,7 +147,7 @@
 
                 <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
             <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-                <a href="#" class="btn btn-custom btn-inverse" onclick="var addr = ''; <?php if(Registry::get('auditor_user') == 1) { ?>addr = prompt('<?php print $text_forward_selected_emails_to', ''); <?php } ?>Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); " title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
+                <a href="#" class="btn btn-custom btn-inverse<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete<?php } ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
             <?php } ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />

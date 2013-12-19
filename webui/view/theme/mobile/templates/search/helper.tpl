@@ -100,6 +100,7 @@
 
          <?php if($next_page <= $total_pages){ ?><a href="#" onclick="Piler.navigation(<?php print $next_page; ?>);">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
          <?php if($page < $total_pages) { ?> &nbsp; <a href="#" onclick="Piler.navigation(<?php print $total_pages; ?>);"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
+
    </span>
 
 <?php } else { ?>&nbsp;<?php } ?>
@@ -111,7 +112,7 @@
            <?php } ?>
 
            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-              <button class="btn piler-right-margin" onclick="var addr = ''; <?php if(Registry::get('auditor_user') == 1) { ?>addr = prompt('<?php print $text_forward_selected_emails_to', ''); <?php } ?> Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
+              <button class="btn piler-right-margin<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete<?php } ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', ''); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
            <?php } ?>
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
