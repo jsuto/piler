@@ -141,6 +141,7 @@ $_['text_failed_to_update'] = "Nem sikerült módosítani";
 $_['text_first'] = "Elsõ";
 $_['text_folder'] = "Mappa";
 $_['text_folders'] = "Mappák";
+$_['text_forward_selected_emails_to'] = "Kijelölt levelek továbbítása";
 $_['text_from'] = "Feladó";
 $_['text_from_domain'] = "Feladó domain";
 
@@ -249,7 +250,7 @@ $_['text_password'] = "Jelszó";
 $_['text_password_again'] = "Jelszó ismét";
 $_['text_password_changed'] = "Jelszó megváltozott";
 $_['text_password_mismatch'] = "A két jelszó nem egyezik meg";
-$_['text_page_length'] = "Lap méret";
+$_['text_page_length'] = "Oldalankénti találatok száma";
 $_['text_periodic_purge'] = "Periódikus levéltörlés";
 $_['text_policy'] = "Házirend";
 $_['text_policy_group'] = "Házirend azonosító";

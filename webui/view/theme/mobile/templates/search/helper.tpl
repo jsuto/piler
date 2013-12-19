@@ -111,7 +111,7 @@
            <?php } ?>
 
            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-              <button class="btn piler-right-margin" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>'); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
+              <button class="btn piler-right-margin" onclick="var addr = ''; <?php if(Registry::get('auditor_user') == 1) { ?>addr = prompt('<?php print $text_forward_selected_emails_to', ''); <?php } ?> Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
            <?php } ?>
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />

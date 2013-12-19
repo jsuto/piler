@@ -310,16 +310,16 @@ var Piler =
     },
 
 
-    bulk_restore_messages:function(msg)
+    bulk_restore_messages:function(msg, email)
     {
-        Piler.log("[bulk_restore_messages]");
+        Piler.log("[bulk_restore_messages]", email);
 
         var idlist = Piler.get_selected_messages_list();
 
         if(!idlist) return;
 
         jQuery.ajax('/bulkrestore.php', {
-           data: { download: '0', idlist: idlist },
+           data: { download: '0', idlist: idlist, email: email },
            type: "POST"
         })
         .done( function( a ) {})

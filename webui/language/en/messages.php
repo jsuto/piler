@@ -140,6 +140,7 @@ $_['text_failed_to_update'] = "Failed to update";
 $_['text_first'] = "First";
 $_['text_folder'] = "Folder";
 $_['text_folders'] = "Folders";
+$_['text_forward_selected_emails_to'] = "Forward selected emails to";
 $_['text_from'] = "From";
 $_['text_from_domain'] = "From domain";
 
@@ -248,7 +249,7 @@ $_['text_password'] = "Password";
 $_['text_password_again'] = "Password again";
 $_['text_password_changed'] = "Password changed";
 $_['text_password_mismatch'] = "Password mismatch";
-$_['text_page_length'] = "Page length";
+$_['text_page_length'] = "Results per page";
 $_['text_periodic_purge'] = "Periodic purge";
 $_['text_policy'] = "Policy";
 $_['text_policy_group'] = "Policy group";

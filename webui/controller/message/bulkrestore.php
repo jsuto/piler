@@ -14,6 +14,7 @@ class ControllerMessageBulkrestore extends Controller {
       $db = Registry::get('db');
 
       $imap_ok = 0;
+      $email = '';
 
       $this->load->model('search/search');
       $this->load->model('search/message');
@@ -31,6 +32,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       $download = $this->request->post['download'];
 
+      if(isset($this->request->post['email'])) { $email = $this->request->post['email']; }
 
       if($download == 1) {
          $this->model_message_restore->download_files_as_zip($idlist);
@@ -63,7 +65,12 @@ class ControllerMessageBulkrestore extends Controller {
          /* send the email to all the recipients of the original email if you are an auditor user */
 
          if(Registry::get('auditor_user') == 1) {
-            $rcpt = $this->model_search_search->get_message_recipients($id);
+            if($email) {
+               $rcpt[0] = $email;
+            }
+            else {
+               $rcpt = $this->model_search_search->get_message_recipients($id);
+            }
          }
          else {
             array_push($rcpt, $session->get("email"));

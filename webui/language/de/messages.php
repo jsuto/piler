@@ -470,5 +470,6 @@ $_['text_invalid_pin_code'] = "Invalid pin code";
 $_['text_qr_code'] = "QR";
 $_['text_refresh_qr_code'] = "Refresh QR code";
 $_['text_print_message'] = "Print";
+$_['text_forward_selected_emails_to'] = "Forward selected emails to";
 
 ?>
