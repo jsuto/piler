@@ -54,12 +54,12 @@ class ControllerSearchHelper extends Controller {
 
          $this->fixup_post_request();
 
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
+         list ($this->data['n'], $this->data['total_found'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
       }
 
       else {
          $this->fixup_post_simple_request();
-         list ($this->data['n'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
+         list ($this->data['n'], $this->data['total_found'], $this->data['all_ids'], $this->data['messages']) = $this->model_search_search->search_messages($this->a, $this->data['page']);
       }
 
 

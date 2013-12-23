@@ -5,6 +5,7 @@ class ModelSearchSearch extends Model {
    public function search_messages($data = array(), $page = 0) {
       $one_page_of_ids = array();
       $total_hits = 0;
+      $total_found = 0;
       $sort = "sent";
       $order = "DESC";
       $sortorder = "ORDER BY sent DESC";
@@ -44,13 +45,14 @@ class ModelSearchSearch extends Model {
 
       if(isset($m['ids'])) {
          $all_ids = $m['ids'];
+         $total_found = $m['total_found'];
       } else {
 
          if(isset($data['ref']) && $data['ref']){
-            $all_ids = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
+            list ($total_found, $all_ids) = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
          }
          else {
-            $all_ids = $this->query_all_possible_IDs($data, $sort, $order, $sortorder, $cache_key);
+            list ($total_found, $all_ids) = $this->query_all_possible_IDs($data, $sort, $order, $sortorder, $cache_key);
          }
       }
 
@@ -86,7 +88,7 @@ class ModelSearchSearch extends Model {
       $all_ids_csv = substr($all_ids_csv, 1, strlen($all_ids_csv));
 
 
-      return array($total_hits, $all_ids_csv, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
+      return array($total_hits, $total_found, $all_ids_csv, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
    }
 
 
@@ -225,7 +227,9 @@ class ModelSearchSearch extends Model {
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
 
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->num_rows)); }
+      $total_found = $query->total_found;
+
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $total_found)); }
 
 
       /*
@@ -251,11 +255,11 @@ class ModelSearchSearch extends Model {
 
       if($data['sort'] == 'from' || $data['sort'] == 'subj') {
 
-         $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE id IN ($q) ORDER BY `$sort` $order", $ids);
+         $fs_query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE id IN ($q) ORDER BY `$sort` $order", $ids);
 
          $ids = array();
 
-         foreach($query->rows as $q) {
+         foreach($fs_query->rows as $q) {
             array_push($ids, $q['id']);
          }
 
@@ -264,10 +268,10 @@ class ModelSearchSearch extends Model {
 
       if(MEMCACHED_ENABLED && $cache_key) {
          $memcache = Registry::get('memcache');
-         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
+         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids, 'total_found' => $total_found), 0, MEMCACHED_TTL);
       }
 
-      return $ids;
+      return array($total_found, $ids);
    }
 
 
@@ -292,13 +296,14 @@ class ModelSearchSearch extends Model {
          }
       }
 
+      $total_found = count($ids);
 
       if(MEMCACHED_ENABLED && $cache_key) {
          $memcache = Registry::get('memcache');
-         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids), 0, MEMCACHED_TTL);
+         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'total_found' => $total_found, 'ids' => $ids), 0, MEMCACHED_TTL);
       }
 
-      return $ids;
+      return array($total_found, $ids);
    }
 
 
