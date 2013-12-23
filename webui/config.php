@@ -68,18 +68,21 @@ $config['LDAP_BASE_DN'] = '';
 $config['LDAP_ACCOUNT_OBJECTCLASS'] = 'user';
 $config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'group';
 $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
+$config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
 
 // zimbra specific settings
 //$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
 //$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
 
 // Lotus Notes specific settings for ldap authentication
 //
 //$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'dominoPerson';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
 
 // iredmail specific settings
 //$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=yourdomain,dc=com';
@@ -87,6 +90,7 @@ $config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
 //$config['LDAP_BASE_DN'] = 'o=domains,dc=yourdomain,dc=com';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'mailList';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
 
 
 

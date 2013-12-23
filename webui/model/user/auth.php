@@ -79,6 +79,7 @@ class ModelUserAuth extends Model {
       $ldap_admin_member_dn = LDAP_ADMIN_MEMBER_DN;
 
       $role = 0;
+      $username_prefix = '';
 
       if(ENABLE_SAAS == 1) {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
@@ -95,13 +96,15 @@ class ModelUserAuth extends Model {
 
       list($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass) = get_ldap_attribute_names($ldap_type);
 
+      if($ldap_mail_attr == 'proxyAddresses') { $username_prefix = 'smtp:'; }
+
       if($ldap_host == '' || $ldap_helper_password == '') { return 0; }
 
       $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query($ldap_base_dn, "(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))", array());
+         $query = $ldap->query($ldap_base_dn, "(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username_prefix$username))", array());
 
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
@@ -112,7 +115,7 @@ class ModelUserAuth extends Model {
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array());
+               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username_prefix$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username_prefix$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array());
 
                if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
                if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
@@ -174,15 +177,23 @@ class ModelUserAuth extends Model {
 
                if(is_array($a[$mailattr])) {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
-                     if(preg_match("/^smtp\:/i", $a[$mailattr][$i]) || strchr($a[$mailattr][$i], '@') ) {
-                        $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr][$i]));
-                        if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:' && substr($email, 0, 4) != 'eum:') { array_push($data, $email); }
+
+                     $a[$mailattr][$i] = strtolower($a[$mailattr][$i]);
+
+                     if(strchr($a[$mailattr][$i], '@')) {
+
+                        if(preg_match("/^([\w]+)\:/i", $a[$mailattr][$i], $p)) {
+                           if(isset($p[0]) && $p[0] != "smtp:") { continue; }
+                        }
+
+                        $email = preg_replace("/^([\w]+)\:/i", "", $a[$mailattr][$i]);
+                        if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
                      }
                   }
                }
                else {
-                  $email = strtolower(preg_replace("/^smtp\:/i", "", $a[$mailattr]));
-                  if(!in_array($email, $data) && strchr($email, '@') && substr($email, 0, 4) != 'sip:' && substr($email, 0, 4) != 'eum:') { array_push($data, $email); }
+                  $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
+                  if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
                }
             }
          }

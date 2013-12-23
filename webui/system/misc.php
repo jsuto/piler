@@ -504,7 +504,7 @@ function get_ldap_attribute_names($ldap_type = '') {
    switch ($ldap_type) {
 
             case 'AD':
-                       $ldap_mail_attr = 'mail';
+                       $ldap_mail_attr = 'proxyAddresses';
                        $ldap_account_objectclass = 'user';
                        $ldap_distributionlist_attr = 'member';
                        $ldap_distributionlist_objectclass = 'group';
