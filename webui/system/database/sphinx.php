@@ -63,10 +63,12 @@ class Sphinx {
 
       $query->exec_time = $time_end - $time_start;
 
-      $meta = $this->link->prepare("show meta like 'total_found'");
+      $meta = $this->link->prepare("show meta");
       $meta->execute();
-      $R = $meta->fetch();
-      if(isset($R[1])) { $query->total_found = $R[1]; }
+      $R = $meta->fetchAll();
+      while(list ($k, $v) = each($R)){
+         if($v[0] == "total_found") { $query->total_found = $v[1]; break; }
+      }
 
       return $query;
    }
