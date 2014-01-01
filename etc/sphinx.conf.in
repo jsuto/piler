@@ -176,7 +176,7 @@ index note1
 
 indexer
 {
-	mem_limit		= 64M
+	mem_limit		= 256M
 }
 
 
