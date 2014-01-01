@@ -309,10 +309,6 @@ class ModelUserAuth extends Model {
 
 
    public function check_ntlm_auth() {
-      $ldap_mail_attr = 'mail';
-      $ldap_account_objectclass = 'user';
-      $ldap_distributionlist_attr = 'member';
-      $ldap_distributionlist_objectclass = 'group';
       $ldap_auditor_member_dn = LDAP_AUDITOR_MEMBER_DN;
       $ldap_admin_member_dn = LDAP_ADMIN_MEMBER_DN;
 
@@ -331,7 +327,7 @@ class ModelUserAuth extends Model {
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=$ldap_account_objectclass)(samaccountname=" . $username . "))", array());
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=user)(samaccountname=" . $username . "))", array());
 
          if(isset($query->row['dn'])) {
             $a = $query->row;
@@ -344,7 +340,7 @@ class ModelUserAuth extends Model {
                return 0;
             }
 
-            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . $a['dn'] . ")))", array());
+            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(proxyAddresses=smtp:$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
