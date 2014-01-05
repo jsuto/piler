@@ -82,8 +82,15 @@ class ControllerMessageRestore extends Controller {
          }
          else {
 
-            $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
-               "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $msg );
+            if(RESTORE_EMAILS_AS_ATTACHMENT == 1) {
+               $msg = $this->model_mail_mail->message_as_rfc822_attachment($this->data['id'], $msg, $rcpt[0]);
+               $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
+            }
+            else {
+               $x = $this->model_mail_mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, 
+                  "Received: by piler" . EOL . PILER_HEADER_FIELD . $this->data['id'] . EOL . $msg );
+            }
+
          }
 
          if($x == 1) { $this->data['data'] = $this->data['text_restored']; }

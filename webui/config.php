@@ -139,6 +139,7 @@ $config['SEARCH_RESULT_CHECKBOX_CHECKED'] = 0;
 $config['HELPER_URL'] = '';
 $config['ENABLE_SYSLOG'] = 1;
 $config['REWRITE_MESSAGE_ID'] = 0;
+$config['RESTORE_EMAILS_AS_ATTACHMENT'] = 0;
 $config['RESTRICTED_AUDITOR'] = 0;
 
 $config['SHOW_ENVELOPE_JOURNAL'] = 0;
