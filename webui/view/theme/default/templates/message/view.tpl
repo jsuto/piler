@@ -48,7 +48,7 @@
     <strong><?php print $message['date']; ?></strong><br />
     <?php foreach($attachments as $a) { ?>
        <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
-    <?php } ?><br/>
+    <?php } ?><?php if(count($attachments) > 1) { ?>| <a href="index.php?route=message/attachments&id=<?php print $id; ?>"><i class="icon-briefcase"></i></a><?php } ?><br/>
 </div>
 <div class="messagecontents">
 <?php print $message['message']; ?>
