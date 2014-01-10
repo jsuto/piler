@@ -1726,4 +1726,5 @@ body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 .control-group.success .fileupload .uneditable-input{color:#468847;border-color:#468847;}
 .control-group.success .fileupload .fileupload-preview{color:#468847;}
 .control-group.success .fileupload .thumbnail{border-color:#468847;}
+.bottomborder { border-bottom: 1px solid black; }
 @media (min-width:980px){body{padding-top:65px;}}@media (max-width:980px){.navbar-fixed-top{margin-bottom:10px;} .nav-collapse .nav>li>a,.nav-collapse .dropdown-menu a{font-weight:normal;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;} .nav-collapse .nav>li>a:hover,.nav-collapse ul.nav li.dropdown ul.dropdown-menu li a:hover{color:#fff;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background-color:#555555;} .navbar .nav li.dropdown>a:hover .caret{border-top-color:#fff;border-bottom-color:#fff;} .dropdown-menu li>a:hover{background-color:#00f;}}@media (max-width:767px){#mainscreen{top:162px;} #pagingrow{border-bottom:1px solid #ccc;} #pagingbox{border-right:none;} #functionbox{border-left:none;} .boxlistcontent{bottom:68px;overflow:scroll;} .boxfooter{height:67px;}}

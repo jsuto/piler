@@ -143,6 +143,7 @@
 	.center { text-align: center; }
 	.sleek { margin:0; padding:0; }
 	.with20margin{ margin-left:20%; margin-right:20%; }
+	.bottomborder { border-bottom: 1px solid black; }
 
 	#notesbox { position:absolute; top: 3px; right: 3px; }
 	.messageheader { margin-left: 5px; }

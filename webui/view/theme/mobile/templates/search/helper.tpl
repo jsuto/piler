@@ -20,26 +20,26 @@
       </th>
       <th data-resizable-column-id="date" id="date" class="sleek">
          <strong><?php print $text_date; ?></strong>
-         <a xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek"></i></a>
-         <a xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek"></i></a>
+         <a xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'date' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
       </th>
       <th data-resizable-column-id="from">
          <strong><?php print $text_from; ?></strong>
-         <a xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek"></i></a>
-         <a xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek"></i></a>
+         <a xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'from' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'from' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
       </th>
       <th data-resizable-column-id="to">
          <strong><?php print $text_to; ?></strong>
       </th>
       <th data-resizable-column-id="subject">
          <strong><?php print $text_subject; ?><strong>
-         <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek"></i></a>
-         <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek"></i></a>
+         <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'subject' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'subject' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
       </th>
       <th data-resizable-column-id="size">
          <strong><?php print $text_size; ?></strong>
-         <a xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek"></i></a>
-         <a xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek"></i></a>
+         <a xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'size' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'size' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
       </th>
       <th data-resizable-column-id="attachment" id="attachment" data-noresize><i class="icon-file sleek"></i></th>
       <th data-resizable-column-id="bookmark" id="bookmark" data-noresize><i class="icon-bookmark sleek"></i></th>

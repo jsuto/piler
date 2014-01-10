@@ -78,6 +78,8 @@ class ControllerSearchHelper extends Controller {
 
       if($this->data['hits_to'] > $this->data['n']) { $this->data['hits_to'] = $this->data['n']; }
 
+      $this->data['sort'] = $this->request->post['sort'];
+      $this->data['order'] = $this->request->post['order'];
 
       $this->render();
    }
