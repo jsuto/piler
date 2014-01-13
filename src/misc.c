@@ -471,6 +471,7 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
 
    sdata->__acquire = sdata->__parsed = sdata->__av = sdata->__store = sdata->__compress = sdata->__encrypt = 0;
 
+   sdata->import = 0;
 
    for(i=0; i<MAX_RCPT_TO; i++) memset(sdata->rcptto[i], 0, SMALLBUFSIZE);
 

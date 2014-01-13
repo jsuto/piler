@@ -217,6 +217,7 @@ int main(int argc, char **argv){
 
    data.folder = 0;
    data.recursive_folder_names = 0;
+
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
