@@ -1096,6 +1096,28 @@ var Piler =
     },
 
 
+    fix_ldap_display: function()
+    {
+       if($('#ldap_type').val() == '<?php print LDAP_TYPE_GENERIC; ?>') {
+          $('#ldap_mail_attr_id').show();
+          $('#ldap_account_objectclass_id').show();
+          $('#ldap_distributionlist_attr_id').show();
+          $('#ldap_distributionlist_objectclass_id').show();
+       }
+       else {
+          $('#ldap_mail_attr').val('');
+          $('#ldap_account_objectclass').val('');
+          $('#ldap_distributionlist_attr').val('');
+          $('#ldap_distributionlist_objectclass').val('');
+
+          $('#ldap_mail_attr_id').hide();
+          $('#ldap_account_objectclass_id').hide();
+          $('#ldap_distributionlist_attr_id').hide();
+          $('#ldap_distributionlist_objectclass_id').hide();
+       }
+    },
+
+
     fix_page: function()
     {
 <?php if(OUTLOOK == 1) { ?>

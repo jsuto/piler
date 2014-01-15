@@ -82,8 +82,10 @@ class ControllerLdapList extends Controller {
          
          if ( isset($this->data['errorstring']) ) {
             // use posted values if they differ from database values (ie - form was submitted but failed validation)
-            if (isset($this->request->post['ldap_type'])) { $this->data['a']['ldap_type'] = $this->request->post['ldap_type'];}
-            if (isset($this->request->post['description'])) { $this->data['a']['description'] = $this->request->post['description'];}
+            /*if (isset($this->request->post['ldap_type'])) { $this->data['a']['ldap_type'] = $this->request->post['ldap_type'];}
+            if (isset($this->request->post['description'])) { $this->data['a']['description'] = $this->request->post['description'];}*/
+
+            $this->data['a'] = $this->request->post;
          }
          
       }
@@ -117,6 +119,23 @@ class ControllerLdapList extends Controller {
       // ldap_bind_pw is required and must be 1 or more characters in length to meet this
       if(!isset($this->request->post['ldap_bind_pw']) || strlen($this->request->post['ldap_bind_pw']) < 1) {
          $this->error['ldap_bind_pw'] = $this->data['text_field_required'];
+      }
+
+      if(isset($this->request->post['ldap_type']) && $this->request->post['ldap_type'] == LDAP_TYPE_GENERIC) {
+
+         if(!isset($this->request->post['ldap_mail_attr']) || strlen($this->request->post['ldap_mail_attr']) < 3) {
+            $this->error['ldap_mail_attr'] = $this->data['text_field_required'];
+         }
+         if(!isset($this->request->post['ldap_account_objectclass']) || strlen($this->request->post['ldap_account_objectclass']) < 3) {
+            $this->error['ldap_account_objectclass'] = $this->data['text_field_required'];
+         }
+         if(!isset($this->request->post['ldap_distributionlist_attr']) || strlen($this->request->post['ldap_distributionlist_attr']) < 3) {
+            $this->error['ldap_distributionlist_attr'] = $this->data['text_field_required'];
+         }
+         if(!isset($this->request->post['ldap_distributionlist_objectclass']) || strlen($this->request->post['ldap_distributionlist_objectclass']) < 3) {
+            $this->error['ldap_distributionlist_objectclass'] = $this->data['text_field_required'];
+         }
+
       }
 
       if (!$this->error) {

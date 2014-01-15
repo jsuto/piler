@@ -58,7 +58,7 @@ Registry::set('langs', $langs);
 Registry::set('paging', $paging);
 Registry::set('themes', $themes);
 Registry::set('letters', $letters);
-Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra"));
+Registry::set('ldap_types', array("AD", "iredmail", "lotus", "zimbra", LDAP_TYPE_GENERIC));
 Registry::set('health_smtp_servers', $health_smtp_servers);
 Registry::set('partitions_to_monitor', $partitions_to_monitor);
 Registry::set('actions', $actions);

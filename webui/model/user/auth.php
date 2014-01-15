@@ -85,16 +85,23 @@ class ModelUserAuth extends Model {
          $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
 
          if(count($a) >= 6) {
-            $ldap_type = $a[0];
-            $ldap_host = $a[1];
-            $ldap_base_dn = $a[2];
-            $ldap_helper_dn = $a[3];
-            $ldap_helper_password = $a[4];
-            $ldap_auditor_member_dn = $a[5];
+            $ldap_type = $a['ldap_type'];
+            $ldap_host = $a['ldap_host'];
+            $ldap_base_dn = $a['ldap_base_dn'];
+            $ldap_helper_dn = $a['ldap_bind_dn'];
+            $ldap_helper_password = $a['ldap_bind_pw'];
+            $ldap_auditor_member_dn = $a['ldap_auditor_member_dn'];
+
+            $ldap_mail_attr = $a['ldap_mail_attr'];
+            $ldap_account_objectclass = $a['ldap_account_objectclass'];
+            $ldap_distributionlist_attr = $a['ldap_distributionlist_attr'];
+            $ldap_distributionlist_objectclass = $a['ldap_distributionlist_objectclass'];
          }
       }
 
-      list($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass) = get_ldap_attribute_names($ldap_type);
+      if($ldap_type != LDAP_TYPE_GENERIC) {
+         list($ldap_mail_attr, $ldap_account_objectclass, $ldap_distributionlist_attr, $ldap_distributionlist_objectclass) = get_ldap_attribute_names($ldap_type);
+      }
 
       if($ldap_mail_attr == 'proxyAddresses') { $username_prefix = 'smtp:'; }
 

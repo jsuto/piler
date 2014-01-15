@@ -34,7 +34,7 @@
     <div class="control-group">
        <label class="control-label" for="ldap_type"><?php print $text_ldap_type; ?>:</label>
        <div class="controls">
-          <select name="ldap_type" id="ldap_type">
+          <select name="ldap_type" id="ldap_type" onchange="Piler.fix_ldap_display();" class="span4">
        <?php while(list($k, $v) = each($ldap_types)) { ?>
           <option value="<?php print $v; ?>"<?php if(isset($a['ldap_type']) && $a['ldap_type'] == $v) { ?> selected="selected"<?php } ?>><?php print $v; ?></option>
        <?php } ?>
@@ -42,39 +42,69 @@
        </div>
     </div>
     <div class="control-group">
-		<label class="control-label" for="description"><?php print $text_description; ?>:</label>
+	<label class="control-label" for="description"><?php print $text_description; ?>:</label>
         <div class="controls">
-            <input type="text" class="text" name="description" id="description" placeholder="" value="<?php if(isset($a['description'])) { print $a['description']; } ?>" />
+            <input type="text" class="text span4" name="description" id="description" placeholder="" value="<?php if(isset($a['description'])) { print $a['description']; } ?>" />
         </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="ldap_host"><?php print $text_ldap_host; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="ldap_host" id="ldap_host" placeholder="" value="<?php if(isset($a['ldap_host'])) { print $a['ldap_host']; } ?>" />
+          <input type="text" class="text span4" name="ldap_host" id="ldap_host" placeholder="" value="<?php if(isset($a['ldap_host'])) { print $a['ldap_host']; } ?>" />
        </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="ldap_base_dn"><?php print $text_ldap_base_dn; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="ldap_base_dn" id="ldap_base_dn" placeholder="" value="<?php if(isset($a['ldap_base_dn'])) { print $a['ldap_base_dn']; } ?>" />
+          <input type="text" class="text span4" name="ldap_base_dn" id="ldap_base_dn" placeholder="" value="<?php if(isset($a['ldap_base_dn'])) { print $a['ldap_base_dn']; } ?>" />
        </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="ldap_bind_dn"><?php print $text_ldap_bind_dn; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="ldap_bind_dn" id="ldap_bind_dn" placeholder="" value="<?php if(isset($a['ldap_bind_dn'])) { print $a['ldap_bind_dn']; } ?>" />
+          <input type="text" class="text span4" name="ldap_bind_dn" id="ldap_bind_dn" placeholder="" value="<?php if(isset($a['ldap_bind_dn'])) { print $a['ldap_bind_dn']; } ?>" />
        </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="ldap_bind_pw"><?php print $text_ldap_bind_pw; ?>:</label>
        <div class="controls">
-          <input type="password" class="password" name="ldap_bind_pw" id="ldap_bind_pw" placeholder="" value="<?php if(isset($a['ldap_bind_pw'])) { print $a['ldap_bind_pw']; } ?>" /> <input type="button" value="<?php print $text_test_connection; ?>" class="btn btn-danger" onclick="Piler.test_ldap_connection(); return false;" /> <span id="LDAPTEST"></span>
+          <input type="password" class="password span4" name="ldap_bind_pw" id="ldap_bind_pw" placeholder="" value="<?php if(isset($a['ldap_bind_pw'])) { print $a['ldap_bind_pw']; } ?>" /> <input type="button" value="<?php print $text_test_connection; ?>" class="btn btn-danger" onclick="Piler.test_ldap_connection(); return false;" /> <span id="LDAPTEST"></span>
        </div>
     </div>
     <div class="control-group">
        <label class="control-label" for="ldap_auditor_member_dn"><?php print $text_ldap_auditor_member_dn; ?>:</label>
        <div class="controls">
-          <input type="text" class="text" name="ldap_auditor_member_dn" id="ldap_auditor_member_dn" placeholder="" value="<?php if(isset($a['ldap_auditor_member_dn'])) { print $a['ldap_auditor_member_dn']; } ?>" />
+          <input type="text" class="text span4" name="ldap_auditor_member_dn" id="ldap_auditor_member_dn" placeholder="" value="<?php if(isset($a['ldap_auditor_member_dn'])) { print $a['ldap_auditor_member_dn']; } ?>" />
+       </div>
+    </div>
+
+
+    <div id="ldap_mail_attr_id" class="ui-helper-hidden control-group<?php if(isset($errors['ldap_mail_attr'])){ print " error"; } ?>">
+       <label class="control-label" for="ldap_mail_attr"></label>
+       <div class="controls">
+          <input type="text" class="text span4" name="ldap_mail_attr" id="ldap_mail_attr" placeholder="LDAP_MAIL_ATTR" value="<?php if(isset($a['ldap_mail_attr'])) { print $a['ldap_mail_attr']; } ?>" />
+          <?php if ( isset($errors['ldap_mail_attr']) ) { ?><span class="help-inline"><?php print $errors['ldap_mail_attr']; ?></span><?php } ?>
+       </div>
+    </div>
+    <div id="ldap_account_objectclass_id" class="ui-helper-hidden control-group<?php if(isset($errors['ldap_account_objectclass'])){ print " error"; } ?>">
+       <label class="control-label" for="ldap_account_objectclass"></label>
+       <div class="controls">
+          <input type="text" class="text span4" name="ldap_account_objectclass" id="ldap_account_objectclass" placeholder="LDAP_ACCOUNT_OBJECTCLASS" value="<?php if(isset($a['ldap_account_objectclass'])) { print $a['ldap_account_objectclass']; } ?>" />
+          <?php if ( isset($errors['ldap_account_objectclass']) ) { ?><span class="help-inline"><?php print $errors['ldap_account_objectclass']; ?></span><?php } ?>
+       </div>
+    </div>
+    <div id="ldap_distributionlist_attr_id" class="ui-helper-hidden control-group<?php if(isset($errors['ldap_distributionlist_attr'])){ print " error"; } ?>">
+       <label class="control-label" for="ldap_distributionlist_attr"></label>
+       <div class="controls">
+          <input type="text" class="text span4" name="ldap_distributionlist_attr" id="ldap_distributionlist_attr" placeholder="LDAP_DISTRIBUTIONLIST_ATTR" value="<?php if(isset($a['ldap_distributionlist_attr'])) { print $a['ldap_distributionlist_attr']; } ?>" />
+          <?php if ( isset($errors['ldap_distributionlist_attr']) ) { ?><span class="help-inline"><?php print $errors['ldap_distributionlist_attr']; ?></span><?php } ?>
+       </div>
+    </div>
+    <div id="ldap_distributionlist_objectclass_id" class="ui-helper-hidden control-group<?php if(isset($errors['ldap_distributionlist_objectclass'])){ print " error"; } ?>">
+       <label class="control-label" for="ldap_distributionlist_objectclass"></label>
+       <div class="controls">
+          <input type="text" class="text span4" name="ldap_distributionlist_objectclass" id="ldap_distributionlist_objectclass" placeholder="LDAP_DISTRIBUTIONLIST_OBJECTCLASS" value="<?php if(isset($a['ldap_distributionlist_objectclass'])) { print $a['ldap_distributionlist_objectclass']; } ?>" />
+          <?php if ( isset($errors['ldap_distributionlist_objectclass']) ) { ?><span class="help-inline"><?php print $errors['ldap_distributionlist_objectclass']; ?></span><?php } ?>
        </div>
     </div>
 

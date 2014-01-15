@@ -179,6 +179,7 @@
 
 
 
+	.ui-helper-hidden { display: none; }
 
 	.btn-file{position:relative;overflow:hidden;vertical-align:middle;}
 	.btn-file>input{position:absolute;top:0;right:0;margin:0;font-size:23px;cursor:pointer;opacity:0;filter:alpha(opacity=0);transform:translate(-300px, 0) scale(4);direction:ltr;}

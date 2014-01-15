@@ -379,6 +379,8 @@ define('GOOGLE_REDIRECT_URL', SITE_URL . 'google.php');
 define('HEALTH_URL', SITE_URL . 'index.php?route=health/health');
 define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
 
+define('LDAP_TYPE_GENERIC', 'generic_ldap');
+
 define('ACTION_ALL', 0);
 define('ACTION_UNKNOWN', 1);
 define('ACTION_LOGIN', 2);
