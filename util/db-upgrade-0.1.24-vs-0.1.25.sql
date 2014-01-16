@@ -26,3 +26,6 @@ alter table ldap add column ldap_account_objectclass varchar(128) default null;
 alter table ldap add column ldap_distributionlist_attr varchar(128) default null;
 alter table ldap add column ldap_distributionlist_objectclass varchar(128) default null;
 
+alter table google change column id id char(32) not null primary key;
+alter table google_imap change column id id char(32) not null primary key;
+

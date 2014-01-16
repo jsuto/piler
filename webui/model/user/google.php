@@ -12,14 +12,6 @@ class ModelUserGoogle extends Model {
          $user = $query->row;
       }
       else {
-/*
-    [id] => 11731982531819289345
-    [email] => bela@bacsi.hu
-    [verified_email] => 1
-    [name] => Bela Bacsi
-    [given_name] => Bela
-    [family_name] => Bacsi
-*/      
 
          $d = explode('@', $google_account['email']);
 
@@ -57,8 +49,8 @@ class ModelUserGoogle extends Model {
    }
 
 
-   public function update_tokens($email = '', $id = 0, $token = array()) {
-      if($email == '') { return 0; }
+   public function update_tokens($email = '', $id = '', $token = array()) {
+      if($email == '' || $id == '') { return 0; }
 
       $query = $this->db->query("SELECT email FROM " . TABLE_GOOGLE . " WHERE email=?", array($email));
 
@@ -70,16 +62,6 @@ class ModelUserGoogle extends Model {
       }
 
       return $this->db->countAffected();
-
-/*
-    [access_token] => ya29.AHES6ZSavh4CnWXyfAYRNwqqZ3FmZ-bHPZkWIEPlutG6K_E
-    [token_type] => Bearer
-    [expires_in] => 3600
-    [refresh_token] => 1/J7bwdfCfQkjCu3Q51ypdJeGOzOtw6F1uyg1vaAwOZ2Q
-    [created] => 1348415267
-*/
-
-
    }
 
 

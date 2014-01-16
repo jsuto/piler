@@ -2,7 +2,7 @@
 
 function is_mobile_device() {
 
-   if(!isset($_SERVER['HTTP_USER_AGENT'])) { return 0; }
+   if(!isset($_SERVER['HTTP_USER_AGENT'])) { define('OUTLOOK', 0); return 0; }
 
    if(strstr($_SERVER['HTTP_USER_AGENT'], "Microsoft Outlook")) { define('OUTLOOK', 1); } else { define('OUTLOOK', 0); }
 

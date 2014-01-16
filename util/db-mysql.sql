@@ -327,7 +327,7 @@ create index `audit_idx5` on `audit`(`domain`);
 
 
 create table if not exists `google` (
-   `id` bigint unsigned not null primary key,
+   `id` char(32) not null primary key,
    `email` char(128) not null unique,
    `access_token` char(255) default null,
    `refresh_token` char(255) default null,
@@ -336,7 +336,7 @@ create table if not exists `google` (
 
 
 create table if not exists `google_imap` (
-   `id` bigint unsigned not null,
+   `id` char(32) not null primary key,
    `email` char(128) not null,
    `last_msg_id` bigint default 0,
    key(`email`)

@@ -1,12 +1,12 @@
 <?php
 
+ini_set("session.save_path", "/tmp");
+
 $webuidir = "";
 
 if(isset($_SERVER['argv'][1])) { $webuidir = $_SERVER['argv'][1]; }
 
 require_once($webuidir . "/config.php");
-
-ini_set("session.save_path", DIR_TMP);
 
 require(DIR_SYSTEM . "/startup.php");
 
