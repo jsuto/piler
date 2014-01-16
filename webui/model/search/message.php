@@ -713,7 +713,7 @@ class ModelSearchMessage extends Model {
    public function is_message_spam($id = 0) {
       $spam = 0;
 
-      if($id > 0) {
+      if($id > 0 && DEFAULT_RETENTION > 30) {
          $query = $this->db->query("SELECT spam FROM " . TABLE_META . " WHERE id=?", array($id));
 
          if(isset($query->row['spam'])) { $spam = $query->row['spam']; }
