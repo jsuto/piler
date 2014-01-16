@@ -33,7 +33,9 @@ class ControllerMessageNotSpam extends Controller {
 
       AUDIT(ACTION_NOT_SPAM, '', '', $this->data['id'], '');
 
-      $this->model_search_message->not_spam($this->data['id']);
+      if(DEFAULT_RETENTION > 30) {
+         $this->model_search_message->not_spam($this->data['id']);
+      }
 
    }
 
