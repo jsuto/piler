@@ -399,6 +399,7 @@ define('ACTION_UNAUTHORIZED_REMOVE_MESSAGE', 14);
 define('ACTION_DOWNLOAD_ATTACHMENT', 15);
 define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 define('ACTION_VIEW_JOURNAL', 17);
+define('ACTION_NOT_SPAM', 18);
 
 $actions = array(
                   'unknown' => 1,

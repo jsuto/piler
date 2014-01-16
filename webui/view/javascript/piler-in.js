@@ -303,6 +303,21 @@ var Piler =
     },
 
 
+    not_spam:function(id)
+    {
+        Piler.log("[not_spam]", id);
+
+        jQuery.ajax('index.php?route=message/notspam', {
+           data: { id: id },
+           type: "POST"
+        })
+        .done( function( a ) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', "OK", 0.8);
+    },
+
+
     restore_message:function(id)
     {
         Piler.log("[restore_message]");

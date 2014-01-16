@@ -710,6 +710,28 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function is_message_spam($id = 0) {
+      $spam = 0;
+
+      if($id > 0) {
+         $query = $this->db->query("SELECT spam FROM " . TABLE_META . " WHERE id=?", array($id));
+
+         if(isset($query->row['spam'])) { $spam = $query->row['spam']; }
+      }
+
+      return $spam;
+   }
+
+
+   public function not_spam($id = 0) {
+
+      if($id > 0) {
+         $query = $this->db->query("UPDATE " . TABLE_META . " SET spam=0, retained=? WHERE id=?", array(NOW + (DEFAULT_RETENTION*86400), $id));
+      }
+
+   }
+
+
    public function get_message_tag($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 
