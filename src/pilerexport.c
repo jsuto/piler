@@ -31,6 +31,7 @@ void usage(){
    printf("    [-c|--config <config file>] \n");
    printf("    -a|--start-date <YYYY.MM.DD> -b|--stop-date <YYYY.MM.DD> \n");
    printf("    -f|--from <email@address> -r|--to <email@address>\n");
+   printf("    -F|--from-domain <domain.com> -R|--to-domain <domain.com>\n");
    printf("    -s|--minsize <number> -S|--maxsize <number>\n");
    printf("    -A|--all  -d|--dryrun \n");
    printf("\n    use -A if you don't want to specify the start/stop time nor any from/to address\n\n");
@@ -215,7 +216,7 @@ int main(int argc, char **argv){
    size_t nmatch=0;
    unsigned long startdate=0, stopdate=0;
    char *configfile=CONFIG_FILE;
-   char *to=NULL, *from=NULL;
+   char *to=NULL, *from=NULL, *todomain=NULL, *fromdomain=NULL;
    char s[SMALLBUFSIZE];
    struct session_data sdata;
    struct __data data;
@@ -242,6 +243,8 @@ int main(int argc, char **argv){
             {"version",      no_argument,        0,  'v' },
             {"from",         required_argument,  0,  'f' },
             {"to",           required_argument,  0,  'r' },
+            {"from-domain",  required_argument,  0,  'F' },
+            {"to-domain",    required_argument,  0,  'R' },
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
             {"id",           required_argument,  0,  'i' },
@@ -250,9 +253,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:s:S:f:r:a:b:i:Adhv?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:i:Adhv?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:s:S:f:r:a:b:i:Adhv?");
+      c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:i:Adhv?");
 #endif
 
       if(c == -1) break;
@@ -298,7 +301,28 @@ int main(int argc, char **argv){
 
                     break;
 
+         case 'F' :
 
+                    if(regexec(&regexp, optarg, nmatch, NULL, 0)){
+                       printf("%s is not a valid domain name\n", optarg);
+                       break;
+                    }
+
+                    rc = append_email_to_buffer(&fromdomain, optarg);
+
+                    break;           
+
+         case 'R' :
+
+                    if(regexec(&regexp, optarg, nmatch, NULL, 0)){
+                       printf("%s is not a valid domain name\n", optarg);
+                       break;
+                    }
+
+                    rc = append_email_to_buffer(&todomain, optarg);
+
+                    break;                     
+                    
          case 'a' :
                     startdate = convert_time(optarg, 0, 0, 0);
                     break;
@@ -322,7 +346,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(from == NULL && to == NULL && startdate == 0 && stopdate == 0 && exportall == 0) usage();
+   if(from == NULL && to == NULL && fromdomain == NULL && todomain == NULL && startdate == 0 && stopdate == 0 && exportall == 0) usage();
 
 
    regfree(&regexp);
@@ -362,6 +386,30 @@ int main(int argc, char **argv){
       where_condition++;
    }
 
+   if(fromdomain){
+      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      
+      rc += append_string_to_buffer(&query, "`fromdomain` IN (");
+      rc += append_string_to_buffer(&query, fromdomain);
+      rc += append_string_to_buffer(&query, ")"); 
+
+      free(fromdomain);
+
+      where_condition++;
+   }
+
+
+   if(todomain){
+      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+
+      rc += append_string_to_buffer(&query, "`todomain` IN (");
+      rc += append_string_to_buffer(&query, todomain);
+      rc += append_string_to_buffer(&query, ")");
+
+      free(todomain);
+
+      where_condition++;
+   }
 
    if(minsize > 0){
       if(where_condition) rc = append_string_to_buffer(&query, " AND ");
