@@ -33,8 +33,8 @@
       </th>
       <th data-resizable-column-id="subject">
          <strong><?php print $text_subject; ?><strong>
-         <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'subject' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-         <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'subject' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up sleek<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+         <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down sleek<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
       </th>
       <th data-resizable-column-id="size">
          <strong><?php print $text_size; ?></strong>

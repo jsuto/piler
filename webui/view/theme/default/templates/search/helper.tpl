@@ -24,8 +24,8 @@
           </th>
           <th id="subject-header">
              <?php print $text_subject; ?>
-             <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'subject' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-             <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'subject' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+             <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
           </th>
           <th id="size-header">
              <?php print $text_size; ?>
