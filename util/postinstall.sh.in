@@ -417,7 +417,6 @@ webui_install() {
 
    chmod 770 $DOCROOT/tmp $DOCROOT/images
    chgrp $WWWGROUP $DOCROOT/tmp
-   chgrp $WWWGROUP $DOCROOT/system/helper/phpqrcode/cache
 
    echo "<?php" > $DOCROOT/config-site.php
    echo >> $DOCROOT/config-site.php
