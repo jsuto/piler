@@ -6,6 +6,7 @@ SEARCHD=`which searchd 2>/dev/null`
 CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
 PILERCONF_TMP="/tmp/config.piler.88"
+SOCKET_HELPER_SCRIPT="aaa.pl"
 
 
 load_default_values() {
@@ -381,7 +382,13 @@ execute_post_install_tasks() {
 
    make_certificate
 
-   MYSQL_SOCKET=$(sed 's/\//\\\//g' <<< "$MYSQL_SOCKET")
+cat <<SOCKHELPER > $SOCKET_HELPER_SCRIPT
+\$a=\$ARGV[0];
+\$a=~s/\//\\\\\//g;
+print \$a;
+SOCKHELPER
+
+   MYSQL_SOCKET=`perl $SOCKET_HELPER_SCRIPT $MYSQL_SOCKET`
 
    sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
