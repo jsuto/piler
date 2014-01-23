@@ -305,6 +305,7 @@ $_['text_search'] = "Keresés";
 $_['text_search2'] = "keresés";
 $_['text_search_emails'] = "Email címek keresése";
 $_['text_search_email_to_add'] = "írja be az email cím elejét";
+$_['text_search_expression'] = "Keresési kifejezés";
 $_['text_search_folders'] = "Mappák keresése";
 $_['text_search_folder_to_add'] = "Írja be a mappa elejét";
 $_['text_search_groups'] = "Csoportok keresése";

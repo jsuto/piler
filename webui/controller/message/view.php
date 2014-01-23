@@ -32,6 +32,12 @@ class ControllerMessageView extends Controller {
          $this->data['search'] = $this->request->post['search'];
       }
 
+      if(substr($this->data['id'], 0, 1) == 'a') {
+         $this->template = "message/auto.tpl";
+         $this->data['id'] = substr($this->data['id'], 1, 200);
+      }
+
+
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown id: ' . $this->data['id']);
          die("invalid id: " . $this->data['id']);

@@ -303,6 +303,7 @@ $_['text_search'] = "Search";
 $_['text_search2'] = "search";
 $_['text_search_emails'] = "Search email addresses";
 $_['text_search_email_to_add'] = "Search email to add";
+$_['text_search_expression'] = "Search expression";
 $_['text_search_folders'] = "Search folders";
 $_['text_search_folder_to_add'] = "Search folder to add";
 $_['text_search_groups'] = "Search groups";

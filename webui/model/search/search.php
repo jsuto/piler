@@ -307,6 +307,105 @@ class ModelSearchSearch extends Model {
    }
 
 
+   public function preprocess_post_expert_request($data = array()) {
+      $token = 'match';
+      $ndate = 0;
+      $match = array();
+
+      $a = array(
+                    'date1'           => '',
+                    'date2'           => '',
+                    'direction'       => '',
+                    'size'            => '',
+                    'attachment_type' => '',
+                    'tag'             => '',
+                    'note'            => '',
+                    'ref'             => '',
+                    'folders'         => '',
+                    'extra_folders'   => '',
+                    'id'              => '',
+                    'match'           => array()
+      );
+
+      if(!isset($data['search'])) { return $a; }
+
+      $s = preg_replace("/:/", ": ", $data['search']);
+      $s = preg_replace("/,/", " ", $s);
+      $s = preg_replace("/\(/", "( ", $s);
+      $s = preg_replace("/\)/", ") ", $s);
+      $s = preg_replace("/OR/", "|", $s);
+      $s = preg_replace("/AND/", "", $s);
+      $s = preg_replace("/\s{1,}/", " ", $s);
+      $b = explode(" ", $s);
+
+      while(list($k, $v) = each($b)) {
+         if($v == '') { continue; }
+
+         if($v == 'from:') { $token = 'match'; $a['match'][] = '@from'; continue; }
+         else if($v == 'to:') { $token = 'match'; $a['match'][] = '@to'; continue; }
+         else if($v == 'subject:') { $token = 'match'; $a['match'][] = '@subject'; continue; }
+         else if($v == 'body:') { $token = 'match'; $a['match'][] = '@body'; continue; }
+         else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }
+         else if($v == 'size:') { $token = 'size'; continue; }
+         else if($v == 'date1:') { $token = 'date1'; continue; }
+         else if($v == 'date2:') { $token = 'date2'; continue; }
+         else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
+         else if($v == 'size') { $token = 'size'; continue; }
+         else if($v == 'tag:') { $token = 'tag'; continue; }
+         else if($v == 'note:') { $token = 'note'; continue; }
+         else if($v == 'ref:') { $token = 'ref'; continue; }
+         else if($v == 'id:') { $token = 'id'; continue; }
+         else {
+            if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
+               $ndate++;
+               $a["date$ndate"] = $v;
+            }
+         }
+
+         if($token == 'match') { $a['match'][] = $v; }
+         else if($token == 'date1') { $a['date1'] = ' ' . $v; }
+         else if($token == 'date2') { $a['date2'] = ' ' . $v; }
+         else if($token == 'tag') { $a['tag'] .= ' ' . $v; }
+         else if($token == 'note') { $a['note'] .= ' ' . $v; }
+         else if($token == 'ref') { $a['ref'] = ' ' . $v; }
+         else if($token == 'id') { $a['id'] .= ' ' . $v; }
+
+         else if($token == 'direction') {
+            if($v == 'inbound') { $a['direction'] = "0"; }
+            else if($v == 'outbound') { $a['direction'] = 2; }
+            else if($v == 'internal') { $a['direction'] = 1; }
+         }
+
+         else if($token == 'size') {
+            $o = substr($v, 0, 1);
+            if($o == '<' || $o == '>') {
+               $v = substr($v, 1, strlen($v));
+               $o1 = substr($v, 0, 1);
+               if($o1 == '=') {
+                  $v = substr($v, 1, strlen($v));
+                  $o .= $o1;
+               }
+            }
+            else { $o = ''; }
+
+            $s = explode("k", $v);
+            if($s[0] != $v) { $v = $s[0] * 1000; }
+
+            $s = explode("M", $v);
+            if($s[0] != $v) { $v = $s[0] * 1000000; }
+
+            $a['size'] .= ' ' . $o . $v;
+         }
+
+      }
+
+      $a['sort'] = $data['sort'];
+      $a['order'] = $data['order'];
+
+      return $a;
+   }
+
+
    private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '') {
       $id_list = '';
 

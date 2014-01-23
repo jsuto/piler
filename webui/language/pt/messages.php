@@ -460,5 +460,6 @@ $_['text_invalid_pin_code'] = "Pin code inválido";
 $_['text_qr_code'] = "QR";
 $_['text_refresh_qr_code'] = "Renovar código QR";
 $_['text_forward_selected_emails_to'] = "Forward selected emails to";
+$_['text_search_expression'] = "Search expression";
 
 ?>

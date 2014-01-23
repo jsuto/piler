@@ -4,4 +4,5 @@ The FSF.hu Foundation (http://fsf.hu/) supported and donated piler within the
 Nemeth Adam reviewed the web interface, and gave lots of useful hints and insights to
 improve the web ui of piler.
 
-Remi Smith improved the restricted auditor feature for a better multitenancy.
+Remi Smith improved the restricted auditor feature for a better multitenancy,
+and invented the default theme.

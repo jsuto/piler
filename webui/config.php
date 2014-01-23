@@ -259,6 +259,8 @@ $paging = array(
                  50
                );
 
+$automated_search_recipients = array();
+
 
 $letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
 
@@ -287,7 +289,7 @@ if(MOBILE_DEVICE == 1 || OUTLOOK == 1) { $config['THEME'] = 'mobile'; }
 
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
-if($session->get("username") == 'auditor@local') { $config['RESTRICTED_AUDITOR'] = 0; }
+if($session->get("username") == 'auditor@local' || isset($_SERVER['argv'][2]) ) { $config['RESTRICTED_AUDITOR'] = 0; }
 
 
 
