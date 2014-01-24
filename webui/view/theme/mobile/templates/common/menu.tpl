@@ -37,6 +37,7 @@
      <?php } ?>
                     <li><a href="index.php?route=policy/archiving"><?php print $text_archiving_rules; ?></a></li>
                     <li><a href="index.php?route=policy/retention"><?php print $text_retention_rules; ?></a></li>
+                    <li><a href="index.php?route=search/autosearch"><?php print $text_automated_search; ?></a></li>
                  </ul>
              </li>
 

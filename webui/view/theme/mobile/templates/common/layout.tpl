@@ -41,6 +41,8 @@ if(isset($this->request->get['route'])) {
 
 } ?>>
 
+<div id="messagebox1"></div>
+
 <div id="piler1" class="container">
 
    <div id="menu">

@@ -8,11 +8,13 @@ $page = 0;
 $sort = "date";
 $order = 0;
 $dry_run = 0;
+$auto_search = 0;
 
-$opts = 'w:s:dyh';
+$opts = 'w:s:dayh';
 $lopts = array(
                 'webui:',
                 'search:',
+                'auto',
                 'dry-run',
                 'yesterday',
                 'help'
@@ -36,15 +38,32 @@ if(isset($options['webui']))
       display_help();
       exit;
 }
-    
-if(isset($options['search']))
+
+if(isset($options['auto']) || isset($options['a']) )
 {
-   $search_expression = $options['search'];
-} else {
-   print "\nError: must provide a search expression\n\n";
-   display_help();
-   exit;
+   $auto_search = 1;
 }
+
+if($auto_search == 0)
+{
+   if(isset($options['search']))
+   {
+      $search_expression = $options['search'];
+   } else {
+      print "\nError: must provide a search expression\n\n";
+      display_help();
+      exit;
+   }
+}
+else {
+   if(isset($options['search']))
+   {
+      print "\nError: don't specify BOTH --search AND --auto\n\n";
+      display_help();
+      exit;
+   }
+}
+
 
 if(isset($options['dry-run']) || isset($options['d']) )
 {
@@ -148,55 +167,83 @@ $data = array(
 
 $loader->model('search/search');
 $loader->model('search/message');
+$loader->model('search/auto');
 $loader->model('mail/mail');
 
-$search = new ModelSearchSearch();
-$mail = new ModelMailMail();
 
-$a = $search->preprocess_post_expert_request($data);
-
-if(isset($options['yesterday']) || isset($options['y']) )
+if($auto_search == 1)
 {
-   $a['date1'] = $a['date2'] = date("Y.m.d", time() - 86400);
-}
+   $sa = new ModelSearchAuto();
 
-list ($n, $total_found, $all_ids, $messages) = $search->search_messages($a, $page);
+   $queries = $sa->get();
 
-if($dry_run == 0)
-{
-   $msg = "From: " . SMTP_FROMADDR . EOL;
-   $msg .= "To: " . ADMIN_EMAIL . EOL;
-   $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
-   $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
-   $msg .= "MIME-Version: 1.0" . EOL;
-   $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
-   $msg .= EOL . EOL;
+   foreach ($queries as $query) {
+      $data['search'] = $query['query'];
 
-   ob_start();
-   include($webuidir . "/view/theme/default/templates/search/auto.tpl");
-   $msg .= ob_get_contents();
-
-   ob_end_clean();
-
-   $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $automated_search_recipients, $msg);
+      do_search($data, $automated_search_recipients);
+   }
 }
 else {
-   print "search = $search_expression\n";
-   print_r($all_ids);
-   print EOL;
+   do_search($data, $automated_search_recipients);
 }
+
+function do_search($data = array(), $automated_search_recipients = array())
+{
+   global $options;
+   global $dry_run;
+   global $webuidir;
+
+   $search = new ModelSearchSearch();
+   $mail = new ModelMailMail();
+
+   $a = $search->preprocess_post_expert_request($data);
+
+   if(isset($options['yesterday']) || isset($options['y']) )
+   {
+      $a['date1'] = $a['date2'] = date("Y.m.d", time() - 86400);
+   }
+
+   list ($n, $total_found, $all_ids, $messages) = $search->search_messages($a, 0);
+
+   if($dry_run == 0)
+   {
+      $msg = "From: " . SMTP_FROMADDR . EOL;
+      $msg .= "To: " . ADMIN_EMAIL . EOL;
+      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
+      $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
+      $msg .= "MIME-Version: 1.0" . EOL;
+      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
+      $msg .= EOL . EOL;
+
+      ob_start();
+      include($webuidir . "/view/theme/default/templates/search/auto.tpl");
+      $msg .= ob_get_contents();
+
+      ob_end_clean();
+
+      $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $automated_search_recipients, $msg);
+   }
+   else {
+      print "search = " . $data['search'] . "\n";
+      print_r($all_ids);
+      print EOL . EOL;
+   }
+
+}
+
 
 
 
 function display_help() {
     $phpself = basename(__FILE__);
 
-    echo("\nUsage: $phpself --webui [PATH] --search '[SEARCH EXPRESSION]' [OPTIONS...]\n\n");
+    echo("\nUsage: $phpself [OPTIONS...] --webui [PATH] --search '[SEARCH EXPRESSION]' | --auto\n\n");
     echo("\nThe results go to the recipients defined in \$automated_search_recipients, see config-site.php\n\n");
 
     echo("\t--webui=\"[REQUIRED: path to the piler webui directory]\"\n");
-    echo("\t--search=\"[REQUIRED: the search expression]\"\n\n");
+    echo("\t--search=\"[REQUIRED (unless you specify --auto): the search expression]\"\n\n");
     echo("options:\n");
+    echo("\t-a | --auto: Perform an automated search based on queries defined via the piler gui\n");
     echo("\t-y | --yesterday: Search \"yesterday\"\n");
     echo("\t-d | --dry-run: Only print the found IDs\n");
     echo("\t-h | --help: Prints this help screen and exits\n");

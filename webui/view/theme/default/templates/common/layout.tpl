@@ -48,6 +48,8 @@ if(isset($this->request->get['route'])) {
     <?php print $menu; ?>
 </div>
 
+<div id="messagebox1" class="alert alert-info lead"></div>
+
 <div id="piler1" class="container">
 
 

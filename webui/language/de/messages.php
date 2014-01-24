@@ -472,5 +472,9 @@ $_['text_refresh_qr_code'] = "Refresh QR code";
 $_['text_print_message'] = "Print";
 $_['text_forward_selected_emails_to'] = "Forward selected emails to";
 $_['text_search_expression'] = "Search expression";
+$_['text_automated_search'] = "Automated search";
+$_['text_delete_confirm_message'] = "Do you wish to delete";
+$_['text_existing'] = "Existing";
+$_['text_new'] = "new";
 
 ?>

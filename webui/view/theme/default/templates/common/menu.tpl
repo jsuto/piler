@@ -41,6 +41,7 @@
         <?php } ?>
                             <li><a href="index.php?route=policy/archiving"><i class="icon-folder-open"></i>&nbsp;<?php print $text_archiving_rules; ?></a></li>
                             <li><a href="index.php?route=policy/retention"><i class="icon-time"></i>&nbsp;<?php print $text_retention_rules; ?></a></li>
+                            <li><a href="index.php?route=search/autosearch"><i class="icon-search"></i>&nbsp;<?php print $text_automated_search; ?></a></li>
                         </ul>
                     </li>
 

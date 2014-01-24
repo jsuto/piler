@@ -29,3 +29,10 @@ alter table ldap add column ldap_distributionlist_objectclass varchar(128) defau
 alter table google change column id id char(32) not null primary key;
 alter table google_imap change column id id char(32) not null primary key;
 
+
+create table if not exists `autosearch` (
+   `id` int not null auto_increment primary key,
+   `query` varchar(512) not null
+) Engine=InnoDB;
+
+

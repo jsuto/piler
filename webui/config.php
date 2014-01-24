@@ -331,6 +331,7 @@ define('TABLE_ONLINE', 'online');
 define('TABLE_IMPORT', 'import');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
+define('TABLE_AUTOSEARCH', 'autosearch');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('EOL', "\n");

@@ -411,3 +411,8 @@ create table if not exists `import` (
 ) Engine=InnoDB;
 
 
+create table if not exists `autosearch` (
+   `id` int not null auto_increment primary key,
+   `query` varchar(512) not null
+) Engine=InnoDB;
+
