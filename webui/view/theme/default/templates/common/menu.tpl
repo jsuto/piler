@@ -70,7 +70,7 @@
             
                 <ul class="nav pull-right">
 	<?php if($settings['branding_url']) { ?>
-                    <li><a href="<?php print $settings['branding_url']; ?> <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>" target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li>
+                    <li><a href="<?php print $settings['branding_url']; ?>" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?> target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li>
     <?php } ?>
 
                     <li class="dropdown">
