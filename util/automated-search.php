@@ -2,7 +2,6 @@
 
 $webuidir = "";
 $search_expression = "";
-$title = "automated search";
 
 $page = 0;
 $sort = "date";
@@ -113,6 +112,8 @@ Registry::set('language', $language);
 
 extract($language->data);
 
+$title = $text_automated_search;
+
 if(ENABLE_SYSLOG == 1) { openlog("piler-automated-search", LOG_PID, LOG_MAIL); }
 
 
@@ -158,6 +159,7 @@ Registry::set('import_status', $import_status);
 
 $data = array(
                'page' => 0,
+               'id' => 0,
                'sort' => $sort,
                'order' => $order,
                'type' => 'search',
@@ -179,6 +181,7 @@ if($auto_search == 1)
 
    foreach ($queries as $query) {
       $data['search'] = $query['query'];
+      $data['id'] = $query['id'];
 
       do_search($data, $automated_search_recipients);
    }
@@ -192,6 +195,7 @@ function do_search($data = array(), $automated_search_recipients = array())
    global $options;
    global $dry_run;
    global $webuidir;
+   global $title;
 
    $search = new ModelSearchSearch();
    $mail = new ModelMailMail();
@@ -209,7 +213,7 @@ function do_search($data = array(), $automated_search_recipients = array())
    {
       $msg = "From: " . SMTP_FROMADDR . EOL;
       $msg .= "To: " . ADMIN_EMAIL . EOL;
-      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
+      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title . " " . $data['id'])) . "?=" . EOL;
       $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
       $msg .= "MIME-Version: 1.0" . EOL;
       $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
