@@ -242,7 +242,8 @@ $langs = array(
                 'en',
                 'es',
                 'hu',
-                'pt'
+                'pt',
+                'tr'
                );
 
 
