@@ -111,7 +111,7 @@ long get_local_timezone_offset(){
 
 
 unsigned long parse_date_header(char *datestr, struct __config *cfg){
-   int n=0;
+   int n=0, len;
    long offset=0;
    unsigned long ts=0;
    char *p, *q, *r, s[SMALLBUFSIZE];
@@ -120,9 +120,17 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
    datestr += 5;
    p = datestr;
 
+   tm.tm_year = 0;
+   tm.tm_mon = 0;
+   tm.tm_mday = 0;
+   tm.tm_wday = 0;
+   tm.tm_hour = 0;
+   tm.tm_min = 0;
+   tm.tm_sec = 0;
+   tm.tm_isdst = -1;
 
    for(; *datestr; datestr++){
-      if(isspace(*datestr)) *datestr = ' ';
+      if(isspace(*datestr) || *datestr == '.' || *datestr == ',') *datestr = ' ';
    }
 
 
@@ -132,14 +140,26 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
       p = split_str(p, " ", s, sizeof(s)-1);
       if(strlen(s) > 0){
          n++;
+         len = strlen(s);
 
-         q = strchr(s, ','); if(q) *q='\0';
+         /*
+          *  A proper Date: header should look like this:
+          *
+          *  Date: Mon, 3 Feb 2014 13:21:07 +0100
+          *
+          *
+          *  However some email applications provide crap, eg.
+          *
+          *  Sat, 4 Aug 2007 13:36:52 GMT-0700
+          *  Sat, 4 Aug 07 13:36:52 GMT-0700
+          *  16 Dec 07 20:45:52
+          *  03 Jun 06 05:59:00 +0100
+          *  30.06.2005 17:47:42
+          *
+          *  [wday] mday mon year h:m:s offset
+          */
 
-         if(strlen(s) <= 2){ tm.tm_mday = atoi(s); continue; }
-
-         if(strlen(s) == 4){ tm.tm_year = atoi(s) - 1900; continue; }
-
-         if(strlen(s) == 3){
+         if(n == 1 && len == 3){
             if(strcmp(s, "Mon") == 0) tm.tm_wday = 1;
             else if(strcmp(s, "Tue") == 0) tm.tm_wday = 2;
             else if(strcmp(s, "Wed") == 0) tm.tm_wday = 3;
@@ -147,41 +167,65 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
             else if(strcmp(s, "Fri") == 0) tm.tm_wday = 5;
             else if(strcmp(s, "Sat") == 0) tm.tm_wday = 6;
             else if(strcmp(s, "Sun") == 0) tm.tm_wday = 0;
-
-
-            if(strcmp(s, "Jan") == 0) tm.tm_mon = 0;
-            else if(strcmp(s, "Feb") == 0) tm.tm_mon = 1;
-            else if(strcmp(s, "Mar") == 0) tm.tm_mon = 2;
-            else if(strcmp(s, "Apr") == 0) tm.tm_mon = 3;
-            else if(strcmp(s, "May") == 0) tm.tm_mon = 4;
-            else if(strcmp(s, "Jun") == 0) tm.tm_mon = 5;
-            else if(strcmp(s, "Jul") == 0) tm.tm_mon = 6;
-            else if(strcmp(s, "Aug") == 0) tm.tm_mon = 7;
-            else if(strcmp(s, "Sep") == 0) tm.tm_mon = 8;
-            else if(strcmp(s, "Oct") == 0) tm.tm_mon = 9;
-            else if(strcmp(s, "Nov") == 0) tm.tm_mon = 10;
-            else if(strcmp(s, "Dec") == 0) tm.tm_mon = 11;
-
-            continue;
          }
 
-         if(strlen(s) == 8){
+         if(n == 1 && len <= 2){
+            n++;
+         }
+
+         if(n == 2 && len <= 2){ tm.tm_mday = atoi(s); continue; }
+
+         if(n == 3){
+            if(len == 3){
+               if(strcmp(s, "Jan") == 0) tm.tm_mon = 0;
+               else if(strcmp(s, "Feb") == 0) tm.tm_mon = 1;
+               else if(strcmp(s, "Mar") == 0) tm.tm_mon = 2;
+               else if(strcmp(s, "Apr") == 0) tm.tm_mon = 3;
+               else if(strcmp(s, "May") == 0) tm.tm_mon = 4;
+               else if(strcmp(s, "Jun") == 0) tm.tm_mon = 5;
+               else if(strcmp(s, "Jul") == 0) tm.tm_mon = 6;
+               else if(strcmp(s, "Aug") == 0) tm.tm_mon = 7;
+               else if(strcmp(s, "Sep") == 0) tm.tm_mon = 8;
+               else if(strcmp(s, "Oct") == 0) tm.tm_mon = 9;
+               else if(strcmp(s, "Nov") == 0) tm.tm_mon = 10;
+               else if(strcmp(s, "Dec") == 0) tm.tm_mon = 11;
+
+               continue;
+            }
+
+            if(len == 2){
+               tm.tm_mon = atoi(s);
+               continue;
+            }
+         }
+
+
+         if(n == 4){
+            if(len == 4){ tm.tm_year = atoi(s) - 1900; continue; }
+            if(len == 2){ tm.tm_year = atoi(s); if(tm.tm_year < 70) tm.tm_year += 100; continue; }
+         }
+
+
+         if(n == 5 && len >= 5){
             r = &s[0];
 
             q = strchr(r, ':'); if(!q) break;
             *q = '\0'; tm.tm_hour = atoi(r); r = q+1;
 
-            q = strchr(r, ':'); if(!q) break;
-            *q = '\0'; tm.tm_min = atoi(r); r = q+1;
+            q = strchr(r, ':'); if(q) *q = '\0';
+            tm.tm_min = atoi(r);
 
-            tm.tm_sec = atoi(r);
+            if(len == 8){
+               r = q+1;
+               tm.tm_sec = atoi(r);
+            }
+
             break; 
          }
       }
 
    } while(p);
 
-   tm.tm_isdst = -1;
    ts = mktime(&tm);
 
    if(p && (*p == '+' || *p == '-')){

@@ -138,12 +138,38 @@ int test_htmls(){
    return count;
 }
 
+int test_dates(){
+   int count=0;
+   unsigned long ts;
+   char datestr[SMALLBUFSIZE];
+   struct __config cfg;
+
+   cfg.tweak_sent_time_offset = 0;
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: Mon, 3 Feb 2014 13:16:09 +0100");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: Sat, 4 Aug 07 13:36:52 GMT-0700");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: 23 Sep 09 07:03 -0800");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: 16 Dec 07 20:45:52");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: 30.06.2005 17:47:42");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   snprintf(datestr, sizeof(datestr)-2, "Date: 03 Jun 06 05:59:00 +0100");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
+   return count;
+}
+
 
 int main(int argc, char **argv){
    int n;
-   //struct __config cfg;
-
-   //cfg = read_config(CONFIG_FILE);
 
    n = test_urls();
    printf("testing fixURL(), errors: %d\n", n);
@@ -155,6 +181,9 @@ int main(int argc, char **argv){
 
    n = test_htmls();
    printf("testing markHTML(), errors: %d\n", n);
+
+   n = test_dates();
+   printf("testing parse_date_header(), errors: %d\n", n);
 
    return 0;
 }
