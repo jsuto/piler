@@ -1,6 +1,6 @@
 <?php
 
-define('BUILD', '2013-11-16 851');
+define('BUILD', '2014-01-29 858');
 
 $config = array();
 
@@ -120,6 +120,7 @@ $config['GOOGLE_CLIENT_ID'] = 'xxxxxxxxxxx';
 $config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
 $config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
 $config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
+$config['GOOGLE_ALL_MAIL'] = '[Gmail]/All Mail';
 
 $config['SITE_LOGO_LG'] = 'view/theme/default/assets/images/archive-logo-lg.png';
 $config['SITE_LOGO_SM'] = 'view/theme/default/assets/images/archive-logo-sm.png';
