@@ -66,7 +66,7 @@ int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *po
    if(*(s+len-2) == '\r' && *(s+len-1) == '\n'){
       if((p = strstr(s, tagok))){
          *pos = p - s;
-         if(*pos > 3) *pos -= 2;
+         if(*pos > 0) *pos -= 1;
          return 1;
       }
       if(strstr(s, tagbad)) return 1;
@@ -150,7 +150,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
 
-      snprintf(filename, sizeof(filename)-1, "imap-%d.txt", data->import->processed_messages);
+      snprintf(filename, sizeof(filename)-1, "%d-imap-%d.txt", getpid(), data->import->processed_messages);
       unlink(filename);
 
       fd = open(filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
@@ -341,8 +341,8 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 
 
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
-   char *p, *q, *buf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
-   int len=MAXBUFSIZE+3, pos=0, n, rc=ERR;;
+   char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
+   int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0;
 
    printf("List of IMAP folders:\n");
 
@@ -385,20 +385,50 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
       p = split(p, '\n', puf, sizeof(puf)-1);
       trimBuffer(puf);
 
-      if(strncmp(puf, "* LIST ", 7) == 0){
+      if(strncmp(puf, "* LIST ", 7) == 0 || fldrlen){
 
-         q = strstr(puf, ") \"");
+         if (fldrlen)
+            q = puf;
+         else
+            q = strstr(puf, ") \"");
          if(q){
-            q += 5;
+            if (!fldrlen) {
+               q += 3;
+               while(*q != '"') q++;
+               q++;
+               if(*q == ' ') q++;
+            }
 
-            if(*q == ' ') q++;
-            if(*q == '"') q++;
-
-            if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
-
-            addnode(data->imapfolders, q);
-
-            printf("=> '%s'\n", q);
+            if(!fldrlen && *q == '{' && q[strlen(q)-1] == '}') {
+               q++;
+               fldrlen = strtol(q, NULL, 10);
+            } else {
+               if(*q == '"') q++;
+            
+               if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
+               
+               if(fldrlen) {
+                  ruf = malloc(strlen(q) * 2 + 1);
+                  memset(ruf, 0, strlen(q) * 2 + 1);
+                  memcpy(ruf, q, strlen(q));
+                  r = ruf;
+                  while(*r != '\0') {
+                     if(*r == '\\') {
+                        memmove(r + 1, r, strlen(r));
+                        r++;
+                     }
+                     r++;
+                  }
+                  addnode(data->imapfolders, ruf);
+                  printf("=> '%s'\n", ruf);
+                  free(ruf);
+                  fldrlen = 0;
+               } else {
+                  addnode(data->imapfolders, q);
+                  printf("=> '%s'\n", q);
+               }
+               
+            }
 
          }
       }
