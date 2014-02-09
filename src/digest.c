@@ -19,6 +19,7 @@
 
 int search_header_end(char *p, int n){
    int hdr_len=0;
+   char *q = p;
 
    if(n < 5) return hdr_len;
 
@@ -28,7 +29,7 @@ int search_header_end(char *p, int n){
       hdr_len++;
    }
 
-   return 0;
+   if(*(p-1) == '\n' && strcasestr(q, "Message-ID:")) return n; else return 0;
 }
 
 
