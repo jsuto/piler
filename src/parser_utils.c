@@ -114,33 +114,43 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
    int n=0, len;
    long offset=0;
    unsigned long ts=0;
-   char *p, *q, *r, s[SMALLBUFSIZE];
+   char *p, *q, *r, *tz, s[SMALLBUFSIZE], tzh[4], tzm[3];
    struct tm tm;
 
    datestr += 5;
    p = datestr;
 
-   tm.tm_year = 0;
-   tm.tm_mon = 0;
-   tm.tm_mday = 0;
+   for(; *datestr; datestr++){
+      if(isspace(*datestr) || *datestr == '.') *datestr = ' ';
+   }
+
+   datestr = p;
+
+
+   for(; *datestr != '\0' && datestr - p < 16; datestr++){
+      if(*datestr == '-') *datestr = ' ';
+   }
+
+   datestr = p;
+
+   if(*p == ' '){ p++; }
+
    tm.tm_wday = 0;
+   tm.tm_mday = 0;
+   tm.tm_mon = -1;
+   tm.tm_year = 0;
    tm.tm_hour = 0;
    tm.tm_min = 0;
    tm.tm_sec = 0;
    tm.tm_isdst = -1;
 
-   for(; *datestr; datestr++){
-      if(isspace(*datestr) || *datestr == '.' || *datestr == ',') *datestr = ' ';
-   }
-
-
-   if(*p == ' '){ p++; }
-
    do {
       p = split_str(p, " ", s, sizeof(s)-1);
-      if(strlen(s) > 0){
+
+      len = strlen(s);
+
+      if(len > 0){
          n++;
-         len = strlen(s);
 
          /*
           *  A proper Date: header should look like this:
@@ -155,84 +165,92 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
           *  16 Dec 07 20:45:52
           *  03 Jun 06 05:59:00 +0100
           *  30.06.2005 17:47:42
+          *  03-Feb-2014 08:09:10
           *
           *  [wday] mday mon year h:m:s offset
           */
 
-         if(n == 1 && len == 3){
-            if(strcmp(s, "Mon") == 0) tm.tm_wday = 1;
-            else if(strcmp(s, "Tue") == 0) tm.tm_wday = 2;
-            else if(strcmp(s, "Wed") == 0) tm.tm_wday = 3;
-            else if(strcmp(s, "Thu") == 0) tm.tm_wday = 4;
-            else if(strcmp(s, "Fri") == 0) tm.tm_wday = 5;
-            else if(strcmp(s, "Sat") == 0) tm.tm_wday = 6;
-            else if(strcmp(s, "Sun") == 0) tm.tm_wday = 0;
+         q = strchr(s, ','); if(q) *q='\0';
+
+         if(strncmp(s, "Jan", 3) == 0) tm.tm_mon = 0;
+         else if(strncmp(s, "Feb", 3) == 0) tm.tm_mon = 1;
+         else if(strncmp(s, "Mar", 3) == 0) tm.tm_mon = 2;
+         else if(strncmp(s, "Apr", 3) == 0) tm.tm_mon = 3;
+         else if(strncmp(s, "May", 3) == 0) tm.tm_mon = 4;
+         else if(strncmp(s, "Jun", 3) == 0) tm.tm_mon = 5;
+         else if(strncmp(s, "Jul", 3) == 0) tm.tm_mon = 6;
+         else if(strncmp(s, "Aug", 3) == 0) tm.tm_mon = 7;
+         else if(strncmp(s, "Sep", 3) == 0) tm.tm_mon = 8;
+         else if(strncmp(s, "Oct", 3) == 0) tm.tm_mon = 9;
+         else if(strncmp(s, "Nov", 3) == 0) tm.tm_mon = 10;
+         else if(strncmp(s, "Dec", 3) == 0) tm.tm_mon = 11;
+
+         if(strncmp(s, "Mon", 3) == 0) tm.tm_wday = 1;
+         else if(strncmp(s, "Tue", 3) == 0) tm.tm_wday = 2;
+         else if(strncmp(s, "Wed", 3) == 0) tm.tm_wday = 3;
+         else if(strncmp(s, "Thu", 3) == 0) tm.tm_wday = 4;
+         else if(strncmp(s, "Fri", 3) == 0) tm.tm_wday = 5;
+         else if(strncmp(s, "Sat", 3) == 0) tm.tm_wday = 6;
+         else if(strncmp(s, "Sun", 3) == 0) tm.tm_wday = 0;
+
+         if(len <= 2 && tm.tm_mday == 0){ tm.tm_mday = atoi(s); continue; }
+
+         if(len <= 2 && tm.tm_mon == -1){ tm.tm_mon = atoi(s) - 1; continue; }
+
+         if(len == 2){ if(atoi(s) >=90) tm.tm_year = atoi(s); else tm.tm_year = atoi(s) + 100; continue; }
+
+         if(len == 4){ tm.tm_year = atoi(s) - 1900; continue; }
+
+         if(len == 3){
+            if(strcmp(s, "EDT") == 0) offset = -14400;
+            else if(strcmp(s, "EST") == 0) offset = -18000;
+            else if(strcmp(s, "CDT") == 0) offset = -18000;
+            else if(strcmp(s, "CST") == 0) offset = -21600;
+            else if(strcmp(s, "MDT") == 0) offset = -21600;
+            else if(strcmp(s, "MST") == 0) offset = -25200;
+            else if(strcmp(s, "PDT") == 0) offset = -25200;
+            else if(strcmp(s, "PST") == 0) offset = -28800;
+
+            continue;
          }
 
-         if(n == 1 && len <= 2){
-            n++;
+         if((len == 5 && (*s == '+' || *s == '-')) || (len == 8 && (strncmp(s, "GMT+", 4) == 0 || strncmp(s, "GMT-", 4) == 0))){
+            offset = 0;
+            tz = strpbrk(s, "+-");
+            memset(tzh, 0, 4);
+            memset(tzm, 0, 3);
+            strncpy(tzh, tz, 3);
+            strncpy(tzm, tz+3, 2);
+            offset += atoi(tzh) * 3600;
+            offset += atoi(tzm) * 60;
+            continue;
          }
 
-         if(n == 2 && len <= 2){ tm.tm_mday = atoi(s); continue; }
-
-         if(n == 3){
-            if(len == 3){
-               if(strcmp(s, "Jan") == 0) tm.tm_mon = 0;
-               else if(strcmp(s, "Feb") == 0) tm.tm_mon = 1;
-               else if(strcmp(s, "Mar") == 0) tm.tm_mon = 2;
-               else if(strcmp(s, "Apr") == 0) tm.tm_mon = 3;
-               else if(strcmp(s, "May") == 0) tm.tm_mon = 4;
-               else if(strcmp(s, "Jun") == 0) tm.tm_mon = 5;
-               else if(strcmp(s, "Jul") == 0) tm.tm_mon = 6;
-               else if(strcmp(s, "Aug") == 0) tm.tm_mon = 7;
-               else if(strcmp(s, "Sep") == 0) tm.tm_mon = 8;
-               else if(strcmp(s, "Oct") == 0) tm.tm_mon = 9;
-               else if(strcmp(s, "Nov") == 0) tm.tm_mon = 10;
-               else if(strcmp(s, "Dec") == 0) tm.tm_mon = 11;
-
-               continue;
-            }
-
-            if(len == 2){
-               tm.tm_mon = atoi(s);
-               continue;
-            }
-         }
-
-
-         if(n == 4){
-            if(len == 4){ tm.tm_year = atoi(s) - 1900; continue; }
-            if(len == 2){ tm.tm_year = atoi(s); if(tm.tm_year < 70) tm.tm_year += 100; continue; }
-         }
-
-
-         if(n == 5 && len >= 5){
+         if(len == 5 || len == 7 || len == 8){
             r = &s[0];
 
-            q = strchr(r, ':'); if(!q) break;
-            *q = '\0'; tm.tm_hour = atoi(r); r = q+1;
+            q = strchr(r, ':'); if(!q) continue;
+            *q = '\0'; tm.tm_hour = atoi(r); r = q+1; *q = ':';
 
-            q = strchr(r, ':'); if(q) *q = '\0';
-            tm.tm_min = atoi(r);
+            if(strlen(r) == 5) {
+               q = strchr(r, ':'); if(!q) continue;
+               *q = '\0'; tm.tm_min = atoi(r); r = q+1; *q = ':';
 
-            if(len == 8){
-               r = q+1;
                tm.tm_sec = atoi(r);
+            } else {
+               tm.tm_min = atoi(r);
             }
-
-            break; 
+            continue; 
          }
       }
 
    } while(p);
 
+   if(tm.tm_mon == -1) tm.tm_mon = 0;
+
    ts = mktime(&tm);
 
-   if(p && (*p == '+' || *p == '-')){
-      offset = atoi(p) / 100 * 3600;
-      ts += get_local_timezone_offset() - offset;
-   }
-
+   ts += get_local_timezone_offset() - offset;
 
 #ifdef HAVE_TWEAK_SENT_TIME
    if(ts > 631148400) ts += cfg->tweak_sent_time_offset;
