@@ -209,6 +209,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       state->is_header = 1;
       memset(state->b_body, 0, BIGBUFSIZE);
       state->bodylen = 0;
+
+      if(sdata->import == 1){
+         sdata->sent = 0;
+      }
+
    }
 
    if(take_into_pieces == 1){
