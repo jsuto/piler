@@ -109,7 +109,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
    clearhash(state->journal_recipient);
 
    trimBuffer(state->b_subject);
-   fixupEncodedHeaderLine(state->b_subject);
+   fixupEncodedHeaderLine(state->b_subject, MAXBUFSIZE);
 
 
    if(sdata->internal_sender == 0) sdata->direction = DIRECTION_INCOMING;
@@ -265,7 +265,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
 
-            fixupEncodedHeaderLine(state->attachments[state->n_attachments].filename);
+            fixupEncodedHeaderLine(state->attachments[state->n_attachments].filename, TINYBUFSIZE);
 
             p = get_attachment_extractor_by_filename(state->attachments[state->n_attachments].filename);
 
@@ -428,7 +428,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
    if(state->is_1st_header == 1){
-      fixupEncodedHeaderLine(buf);
+      fixupEncodedHeaderLine(buf, MAXBUFSIZE);
    }
 
 

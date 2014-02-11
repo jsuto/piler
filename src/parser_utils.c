@@ -315,7 +315,7 @@ int extract_boundary(char *p, struct _state *state){
 }
 
 
-void fixupEncodedHeaderLine(char *buf){
+void fixupEncodedHeaderLine(char *buf, int buflen){
    char *sb, *sq, *p, *q, *r, *s, *e, *start, *end;
    char v[SMALLBUFSIZE], puf[MAXBUFSIZE], encoding[SMALLBUFSIZE], tmpbuf[2*SMALLBUFSIZE];
    iconv_t cd;
@@ -323,6 +323,7 @@ void fixupEncodedHeaderLine(char *buf){
    char *inbuf, *outbuf;
    int need_encoding;
 
+   if(buflen < 5) return;
 
    memset(puf, 0, sizeof(puf));
 
@@ -412,7 +413,7 @@ void fixupEncodedHeaderLine(char *buf){
 
    } while(q);
 
-   snprintf(buf, MAXBUFSIZE-1, "%s", puf);
+   snprintf(buf, buflen-1, "%s", puf);
 }
 
 
@@ -740,7 +741,7 @@ void fixURL(char *url){
 
 int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
    int rc=0;
-   char buf[TINYBUFSIZE], *p, *q;
+   char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q;
 
    snprintf(buf, sizeof(buf)-1, "%s", s);
 
@@ -760,7 +761,13 @@ int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
                p++;
             }
          }
-         snprintf(resultbuf, TINYBUFSIZE-1, "%s", p);
+
+         snprintf(puf, sizeof(puf)-1, "%s", p);
+
+         fixupEncodedHeaderLine(puf, sizeof(puf));
+
+         snprintf(resultbuf, TINYBUFSIZE-1, "%s", puf);
+
          rc = 1;
       }
    }

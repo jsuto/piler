@@ -164,6 +164,9 @@ int test_dates(){
    snprintf(datestr, sizeof(datestr)-2, "Date: 03 Jun 06 05:59:00 +0100");
    ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
 
+   snprintf(datestr, sizeof(datestr)-2, "Date: 03-Feb-2014 18:00:00");
+   ts = parse_date_header(datestr, &cfg); printf("%s => %ld\n", datestr, ts);
+
    return count;
 }
 

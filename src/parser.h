@@ -17,7 +17,7 @@ void init_state(struct _state *state);
 unsigned long parse_date_header(char *s, struct __config *cfg);
 int isHexNumber(char *p);
 int extract_boundary(char *p, struct _state *state);
-void fixupEncodedHeaderLine(char *buf);
+void fixupEncodedHeaderLine(char *buf, int buflen);
 void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state);
 void fixupBase64EncodedLine(char *buf, struct _state *state);
 void markHTML(char *buf, struct _state *state);
