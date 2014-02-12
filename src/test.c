@@ -66,6 +66,7 @@ int main(int argc, char **argv){
    sdata.sent = 0;
    sdata.delivered = 0;
    sdata.tot_len = st.st_size;
+   sdata.import = 1;
 
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
