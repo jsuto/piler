@@ -233,10 +233,6 @@ void p_clean_exit(){
 
    clearhash(data.mydomains);
 
-#ifdef HAVE_MULTITENANCY
-   free_list(data.customers);
-#endif
-
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
    unlink(cfg.pidfile);
@@ -312,20 +308,12 @@ void initialise_configuration(){
 
    clearhash(data.mydomains);
 
-#ifdef HAVE_MULTITENANCY
-   free_list(data.customers);
-#endif
-
    data.folder = 0;
    data.recursive_folder_names = 0;
 
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
-
-#ifdef HAVE_MULTITENANCY
-   data.customers = NULL;
-#endif
 
    memset(data.starttls, 0, sizeof(data.starttls));
 
@@ -344,10 +332,6 @@ void initialise_configuration(){
    load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
-
-#ifdef HAVE_MULTITENANCY
-   load_customers(&sdata, &data, &cfg);
-#endif
 
    if(cfg.server_id > 0) insert_offset(&sdata, cfg.server_id);
 
@@ -397,9 +381,6 @@ int main(int argc, char **argv){
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
-#ifdef HAVE_MULTITENANCY
-   data.customers = NULL;
-#endif
    data.ctx = NULL;
    data.ssl = NULL;
 

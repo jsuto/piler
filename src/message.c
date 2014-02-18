@@ -50,9 +50,6 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = sdata->attachments; data->type[data->pos] = TYPE_STRING; data->pos++;
-#ifdef HAVE_MULTITENANCY
-   data->sql[data->pos] = (char *)&sdata->customer_id; data->type[data->pos] = TYPE_SHORT; data->pos++;
-#endif
 
    if(p_exec_query(sdata, data->stmt_insert_into_sphinx_table, data) == OK) rc = OK;
 
@@ -207,9 +204,6 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    data->sql[data->pos] = sdata->digest; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = sdata->bodydigest; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = &vcode[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
-#ifdef HAVE_MULTITENANCY
-   data->sql[data->pos] = (char *)&sdata->customer_id; data->type[data->pos] = TYPE_SHORT; data->pos++;
-#endif
 
    if(p_exec_query(sdata, data->stmt_insert_into_meta_table, data) == ERR){
       ret = ERR_EXISTS;

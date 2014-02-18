@@ -66,8 +66,5 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
 int is_email_address_on_my_domains(char *email, struct __data *data);
 
-void load_customers(struct session_data *sdata, struct __data *data, struct __config *cfg);
-unsigned char get_customer_id_by_rcpt_to_email(char *rcpttoemail, struct __data *data);
-
 #endif /* _PILER_H */
 

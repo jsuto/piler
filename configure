@@ -3647,9 +3647,6 @@ ac_cv_lib_wrap=ac_cv_lib_wrap_main
 fi
 
 
-
-
-
 # Check whether --enable-tweak-sent-time was given.
 if test "${enable_tweak_sent_time+set}" = set; then :
   enableval=$enable_tweak_sent_time; have_tweak_sent_time=$enableval
@@ -4516,7 +4513,7 @@ if test "${with_plugin_timeout+set}" = set; then :
       timeout_binary=`which timeout`" $withval "
    fi
 
-   if test "$withval" = "yes" || $withval = ""; then
+   if test "$withval" = "yes" || test "$withval" = ""; then
       echo "please specify the value for plugin-timeout, eg. --with-plugin-timeout=15";
       exit;
    fi
@@ -4748,8 +4745,6 @@ fi
 if test "$have_psql" = "yes"; then
    defs="$defs -DNEED_PSQL"
 fi
-
-
 
 if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`

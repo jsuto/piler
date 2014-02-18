@@ -367,7 +367,11 @@ create table if not exists `ldap` (
    `ldap_base_dn` varchar(255) not null,
    `ldap_bind_dn` varchar(255) not null,
    `ldap_bind_pw` varchar(255) not null,
-   `ldap_auditor_member_dn` varchar(255) default null
+   `ldap_auditor_member_dn` varchar(255) default null,
+   `ldap_mail_attr` varchar(128) default null,
+   `ldap_account_objectclass` varchar(128) default null,
+   `ldap_distributionlist_attr` varchar(128) default null,
+   `ldap_distributionlist_objectclass` varchar(128) default null
 ) Engine=InnoDB;
 
 

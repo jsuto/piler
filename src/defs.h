@@ -305,11 +305,6 @@ struct __data {
 
    SSL_CTX *ctx;
    SSL *ssl;
-
-#ifdef HAVE_MULTITENANCY
-   struct list *customers;
-#endif
-
 };
 
 

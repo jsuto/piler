@@ -44,7 +44,6 @@ have_zlib="no"
 have_starttls="no"
 have_tcpwrappers="no"
 have_tweak_sent_time="no"
-dnl have_multitenancy="no"
 
 pdftotext="no"
 catdoc="no"
@@ -127,11 +126,6 @@ if test "$want_tcpwrappers" = "yes"; then
       exit 1;
    fi
 fi
-
-
-dnl AC_ARG_ENABLE(multitenancy,
-dnl	[  --enable-multitenancy   build piler with multitenancy support (!!!EXPERIMENTAL!!!)], have_multitenancy=$enableval, have_multitenancy="no")
-
 
 
 AC_ARG_ENABLE(tweak-sent-time,
@@ -267,7 +261,7 @@ AC_ARG_WITH(plugin-timeout,
       timeout_binary=`which timeout`" $withval "
    fi
 
-   if test "$withval" = "yes" || $withval = ""; then
+   if test "$withval" = "yes" || test "$withval" = ""; then
       echo "please specify the value for plugin-timeout, eg. --with-plugin-timeout=15";
       exit;
    fi
@@ -461,15 +455,6 @@ fi
 if test "$have_psql" = "yes"; then
    defs="$defs -DNEED_PSQL"
 fi
-
-
-dnl if test "$have_multitenancy" = "yes"; then
-dnl    echo "multitenancy support: yes"
-dnl    defs="$defs -DHAVE_MULTITENANCY"
-dnl   objs="$objs multitenancy.o"
-dnl else
-dnl    echo "multitenancy support: no"
-dnl fi
 
 if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`

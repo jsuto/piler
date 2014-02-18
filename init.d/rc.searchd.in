@@ -20,7 +20,11 @@ PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
 
 start() {
 	echo "starting searchd . . ."
-	su piler -c searchd
+        if [ `id -u` -eq 0 ]; then
+		su piler -c searchd
+	else
+		searchd
+	fi
 }
 
 stop() {

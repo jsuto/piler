@@ -11,11 +11,17 @@ source base
    sql_pass = MYSQL_PASSWORD
 
    sql_attr_uint = size
-   sql_attr_uint = arrived
    sql_attr_uint = sent
-   sql_attr_uint = direction
-   sql_attr_uint = folder
    sql_attr_uint = attachments
+##
+##   From 0.1.25 these attributes are disabled for an optimized version
+##   If you have indexed data already, then don't exclude them otherwise
+##   you have to reindex all your emails
+##
+##   sql_attr_uint = direction
+##   sql_attr_uint = arrived
+##   sql_attr_uint = folder
+
 }
 
 source delta : base

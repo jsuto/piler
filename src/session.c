@@ -199,9 +199,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   extractEmail(sdata.rcptto[i], rcpttoemail);
 
-                  /* copy default config to enable policy support */
-                  //memcpy(&my_cfg, cfg, sizeof(struct __config));
-
                   inj = ERR;
 
 
@@ -421,14 +418,7 @@ AFTER_PERIOD:
 
                state = SMTP_STATE_RCPT_TO;
 
-               /* check against blackhole addresses */
-
                extractEmail(buf, rcpttoemail);
-
-            #ifdef HAVE_MULTITENANCY
-               if(sdata.customer_id == 0) sdata.customer_id = get_customer_id_by_rcpt_to_email(rcpttoemail, data);
-            #endif
-
 
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;
 

@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.25-master-branch"
 
-#define BUILD 861
+#define BUILD 864
 
 #define HOSTID "mailarchiver"
 
@@ -94,15 +94,8 @@
 #define SQL_PREPARED_STMT_GET_DOMAINS                "SELECT `domain` FROM `" SQL_DOMAIN_TABLE "`"
 #define SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID  "SELECT id FROM " SQL_METADATA_TABLE " WHERE message_id=?"
 #define SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE     "INSERT INTO " SQL_RECIPIENT_TABLE " (`id`,`to`,`todomain`) VALUES(?,?,?)"
-
-#ifdef HAVE_MULTITENANCY
-   #define SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE   "INSERT INTO " SQL_SPHINX_TABLE " (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`, `customer`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-   #define SQL_PREPARED_STMT_INSERT_INTO_META_TABLE     "INSERT INTO " SQL_METADATA_TABLE " (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`,`customer`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-#else
-   #define SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE   "INSERT INTO " SQL_SPHINX_TABLE " (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-   #define SQL_PREPARED_STMT_INSERT_INTO_META_TABLE     "INSERT INTO " SQL_METADATA_TABLE " (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-#endif
-
+#define SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE   "INSERT INTO " SQL_SPHINX_TABLE " (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+#define SQL_PREPARED_STMT_INSERT_INTO_META_TABLE     "INSERT INTO " SQL_METADATA_TABLE " (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 #define SQL_PREPARED_STMT_INSERT_INTO_ATTACHMENT_TABLE     "INSERT INTO " SQL_ATTACHMENT_TABLE " (`piler_id`,`attachment_id`,`sig`,`name`,`type`,`size`,`ptr`) VALUES(?,?,?,?,?,?,?)"
 #define SQL_PREPARED_STMT_GET_ATTACHMENT_ID_BY_SIGNATURE   "SELECT `id` FROM `" SQL_ATTACHMENT_TABLE "` WHERE `sig`=?"
 #define SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER     "SELECT `piler_id`, `attachment_id` FROM " SQL_ATTACHMENT_TABLE " WHERE id=?"
