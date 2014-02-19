@@ -222,19 +222,19 @@ int main(int argc, char **argv){
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
 
+   init_session_data(&sdata, &cfg);
+
+
+   if(open_database(&sdata, &cfg) == ERR){
+      p_clean_exit("cannot connect to mysql server", 1);
+   }
+
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;
       }
-   }
-
-   init_session_data(&sdata, &cfg);
-
-
-   if(open_database(&sdata, &cfg) == ERR){
-      p_clean_exit("cannot connect to mysql server", 1);
    }
 
 
