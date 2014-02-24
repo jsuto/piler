@@ -616,6 +616,9 @@ int main(int argc, char **argv){
 
    cfg = read_config(configfile);
 
+   /* make sure we don't discard messages without a valid Message-Id when importing manually */
+   cfg.archive_emails_not_having_message_id = 1;
+
    if(read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);
       return ERR;
