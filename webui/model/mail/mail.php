@@ -47,6 +47,8 @@ class ModelMailMail extends Model {
 
       fclose($r);
 
+      syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok");
+
       return $ok;
    }
 

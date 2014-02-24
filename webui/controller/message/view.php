@@ -81,13 +81,13 @@ class ControllerMessageView extends Controller {
       foreach($this->data['attachments'] as $a) {
          if(preg_match("/image/", $a['type'])) {
             $attachment = $this->model_search_message->get_attachment_by_id($a['id']);
-            $fp = fopen(DIR_BASE . 'tmp/' . $a['id'], "w+");
+            $fp = fopen(DIR_BASE . 'tmp/' . "i." . $a['id'], "w+");
             if($fp) {
                fwrite($fp, $attachment['attachment']);
                fclose($fp);
 
                $this->data['images'][] = array(
-                                           'name' => $a['id']
+                                           'name' => "i." . $a['id']
                                          );
             }
          }
