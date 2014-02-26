@@ -42,7 +42,10 @@ class MySQL {
       $s = $this->link->prepare($sql);
       if(!$s) { return $query; }
 
-      $s->execute($arr);
+      try {
+         $s->execute($arr);
+      }
+      catch(PDOException $exception) { }
 
       $this->affected = $s->rowCount();
 

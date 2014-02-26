@@ -91,12 +91,18 @@ $mail = new ModelMailMail();
 
       $options = $health->get_options();
 
+      $averagemessagesizeraw = $averagesqlsizeraw = $averagesphinxsizeraw = $daysleftatcurrentrate = 0;
+
 	  /* these next counters are for projecting space */
 	  $averagemessagesweekraw = ($processed_emails[1]) / 7;
 	  $averagemessagesmonthraw = ($processed_emails[2]) / 30;
-	  $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];
-	  $averagesqlsizeraw = $sqlsizeraw / $counters['rcvd'];
-	  $averagesphinxsizeraw = $sphinxsizeraw / $counters['rcvd'];
+
+          if($counters['rcvd'] > 0) {
+             $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];
+             $averagesqlsizeraw = $sqlsizeraw / $counters['rcvd'];
+             $averagesphinxsizeraw = $sphinxsizeraw / $counters['rcvd'];
+          }
+
 	  $averagesizedayraw = ($averagemessagesizeraw+$averagesqlsizeraw+$averagesphinxsizeraw) * $averagemessagesweekraw;
           $datapart = 0;
 	  foreach($shortdiskinfo as $part) {
@@ -108,7 +114,11 @@ $mail = new ModelMailMail();
 	  $averagesqlsize = nice_size($averagesqlsizeraw,' ');						// average metadata size in sql
 	  $averagesphinxsize = nice_size($averagesphinxsizeraw,' ');					// average sphinx index
 	  $averagesizeday = nice_size($averagesizedayraw,' ');						// average size per day
-	  $daysleftatcurrentrate = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
+
+	  if($averagesizedayraw > 0) {
+             $daysleftatcurrentrate = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
+          }
+
 	  if ( $averagemessagesweekraw > $averagemessagesmonthraw ) {
 		$usagetrend = 1;
 	  } elseif( $averagemessagesweekraw < $averagemessagesmonthraw ) {
