@@ -127,7 +127,7 @@ function validemail($email = '') {
 
    if(preg_match("/@local$/", $email)) { return 1; }
 
-   if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,5})$/', $email)) {
+   if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $email)) {
       return 1;
    }
 
@@ -155,7 +155,7 @@ function validdomain($domain = '') {
 
    if(preg_match("/@local$/", $domain)) { return 1; }
 
-   if(preg_match('/@?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,5})$/', $domain)) {
+   if(preg_match('/@?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $domain)) {
       return 1;
    }
 
