@@ -1,7 +1,7 @@
 
 create table if not exists `sph_counter` (
-  `counter_id` int not null,
-  `max_doc_id` int not null,
+  `counter_id` bigint not null,
+  `max_doc_id` bigint not null,
   primary key (`counter_id`)
 );
 
