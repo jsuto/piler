@@ -54,6 +54,9 @@ void init_state(struct _state *state){
    memset(state->filename, 0, TINYBUFSIZE);
    memset(state->type, 0, TINYBUFSIZE);
 
+   memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
+   state->anamepos = 0;
+
    state->has_to_dump = 0;
    state->fd = -1;
    state->b64fd = -1;

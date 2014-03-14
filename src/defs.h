@@ -158,6 +158,9 @@ struct _state {
    char filename[TINYBUFSIZE];
    char type[TINYBUFSIZE];
 
+   char attachment_name_buf[SMALLBUFSIZE];
+   int anamepos;
+
    struct node *boundaries[MAXHASH];
    struct node *rcpt[MAXHASH];
    struct node *rcpt_domain[MAXHASH];
@@ -257,6 +260,7 @@ struct import {
    int processed_messages;
    int import_job_id;
    int remove_after_import;
+   int keep_eml;
    time_t started, updated, finished;
 };
 

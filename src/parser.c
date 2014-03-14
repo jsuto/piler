@@ -200,6 +200,11 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
       if(state->is_header == 1) state->is_header = 0;
       state->is_1st_header = 0;
+
+      if(state->anamepos > 0){
+         extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
+      }
+
    }
 
    if(sdata->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
@@ -333,10 +338,27 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
       if(strncasecmp(buf, "From:", strlen("From:")) == 0) state->message_state = MSG_FROM;
 
-      else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0) state->message_state = MSG_CONTENT_TYPE;
-      else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
-      else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0) state->message_state = MSG_CONTENT_DISPOSITION;
+      else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
+         state->message_state = MSG_CONTENT_TYPE;
 
+         if(state->anamepos > 0){
+            extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
+            memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
+            state->anamepos = 0;
+         }
+
+      }
+      else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
+      else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0){
+         state->message_state = MSG_CONTENT_DISPOSITION;
+
+         if(state->anamepos > 0){
+            extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
+            memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
+            state->anamepos = 0;
+         }
+
+      }
       else if(strncasecmp(buf, "To:", 3) == 0) state->message_state = MSG_TO;
       else if(strncasecmp(buf, "Cc:", 3) == 0) state->message_state = MSG_CC;
       else if(strncasecmp(buf, "Bcc:", 4) == 0) state->message_state = MSG_CC;
@@ -482,7 +504,18 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
 
    if((state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION) && strlen(state->filename) < 5){
-      extractNameFromHeaderLine(buf, "name", state->filename);
+
+      p = &buf[0];
+      for(; *p; p++){
+         if(*p != ' ' && *p != '\t') break;
+      }
+
+      len = strlen(p);
+
+      if(len + state->anamepos < SMALLBUFSIZE-2){
+         memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
+         state->anamepos += len;
+      }
    }
 
 
@@ -542,6 +575,9 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
       memset(state->filename, 0, TINYBUFSIZE);
       memset(state->type, 0, TINYBUFSIZE);
+
+      memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
+      state->anamepos = 0;
 
       state->message_state = MSG_UNDEF;
 
