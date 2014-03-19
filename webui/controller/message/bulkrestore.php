@@ -69,7 +69,7 @@ class ControllerMessageBulkrestore extends Controller {
                $rcpt[0] = $email;
             }
             else {
-               $rcpt = $this->model_search_search->get_message_recipients($id);
+               $rcpt[0] = $session->get("email");
             }
          }
          else {

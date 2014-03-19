@@ -56,7 +56,7 @@ class ControllerDomainRemove extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 3 || ($this->request->get['name'] != "local" && !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5})$/', $this->request->get['name'])) ) {
+      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 3 || ($this->request->get['name'] != "local" && !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,10})$/', $this->request->get['name'])) ) {
          $this->error['domain'] = $this->data['text_invalid_data'];
       }
 
