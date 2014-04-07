@@ -44,10 +44,10 @@ class ModelMessagePDF extends Model {
 
          $message = $this->model_search_message->extract_message($piler_id);
 
-         $page  = "From: " . $message['from'] . "<br />\n";
-         $page .= "To: " . $message['to'] . "<br />\n";
-         $page .= "Subject: " . $message['subject'] . "<br />\n";
-         $page .= "Date: " . $message['date'] . "<br />\n";
+         $page  = $message['from'] . "<br />\n";
+         $page .= $message['to'] . "<br />\n";
+         $page .= $message['subject'] . "<br />\n";
+         $page .= $message['date'] . "<br />\n";
          $page .= "<hr />\n" . $message['message'];
 
          $this->create_pdf_from_eml($piler_id, $page, $images);
