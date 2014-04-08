@@ -34,14 +34,14 @@
     <div id="logincontainer" class="container">
         <div id="logo-lg"><img src="<?php print SITE_URL; ?><?php print SITE_LOGO_LG; ?>" alt="Archive Logo Image" title="<?php print $text_login; ?>" /></div>
 
-        <form name="login" action="index.php?route=login/ga" method="post" class="form-signin">
+        <form name="login" action="index.php?route=login/ga" method="post" class="form-signin" autocomplete="off">
 
             <h2 class="form-signin-heading"><?php print $text_enter_google_authenticator_code; ?></h2>
 
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
-            <input type="password" class="input-block-level bold" name="ga_code" placeholder="<?php print $text_google_authenticator_code; ?>">
+            <input type="password" class="input-block-level bold" name="ga_code" placeholder="<?php print $text_google_authenticator_code; ?>" required autofocus>
 
             <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
             <button class="btn btn-large" type="reset" value="<?php print $text_cancel; ?>" onclick="document.location.href='logout.php';"><?php print $text_cancel; ?></button>
