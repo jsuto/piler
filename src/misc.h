@@ -5,6 +5,7 @@
 #ifndef _MISC_H
  #define _MISC_H
 
+#include <sys/socket.h>
 #include <openssl/ssl.h>
 #include <sys/time.h>
 #include <pwd.h>
