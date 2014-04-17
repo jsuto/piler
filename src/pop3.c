@@ -197,6 +197,12 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
       if(dryrun == 0) rc = import_message(filename, sdata, data, cfg);
       else rc = OK;
 
+      if(dryrun == 0 && rc == OK && data->import->remove_after_import == 1){
+         snprintf(buf, sizeof(buf)-1, "DELE %d\r\n", i);
+         n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+         n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+      }
+
       if(i % 100 == 0){
          time(&(data->import->updated));
          update_import_job_stat(sdata, data);
