@@ -46,64 +46,66 @@ class ModelGoogleGoogle extends Model {
       }
    }
 
+
    // Save all Messages from selected folder
 
    private function saveMessages($email) {
-       $last_msg_id = -1;
-       $from = 1;
-       $downloaded = 0;
-       $storage = $this->storage;
+      $last_msg_id = -1;
+      $from = 1;
+      $count = 0;
+      $storage = $this->storage;
 
-         $from = $this->get_last_message_id_by_unique_id($email, $storage) + 1;
+      $from = $this->get_last_message_id_by_unique_id($email, $storage) + 1;
 
-         //print "will download messages from: $from\n";
+      //print "will download messages from: $from\n";
 
 
-         $num = $storage->countMessages();
+      $num = $storage->countMessages();
 
-         $to = $from;
+      $to = $from;
 
-         while($from <= $num) {
-            if($num - $from > 9) { $delta = 9; }
-            else { $delta = $num-$from; }
+      while($from <= $num) {
+         if($num - $from > 9) { $delta = 9; }
+         else { $delta = $num-$from; }
 
-            $to = $from + $delta;
+         $to = $from + $delta;
 
-            //print "downloading $from, $to\n";
+         //print "downloading $from, $to\n";
 
-            $unique_msg_id = $storage->getUniqueId($to);
+         $unique_msg_id = $storage->getUniqueId($to);
 
-            $messages = $storage->piler_batch_fetch($from, $to);
+         $messages = $storage->piler_batch_fetch($from, $to);
 
-            while(list($k, $v) = each($messages)) {
-               $uuid = $storage->getUniqueId($k);
+         while(list($k, $v) = each($messages)) {
+            $uuid = $storage->getUniqueId($k);
 
-               $tmpname = "piler-" . $email . "-" . $k . "-" . $uuid . ".eml";
-               $f = fopen(DIR_TMP . "/" . $tmpname, "w+");
-               if($f){
-                  fwrite($f, $v['RFC822.HEADER'] . $v['RFC822.TEXT']);
-                  fclose($f);
+            $tmpname = "piler-" . $email . "-" . $k . "-" . $uuid . ".eml";
+            $f = fopen(DIR_TMP . "/" . $tmpname, "w+");
+            if($f){
+               fwrite($f, $v['RFC822.HEADER'] . $v['RFC822.TEXT']);
+               fclose($f);
 
-                  rename(DIR_TMP . "/" . $tmpname, DIR_IMAP . "/" . $tmpname);
+               rename(DIR_TMP . "/" . $tmpname, DIR_IMAP . "/" . $tmpname);
 
-                  $downloaded++;
-               }
-               //print "k: $k\n";
+               $count++;
             }
-
-            $this->update_imap_table($email, $unique_msg_id, $to);
-
-            $from += $delta + 1;
+            //print "k: $k\n";
          }
 
+         $this->update_imap_table($email, $unique_msg_id, $to);
 
-        syslog(LOG_INFO, "downloaded $downloaded messages for $email");   
+         $from += $delta + 1;
+      }
 
+
+      syslog(LOG_INFO, "downloaded $count messages for $email");   
+
+      return $count;
    }
 
 
    public function download_users_emails($email, $accessToken) {
-
+      $count = 0;
 
       if(!$email || !$accessToken) { return 0; }
 
@@ -117,16 +119,17 @@ class ModelGoogleGoogle extends Model {
          $folders = new RecursiveIteratorIterator($this->storage->getFolders(),
                                          RecursiveIteratorIterator::SELF_FIRST);
 
-        foreach ($folders as $localName => $folder) {
+         foreach ($folders as $localName => $folder) {
 
-            if ($folder->isSelectable()) {
+            if($folder->isSelectable()) {
                $this->storage->selectFolder($folder);
-               $this->saveMessages($email);
+               $count += $this->saveMessages($email);
             }
 
-        }
-     }
+         }
+      }
 
+      return $count;
    }
 
 
