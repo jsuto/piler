@@ -129,6 +129,8 @@ class ModelGoogleGoogle extends Model {
          }
       }
 
+      if($count > 0) { $this->run_import_command(); }
+
       return $count;
    }
 
@@ -155,6 +157,13 @@ class ModelGoogleGoogle extends Model {
       $query = $this->db->query("INSERT INTO " . TABLE_GOOGLE_IMAP . " (id, email, last_msg_id) VALUES(?,?,?)", array($id, $email, $unique_msg_id));
 
       return $this->db->countAffected();
+   }
+
+
+   private function run_import_command() {
+      syslog(LOG_INFO, "importing emails ...");
+      system(PILERIMPORT_IMAP_COMMAND, $val);
+      syslog(LOG_INFO, "importing emails done");
    }
 
 

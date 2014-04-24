@@ -17,7 +17,6 @@ alter table retention_rule add column `attachment_name` varchar(128) default nul
 alter table archiving_rule drop index `from`; 
 create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
-alter table retention_rule drop index `entry`;
 create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
 
@@ -26,7 +25,7 @@ alter table ldap add column ldap_account_objectclass varchar(128) default null;
 alter table ldap add column ldap_distributionlist_attr varchar(128) default null;
 alter table ldap add column ldap_distributionlist_objectclass varchar(128) default null;
 
-alter table google change column id id char(32) not null primary key;
+alter table google change column id id char(32) not null;
 alter table google_imap change column id id char(32) not null primary key;
 
 
