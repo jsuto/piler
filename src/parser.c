@@ -145,6 +145,9 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
       else snprintf(state->message_id, SMALLBUFSIZE-1, "null");
    }
 
+
+   digest_string(state->message_id, &(state->message_id_hash[0]));
+
 }
 
 

@@ -231,6 +231,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         }
                         else {
                            inj = process_message(&sdata, &sstate, data, cfg);
+                           unlink(sstate.message_id_hash);
                            counters.c_size += sdata.tot_len;
                         }
 
@@ -258,7 +259,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   counters.c_rcvd++;
 
                   if(inj == ERR_EXISTS){
-                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu", sdata.ttmpfile, sdata.duplicate_id);
+                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata.ttmpfile, sdata.duplicate_id, sstate.message_id);
                      counters.c_duplicate++;
                      status = S_STATUS_DUPLICATE;
                   }

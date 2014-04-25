@@ -48,6 +48,7 @@ void init_state(struct _state *state){
    state->content_type_is_set = 0;
 
    memset(state->message_id, 0, SMALLBUFSIZE);
+   memset(state->message_id_hash, 0, 2*DIGEST_LENGTH+1);
    memset(state->miscbuf, 0, MAX_TOKEN_LEN);
    memset(state->qpbuf, 0, MAX_TOKEN_LEN);
 

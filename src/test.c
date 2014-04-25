@@ -78,7 +78,7 @@ int main(int argc, char **argv){
    printf("post parsing...\n");
    post_parse(&sdata, &state, &cfg);
 
-   printf("message-id: %s\n", state.message_id);
+   printf("message-id: %s / %s\n", state.message_id, state.message_id_hash);
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
    printf("reference: *%s*\n", state.reference);

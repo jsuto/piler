@@ -240,7 +240,7 @@ void remove_stripped_attachments(struct _state *state){
 
 
 int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
-   int rc;
+   int rc, fd;
 
    /* discard if existing message_id */
 
@@ -254,6 +254,12 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
          store_recipients(sdata, data, state->b_journal_to, sdata->duplicate_id, 0, cfg);
       }
 
+      return ERR_EXISTS;
+   }
+
+   fd = open(state->message_id_hash, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
+   if(fd == -1){
+      remove_stripped_attachments(state);
       return ERR_EXISTS;
    }
 

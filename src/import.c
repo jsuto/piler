@@ -98,6 +98,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
       }
 
       rc = process_message(sdata, &state, data, cfg);
+      unlink(state.message_id_hash);
    }
 
    unlink(sdata->tmpframe);

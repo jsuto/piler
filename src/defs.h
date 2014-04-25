@@ -148,6 +148,7 @@ struct _state {
    int abufpos;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
+   char message_id_hash[2*DIGEST_LENGTH+1];
    char miscbuf[MAX_TOKEN_LEN];
    char qpbuf[MAX_TOKEN_LEN];
    unsigned long n_token;
