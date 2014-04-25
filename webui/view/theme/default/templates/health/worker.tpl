@@ -45,7 +45,19 @@
 
 				 <tr>
 					<th><?php print $text_disk_usage; ?></th>
-                                        <td><?php foreach($shortdiskinfo as $partition) { ?><span class="<?php if($partition['utilization'] < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>"><?php print $partition['partition']; ?> =&gt; <?php print nice_size(1000*$partition['used']); ?> / <?php print nice_size(1000*$partition['total']); ?> (<?php print $partition['utilization']; ?>%)</span><br /> <?php } ?></td>
+                                        <td>
+                                            <table>
+                                                <?php foreach($shortdiskinfo as $partition) { ?>
+
+                                                   <tr class="<?php if($partition['utilization'] < HEALTH_RATIO) { ?>text-success<?php } else { ?>text-error<?php } ?>">
+                                                      <td><?php print $partition['partition']; ?></td>
+                                                      <td><?php print nice_size(1000*$partition['used']); ?> / <?php print nice_size(1000*$partition['total']); ?></td>
+                                                      <td>(<?php print $partition['utilization']; ?>%)</td>
+                                                   </tr>
+
+                                                <?php } ?>
+                                            </table>
+                                        </td>
 				 </tr>
 		
 				 <tr>
