@@ -181,6 +181,15 @@ class ModelHealthHealth extends Model {
    }
 
 
+   public function get_first_email_arrival_ts() {
+      $query = $this->db->query("SELECT `arrived`  FROM " . TABLE_META . " ORDER BY id ASC LIMIT 1");
+
+      if(isset($query->row)) { return $query->row['arrived']; }
+
+      return time();
+   }
+
+
    public function get_sphinx_size($directory = DIR_SPHINX) {
       $dirSize=0;
 
