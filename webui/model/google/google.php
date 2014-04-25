@@ -161,9 +161,15 @@ class ModelGoogleGoogle extends Model {
 
 
    private function run_import_command() {
+      $dir = getcwd();
+
+      chdir(DIR_IMAP);
+
       syslog(LOG_INFO, "importing emails ...");
       system(PILERIMPORT_IMAP_COMMAND, $val);
       syslog(LOG_INFO, "importing emails done");
+
+      chdir($dir);
    }
 
 
