@@ -58,7 +58,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
    memset(buf, 0, sizeof(buf));
 
    while(zip_stat_index(z, i, 0, &sb) == 0){
-      if(strncmp(sb.name, prefix, strlen(prefix)) == 0 && (int)sb.size > 0){
+      if(ZIP_EM_NONE == sb.encryption_method && strncmp(sb.name, prefix, strlen(prefix)) == 0 && (int)sb.size > 0){
 
          zf = zip_fopen_index(z, i, 0);
          if(zf){
@@ -106,34 +106,40 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
    while(zip_stat_index(z, i, 0, &sb) == 0){
       //printf("processing file inside the zip: %s, index: %d, size: %d\n", sb.name, sb.index, (int)sb.size);
 
-      p = strrchr(sb.name, '.');
+      if(ZIP_EM_NONE == sb.encryption_method) {
 
-      if((int)sb.size > 0 && p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+         p = strrchr(sb.name, '.');
 
-         snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
+         if((int)sb.size > 0 && p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
 
-         fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
-         if(fd != -1){
-            zf = zip_fopen_index(z, i, 0);
-            if(zf){
-               while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
-                  write(fd, buf, len);
+            snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
+
+            fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+            if(fd != -1){
+               zf = zip_fopen_index(z, i, 0);
+               if(zf){
+                  while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
+                     write(fd, buf, len);
+                  }
+                  zip_fclose(zf);
                }
-               zip_fclose(zf);
+               else syslog(LOG_PRIORITY, "%s: cannot extract '%s' from '%s'", sdata->ttmpfile, sb.name, extracted_filename);
+
+               close(fd);
+
+               extract_attachment_content(sdata, state, extracted_filename, get_attachment_extractor_by_filename(extracted_filename), rec);
+
+               unlink(extracted_filename);
+
             }
-            else syslog(LOG_PRIORITY, "%s: cannot extract '%s' from '%s'", sdata->ttmpfile, sb.name, extracted_filename);
-
-            close(fd);
-
-            extract_attachment_content(sdata, state, extracted_filename, get_attachment_extractor_by_filename(extracted_filename), rec);
-
-            unlink(extracted_filename);
-
-         }
-         else {
-            syslog(LOG_PRIORITY, "%s: cannot open '%s'", sdata->ttmpfile, extracted_filename);
+            else {
+               syslog(LOG_PRIORITY, "%s: cannot open '%s'", sdata->ttmpfile, extracted_filename);
+            }
          }
 
+      }
+      else {
+         syslog(LOG_PRIORITY, "ERR: attachment ('%s') is in encrypted zip file", sb.name);
       }
 
       i++;
