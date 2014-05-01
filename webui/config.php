@@ -215,7 +215,7 @@ $config['JQUERY_DATE_FORMAT'] = 'yy-mm-dd';
 $config['FROM_LENGTH_TO_SHOW'] = 28;
 
 $config['HISTORY_REFRESH'] = 60;
-$config['HEALTH_REFRESH'] = 60;
+$config['HEALTH_REFRESH'] = 300;
 $config['HEALTH_RATIO'] = 80;
 
 $config['MAX_AUDIT_HITS'] = 1000;
