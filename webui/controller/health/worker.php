@@ -87,14 +87,13 @@ class ControllerHealthWorker extends Controller {
        */
 
       //average messages per day, computed over the past week
-      $averagemessagesweekraw = ($this->data['processed_emails'][1]) / 7;
+      $averagemessagesweekraw = ($this->data['processed_emails'][2]) / 7;
 
       //average messages per day, computed over the past month
-      $averagemessagesmonthraw = ($this->data['processed_emails'][2]) / 30;
+      $averagemessagesmonthraw = ($this->data['processed_emails'][3]) / 30;
 
       //average messages per day, computed over the time period since the first email was archived
-      if($total_number_days > 0) { $averagemessagestotalraw = ($this->data['counters']['rcvd']) / $total_number_days; }
-
+      if($total_number_days > 0) { $averagemessagestotalraw = $this->data['counters']['rcvd'] / $total_number_days; }
 
 
       /*
