@@ -50,7 +50,7 @@ class ControllerHealthWorker extends Controller {
 
       list ($this->data['uptime'], $this->data['cpuload']) = $this->model_health_health->uptime();
 
-      $x = system(CPU_USAGE_COMMAND);
+      $x = exec(CPU_USAGE_COMMAND);
       $this->data['cpuinfo'] = 100 - (int)$x;
 
       $this->data['quarantinereportinfo'] = @file_get_contents(DAILY_QUARANTINE_REPORT_STAT);
