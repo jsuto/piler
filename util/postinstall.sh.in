@@ -284,8 +284,6 @@ make_cron_entries() {
 
    echo ""
    echo "### PILERSTART" >> $CRON_TMP
-   echo "*/5 * * * * LC_ALL=C mpstat | tail -1 | awk '{print \$11}' > $LOCALSTATEDIR/piler/stat/cpu.stat" >> $CRON_TMP
-
    echo "5,35 * * * * $LIBEXECDIR/piler/indexer.delta.sh" >> $CRON_TMP
    echo "30   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP

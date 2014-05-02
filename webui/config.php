@@ -193,6 +193,7 @@ $config['SPHINX_NOTE_INDEX'] = 'note1';
 
 $config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
+$config['CPU_USAGE_COMMAND'] = "LC_ALL=C mpstat | tail -1 | awk '{print $11}'";
 
 $config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
 

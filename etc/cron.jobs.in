@@ -7,7 +7,6 @@ piler's crontab:
 
 ### mandatory
 
-*/5  * * * * LC_ALL=C mpstat | tail -1 | awk '{print $11}' > /var/piler/stat/cpu.stat
 5,35 * * * * LIBEXECDIR/piler/indexer.delta.sh
 30   2 * * * LIBEXECDIR/piler/indexer.main.sh
 */15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
