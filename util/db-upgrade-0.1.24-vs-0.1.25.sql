@@ -14,12 +14,6 @@ alter table retention_rule change column `subject` `subject` varchar(128) defaul
 alter table archiving_rule add column `attachment_name` varchar(128) default null;
 alter table retention_rule add column `attachment_name` varchar(128) default null;
 
-alter table archiving_rule drop index `from`; 
-create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
-
-create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
-
-
 alter table ldap add column ldap_mail_attr varchar(128) default null;
 alter table ldap add column ldap_account_objectclass varchar(128) default null;
 alter table ldap add column ldap_distributionlist_attr varchar(128) default null;
@@ -34,4 +28,8 @@ create table if not exists `autosearch` (
    `query` varchar(512) not null
 ) Engine=InnoDB;
 
+
+create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
+
+create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
