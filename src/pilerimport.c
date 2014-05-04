@@ -32,7 +32,7 @@ extern int optind;
 
 int dryrun=0;
 int import_from_gui=0;
-
+char *folder_imap=NULL;
 
 int connect_to_imap_server(int sd, int *seq, char *username, char *password, int port, struct __data *data, int use_ssl);
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data);
@@ -313,6 +313,10 @@ int import_from_imap_server(char *server, char *username, char *password, int po
                if(strstr(skiplist, q->str)) skipmatch = 1;
             }
 
+            if(folder_imap && strstr(q->str, folder_imap) == NULL){
+               skipmatch = 1;
+            }
+
             if(skipmatch == 1){
                if(data->quiet == 0) printf("SKIPPING FOLDER: %s\n", (char *)q->str);
             }
@@ -505,6 +509,7 @@ int main(int argc, char **argv){
             {"port",         required_argument,  0,  'P' },
             {"skiplist",     required_argument,  0,  'x' },
             {"folder",       required_argument,  0,  'F' },
+            {"folder_imap",  required_argument,  0,  'f' },
             {"quiet",        required_argument,  0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",    required_argument,  0,  'r' },
@@ -516,9 +521,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:GDRrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:GDRrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:GDRrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:GDRrqh?");
 #endif
 
       if(c == -1) break;
@@ -577,6 +582,10 @@ int main(int argc, char **argv){
 
          case 'F' :
                     folder = optarg;
+                    break;
+
+         case 'f' :
+                    folder_imap = optarg;
                     break;
 
          case 'R' :
