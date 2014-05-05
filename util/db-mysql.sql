@@ -149,10 +149,11 @@ create table if not exists `counter` (
    `virus` bigint unsigned default 0,
    `duplicate` bigint unsigned default 0,
    `ignore` bigint unsigned default 0,
-   `size` bigint unsigned default 0
+   `size` bigint unsigned default 0,
+   `stored_size` bigint unsigned default 0
 ) Engine=InnoDB;
 
-insert into `counter` values(0, 0, 0, 0, 0);
+insert into `counter` values(0, 0, 0, 0, 0, 0);
 
 
 create table if not exists `option` (

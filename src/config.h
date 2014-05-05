@@ -12,9 +12,9 @@
 #define PROGNAME "piler"
 #define PILERGETD_PROGNAME "pilergetd"
 
-#define VERSION "0.1.25-rc1"
+#define VERSION "0.1.25-master-branch"
 
-#define BUILD 870
+#define BUILD 871
 
 #define HOSTID "mailarchiver"
 
@@ -57,6 +57,7 @@
 #define MEMCACHED_MSGS_DUPLICATE MEMCACHED_CLAPF_PREFIX "duplicate"
 #define MEMCACHED_MSGS_IGNORE MEMCACHED_CLAPF_PREFIX "ignore"
 #define MEMCACHED_MSGS_SIZE MEMCACHED_CLAPF_PREFIX "size"
+#define MEMCACHED_MSGS_STORED_SIZE MEMCACHED_CLAPF_PREFIX "stored_size"
 
 
 #define LOG_PRIORITY LOG_INFO

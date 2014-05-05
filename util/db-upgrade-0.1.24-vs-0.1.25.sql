@@ -29,6 +29,9 @@ create table if not exists `autosearch` (
 ) Engine=InnoDB;
 
 
+alter table `counter` add column `stored_size` bigint unsigned default 0;
+
+
 create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
 create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
