@@ -111,6 +111,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
                         bzero(&counters, sizeof(counters));
                         counters.c_rcvd = 1; 
                         counters.c_size += sdata->tot_len;
+                        counters.c_stored_size = sdata->stored_len;
                         update_counters(sdata, data, &counters, cfg);
 
                         break;

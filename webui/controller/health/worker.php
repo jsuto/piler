@@ -64,12 +64,13 @@ class ControllerHealthWorker extends Controller {
       $db = Registry::get('db');
       $db->select_db($db->database);
 
-      list($archivesizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
+      list($archivesizeraw, $archivestoredsizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
  
       $oldest_record_timestamp = $this->model_health_health->get_oldest_record_ts();
       $total_number_days = round( (time() - $this->model_health_health->get_first_email_arrival_ts()) / 86400 );
 
       $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
+      $this->data['archive_stored_size'] = nice_size($archivestoredsizeraw, ' ');
 
       $this->data['prefix'] = '';
       if(isset($this->data['counters'][MEMCACHED_PREFIX . 'rcvd'])) { $this->data['prefix'] = MEMCACHED_PREFIX; }

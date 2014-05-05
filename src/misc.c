@@ -455,7 +455,7 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
 
    sdata->hdr_len = 0;
    sdata->tot_len = 0;
-   sdata->store_len = 0;
+   sdata->stored_len = 0;
    sdata->num_of_rcpt_to = 0;
 
    sdata->ms_journal = 0;

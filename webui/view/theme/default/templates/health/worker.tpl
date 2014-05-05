@@ -40,7 +40,7 @@
 			<table class="table table-striped">
 				 <tr>
 					<th><?php print $text_archive_size; ?>:</th>
-					<td><?php print $archive_size; ?>B</td>
+					<td><?php print $archive_size; ?>B (<?php print $archive_stored_size; ?>B)</td>
 				 </tr>
 
 				 <tr>

@@ -31,7 +31,7 @@
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_archive_size; ?></div>
-            <div class="cellhealthright"><?php print $archive_size; ?>B</div>
+            <div class="cellhealthright"><?php print $archive_size; ?>B (<?php print $archive_stored_size; ?>B)</div>
          </div>
 
          <div class="row">

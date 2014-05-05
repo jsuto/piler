@@ -158,7 +158,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    if(n > 0 && n == writelen){
       ret = 1;
-      sdata->store_len += writelen;
+      sdata->stored_len += writelen;
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored '%s' %d/%d bytes", sdata->ttmpfile, filename, len, writelen);
    }
    else {
