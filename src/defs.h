@@ -196,7 +196,7 @@ struct session_data {
    int direction;
    int tls;
    int spam_message;
-   int fd, hdr_len, tot_len, num_of_rcpt_to, rav;
+   int fd, hdr_len, tot_len, store_len, num_of_rcpt_to, rav;
    int need_scan;
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
    char bodydigest[2*DIGEST_LENGTH+1];
