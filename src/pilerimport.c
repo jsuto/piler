@@ -257,7 +257,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 int import_from_imap_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, char *skiplist, int dryrun, struct __config *cfg){
    int i, rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
-   char port_string[6];
+   char port_string[6], puf[SMALLBUFSIZE];
    struct addrinfo hints, *res;
    struct node *q;
 
@@ -310,7 +310,8 @@ int import_from_imap_server(char *server, char *username, char *password, int po
             skipmatch = 0;
 
             if(skiplist && strlen(skiplist) > 0){
-               if(strstr(skiplist, q->str)) skipmatch = 1;
+               snprintf(puf, sizeof(puf)-1, "%s,", (char *)q->str);
+               if(strstr(skiplist, puf)) skipmatch = 1;
             }
 
             if(folder_imap && strstr(q->str, folder_imap) == NULL){
@@ -461,7 +462,7 @@ ENDE:
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port> [-F <foldername>] [-R] [-r] [-q]\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port> [-x <folder1,folder2,....,folderN,>] [-F <foldername>] [-R] [-r] [-q]\n");
    exit(0);
 }
 
