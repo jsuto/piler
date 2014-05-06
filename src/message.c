@@ -262,6 +262,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
       remove_stripped_attachments(state);
       return ERR_EXISTS;
    }
+   close(fd);
 
 
    /* store base64 encoded file attachments */
