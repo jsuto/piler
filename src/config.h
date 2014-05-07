@@ -12,7 +12,7 @@
 #define PROGNAME "piler"
 #define PILERGETD_PROGNAME "pilergetd"
 
-#define VERSION "0.1.25-master-branch"
+#define VERSION "0.1.25-rc2"
 
 #define BUILD 871
 
