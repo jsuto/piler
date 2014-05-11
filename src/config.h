@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.25-rc2"
 
-#define BUILD 871
+#define BUILD 872
 
 #define HOSTID "mailarchiver"
 
@@ -127,8 +127,10 @@
 #define WRITE_TO_STDOUT 0
 #define WRITE_TO_BUFFER 1
 
+#define S_STATUS_UNDEF "undef"
 #define S_STATUS_STORED "stored"
 #define S_STATUS_DUPLICATE "duplicate"
+#define S_STATUS_DISCARDED "discarded"
 #define S_STATUS_ERROR "error"
 
 #endif /* _CONFIG_H */

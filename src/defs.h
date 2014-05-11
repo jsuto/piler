@@ -58,6 +58,10 @@
 
 #define MAXCHILDREN 64
 
+#define RULE_UNDEF 0
+#define RULE_MATCH 1
+#define RULE_NO_MATCH -100
+
 
 typedef void signal_func (int);
 

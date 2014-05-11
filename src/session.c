@@ -200,6 +200,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   extractEmail(sdata.rcptto[i], rcpttoemail);
 
                   inj = ERR;
+                  status = S_STATUS_UNDEF;
 
 
                   if(db_conn == 1){
@@ -228,12 +229,16 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                            counters.c_ignore++;
 
                            remove_stripped_attachments(&sstate);
+
+                           status = S_STATUS_DISCARDED;
                         }
                         else {
                            inj = process_message(&sdata, &sstate, data, cfg);
                            unlink(sstate.message_id_hash);
                            counters.c_size += sdata.tot_len;
                            counters.c_stored_size = sdata.stored_len;
+
+                           status = S_STATUS_STORED;
                         }
 
                      }
@@ -245,8 +250,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   /* set the accept buffer */
 
                   snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
-
-                  status = S_STATUS_STORED;
 
                   if(inj == ERR){
                      snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
