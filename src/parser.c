@@ -377,7 +377,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
        * in piler daemon: sdata->sent = sdata->now
        */
 
-      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0){
+      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && state->is_1st_header == 1){
          if(sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
          else {
             sdata->sent = parse_date_header(buf, cfg);
