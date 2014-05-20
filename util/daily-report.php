@@ -8,11 +8,39 @@ $averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $a
    
 $_SERVER['HTTP_USER_AGENT'] = "daily/cron";
 
-if(isset($_SERVER['argv'][1])) { $webuidir = $_SERVER['argv'][1]; }
-
-for($i=2; $i<$_SERVER['argc']; $i++){
-   if($_SERVER['argv'][$i] == "verbose") { $verbose = 1; }
+$opts = 'h::v';
+$lopts = array(
+    'webui:',
+    'verbose'
+    );
+    
+if ( $options = getopt( $opts, $lopts ) )
+{
+    if ( isset($options['webui']) ) 
+    {
+        $webuidir = $options['webui'];
+    } else
+    {
+        echo("\nError: must provide path to WebUI directory\n\n");
+    
+        display_help();
+        exit;
+    }
+    
+    if ( isset($options['h']) ) 
+    {
+        display_help();
+        exit;
+    }
+    if ( isset($options['verbose']) )
+    {
+        $verbose = 1;
+    }
+} else {
+    display_help();
+    exit;   
 }
+
 
 require_once($webuidir . "/config.php");
 
@@ -154,6 +182,16 @@ $mail = new ModelMailMail();
 if($fp) {
    flock($fp, LOCK_UN);
    fclose($fp);
+}
+
+
+function display_help() {
+    $phpself = basename(__FILE__);
+    echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
+    echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
+    echo("options:\n");
+    echo("\t-v Provide a verbose output\n");
+    echo("\t-h Prints this help screen and exits\n");
 }
 
 

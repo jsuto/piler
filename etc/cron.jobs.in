@@ -13,10 +13,10 @@ piler's crontab:
 */15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
 
 ### optional: the same report you can see on the health page
-30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php /srv/www/webui.yourdomain.com
+30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui /srv/www/webui.yourdomain.com
 
 ### optional: populate accouting data
-30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php /srv/www/webui.yourdomain.com
+30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui /srv/www/webui.yourdomain.com
 
 ### optional: purge aged emails
 2 0 * * * /usr/local/bin/pilerpurge
