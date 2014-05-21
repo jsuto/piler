@@ -225,9 +225,6 @@ class ModelSearchMessage extends Model {
 
 
       $p = strstr($msg, "\nX-MS-Journal-Report:");
-      if(!$p) {
-         $p = strstr($msg, "\nX-MS-Exchange-Organization-Auth");
-      }
       $msg = '';
 
       if($p) {
@@ -273,9 +270,6 @@ class ModelSearchMessage extends Model {
       }
 
       $p = strstr($msg, "\nX-MS-Journal-Report:");
-      if(!$p) {
-         $p = strstr($msg, "\nX-MS-Exchange-Organization-Auth");
-      }
 
       if($p) {
          $has_journal = 1;

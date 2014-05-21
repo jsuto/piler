@@ -27,6 +27,10 @@ if($options = getopt($opts, $lopts)) {
    }
 
 }
+else {
+    display_help();
+    exit;
+}
 
 
 
@@ -97,6 +101,17 @@ function poll_imap_accounts() {
          $g->download_users_emails($q['email'], $access_token);
       }
    }
+}
+
+
+
+function display_help() {
+    $phpself = basename(__FILE__);
+    echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
+    echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
+    echo("options:\n");
+    echo("\t-d Daemonize the imap polling\n");
+    echo("\t-h Prints this help screen and exits\n");
 }
 
 
