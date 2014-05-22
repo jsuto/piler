@@ -190,7 +190,7 @@ $_['text_logged_out'] = "Sie haben sich abgemeldet";
 $_['text_login'] = "Anmeldung";
 $_['text_login2'] = "Anmeldung";
 $_['text_login_failed'] = "Anmeldung gescheitert";
-$_['text_login_via_google'] = "Mit Google-Daten anmelden";
+$_['text_login_via_google'] = "Mit Google-Konto anmelden";
 $_['text_logout'] = "Abmeldung";
 $_['text_logout2'] = "Abmeldung";
 
@@ -346,7 +346,7 @@ $_['text_total_users'] = "insgesamt";
 $_['text_type'] = "Typ";
 
 $_['text_uids'] = "Benutzerkennungen";
-$_['text_unauthorized_domain'] = "unbefugte Domäne domain";
+$_['text_unauthorized_domain'] = "unbefugte Domäne";
 $_['text_unauthorized_download_attachment'] = "Anhang unbefugt heruntergeladen";
 $_['text_unauthorized_remove_message'] = "unbefugte Nachrichtenlöschung";
 $_['text_unauthorized_view_message'] = "unbefugte Nachrichtenansicht";
@@ -459,22 +459,22 @@ $_['text_customer_delete_confirm_message'] = 'Soll dieser Kunde wirklich gelösc
 $_['text_with_selected'] = 'mit ausgewählten';
 
 
-$_['text_download_all_hits_as_eml'] = "Download all as EML";
-$_['text_download_selected_hits_as_pdf'] = "Download selected as PDF";
-$_['text_archive_size_before_compression'] = "Archive size before compression";
-$_['text_create_new_secret'] = "Create new secret";
-$_['text_enter_google_authenticator_code'] = "Enter Google Authenticator code";
-$_['text_google_authenticator_code'] = "Google Authenticator code";
-$_['text_google_authenticator_settings'] = "Google Authenticator settings";
-$_['text_invalid_pin_code'] = "Invalid pin code";
+$_['text_download_all_hits_as_eml'] = "Alle herunterladen (EML)";
+$_['text_download_selected_hits_as_pdf'] = "Ausgewählte Nachrichten herunterladen (PDF)";
+$_['text_archive_size_before_compression'] = "Archivgröße vor Komprimierung";
+$_['text_create_new_secret'] = "Neuen Schlüssel erzeugen";
+$_['text_enter_google_authenticator_code'] = "Google Authenticator Code eingeben";
+$_['text_google_authenticator_code'] = "Google Authenticator Code";
+$_['text_google_authenticator_settings'] = "Einstellungen für Google Authenticator";
+$_['text_invalid_pin_code'] = "PIN ungültig";
 $_['text_qr_code'] = "QR";
-$_['text_refresh_qr_code'] = "Refresh QR code";
-$_['text_print_message'] = "Print";
-$_['text_forward_selected_emails_to'] = "Forward selected emails to";
-$_['text_search_expression'] = "Search expression";
-$_['text_automated_search'] = "Automated search";
-$_['text_delete_confirm_message'] = "Do you wish to delete";
-$_['text_existing'] = "Existing";
-$_['text_new'] = "new";
+$_['text_refresh_qr_code'] = "QR-Code erneuern";
+$_['text_print_message'] = "Drucken";
+$_['text_forward_selected_emails_to'] = "Ausgewählte Nachrichten weiterleiten an";
+$_['text_search_expression'] = "Suchausdruck";
+$_['text_automated_search'] = "Automatisierte Suche";
+$_['text_delete_confirm_message'] = "Wirklich löschen?";
+$_['text_existing'] = "existiert";
+$_['text_new'] = "neu";
 
 ?>
