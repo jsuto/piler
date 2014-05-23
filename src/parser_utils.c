@@ -176,26 +176,26 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
 
          q = strchr(s, ','); if(q) *q='\0';
 
-         if(strncmp(s, "Jan", 3) == 0) tm.tm_mon = 0;
-         else if(strncmp(s, "Feb", 3) == 0) tm.tm_mon = 1;
-         else if(strncmp(s, "Mar", 3) == 0) tm.tm_mon = 2;
-         else if(strncmp(s, "Apr", 3) == 0) tm.tm_mon = 3;
-         else if(strncmp(s, "May", 3) == 0) tm.tm_mon = 4;
-         else if(strncmp(s, "Jun", 3) == 0) tm.tm_mon = 5;
-         else if(strncmp(s, "Jul", 3) == 0) tm.tm_mon = 6;
-         else if(strncmp(s, "Aug", 3) == 0) tm.tm_mon = 7;
-         else if(strncmp(s, "Sep", 3) == 0) tm.tm_mon = 8;
-         else if(strncmp(s, "Oct", 3) == 0) tm.tm_mon = 9;
-         else if(strncmp(s, "Nov", 3) == 0) tm.tm_mon = 10;
-         else if(strncmp(s, "Dec", 3) == 0) tm.tm_mon = 11;
+         if(strncasecmp(s, "Jan", 3) == 0) tm.tm_mon = 0;
+         else if(strncasecmp(s, "Feb", 3) == 0) tm.tm_mon = 1;
+         else if(strncasecmp(s, "Mar", 3) == 0) tm.tm_mon = 2;
+         else if(strncasecmp(s, "Apr", 3) == 0) tm.tm_mon = 3;
+         else if(strncasecmp(s, "May", 3) == 0) tm.tm_mon = 4;
+         else if(strncasecmp(s, "Jun", 3) == 0) tm.tm_mon = 5;
+         else if(strncasecmp(s, "Jul", 3) == 0) tm.tm_mon = 6;
+         else if(strncasecmp(s, "Aug", 3) == 0) tm.tm_mon = 7;
+         else if(strncasecmp(s, "Sep", 3) == 0) tm.tm_mon = 8;
+         else if(strncasecmp(s, "Oct", 3) == 0) tm.tm_mon = 9;
+         else if(strncasecmp(s, "Nov", 3) == 0) tm.tm_mon = 10;
+         else if(strncasecmp(s, "Dec", 3) == 0) tm.tm_mon = 11;
 
-         if(strncmp(s, "Mon", 3) == 0) tm.tm_wday = 1;
-         else if(strncmp(s, "Tue", 3) == 0) tm.tm_wday = 2;
-         else if(strncmp(s, "Wed", 3) == 0) tm.tm_wday = 3;
-         else if(strncmp(s, "Thu", 3) == 0) tm.tm_wday = 4;
-         else if(strncmp(s, "Fri", 3) == 0) tm.tm_wday = 5;
-         else if(strncmp(s, "Sat", 3) == 0) tm.tm_wday = 6;
-         else if(strncmp(s, "Sun", 3) == 0) tm.tm_wday = 0;
+         if(strncasecmp(s, "Mon", 3) == 0) tm.tm_wday = 1;
+         else if(strncasecmp(s, "Tue", 3) == 0) tm.tm_wday = 2;
+         else if(strncasecmp(s, "Wed", 3) == 0) tm.tm_wday = 3;
+         else if(strncasecmp(s, "Thu", 3) == 0) tm.tm_wday = 4;
+         else if(strncasecmp(s, "Fri", 3) == 0) tm.tm_wday = 5;
+         else if(strncasecmp(s, "Sat", 3) == 0) tm.tm_wday = 6;
+         else if(strncasecmp(s, "Sun", 3) == 0) tm.tm_wday = 0;
 
          if(len <= 2 && tm.tm_mday == 0){ tm.tm_mday = atoi(s); continue; }
 
