@@ -77,7 +77,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    if(db_conn == 0){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR_TMP, cfg->hostid);
       send(new_sd, buf, strlen(buf), 0);
-      syslog(LOG_PRIORITY, "cannot make prepared statement");
       return 0;
    }
 
