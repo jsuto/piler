@@ -14,7 +14,7 @@
 
 #define VERSION "0.1.25-rc2"
 
-#define BUILD 872
+#define BUILD 873
 
 #define HOSTID "mailarchiver"
 

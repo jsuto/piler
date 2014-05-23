@@ -203,7 +203,7 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
 
          if(len == 2){ if(atoi(s) >=90) tm.tm_year = atoi(s); else tm.tm_year = atoi(s) + 100; continue; }
 
-         if(len == 4){ tm.tm_year = atoi(s) - 1900; continue; }
+         if(len == 4 && atoi(s) > 1900){ tm.tm_year = atoi(s) - 1900; continue; }
 
          if(len == 3){
             if(strcmp(s, "EDT") == 0) offset = -14400;
