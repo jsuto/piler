@@ -76,6 +76,8 @@ class ControllerMessageView extends Controller {
       $this->data['message']['tag'] = $this->model_search_message->get_message_tag($this->data['id'], $session->get("uid"));
       $this->data['message']['note'] = $this->model_search_message->get_message_note($this->data['id'], $session->get("uid"));
 
+      $this->data['spam'] = $this->model_search_message->is_message_spam($this->data['id']);
+
       $this->data['images'] = array();
 
       foreach($this->data['attachments'] as $a) {

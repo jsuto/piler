@@ -103,6 +103,9 @@ class ControllerSearchHelper extends Controller {
 
       $match = preg_replace("/OR/", "|", $match);
       $this->a['match'] = preg_split("/ /", $match);
+
+      $this->a['sort'] = "date";
+      $this->a['order'] = 0;
    }
 
 
