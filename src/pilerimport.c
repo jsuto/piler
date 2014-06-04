@@ -486,6 +486,7 @@ int main(int argc, char **argv){
 
    import.import_job_id = import.total_messages = import.processed_messages = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
+   import.extra_recipient = NULL;
 
    data.import = &import;
 
@@ -511,20 +512,21 @@ int main(int argc, char **argv){
             {"skiplist",     required_argument,  0,  'x' },
             {"folder",       required_argument,  0,  'F' },
             {"folder_imap",  required_argument,  0,  'f' },
-            {"quiet",        required_argument,  0,  'q' },
+            {"add-recipient",required_argument,  0,  'a' },
+            {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
-            {"remove-after-import",    required_argument,  0,  'r' },
-            {"gui-import",   required_argument,  0,  'G' },
-            {"dry-run",      required_argument,  0,  'D' },
+            {"remove-after-import",no_argument,  0,  'r' },
+            {"gui-import",   no_argument,        0,  'G' },
+            {"dry-run",      no_argument,        0,  'D' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:GDRrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:GDRrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:GDRrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:GDRrqh?");
 #endif
 
       if(c == -1) break;
@@ -595,6 +597,10 @@ int main(int argc, char **argv){
 
          case 'r' :
                     data.import->remove_after_import = 1;
+                    break;
+
+         case 'a' :
+                    data.import->extra_recipient = optarg;
                     break;
 
          case 'G' :

@@ -32,6 +32,16 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
 
+   if(sdata->import == 1 && data->import->extra_recipient){
+      len = strlen(data->import->extra_recipient);
+      memcpy(&(state.b_to[state.tolen]), data->import->extra_recipient, len);
+      state.tolen += len;
+      memcpy(&(state.b_to[state.tolen]), " ", 1);
+      state.tolen++;
+      strtolower(state.b_to);
+   }
+
+
    if(sdata->num_of_rcpt_to > 0){
       for(i=0; i<sdata->num_of_rcpt_to; i++){
          extractEmail(sdata->rcptto[i], puf);

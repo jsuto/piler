@@ -22,12 +22,13 @@ int main(int argc, char **argv){
    struct _state state;
    struct __config cfg;
    struct __data data;
+   struct import import;
    char *rule;
 
    srand(getpid());
 
    if(argc < 2){
-      fprintf(stderr, "usage: %s <message>\n", argv[0]);
+      fprintf(stderr, "usage: %s <message> [<extra recipient>]\n", argv[0]);
       exit(1);
    }
 
@@ -46,6 +47,12 @@ int main(int argc, char **argv){
    setlocale(LC_CTYPE, cfg.locale);
 
    printf("build: %d\n", get_build());
+
+   import.extra_recipient = NULL;
+
+   if(argc > 2) import.extra_recipient = argv[2];
+
+   data.import = &import;
 
    data.folder = 0;
    data.recursive_folder_names = 0;
