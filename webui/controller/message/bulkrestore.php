@@ -46,7 +46,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->data['restored'] = 0;
 
-      if(ENABLE_IMAP_AUTH == 1) {
+      if(RESTORE_OVER_IMAP == 1) {
          require_once 'Zend/Mail/Protocol/Imap.php';
          require_once 'Zend/Mail/Storage/Imap.php';
 
@@ -82,7 +82,7 @@ class ControllerMessageBulkrestore extends Controller {
             $msg = $this->model_search_message->get_raw_message($piler_id);
             $this->model_search_message->remove_journal($msg);
 
-            if(ENABLE_IMAP_AUTH == 1) {
+            if(RESTORE_OVER_IMAP == 1) {
                if($imap_ok) {
                   $x = $this->imap->append('INBOX',  $msg);
                }
@@ -107,7 +107,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->model_search_message->disconnect_from_pilergetd();
 
-      if(ENABLE_IMAP_AUTH == 1) { $this->model_mail_mail->disconnect_imap(); }
+      if(RESTORE_OVER_IMAP == 1) { $this->model_mail_mail->disconnect_imap(); }
 
 
       $this->render();

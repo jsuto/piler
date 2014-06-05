@@ -25,7 +25,7 @@ class ControllerMessageRestore extends Controller {
 
       $rcpt = array();
 
-      if(ENABLE_IMAP_AUTH == 1) {
+      if(RESTORE_OVER_IMAP == 1) {
          require_once 'Zend/Mail/Protocol/Imap.php';
          require_once 'Zend/Mail/Storage/Imap.php';
       }
@@ -71,7 +71,7 @@ class ControllerMessageRestore extends Controller {
 
          $this->model_search_message->remove_journal($msg);
 
-         if(ENABLE_IMAP_AUTH == 1) {
+         if(RESTORE_OVER_IMAP == 1) {
             if($this->model_mail_mail->connect_imap()) {
                $x = $this->imap->append('INBOX',  $msg);
                $this->model_mail_mail->disconnect_imap();

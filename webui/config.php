@@ -101,6 +101,7 @@ $config['ENABLE_SSO_LOGIN'] = 0;
 // enable authentication against an imap server (disabled by default)
 
 $config['ENABLE_IMAP_AUTH'] = 0;
+$config['RESTORE_OVER_IMAP'] = 0;
 $config['IMAP_HOST'] = 'mail.yourdomain.com';
 $config['IMAP_PORT'] =  993;
 $config['IMAP_SSL'] = true;
