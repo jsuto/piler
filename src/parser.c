@@ -34,6 +34,15 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
    if(sdata->import == 1 && data->import->extra_recipient){
       len = strlen(data->import->extra_recipient);
+
+      addnode(state.journal_recipient, data->import->extra_recipient);
+
+      memcpy(&(state.b_journal_to[state.journaltolen]), data->import->extra_recipient, len);
+      state.journaltolen += len;
+      memcpy(&(state.b_journal_to[state.journaltolen]), " ", 1);
+      state.journaltolen++;
+      strtolower(state.b_journal_to);
+
       memcpy(&(state.b_to[state.tolen]), data->import->extra_recipient, len);
       state.tolen += len;
       memcpy(&(state.b_to[state.tolen]), " ", 1);
