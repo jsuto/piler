@@ -55,7 +55,6 @@
                if($user['isadmin'] == 0){ print $text_user_regular; }
                if($user['isadmin'] == 1){ print $text_user_masteradmin; }
                if($user['isadmin'] == 2){ print $text_user_auditor; }
-               if($user['isadmin'] == 3){ print $text_user_read_only_admin; }
             ?>
          </div>
          <div class="domaincell"><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><?php print $text_edit_or_view; ?></a></div>

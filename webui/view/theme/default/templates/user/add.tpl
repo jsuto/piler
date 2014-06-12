@@ -128,7 +128,6 @@
                <option value="0"<?php if(isset($post['isadmin']) && $post['isadmin'] == 0){ ?> selected="selected"<?php } ?>><?php print $text_user_regular; ?></option>
                <?php if(Registry::get('admin_user') == 1) { ?><option value="1"<?php if(isset($post['isadmin']) && $post['isadmin'] == 1){ ?> selected="selected"<?php } ?>><?php print $text_user_masteradmin; ?></option><?php } ?>
                <option value="2"<?php if(isset($post['isadmin']) && $post['isadmin'] == 2){ ?> selected="selected"<?php } ?>><?php print $text_user_auditor; ?></option>
-               <option value="3"<?php if(isset($post['isadmin']) && $post['isadmin'] == 3){ ?> selected="selected"<?php } ?>><?php print $text_user_read_only_admin; ?></option>
           </select>
 		</div>
 	</div>	
