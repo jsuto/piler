@@ -329,13 +329,15 @@ class ModelSearchSearch extends Model {
 
       if(!isset($data['search'])) { return $a; }
 
-      $s = preg_replace("/:/", ": ", $data['search']);
+      $s = preg_replace("/https{0,1}:/", "httpX", $data['search']);
+      $s = preg_replace("/:/", ": ", $s);
       $s = preg_replace("/,/", " ", $s);
       $s = preg_replace("/\(/", "( ", $s);
       $s = preg_replace("/\)/", ") ", $s);
       $s = preg_replace("/OR/", "|", $s);
       $s = preg_replace("/AND/", "", $s);
       $s = preg_replace("/\s{1,}/", " ", $s);
+      $s = preg_replace("/httpX/", "http:", $s);
       $b = explode(" ", $s);
 
       while(list($k, $v) = each($b)) {
