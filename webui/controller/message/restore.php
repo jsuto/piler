@@ -33,6 +33,7 @@ class ControllerMessageRestore extends Controller {
 
       if(Registry::get('auditor_user') == 1) {
          $this->data['id'] = @$this->request->post['id'];
+         $this->request->post['rcpt'] = urldecode($this->request->post['rcpt']);
          $rcpt = preg_split("/\s/", $this->request->post['rcpt']);
       }
 
