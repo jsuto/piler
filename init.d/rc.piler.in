@@ -14,12 +14,13 @@
 
 
 NAME=piler
-PID_FILE=`SBINDIR/pilerconf -q pidfile | cut -f2 -d=`
+OPTIONS=""
+PID_FILE=`SBINDIR/pilerconf $OPTIONS -q pidfile | cut -f2 -d=`
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
 
 start() {
 	echo "starting $NAME . . ."
-	SBINDIR/piler -d
+	SBINDIR/piler -d $OPTIONS
 }
 
 stop() {

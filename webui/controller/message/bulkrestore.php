@@ -51,6 +51,10 @@ class ControllerMessageBulkrestore extends Controller {
          require_once 'Zend/Mail/Storage/Imap.php';
 
          $imap_ok = $this->model_mail_mail->connect_imap();
+
+         if(!$imap_ok) {
+            syslog(LOG_INFO, "imap connection failed for bulkrestore");
+         }
       }
 
 
