@@ -19,7 +19,7 @@ class ModelUserPrefs extends Model {
 
    public function set_user_preferences($username = '', $prefs = array() ) {
 
-      if(!isset($prefs['pagelen']) || !is_numeric($prefs['pagelen']) || $prefs['pagelen'] < 10 || $prefs['pagelen'] > 100
+      if(!isset($prefs['pagelen']) || !is_numeric($prefs['pagelen']) || $prefs['pagelen'] < 10 || $prefs['pagelen'] > 1000
          || !isset($prefs['theme']) || !preg_match("/^([a-zA-Z0-9\-\_]+)$/", $prefs['theme']) || !file_exists(DIR_THEME . $prefs['theme']) ) { return 1; }
 
       $session = Registry::get('session');
