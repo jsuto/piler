@@ -11,6 +11,7 @@ piler's crontab:
 30   2 * * * LIBEXECDIR/piler/indexer.main.sh
 */15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
 */15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
+*/5 * * * *  /usr/bin/find /srv/www/webui.yourdomain.com/tmp -type f -name i.\* -exec rm -f {} \;
 
 ### optional: the same report you can see on the health page
 30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui /srv/www/webui.yourdomain.com

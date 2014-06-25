@@ -112,7 +112,7 @@
            <?php } ?>
 
            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-              <button class="btn piler-right-margin<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete<?php } ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', ''); return false;"><?php print $text_bulk_restore_selected_emails; ?></button>
+              <button class="btn piler-right-margin<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"><?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', ''); return false;"><?php } ?><?php print $text_bulk_restore_selected_emails; ?></button>
            <?php } ?>
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
