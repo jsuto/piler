@@ -311,7 +311,7 @@ class ModelSearchMessage extends Model {
       $_1st_header = 1;
       $verification = 1;
 
-      $from = $to = $subject = $date = $message = "";
+      $from = $to = $subject = $date = $text_message = $html_message = "";
 
       $this->connect_to_pilergetd();
       $msg = $this->get_raw_message($id);
@@ -340,17 +340,20 @@ class ModelSearchMessage extends Model {
             if($is_header == 1 && preg_match("/^Content-Transfer-Encoding:/i", $l)) $state = "CONTENT_TRANSFER_ENCODING";
 
             if($state == "CONTENT_TYPE"){
-               $x = strstr($l, "boundary");
+               $x = stristr($l, "boundary");
                if($x){
-                  $x = preg_replace("/boundary =/", "boundary=", $x);
-                  $x = preg_replace("/boundary= /", "boundary=", $x);
+                  $x = preg_replace("/boundary\s{0,}=/i", "boundary=", $x);
+                  $x = preg_replace("/boundary= /i", "boundary=", $x);
 
                   $x = preg_replace("/\"\;{0,1}/", "", $x);
                   $x = preg_replace("/\'/", "", $x);
 
                   $b = explode("boundary=", $x);
 
-                  array_push($boundary, rtrim($b[count($b)-1]));
+                  $__boundary = rtrim($b[count($b)-1]);
+
+                  if($__boundary) { array_push($boundary, $__boundary); }
+
                }
 
                if(preg_match("/charset/i", $l)){
@@ -370,8 +373,8 @@ class ModelSearchMessage extends Model {
 
                if(strstr($l, "message/rfc822")) { $rfc822 = 1; }
 
-               if(strstr($l, "text/plain")){ $text_plain = 1; $has_text_plain = 1; }
-               if(strstr($l, "text/html")){ $text_html = 1; $text_plain = 0; }
+               if(stristr($l, "text/plain")){ $text_plain = 1; $text_html = 0; $has_text_plain = 1; }
+               if(stristr($l, "text/html")){ $text_html = 1; $text_plain = 0; }
             }
 
             if($state == "CONTENT_TRANSFER_ENCODING"){
@@ -404,7 +407,11 @@ class ModelSearchMessage extends Model {
                if($this->check_boundary($boundary, $l) == 1){
 
                   if($text_plain == 1 || $has_text_plain == 0) {
-                     $message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+                     $text_message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+                  }
+
+                  if($text_html == 1) {
+                     $html_message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
                   }
 
                   $text_plain = $text_html = $qp = $base64 = 0;
@@ -423,7 +430,6 @@ class ModelSearchMessage extends Model {
 
                else if($state == "BODY"){
                   if($text_plain == 1 || $text_html == 1){ $body_chunk .= $l; }
-
                }
 
             }
@@ -431,16 +437,28 @@ class ModelSearchMessage extends Model {
 
          }
 
-      if($body_chunk && ($text_plain == 1 || $has_text_plain == 0) ){
-         $message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+      if($body_chunk) {
+         if($text_plain == 1 || $has_text_plain == 0) {
+            $text_message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+         }
+
+         if($text_html == 1) {
+            $html_message .= $this->flush_body_chunk($body_chunk, $charset, $qp, $base64, $text_plain, $text_html);
+         }
       }
 
+
+      if(strlen($html_message) > 20) {
+         $message = $this->highlight_search_terms($html_message, $terms);
+      } else {
+         $message = $this->highlight_search_terms($text_message, $terms);
+      }
 
       return array('from' => $this->decode_my_str($from),
                    'to' => $this->decode_my_str($to),
                    'subject' => $this->highlight_search_terms($this->decode_my_str($subject), $terms),
                    'date' => $this->decode_my_str($date),
-                   'message' => $this->highlight_search_terms($message, $terms),
+                   'message' => $message,
                    'has_journal' => $has_journal,
                    'verification' => $verification
             );
