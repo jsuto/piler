@@ -340,10 +340,12 @@ class ModelSearchMessage extends Model {
             if($is_header == 1 && preg_match("/^Content-Transfer-Encoding:/i", $l)) $state = "CONTENT_TRANSFER_ENCODING";
 
             if($state == "CONTENT_TYPE"){
+
                $x = stristr($l, "boundary");
                if($x){
-                  $x = preg_replace("/boundary\s{0,}=/i", "boundary=", $x);
-                  $x = preg_replace("/boundary= /i", "boundary=", $x);
+
+                  $x = preg_replace("/boundary\s{0,}=\s{0,}/i", "boundary=", $x);
+                  //$x = preg_replace("/boundary= /i", "boundary=", $x);
 
                   $x = preg_replace("/\"\;{0,1}/", "", $x);
                   $x = preg_replace("/\'/", "", $x);
@@ -449,7 +451,7 @@ class ModelSearchMessage extends Model {
 
 
       if(strlen($html_message) > 20) {
-         $message = $this->highlight_search_terms($html_message, $terms);
+         $message = $this->highlight_search_terms($html_message, $terms, 1);
       } else {
          $message = $this->highlight_search_terms($text_message, $terms);
       }
@@ -465,23 +467,56 @@ class ModelSearchMessage extends Model {
    }
 
 
-   private function highlight_search_terms($s = '', $terms = '') {
+   private function highlight_search_terms($s = '', $terms = '', $html = 0) {
       $fields = array("from:", "to:", "subject:", "body:");
 
       $terms = preg_replace("/(\'|\")/", "", $terms);
 
-      $terms = explode(" ", $terms);
+      $a = explode(" ", $terms);
+      $terms = array();
+
+      while(list($k, $v) = each($a)) {
+         if(strlen($v) >= 3 && !in_array($v, $fields)) {
+            $v = preg_replace("/\W/", "", $v);
+            array_push($terms, $v);
+         }
+      }
 
       if(count($terms) <= 0) { return $s; }
 
-      while(list($k, $v) = each($terms)) {
-         if(in_array($v, $fields)) { continue; }
 
-         $v = preg_replace("/\W/", "", $v);
+      if($html == 0) {
+         while(list($k, $v) = each($terms)) {
+            $s = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $s);
+         }
 
-         if(strlen($v) < 3) { continue; }
+         return $s;
+      }
 
-         $s = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $s);
+
+      $tokens = preg_split("/\</", $s);
+      $s = '';
+
+      while(list($k, $token) = each($tokens)) {
+
+         $pos = strpos($token, ">");
+         if($pos > 0) {
+            $len = strlen($token);
+
+            $s .= '<' . substr($token, 0, $pos) . '>';
+
+            if($len > $pos+1) {
+               $str = substr($token, $pos+1, $len);
+
+               reset($terms);
+               while(list($k, $v) = each($terms)) {
+                  $str = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $str);
+               }
+
+               $s .= $str;
+            }
+
+         }
       }
 
       return $s;
@@ -524,11 +559,11 @@ class ModelSearchMessage extends Model {
       }
 
       if($text_html == 1){
-         $chunk = preg_replace("/\<style([^\>]+)\>([\w\W]+)\<\/style\>/i", "", $chunk);
+         $chunk = preg_replace("/\<style\>([\w\W]+)\<\/style\>/i", "", $chunk);
 
          if(ENABLE_REMOTE_IMAGES == 0) {
             $chunk = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $chunk);
-            $chunk = preg_replace("/style([\s]{0,}=[\s]{0,})\'([^\']+)/", "style=\'xxxx", $chunk);
+            $chunk = preg_replace("/style([\s]{0,}=[\s]{0,})\'([^\']+)/", "style='xxxx", $chunk);
          }
 
          $chunk = preg_replace("/\<body ([\w\s\;\"\'\#\d\:\-\=]+)\>/i", "<body>", $chunk);
