@@ -118,6 +118,8 @@ struct rule {
 
    int days;
 
+   char emptyfrom, emptyto, emptysubject, emptyaname, emptyatype;
+
    char *rulestr;
    char compiled;
 

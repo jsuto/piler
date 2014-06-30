@@ -67,7 +67,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
       memset(attachment_type, 0, sizeof(attachment_type));
       memset(_attachment_size, 0, sizeof(_attachment_size));
 
-      size=0, attachment_size=0, spam=0, days=0;
+      size=0; attachment_size=0; spam=0; days=0;
    }
 
    p_free_results(data->stmt_generic);
@@ -92,6 +92,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
 
    if(rule == NULL){
       free(node);
+      syslog(LOG_INFO, "could not load rule=%s/%s/%s/%s/%s,%d", domain, from, to, subject, _size, size);
       return rc;
    }
 
@@ -138,13 +139,16 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
       }
    }
 
-   if(!from) from = &empty;
+   h->emptyfrom = h->emptyto = h->emptysubject = h->emptyaname = h->emptyatype = 0;
+
+
+   if(!from || strlen(from) < 1){ from = &empty; h->emptyfrom = 1; }
    if(regcomp(&(h->from), from, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!to) to = &empty;
+   if(!to || strlen(to) < 1){ to = &empty; h->emptyto = 1; }
    if(regcomp(&(h->to), to, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!subject) subject = &empty;
+   if(!subject || strlen(subject) < 1){ subject = &empty; h->emptysubject = 1; }
    if(regcomp(&(h->subject), subject, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
    h->spam = spam;
@@ -155,10 +159,10 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
    if(!_size) _size = &empty;
    snprintf(h->_size, 3, "%s", _size);
 
-   if(!attachment_name) attachment_name = &empty;
+   if(!attachment_name || strlen(attachment_name) < 1){ attachment_name = &empty; h->emptyaname = 1; }
    if(regcomp(&(h->attachment_name), attachment_name, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!attachment_type) attachment_type = &empty;
+   if(!attachment_type || strlen(attachment_type) < 1){ attachment_type = &empty; h->emptyatype = 1; }
    if(regcomp(&(h->attachment_type), attachment_type, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
 
@@ -201,13 +205,24 @@ char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size,
             ismatch += check_size_rule(size, p->size, p->_size);
             ismatch += check_attachment_rule(state, p);
 
-            if(
-               p->compiled == 1 &&
-               regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
-               regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
-               regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
-               ismatch > 0
-            ){
+            if(p->compiled == 1){
+               if(p->emptyfrom == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptyto == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptysubject == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+            }
+
+            if(ismatch > 0){
                return p->rulestr;
             }
 
@@ -236,25 +251,39 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
 
          ismatch = 0;
 
-         ismatch += check_spam_rule(spam, p->spam);
-         ismatch += check_size_rule(size, p->size, p->_size);
-         ismatch += check_attachment_rule(state, p);
-
          if(p->domainlen > 2){
             if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
                state->retention = p->days;
                return p->days * 86400;
             }
          }
-         else if (
-            p->compiled == 1 &&
-            regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0 &&
-            regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0 &&
-            regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0 &&
-            ismatch > 0
-         ){
-            state->retention = p->days;
-            return p->days * 86400;
+         else {
+
+            ismatch += check_spam_rule(spam, p->spam);
+            ismatch += check_size_rule(size, p->size, p->_size);
+            ismatch += check_attachment_rule(state, p);
+
+            if(p->compiled == 1){
+               if(p->emptyfrom == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptyto == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptysubject == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+            }
+
+            if(ismatch > 0){
+               state->retention = p->days;
+               return p->days * 86400;
+            }
          }
 
       }
@@ -291,17 +320,32 @@ int check_spam_rule(int is_spam, int spam){
 int check_attachment_rule(struct _state *state, struct rule *rule){
    int i;
    size_t nmatch=0;
+   int ismatch = 0;
 
    if(state->n_attachments == 0) return RULE_UNDEF;
 
+   if(rule->emptyaname == 1 && rule->emptyatype == 1) return RULE_UNDEF;
+
    for(i=1; i<=state->n_attachments; i++){
-      if(
-         regexec(&(rule->attachment_name), state->attachments[i].filename, nmatch, NULL, 0) == 0 &&
-         regexec(&(rule->attachment_type), state->attachments[i].type, nmatch, NULL, 0) == 0 &&
-         check_size_rule(state->attachments[i].size, rule->attachment_size, rule->_attachment_size) == 1
-      ){
-         return RULE_MATCH;
+      ismatch = 0;
+
+      if(rule->emptyaname == 0){
+         if(regexec(&(rule->attachment_name), state->attachments[i].filename, nmatch, NULL, 0) == 0)
+            ismatch += RULE_MATCH;
+         else
+            ismatch += RULE_NO_MATCH;
       }
+
+      if(rule->emptyatype == 0){
+         if(regexec(&(rule->attachment_type), state->attachments[i].type, nmatch, NULL, 0) == 0)
+            ismatch += RULE_MATCH;
+         else
+            ismatch += RULE_NO_MATCH;
+      }
+
+      ismatch += check_size_rule(state->attachments[i].size, rule->attachment_size, rule->_attachment_size);
+
+      if(ismatch > 0) return RULE_MATCH;
    }
 
    return RULE_NO_MATCH;
