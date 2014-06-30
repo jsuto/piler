@@ -193,12 +193,29 @@ int trimBuffer(char *s){
 
 
 int extractEmail(char *rawmail, char *email){
-   char *p;
+   char *p, *q1, *q2;
 
    memset(email, 0, SMALLBUFSIZE);
 
+   // extract both regular and VERP addresses, eg.
+   // aaa@aaa.fu and archive+user=domain.com@myarchive.local
+
    p = strchr(rawmail, '<');
    if(p){
+      q1 = strchr(p+1, '+');
+      if(q1){
+         q2 = strchr(q1+1, '=');
+         if(q2){
+            p = strchr(q2, '@');
+            if(p){
+               *p = '\0';
+               *q2 = '@';
+               snprintf(email, SMALLBUFSIZE-1, "%s", q1+1);
+               return 1;
+            }
+         }
+      }
+
       snprintf(email, SMALLBUFSIZE-1, "%s", p+1);
       p = strchr(email, '>');
       if(p){
