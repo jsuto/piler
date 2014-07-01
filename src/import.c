@@ -28,6 +28,11 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    init_session_data(sdata, cfg);
 
+   if(data->import->extra_recipient){
+      snprintf(sdata->rcptto[0], SMALLBUFSIZE-1, "%s", data->import->extra_recipient);
+      sdata->num_of_rcpt_to = 1;
+   }
+
    if(cfg->verbosity > 1) printf("processing: %s\n", filename);
 
    if(strcmp(filename, "-") == 0){

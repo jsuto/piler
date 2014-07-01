@@ -32,56 +32,35 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
 
-   if(sdata->import == 1 && data->import->extra_recipient){
-      len = strlen(data->import->extra_recipient);
-
-      addnode(state.journal_recipient, data->import->extra_recipient);
-
-      memcpy(&(state.b_journal_to[state.journaltolen]), data->import->extra_recipient, len);
-      state.journaltolen += len;
-      memcpy(&(state.b_journal_to[state.journaltolen]), " ", 1);
-      state.journaltolen++;
-      strtolower(state.b_journal_to);
-
-      memcpy(&(state.b_to[state.tolen]), data->import->extra_recipient, len);
-      state.tolen += len;
-      memcpy(&(state.b_to[state.tolen]), " ", 1);
-      state.tolen++;
-      strtolower(state.b_to);
-   }
-
-
    if(sdata->num_of_rcpt_to > 0){
       for(i=0; i<sdata->num_of_rcpt_to; i++){
-         extractEmail(sdata->rcptto[i], puf);
 
-         if(strlen(puf) > 5){
+         snprintf(puf, sizeof(puf)-1, "%s ", sdata->rcptto[i]);
+
+         if(does_it_seem_like_an_email_address(puf) == 1){
             p = strstr(puf, cfg->hostid);
-            if(p && *(p-1) == '.'){
+            if(!p){
 
-               *(p-1) = ' ';
-               *p = '\0';
-
+               strtolower(puf);
                len = strlen(puf);
 
-               if(does_it_seem_like_an_email_address(puf) == 1){
+               if(state.tolen < MAXBUFSIZE-len-1){
 
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing rcpt to address: *%s*", sdata->ttmpfile, puf);
+                  if(findnode(state.rcpt, puf) == NULL){
+                     addnode(state.journal_recipient, puf);
 
-                  if(state.tolen < MAXBUFSIZE-len-1){
-                     if(findnode(state.rcpt, puf) == NULL){
-                        addnode(state.rcpt, puf);
+                     memcpy(&(state.b_journal_to[state.journaltolen]), puf, len);
+                     state.journaltolen += len;
+
+                     memcpy(&(state.b_to[state.tolen]), puf, len);
+                     state.tolen += len;
+
+                     if(state.tolen < MAXBUFSIZE-len-1){
+                        split_email_address(puf);
                         memcpy(&(state.b_to[state.tolen]), puf, len);
                         state.tolen += len;
-
-                        if(state.tolen < MAXBUFSIZE-len-1){
-                           split_email_address(puf);
-                           memcpy(&(state.b_to[state.tolen]), puf, len);
-                           state.tolen += len;
-                        }
                      }
                   }
-
                }
             }
          }

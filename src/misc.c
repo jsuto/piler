@@ -211,6 +211,7 @@ int extractEmail(char *rawmail, char *email){
                *p = '\0';
                *q2 = '@';
                snprintf(email, SMALLBUFSIZE-1, "%s", q1+1);
+               *p = '@';
                return 1;
             }
          }

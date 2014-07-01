@@ -22,7 +22,7 @@
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char rcpttoemail[SMALLBUFSIZE], virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
+   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
    char *arule = NULL;
    char *status = NULL;
    struct session_data sdata;
@@ -167,7 +167,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   remove_stripped_attachments(&sstate);
                   inj = ERR_MYDOMAINS;
 
-                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s\r\n", sdata.ttmpfile);
                   write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
 
                   syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata.ttmpfile, sdata.fromemail, sstate.message_id);
@@ -182,7 +182,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){
                   gettimeofday(&tv1, &tz);
-                  sdata.rav = do_av_check(&sdata, rcpttoemail, &virusinfo[0], data, cfg);
+                  sdata.rav = do_av_check(&sdata, &virusinfo[0], data, cfg);
                   gettimeofday(&tv2, &tz);
                   sdata.__av = tvdiff(tv2, tv1);
                }
@@ -196,8 +196,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                i = 0;
             #endif
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata.ttmpfile, i);
-
-                  extractEmail(sdata.rcptto[i], rcpttoemail);
 
                   inj = ERR;
                   status = S_STATUS_UNDEF;
@@ -249,10 +247,10 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                   /* set the accept buffer */
 
-                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, sdata.rcptto[i]);
 
                   if(inj == ERR){
-                     snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, rcpttoemail);
+                     snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, sdata.rcptto[i]);
                      status = S_STATUS_ERROR;
                   }
 
@@ -418,12 +416,10 @@ AFTER_PERIOD:
                }
 
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1){
-                  snprintf(sdata.rcptto[sdata.num_of_rcpt_to], SMALLBUFSIZE-1, "%s\r\n", buf);
+                  extractEmail(buf, sdata.rcptto[sdata.num_of_rcpt_to]);
                }
 
                state = SMTP_STATE_RCPT_TO;
-
-               extractEmail(buf, rcpttoemail);
 
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;
 
