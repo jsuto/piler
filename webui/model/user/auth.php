@@ -129,6 +129,9 @@ class ModelUserAuth extends Model {
 
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
+               $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+               $emails = array_merge($emails, $extra_emails);
+
                $this->add_session_vars($a['cn'], $username, $emails, $role);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
@@ -270,6 +273,7 @@ class ModelUserAuth extends Model {
 
    private function checkLoginAgainstIMAP($username = '', $password = '') {
       $session = Registry::get('session');
+      $emails = array($username);
 
       if(!strchr($username, '@')) { return 0; }
 
@@ -277,7 +281,10 @@ class ModelUserAuth extends Model {
       if($imap->login($username, $password)) {
          $imap->logout();
 
-         $this->add_session_vars($username, $username, array($username), 0);
+         $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+         $emails = array_merge($emails, $extra_emails);
+
+         $this->add_session_vars($username, $username, $emails, 0);
 
          $session->set("password", $password);
 
@@ -290,6 +297,7 @@ class ModelUserAuth extends Model {
 
    private function checkLoginAgainstPOP3($username = '', $password = '') {
       $rc = 0;
+      $emails = array($username);
 
       try {
          $conn = new Zend_Mail_Protocol_Pop3(POP3_HOST, POP3_PORT, POP3_SSL);
@@ -302,7 +310,10 @@ class ModelUserAuth extends Model {
                try {
                   $conn->login($username, $password);
 
-                  $this->add_session_vars($username, $username, array($username), 0);
+                  $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+                  $emails = array_merge($emails, $extra_emails);
+
+                  $this->add_session_vars($username, $username, $emails, 0);
                   $rc = 1;
                }
                catch (Zend_Mail_Protocol_Exception $e) {}
@@ -350,6 +361,9 @@ class ModelUserAuth extends Model {
             $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(proxyAddresses=smtp:$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
+
+            $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+            $emails = array_merge($emails, $extra_emails);
 
             if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
             if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }

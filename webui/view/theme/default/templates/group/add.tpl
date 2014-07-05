@@ -42,6 +42,13 @@
         </div>
     </div>
 
+    <div class="control-group">
+          <label class="control-label" for="groupname"><?php print $text_assigned_email_addresses; ?>**:</label>
+          <div class="controls">
+            <textarea style="height:280px;" name="assigned_email" id="assigned_email" class="domain"><?php if(isset($assigned_email)){ print $assigned_email; } ?></textarea>
+          </div>
+    </div>
+
     <div class="alert alert-info">*: <?php print $text_min_2_chars; ?><br />**: <?php print $text_enter_one_email_address_per_line; ?></div>
 
     <div class="form-actions">

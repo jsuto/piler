@@ -45,6 +45,19 @@ class ModelGroupGroup extends Model {
    public function get_emails_by_group_id($id = 0) {
       $emails = '';
 
+      $query = $this->db->query("SELECT `email` FROM `" . TABLE_GROUP_USER . "` WHERE id=?", array($id));
+
+      foreach ($query->rows as $q) {
+         $emails .= $q['email'] . "\n";
+      }
+
+      return preg_replace("/\n$/", "", $emails);
+   }
+
+
+   public function get_assigned_emails_by_group_id($id = 0) {
+      $emails = '';
+
       $query = $this->db->query("SELECT `email` FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($id));
 
       foreach ($query->rows as $q) {
@@ -86,10 +99,18 @@ class ModelGroupGroup extends Model {
       foreach ($emails as $email) {
          $email = rtrim($email);
          if(validemail($email)) {
-            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_EMAIL . "` (id, email) VALUES(?,?)", array($gid, $email));
+            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, email) VALUES(?,?)", array($gid, $email));
          }
       }
 
+
+      $emails = explode("\n", $group['assigned_email']);
+      foreach ($emails as $email) {
+         $email = rtrim($email);
+         if(validemail($email)) {
+            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_EMAIL . "` (id, email) VALUES(?,?)", array($gid, $email));
+         }
+      }
 
       LOGGER("add group: " . $group['groupname'] . ", id=" . (int)$gid);
 
@@ -102,9 +123,21 @@ class ModelGroupGroup extends Model {
 
       $query = $this->db->query("UPDATE `" . TABLE_GROUP . "` SET `groupname`=? WHERE id=?", array($group['groupname'], (int)$group['id']));
 
-      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($group['id']));
+      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE id=?", array($group['id']));
 
       $emails = explode("\n", $group['email']);
+      foreach ($emails as $email) {
+         $email = rtrim($email);
+
+         if(validemail($email)) {
+            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, email) VALUES(?,?)", array($group['id'], $email));
+         }
+      }
+
+
+      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($group['id']));
+
+      $emails = explode("\n", $group['assigned_email']);
       foreach ($emails as $email) {
          $email = rtrim($email);
 
@@ -112,6 +145,7 @@ class ModelGroupGroup extends Model {
             $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_EMAIL . "` (id, email) VALUES(?,?)", array($group['id'], $email));
          }
       }
+
 
       return $this->db->countAffected();
    }
@@ -132,11 +166,13 @@ class ModelGroupGroup extends Model {
 
       $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_EMAIL . "` WHERE id=?", array($id));
 
+      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE id=?", array($id));
+
       $query = $this->db->query("DELETE FROM `" . TABLE_GROUP . "` WHERE id=?", array((int)$id));
 
       LOGGER("remove group: id=$id");
 
-      return $this->db->countAffected();
+      return 1;
    }
 
 
@@ -214,10 +250,15 @@ class ModelGroupGroup extends Model {
    }
 
 
-   public function get_groups_by_uid($uid = 0) {
+   public function get_groups_by_email($email = array()) {
       $groups = '';
+      $q = '?';
 
-      $query = $this->db->query("SELECT `" . TABLE_GROUP_USER . "`.id, groupname FROM `" . TABLE_GROUP_USER . "`, `" . TABLE_GROUP . "` WHERE `" . TABLE_GROUP_USER . "`.id=`" . TABLE_GROUP . "`.id AND uid=?", array($uid) );
+      for($i=1; $i<count($email); $i++) {
+         $q .= ',?';
+      }
+
+      $query = $this->db->query("SELECT `" . TABLE_GROUP_USER . "`.id, groupname FROM `" . TABLE_GROUP_USER . "`, `" . TABLE_GROUP . "` WHERE `" . TABLE_GROUP_USER . "`.id=`" . TABLE_GROUP . "`.id AND email IN ($q)", $email);
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) { $groups .= "\n" . $q['groupname']; }

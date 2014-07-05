@@ -224,9 +224,9 @@ create table if not exists `group` (
 
 create table if not exists `group_user` (
    `id` bigint unsigned not null,
-   `uid` int unsigned not null,
+   `email` char(128) not null,
    key `group_user_idx` (`id`),
-   key `group_user_idx2` (`uid`)
+   key `group_user_idx2` (`email`)
 ) ENGINE=InnoDB;
 
 

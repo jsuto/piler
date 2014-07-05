@@ -36,3 +36,13 @@ create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`_
 
 create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
+-- 2014.07.05
+drop table if exists `group_user`;
+
+create table if not exists `group_user` (
+   `id` bigint unsigned not null,
+   `email` char(128) not null,
+   key `group_user_idx` (`id`),
+   key `group_user_idx2` (`email`)
+) ENGINE=InnoDB;
+

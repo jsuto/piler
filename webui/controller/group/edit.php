@@ -59,6 +59,7 @@ class ControllerGroupEdit extends Controller {
          else {
             $this->data['group'] = $this->model_group_group->get_domain_by_id($this->data['id']);
             $this->data['email'] = $this->model_group_group->get_emails_by_group_id($this->data['id']);
+            $this->data['assigned_email'] = $this->model_group_group->get_assigned_emails_by_group_id($this->data['id']);
          }
       }
       else {
@@ -81,6 +82,10 @@ class ControllerGroupEdit extends Controller {
 
       if(!isset($this->request->post['email']) || $this->request->post['email'] == '') {
          $this->error['email'] = $this->data['text_missing_data'];
+      }
+
+      if(!isset($this->request->post['assigned_email']) || $this->request->post['assigned_email'] == '') {
+         $this->error['assigned_email'] = $this->data['text_missing_data'];
       }
 
       if(!isset($this->request->post['id']) || !is_numeric($this->request->post['id']) || (int)$this->request->post['id'] < 0) {

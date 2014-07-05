@@ -38,8 +38,8 @@ class ControllerUserSettings extends Controller {
          $auditdomains .= ', ' . $d;
       }
       $auditdomains = preg_replace("/^,\s/", "", $auditdomains);
-  
-      $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_uid($session->get("uid")));
+
+      $auditgroups = preg_replace("/\s/", ", ", $this->model_group_group->get_groups_by_email($session->get("emails")));
 
       $folders = $session->get("folders");
   

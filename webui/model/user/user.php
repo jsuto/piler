@@ -69,8 +69,7 @@ class ModelUserUser extends Model {
       }
 
 
-      $query = $this->db->query("SELECT `" . TABLE_GROUP_EMAIL . "`.email FROM `" . TABLE_GROUP_EMAIL . "`, `" . TABLE_GROUP_USER . "` WHERE `" . TABLE_GROUP_EMAIL . "`.id=`" . TABLE_GROUP_USER . "`.id and `" . TABLE_GROUP_USER . "`.uid=?", array($uid) );
-
+      $query = $this->db->query("SELECT g.email FROM `" . TABLE_GROUP_EMAIL . "` g WHERE g.id IN (SELECT u.id FROM `" . TABLE_GROUP_USER . "` u WHERE u.email IN (?))", $data);
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
@@ -359,7 +358,7 @@ class ModelUserUser extends Model {
       }
 
       $this->update_domains_settings((int)$user['uid'], $user['domains']);
-      $this->update_group_settings((int)$user['uid'], $user['group']);
+      $this->update_group_settings($emails[0], $user['group']);
       $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
       return 1;
@@ -442,7 +441,7 @@ class ModelUserUser extends Model {
       }
 
       $this->update_domains_settings((int)$user['uid'], $user['domains']);
-      $this->update_group_settings((int)$user['uid'], $user['group']);
+      $this->update_group_settings($emails[0], $user['group']);
       $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
       return 1;
@@ -471,12 +470,14 @@ class ModelUserUser extends Model {
    }
 
 
-   private function update_group_settings($uid = -1, $group = '') {
+   private function update_group_settings($email = '', $group = '') {
       $__g = array();
 
-      if($uid <= 0) { return 0; }
+      $email = rtrim($email);
 
-      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE uid=?", array($uid));
+      if($email == '') { return 0; }
+
+      $query = $this->db->query("DELETE FROM `" . TABLE_GROUP_USER . "` WHERE email=?", array($email));
 
       $query = $this->db->query("SELECT id, groupname FROM `" . TABLE_GROUP . "`");
 
@@ -492,7 +493,7 @@ class ModelUserUser extends Model {
          $g = rtrim($g);
 
          if($g && !isset($__g[$groups[$g]])) {
-            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, uid) VALUES(?,?)", array($groups[$g], (int)$uid));
+            $query = $this->db->query("INSERT INTO `" . TABLE_GROUP_USER . "` (id, email) VALUES(?,?)", array($groups[$g], $email));
             $__g[$groups[$g]] = 1;
          }
       }

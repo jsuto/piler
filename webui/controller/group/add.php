@@ -70,6 +70,10 @@ class ControllerGroupAdd extends Controller {
          $this->error['email'] = $this->data['text_missing_data'];
       }
 
+      if(!isset($this->request->post['assigned_email']) || $this->request->post['assigned_email'] == '') {
+         $this->error['assigned_email'] = $this->data['text_missing_data'];
+      }
+
       if (!$this->error) {
          return true;
       } else {

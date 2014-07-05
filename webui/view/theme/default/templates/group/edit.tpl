@@ -32,7 +32,7 @@
 	    <input type="text" name="groupname" id="groupname" value="<?php print $group['groupname']; ?>" class="text" />
 	  </div>
     </div>
-   
+
     <div class="control-group">
 	  <label class="control-label" for="s_piler_email"><?php print $text_search_emails; ?>*:</label>
 	  <div class="controls">
@@ -48,11 +48,18 @@
 <?php } ?>
 	  </div>
     </div>
-	
+
     <div class="control-group">
-	  <label class="control-label" for="groupname"><?php print $text_email_addresses; ?>**:</label>
+          <label class="control-label" for="groupname"><?php print $text_email_addresses; ?>**:</label>
+          <div class="controls">
+            <textarea style="height:280px;" name="email" id="email" class="domain"><?php if(isset($email)){ print $email; } ?></textarea>
+          </div>
+    </div>
+
+    <div class="control-group">
+	  <label class="control-label" for="groupname"><?php print $text_assigned_email_addresses; ?>**:</label>
 	  <div class="controls">
-	    <textarea style="height:280px;" name="email" id="email" class="domain"><?php if(isset($email)){ print $email; } ?></textarea>
+	    <textarea style="height:280px;" name="assigned_email" id="assigned_email" class="domain"><?php if(isset($assigned_email)){ print $assigned_email; } ?></textarea>
 	  </div>
     </div>
    
