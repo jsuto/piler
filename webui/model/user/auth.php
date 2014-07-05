@@ -129,7 +129,7 @@ class ModelUserAuth extends Model {
 
                $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-               $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+               $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                $emails = array_merge($emails, $extra_emails);
 
                $this->add_session_vars($a['cn'], $username, $emails, $role);
@@ -281,7 +281,7 @@ class ModelUserAuth extends Model {
       if($imap->login($username, $password)) {
          $imap->logout();
 
-         $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+         $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
          $emails = array_merge($emails, $extra_emails);
 
          $this->add_session_vars($username, $username, $emails, 0);
@@ -310,7 +310,7 @@ class ModelUserAuth extends Model {
                try {
                   $conn->login($username, $password);
 
-                  $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+                  $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                   $emails = array_merge($emails, $extra_emails);
 
                   $this->add_session_vars($username, $username, $emails, 0);
@@ -362,7 +362,7 @@ class ModelUserAuth extends Model {
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
-            $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails));
+            $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);
 
             if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
