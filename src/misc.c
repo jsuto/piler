@@ -192,35 +192,48 @@ int trimBuffer(char *s){
 }
 
 
-int extractEmail(char *rawmail, char *email){
-   char *p, *q1, *q2;
+int extract_verp_address(char *email){
+   char *p, *p1, *p2;
+   char puf[SMALLBUFSIZE];
 
-   memset(email, 0, SMALLBUFSIZE);
+   // a VERP address is like archive+user=domain.com@myarchive.local
 
-   // extract both regular and VERP addresses, eg.
-   // aaa@aaa.fu and archive+user=domain.com@myarchive.local
+   if(!email) return 0;
 
-   p = strchr(rawmail, '<');
-   if(p){
-      q1 = strchr(p+1, '+');
-      if(q1){
-         q2 = strchr(q1+1, '=');
-         if(q2){
-            p = strchr(q2, '@');
-            if(p){
-               *p = '\0';
-               *q2 = '@';
-               snprintf(email, SMALLBUFSIZE-1, "%s", q1+1);
-               *p = '@';
-               return 1;
-            }
+   if(strlen(email) < 5) return 0;
+
+   p1 = strchr(email, '+');
+   if(p1){
+      p2 = strchr(p1, '@');
+      if(p2 && p2 > p1 + 2){
+         if(strchr(p1+1, '=')){
+            memset(puf, 0, sizeof(puf));
+
+            memcpy(&puf[0], p1+1, p2-p1-1);
+            p = strchr(puf, '=');
+            if(p) *p = '@';
+            strcpy(email, puf);
          }
       }
 
+   }
+
+   return 0;
+}
+
+
+int extractEmail(char *rawmail, char *email){
+   char *p;
+
+   memset(email, 0, SMALLBUFSIZE);
+
+   p = strchr(rawmail, '<');
+   if(p){
       snprintf(email, SMALLBUFSIZE-1, "%s", p+1);
       p = strchr(email, '>');
       if(p){
          *p = '\0';
+         extract_verp_address(email);
          return 1;
       }
    }
