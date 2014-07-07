@@ -68,8 +68,16 @@ class ModelUserUser extends Model {
       
       }
 
+      $emails = $this->get_email_addresses_from_groups($data);
+      $data = array_merge($data, $emails);
 
-      $query = $this->db->query("SELECT g.email FROM `" . TABLE_GROUP_EMAIL . "` g WHERE g.id IN (SELECT u.id FROM `" . TABLE_GROUP_USER . "` u WHERE u.email IN (?))", $data);
+      return $data;
+   }
+
+   public function get_email_addresses_from_groups($emails = array()) {
+      $data = array();
+
+      $query = $this->db->query("SELECT g.email FROM `" . TABLE_GROUP_EMAIL . "` g WHERE g.id IN (SELECT u.id FROM `" . TABLE_GROUP_USER . "` u WHERE u.email IN (?))", $emails);
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
