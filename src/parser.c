@@ -48,6 +48,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 
                   if(findnode(state.rcpt, puf) == NULL){
                      addnode(state.journal_recipient, puf);
+                     addnode(state.rcpt, puf);
 
                      memcpy(&(state.b_journal_to[state.journaltolen]), puf, len);
                      state.journaltolen += len;
