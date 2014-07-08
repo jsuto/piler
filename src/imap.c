@@ -26,21 +26,17 @@
 void update_import_job_stat(struct session_data *sdata, struct __data *data);
 
 
-int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
+int get_message_length_from_imap_answer(char *s){
    char *p, *q;
    int len=0;
 
-
-   p = strstr(s, "\r\n");
+   p = strstr(s, "\r");
    if(!p){
       printf("invalid reply: %s", s);
       return len;
    }
 
    *p = '\0';
-
-   //*_1st_line_bytes = strlen(s)+2;
-   *_1st_line_bytes = p-s+2;
 
    if(*(p-1) == '}') *(p-1) = '\0';
 
@@ -55,24 +51,6 @@ int get_message_length_from_imap_answer(char *s, int *_1st_line_bytes){
    *p = '\r';
 
    return len;
-}
-
-
-int is_last_complete_packet(char *s, int len, char *tagok, char *tagbad, int *pos){
-   char *p;
-
-   *pos = 0;
-
-   if(*(s+len-2) == '\r' && *(s+len-1) == '\n'){
-      if((p = strstr(s, tagok))){
-         *pos = p - s;
-         if(*pos > 0) *pos -= 1;
-         return 1;
-      }
-      if(strstr(s, tagbad)) return 1;
-   }
-
-   return 0;
 }
 
 
@@ -109,9 +87,8 @@ END:
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, pos, endpos, messages=0, len, readlen, fd, lastpos, nreads;
-   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], filename[SMALLBUFSIZE];
-   char aggrbuf[3*MAXBUFSIZE];
+   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen;
+   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
 
    /* imap cmd: SELECT */
 
@@ -145,8 +122,11 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
 
       snprintf(tag, sizeof(tag)-1, "A%d", *seq);
-      snprintf(tagok, sizeof(tagok)-1, "\r\nA%d OK", (*seq)++);
-      snprintf(tagbad, sizeof(tagbad)-1, "\r\n%s BAD", tag);
+      snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
+      snprintf(tagbad, sizeof(tagbad)-1, "%s BAD", tag);
+
+      tagoklen = strlen(tagok);
+      tagbadlen = strlen(tagbad);
 
       snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
 
@@ -163,55 +143,59 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
       readlen = 0;
-      pos = 0;
-      len = 0;
       nreads = 0;
-      endpos = 0;
+      readpos = 0;
+      finished = 0;
+      msglen = 0;
+      msg_written_len = 0;
 
-      memset(aggrbuf, 0, sizeof(aggrbuf));
-      lastpos = 0;
+      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, 15, use_ssl, data->ssl)) > 0){
 
-
-      while((n = recvtimeoutssl(sd, buf, sizeof(buf), 15, use_ssl, data->ssl)) > 0){
-         nreads++;
          readlen += n;
 
-         if(nreads == 1){
-            len = get_message_length_from_imap_answer(buf, &pos);
+         if(strchr(buf, '\n')){
+            readpos = 0;
+            p = &buf[0];
+            do {
+               nreads++;
+               memset(puf, 0, sizeof(puf));
+               p = split(p, '\n', puf, sizeof(puf)-1);
+               len = strlen(puf);
 
-            if(len < 10){
-               printf("%d: too short message! %s\n", i, buf);
-               break;
-            }
-         }
+               if(nreads == 1){
+                  msglen = get_message_length_from_imap_answer(puf);
+                  continue;
+               }
 
-         if(lastpos + 1 + n < sizeof(aggrbuf)){
+               if(len > 0){
+                  if(msg_written_len < msglen){
+                     write(fd, puf, len);
+                     write(fd, "\n", 1);
+                     msg_written_len += len + 1;
+                  }
+               }
 
-            if(nreads == 1){
-               memcpy(aggrbuf+lastpos, buf+pos, n-pos);
-               lastpos += n-pos;
-            }
-            else {
-               memcpy(aggrbuf+lastpos, buf, n);
-               lastpos += n;
-            }
+               if(strncmp(puf, tagok, tagoklen) == 0){
+                  finished = 1;
+                  break;
+               }
+
+               if(strncmp(puf, tagbad, tagbadlen) == 0){
+                  printf("ERROR happened reading the message!\n");
+                  finished = 1;
+                  break;
+               }
+
+
+            } while(p);
          }
          else {
-            write(fd, aggrbuf, sizeof(buf));
-
-            memmove(aggrbuf, aggrbuf+sizeof(buf), lastpos-sizeof(buf));
-            lastpos -= sizeof(buf);
-
-            memcpy(aggrbuf+lastpos, buf, n);
-            lastpos += n;
+            readpos += n;
          }
 
-         if(is_last_complete_packet(aggrbuf, lastpos, tagok, tagbad, &endpos) == 1){
-            write(fd, aggrbuf, lastpos-(lastpos-endpos));
-            break;
-         }
+         if(finished == 1) break;
+      }
 
-      } 
 
       close(fd);
 
