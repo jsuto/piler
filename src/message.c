@@ -87,7 +87,7 @@ CLOSE:
 }
 
 
-int store_recipients(struct session_data *sdata, struct __data *data, char *to, uint64 id, int log_errors, struct __config *cfg){
+int store_recipients(struct session_data *sdata, struct __data *data, char *to, uint64 id, struct __config *cfg){
    int ret=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
 
@@ -211,19 +211,15 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    else {
       id = p_get_insert_id(data->stmt_insert_into_meta_table);
 
-      rc = store_recipients(sdata, data, state->b_to, id, 1, cfg);
+      rc = store_recipients(sdata, data, state->b_to, id, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
 
-      if(rc == OK){
+      rc = store_index_data(sdata, state, data, id, cfg);
 
-         rc = store_index_data(sdata, state, data, id, cfg);
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
 
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
-
-         if(rc == OK)
-            ret = OK;
-      }
+      ret = OK;
    }
 
    close_prepared_statement(data->stmt_insert_into_meta_table);
@@ -251,7 +247,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
       if(strlen(state->b_journal_to) > 0){
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, sdata->duplicate_id, state->message_id);
-         store_recipients(sdata, data, state->b_journal_to, sdata->duplicate_id, 0, cfg);
+         store_recipients(sdata, data, state->b_journal_to, sdata->duplicate_id, cfg);
       }
 
       return ERR_EXISTS;
