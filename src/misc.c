@@ -511,7 +511,7 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
    sdata->sent = sdata->delivered = sdata->retained = sdata->now;
 
 #ifdef NEED_MYSQL
-   sdata->errno = 0;
+   sdata->mysql_errno = 0;
 #endif
 
 #ifdef HAVE_TWEAK_SENT_TIME

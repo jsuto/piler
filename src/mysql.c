@@ -57,7 +57,7 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
    unsigned long length[MAX_SQL_VARS];
    int i, ret=ERR;
 
-   sdata->errno = 0;
+   sdata->mysql_errno = 0;
    memset(bind, 0, sizeof(bind));
 
    for(i=0; i<MAX_SQL_VARS; i++){
@@ -106,14 +106,14 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
    }
 
    if(mysql_stmt_bind_param(stmt, bind)){
-      sdata->errno = mysql_stmt_errno(stmt);
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_bind_param() error: %s (errno: %d)", sdata->ttmpfile, mysql_stmt_error(stmt), sdata->errno);
+      sdata->mysql_errno = mysql_stmt_errno(stmt);
+      syslog(LOG_PRIORITY, "%s: mysql_stmt_bind_param() error: %s (errno: %d)", sdata->ttmpfile, mysql_stmt_error(stmt), sdata->mysql_errno);
       goto CLOSE;
    }
 
    if(mysql_stmt_execute(stmt)){
-      sdata->errno = mysql_stmt_errno(stmt);
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_execute error: *%s* (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->errno);
+      sdata->mysql_errno = mysql_stmt_errno(stmt);
+      syslog(LOG_PRIORITY, "%s: mysql_stmt_execute error: *%s* (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->mysql_errno);
       goto CLOSE;
    }
 
