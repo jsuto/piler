@@ -510,9 +510,7 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
    time(&(sdata->now));
    sdata->sent = sdata->delivered = sdata->retained = sdata->now;
 
-#ifdef NEED_MYSQL
-   sdata->mysql_errno = 0;
-#endif
+   sdata->sql_errno = 0;
 
 #ifdef HAVE_TWEAK_SENT_TIME
    sdata->sent += cfg->tweak_sent_time_offset;

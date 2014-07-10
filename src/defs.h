@@ -7,6 +7,7 @@
 
 #ifdef NEED_MYSQL
   #include <mysql.h>
+  #include <mysqld_error.h>
 #endif
 #ifdef NEED_PSQL
   #include <libpq-fe.h>
@@ -211,9 +212,9 @@ struct session_data {
    char ms_journal;
    char import;
    int journal_envelope_length, journal_bottom_length;
+   unsigned int sql_errno;
 #ifdef NEED_MYSQL
    MYSQL mysql;
-   unsigned int mysql_errno;
 #endif
 #ifdef NEED_PSQL
    PGconn *psql;

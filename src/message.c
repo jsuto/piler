@@ -110,7 +110,7 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 
 
          if(p_exec_query(sdata, data->stmt_insert_into_rcpt_table, data) == ERR){
-            ret = ERR;
+            if(sdata->sql_errno != ER_DUP_ENTRY) ret = ERR;
          }
          else n++;
       }
