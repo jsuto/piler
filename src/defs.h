@@ -213,6 +213,7 @@ struct session_data {
    int journal_envelope_length, journal_bottom_length;
 #ifdef NEED_MYSQL
    MYSQL mysql;
+   unsigned int errno;
 #endif
 #ifdef NEED_PSQL
    PGconn *psql;
