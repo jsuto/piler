@@ -163,8 +163,24 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
                len = strlen(puf);
 
                if(nreads == 1){
-                  msglen = get_message_length_from_imap_answer(puf);
-                  continue;
+
+                  if(strcasestr(puf, " FETCH ")){
+                     msglen = get_message_length_from_imap_answer(puf);
+
+                     if(msglen == 0){
+                        finished = 1;
+                        break;
+                     }
+
+                     continue;
+                  }
+
+                  if(strcasestr(puf, " BYE")){
+                     printf("imap server sent BYE response: '%s'\n", puf);
+                     close(fd);
+                     unlink(filename);
+                     return ERR;
+                  }
                }
 
                if(len > 0){
@@ -199,7 +215,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       close(fd);
 
-      if(dryrun == 0) rc = import_message(filename, sdata, data, cfg);
+      if(dryrun == 0 && msglen > 10) rc = import_message(filename, sdata, data, cfg);
       else rc = OK;
 
 

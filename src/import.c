@@ -67,6 +67,8 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
       snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
       sdata->tot_len = st.st_size;
+
+      data->import->total_size += st.st_size;
    }
 
 

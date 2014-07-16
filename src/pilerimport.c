@@ -484,7 +484,7 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.quiet = 0;
 
-   import.import_job_id = import.total_messages = import.processed_messages = 0;
+   import.import_job_id = import.total_messages = import.total_size = import.processed_messages = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
    import.extra_recipient = NULL;
 

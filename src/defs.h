@@ -271,6 +271,7 @@ struct import {
    int import_job_id;
    int remove_after_import;
    int keep_eml;
+   long total_size;
    time_t started, updated, finished;
 };
 
