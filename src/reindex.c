@@ -131,7 +131,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
             unlink(filename);
 
-            if(progressbar && reindexed % 100 == 0) printf(".");
+            if(progressbar) printf("processed: %8llu\r", reindexed); fflush(stdout);
          }
          else printf("cannot open: %s\n", filename);
 
