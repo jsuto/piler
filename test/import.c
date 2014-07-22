@@ -130,7 +130,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 
 int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, seq=1;
+   int rc=ERR, ret=OK, sd, seq=1, result;
    char *p, puf[MAXBUFSIZE];
    char folders[MAXBUFSIZE];
    
@@ -151,7 +151,7 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
    p = &folders[0];
    do {
       memset(puf, 0, sizeof(puf));
-      p = split(p, '\n', puf, sizeof(puf)-1);
+      p = split(p, '\n', puf, sizeof(puf)-1, &result);
 
       printf("processing folder: %s... ", puf);
 

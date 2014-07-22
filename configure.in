@@ -356,6 +356,8 @@ dnl let us know if we are building on FreeBSD
 
 if test "$os" = "FreeBSD"; then
    defs="$defs -DFREEBSD"
+   antispam_libs="-lz -lm -lcrypto -lssl"
+   MAKE="gmake"
 fi
 
 if test "$os" = "Linux"; then
@@ -424,7 +426,12 @@ fi
 if test "$have_tcpwrappers" = "yes"; then
    echo "tcpwrappers support: yes"
    AC_DEFINE_UNQUOTED(HAVE_LIBWRAP, 1, [tcpwrappers support])
-   antispam_libs="$antispam_libs -lwrap -lnsl"
+
+   if test "$os" = "FreeBSD"; then
+      antispam_libs="$antispam_libs -lwrap"
+   else
+      antispam_libs="$antispam_libs -lwrap -lnsl"
+   fi
 else
    echo "tcpwrappers support: no"
 fi

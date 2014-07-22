@@ -4629,6 +4629,8 @@ fi
 
 if test "$os" = "FreeBSD"; then
    defs="$defs -DFREEBSD"
+   antispam_libs="-lz -lm -lcrypto -lssl"
+   MAKE="gmake"
 fi
 
 if test "$os" = "Linux"; then
@@ -4714,7 +4716,12 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBWRAP 1
 _ACEOF
 
-   antispam_libs="$antispam_libs -lwrap -lnsl"
+
+   if test "$os" = "FreeBSD"; then
+      antispam_libs="$antispam_libs -lwrap"
+   else
+      antispam_libs="$antispam_libs -lwrap -lnsl"
+   fi
 else
    echo "tcpwrappers support: no"
 fi

@@ -229,7 +229,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 
 int import_from_imap_server(char *imapserver, char *username, char *password, struct session_data *sdata, struct __data *data, char *skiplist, struct __config *cfg){
-   int rc=ERR, ret=OK, sd, seq=1, skipmatch;
+   int rc=ERR, ret=OK, sd, seq=1, skipmatch, result;
    char *p, puf[SMALLBUFSIZE];
    char *q, muf[SMALLBUFSIZE];
    char folders[MAXBUFSIZE];
@@ -251,7 +251,7 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
    p = &folders[0];
    do {
       memset(puf, 0, sizeof(puf));
-      p = split(p, '\n', puf, sizeof(puf)-1);
+      p = split(p, '\n', puf, sizeof(puf)-1, &result);
 
       if(strlen(puf) < 1) continue;
 
@@ -261,7 +261,7 @@ int import_from_imap_server(char *imapserver, char *username, char *password, st
          q = skiplist;
          do {
             memset(muf, 0, sizeof(muf));
-            q = split(q, ',', muf, sizeof(muf)-1);
+            q = split(q, ',', muf, sizeof(muf)-1, &result);
             if(strncasecmp(puf, muf, strlen(muf)) == 0){
                skipmatch = 1;
                break;
