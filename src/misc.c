@@ -112,23 +112,27 @@ void replaceCharacterInBuffer(char *p, char from, char to){
  * split a string by a character as delimiter
  */
 
-char *split(char *row, int ch, char *s, int size){
-   char *r;
+char *split(char *str, int ch, char *buf, int buflen, int *result){
+   char *p;
 
-   if(row == NULL || s == NULL)
-      return NULL;
+   *result = 0;
 
-   r = strchr(row, ch);
-   if(r) *r = '\0';
+   if(str == NULL || buf == NULL || buflen < 2) return NULL;
 
-   snprintf(s, size, "%s", row);
-
-   if(r){
-      *r = ch;
-      r++;
+   p = strchr(str, ch);
+   if(p){
+      *p = '\0';
    }
 
-   return r;
+   snprintf(buf, buflen, "%s", str);
+
+   if(p){
+      *p = ch;
+      *result = 1;
+      p++;
+   }
+
+   return p;
 }
 
 

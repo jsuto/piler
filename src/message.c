@@ -146,7 +146,7 @@ int update_metadata_reference(struct session_data *sdata, struct _state *state, 
 
 
 int store_meta_data(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
-   int rc, ret=ERR;
+   int rc, ret=ERR, result;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
 
@@ -172,7 +172,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    p = state->b_from;
    do {
       memset(s2, 0, sizeof(s2));
-      p = split(p, ' ', s2, sizeof(s2)-1);
+      p = split(p, ' ', s2, sizeof(s2)-1, &result);
 
       if(s2[0] == '\0') continue;
 

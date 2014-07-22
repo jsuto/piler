@@ -173,7 +173,7 @@ void storno_attachment(struct _state *state){
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
-   int n64, len, writelen, boundary_line=0;
+   int n64, len, writelen, boundary_line=0, result;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -635,7 +635,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
    do {
       memset(puf, 0, sizeof(puf));
-      p = split(p, ' ', puf, sizeof(puf)-1);
+      p = split(p, ' ', puf, sizeof(puf)-1, &result);
 
       if(puf[0] == '\0') continue;
 

@@ -87,7 +87,7 @@ END:
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen;
+   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result;
    char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
 
    /* imap cmd: SELECT */
@@ -159,51 +159,63 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
             do {
                nreads++;
                memset(puf, 0, sizeof(puf));
-               p = split(p, '\n', puf, sizeof(puf)-1);
+               p = split(p, '\n', puf, sizeof(puf)-1, &result);
                len = strlen(puf);
 
-               if(nreads == 1){
+               if(result == 1){
+                  // process a complete line
 
-                  if(strcasestr(puf, " FETCH ")){
-                     msglen = get_message_length_from_imap_answer(puf);
+                  if(nreads == 1){
 
-                     if(msglen == 0){
-                        finished = 1;
-                        break;
+                     if(strcasestr(puf, " FETCH ")){
+                        msglen = get_message_length_from_imap_answer(puf);
+
+                        if(msglen == 0){
+                           finished = 1;
+                           break;
+                        }
+                        continue;
                      }
 
-                     continue;
-                  }
+                     if(strcasestr(puf, " BYE")){
+                        printf("imap server sent BYE response: '%s'\n", puf);
+                        close(fd);
+                        unlink(filename);
+                        return ERR;
+                     }
 
-                  if(strcasestr(puf, " BYE")){
-                     printf("imap server sent BYE response: '%s'\n", puf);
-                     close(fd);
-                     unlink(filename);
-                     return ERR;
                   }
-               }
-
-               if(len > 0){
-                  if(msg_written_len < msglen){
+ 
+                  if(len > 0 && msg_written_len < msglen){
                      write(fd, puf, len);
                      write(fd, "\n", 1);
                      msg_written_len += len + 1;
                   }
-               }
 
-               if(strncmp(puf, tagok, tagoklen) == 0){
-                  finished = 1;
+                  if(strncmp(puf, tagok, tagoklen) == 0){
+                     finished = 1;
+                     break;
+                  }
+
+                  if(strncmp(puf, tagbad, tagbadlen) == 0){
+                     printf("ERROR happened reading the message!\n");
+                     finished = 1;
+                     break;
+                  }
+
+               }
+               else {
+                  // prepend the last incomplete line back to 'buf'
+
+                  snprintf(buf, sizeof(buf)-2, "%s", puf);
+                  readpos = len;
                   break;
                }
-
-               if(strncmp(puf, tagbad, tagbadlen) == 0){
-                  printf("ERROR happened reading the message!\n");
-                  finished = 1;
-                  break;
-               }
-
 
             } while(p);
+
+
+
          }
          else {
             readpos += n;
@@ -342,7 +354,7 @@ void close_connection(int sd, struct __data *data, int use_ssl){
 
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
-   int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0;
+   int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;
 
    printf("List of IMAP folders:\n");
 
@@ -382,7 +394,7 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    p = buf;
    do {
       memset(puf, 0, sizeof(puf));
-      p = split(p, '\n', puf, sizeof(puf)-1);
+      p = split(p, '\n', puf, sizeof(puf)-1, &result);
       trimBuffer(puf);
 
       if(strncmp(puf, "* LIST ", 7) == 0 || fldrlen){

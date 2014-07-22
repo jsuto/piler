@@ -59,12 +59,12 @@ ENDE:
 
 int remove_message_frame_files(char *s, char *update_meta_sql, struct session_data *sdata, struct __config *cfg){
    char *p, puf[SMALLBUFSIZE], filename[SMALLBUFSIZE];
-   int n=0;
+   int n=0, result;
    struct stat st;
 
    p = s;
    do {
-      p = split(p, ' ', puf, sizeof(puf)-1);
+      p = split(p, ' ', puf, sizeof(puf)-1, &result);
 
       if(strlen(puf) == RND_STR_LEN){
          snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, puf[8], puf[9], puf[10], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
