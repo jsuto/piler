@@ -182,11 +182,15 @@ class ModelUserAuth extends Model {
       $data = array();
 
       foreach($e as $a) {
+         syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']);
+
          foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(is_array($a[$mailattr])) {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
+
+                     syslog(LOG_INFO, "checking entry: " . $a[$mailattr][$i]);
 
                      $a[$mailattr][$i] = strtolower($a[$mailattr][$i]);
 
@@ -202,6 +206,8 @@ class ModelUserAuth extends Model {
                   }
                }
                else {
+                  syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]);
+
                   $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
                   if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
                }
@@ -369,6 +375,8 @@ class ModelUserAuth extends Model {
             if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
             $this->add_session_vars($a['cn'], $username, $emails, $role);
+
+            $this->model_user_prefs->get_user_preferences($username);
 
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
