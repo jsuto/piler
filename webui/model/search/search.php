@@ -285,7 +285,9 @@ class ModelSearchSearch extends Model {
       $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id=? OR reference=? ORDER BY id DESC", array($reference, $reference));
 
       foreach($query->rows as $q) {
-         array_push($ids, $q['id']);
+         if($this->check_your_permission_by_id($q['id'])) {
+            array_push($ids, $q['id']);
+         }
       }
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
