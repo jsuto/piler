@@ -27,6 +27,8 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
 
    $db = Registry::get('db');
 
+   $description = htmlspecialchars($description);
+
    $query = $db->query("INSERT INTO " . TABLE_AUDIT . " (ts, email, domain, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?,?)", array(time(), $email, $a[1], $action, $ipaddr, $id, $description));
 
    return $db->countAffected();
