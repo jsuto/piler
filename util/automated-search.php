@@ -110,9 +110,7 @@ Registry::set('load', $loader);
 $language = new Language();
 Registry::set('language', $language);
 
-extract($language->data);
 
-$title = $text_automated_search;
 
 if(ENABLE_SYSLOG == 1) { openlog("piler-automated-search", LOG_PID, LOG_MAIL); }
 
@@ -187,6 +185,7 @@ if($auto_search == 1)
    }
 }
 else {
+   $data['id'] = '';
    do_search($data, $automated_search_recipients);
 }
 
@@ -195,7 +194,16 @@ function do_search($data = array(), $automated_search_recipients = array())
    global $options;
    global $dry_run;
    global $webuidir;
-   global $title;
+   global $search_expression;
+   global $page_len;
+
+   $lang = Registry::get('language');
+   extract($lang->data);
+
+   $page = 0;
+   $title = $text_automated_search;
+
+   if($data['id'] != '') { $title .= $data['id']; }
 
    $search = new ModelSearchSearch();
    $mail = new ModelMailMail();
@@ -213,7 +221,8 @@ function do_search($data = array(), $automated_search_recipients = array())
    {
       $msg = "From: " . SMTP_FROMADDR . EOL;
       $msg .= "To: " . ADMIN_EMAIL . EOL;
-      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title . " " . $data['id'])) . "?=" . EOL;
+      $msg .= "Date: " . date(DATE_RFC2822) . EOL;
+      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
       $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
       $msg .= "MIME-Version: 1.0" . EOL;
       $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;

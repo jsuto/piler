@@ -12,7 +12,7 @@
 <body>
 
     <p style="font-weight: bold; font-size: 18px;"><?php print $text_search_expression; ?>: <?php print $search_expression; ?><br />
-    <?php print $text_date; ?>: <?php print $a['date1']; ?></p>
+    <?php if($a['date1']) { print $text_date; ?>: <?php print $a['date1']; } ?></p>
  
     <?php if($n > 0) { ?>
     <table id="results" class="table table-striped table-condensed">
