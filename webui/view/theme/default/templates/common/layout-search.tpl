@@ -10,6 +10,7 @@
    <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
    <meta name="rating" content="general" />
    <meta name="robots" content="all" />
+   <meta http-equiv="x-ua-compatible" content="IE=9">
 
     <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
 
