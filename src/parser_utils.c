@@ -275,7 +275,7 @@ int isHexNumber(char *p){
 
 
 int extract_boundary(char *p, struct _state *state){
-   char *q;
+   char *q, *q2;
 
    p += strlen("boundary");
 
@@ -301,6 +301,10 @@ int extract_boundary(char *p, struct _state *state){
          if(isspace(*p) == 0)
             break;
       }
+
+      q2 = strchr(p, ';');
+      if(q2) *q2 = '\0';
+
       q = strrchr(p, '"');
       if(q) *q = '\0';
 
@@ -311,6 +315,8 @@ int extract_boundary(char *p, struct _state *state){
       if(q) *q = '\0';
 
       addnode(state->boundaries, p);
+
+      if(q2) *q2 = ';';
 
       return 1;
    }
