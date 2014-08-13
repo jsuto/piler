@@ -344,6 +344,9 @@ class ModelSearchMessage extends Model {
                $x = stristr($l, "boundary");
                if($x){
 
+                  $s1 = explode(";", $x);
+                  $x = $s1[0];
+
                   $x = preg_replace("/boundary\s{0,}=\s{0,}/i", "boundary=", $x);
                   //$x = preg_replace("/boundary= /i", "boundary=", $x);
 
