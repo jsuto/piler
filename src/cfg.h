@@ -86,6 +86,8 @@ struct __config {
 
    int enable_cjk;
 
+   int syslog_recipients;
+
    int debug;
 };
 

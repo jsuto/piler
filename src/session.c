@@ -21,8 +21,8 @@
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, state, prevlen=0;
-   char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE];
+   char *p, *rcpt, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
+   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
    char *arule = NULL;
    char *status = NULL;
    struct session_data sdata;
@@ -160,6 +160,17 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                gettimeofday(&tv2, &tz);
                sdata.__parsed = tvdiff(tv2, tv1);
+
+               if(cfg->syslog_recipients == 1){
+                  rcpt = sstate.b_to;
+                  do {
+                     rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
+
+                     if(does_it_seem_like_an_email_address(tmpbuf) == 1){
+                        syslog(LOG_PRIORITY, "%s: rcpt=%s", sdata.ttmpfile, tmpbuf);
+                     }
+                  } while(rcpt);
+               }
 
                if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata.ttmpfile);
 

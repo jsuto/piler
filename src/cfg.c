@@ -100,6 +100,7 @@ struct _parse_rule config_parse_rules[] =
    { "server_id", "integer", (void*) int_parser, offsetof(struct __config, server_id), "0", sizeof(int)},
    { "session_timeout", "integer", (void*) int_parser, offsetof(struct __config, session_timeout), "420", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct __config, spam_header_line), "", MAXVAL-1},
+   { "syslog_recipients", "integer", (void*) int_parser, offsetof(struct __config, syslog_recipients), "0", sizeof(int)},
    { "tls_enable", "integer", (void*) int_parser, offsetof(struct __config, tls_enable), "0", sizeof(int)},
    { "tweak_sent_time_offset", "integer", (void*) int_parser, offsetof(struct __config, tweak_sent_time_offset), "0", sizeof(int)},
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct __config, update_counters_to_memcached), "0", sizeof(int)},
