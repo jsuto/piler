@@ -60,6 +60,7 @@ $_['text_counters'] = "Counters";
 $_['text_cpu_load'] = "CPU load";
 $_['text_cpu_usage'] = "CPU usage";
 $_['text_create_new_secret'] = "Create new secret";
+$_['text_cumulative_counts'] = "Cumulative counts";
 $_['text_customers'] = "Customers";
 
 $_['text_daily_quarantine_report'] = "Daily quarantine report";
@@ -213,6 +214,7 @@ $_['text_marked_for_removal'] = "Message marked for removal";
 $_['text_memory_usage'] = "Memory usage";
 $_['text_message'] = "message";
 $_['text_messages'] = "messages";
+$_['text_message_disposition'] = "Message Disposition";
 $_['text_message_text'] = "Message text";
 $_['text_min_2_chars'] = "Min. 2 characters";
 $_['text_missing_data'] = "Missing data";

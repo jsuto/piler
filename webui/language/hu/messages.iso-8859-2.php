@@ -60,6 +60,7 @@ $_['text_counters'] = "Számlálók";
 $_['text_cpu_load'] = "CPU terhelés";
 $_['text_cpu_usage'] = "CPU használat";
 $_['text_create_new_secret'] = "Új kód";
+$_['text_cumulative_counts'] = "Összesített számlálók";
 $_['text_customers'] = "Ügyfelek";
 
 $_['text_daily_quarantine_report'] = "Napi karantén riport";
@@ -214,6 +215,7 @@ $_['text_marked_for_removal'] = "Levél törlésre jelölve";
 $_['text_memory_usage'] = "Memória használat";
 $_['text_message'] = "üzenet";
 $_['text_messages'] = "üzenet";
+$_['text_message_disposition'] = "Üzenet típusok";
 $_['text_message_text'] = "Levél szöveg";
 $_['text_min_2_chars'] = "Min. 2 karakter";
 $_['text_missing_data'] = "Hiányzó adat";

@@ -477,4 +477,7 @@ $_['text_delete_confirm_message'] = "Wirklich löschen?";
 $_['text_existing'] = "existiert";
 $_['text_new'] = "neu";
 
+$_['text_cumulative_counts'] = "Cumulative counts";
+$_['text_message_disposition'] = "Message Disposition";
+
 ?>

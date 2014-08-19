@@ -466,4 +466,7 @@ $_['text_delete_confirm_message'] = "Do you wish to delete";
 $_['text_existing'] = "Existing";
 $_['text_new'] = "new";
 
+$_['text_cumulative_counts'] = "Cumulative counts";
+$_['text_message_disposition'] = "Message Disposition";
+
 ?>

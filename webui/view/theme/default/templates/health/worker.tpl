@@ -99,7 +99,7 @@
 		 <div class="span4">		
 			<table class="table table-striped">
 				<tr>
-					<th colspan="2">Cumulative Counts</th>
+					<th colspan="2"><?php print $text_cumulative_counts; ?></th>
 				</tr>
                                 <tr>
                                         <td><?php print $text_oldest_record; ?></td>
@@ -110,7 +110,7 @@
 					<td><?php print $processed_emails[0]; ?> (<?php print $text_60_minutes; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[3]; ?> (<?php print $text_30_days; ?>)</td>
 				</tr>
 				<tr>
-					<th colspan="2">Message Disposition</th>
+					<th colspan="2"><?php print $text_message_disposition; ?></th>
 				</tr>
 			   <?php while(list($k, $v) = each($counters)) {
 						if(!is_numeric($k)) { ?>

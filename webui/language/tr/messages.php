@@ -474,4 +474,7 @@ $_['text_ldap_delete_confirm_message'] = 'LDAP girişini silmek istiyor musunuz'
 $_['text_customer_delete_confirm_message'] = 'Müşteriyi silmek istiyor musunuz';
 $_['text_with_selected'] = 'Seçilenler ile';
 
+$_['text_cumulative_counts'] = "Cumulative counts";
+$_['text_message_disposition'] = "Message Disposition";
+
 ?>
