@@ -414,6 +414,7 @@ SOCKHELPER
 webui_install() {
 
    chmod 770 $DOCROOT/tmp $DOCROOT/images
+   chown $PILERUSER $DOCROOT/tmp
    chgrp $WWWGROUP $DOCROOT/tmp
 
    echo "<?php" > $DOCROOT/config-site.php
