@@ -548,7 +548,9 @@ int read_from_stdin(struct session_data *sdata){
 
 
 void strtolower(char *s){
-   for(; *s; s++) *s = tolower(*s);
+   for(; *s; s++){
+      if(*s >= 65 && *s <= 90) *s = tolower(*s);
+   }
 }
 
 

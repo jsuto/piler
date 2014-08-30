@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <iconv.h>
 #include "decoder.h"
 #include "htmlentities.h"
 #include "config.h"
@@ -182,7 +183,7 @@ void decodeQP(char *p){
 }
 
 
-void decodeHTML(char *p){
+void decodeHTML(char *p, int utf8){
    unsigned char buf[MAXBUFSIZE], __u[8];
    char *s, *q;
    int count=0, len, c;
@@ -212,9 +213,16 @@ void decodeHTML(char *p){
                res = bsearch(&key, htmlentities, NUM_OF_HTML_ENTITIES, sizeof(struct mi), compmi);
 
                if(res && res->val <= 255){
-                  utf8_encode_char(res->val, &__u[0], sizeof(__u), &len);
-                  memcpy(&buf[count], &__u[0], len);
-                  count += len;
+
+                  if(utf8 == 1){
+                     utf8_encode_char(res->val, &__u[0], sizeof(__u), &len);
+                     memcpy(&buf[count], &__u[0], len);
+                     count += len;
+                  }
+                  else {
+                     buf[count] = res->val;
+                     count++;
+                  }
                }
                else {
                   buf[count] = 'q';
@@ -316,37 +324,25 @@ inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, in
 }
 
 
-void utf8_encode(unsigned char *p){
-   int count=0, len;
-   unsigned char *u, *s, utf8[MAXBUFSIZE], __u[8];
+int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *encoding){
+   iconv_t cd;
+   size_t size, inbytesleft, outbytesleft;
 
-   if(p == NULL || strlen((char *)p) == 0) return;
+   memset(outbuf, 0, outbuflen);
 
-   memset(utf8, 0, MAXBUFSIZE);
-   u = &utf8[0];
-   s = p;
+   cd = iconv_open("utf-8", encoding);
 
-   for(; *s; s++){
+   if(cd != (iconv_t)-1){
+      inbytesleft = inbuflen;
+      outbytesleft = outbuflen-1;
 
-      utf8_encode_char(*s, &__u[0], sizeof(__u), &len);
+      size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
 
-      /*
-       * this condition should never happen, as according to the RFCs:
-       *
-       * "Each line of characters MUST be no more than 998 characters, and
-       * SHOULD be no more than 78 characters, excluding the CRLF."
-       *
-       */
+      iconv_close(cd);
 
-      if(count+len > sizeof(utf8)-1) break;
-
-      //printf("%s", __u);
-      memcpy(u+count, &__u[0], len);
-
-      count += len;
+      if(size >= 0) return OK;
    }
 
-   *(u+count) = '\0'; count++;
-   memcpy(p, u, count);
+   return ERR;
 }
 

@@ -12,9 +12,9 @@
 #define PROGNAME "piler"
 #define PILERGETD_PROGNAME "pilergetd"
 
-#define VERSION "1.1.0"
+#define VERSION "1.1.1"
 
-#define BUILD 884
+#define BUILD 885
 
 #define HOSTID "mailarchiver"
 

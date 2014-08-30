@@ -165,6 +165,7 @@ struct _state {
 
    char filename[TINYBUFSIZE];
    char type[TINYBUFSIZE];
+   char charset[TINYBUFSIZE];
 
    char attachment_name_buf[SMALLBUFSIZE];
    int anamepos;

@@ -15,10 +15,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
-#include <iconv.h>
 #include <piler.h>
 #include "trans.h"
-#include "html.h"
 
 
 void init_state(struct _state *state){
@@ -328,10 +326,7 @@ int extract_boundary(char *p, struct _state *state){
 void fixupEncodedHeaderLine(char *buf, int buflen){
    char *sb, *sq, *p, *q, *r, *s, *e, *start, *end;
    char v[SMALLBUFSIZE], puf[MAXBUFSIZE], encoding[SMALLBUFSIZE], tmpbuf[2*SMALLBUFSIZE];
-   iconv_t cd;
-   size_t size, inbytesleft, outbytesleft;
-   char *inbuf, *outbuf;
-   int need_encoding;
+   int need_encoding, ret;
 
    if(buflen < 5) return;
 
@@ -376,29 +371,16 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
                   if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
 
                   /* encode everything if it's not utf-8 encoded */
-                  //if(strncasecmp(start+1, "utf-8", 5)) utf8_encode((unsigned char*)s+3);
-                  //strncat(puf, s+3, sizeof(puf)-1);
 
-                  size = need_encoding = 0;
+                  need_encoding = 0;
+                  ret = ERR;
 
                   if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8")){
                      need_encoding = 1;
-                     memset(tmpbuf, 0, sizeof(tmpbuf));
-
-                     cd = iconv_open("utf-8", encoding);
-
-                     if(cd != (iconv_t)-1){
-                        inbuf = s+3;
-                        outbuf = &tmpbuf[0];
-                        inbytesleft = strlen(s+3);
-                        outbytesleft = sizeof(tmpbuf)-1;
-                        size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-                        iconv_close(cd);
-                     }
-                     else { syslog(LOG_PRIORITY, "unsupported encoding: '%s'", encoding); }
+                     ret = utf8_encode(s+3, strlen(s+3), &tmpbuf[0], sizeof(tmpbuf), encoding);
                   }
 
-                  if(need_encoding == 1 && size >= 0)
+                  if(need_encoding == 1 && ret == OK)
                      strncat(puf, tmpbuf, sizeof(puf)-1);
                   else 
                      strncat(puf, s+3, sizeof(puf)-1);

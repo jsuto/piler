@@ -173,6 +173,7 @@ void storno_attachment(struct _state *state){
 int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
+   char tmpbuf[MAXBUFSIZE];
    int n64, len, writelen, boundary_line=0, result;
 
    if(cfg->debug == 1) printf("line: %s", buf);
@@ -501,7 +502,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       }
 
 
-      if(strcasestr(buf, "charset") && strcasestr(buf, "UTF-8")) state->utf8 = 1;
+      if(strcasestr(buf, "charset")) extractNameFromHeaderLine(buf, "charset", state->charset);
+      if(strcasestr(state->charset, "UTF-8")) state->utf8 = 1;
    }
 
 
@@ -577,6 +579,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
 
       memset(state->filename, 0, TINYBUFSIZE);
       memset(state->type, 0, TINYBUFSIZE);
+      snprintf(state->charset, TINYBUFSIZE-1, "unknown");
 
       memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
       state->anamepos = 0;
@@ -617,11 +620,13 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    /* I believe that we can live without this function call */
    //decodeURL(buf);
 
-   if(state->texthtml == 1) decodeHTML(buf);
+   if(state->texthtml == 1) decodeHTML(buf, state->utf8);
 
    /* encode the body if it's not utf-8 encoded */
-   if(state->message_state == MSG_BODY && state->utf8 != 1) utf8_encode((unsigned char*)buf);
-
+   if(state->message_state == MSG_BODY && state->utf8 != 1){
+      result = utf8_encode(buf, strlen(buf), &tmpbuf[0], sizeof(tmpbuf), state->charset);
+      if(result == OK) snprintf(buf, MAXBUFSIZE-1, "%s", tmpbuf);
+   }
 
    translateLine((unsigned char*)buf, state);
 
