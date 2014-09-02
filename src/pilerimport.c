@@ -484,7 +484,8 @@ int main(int argc, char **argv){
    data.recursive_folder_names = 0;
    data.quiet = 0;
 
-   import.import_job_id = import.total_messages = import.total_size = import.processed_messages = 0;
+
+   import.import_job_id = import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
    import.extra_recipient = NULL;
 
@@ -513,6 +514,7 @@ int main(int argc, char **argv){
             {"folder",       required_argument,  0,  'F' },
             {"folder_imap",  required_argument,  0,  'f' },
             {"add-recipient",required_argument,  0,  'a' },
+            {"batch-limit",  required_argument,  0,  'b' },
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
@@ -524,9 +526,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:GDRrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:GDRrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:GDRrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:GDRrqh?");
 #endif
 
       if(c == -1) break;
@@ -597,6 +599,10 @@ int main(int argc, char **argv){
 
          case 'r' :
                     data.import->remove_after_import = 1;
+                    break;
+
+         case 'b' :
+                    data.import->batch_processing_limit = atoi(optarg);
                     break;
 
          case 'a' :

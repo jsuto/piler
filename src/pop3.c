@@ -209,6 +209,13 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
       }
 
       unlink(filename);
+
+
+      /* whether to quit after processing a batch of messages */
+
+      if(data->import->batch_processing_limit > 0 && data->import->processed_messages >= data->import->batch_processing_limit){
+         break;
+      }
    }
 
 
