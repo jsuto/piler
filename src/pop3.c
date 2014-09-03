@@ -120,7 +120,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
    if(data->import->total_messages <= 0) return OK;
 
-   for(i=1; i<=data->import->total_messages; i++){
+   for(i=data->import->start_position; i<=data->import->total_messages; i++){
       data->import->processed_messages++;
       printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
 

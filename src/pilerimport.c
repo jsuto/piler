@@ -488,6 +488,7 @@ int main(int argc, char **argv){
    import.import_job_id = import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
    import.extra_recipient = NULL;
+   import.start_position = 1;
 
    data.import = &import;
 
@@ -515,6 +516,7 @@ int main(int argc, char **argv){
             {"folder_imap",  required_argument,  0,  'f' },
             {"add-recipient",required_argument,  0,  'a' },
             {"batch-limit",  required_argument,  0,  'b' },
+            {"start-position",required_argument,  0,  's' },
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
@@ -526,9 +528,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:GDRrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRrqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:GDRrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRrqh?");
 #endif
 
       if(c == -1) break;
@@ -603,6 +605,15 @@ int main(int argc, char **argv){
 
          case 'b' :
                     data.import->batch_processing_limit = atoi(optarg);
+                    break;
+
+         case 's' :
+                    if(atoi(optarg) < 1){
+                       printf("invalid start position: %s\n", optarg);
+                       return -1;
+                    }
+
+                    data.import->start_position = atoi(optarg);
                     break;
 
          case 'a' :

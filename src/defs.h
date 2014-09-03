@@ -270,6 +270,7 @@ struct import {
    int total_messages;
    int processed_messages;
    int batch_processing_limit;
+   int start_position;
    int import_job_id;
    int remove_after_import;
    int keep_eml;
