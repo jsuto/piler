@@ -73,7 +73,7 @@ class ModelSaasLdap extends Model
 
       $query = $this->db->query("SELECT d.*, l.* FROM " . TABLE_DOMAIN . " as d, " . TABLE_LDAP . " as l where d.ldap_id=l.id and d.domain=?", array($d));
 
-      if($query->num_rows > 0) { return $query->row; }
+      if($query->num_rows > 0) { return $query->rows; }
 
       return array();
    }
