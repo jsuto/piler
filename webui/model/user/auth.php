@@ -70,6 +70,29 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstLDAP($username = '', $password = '') {
+      $a = array();
+      $ret = 0;
+
+      if(ENABLE_SAAS == 1) {
+         $params = $this->model_saas_ldap->get_ldap_params_by_email($username);
+         foreach($params as $param) {
+            $ret = $this->checkLoginAgainstLDAP_real($username, $password, $param);
+
+            syslog(LOG_INFO, "ldap auth result against " . $param['ldap_host'] . " / " . $param['ldap_type'] . ": $ret");
+
+            if($ret == 1) { return $ret; }
+         }
+      }
+      else {
+         $ret = $this->checkLoginAgainstLDAP_real($username, $password);
+      }
+
+      return $ret;
+   }
+
+
+   private function checkLoginAgainstLDAP_real($username = '', $password = '', $a = array()) {
+
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
       $ldap_base_dn = LDAP_BASE_DN;
@@ -81,22 +104,18 @@ class ModelUserAuth extends Model {
       $role = 0;
       $username_prefix = '';
 
-      if(ENABLE_SAAS == 1) {
-         $a = $this->model_saas_ldap->get_ldap_params_by_email($username);
+      if(count($a) >= 6) {
+         $ldap_type = $a['ldap_type'];
+         $ldap_host = $a['ldap_host'];
+         $ldap_base_dn = $a['ldap_base_dn'];
+         $ldap_helper_dn = $a['ldap_bind_dn'];
+         $ldap_helper_password = $a['ldap_bind_pw'];
+         $ldap_auditor_member_dn = $a['ldap_auditor_member_dn'];
 
-         if(count($a) >= 6) {
-            $ldap_type = $a['ldap_type'];
-            $ldap_host = $a['ldap_host'];
-            $ldap_base_dn = $a['ldap_base_dn'];
-            $ldap_helper_dn = $a['ldap_bind_dn'];
-            $ldap_helper_password = $a['ldap_bind_pw'];
-            $ldap_auditor_member_dn = $a['ldap_auditor_member_dn'];
-
-            $ldap_mail_attr = $a['ldap_mail_attr'];
-            $ldap_account_objectclass = $a['ldap_account_objectclass'];
-            $ldap_distributionlist_attr = $a['ldap_distributionlist_attr'];
-            $ldap_distributionlist_objectclass = $a['ldap_distributionlist_objectclass'];
-         }
+         $ldap_mail_attr = $a['ldap_mail_attr'];
+         $ldap_account_objectclass = $a['ldap_account_objectclass'];
+         $ldap_distributionlist_attr = $a['ldap_distributionlist_attr'];
+         $ldap_distributionlist_objectclass = $a['ldap_distributionlist_objectclass'];
       }
 
       if($ldap_type != LDAP_TYPE_GENERIC) {
@@ -369,7 +388,7 @@ class ModelUserAuth extends Model {
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
-            $emails = array_merge($emails, $extra_emails);
+            $emails = array_merge(array($username), $emails, $extra_emails);
 
             if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
             if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
