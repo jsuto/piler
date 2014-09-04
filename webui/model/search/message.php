@@ -562,7 +562,7 @@ class ModelSearchMessage extends Model {
       }
 
       if($text_html == 1){
-         $chunk = preg_replace("/\<style\>([\w\W]+)\<\/style\>/i", "", $chunk);
+         $chunk = preg_replace("/\<style[\w\W]{0,}\>([\w\W]+)\<\/style\>/i", "", $chunk);
 
          if(ENABLE_REMOTE_IMAGES == 0) {
             $chunk = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $chunk);
