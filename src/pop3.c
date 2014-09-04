@@ -116,13 +116,13 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
    else return ERR;
 
 
-   printf("found %d messages\n", data->import->total_messages);
+   if(data->quiet == 0) printf("found %d messages\n", data->import->total_messages);
 
    if(data->import->total_messages <= 0) return OK;
 
    for(i=data->import->start_position; i<=data->import->total_messages; i++){
       data->import->processed_messages++;
-      printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
+      if(data->quiet == 0){ printf("processed: %7d\r", data->import->processed_messages); fflush(stdout); }
 
 
       snprintf(buf, sizeof(buf)-1, "RETR %d\r\n", i);
@@ -222,7 +222,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
    snprintf(buf, sizeof(buf)-1, "QUIT\r\n");
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
-   printf("\n");
+   if(data->quiet == 0) printf("\n");
 
    time(&(data->import->finished));
    data->import->status = 2;
