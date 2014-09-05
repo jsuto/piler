@@ -13,15 +13,6 @@ source base
    sql_attr_uint = size
    sql_attr_uint = sent
    sql_attr_uint = attachments
-##
-##   From 0.1.25 these attributes are disabled for an optimized version
-##   If you have indexed data already, then don't exclude them otherwise
-##   you have to reindex all your emails
-##
-##   sql_attr_uint = direction
-##   sql_attr_uint = arrived
-##   sql_attr_uint = folder
-
 }
 
 source delta : base
@@ -96,7 +87,8 @@ index main1
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
-
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 index main2
@@ -108,6 +100,8 @@ index main2
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 index main3
@@ -119,6 +113,8 @@ index main3
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 index main4
@@ -130,6 +126,8 @@ index main4
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 index dailydelta1
@@ -141,6 +139,8 @@ index dailydelta1
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 index delta1
@@ -152,7 +152,8 @@ index delta1
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
-
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 
@@ -165,6 +166,8 @@ index tag1
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 
@@ -177,6 +180,8 @@ index note1
         enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
+        #ngram_len               = 1
+        #ngram_chars             = U+3000..U+2FA1F
 }
 
 
