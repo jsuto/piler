@@ -476,4 +476,6 @@ $_['text_ldap_delete_confirm_message'] = 'Вы хотите удалить на�
 $_['text_customer_delete_confirm_message'] = 'Вы хотите уделить потребителя';                                                                                                 
 $_['text_with_selected'] = 'С выделенным';                                                                                                                                    
 
+$_['text_assigned_email_addresses'] = "Assigned email addresses";
+
 ?>                                                                                                                                                                            

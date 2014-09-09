@@ -26,6 +26,7 @@ $_['text_archive_size'] = "Archive size";
 $_['text_archive_size_before_compression'] = "Archive size before compression";
 $_['text_archived_messages'] = "Archived messages";
 $_['text_archiving_rules'] = "Archiving rules";
+$_['text_assigned_email_addresses'] = "Assigned email addresses";
 $_['text_attachment'] = "Attachment";
 $_['text_attachment_name'] = "Attachment name";
 $_['text_attachment_size'] = "Attachment size";

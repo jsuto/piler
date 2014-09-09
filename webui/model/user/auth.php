@@ -201,7 +201,7 @@ class ModelUserAuth extends Model {
       $data = array();
 
       foreach($e as $a) {
-         syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']);
+         //syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']);
 
          foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
             if(isset($a[$mailattr])) {
@@ -209,7 +209,7 @@ class ModelUserAuth extends Model {
                if(is_array($a[$mailattr])) {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
 
-                     syslog(LOG_INFO, "checking entry: " . $a[$mailattr][$i]);
+                     //syslog(LOG_INFO, "checking entry: " . $a[$mailattr][$i]);
 
                      $a[$mailattr][$i] = strtolower($a[$mailattr][$i]);
 
@@ -225,7 +225,7 @@ class ModelUserAuth extends Model {
                   }
                }
                else {
-                  syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]);
+                  //syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]);
 
                   $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
                   if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
@@ -383,7 +383,11 @@ class ModelUserAuth extends Model {
                return 0;
             }
 
-            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(proxyAddresses=smtp:$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
+            $ldap_mail_attr = LDAP_MAIL_ATTR;
+            if(LDAP_MAIL_ATTR == 'proxyAddresses') { $ldap_mail_attr = 'proxyAddresses=smtp:'; }
+
+            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "=$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
+
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 

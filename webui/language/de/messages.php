@@ -479,5 +479,6 @@ $_['text_new'] = "neu";
 
 $_['text_cumulative_counts'] = "Cumulative counts";
 $_['text_message_disposition'] = "Message Disposition";
+$_['text_assigned_email_addresses'] = "Assigned email addresses";
 
 ?>

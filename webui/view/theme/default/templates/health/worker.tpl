@@ -4,7 +4,7 @@
 	<div class="row">
 		
 		<div class="span8">
-            <h2><i class="icon-dashboard icon-2x pull-left"></i><?php print $sysinfo[0]; ?> <small">Status</small></h2>
+            <h2><i class="icon-dashboard icon-2x pull-left"></i><?php print $sysinfo[0]; ?> <small><?php print $text_status; ?></small></h2>
             <h3><strong>Up For:</strong> <?php print $uptime; ?></h3>
             <table class="table table-striped">
                 <tr>

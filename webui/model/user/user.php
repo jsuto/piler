@@ -76,8 +76,11 @@ class ModelUserUser extends Model {
 
    public function get_email_addresses_from_groups($emails = array()) {
       $data = array();
+      $q = str_repeat("?,", count($emails));
 
-      $query = $this->db->query("SELECT g.email FROM `" . TABLE_GROUP_EMAIL . "` g WHERE g.id IN (SELECT u.id FROM `" . TABLE_GROUP_USER . "` u WHERE u.email IN (?))", $emails);
+      $q = substr($q, 0, strlen($q)-1);
+
+      $query = $this->db->query("SELECT g.email FROM `" . TABLE_GROUP_EMAIL . "` g WHERE g.id IN (SELECT u.id FROM `" . TABLE_GROUP_USER . "` u WHERE u.email IN ($q))", $emails);
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
