@@ -334,6 +334,7 @@ $_['text_spam'] = "Spam";
 $_['text_spam2'] = "spam";
 $_['text_statistics'] = "Statistics";
 $_['text_status'] = "Status";
+$_['text_storage'] = "Storage";
 $_['text_subject'] = "Subject";
 $_['text_submit'] = "Submit";
 $_['text_successful'] = "Successful";

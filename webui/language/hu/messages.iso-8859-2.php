@@ -336,6 +336,7 @@ $_['text_spam'] = "Spam";
 $_['text_spam2'] = "spam";
 $_['text_statistics'] = "Statisztika";
 $_['text_status'] = "Státusz";
+$_['text_storage'] = "Tároló";
 $_['text_subject'] = "Tárgy";
 $_['text_submit'] = "Mehet";
 $_['text_successful'] = "Sikeres";

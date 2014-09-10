@@ -36,7 +36,7 @@
                 
             </table>
             
-            <h2><i class="icon-hdd icon-2x pull-left"></i>&nbsp;Storage</h2>
+            <h2><i class="icon-hdd icon-2x pull-left"></i>&nbsp;<?php print $text_storage; ?></h2>
 			<table class="table table-striped">
 				 <tr>
 					<th><?php print $text_archive_size; ?>:</th>
