@@ -214,7 +214,7 @@ $_['text_marked_for_removal'] = "Message marqué pour suppression";
 $_['text_memory_usage'] = "Utilisation mémoire";
 $_['text_message'] = "message";
 $_['text_messages'] = "messages";
-$_['text_message_disposition'] = "Disposition message";*
+$_['text_message_disposition'] = "Disposition message";
 $_['text_assigned_email_addresses'] = "Adresses email assignées";
 $_['text_message_text'] = "Texte message";
 $_['text_min_2_chars'] = "Min. 2 caractères";
@@ -477,4 +477,5 @@ $_['text_ldap_delete_confirm_message'] = "Souhaitez-vous supprimer l'entrée LDA
 $_['text_customer_delete_confirm_message'] = 'Souhaitez-vous supprimer le client';
 $_['text_with_selected'] = 'Selection';
 $_['text_storage'] = "Stockage";
+
 ?>
