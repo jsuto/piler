@@ -34,6 +34,7 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
          p_bind_init(data);
 
          data->sql[data->pos] = state->attachments[i].digest; data->type[data->pos] = TYPE_STRING; data->pos++;
+         data->sql[data->pos] = (char *)&(state->attachments[i].size); data->type[data->pos] = TYPE_LONG; data->pos++;
 
          if(p_exec_query(sdata, data->stmt_get_attachment_id_by_signature, data) == ERR) goto NOT_FOUND;
 
