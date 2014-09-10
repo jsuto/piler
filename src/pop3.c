@@ -89,6 +89,8 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
 
    if(strncmp(buf, "+OK", 3) == 0) return OK;
 
+   printf("error: %s", buf);
+
    return ERR;
 }
 
