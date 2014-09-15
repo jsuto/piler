@@ -51,10 +51,12 @@
   </div>
 </div>
 
-
+<?php if(!(OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 0)) { ?>
     <div id="menu">
         <?php print $menu; ?>
     </div>
+<?php } ?>
+
     <div id="messagebox1" class="alert alert-info lead"></div>
 
     <div id="piler1" class="container-fluid">
@@ -69,11 +71,11 @@
          <div class="control-group">
             <div class="controls row-fluid">
                 <div id="input-span" class="span6">
-                    <label for="_search">Search</label>
+                    <label for="_search"><?php print $text_search; ?></label>
                 <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
                 </div>
                 <div class="span6 input-append btn-group">
-                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
                     <button id="button_expert" class="btn btn-large btn-inverse" onclick="$('#searchpopup1').show();"><?php print $text_advanced_search; ?> &nbsp;<span class="caret"></span></button>
                     <button id="button_options" class="btn btn-large btn-inverse dropdown-toggle" data-toggle="dropdown"><?php print $text_options; ?> &nbsp;<span class="caret"></span></button>
                     <ul class="dropdown-menu">

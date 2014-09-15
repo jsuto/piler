@@ -392,7 +392,9 @@ class ModelUserAuth extends Model {
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
-            $emails = array_merge(array($username), $emails, $extra_emails);
+            $emails = array_merge($emails, $extra_emails);
+
+            if(!in_array($username, $emails)) { array_push($emails, $username); }
 
             if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
             if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }

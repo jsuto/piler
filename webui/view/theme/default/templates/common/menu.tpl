@@ -77,7 +77,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>&nbsp;<?php if($realname) { print $realname; ?>&nbsp;<?php } ?><b class="caret"></b></a>
                         <ul class="dropdown-menu">
     <?php if($settings['support_link']) { ?>
-                            <li><a href="<?php print $settings['support_link']; ?>" target="_blank" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-question-sign"></i>&nbsp;<?php print $text_contact_support; ?></a></li>
+                            <li><a href="<?php print $settings['support_link']; ?>" target="_blank"><i class="icon-question-sign"></i>&nbsp;<?php print $text_contact_support; ?></a></li>
                             <li class="divider"></li>
     <?php } ?>
                             <li><a href="settings.php"><i class="icon-cog"></i>&nbsp;<?php print $text_settings; ?></a></li>

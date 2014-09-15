@@ -55,7 +55,7 @@
 
 <div id="piler1" class="container">
 
-<?php if(OUTLOOK == 0) { ?>
+<?php if(!(OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 0)) { ?>
 <div id="menu">
    <?php print $menu; ?>
 </div>

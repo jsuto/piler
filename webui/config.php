@@ -43,6 +43,8 @@ $config['ENABLE_DOWNLOADING_ALL_SEARCH_HITS'] = 0;
 $config['ENABLE_TABLE_RESIZE'] = 0;
 $config['DEMO_MODE'] = 0;
 
+$config['SHOW_MENU_FOR_OUTLOOK'] = 0;
+
 $config['TIMEZONE'] = 'Europe/Budapest';
 
 $config['PROVIDED_BY'] = 'www.mailpiler.org';
@@ -292,7 +294,7 @@ if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get(
 
 include("system/helper/detectmobilebrowser.php");
 
-if(MOBILE_DEVICE == 1 || OUTLOOK == 1) { $config['THEME'] = 'mobile'; }
+if(MOBILE_DEVICE == 1) { $config['THEME'] = 'mobile'; }
 
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
