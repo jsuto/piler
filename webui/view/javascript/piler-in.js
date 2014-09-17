@@ -127,6 +127,8 @@ var Piler =
     {
         var url;
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         Piler.Shared.type == 'search' ? url = '/search-helper.php' : url = '/audit-helper.php';
 
         Piler.log("[load_search_results]", url); 
@@ -193,6 +195,8 @@ var Piler =
     saved_search_terms:function(msg)
     {
         Piler.log("[saved_search_terms]");
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax( '/index.php?route=search/save', {
             data: $.extend(!0, { }, Piler.Shared, Piler.Searches[Piler.search], {save: '1'} ),
@@ -270,6 +274,8 @@ var Piler =
     {
         var search = $('#_search').val();
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         Piler.log("[view_message]", id, search);
 
         jQuery.ajax('/message.php', {
@@ -307,6 +313,8 @@ var Piler =
     {
         Piler.log("[not_spam]", id);
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         jQuery.ajax('index.php?route=message/notspam', {
            data: { id: id },
            type: "POST"
@@ -328,6 +336,8 @@ var Piler =
     bulk_restore_messages:function(msg, email)
     {
         Piler.log("[bulk_restore_messages]", email);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
 
         var idlist = Piler.get_selected_messages_list();
 
@@ -374,6 +384,8 @@ var Piler =
     {
         Piler.log("[add_note_to_message]", id, msg);
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         jQuery.ajax('index.php?route=message/note', {
            data: { id: id, note: encodeURI($('#note').val()) },
            type: "POST"
@@ -388,6 +400,8 @@ var Piler =
     tag_search_results:function(msg)
     {
         Piler.log("[tag_search_results]", msg);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
 
         var idlist = Piler.get_selected_messages_list();
 
@@ -413,6 +427,8 @@ var Piler =
     load_url_to_preview_pane:function(url)
     {
         Piler.log("[load_url_to_preview_pane]", url);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax(url, { cache: true })
         .done( function(a) { $('#mailpreviewframe').html(a); })
@@ -764,6 +780,8 @@ var Piler =
     {
         Piler.log("[restore_message_for_recipients]", id);
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         var z = $('#restorebox').children(), y = z.length, x;
         var emails = '';
 
@@ -972,6 +990,8 @@ var Piler =
 
         var folder_copy_url = '<?php print SITE_URL; ?>/index.php?route=folder/copy'
 
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
         jQuery.ajax('index.php?route=folder/copy', {
            data: { folder_id: folder_id, id: id },
            type: "POST"
@@ -1150,6 +1170,22 @@ var Piler =
        window.print();
 
        document.body.innerHTML = oldPage;
+    },
+
+
+    poor_mans_keepalive_for_dummy_browsers: function()
+    {
+
+<?php if(BROWSER_WITH_NTLM_BUG == 1 && ENABLE_SSO_LOGIN == 1) { ?>
+
+       Piler.log("[poor_mans_keepalive_for_dummy_browsers]");
+
+       jQuery.ajax('/ok.txt', { async:   false })
+       .done( function(a) { } )
+       .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+<?php } ?>
+
     }
 
 

@@ -1,6 +1,6 @@
 <?php
 
-function is_mobile_device() {
+function browser_detect() {
 
    if(!isset($_SERVER['HTTP_USER_AGENT'])) { define('OUTLOOK', 0); return 0; }
 
@@ -11,7 +11,7 @@ function is_mobile_device() {
    return 0;
 }
 
-define('MOBILE_DEVICE', is_mobile_device());
+define('MOBILE_DEVICE', browser_detect());
 
 
 ?>
