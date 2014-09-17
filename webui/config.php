@@ -236,7 +236,7 @@ $memcached_servers = array(
       array('127.0.0.1', 11211)
                           );
 
-$partitions_to_monitor = array('/', '/home', '/var', '/tmp');
+$partitions_to_monitor = array('/', '/home', '/var', '/var/piler', '/tmp');
 $config['DATA_PARTITION'] = '/var';
 
 $config['DELIMITER'] = "\t";

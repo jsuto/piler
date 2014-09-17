@@ -1176,13 +1176,18 @@ var Piler =
     poor_mans_keepalive_for_dummy_browsers: function()
     {
 
-<?php if(BROWSER_WITH_NTLM_BUG == 1 && ENABLE_SSO_LOGIN == 1) { ?>
+<?php if(ENABLE_SSO_LOGIN == 1) { ?>
 
-       Piler.log("[poor_mans_keepalive_for_dummy_browsers]");
+       // MSIE 11 and Outlook 2013 match this condition
 
-       jQuery.ajax('/ok.txt', { async:   false })
-       .done( function(a) { } )
-       .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+       if(Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) {
+
+          Piler.log("[poor_mans_keepalive_for_dummy_browsers]");
+
+          jQuery.ajax('/ok.txt', { async:   false })
+          .done( function(a) { } )
+          .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+       }
 
 <?php } ?>
 
