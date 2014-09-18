@@ -315,8 +315,6 @@ void initialise_configuration(){
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
 
-   memset(data.starttls, 0, sizeof(data.starttls));
-
 #ifdef HAVE_STARTTLS
    if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
       snprintf(data.starttls, sizeof(data.starttls)-1, "250-STARTTLS\r\n");
@@ -383,6 +381,7 @@ int main(int argc, char **argv){
    initrules(data.retention_rules);
    data.ctx = NULL;
    data.ssl = NULL;
+   memset(data.starttls, 0, sizeof(data.starttls));
 
 
    initialise_configuration();
