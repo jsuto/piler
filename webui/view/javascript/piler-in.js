@@ -329,7 +329,12 @@ var Piler =
     restore_message:function(id)
     {
         Piler.log("[restore_message]");
-        Piler.load_url_to_preview_pane('/index.php?route=message/restore&id=' + id);
+
+        jQuery.ajax('/index.php?route=message/restore&id=' + id, {})
+        .done(function(a) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', "OK", 0.8);
     },
 
 
