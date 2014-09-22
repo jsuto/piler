@@ -254,6 +254,8 @@ class ModelGroupGroup extends Model {
       $groups = '';
       $q = '?';
 
+      if(count($email) <= 0) { return ''; }
+
       for($i=1; $i<count($email); $i++) {
          $q .= ',?';
       }
