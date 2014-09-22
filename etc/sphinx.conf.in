@@ -83,6 +83,7 @@ index main1
 	source			= main1
 	path			= /var/piler/sphinx/main1
 	docinfo			= extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -94,6 +95,7 @@ index main2
         source                  = main2
         path                    = /var/piler/sphinx/main2
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -105,6 +107,7 @@ index main3
         source                  = main3
         path                    = /var/piler/sphinx/main3
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -116,6 +119,7 @@ index main4
         source                  = main4
         path                    = /var/piler/sphinx/main4
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -127,6 +131,7 @@ index dailydelta1
         source                  = dailydelta
         path                    = /var/piler/sphinx/dailydelta1
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -138,6 +143,7 @@ index delta1
         source                  = delta
         path                    = /var/piler/sphinx/delta1
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -150,6 +156,7 @@ index tag1
         source                  = tag
         path                    = /var/piler/sphinx/tag1
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -162,6 +169,7 @@ index note1
         source                  = note
         path                    = /var/piler/sphinx/note1
         docinfo                 = extern
+	dict			= keywords
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -185,7 +193,6 @@ searchd
 	read_timeout		= 5
 	max_children		= 30
 	pid_file		= /var/run/piler/searchd.pid
-	max_matches		= 1000
 	seamless_rotate		= 1
 	preopen_indexes		= 1
 	unlink_old		= 1
