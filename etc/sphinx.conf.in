@@ -59,9 +59,9 @@ source dailydelta : base
 source tag : base
 {
    sql_query_pre = SET NAMES utf8
-   sql_query  = SELECT `_id`, `id`, `uid`, `tag` FROM `tag`
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `tag` FROM `tag`
 
-   sql_attr_uint = id
+   sql_attr_uint = iid
    sql_attr_uint = uid
 
 }
@@ -70,9 +70,9 @@ source tag : base
 source note : base
 {
    sql_query_pre = SET NAMES utf8
-   sql_query  = SELECT `_id`, `id`, `uid`, `note` FROM `note`
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `note` FROM `note`
 
-   sql_attr_uint = id
+   sql_attr_uint = iid
    sql_attr_uint = uid
 
 }
@@ -83,8 +83,6 @@ index main1
 	source			= main1
 	path			= /var/piler/sphinx/main1
 	docinfo			= extern
-	charset_type		= utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -96,8 +94,6 @@ index main2
         source                  = main2
         path                    = /var/piler/sphinx/main2
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -109,8 +105,6 @@ index main3
         source                  = main3
         path                    = /var/piler/sphinx/main3
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -122,8 +116,6 @@ index main4
         source                  = main4
         path                    = /var/piler/sphinx/main4
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -135,8 +127,6 @@ index dailydelta1
         source                  = dailydelta
         path                    = /var/piler/sphinx/dailydelta1
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -148,8 +138,6 @@ index delta1
         source                  = delta
         path                    = /var/piler/sphinx/delta1
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -162,8 +150,6 @@ index tag1
         source                  = tag
         path                    = /var/piler/sphinx/tag1
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -176,8 +162,6 @@ index note1
         source                  = note
         path                    = /var/piler/sphinx/note1
         docinfo                 = extern
-        charset_type            = utf-8
-        enable_star             = 1
         min_prefix_len          = 6
         min_word_len            = 1
         #ngram_len               = 1
@@ -206,5 +190,4 @@ searchd
 	preopen_indexes		= 1
 	unlink_old		= 1
 	workers			= threads # for RT to work
-	compat_sphinxql_magics  = 0
 }

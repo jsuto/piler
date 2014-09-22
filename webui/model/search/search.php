@@ -417,10 +417,11 @@ class ModelSearchSearch extends Model {
 
       $s = $this->fixup_sphinx_operators($s);
 
-      $q = $this->sphx->query("SELECT id FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') ");
+      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') ");
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "sql: " . $q->query); }
 
       foreach($q->rows as $a) {
-         $id_list .= "," . $a['id'];
+         $id_list .= "," . $a['iid'];
       }
 
       if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
@@ -446,10 +447,10 @@ class ModelSearchSearch extends Model {
       }
 
 
-      $q = $this->db->query("SELECT id FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id IN ($q)", $__folders);
+      $q = $this->db->query("SELECT iid FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id IN ($q)", $__folders);
 
       foreach($q->rows as $a) {
-         $id_list .= "," . $a['id'];
+         $id_list .= "," . $a['iid'];
       }
 
       if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
