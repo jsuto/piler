@@ -562,7 +562,19 @@ class ModelSearchMessage extends Model {
       }
 
       if($text_html == 1){
-         $chunk = preg_replace("/\<style[\w\W]{0,}\>([\w\W]+)\<\/style\>/i", "", $chunk);
+
+         $h = preg_split("/\<style/i", $chunk);
+         $chunk = '';
+
+         for($i=0; $i<count($h); $i++) {
+            $pos = strpos($h[$i], "</style>");
+            if($pos != FALSE) {
+               $s = substr($h[$i], $pos+8, strlen($h[$i]));
+               $chunk .= $s . "\n";
+            }
+            else { $chunk .= $h[$i] . "\n"; }
+         }
+
 
          if(ENABLE_REMOTE_IMAGES == 0) {
             $chunk = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $chunk);
