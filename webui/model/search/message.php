@@ -567,7 +567,7 @@ class ModelSearchMessage extends Model {
          $chunk = '';
 
          for($i=0; $i<count($h); $i++) {
-            $pos = strpos($h[$i], "</style>");
+            $pos = stripos($h[$i], "</style>");
             if($pos != FALSE) {
                $s = substr($h[$i], $pos+8, strlen($h[$i]));
                $chunk .= $s . "\n";
