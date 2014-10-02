@@ -647,6 +647,8 @@ int main(int argc, char **argv){
 
    if(!mbox[0] && !mboxdir && !emlfile && !directory && !imapserver && !pop3server && import_from_gui == 0) usage();
 
+   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+
    cfg = read_config(configfile);
 
    /* make sure we don't discard messages without a valid Message-Id when importing manually */

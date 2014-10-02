@@ -351,6 +351,8 @@ int main(int argc, char **argv){
 
    regfree(&regexp);
 
+   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+
    (void) openlog("pilerexport", LOG_PID, LOG_MAIL);
 
    if(exportall == 1){

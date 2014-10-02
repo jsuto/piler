@@ -32,6 +32,8 @@ int main(int argc, char **argv){
       exit(1);
    }
 
+   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+
    if(stat(argv[1], &st) != 0){
       fprintf(stderr, "%s is not found\n", argv[1]);
       return 0;

@@ -560,6 +560,24 @@ void *get_in_addr(struct sockaddr *sa){
 }
 
 
+int can_i_write_current_directory(){
+   int fd;
+   char filename[SMALLBUFSIZE];
+
+   snprintf(filename, sizeof(filename)-1, "__piler_%d", getpid());
+
+   fd = open(filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
+   if(fd == -1){
+      return 0;
+   }
+
+   close(fd);
+   unlink(filename);
+
+   return 1;
+}
+
+
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;
