@@ -732,14 +732,41 @@ void fixURL(char *url){
 
 
 int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
-   int rc=0;
-   char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q;
+   int rc=0, extended=0;
+   char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q, *encoding;
 
    snprintf(buf, sizeof(buf)-1, "%s", s);
 
    p = strstr(buf, name);
    if(p){
+
+      /*
+       *
+       * Some examples from http://tools.ietf.org/html/rfc5987:
+       *
+       *   Non-extended notation, using "token":
+       *
+       *      foo: bar; title=Economy
+       *
+       *   Non-extended notation, using "quoted-string":
+       *
+       *      foo: bar; title="US-$ rates"
+       *
+       *   Extended notation, using the Unicode character U+00A3 (POUND SIGN):
+       *
+       *      foo: bar; title*=iso-8859-1'en'%A3%20rates
+       *
+       *   Extended notation, using the Unicode characters U+00A3 (POUND SIGN) and U+20AC (EURO SIGN):
+       *
+       *      foo: bar; title*=UTF-8''%c2%a3%20and%20%e2%82%ac%20rates
+       *
+       */
+
       p += strlen(name);
+      if(*p == '*'){
+         extended = 1;
+      }
+
       p = strchr(p, '=');
       if(p){
          p++;
@@ -754,11 +781,29 @@ int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
             }
          }
 
-         snprintf(puf, sizeof(puf)-1, "%s", p);
+         if(extended == 1){
+            encoding = p;
+            q = strchr(p, '\'');
+            if(q){
+               *q = '\0';
+               p = q + 1;
+               q = strchr(p, '\'');
+               if(q) p = q + 1;
+            }
 
-         fixupEncodedHeaderLine(puf, sizeof(puf));
+            decodeURL(p);
 
-         snprintf(resultbuf, TINYBUFSIZE-1, "%s", puf);
+            if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8"))
+               utf8_encode(p, strlen(p), resultbuf, TINYBUFSIZE-1, encoding);
+            else
+               snprintf(resultbuf, TINYBUFSIZE-1, "%s", p);
+         }
+         else {
+            snprintf(puf, sizeof(puf)-1, "%s", p);
+            fixupEncodedHeaderLine(puf, sizeof(puf));
+
+            snprintf(resultbuf, TINYBUFSIZE-1, "%s", puf);
+         }
 
          rc = 1;
       }
