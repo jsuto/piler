@@ -267,6 +267,8 @@ var Piler =
 
         Piler.prev_message_id = id;
         Piler.view_message(id);
+
+        $('#mailpreviewframe').scrollTop(0);
     },
 
 
