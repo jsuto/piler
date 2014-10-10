@@ -257,7 +257,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
 int import_from_imap_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, char *skiplist, int dryrun, struct __config *cfg){
    int i, rc=ERR, ret=OK, sd, seq=1, skipmatch, use_ssl=0;
-   char port_string[6], puf[SMALLBUFSIZE];
+   char port_string[8], puf[SMALLBUFSIZE];
    struct addrinfo hints, *res;
    struct node *q;
 
