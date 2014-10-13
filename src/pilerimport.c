@@ -351,7 +351,7 @@ ENDE_IMAP:
 
 int import_from_pop3_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, int dryrun, struct __config *cfg){
    int rc, ret=OK, sd, use_ssl=0;
-   char port_string[6];
+   char port_string[8];
    struct addrinfo hints, *res;
 
    snprintf(port_string, sizeof(port_string)-1, "%d", port);

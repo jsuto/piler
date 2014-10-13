@@ -87,12 +87,25 @@ END:
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result;
-   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
+   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result, fpos=0;
+   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE], __folder[SMALLBUFSIZE];
 
    /* imap cmd: SELECT */
 
-   snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, folder);
+   memset(__folder, 0, sizeof(__folder));
+
+   for(; *folder; folder++){
+      if(fpos < sizeof(__folder)-2){
+         if(*folder == '"'){
+            __folder[fpos] = '\\';
+            fpos++;
+         }
+         __folder[fpos] = *folder;
+         fpos++;
+      }
+   }
+
+   snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, __folder);
 
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
