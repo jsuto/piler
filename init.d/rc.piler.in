@@ -58,6 +58,7 @@ case "$1" in
 
 	reload)
 		kill -HUP $PID_NUMBER
+		echo "reloaded"
 	;;
 
 	*)
