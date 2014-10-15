@@ -107,7 +107,7 @@ private function validate() {
       else {
          $emails = explode("\n", $this->request->post['email']);
          foreach ($emails as $email) {
-            $email = rtrim($email);
+            $email = strtolower(rtrim($email));
             if($email == '') { continue; }
 
             $ret = checkemail($email, $this->domains);

@@ -113,7 +113,7 @@ class ControllerUserEdit extends Controller {
       } else {
          $emails = explode("\n", $this->request->post['email']);
          foreach ($emails as $email) {
-            $email = rtrim($email);
+            $email = strtolower(rtrim($email));
 
             if($email == '') { continue; }
 
