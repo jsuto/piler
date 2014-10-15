@@ -472,7 +472,7 @@ ENDE:
 
 void usage(){
    printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port>\n");
-   printf("                                                           [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-R] [-r] [-q]\n");
+   printf("                                                           [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-o] [-R] [-r] [-q]\n");
    exit(0);
 }
 
@@ -499,6 +499,7 @@ int main(int argc, char **argv){
    import.started = import.updated = import.finished = import.remove_after_import = 0;
    import.extra_recipient = NULL;
    import.start_position = 1;
+   import.download_only = 0;
 
    data.import = &import;
 
@@ -530,6 +531,7 @@ int main(int argc, char **argv){
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
+            {"only-download",no_argument,        0,  'o' },
             {"gui-import",   no_argument,        0,  'G' },
             {"dry-run",      no_argument,        0,  'D' },
             {"help",         no_argument,        0,  'h' },
@@ -538,9 +540,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRrqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRrqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -611,6 +613,11 @@ int main(int argc, char **argv){
 
          case 'r' :
                     data.import->remove_after_import = 1;
+                    break;
+
+         case 'o' :
+                    data.import->download_only = 1;
+                    dryrun = 1;
                     break;
 
          case 'b' :

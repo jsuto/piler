@@ -259,7 +259,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
             read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
          }
 
-         unlink(filename);
+         if(data->import->download_only == 0) unlink(filename);
       }
 
 
@@ -290,7 +290,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
       SSL_library_init();
       SSL_load_error_strings();
 
-      data->ctx = SSL_CTX_new(SSLv3_client_method());
+      data->ctx = SSL_CTX_new(TLSv1_client_method());
       CHK_NULL(data->ctx, "internal SSL error");
 
       data->ssl = SSL_new(data->ctx);
@@ -300,7 +300,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
       n = SSL_connect(data->ssl);
       CHK_SSL(n, "internal ssl error");
 
-      //printf("Cipher: %s\n", SSL_get_cipher(data->ssl));
+      printf("Cipher: %s\n", SSL_get_cipher(data->ssl));
 
       server_cert = SSL_get_peer_certificate(data->ssl);
       CHK_NULL(server_cert, "server cert error");

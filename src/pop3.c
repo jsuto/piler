@@ -48,7 +48,7 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
       SSL_library_init();
       SSL_load_error_strings();
 
-      data->ctx = SSL_CTX_new(SSLv3_client_method());
+      data->ctx = SSL_CTX_new(TLSv1_client_method());
       CHK_NULL(data->ctx, "internal SSL error");
 
       data->ssl = SSL_new(data->ctx);
@@ -57,6 +57,8 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
       SSL_set_fd(data->ssl, sd);
       n = SSL_connect(data->ssl);
       CHK_SSL(n, "internal ssl error");
+
+      printf("Cipher: %s\n", SSL_get_cipher(data->ssl));
 
       server_cert = SSL_get_peer_certificate(data->ssl);
       CHK_NULL(server_cert, "server cert error");
@@ -129,7 +131,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
 
       snprintf(buf, sizeof(buf)-1, "RETR %d\r\n", i);
 
-      snprintf(filename, sizeof(filename)-1, "pop3-tmp-%d.txt", i);
+      snprintf(filename, sizeof(filename)-1, "pop3-tmp-%d-%d.txt", getpid(), i);
       unlink(filename);
 
       fd = open(filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
@@ -210,7 +212,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
          update_import_job_stat(sdata, data);
       }
 
-      unlink(filename);
+      if(data->import->download_only == 0) unlink(filename);
 
 
       /* whether to quit after processing a batch of messages */
