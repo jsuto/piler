@@ -130,7 +130,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    data->import->total_messages += messages;
 
-   for(i=1; i<=messages; i++){
+   for(i=data->import->start_position; i<=messages; i++){
       data->import->processed_messages++;
       printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
 
@@ -384,6 +384,7 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
 
    while(1){
       n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+      if(n < 0) return ERR;
 
       if(pos + n >= len){
          q = realloc(buf, len+MAXBUFSIZE+1);
@@ -429,7 +430,8 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
                fldrlen = strtol(q, NULL, 10);
             } else {
                if(*q == '"') q++;
-            
+
+               if(q[strlen(q)-1] == ' ') q[strlen(q)-1] = '\0';
                if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
                
                if(fldrlen) {

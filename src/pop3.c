@@ -85,7 +85,7 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
    snprintf(buf, sizeof(buf)-1, "PASS %s\r\n", password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 30, use_ssl, data->ssl);
 
    if(strncmp(buf, "+OK", 3) == 0) return OK;
 
@@ -106,7 +106,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
    snprintf(buf, sizeof(buf)-1, "STAT\r\n");
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), 30, use_ssl, data->ssl);
 
    if(strncmp(buf, "+OK ", 4) == 0){
       p = strchr(&buf[4], ' ');

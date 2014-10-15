@@ -297,8 +297,17 @@ int import_from_imap_server(char *server, char *username, char *password, int po
    }
 
 
-   rc = list_folders(sd, &seq, use_ssl, data);
-   if(rc == ERR) goto ENDE_IMAP;
+   /* 
+    * if the user gives -f <foldername>, then don't iterate through the folder list
+    * rather build the folderlist based on the <foldername> option, 2014.10.14, SJ
+    */
+
+   if(folder_imap){
+      addnode(data->imapfolders, folder_imap);
+   } else {
+      rc = list_folders(sd, &seq, use_ssl, data);
+      if(rc == ERR) goto ENDE_IMAP;
+   }
 
 
    for(i=0;i<MAXHASH;i++){
@@ -462,7 +471,8 @@ ENDE:
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port> [-x <folder1,folder2,....,folderN,>] [-F <foldername>] [-R] [-r] [-q]\n");
+   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port>\n");
+   printf("                                                           [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-R] [-r] [-q]\n");
    exit(0);
 }
 

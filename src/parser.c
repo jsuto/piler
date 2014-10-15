@@ -190,11 +190,13 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
    if(state->is_1st_header == 1 && sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
-      sdata->ms_journal = 1;
-      memset(state->message_id, 0, SMALLBUFSIZE);
+      if(sdata->import == 0){
+         sdata->ms_journal = 1;
+         memset(state->message_id, 0, SMALLBUFSIZE);
 
-      memset(state->b_from, 0, SMALLBUFSIZE); 
-      memset(state->b_from_domain, 0, SMALLBUFSIZE);
+         memset(state->b_from, 0, SMALLBUFSIZE); 
+         memset(state->b_from_domain, 0, SMALLBUFSIZE);
+      }
    }
 
 
@@ -636,7 +638,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_header == 1) p = strchr(buf, ' ');
    else p = buf;
 
-   //printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
+   printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
 
    do {
       memset(puf, 0, sizeof(puf));
