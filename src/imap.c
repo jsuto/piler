@@ -132,7 +132,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    for(i=data->import->start_position; i<=messages; i++){
       data->import->processed_messages++;
-      printf("processed: %7d\r", data->import->processed_messages); fflush(stdout);
+      if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/messages); fflush(stdout); }
 
       snprintf(tag, sizeof(tag)-1, "A%d", *seq);
       snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
