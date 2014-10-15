@@ -260,7 +260,7 @@ int init_ssl(){
    SSL_library_init();
    SSL_load_error_strings();
 
-   data.ctx = SSL_CTX_new(SSLv23_server_method());
+   data.ctx = SSL_CTX_new(TLSv1_server_method());
 
    if(data.ctx == NULL){ syslog(LOG_PRIORITY, "SSL_CTX_new() failed"); return ERR; }
 

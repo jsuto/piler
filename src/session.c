@@ -370,6 +370,9 @@ AFTER_PERIOD:
             if(data->ctx){
                data->ssl = SSL_new(data->ctx);
                if(data->ssl){
+
+                  SSL_set_options(data->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
+
                   if(SSL_set_fd(data->ssl, new_sd) == 1){
                      strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, MAXBUFSIZE-1);
                      starttls = 1;
