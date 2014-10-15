@@ -638,7 +638,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_header == 1) p = strchr(buf, ' ');
    else p = buf;
 
-   printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
+   //printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
 
    do {
       memset(puf, 0, sizeof(puf));
