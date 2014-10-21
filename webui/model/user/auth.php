@@ -141,7 +141,11 @@ class ModelUserAuth extends Model {
 
             if($ldap_auth->is_bind_ok()) {
 
-               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username_prefix$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username_prefix$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . stripslashes($a['dn']) . ")))", array());
+               $a['dn'] = stripslashes($a['dn']);
+               $a['dn'] = preg_replace("/\(/", '\(', $a['dn']);
+               $a['dn'] = preg_replace("/\)/", '\)', $a['dn']);
+
+               $query = $ldap->query($ldap_base_dn, "(|(&(objectClass=$ldap_account_objectclass)($ldap_mail_attr=$username_prefix$username))(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=$username_prefix$username)" . ")(&(objectClass=$ldap_distributionlist_objectclass)($ldap_distributionlist_attr=" . $a['dn'] . ")))", array());
 
                if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
                if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
