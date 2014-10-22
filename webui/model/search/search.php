@@ -142,6 +142,9 @@ class ModelSearchSearch extends Model {
             if($v == "any") {
                $data['match'][$i-1] = "";
                $data['match'][$i] = "";
+            }
+
+            if($a == '') {
                $a = "attachments > 0 AND ";
             }
          }
