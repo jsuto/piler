@@ -36,25 +36,38 @@ class ModelHealthHealth extends Model {
 
    public function count_processed_emails() {
       $today = $last_7_days = $last_30_days = 0;
+      $a = array();
       $now = time();
 
       $ts = $now - 3600;
-      $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
-      if(isset($query->row['count'])) { $last_60_mins = $query->row['count']; }
+      $query = $this->db->query("select count(*) as count, sum(size) as size from " . TABLE_META . " where arrived > $ts");
+      if(isset($query->row['count'])) {
+         $a['last_60_mins_count'] = $query->row['count'];
+         $a['last_60_mins_size'] = $query->row['size'];
+      }
 
       $ts = $now - 86400;
-      $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
-      if(isset($query->row['count'])) { $today = $query->row['count']; }
+      $query = $this->db->query("select count(*) as count, sum(size) as size from " . TABLE_META . " where arrived > $ts");
+      if(isset($query->row['count'])) {
+         $a['today_count'] = $query->row['count'];
+         $a['today_size'] = $query->row['size'];
+      }
 
       $ts = $now - 604800;
-      $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
-      if(isset($query->row['count'])) { $last_7_days = $query->row['count']; }
+      $query = $this->db->query("select count(*) as count, sum(size) as size from " . TABLE_META . " where arrived > $ts");
+      if(isset($query->row['count'])) {
+         $a['last_7_days_count'] = $query->row['count'];
+         $a['last_7_days_size'] = $query->row['size'];
+      }
 
       $ts = $now - 2592000;
-      $query = $this->db->query("select count(*) as count from " . TABLE_META . " where arrived > $ts");
-      if(isset($query->row['count'])) { $last_30_days = $query->row['count']; }
+      $query = $this->db->query("select count(*) as count, sum(size) as size from " . TABLE_META . " where arrived > $ts");
+      if(isset($query->row['count'])) {
+         $a['last_30_days_count'] = $query->row['count'];
+         $a['last_30_days_size'] = $query->row['size'];
+      }
 
-      return array($last_60_mins, $today, $last_7_days, $last_30_days);
+      return $a;
    }
 
 

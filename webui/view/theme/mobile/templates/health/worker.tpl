@@ -52,7 +52,12 @@
 
          <div class="row">
             <div class="cellhealthleft"><?php print $text_processed_emails; ?></div>
-            <div class="cellhealthright"><?php print $processed_emails[0]; ?> (<?php print $text_60_minutes; ?>)<br /><?php print $processed_emails[1]; ?> (<?php print $text_24_hours; ?>)<br /><?php print $processed_emails[2]; ?> (<?php print $text_1_week; ?>)<br /><?php print $processed_emails[3]; ?> (<?php print $text_30_days; ?>)</div>
+            <div class="cellhealthright">
+              <?php print $processed_emails['last_60_mins_count']; ?> / <?php print nice_size($processed_emails['last_60_mins_size']); ?> (<?php print $text_60_minutes; ?>)<br />
+              <?php print $processed_emails['today_count']; ?> / <?php print nice_size($processed_emails['today_size']); ?> (<?php print $text_24_hours; ?>)<br />
+              <?php print $processed_emails['last_7_days_count']; ?> / <?php print nice_size($processed_emails['last_7_days_size']); ?> (<?php print $text_1_week; ?>)<br />
+              <?php print $processed_emails['last_30_days_count']; ?> / <?php print nice_size($processed_emails['last_30_days_size']); ?> (<?php print $text_30_days; ?>)
+           </div>
          </div>
 
          <div class="row">
