@@ -111,10 +111,10 @@ $mail = new ModelMailMail();
       list($totalmem, $meminfo, $totalswap, $swapinfo) = $health->meminfo();
       $shortdiskinfo = $health->diskinfo();
 
-      list($archivesizeraw, $counters) = $counter->get_counters();
+      list($archivesizeraw, $archivesizestored, $counters) = $counter->get_counters();
 
       $archive_size = nice_size($archivesizeraw, ' ');
-	  
+
       $sysinfo = $health->sysinfo();
 
       $options = $health->get_options();
