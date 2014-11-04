@@ -253,19 +253,12 @@ AC_ARG_WITH(database,
 ])
 
 
+dnl timeout binary
 
-AC_ARG_WITH(plugin-timeout,
-[  --with-plugin-timeout=N  use the timeout binary to kill a hanging extractor plugin program after N seconds],[
-
-   if test z`which timeout 2>/dev/null` != "z"; then
-      timeout_binary=`which timeout`" $withval "
-   fi
-
-   if test "$withval" = "yes" || test "$withval" = ""; then
-      echo "please specify the value for plugin-timeout, eg. --with-plugin-timeout=15";
-      exit;
-   fi
-])
+if test z`which timeout 2>/dev/null` != "z"; then
+   timeout_binary=`which timeout`
+   AC_DEFINE_UNQUOTED(TIMEOUT_BINARY, "$timeout_binary", [timeout binary])
+fi
 
 
 dnl user running piler
@@ -465,42 +458,42 @@ fi
 
 if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`
-   AC_DEFINE_UNQUOTED(HAVE_PDFTOTEXT, "$timeout_binary$pdftotext", [path to pdftotext])
+   AC_DEFINE_UNQUOTED(HAVE_PDFTOTEXT, "$pdftotext", [path to pdftotext])
 fi
 
 if test z`which catdoc 2>/dev/null` != "z"; then
    catdoc=`which catdoc`
-   AC_DEFINE_UNQUOTED(HAVE_CATDOC, "$timeout_binary$catdoc", [path to catdoc])
+   AC_DEFINE_UNQUOTED(HAVE_CATDOC, "$catdoc", [path to catdoc])
 fi
 
 
 if test z`which catppt 2>/dev/null` != "z"; then
    catppt=`which catppt`
-   AC_DEFINE_UNQUOTED(HAVE_CATPPT, "$timeout_binary$catppt", [path to catppt])
+   AC_DEFINE_UNQUOTED(HAVE_CATPPT, "$catppt", [path to catppt])
 fi
 
 
 if test z`which ppthtml 2>/dev/null` != "z"; then
    ppthtml=`which ppthtml`
-   AC_DEFINE_UNQUOTED(HAVE_PPTHTML, "$timeout_binary$ppthtml", [path to ppthtml])
+   AC_DEFINE_UNQUOTED(HAVE_PPTHTML, "$ppthtml", [path to ppthtml])
 fi
 
 
 if test z`which xls2csv 2>/dev/null` != "z"; then
    xls2csv=`which xls2csv`
-   AC_DEFINE_UNQUOTED(HAVE_XLS2CSV, "$timeout_binary$xls2csv", [path to xls2csv])
+   AC_DEFINE_UNQUOTED(HAVE_XLS2CSV, "$xls2csv", [path to xls2csv])
 fi
 
 
 if test z`which unrtf 2>/dev/null` != "z"; then
    unrtf=`which unrtf`
-   AC_DEFINE_UNQUOTED(HAVE_UNRTF, "$timeout_binary$unrtf", [path to unrtf])
+   AC_DEFINE_UNQUOTED(HAVE_UNRTF, "$unrtf", [path to unrtf])
 fi
 
 
 if test z`which tnef 2>/dev/null` != "z"; then
    tnef=`which tnef`
-   AC_DEFINE_UNQUOTED(HAVE_TNEF, "$timeout_binary$tnef", [path to tnef])
+   AC_DEFINE_UNQUOTED(HAVE_TNEF, "$tnef", [path to tnef])
 fi
 
 

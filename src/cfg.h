@@ -52,6 +52,7 @@ struct __config {
    char locale[MAXVAL];
 
    int session_timeout;
+   int helper_timeout;
 
    char piler_header_field[MAXVAL];
    char extra_to_field[MAXVAL];

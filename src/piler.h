@@ -59,7 +59,7 @@ int add_new_folder(struct session_data *sdata, struct __data *data, char *folder
 
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg);
 
-void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec);
+void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec, struct __config *cfg);
 
 int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg);
 

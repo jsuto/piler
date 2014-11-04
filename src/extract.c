@@ -91,7 +91,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
-int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec){
+int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec, struct __config *cfg){
    int errorp, i=0, len=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
@@ -127,7 +127,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
                close(fd);
 
-               extract_attachment_content(sdata, state, extracted_filename, get_attachment_extractor_by_filename(extracted_filename), rec);
+               extract_attachment_content(sdata, state, extracted_filename, get_attachment_extractor_by_filename(extracted_filename), rec, cfg);
 
                unlink(extracted_filename);
 
@@ -156,7 +156,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
 #ifdef HAVE_TNEF
 
-int extract_tnef(struct session_data *sdata, struct _state *state, char *filename){
+int extract_tnef(struct session_data *sdata, struct _state *state, char *filename, struct __config *cfg){
    int rc=0, n, rec=1;
    char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
    struct dirent **namelist;
@@ -179,7 +179,7 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
          if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
             snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
 
-            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec);
+            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec, cfg);
 
             unlink(buf);
          }
@@ -196,10 +196,12 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
 
 #endif
 
-void read_content_with_popen(struct session_data *sdata, struct _state *state, char *cmd){
+void read_content_with_popen(struct session_data *sdata, struct _state *state, char *cmd, struct __config *cfg){
    int len;
    char buf[MAXBUFSIZE];
    FILE *f;
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "running command: '%s'", cmd);
 
    f = popen(cmd, "r");
    if(f){
@@ -220,46 +222,51 @@ void read_content_with_popen(struct session_data *sdata, struct _state *state, c
 }
 
 
-void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec){
-   char cmd[SMALLBUFSIZE];
+void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec, struct __config *cfg){
+   char cmd[SMALLBUFSIZE], timeout[SMALLBUFSIZE];
 
    if(strcmp(type, "other") == 0) return;
 
    memset(cmd, 0, sizeof(cmd));
+   memset(timeout, 0, sizeof(timeout));
+
+#ifdef TIMEOUT_BINARY
+   if(cfg->helper_timeout > 0) snprintf(timeout, sizeof(timeout)-1, "%s %d ", TIMEOUT_BINARY, cfg->helper_timeout);
+#endif
 
 #ifdef HAVE_PDFTOTEXT
-   if(strcmp(type, "pdf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s -enc UTF-8 %s -", HAVE_PDFTOTEXT, filename);
+   if(strcmp(type, "pdf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -enc UTF-8 %s -", timeout, HAVE_PDFTOTEXT, filename);
 #endif
 
 #ifdef HAVE_CATDOC
-   if(strcmp(type, "doc") == 0) snprintf(cmd, sizeof(cmd)-1, "%s -d utf-8 %s", HAVE_CATDOC, filename);
+   if(strcmp(type, "doc") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_CATDOC, filename);
 #endif
 
 #ifdef HAVE_CATPPT
-   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s -d utf-8 %s", HAVE_CATPPT, filename);
+   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_CATPPT, filename);
 #endif
 
 #ifdef HAVE_XLS2CSV
-   if(strcmp(type, "xls") == 0) snprintf(cmd, sizeof(cmd)-1, "%s -d utf-8 %s", HAVE_XLS2CSV, filename);
+   if(strcmp(type, "xls") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_XLS2CSV, filename);
 #endif
 
 #ifdef HAVE_PPTHTML
-   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s %s", HAVE_PPTHTML, filename);
+   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s %s", timeout, HAVE_PPTHTML, filename);
 #endif
 
 #ifdef HAVE_UNRTF
-   if(strcmp(type, "rtf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s --text %s", HAVE_UNRTF, filename);
+   if(strcmp(type, "rtf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s --text %s", timeout, HAVE_UNRTF, filename);
 #endif
 
 #ifdef HAVE_TNEF
    if(strcmp(type, "tnef") == 0){
-      extract_tnef(sdata, state, filename);
+      extract_tnef(sdata, state, filename, cfg);
       return;
    }
 #endif
 
    if(strlen(cmd) > 12){
-      read_content_with_popen(sdata, state, cmd);
+      read_content_with_popen(sdata, state, cmd, cfg);
       return;
    }
 
@@ -288,7 +295,7 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 
    if(strcmp(type, "zip") == 0){
       if(*rec < MAX_ZIP_RECURSION_LEVEL){
-         unzip_file(sdata, state, filename, rec);
+         unzip_file(sdata, state, filename, rec, cfg);
       }
       else {
          syslog(LOG_PRIORITY, "%s: multiple recursion level zip attachment, skipping %s", sdata->ttmpfile, filename);

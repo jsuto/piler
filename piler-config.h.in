@@ -9,6 +9,8 @@
 
 #define HAVE_DAEMON 1
 
+#undef TIMEOUT_BINARY
+
 #undef HAVE_PDFTOTEXT
 #undef HAVE_CATDOC
 #undef HAVE_CATPPT

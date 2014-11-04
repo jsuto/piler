@@ -701,7 +701,6 @@ enable_starttls
 enable_tcpwrappers
 enable_tweak_sent_time
 with_database
-with_plugin_timeout
 with_piler_user
 '
       ac_precious_vars='build_alias
@@ -1331,7 +1330,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-database[=mysql]  select the used database, currently mysql only (default: none)
-  --with-plugin-timeout=N  use the timeout binary to kill a hanging extractor plugin program after N seconds
   --with-piler-user=username      what user the piler daemon shall be run as
 
 Some influential environment variables:
@@ -4504,22 +4502,14 @@ fi
 
 
 
+if test z`which timeout 2>/dev/null` != "z"; then
+   timeout_binary=`which timeout`
 
-# Check whether --with-plugin-timeout was given.
-if test "${with_plugin_timeout+set}" = set; then :
-  withval=$with_plugin_timeout;
-
-   if test z`which timeout 2>/dev/null` != "z"; then
-      timeout_binary=`which timeout`" $withval "
-   fi
-
-   if test "$withval" = "yes" || test "$withval" = ""; then
-      echo "please specify the value for plugin-timeout, eg. --with-plugin-timeout=15";
-      exit;
-   fi
+cat >>confdefs.h <<_ACEOF
+#define TIMEOUT_BINARY "$timeout_binary"
+_ACEOF
 
 fi
-
 
 
 
@@ -4757,7 +4747,7 @@ if test z`which pdftotext 2>/dev/null` != "z"; then
    pdftotext=`which pdftotext`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_PDFTOTEXT "$timeout_binary$pdftotext"
+#define HAVE_PDFTOTEXT "$pdftotext"
 _ACEOF
 
 fi
@@ -4766,7 +4756,7 @@ if test z`which catdoc 2>/dev/null` != "z"; then
    catdoc=`which catdoc`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_CATDOC "$timeout_binary$catdoc"
+#define HAVE_CATDOC "$catdoc"
 _ACEOF
 
 fi
@@ -4776,7 +4766,7 @@ if test z`which catppt 2>/dev/null` != "z"; then
    catppt=`which catppt`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_CATPPT "$timeout_binary$catppt"
+#define HAVE_CATPPT "$catppt"
 _ACEOF
 
 fi
@@ -4786,7 +4776,7 @@ if test z`which ppthtml 2>/dev/null` != "z"; then
    ppthtml=`which ppthtml`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_PPTHTML "$timeout_binary$ppthtml"
+#define HAVE_PPTHTML "$ppthtml"
 _ACEOF
 
 fi
@@ -4796,7 +4786,7 @@ if test z`which xls2csv 2>/dev/null` != "z"; then
    xls2csv=`which xls2csv`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_XLS2CSV "$timeout_binary$xls2csv"
+#define HAVE_XLS2CSV "$xls2csv"
 _ACEOF
 
 fi
@@ -4806,7 +4796,7 @@ if test z`which unrtf 2>/dev/null` != "z"; then
    unrtf=`which unrtf`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_UNRTF "$timeout_binary$unrtf"
+#define HAVE_UNRTF "$unrtf"
 _ACEOF
 
 fi
@@ -4816,7 +4806,7 @@ if test z`which tnef 2>/dev/null` != "z"; then
    tnef=`which tnef`
 
 cat >>confdefs.h <<_ACEOF
-#define HAVE_TNEF "$timeout_binary$tnef"
+#define HAVE_TNEF "$tnef"
 _ACEOF
 
 fi

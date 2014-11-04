@@ -130,7 +130,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
       if(state->attachments[i].dumped == 1){
          rec = 0;
-         if(state->bodylen < BIGBUFSIZE-1024) extract_attachment_content(sdata, state, state->attachments[i].aname, get_attachment_extractor_by_filename(state->attachments[i].filename), &rec);
+         if(state->bodylen < BIGBUFSIZE-1024) extract_attachment_content(sdata, state, state->attachments[i].aname, get_attachment_extractor_by_filename(state->attachments[i].filename), &rec, cfg);
       
          unlink(state->attachments[i].aname);
       }

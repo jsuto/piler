@@ -71,6 +71,7 @@ struct _parse_rule config_parse_rules[] =
    { "enable_cjk", "integer", (void*) int_parser, offsetof(struct __config, enable_cjk), "0", sizeof(int)},
    { "encrypt_messages", "integer", (void*) int_parser, offsetof(struct __config, encrypt_messages), "1", sizeof(int)},
    { "extra_to_field", "string", (void*) string_parser, offsetof(struct __config, extra_to_field), "", MAXVAL-1},
+   { "helper_timeout", "integer", (void*) int_parser, offsetof(struct __config, helper_timeout), "20", sizeof(int)},
    { "hostid", "string", (void*) string_parser, offsetof(struct __config, hostid), HOSTID, MAXVAL-1},
    { "iv", "string", (void*) string_parser, offsetof(struct __config, iv), "", MAXVAL-1},
    { "listen_addr", "string", (void*) string_parser, offsetof(struct __config, listen_addr), "0.0.0.0", MAXVAL-1},
