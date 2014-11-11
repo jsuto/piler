@@ -32,7 +32,7 @@ load_default_values() {
    SPHINXCFG="/usr/local/etc/sphinx.conf"
 
    WWWGROUP="apache"
-   DOCROOT="/var/www/$HOSTNAME"
+   DOCROOT="/var/www/piler"
 
    SMARTHOST=""
    SMARTHOST_PORT=25
@@ -195,11 +195,6 @@ preinstall_check() {
 
 
 gather_webserver_data() {
-   askNonBlank "Please enter the path of your documentroot" "$DOCROOT"
-   DOCROOT=$response
-
-   if [ -d $DOCROOT ]; then echo "ERROR: vhost docroot should NOT exist, abroting install"; echo ""; exit 0; fi
-
    askNonBlank "Please enter the webserver groupname" "$WWWGROUP"
    WWWGROUP=$response
 }
@@ -421,7 +416,7 @@ webui_install() {
    echo >> $DOCROOT/config-site.php
 
    echo "\$config['SITE_NAME'] = '$HOSTNAME';" >> $DOCROOT/config-site.php
-   echo "\$config['SITE_URL'] = 'http://$HOSTNAME/';" >> $DOCROOT/config-site.php
+   echo "\$config['SITE_URL'] = 'http://' . \$config['SITE_NAME'] . '/';" >> $DOCROOT/config-site.php
    echo "\$config['DIR_BASE'] = '$DOCROOT/';" >> $DOCROOT/config-site.php
 
    echo >> $DOCROOT/config-site.php
