@@ -24,17 +24,15 @@ INSTALL = @INSTALL@
 
 all:
 	sed -e "s%SBINDIR%$(sbindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.piler.in > $(srcdir)/rc.piler
-	sed -e "s%SBINDIR%$(sbindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.pilergetd.in > $(srcdir)/rc.pilergetd
 	sed -e "s%BINDIR%$(bindir)%" -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/rc.searchd.in > $(srcdir)/rc.searchd
 
 
 install:
 	$(INSTALL) -m 0755 $(srcdir)/rc.piler $(DESTDIR)/etc/init.d/rc.piler
-	$(INSTALL) -m 0755 $(srcdir)/rc.pilergetd $(DESTDIR)/etc/init.d/rc.pilergetd
 	$(INSTALL) -m 0755 $(srcdir)/rc.searchd $(DESTDIR)/etc/init.d/rc.searchd
 
 clean:
-	rm -f rc.piler rc.pilergetd rc.searchd
+	rm -f rc.piler rc.searchd
 
 distclean: clean
 	rm -f Makefile
