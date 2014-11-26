@@ -588,7 +588,7 @@ void translateLine(unsigned char *p, struct _state *state){
 
       if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
 
-      if( (state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '_'){ continue; }
+      if( (state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && (*p == '_' || *p == '\'' || *p == '&') ){ continue; }
 
       if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_' || *p == '&') ){ continue; }
 
