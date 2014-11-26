@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOSTNAME=`hostname -f`
-PILER_HOST_IP="127.0.0.1"
+PILER_HOST_IP=`ip addr show | grep inet\  | grep -v 127.0.0.1 | awk '{print $2}' | cut -f1 -d '/'`
 SMARTHOST=""
 PILERUSER="piler"
 MYSQL_HOSTNAME="localhost"
@@ -14,9 +14,7 @@ KEYTMPFILE="key.tmp"
 DOCROOT="/var/www/piler"
 WWWGROUP="www-data"
 SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
-
-NGINX_PILER_CONFIG_DEBIAN="/etc/nginx/sites-available/piler.conf"
-SPHINX_PILER_CONFIG_DEBIAN="/usr/local/etc/sphinx.conf"
+SPHINX_PILER_CONFIG="/usr/local/etc/sphinx.conf"
 
 
 
@@ -191,8 +189,6 @@ show_install_parameters() {
    echo
    echo "Hostname: $HOSTNAME"
    echo "IP-address: $PILER_HOST_IP"
-   echo "Netmask: $NETMASK"
-   echo "Gateway: $GATEWAY"
    echo "Smarthost: $SMARTHOST"
    echo "Documentroot: $DOCROOT"
    echo "Webserver user: $WWWGROUP"
@@ -228,7 +224,7 @@ debug=0
 default_retention_days=2557
 encrypt_messages=1
 extra_to_field=X-Envelope-To:
-hostid=HOSTNAME
+hostid=$HOSTNAME
 iv=
 listen_addr=0.0.0.0
 listen_port=25
@@ -241,9 +237,9 @@ min_word_len=1
 mysqlhost=
 mysqlport=0
 mysqlsocket=/var/run/mysqld/mysqld.sock
-mysqluser=MYSQL_USERNAME
-mysqlpwd=MYSQL_PASSWORD
-mysqldb=MYSQL_DATABASE
+mysqluser=$MYSQL_USERNAME
+mysqlpwd=$MYSQL_PASSWORD
+mysqldb=$MYSQL_DATABASE
 mysql_connect_timeout=2
 number_of_worker_processes=10
 pemfile=/usr/local/etc/piler.pem
@@ -263,6 +259,8 @@ PILERCONF
 
 
 piler_postinstall() {
+
+cd /tmp/jsuto-piler-*
 
 echo -n "Creating mysql database... ";
 sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAMEg%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%g" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%g" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%g" util/db-mysql-root.sql.in | mysql -h $MYSQL_HOSTNAME -u root --password=$MYSQL_ROOT_PASSWORD
@@ -287,16 +285,17 @@ rm 1.cert
 
 
 echo -n "installing keyfile ($KEYTMPFILE) to $KEYFILE... "
+dd if=/dev/urandom bs=56 count=1 of=$KEYTMPFILE
 cp $KEYTMPFILE $KEYFILE
 chgrp $PILERUSER $KEYFILE
 chmod 640 $KEYFILE
 rm -f $KEYTMPFILE
 echo "Done."
 
-sed -e "s%HOSTNAME%$HOSTNAME%" contrib/webserver/piler-nginx.conf > /etc/nginx/sites-enabled/piler.conf
+sed -e "s%HOSTNAME%$HOSTNAME%" contrib/webserver/piler-nginx.conf > /usr/local/etc/nginx-piler.conf
 
 
-cat <<CONFIGSITE > $DOCROOT/config-site.php
+cat <<CONFIGSITE > /usr/local/etc/config-site.php
 <?php
 
 \$config['SITE_NAME'] = '$HOSTNAME';
