@@ -262,6 +262,9 @@ piler_postinstall() {
 
 cd /tmp/jsuto-piler-*
 
+mkdir -p /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store/00 /var/piler/import /var/piler/sphinx
+chown -R piler:piler /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store /var/piler/import /var/piler/sphinx
+
 echo -n "Creating mysql database... ";
 sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAMEg%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%g" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%g" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%g" util/db-mysql-root.sql.in | mysql -h $MYSQL_HOSTNAME -u root --password=$MYSQL_ROOT_PASSWORD
 mysql -h $MYSQL_HOSTNAME -u $MYSQL_USERNAME --password=$MYSQL_PASSWORD $MYSQL_DATABASE < util/db-mysql.sql
