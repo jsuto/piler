@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HOSTNAME=`hostname -f`
-PILER_HOST_IP=`ip addr show | grep inet\  | grep -v 127.0.0.1 | awk '{print $2}' | cut -f1 -d '/'`
+PILER_HOST_IP="127.0.0.1"
 SMARTHOST=""
 PILERUSER="piler"
 MYSQL_HOSTNAME="localhost"
@@ -15,7 +15,7 @@ DOCROOT="/var/www/piler"
 WWWGROUP="www-data"
 SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
 SPHINX_PILER_CONFIG="/usr/local/etc/sphinx.conf"
-
+CRON_TMP=aaaa.11
 
 
 isFQDN() {
@@ -222,6 +222,7 @@ cipher_list=HIGH:MEDIUM
 clamd_socket=/tmp/clamd
 debug=0
 default_retention_days=2557
+enable_cjk=0
 encrypt_messages=1
 extra_to_field=X-Envelope-To:
 hostid=$HOSTNAME
@@ -248,6 +249,7 @@ piler_header_field=X-piler: piler already archived this email
 queuedir=/var/piler/store
 server_id=0
 session_timeout=420
+syslog_recipients=1
 spam_header_line=
 tls_enable=1
 username=piler
@@ -258,27 +260,53 @@ PILERCONF
 }
 
 
+writing_piler_crontab() {
+
+cat <<CRONTAB > $CRON_TMP
+
+### PILERSTART
+5,35 * * * * /usr/local/libexec/piler/indexer.delta.sh
+30   2 * * * /usr/local/libexec/piler/indexer.main.sh
+*/15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
+*/15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
+30   6 * * * /usr/bin/php /usr/local/libexec/piler/generate_stats.php --webui /var/www/piler > /dev/null
+*/5 * * * * /usr/bin/find /var/www/piler/tmp -type f -name i.\* -exec rm -f {} \;
+
+### PILEREND
+CRONTAB
+
+crontab -u $PILERUSER $CRON_TMP
+
+rm -f $CRON_TMP
+
+}
+
+
 piler_postinstall() {
 
-cd /tmp/jsuto-piler-*
+cd /tmp
 
-mkdir -p /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store/00 /var/piler/import /var/piler/sphinx
-chown -R piler:piler /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store /var/piler/import /var/piler/sphinx
+mkdir -p /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store/00 /var/piler/import /var/piler/export /var/piler/sphinx
+chown -R piler:piler /var/piler/tmp /var/piler/stat /var/piler/imap /var/piler/store /var/piler/import /var/piler/export /var/piler/sphinx
 
 echo -n "Creating mysql database... ";
-sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAMEg%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%g" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%g" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%g" util/db-mysql-root.sql.in | mysql -h $MYSQL_HOSTNAME -u root --password=$MYSQL_ROOT_PASSWORD
-mysql -h $MYSQL_HOSTNAME -u $MYSQL_USERNAME --password=$MYSQL_PASSWORD $MYSQL_DATABASE < util/db-mysql.sql
+sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAMEg%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%g" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%g" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%g" /usr/local/share/piler/db-mysql-root.sql.in | mysql -h $MYSQL_HOSTNAME -u root --password=$MYSQL_ROOT_PASSWORD
+mysql -h $MYSQL_HOSTNAME -u $MYSQL_USERNAME --password=$MYSQL_PASSWORD $MYSQL_DATABASE < /usr/local/share/piler/db-mysql.sql
 echo "Done."
 
 echo -n "Overwriting sphinx configuration... ";
-sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" etc/sphinx.conf.in > etc/sphinx.conf
-cp etc/sphinx.conf $SPHINX_PILER_CONFIG
+sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" jsuto-piler-*/etc/sphinx.conf.in > /usr/local/etc/sphinx.conf
 echo "Done."
 
 echo -n "Initializing sphinx indices... ";
 su $PILERUSER -c "indexer --all"
 echo "Done."
 
+echo -n "Generating openssh keys ... ";
+/usr/bin/ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key -N ''
+/usr/bin/ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
+/usr/bin/ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ''
+echo "Done."
 
 echo -n "Making an ssl certificate ... "
 openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout /usr/local/etc/piler.pem -out 1.cert
@@ -295,7 +323,67 @@ chmod 640 $KEYFILE
 rm -f $KEYTMPFILE
 echo "Done."
 
-sed -e "s%HOSTNAME%$HOSTNAME%" contrib/webserver/piler-nginx.conf > /usr/local/etc/nginx-piler.conf
+cat <<NGINXCONFIG > /usr/local/etc/nginx-piler.conf
+
+server {
+        server_name  $HOSTNAME;
+
+        root /var/www/piler;
+
+        access_log  /var/log/nginx/$HOSTNAME-access.log;
+        error_log   /var/log/nginx/$HOSTNAME-error.log;
+
+        gzip  on;
+        gzip_types text/plain application/xml text/css;
+        gzip_vary on;
+
+        location / {
+            index  index.php index.html;
+        }
+
+        #error_page  404              /404.html;
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        location ~ [^/]\.php(/|$) {
+            fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+            if (!-f \$document_root\$fastcgi_script_name) {
+               return 404;
+            }
+
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            include fastcgi_params;
+        }
+
+        location ~* \.(ico|css|js|gif|jpe?g|png)$ {
+            expires 2w;
+        }
+
+        rewrite /search.php /index.php?route=search/search&type=simple;
+        rewrite /advanced.php /index.php?route=search/search&type=advanced;
+        rewrite /expert.php /index.php?route=search/search&type=expert;
+        rewrite /search-helper.php /index.php?route=search/helper;
+        rewrite /audit-helper.php /index.php?route=audit/helper;
+        rewrite /message.php /index.php?route=message/view;
+        rewrite /bulkrestore.php /index.php?route=message/bulkrestore;
+        rewrite /bulkpdf.php /index.php?route=message/bulkpdf;
+        rewrite /folders.php /index.php?route=folder/list&;
+        rewrite /settings.php /index.php?route=user/settings;
+        rewrite /login.php /index.php?route=login/login;
+        rewrite /logout.php /index.php?route=login/logout;
+        rewrite /google.php /index.php?route=login/google;
+        rewrite /domain.php /index.php?route=domain/domain;
+        rewrite /ldap.php /index.php?route=ldap/list;
+        rewrite /customer.php /index.php?route=customer/list;
+        rewrite /retention.php /index.php?route=policy/retention;
+        rewrite /archiving.php /index.php?route=policy/archiving;
+        rewrite /view/javascript/piler.js /js.php;
+}
+NGINXCONFIG
 
 
 cat <<CONFIGSITE > /usr/local/etc/config-site.php
@@ -347,4 +435,10 @@ collect_data
 configure_piler
 
 piler_postinstall
+
+writing_piler_crontab
+
+echo "changing root password:"
+passwd root
+
 
