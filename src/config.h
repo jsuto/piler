@@ -14,7 +14,7 @@
 
 #define VERSION "1.1.1-pre"
 
-#define BUILD 897
+#define BUILD 898
 
 #define HOSTID "mailarchiver"
 

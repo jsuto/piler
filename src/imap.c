@@ -56,10 +56,11 @@ int get_message_length_from_imap_answer(char *s){
 
 int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, int use_ssl){
    int i=0, n, len=0, rc=0;
-   char puf[MAXBUFSIZE], tagok[SMALLBUFSIZE], tagno[SMALLBUFSIZE];
+   char puf[MAXBUFSIZE], tagok[SMALLBUFSIZE], tagno[SMALLBUFSIZE], tagbad[SMALLBUFSIZE];
 
    snprintf(tagok, sizeof(tagok)-1, "A%d OK", *seq);
    snprintf(tagno, sizeof(tagno)-1, "A%d NO", *seq);
+   snprintf(tagbad, sizeof(tagbad)-1, "A%d BAD", *seq);
 
    memset(buf, 0, buflen);
 
@@ -69,7 +70,13 @@ int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, 
       if(n + len < buflen) strncat(buf, puf, n);
       else goto END;
 
-      if(i == 0 && strstr(puf, tagno)) goto END;
+      /*
+       * possible error message from the imap server:
+       *
+       *  * BYE Temporary problem, please try again later\r\n
+       */
+
+      if(i == 0 && (strstr(puf, tagno) || strstr(puf, tagbad) || strstr(puf, "* BYE ")) ) goto END;
 
 
       len += n;
