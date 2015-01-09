@@ -81,7 +81,7 @@ source note : base
 index main1
 {
 	source			= main1
-	path			= /var/piler/sphinx/main1
+	path			= LOCALSTATEDIR/piler/sphinx/main1
 	docinfo			= extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -93,7 +93,7 @@ index main1
 index main2
 {
         source                  = main2
-        path                    = /var/piler/sphinx/main2
+        path                    = LOCALSTATEDIR/piler/sphinx/main2
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -105,7 +105,7 @@ index main2
 index main3
 {
         source                  = main3
-        path                    = /var/piler/sphinx/main3
+        path                    = LOCALSTATEDIR/piler/sphinx/main3
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -117,7 +117,7 @@ index main3
 index main4
 {
         source                  = main4
-        path                    = /var/piler/sphinx/main4
+        path                    = LOCALSTATEDIR/piler/sphinx/main4
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -129,7 +129,7 @@ index main4
 index dailydelta1
 {
         source                  = dailydelta
-        path                    = /var/piler/sphinx/dailydelta1
+        path                    = LOCALSTATEDIR/piler/sphinx/dailydelta1
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -141,7 +141,7 @@ index dailydelta1
 index delta1
 {
         source                  = delta
-        path                    = /var/piler/sphinx/delta1
+        path                    = LOCALSTATEDIR/piler/sphinx/delta1
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -154,7 +154,7 @@ index delta1
 index tag1
 {
         source                  = tag
-        path                    = /var/piler/sphinx/tag1
+        path                    = LOCALSTATEDIR/piler/sphinx/tag1
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6
@@ -167,7 +167,7 @@ index tag1
 index note1
 {
         source                  = note
-        path                    = /var/piler/sphinx/note1
+        path                    = LOCALSTATEDIR/piler/sphinx/note1
         docinfo                 = extern
 	dict			= keywords
         min_prefix_len          = 6

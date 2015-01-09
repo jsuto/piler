@@ -66,7 +66,7 @@ $(RECURSIVE_TARGETS):
 
 installdirs: mkinstalldirs
 	$(srcdir)/mkinstalldirs \
-		$(DESTDIR)$(bindir) $(DESTDIR)$(sbindir) $(DESTDIR)$(libdir) $(DESTDIR)$(libexecdir)/piler $(DESTDIR)$(datarootdir)/piler $(DESTDIR)$(sysconfdir) \
+		$(DESTDIR)$(bindir) $(DESTDIR)$(sbindir) $(DESTDIR)$(libdir) $(DESTDIR)$(libexecdir)/piler $(DESTDIR)$(datarootdir)/piler $(DESTDIR)$(sysconfdir) $(DESTDIR)/etc/init.d \
 		$(DESTDIR)$(localstatedir)/piler/store \
 		$(DESTDIR)$(localstatedir)/piler/stat $(DESTDIR)$(localstatedir)/piler/tmp \
 		$(DESTDIR)$(localstatedir)/piler/sphinx
