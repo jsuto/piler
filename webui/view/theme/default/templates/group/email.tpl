@@ -9,7 +9,7 @@
    &nbsp;
    <?php if($page > 0){ ?><a href="index.php?route=group/email&amp;page=<?php print $prev_page; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-left"></i><?php if($page > 0){ ?></a><?php } ?>
    &nbsp;
-   <?php if(count($emails) > 0) { print $emails[0][$sort]; ?> - <?php print $emails[count($emails)-1][$sort]; } ?>
+   <?php if(count($emails) > 0) { print $emails[0]; ?> - <?php print $emails[count($emails)-1]; } ?>
    &nbsp;
    <?php if($total >= $page_len*($page+1) && $total > $page_len){ ?><a href="index.php?route=group/email&amp;page=<?php print $next_page; ?>&amp;term=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-right"></i><?php if($total >= $page_len*($page+1) && $total > $page_len){ ?></a><?php } ?>
    &nbsp;
