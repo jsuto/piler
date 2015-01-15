@@ -25,6 +25,8 @@ $config['BRANDING_FAVICON'] = '/view/theme/default/assets/ico/favicon.png';
 $config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
+$config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
+
 $config['BOOTSTRAP_THEME'] = '-cosmo';
 
 $config['DEFAULT_LANG'] = 'en';
@@ -99,6 +101,8 @@ $config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
 
 // enable single sign-on (disabled by default)
 $config['ENABLE_SSO_LOGIN'] = 0;
+
+$config['STRIP_DOMAIN_NAME_FROM_USERNAME'] = 0;
 
 // enable authentication against an imap server (disabled by default)
 

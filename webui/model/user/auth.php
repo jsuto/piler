@@ -16,13 +16,27 @@ class ModelUserAuth extends Model {
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
          $ok = $this->checkLoginAgainstIMAP($username, $password);
-         if($ok == 1) { return $ok; }
+
+         if($ok == 1) {
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
+            return $ok;
+         }
       }
 
       if(ENABLE_POP3_AUTH == 1) {
          require 'Zend/Mail/Protocol/Pop3.php';
          $ok = $this->checkLoginAgainstPOP3($username, $password);
-         if($ok == 1) { return $ok; }
+
+         if($ok == 1) {
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
+            return $ok;
+         }
       }
 
       // fallback local auth
@@ -56,7 +70,14 @@ class ModelUserAuth extends Model {
          $session->set("realname", $query->row['realname']);
 
          $session->set("auditdomains", $this->model_user_user->get_users_all_domains($query->row['uid']));
-         $session->set("emails", $this->model_user_user->get_users_all_email_addresses($query->row['uid']));
+
+         if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+            call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+         }
+         else {
+            $session->set("emails", $this->model_user_user->get_users_all_email_addresses($query->row['uid']));
+         }
+
          $session->set("folders", $this->model_folder_folder->get_all_folder_ids($query->row['uid']));
          $session->set("extra_folders", $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']));
 
@@ -307,8 +328,15 @@ class ModelUserAuth extends Model {
 
       if(!strchr($username, '@')) { return 0; }
 
+      $login = $username;
+
+      if(STRIP_DOMAIN_NAME_FROM_USERNAME == 1) {
+         $a = explode("@", $username);
+         $login = $a[0];
+      }
+
       $imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
-      if($imap->login($username, $password)) {
+      if($imap->login($login, $password)) {
          $imap->logout();
 
          $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
