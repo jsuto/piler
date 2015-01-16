@@ -168,6 +168,7 @@ unsigned long parse_date_header(char *datestr, struct __config *cfg){
           *  03 Jun 06 05:59:00 +0100
           *  30.06.2005 17:47:42
           *  03-Feb-2014 08:09:10
+          *  13 Mar 2013 14:56:02 UT
           *
           *  [wday] mday mon year h:m:s offset
           */
