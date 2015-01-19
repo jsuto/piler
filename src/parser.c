@@ -416,7 +416,25 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    }
 
 
-   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0){
+   /* 
+    * A normal journal looks like this:
+    *
+    *   Sender: sender@domain
+    *   Subject: Test normal
+    *   Message-Id: ...
+    *   Recipient: user1@domain
+    *   Recipient: user2@domain, Forwarded: user1@domain
+    *
+    * However if outlook forwards an email, then the journal is somewhat changed:
+    *
+    *   Sender: sender@domain
+    *   Subject: Test through outlook
+    *   Message-Id: ...
+    *   To: user1@domain
+    *   To: user2@domain, Forwarded: user1@domain
+    */
+
+   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && (strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0 || strncasecmp(buf, "To:", strlen("To:")) == 0) ){
       state->is_header = 1;
       state->is_1st_header = 1;
       state->message_state = MSG_RECIPIENT;
