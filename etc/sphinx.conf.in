@@ -84,7 +84,7 @@ index main1
 	path			= LOCALSTATEDIR/piler/sphinx/main1
 	docinfo			= extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -96,7 +96,7 @@ index main2
         path                    = LOCALSTATEDIR/piler/sphinx/main2
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -108,7 +108,7 @@ index main3
         path                    = LOCALSTATEDIR/piler/sphinx/main3
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -120,7 +120,7 @@ index main4
         path                    = LOCALSTATEDIR/piler/sphinx/main4
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -132,7 +132,7 @@ index dailydelta1
         path                    = LOCALSTATEDIR/piler/sphinx/dailydelta1
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -144,7 +144,7 @@ index delta1
         path                    = LOCALSTATEDIR/piler/sphinx/delta1
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -157,7 +157,7 @@ index tag1
         path                    = LOCALSTATEDIR/piler/sphinx/tag1
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F
@@ -170,7 +170,7 @@ index note1
         path                    = LOCALSTATEDIR/piler/sphinx/note1
         docinfo                 = extern
 	dict			= keywords
-        min_prefix_len          = 6
+        min_prefix_len          = 5
         min_word_len            = 1
         #ngram_len               = 1
         #ngram_chars             = U+3000..U+2FA1F

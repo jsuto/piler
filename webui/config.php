@@ -230,6 +230,8 @@ $config['MAX_AUDIT_HITS'] = 1000;
 
 $config['MIN_PASSWORD_LENGTH'] = 6;
 
+$config['MIN_PREFIX_LEN'] = 5;
+
 $config['CGI_INPUT_FIELD_WIDTH'] = 50;
 $config['CGI_INPUT_FIELD_HEIGHT'] = 7;
 
