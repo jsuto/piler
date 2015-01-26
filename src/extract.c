@@ -52,8 +52,11 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
    struct zip_stat sb;
    struct zip_file *zf;
 
-   z = zip_open(filename, 0, &errorp);
-   if(!z) return 1;
+   z = zip_open(filename, ZIP_CHECKCONS, &errorp);
+   if(!z){
+      syslog(LOG_INFO, "error: invalid zip file=%s, error code=%d", filename, errorp);
+      return 1;
+   }
 
    memset(buf, 0, sizeof(buf));
 
@@ -100,8 +103,11 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
    (*rec)++;
 
-   z = zip_open(filename, 0, &errorp);
-   if(!z) return 1;
+   z = zip_open(filename, ZIP_CHECKCONS, &errorp);
+   if(!z){
+      syslog(LOG_INFO, "error: invalid zip file=%s, error code=%d", filename, errorp);
+      return 1;
+   }
 
    while(zip_stat_index(z, i, 0, &sb) == 0){
       //printf("processing file inside the zip: %s, index: %d, size: %d\n", sb.name, sb.index, (int)sb.size);
