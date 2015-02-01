@@ -305,9 +305,11 @@ int retrieve_email_from_archive(struct session_data *sdata, struct __data *data,
    }
 
    snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, *(sdata->ttmpfile+8), *(sdata->ttmpfile+9), *(sdata->ttmpfile+10), *(sdata->ttmpfile+RND_STR_LEN-4), *(sdata->ttmpfile+RND_STR_LEN-3), *(sdata->ttmpfile+RND_STR_LEN-2), *(sdata->ttmpfile+RND_STR_LEN-1), sdata->ttmpfile);
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    if(stat(filename, &st)){
       snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, *(sdata->ttmpfile+RND_STR_LEN-6), *(sdata->ttmpfile+RND_STR_LEN-5), *(sdata->ttmpfile+RND_STR_LEN-4), *(sdata->ttmpfile+RND_STR_LEN-3), *(sdata->ttmpfile+RND_STR_LEN-2), *(sdata->ttmpfile+RND_STR_LEN-1), sdata->ttmpfile);
    }
+#endif
 
    if(attachments == 0){
       retrieve_file_from_archive(filename, WRITE_TO_STDOUT, &buffer, dest, cfg);
@@ -330,9 +332,11 @@ int retrieve_email_from_archive(struct session_data *sdata, struct __data *data,
                if(strlen(ptr_arr[i].piler_id) == RND_STR_LEN){
                   snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, ptr_arr[i].piler_id[8], ptr_arr[i].piler_id[9], ptr_arr[i].piler_id[10], ptr_arr[i].piler_id[RND_STR_LEN-4], ptr_arr[i].piler_id[RND_STR_LEN-3], ptr_arr[i].piler_id[RND_STR_LEN-2], ptr_arr[i].piler_id[RND_STR_LEN-1], ptr_arr[i].piler_id, ptr_arr[i].attachment_id);
 
+               #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
                   if(stat(filename, &st)){
                      snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, ptr_arr[i].piler_id[RND_STR_LEN-6], ptr_arr[i].piler_id[RND_STR_LEN-5], ptr_arr[i].piler_id[RND_STR_LEN-4], ptr_arr[i].piler_id[RND_STR_LEN-3], ptr_arr[i].piler_id[RND_STR_LEN-2], ptr_arr[i].piler_id[RND_STR_LEN-1], ptr_arr[i].piler_id, ptr_arr[i].attachment_id);
                   }
+               #endif
 
                   retrieve_file_from_archive(filename, WRITE_TO_STDOUT, NULL, dest, cfg);
                }

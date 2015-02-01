@@ -25,8 +25,10 @@ int stat_file(struct session_data *sdata, char *f, char **buf, int buflen, struc
    snprintf(*buf, buflen, "%s/%02x/%c%c%c/%c%c/%c%c/%s", cfg->queuedir, cfg->server_id, f[8], f[9], f[10], f[RND_STR_LEN-4], f[RND_STR_LEN-3], f[RND_STR_LEN-2], f[RND_STR_LEN-1], f);
    if(!stat(*buf, &st)) return st.st_size;
 
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    snprintf(*buf, TINYBUFSIZE-1, "%s/%02x/%c%c/%c%c/%c%c/%s", cfg->queuedir, cfg->server_id, f[RND_STR_LEN-6], f[RND_STR_LEN-5], f[RND_STR_LEN-4], f[RND_STR_LEN-3], f[RND_STR_LEN-2], f[RND_STR_LEN-1], f);
    if(!stat(*buf, &st)) return st.st_size;
+#endif
 
    return 0;
 }

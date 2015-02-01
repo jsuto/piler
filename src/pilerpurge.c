@@ -69,9 +69,11 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
       if(strlen(puf) == RND_STR_LEN){
          snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, puf[8], puf[9], puf[10], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
 
+      #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
          if(stat(filename, &st)){
             snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.m", cfg->queuedir, cfg->server_id, puf[RND_STR_LEN-6], puf[RND_STR_LEN-5], puf[RND_STR_LEN-4], puf[RND_STR_LEN-3], puf[RND_STR_LEN-2], puf[RND_STR_LEN-1], puf);
          }
+      #endif
 
          if(dryrun == 1){
             n++;
@@ -147,9 +149,11 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    while(p_fetch_results(data->stmt_select_non_referenced_attachments) == OK){
 
       snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, piler_id[8], piler_id[9], piler_id[10], piler_id[RND_STR_LEN-4], piler_id[RND_STR_LEN-3], piler_id[RND_STR_LEN-2], piler_id[RND_STR_LEN-1], piler_id, attachment_id);
+   #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
       if(stat(filename, &st)){
          snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, piler_id[RND_STR_LEN-6], piler_id[RND_STR_LEN-5], piler_id[RND_STR_LEN-4], piler_id[RND_STR_LEN-3], piler_id[RND_STR_LEN-2], piler_id[RND_STR_LEN-1], piler_id, attachment_id);
       }
+   #endif
 
       if(dryrun == 1){
          printf("removing attachment: *%s*\n", filename);

@@ -54,7 +54,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 
    z = zip_open(filename, ZIP_CHECKCONS, &errorp);
    if(!z){
-      syslog(LOG_INFO, "error: corrupt zip file=%s, error code=%d", filename, errorp);
+      syslog(LOG_INFO, "%s: error: corrupt zip file=%s, error code=%d", sdata->ttmpfile, filename, errorp);
       return 1;
    }
 
@@ -105,7 +105,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
    z = zip_open(filename, ZIP_CHECKCONS, &errorp);
    if(!z){
-      syslog(LOG_INFO, "error: corrupt zip file=%s, error code=%d", filename, errorp);
+      syslog(LOG_INFO, "%s: error: corrupt zip file=%s, error code=%d", sdata->ttmpfile, filename, errorp);
       return 1;
    }
 

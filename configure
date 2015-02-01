@@ -695,6 +695,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_static_build
+enable_compat_layout
 enable_clamd
 enable_memcached
 enable_starttls
@@ -1320,6 +1321,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-static-build   build statically linked executables (default: dynamically linked)
+  --enable-compat-layout  support for older storage layout (default: no)
   --enable-clamd          build clamd antivirus support
   --enable-memcached      build memcached support
   --enable-starttls       build starttls support
@@ -3457,6 +3459,7 @@ tnef="no"
 timeout_binary=""
 
 have_static_build="no"
+have_compat_storage_layout="no"
 
 antispam_libs="-lz -lm -ldl -lcrypto -lssl"
 defs=""
@@ -3495,6 +3498,16 @@ if test "${enable_static_build+set}" = set; then :
   enableval=$enable_static_build; have_static_build=$enableval
 else
   have_static_build="no"
+fi
+
+
+
+
+# Check whether --enable-compat-layout was given.
+if test "${enable_compat_layout+set}" = set; then :
+  enableval=$enable_compat_layout; have_compat_storage_layout=$enableval
+else
+  have_compat_storage_layout="no"
 fi
 
 
@@ -4664,6 +4677,16 @@ else
 fi
 
 echo
+
+if test "$have_compat_storage_layout" = "yes"; then
+   echo "support for older storage layout: yes"
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT 1
+_ACEOF
+
+fi
+
 
 if test "$have_mysql" = "yes"; then
    echo "database: mysql"
