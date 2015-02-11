@@ -56,6 +56,9 @@ function isAdminUser() {
 function isAuditorUser() {
    $session = Registry::get('session');
 
+   if(ADMIN_CAN_POWER_SEARCH == 1 && Registry::get('admin_user') == 1) { return 1; }
+
+
    if($session->get("admin_user") == 2){ return 1; }
 
    return 0;
