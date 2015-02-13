@@ -109,7 +109,7 @@ $_['text_email_addresses'] = "Email адреса";
 $_['text_email_aliases'] = "Email псевдоним";                                                                                                                                 
 $_['text_email_in_unknown_domain'] = "Email адрес находится в неизвестном домене";                                                                                            
 $_['text_empty_search_criteria'] = "'Пустой критерий'";                                                                                                                       
-$_['text_empty_search_result'] = "Пустой результат поиска. Попробуйте добавить звездочку (*) после части слова (min. " . MIN_PREFIX_LEN . " characters), например докуме* для поиска \"документ\", \"документы\", итд."
+$_['text_empty_search_result'] = "Пустой результат поиска. Попробуйте добавить звездочку (*) после части слова (min. " . MIN_PREFIX_LEN . " characters), например докуме* для поиска \"документ\", \"документы\", итд.";
 $_['text_enable'] = "активировать";                                                                                                                                           
 $_['text_enabled'] = "активен";                                                                                                                                               
 $_['text_enter_google_authenticator_code'] = "Введите Google Authenticator code";                                                                                             
@@ -419,7 +419,7 @@ $_['text_1_week'] = "1 неделя";
 $_['text_30_days'] = "30 дней";                                                                                                                                               
 
 $_['text_access_settings'] = 'Настройки доступа';                                                                                                                             
-$_['text_access_setting_explanation'] = "У Вас всегда есть доступ к вашей собственной почте. Для доступа с правами аудитора к отдельным группам или доменам обратитесь к админ
+$_['text_access_setting_explanation'] = "У Вас всегда есть доступ к вашей собственной почте. Для доступа с правами аудитора к отдельным группам или доменам обратитесь к админ";
 $_['text_display_settings'] = 'Показать настройки';                                                                                                                           
 $_['text_change_password'] = "Сменить пароль";                                                                                                                                
 $_['text_none_found'] = "Ничего не найдено";                                                                                                                                  
