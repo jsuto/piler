@@ -19,7 +19,9 @@
 int main(int argc, char **argv){
    int readkey=1;
    char filename[SMALLBUFSIZE];
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
+#endif
    struct __config cfg;
 
 

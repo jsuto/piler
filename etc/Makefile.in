@@ -31,6 +31,7 @@ all:
 	-e 's%workdir=.*%workdir=$(localstatedir)/piler/tmp%g' < $(srcdir)/example.conf | grep -v ^\; | grep '=' | sort > $(srcdir)/piler.conf
 
 install:
+	$(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf.dist
 	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf; fi
 	sed -e 's%LOCALSTATEDIR%$(localstatedir)%g' $(srcdir)/sphinx.conf.in > sphinx.conf.dist
 	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.dist $(DESTDIR)$(sysconfdir)/sphinx.conf.dist

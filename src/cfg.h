@@ -51,8 +51,8 @@ struct __config {
    int verbosity;
    char locale[MAXVAL];
 
-   int session_timeout;
    int helper_timeout;
+   int extract_attachments;
 
    char piler_header_field[MAXVAL];
    char extra_to_field[MAXVAL];

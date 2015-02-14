@@ -60,7 +60,9 @@ ENDE:
 int remove_message_frame_files(char *s, char *update_meta_sql, struct session_data *sdata, struct __config *cfg){
    char *p, puf[SMALLBUFSIZE], filename[SMALLBUFSIZE];
    int n=0, result;
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
+#endif
 
    p = s;
    do {
@@ -105,8 +107,9 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    char *a, buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE], delete_attachment_stmt[BIGBUFSIZE];
    char piler_id[SMALLBUFSIZE], i[BUFLEN];
    int n=0, len, attachment_id;
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
-
+#endif
 
    if(strlen(in) < 10) return 0;
 

@@ -289,8 +289,9 @@ int retrieve_email_from_archive(struct session_data *sdata, struct __data *data,
    int i, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
+#ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
-
+#endif
 
    if(strlen(sdata->ttmpfile) != RND_STR_LEN){
       printf("invalid piler-id: %s\n", sdata->ttmpfile);
