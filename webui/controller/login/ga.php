@@ -37,13 +37,25 @@ class ControllerLoginGA extends Controller {
 
          $GA = new PHPGangsta_GoogleAuthenticator();
 
-         $settings = $this->model_user_prefs->get_ga_settings($session->get('username'));
+         $data = $session->get("auth_data");
+
+         if(!isset($data['username'])) {
+            header("Location: " . SITE_URL . "/login.php");
+            exit;
+         }
+
+         $settings = $this->model_user_prefs->get_ga_settings($data['username']);
 
          if(strlen($this->request->post['ga_code']) > 5 && $GA->verifyCode($settings['ga_secret'], $this->request->post['ga_code'], 2)) {
 
+            syslog(LOG_INFO, "GA auth successful for " . $data['username']);
+
             $session->set("ga_block", "");
 
-            $this->model_user_prefs->get_user_preferences($session->get('username'));
+            $this->model_user_auth->apply_user_auth_session($data);
+            $session->remove("auth_data");
+
+            $this->model_user_prefs->get_user_preferences($session->get($data['username']));
 
             if(ENABLE_SAAS == 1) {
                $this->model_saas_customer->online($session->get('email'));

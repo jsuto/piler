@@ -2,20 +2,55 @@
 
 class ModelUserAuth extends Model {
 
+   public function apply_user_auth_session($data = array()) {
+      $session = Registry::get('session');
+
+      $session->set("username", $data['username']);
+      $session->set("uid", $data['uid']);
+      $session->set("admin_user", $data['admin_user']);
+      $session->set("email", $data['username']);
+      $session->set("domain", $data['domain']);
+      $session->set("realname", $data['realname']);
+
+      $session->set("auditdomains", $data['auditdomains']);
+      $session->set("emails", $data['emails']);
+
+      $session->set("folders", $data['folders']);
+      $session->set("extra_folders", $data['extra_folders']);
+   }
+
+
    public function checkLogin($username = '', $password = '') {
       $session = Registry::get('session');
       $ok = 0;
 
+      $data = array();
+
+      $data['username'] = '';
+      $data['uid'] = -1;
+      $data['admin_user'] = 0;
+      $data['email'] = '';
+      $data['domain'] = '';
+      $data['realname'] = '';
+      $data['auditdomains'] = array();
+      $data['emails'] = array();
+      $data['folders'] = array();
+      $data['extra_folders'] = array();
+
       if($username == '' || $password == '') { return 0; }
 
       if(ENABLE_LDAP_AUTH == 1) {
-         $ok = $this->checkLoginAgainstLDAP($username, $password);
+         $ok = $this->checkLoginAgainstLDAP($username, $password, $data);
          if($ok == 1) { return $ok; }
       }
 
+/*
+ * TODO: test the CUSTOM_EMAIL_QUERY_FUNCTION feature!
+ */
+
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
-         $ok = $this->checkLoginAgainstIMAP($username, $password);
+         $ok = $this->checkLoginAgainstIMAP($username, $password, $data);
 
          if($ok == 1) {
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
@@ -28,7 +63,7 @@ class ModelUserAuth extends Model {
 
       if(ENABLE_POP3_AUTH == 1) {
          require 'Zend/Mail/Protocol/Pop3.php';
-         $ok = $this->checkLoginAgainstPOP3($username, $password);
+         $ok = $this->checkLoginAgainstPOP3($username, $password, $data);
 
          if($ok == 1) {
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
@@ -56,32 +91,30 @@ class ModelUserAuth extends Model {
          AUDIT(ACTION_LOGIN_FAILED, $username, '', '', 'failed auth against user table');
       }
 
-      if($ok == 0 && strlen($query->row['dn']) > 3) {
-         $ok = $this->checkLoginAgainstFallbackLDAP($query->row, $password);
-      }
-
 
       if($ok == 1) {
-         $session->set("username", $username);
-         $session->set("uid", $query->row['uid']);
-         $session->set("admin_user", $query->row['isadmin']);
-         $session->set("email", $username);
-         $session->set("domain", $query->row['domain']);
-         $session->set("realname", $query->row['realname']);
+         $data['username'] = $username;
+         $data['uid'] = $query->row['uid'];
+         $data['admin_user'] = $query->row['isadmin'];
+         $data['email'] = $username;
+         $data['domain'] = $query->row['domain'];
+         $data['realname'] = $query->row['realname'];
 
-         $session->set("auditdomains", $this->model_user_user->get_users_all_domains($query->row['uid']));
+         $data['auditdomains'] = $this->model_user_user->get_users_all_domains($query->row['uid']);
 
          if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
             call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
          }
          else {
-            $session->set("emails", $this->model_user_user->get_users_all_email_addresses($query->row['uid']));
+            $data['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
          }
 
-         $session->set("folders", $this->model_folder_folder->get_all_folder_ids($query->row['uid']));
-         $session->set("extra_folders", $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']));
+         $data['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
+         $data['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
 
-         $this->is_ga_code_needed();
+         $session->set("auth_data", $data);
+
+         $this->is_ga_code_needed($username);
 
          return 1;
       }
@@ -90,14 +123,14 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function checkLoginAgainstLDAP($username = '', $password = '') {
+   private function checkLoginAgainstLDAP($username = '', $password = '', $data = array()) {
       $a = array();
       $ret = 0;
 
       if(ENABLE_SAAS == 1) {
          $params = $this->model_saas_ldap->get_ldap_params_by_email($username);
          foreach($params as $param) {
-            $ret = $this->checkLoginAgainstLDAP_real($username, $password, $param);
+            $ret = $this->checkLoginAgainstLDAP_real($username, $password, $data, $param);
 
             syslog(LOG_INFO, "ldap auth result against " . $param['ldap_host'] . " / " . $param['ldap_type'] . ": $ret");
 
@@ -105,14 +138,14 @@ class ModelUserAuth extends Model {
          }
       }
       else {
-         $ret = $this->checkLoginAgainstLDAP_real($username, $password);
+         $ret = $this->checkLoginAgainstLDAP_real($username, $password, $data);
       }
 
       return $ret;
    }
 
 
-   private function checkLoginAgainstLDAP_real($username = '', $password = '', $a = array()) {
+   private function checkLoginAgainstLDAP_real($username = '', $password = '', $data = array(), $a = array()) {
 
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
@@ -176,7 +209,9 @@ class ModelUserAuth extends Model {
                $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                $emails = array_merge($emails, $extra_emails);
 
-               $this->add_session_vars($a['cn'], $username, $emails, $role);
+               $data = $this->fix_user_data($a['cn'], $username, $emails, $role);
+
+               $session->set("auth_data", $data);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
@@ -264,10 +299,19 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function add_session_vars($name = '', $email = '', $emails = array(), $role = 0) {
-      $session = Registry::get('session');
+   private function fix_user_data($name = '', $email = '', $emails = array(), $role = 0) {
+      $data = array();
 
-      $a = explode("@", $email);
+      $data['username'] = $email;
+      $data['uid'] = -1;
+      $data['admin_user'] = $role;
+      $data['email'] = $email;
+      $data['domain'] = '';
+      $data['realname'] = $name;
+      $data['auditdomains'] = $this->model_domain_domain->get_your_all_domains_by_email($email);
+      $data['emails'] = $emails;
+      $data['folders'] = array();
+      $data['extra_folders'] = array();
 
       $uid = $this->model_user_user->get_uid_by_email($email);
       if($uid < 1) {
@@ -275,54 +319,16 @@ class ModelUserAuth extends Model {
          $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array($uid, $email));
       }
 
+      $data['uid'] = $uid;
 
-      $session->set("username", $email);
-      $session->set("uid", $uid);
+      $a = explode("@", $email);
+      $data['domain'] = $a[1];
 
-      if($role > 0) {
-         $session->set("admin_user", $role);
-      } else {
-         $session->set("admin_user", 0);
-      }
-
-      $session->set("email", $email);
-      $session->set("domain", $a[1]);
-      $session->set("realname", $name);
-
-      $session->set("auditdomains", $this->model_domain_domain->get_your_all_domains_by_email($email));
-      $session->set("emails", $emails);
-      $session->set("folders", array());
-      $session->set("extra_folders", array());
-
-      $this->is_ga_code_needed();
+      return $data;
    }
 
 
-   private function checkLoginAgainstFallbackLDAP($user = array(), $password = '') {
-      if($password == '' || !isset($user['username']) || !isset($user['domain']) || !isset($user['dn']) || strlen($user['domain']) < 2){ return 0; }
-
-      $query = $this->db->query("SELECT remotehost, basedn FROM " . TABLE_REMOTE . " WHERE remotedomain=?", array($user['domain']));
-
-      if($query->num_rows != 1) { return 0; }
-
-      $ldap = new LDAP($query->row['remotehost'], $user['dn'], $password);
-
-      if($ldap->is_bind_ok()) {
-         $this->change_password($user['username'], $password);
-
-         AUDIT(ACTION_LOGIN, $user['username'], '', '', 'changed password in local table');
-
-         return 1;
-      }
-      else {
-         AUDIT(ACTION_LOGIN_FAILED, $user['username'], '', '', 'failed bind to ' . $query->row['remotehost'], $user['dn']);
-      }
-
-      return 0; 
-   }
-
-
-   private function checkLoginAgainstIMAP($username = '', $password = '') {
+   private function checkLoginAgainstIMAP($username = '', $password = '', $data = array()) {
       $session = Registry::get('session');
       $emails = array($username);
 
@@ -342,7 +348,14 @@ class ModelUserAuth extends Model {
          $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
          $emails = array_merge($emails, $extra_emails);
 
-         $this->add_session_vars($username, $username, $emails, 0);
+         $data['username'] = $username;
+         $data['email'] = $username;
+         $data['emails'] = $emails;
+         $data['role'] = 0;
+
+         $data = $this->fix_user_data($username, $username, $emails, 0);
+
+         $session->set("auth_data", $data);
 
          $session->set("password", $password);
 
@@ -353,7 +366,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function checkLoginAgainstPOP3($username = '', $password = '') {
+   private function checkLoginAgainstPOP3($username = '', $password = '', $data = array()) {
       $rc = 0;
       $emails = array($username);
 
@@ -371,7 +384,11 @@ class ModelUserAuth extends Model {
                   $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                   $emails = array_merge($emails, $extra_emails);
 
-                  $this->add_session_vars($username, $username, $emails, 0);
+                  $data = $this->fix_user_data($username, $username, $emails, 0);
+
+                  $session = Registry::get('session');
+                  $session->set("auth_data", $data);
+
                   $rc = 1;
                }
                catch (Zend_Mail_Protocol_Exception $e) {}
@@ -432,7 +449,8 @@ class ModelUserAuth extends Model {
             if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
             if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
-            $this->add_session_vars($a['cn'], $username, $emails, $role);
+            $data = $this->fix_user_data($a['cn'], $username, $emails, $role);
+            $this->apply_user_auth_session($data);
 
             $this->model_user_prefs->get_user_preferences($username);
 
@@ -465,14 +483,24 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function is_ga_code_needed() {
+   private function is_ga_code_needed($username = '') {
       $session = Registry::get('session');
 
-      $query = $this->db->query("SELECT ga_enabled FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($session->get("username")));
+      $query = $this->db->query("SELECT ga_enabled FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($username));
 
       if(isset($query->row['ga_enabled']) && $query->row['ga_enabled'] == 1) {
          $session->set("ga_block", 1);
       }
+   }
+
+
+   public function is_four_eye_auth_needed() {
+      $session = Registry::get('session');
+
+      if(1 == FOUR_EYES_LOGIN_FOR_AUDITOR && 2 == $session->get("admin_user")) {
+         $session->set("four_eyes", 1);
+      }
+
    }
 
 

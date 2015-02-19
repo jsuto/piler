@@ -48,6 +48,10 @@ class ControllerLoginLogin extends Controller {
                exit;
             }
             else {
+               $data = $session->get("auth_data");
+               $this->model_user_auth->apply_user_auth_session($data);
+               $session->remove("auth_data");
+
                $this->model_user_prefs->get_user_preferences($session->get('username'));
 
                if(ENABLE_SAAS == 1) {
