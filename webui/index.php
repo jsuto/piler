@@ -69,6 +69,9 @@ Registry::set('import_status', $import_status);
 if($session->get("ga_block") == 1 && $request->get['route'] != 'login/logout' ) {
    $action = new Router('login/ga');
 }
+else if($session->get("four_eyes") == 1 && $request->get['route'] != 'login/logout' ) {
+   $action = new Router('login/foureyes');
+}
 else if(Registry::get('username')) {
 
    if(isset($request->get['route'])){

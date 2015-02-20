@@ -52,6 +52,11 @@ class ControllerLoginGA extends Controller {
 
             $session->set("ga_block", "");
 
+            if($session->get("four_eyes") == 1) {
+               header("Location: " . SITE_URL . "index.php?route=login/foureyes");
+               exit;
+            }
+
             $this->model_user_auth->apply_user_auth_session($data);
             $session->remove("auth_data");
 

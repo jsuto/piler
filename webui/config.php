@@ -236,6 +236,7 @@ $config['CGI_INPUT_FIELD_WIDTH'] = 50;
 $config['CGI_INPUT_FIELD_HEIGHT'] = 7;
 
 $config['ADMIN_CAN_POWER_SEARCH'] = 0;
+$config['FOUR_EYES_LOGIN_FOR_AUDITOR'] = 0;
 
 $config['MEMCACHED_PREFIX'] = '_piler:';
 $config['MEMCACHED_TTL'] = 900;

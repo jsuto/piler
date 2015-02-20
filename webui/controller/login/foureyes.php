@@ -1,13 +1,13 @@
 <?php
 
 
-class ControllerLoginLogin extends Controller {
+class ControllerLoginFoureyes extends Controller {
    private $error = array();
 
    public function index(){
 
       $this->id = "content";
-      $this->template = "login/login.tpl";
+      $this->template = "login/foureyes.tpl";
       $this->layout = "common/layout-empty";
 
 
@@ -38,25 +38,15 @@ class ControllerLoginLogin extends Controller {
 
       $this->data['failed_login_count'] = $this->model_user_auth->get_failed_login_count();
 
+      $data = $session->get("auth_data");
 
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
+            $session->remove("four_eyes");
 
-            if($session->get("ga_block") == 1) {
-               header("Location: " . SITE_URL . "index.php?route=login/ga");
-               exit;
-            }
-
-            else if($session->get("four_eyes") == 1) {
-               header("Location: " . SITE_URL . "index.php?route=login/foureyes");
-               exit;
-            }
-
-            else {
-               $data = $session->get("auth_data");
-               $this->model_user_auth->apply_user_auth_session($data);
-               $session->remove("auth_data");
+            $this->model_user_auth->apply_user_auth_session($data);
+            $session->remove("auth_data");
 
                $this->model_user_prefs->get_user_preferences($session->get('username'));
 
@@ -73,7 +63,6 @@ class ControllerLoginLogin extends Controller {
 
                header("Location: " . SITE_URL . "search.php");
                exit;
-            }
          }
          else {
             $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
@@ -85,26 +74,21 @@ class ControllerLoginLogin extends Controller {
       }
 
 
-      if(ENABLE_GOOGLE_LOGIN == 1) {
-         $client = new apiClient();
-         $client->setApplicationName(GOOGLE_APPLICATION_NAME);
+      $this->render();
+   }
 
-         $client->setScopes(array(
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://mail.google.com/',
-         ));
 
-         $client->setClientId(GOOGLE_CLIENT_ID);
-         $client->setClientSecret(GOOGLE_CLIENT_SECRET);
-         $client->setRedirectUri(GOOGLE_REDIRECT_URL);
-         $client->setDeveloperKey(GOOGLE_DEVELOPER_KEY);
+   private function check_admin_account() {
 
-         $this->data['auth_url'] = $client->createAuthUrl();
+      if($this->model_user_auth->checkLogin($this->request->post['username2'], $_POST['password2']) != 1 || isAdminUser() != 1) {
+         $this->error['username'] = 'failed admin login';
+         return 0;
+      }
+      else {
+         $this->model_user_auth->reset_user_auth_session();
+         return 1;
       }
 
-
-      $this->render();
    }
 
 

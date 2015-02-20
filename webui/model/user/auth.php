@@ -44,10 +44,6 @@ class ModelUserAuth extends Model {
          if($ok == 1) { return $ok; }
       }
 
-/*
- * TODO: test the CUSTOM_EMAIL_QUERY_FUNCTION feature!
- */
-
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
          $ok = $this->checkLoginAgainstIMAP($username, $password, $data);
@@ -115,6 +111,8 @@ class ModelUserAuth extends Model {
          $session->set("auth_data", $data);
 
          $this->is_ga_code_needed($username);
+
+         $this->is_four_eye_auth_needed($data['admin_user']);
 
          return 1;
       }
@@ -212,6 +210,8 @@ class ModelUserAuth extends Model {
                $data = $this->fix_user_data($a['cn'], $username, $emails, $role);
 
                $session->set("auth_data", $data);
+
+               $this->is_four_eye_auth_needed($role);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
@@ -494,10 +494,10 @@ class ModelUserAuth extends Model {
    }
 
 
-   public function is_four_eye_auth_needed() {
+   public function is_four_eye_auth_needed($admin_user = 0) {
       $session = Registry::get('session');
 
-      if(1 == FOUR_EYES_LOGIN_FOR_AUDITOR && 2 == $session->get("admin_user")) {
+      if(1 == FOUR_EYES_LOGIN_FOR_AUDITOR && 2 == $admin_user) {
          $session->set("four_eyes", 1);
       }
 
