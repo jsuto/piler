@@ -43,10 +43,24 @@ class ControllerLoginFoureyes extends Controller {
       if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() == true) {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
-            $session->remove("four_eyes");
 
-            $this->model_user_auth->apply_user_auth_session($data);
-            $session->remove("auth_data");
+            // check if the 2nd login is indeed an admin
+
+            $data2 = $session->get("auth_data");
+            if(!isset($data2['admin_user']) || $data2['admin_user'] != 1) {
+               syslog(LOG_INFO, "user " . $data2['username'] . " is not an admin user");
+
+               $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
+               $this->data['failed_login_count']++;
+
+               $session->set("auth_data", $data);
+            }
+            else {
+
+               $session->remove("four_eyes");
+
+               $this->model_user_auth->apply_user_auth_session($data);
+               $session->remove("auth_data");
 
                $this->model_user_prefs->get_user_preferences($session->get('username'));
 
@@ -63,6 +77,8 @@ class ControllerLoginFoureyes extends Controller {
 
                header("Location: " . SITE_URL . "search.php");
                exit;
+            }
+
          }
          else {
             $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
