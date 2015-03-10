@@ -147,6 +147,7 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstLDAP_real($username = '', $password = '', $data = array(), $a = array()) {
+      $session = Registry::get('session');
 
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
