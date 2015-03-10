@@ -178,16 +178,20 @@ class ModelGroupGroup extends Model {
 
    public function get_emails_by_string($s = '', $page = 0, $page_len = PAGE_LEN) {
       $emails = array();
+      $username_prefix = '';
 
       $from = (int)$page * (int)$page_len;
 
       if(strlen($s) < 1) { return array(); }
 
       if(ENABLE_LDAP_AUTH == 1) {
+
+         if(LDAP_MAIL_ATTR == 'proxyAddresses') { $username_prefix = 'smtp:'; }
+
          $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
          if($ldap->is_bind_ok()) {
 
-            $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=" . $s . "*))", array());
+            $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=" . $username_prefix . $s . "*))", array());
 
             if(isset($query->rows)) {
                $emails = $this->model_user_auth->get_email_array_from_ldap_attr($query->rows);

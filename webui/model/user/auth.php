@@ -105,6 +105,9 @@ class ModelUserAuth extends Model {
             $data['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
          }
 
+         $extra_emails = $this->model_user_user->get_email_addresses_from_groups($data['emails']);
+         $data['emails'] = array_merge($data['emails'], $extra_emails);
+
          $data['folders'] = $this->model_folder_folder->get_all_folder_ids($query->row['uid']);
          $data['extra_folders'] = $this->model_folder_folder->get_all_extra_folder_ids($query->row['uid']);
 
