@@ -112,6 +112,7 @@ create table if not exists `archiving_rule` (
    `from` varchar(128) default null,
    `to` varchar(128) default null,
    `subject` varchar(128) default null,
+   `body` varchar(128) default null,
    `_size` char(2) default null,
    `size` int default 0,
    `attachment_name` varchar(128) default null,
@@ -121,7 +122,7 @@ create table if not exists `archiving_rule` (
    `spam` tinyint(1) default -1,
    `days` int default 0,
    primary key (`id`),
-   unique(`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`) 
+   unique(`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`) 
 ) ENGINE=InnoDB;
 
 
@@ -131,6 +132,7 @@ create table if not exists `retention_rule` (
    `from` varchar(128) default null,
    `to` varchar(128) default null,
    `subject` varchar(128) default null,
+   `body` varchar(128) default null,
    `_size` char(2) default null,
    `size` int default 0,
    `attachment_name` varchar(128) default null,
@@ -140,7 +142,7 @@ create table if not exists `retention_rule` (
    `spam` tinyint(1) default -1,
    `days` int default 0,
    primary key (`id`),
-   unique (`domain`,`from`,`to`,`subject`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`)
+   unique (`domain`,`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`)
 ) ENGINE=InnoDB;
 
 
@@ -180,7 +182,7 @@ create table if not exists `user_settings` (
    `lang` char(2) default null,
    `ga_enabled` int default 0,
    `ga_secret` varchar(255) default null
-);
+) Engine=InnoDB;
 
 create index `user_settings_idx` on `user_settings`(`username`);
 

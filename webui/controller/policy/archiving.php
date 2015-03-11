@@ -50,7 +50,7 @@ class ControllerPolicyArchiving extends Controller {
 
    private function validate() {
       if($this->request->post['from'] == '' && $this->request->post['to'] == '' &&
-         $this->request->post['subject'] == '' && $this->request->post['size'] == '' &&
+         $this->request->post['subject'] == '' && $this->request->post['body'] == '' && $this->request->post['size'] == '' &&
          $this->request->post['attachment_name'] == '' && $this->request->post['attachment_type'] == '' && $this->request->post['attachment_size'] == '' &&
          $this->request->post['spam'] == -1
       ) {

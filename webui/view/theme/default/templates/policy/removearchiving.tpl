@@ -15,6 +15,7 @@
     if($rule['from']) { print $text_from . ': ' . $rule['from'] . ', '; }
     if($rule['to']) { print $text_to . ': ' . $rule['to'] . ', '; }
     if($rule['subject']) { print $text_subject . ': ' . $rule['subject'] . ', '; }
+    if($rule['body']) { print $text_body . ': ' . $rule['body'] . ', '; }
     if($rule['size'] > 0) { print $text_size . ': ' . $rule['_size'] . ' ' . $rule['size'] . ', '; }
     if($rule['attachment_name']) { print $text_attachment_name . ': ' . $rule['attachment_name'] . ', '; }
     if($rule['attachment_type']) { print $text_attachment_type . ': ' . $rule['attachment_type'] . ', '; }

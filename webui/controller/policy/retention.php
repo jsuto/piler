@@ -53,7 +53,7 @@ class ControllerPolicyRetention extends Controller {
       if($this->request->post['days'] == '' || $this->request->post['days'] < 1) { return false; }
 
       if($this->request->post['from'] == '' && $this->request->post['to'] == '' &&
-         $this->request->post['subject'] == '' && $this->request->post['size'] == '' &&
+         $this->request->post['subject'] == '' && $this->request->post['body'] == '' && $this->request->post['size'] == '' &&
          $this->request->post['attachment_name'] == '' && $this->request->post['attachment_type'] == '' && $this->request->post['attachment_size'] == '' &&
          $this->request->post['spam'] == -1
       ) {

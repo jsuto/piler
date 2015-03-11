@@ -105,6 +105,7 @@ struct rule {
    regex_t from;
    regex_t to;
    regex_t subject;
+   regex_t body;
    regex_t attachment_name;
    regex_t attachment_type;
 #endif
@@ -119,7 +120,7 @@ struct rule {
 
    int days;
 
-   char emptyfrom, emptyto, emptysubject, emptyaname, emptyatype;
+   char emptyfrom, emptyto, emptysubject, emptybody, emptyaname, emptyatype;
 
    char *rulestr;
    char compiled;

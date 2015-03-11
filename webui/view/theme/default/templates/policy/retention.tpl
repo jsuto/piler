@@ -37,6 +37,12 @@
          </div>
       </div>
       <div class="control-group">
+                <label class="control-label" for="body"><?php print $text_body; ?>:</label>
+        <div class="controls">
+            <input type="text" class="text" name="body" />
+         </div>
+      </div>
+      <div class="control-group">
 		<label class="control-label" for="size"><?php print $text_size; ?>:</label>
         <div class="controls">
             <select class="ruleselect" name="_size">
@@ -104,6 +110,7 @@
          <th><?php print $text_from; ?></th>
          <th><?php print $text_to; ?></th>
          <th><?php print $text_subject; ?></th>
+         <th><?php print $text_body; ?></th>
          <th><?php print $text_spam; ?></th>
          <th><?php print $text_size; ?></th>
          <th><?php print $text_attachment_name; ?></th>
@@ -124,6 +131,7 @@
          <td><?php print $rule['from']; ?></td>
          <td><?php print $rule['to']; ?></td>
          <td><?php print $rule['subject']; ?></td>
+         <td><?php print $rule['body']; ?></td>
          <td><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></td>
          <td><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></td>
          <td><?php print $rule['attachment_name']; ?></td>

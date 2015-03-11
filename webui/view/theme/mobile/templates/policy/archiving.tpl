@@ -24,6 +24,10 @@
          <div class="domaincell"><input type="text" name="subject" class="input-medium span5" /></div>
       </div>
       <div class="row">
+         <div class="domaincell"><?php print $text_body; ?>:</div>
+         <div class="domaincell"><input type="text" name="body" class="input-medium span5" /></div>
+      </div>
+      <div class="row">
          <div class="domaincell"><?php print $text_size; ?>:</div>
          <div class="domaincell">
             <select name="_size" class="span1">
@@ -87,6 +91,7 @@
          <div class="domaincell"><?php print $text_from; ?></div>
          <div class="domaincell"><?php print $text_to; ?></div>
          <div class="domaincell"><?php print $text_subject; ?></div>
+         <div class="domaincell"><?php print $text_body; ?></div>
          <div class="domaincell"><?php print $text_spam; ?></div>
          <div class="domaincell"><?php print $text_size; ?></div>
          <div class="domaincell"><?php print $text_attachment_name; ?></div>
@@ -100,6 +105,7 @@
          <div class="domaincell"><?php print $rule['from']; ?></div>
          <div class="domaincell"><?php print $rule['to']; ?></div>
          <div class="domaincell"><?php print $rule['subject']; ?></div>
+         <div class="domaincell"><?php print $rule['body']; ?></div>
          <div class="domaincell"><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></div>
          <div class="domaincell"><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></div>
          <div class="domaincell"><?php print $rule['attachment_name']; ?></div>
