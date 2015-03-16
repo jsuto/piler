@@ -95,10 +95,18 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
-int is_safe_filetype(char *s){
+/*
+ * a safe filename contains the following characters:
+ *      space ( ),
+ *      dash (-),
+ *      dot (.),
+ *      underscore (_)
+ *      numbers and letters
+ */
 
+int is_safe_filename(char *s){
    for(; *s; s++){
-      if(*s != 46 && !isalnum(*s)){
+      if(*s != 32 && *s != 45 && *s != 46 && *s != 95 && !isalnum(*s)){
          return 0;
       }
    }
@@ -108,7 +116,7 @@ int is_safe_filetype(char *s){
 
 
 int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec, struct __config *cfg){
-   int errorp, i=0, len=0, fd, safe_extension=0;
+   int errorp, i=0, len=0, fd, safe_to_process=0;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -128,13 +136,13 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
       if(ZIP_EM_NONE == sb.encryption_method) {
 
          p = strrchr(sb.name, '.');
-         safe_extension = 0;
+         safe_to_process = 0;
 
-         if(p) safe_extension = is_safe_filetype(p);
+         if(p) safe_to_process = is_safe_filename(p);
 
-         if(safe_extension == 0) syslog(LOG_INFO, "%s: invalid filename in zip: '%s'", sdata->ttmpfile, (char*)sb.name);
+         if(safe_to_process == 0) syslog(LOG_INFO, "%s: invalid filename in zip: '%s'", sdata->ttmpfile, (char*)sb.name);
 
-         if((int)sb.size > 0 && safe_extension == 1 && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+         if((int)sb.size > 0 && safe_to_process == 1 && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
 
             snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
 
@@ -203,9 +211,14 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
    else {
       while(n--){
          if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
+
             snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
 
-            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec, cfg);
+            if(is_safe_filename(namelist[n]->d_name) == 1){
+               extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec, cfg);
+            } else {
+               syslog(LOG_INFO, "%s: not a safe file to process: '%s'", sdata->ttmpfile, namelist[n]->d_name);
+            }
 
             unlink(buf);
          }
