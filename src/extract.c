@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include <piler.h>
 
 #ifdef HAVE_ZIP
@@ -94,8 +95,20 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
+int is_safe_filetype(char *s){
+
+   for(; *s; s++){
+      if(*s != 46 && !isalnum(*s)){
+         return 0;
+      }
+   }
+
+   return 1;
+}
+
+
 int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec, struct __config *cfg){
-   int errorp, i=0, len=0, fd;
+   int errorp, i=0, len=0, fd, safe_extension=0;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -115,10 +128,17 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
       if(ZIP_EM_NONE == sb.encryption_method) {
 
          p = strrchr(sb.name, '.');
+         safe_extension = 0;
 
-         if((int)sb.size > 0 && p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+         if(p) safe_extension = is_safe_filetype(p);
+
+         if(safe_extension == 0) syslog(LOG_INFO, "%s: invalid filename in zip: '%s'", sdata->ttmpfile, (char*)sb.name);
+
+         if((int)sb.size > 0 && safe_extension == 1 && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
 
             snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
+
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: writing zip content to '%s'", sdata->ttmpfile, extracted_filename);
 
             fd = open(extracted_filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
             if(fd != -1){
