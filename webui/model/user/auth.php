@@ -440,7 +440,7 @@ class ModelUserAuth extends Model {
             $ldap_mail_attr = LDAP_MAIL_ATTR;
             if(LDAP_MAIL_ATTR == 'proxyAddresses') { $ldap_mail_attr = 'proxyAddresses=smtp:'; }
 
-            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "=$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
+            $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
 
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
