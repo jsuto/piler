@@ -429,7 +429,7 @@ class ModelUserAuth extends Model {
          if(isset($query->row['dn'])) {
             $a = $query->row;
 
-            if(isset($a['mail']['count'])) { $username = $a['mail'][0]; } else { $username = $a['mail']; }
+            if(is_array($a['mail'])) { $username = $a['mail'][0]; } else { $username = $a['mail']; }
             $username = strtolower(preg_replace("/^smtp\:/i", "", $username));
 
             if($username == '') {
