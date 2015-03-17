@@ -286,6 +286,10 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 #endif
 
 
+   /*
+    * http://stackoverflow.com/questions/7292642/grabbing-output-from-exec
+    */
+
    if(pipe(link) == -1){
       syslog(LOG_PRIORITY, "%s: cannot open link", sdata->ttmpfile);
       return;
@@ -293,6 +297,8 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
 
    if((pid = fork()) == -1){
       syslog(LOG_PRIORITY, "%s: cannot fork", sdata->ttmpfile);
+      close(link[0]);
+      close(link[1]);
       return;
    }
 
