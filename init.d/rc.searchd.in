@@ -3,7 +3,7 @@
 ##
 
 ### BEGIN INIT INFO
-# Provides:          sphinxsearch
+# Provides:          pilersearch
 # Required-Start:    $remote_fs $syslog $named $network $time
 # Required-Stop:     $remote_fs $syslog $named $network
 # Default-Start:     2 3 4 5
