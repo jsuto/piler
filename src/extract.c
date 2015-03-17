@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -13,6 +14,8 @@
 #ifdef HAVE_ZIP
    #include <zip.h>
 #endif
+
+#define die(e) do { syslog(LOG_INFO, "error: helper: %s", e); exit(EXIT_FAILURE); } while (0);
 
 
 void remove_xml(char *buf, int *html){
@@ -95,28 +98,8 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
-/*
- * a safe filename contains the following characters:
- *      space ( ),
- *      dash (-),
- *      dot (.),
- *      underscore (_)
- *      numbers and letters
- */
-
-int is_safe_filename(char *s){
-   for(; *s; s++){
-      if(*s != 32 && *s != 45 && *s != 46 && *s != 95 && !isalnum(*s)){
-         return 0;
-      }
-   }
-
-   return 1;
-}
-
-
 int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec, struct __config *cfg){
-   int errorp, i=0, len=0, fd, safe_to_process=0;
+   int errorp, i=0, len=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -136,13 +119,8 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
       if(ZIP_EM_NONE == sb.encryption_method) {
 
          p = strrchr(sb.name, '.');
-         safe_to_process = 0;
 
-         if(p) safe_to_process = is_safe_filename(p);
-
-         if(safe_to_process == 0) syslog(LOG_INFO, "%s: invalid filename in zip: '%s'", sdata->ttmpfile, (char*)sb.name);
-
-         if((int)sb.size > 0 && safe_to_process == 1 && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
+         if((int)sb.size > 0 && p && strcmp(get_attachment_extractor_by_filename((char*)sb.name), "other")){
 
             snprintf(extracted_filename, sizeof(extracted_filename)-1, "%s-%d-%d%s", sdata->ttmpfile, *rec, i, p);
 
@@ -173,7 +151,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
       }
       else {
-         syslog(LOG_PRIORITY, "ERR: attachment ('%s') is in encrypted zip file", sb.name);
+         syslog(LOG_PRIORITY, "error: attachment ('%s') is in encrypted zip file", sb.name);
       }
 
       i++;
@@ -207,18 +185,13 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
    system(buf);
 
    n = scandir(tmpdir, &namelist, NULL, alphasort);
-   if(n < 0) syslog(LOG_INFO, "error reading %s", tmpdir);
+   if(n < 0) syslog(LOG_INFO, "error: reading %s", tmpdir);
    else {
       while(n--){
          if(strcmp(namelist[n]->d_name, ".") && strcmp(namelist[n]->d_name, "..")){
 
             snprintf(buf, sizeof(buf)-1, "%s/%s", tmpdir, namelist[n]->d_name);
-
-            if(is_safe_filename(namelist[n]->d_name) == 1){
-               extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec, cfg);
-            } else {
-               syslog(LOG_INFO, "%s: not a safe file to process: '%s'", sdata->ttmpfile, namelist[n]->d_name);
-            }
+            extract_attachment_content(sdata, state, buf, get_attachment_extractor_by_filename(buf), &rec, cfg);
 
             unlink(buf);
          }
@@ -261,57 +234,20 @@ void read_content_with_popen(struct session_data *sdata, struct _state *state, c
 }
 
 
+void kill_helper(){
+   syslog(LOG_PRIORITY, "error: helper is killed by alarm");
+   die("timeout for helper!");
+}
+
+
 void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec, struct __config *cfg){
-   char cmd[SMALLBUFSIZE], timeout[SMALLBUFSIZE];
+   int link[2], n;
+   pid_t pid;
+   char outbuf[MAXBUFSIZE];
 
    if(strcmp(type, "other") == 0) return;
 
-   memset(cmd, 0, sizeof(cmd));
-   memset(timeout, 0, sizeof(timeout));
-
-#ifdef TIMEOUT_BINARY
-   if(cfg->helper_timeout > 0) snprintf(timeout, sizeof(timeout)-1, "%s %d ", TIMEOUT_BINARY, cfg->helper_timeout);
-#endif
-
-#ifdef HAVE_PDFTOTEXT
-   if(strcmp(type, "pdf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -enc UTF-8 %s -", timeout, HAVE_PDFTOTEXT, filename);
-#endif
-
-#ifdef HAVE_CATDOC
-   if(strcmp(type, "doc") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_CATDOC, filename);
-#endif
-
-#ifdef HAVE_CATPPT
-   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_CATPPT, filename);
-#endif
-
-#ifdef HAVE_XLS2CSV
-   if(strcmp(type, "xls") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s -d utf-8 %s", timeout, HAVE_XLS2CSV, filename);
-#endif
-
-#ifdef HAVE_PPTHTML
-   if(strcmp(type, "ppt") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s %s", timeout, HAVE_PPTHTML, filename);
-#endif
-
-#ifdef HAVE_UNRTF
-   if(strcmp(type, "rtf") == 0) snprintf(cmd, sizeof(cmd)-1, "%s%s --text %s", timeout, HAVE_UNRTF, filename);
-#endif
-
-#ifdef HAVE_TNEF
-   if(strcmp(type, "tnef") == 0){
-      extract_tnef(sdata, state, filename, cfg);
-      return;
-   }
-#endif
-
-   if(strlen(cmd) > 12){
-      read_content_with_popen(sdata, state, cmd, cfg);
-      return;
-   }
-
-
 #ifdef HAVE_ZIP
-
    if(strcmp(type, "odf") == 0){
       extract_opendocument(sdata, state, filename, "content.xml");
       return;
@@ -341,6 +277,72 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
       }
    }
 #endif
+
+#ifdef HAVE_TNEF
+   if(strcmp(type, "tnef") == 0){
+      extract_tnef(sdata, state, filename, cfg);
+      return;
+   }
+#endif
+
+
+   if(pipe(link) == -1){
+      syslog(LOG_PRIORITY, "%s: cannot open link", sdata->ttmpfile);
+      return;
+   }
+
+   if((pid = fork()) == -1){
+      syslog(LOG_PRIORITY, "%s: cannot fork", sdata->ttmpfile);
+      return;
+   }
+
+   if(pid == 0){
+      dup2(link[1], STDOUT_FILENO);
+      close(link[0]);
+      close(link[1]);
+
+      alarm(cfg->helper_timeout);
+      sig_catch(SIGALRM, kill_helper);
+
+   #ifdef HAVE_PDFTOTEXT
+      if(strcmp(type, "pdf") == 0) execl(HAVE_PDFTOTEXT, HAVE_PDFTOTEXT, "-enc", "UTF-8", filename, "-", (char *) 0);
+   #endif
+
+   #ifdef HAVE_CATDOC
+      if(strcmp(type, "doc") == 0) execl(HAVE_CATDOC, HAVE_CATDOC, "-d", "utf-8", filename, (char *) 0);
+   #endif
+
+   #ifdef HAVE_CATPPT
+      if(strcmp(type, "ppt") == 0) execl(HAVE_CATPPT, HAVE_CATPPT, "-d", "utf-8", filename, (char *) 0);
+   #endif
+
+   #ifdef HAVE_XLS2CSV
+      if(strcmp(type, "xls") == 0) execl(HAVE_XLS2CSV, HAVE_XLS2CSV, "-d", "utf-8", filename, (char *) 0);
+   #endif
+
+   #ifdef HAVE_PPTHTML
+       if(strcmp(type, "ppt") == 0) execl(HAVE_PPTHTML, HAVE_PPTHTML, filename, (char *) 0);
+   #endif
+
+   #ifdef HAVE_UNRTF
+      if(strcmp(type, "rtf") == 0) execl(HAVE_UNRTF, HAVE_UNRTF, "--text", filename, (char *) 0);
+   #endif
+
+      die("execl");
+   }
+   else {
+      close(link[1]);
+      while((n = read(link[0], outbuf, sizeof(outbuf))) > 0){
+         if(state->bodylen < BIGBUFSIZE-n-1){
+            memcpy(&(state->b_body[state->bodylen]), outbuf, n);
+            state->bodylen += n;
+         }
+         //printf("Output: %.*s\n", n, outbuf);
+      }
+      wait(NULL);
+      return;
+   }
+
 
 }
 
