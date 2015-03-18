@@ -208,31 +208,6 @@ int extract_tnef(struct session_data *sdata, struct _state *state, char *filenam
 
 #endif
 
-void read_content_with_popen(struct session_data *sdata, struct _state *state, char *cmd, struct __config *cfg){
-   int len;
-   char buf[MAXBUFSIZE];
-   FILE *f;
-
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "running command: '%s'", cmd);
-
-   f = popen(cmd, "r");
-   if(f){
-      while(fgets(buf, sizeof(buf)-1, f)){
-         len = strlen(buf);
-
-         if(state->bodylen < BIGBUFSIZE-len-1){
-            memcpy(&(state->b_body[state->bodylen]), buf, len);
-            state->bodylen += len;
-         }
-         else break;
-      }
-
-      fclose(f);
-   }
-   else syslog(LOG_PRIORITY, "%s: popen(): %s", sdata->ttmpfile, buf);
-
-}
-
 
 void kill_helper(){
    syslog(LOG_PRIORITY, "error: helper is killed by alarm");
