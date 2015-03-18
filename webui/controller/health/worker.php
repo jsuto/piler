@@ -50,6 +50,9 @@ class ControllerHealthWorker extends Controller {
 
       list ($this->data['uptime'], $this->data['cpuload']) = $this->model_health_health->uptime();
 
+      exec(PILER_BINARY . " -v", $a);
+      $this->data['piler_version'] = $a[0];
+
       $x = exec(CPU_USAGE_COMMAND);
       $this->data['cpuinfo'] = 100 - (int)$x;
 

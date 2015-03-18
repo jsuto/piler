@@ -8,6 +8,11 @@
             <h3><strong>Up For:</strong> <?php print $uptime; ?></h3>
             <table class="table table-striped">
                 <tr>
+                    <th class="span4">Piler:</th>
+                    <td class="span8"> <?php print $piler_version; ?></td>
+                </tr>
+
+                <tr>
                     <th class="span4"><?php print $text_server_operating_system; ?>:</th>
                     <td class="span8"> <?php print $sysinfo[1]; ?></td>
              	</tr>        

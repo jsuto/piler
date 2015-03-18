@@ -13,6 +13,11 @@
          </div>
 
          <div class="row">
+            <div class="cellhealthleft">Piler</div>
+            <div class="cellhealthright"><?php print $piler_version; ?></div>
+         </div>
+
+         <div class="row">
             <div class="cellhealthleft"><?php print $text_server_operating_system; ?></div>
             <div class="cellhealthright"><?php print $sysinfo[1]; ?></div>
          </div>
