@@ -88,7 +88,7 @@ class ControllerMessageBulkrestore extends Controller {
 
             if(RESTORE_OVER_IMAP == 1) {
                if($imap_ok) {
-                  $x = $this->imap->append('INBOX',  $msg);
+                  $x = $this->imap->append(IMAP_RESTORE_FOLDER,  $msg);
                }
                else { $x = 0; }
             }
