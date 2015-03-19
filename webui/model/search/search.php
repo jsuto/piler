@@ -362,7 +362,7 @@ class ModelSearchSearch extends Model {
          else if($v == 'note:') { $token = 'note'; continue; }
          else if($v == 'ref:') { $token = 'ref'; continue; }
          else if($v == 'id:') { $token = 'id'; continue; }
-         else {
+         else if($token != 'date1' && $token != 'date2') {
             if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
                $ndate++;
                $a["date$ndate"] = $v;
