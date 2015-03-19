@@ -120,6 +120,8 @@ $config['POP3_HOST'] = 'mail.yourdomain.com';
 $config['POP3_PORT'] = 995;
 $config['POP3_SSL'] = true;
 
+$config['ENABLE_GOOGLE_AUTHENTICATOR'] = 1;
+
 // enable authentication against google (disabled by default)
 // see http://www.mailpiler.org/en/google-apps-free.html for details
 

@@ -106,6 +106,7 @@
 <p>&nbsp;</p>
 
 
+<?php if(ENABLE_GOOGLE_AUTHENTICATOR == 1) { ?>
 
    <div id="search">
 
@@ -127,6 +128,7 @@
          </div>
    </div>
 
+<?php } ?>
 
 
 <p>&nbsp;</p>

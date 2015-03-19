@@ -92,6 +92,7 @@
     
 </form>
 
+<?php if(ENABLE_GOOGLE_AUTHENTICATOR == 1) { ?>
 
 <form method="post" name="setqr" class="form-horizontal">
 
@@ -113,6 +114,7 @@
 
 </form>
 
+<?php } ?>
 
 
 <p>&nbsp;</p>
