@@ -189,6 +189,10 @@ class ModelSearchMessage extends Model {
 
       $has_journal = $this->remove_journal($msg);
 
+      if(Registry::get('auditor_user') == 0 && HEADER_LINE_TO_HIDE) {
+         $msg = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}\n/i", "", $msg);
+      }
+
       $pos = strpos($msg, "\n\r\n");
       if($pos == false) {
          $pos = strpos($msg, "\n\n");
