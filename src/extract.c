@@ -220,7 +220,7 @@ void extract_attachment_content(struct session_data *sdata, struct _state *state
    pid_t pid;
    char outbuf[MAXBUFSIZE];
 
-   if(strcmp(type, "other") == 0) return;
+   if(strcmp(type, "other") == 0 || strcmp(type, "text") == 0) return;
 
 #ifdef HAVE_ZIP
    if(strcmp(type, "odf") == 0){
