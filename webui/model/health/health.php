@@ -197,7 +197,7 @@ class ModelHealthHealth extends Model {
    public function get_first_email_arrival_ts() {
       $query = $this->db->query("SELECT `arrived`  FROM " . TABLE_META . " ORDER BY id ASC LIMIT 1");
 
-      if(isset($query->row)) { return $query->row['arrived']; }
+      if(isset($query->row['arrived'])) { return $query->row['arrived']; }
 
       return time();
    }
