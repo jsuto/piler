@@ -581,7 +581,8 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 
 void translateLine(unsigned char *p, struct _state *state){
    int url=0;
-   int has_url = 0;
+   int has_url=0;
+   unsigned char prev=' ';
 
    if(strcasestr((char *)p, "http://") || strcasestr((char *)p, "https://")) has_url = 1;
 
@@ -589,7 +590,22 @@ void translateLine(unsigned char *p, struct _state *state){
 
       if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
 
-      if( (state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && (*p == '_' || *p == '\'' || *p == '&') ){ continue; }
+      if(state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT){
+
+         /* To fix some unusual addresses, eg.
+          *    "'user@domain'"    -> user@domain
+          *    "''user@domain'"   -> 'user@domain
+          *    "''user'@domain'"  -> 'user'@domain
+          *    "'user'@domain'"   -> user'@domain
+          */
+
+         if(*p == '\'' && prev == '"') { *p = ' '; }
+         if(*p == '\'' && *(p+1) == '"'){ *p = ' '; }
+
+         if(*p == '_' || *p == '\'' || *p == '&'){ continue; }
+
+         prev = *p;
+      }
 
       if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_' || *p == '&') ){ continue; }
 

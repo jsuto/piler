@@ -12,9 +12,9 @@
 #define PROGNAME "piler"
 #define PILERGETD_PROGNAME "pilergetd"
 
-#define VERSION "1.2.0"
+#define VERSION "1.2.0-master"
 
-#define BUILD 909
+#define BUILD 910
 
 #define HOSTID "mailarchiver"
 
@@ -89,6 +89,7 @@
 #define SQL_DOMAIN_TABLE "domain"
 #define SQL_CUSTOMER_TABLE "customer"
 #define SQL_IMPORT_TABLE "import"
+#define SQL_LEGAL_HOLD_TABLE "legal_hold"
 #define SQL_MESSAGES_VIEW "v_messages"
 #define SQL_ATTACHMENTS_VIEW "v_attachment"
 
