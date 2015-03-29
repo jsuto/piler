@@ -244,7 +244,7 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND %s", SQL_METADATA_TABLE, sdata->now, attachment_condition);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND %s AND id NOT IN (SELECT id FROM `%s` WHERE `to` IN (SELECT email FROM `%s`)) AND id NOT IN (SELECT id FROM `%s` WHERE `from` IN (SELECT email FROM `%s`))", SQL_METADATA_TABLE, sdata->now, attachment_condition, SQL_RECIPIENT_TABLE, SQL_LEGAL_HOLD_TABLE, SQL_METADATA_TABLE, SQL_LEGAL_HOLD_TABLE);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
