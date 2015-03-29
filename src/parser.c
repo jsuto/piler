@@ -387,8 +387,8 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
          else {
             sdata->sent = parse_date_header(buf, cfg);
 
-            /* allow +/-1 week drift in the parsed Date: value */
-            if(sdata->now - sdata->sent > 604800 || sdata->sent - sdata->now > 604800) sdata->sent = sdata->now;
+            /* allow -1 week ... +1 day drift in the parsed Date: value */
+            if(sdata->now - sdata->sent > 604800 || sdata->sent - sdata->now > 86400) sdata->sent = sdata->now;
          }
       }
 
