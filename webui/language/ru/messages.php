@@ -478,5 +478,6 @@ $_['text_with_selected'] = 'С выделенным';
 
 $_['text_assigned_email_addresses'] = "Assigned email addresses";
 $_['text_storage'] = "Storage";
+$_['text_legal_hold'] = "Legal hold";
 
 ?>                                                                                                                                                                            

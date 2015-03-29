@@ -355,6 +355,7 @@ define('TABLE_IMPORT', 'import');
 define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('TABLE_AUTOSEARCH', 'autosearch');
+define('TABLE_LEGAL_HOLD', 'legal_hold');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('EOL', "\n");

@@ -9,5 +9,12 @@ alter table retention_rule add column `body` varchar(128) default null;
 create unique index `entry` on archiving_rule (`domain`,`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 create unique index `entry` on retention_rule (`domain`,`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`);
 
+-- 2015.03.29
+
 create index metadata_idx10 on metadata(`from`);
+
+create table if not exists `legal_hold` (
+   email varchar(128) default not null
+) Engine=InnoDB;
+
 

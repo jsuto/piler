@@ -477,5 +477,6 @@ $_['text_ldap_delete_confirm_message'] = "Souhaitez-vous supprimer l'entrée LDA
 $_['text_customer_delete_confirm_message'] = 'Souhaitez-vous supprimer le client';
 $_['text_with_selected'] = 'Selection';
 $_['text_storage'] = "Stockage";
+$_['text_legal_hold'] = "Legal hold";
 
 ?>

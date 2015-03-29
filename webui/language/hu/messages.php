@@ -198,6 +198,7 @@ $_['text_ldap_bind_dn'] = "LDAP csatlakozási DN";
 $_['text_ldap_bind_pw'] = "LDAP csatlakozási jelszó";
 $_['text_ldap_host'] = "LDAP kiszolgáló";
 $_['text_ldap_type'] = "LDAP típus";
+$_['text_legal_hold'] = "Legal hold";
 $_['text_load'] = "Betöltés";
 $_['text_loading'] = "töltődik";
 $_['text_logged_in'] = "Bejelentkezés";

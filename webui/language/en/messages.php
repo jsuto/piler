@@ -197,6 +197,7 @@ $_['text_ldap_bind_dn'] = "LDAP bind DN";
 $_['text_ldap_bind_pw'] = "LDAP bind password";
 $_['text_ldap_host'] = "LDAP host";
 $_['text_ldap_type'] = "LDAP type";
+$_['text_legal_hold'] = "Legal hold";
 $_['text_load'] = "Load";
 $_['text_loading'] = "loading";
 $_['text_logged_in'] = "Logged in";
