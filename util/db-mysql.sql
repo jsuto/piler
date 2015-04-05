@@ -426,7 +426,7 @@ create table if not exists `autosearch` (
 
 
 create table if not exists `legal_hold` (
-   email varchar(128) default not null
+   email varchar(128) unique not null
 ) Engine=InnoDB;
 
 
