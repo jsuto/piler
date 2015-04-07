@@ -3,12 +3,14 @@
 ini_set("session.save_path", "/tmp");
 
 $webuidir = "";
+$email = "";
 $daemonize = 0;
 
 
 $opts = 'hd::';
 $lopts = array(
-                'webui:'
+                'webui:',
+                'email:'
               );
 
 
@@ -21,9 +23,13 @@ if($options = getopt($opts, $lopts)) {
       echo("\nError: must provide path to WebUI directory\n\n");
       exit;
    }
-    
+
    if(isset($options['d']))  {
       $daemonize = 1;
+   }
+
+   if(isset($options['email'])) {
+      $email = $options['email'];
    }
 
 }
@@ -80,20 +86,24 @@ if($daemonize == 1) {
    }
 }
 else {
-   poll_imap_accounts();
+   poll_imap_accounts($email);
 }
 
 
 
 
-function poll_imap_accounts() {
+function poll_imap_accounts($email = '') {
    $db = Registry::get('db');
 
    $ug = new ModelUserGoogle();
    $g = new ModelGoogleGoogle();
 
 
-   $query = $db->query("SELECT email FROM " . TABLE_GOOGLE);
+   if($email) {
+      $query = $db->query("SELECT email FROM " . TABLE_GOOGLE . " WHERE email=?", array($email));
+   } else {
+      $query = $db->query("SELECT email FROM " . TABLE_GOOGLE);
+   }
 
    if(isset($query->rows)) {
       foreach($query->rows as $q) {
@@ -110,8 +120,9 @@ function display_help() {
     echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
     echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
     echo("options:\n");
-    echo("\t-d Daemonize the imap polling\n");
-    echo("\t-h Prints this help screen and exits\n");
+    echo("\t--email: Email address to poll. Leave it empty to poll all email addresses\n");
+    echo("\t-d:      Daemonize the imap polling\n");
+    echo("\t-h:      Prints this help screen and exits\n");
 }
 
 
