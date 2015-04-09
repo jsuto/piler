@@ -94,25 +94,12 @@ END:
 
 
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result, fpos=0;
-   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE], __folder[SMALLBUFSIZE];
+   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result;
+   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
 
    /* imap cmd: SELECT */
 
-   memset(__folder, 0, sizeof(__folder));
-
-   for(; *folder; folder++){
-      if(fpos < sizeof(__folder)-2){
-         if(*folder == '"'){
-            __folder[fpos] = '\\';
-            fpos++;
-         }
-         __folder[fpos] = *folder;
-         fpos++;
-      }
-   }
-
-   snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, __folder);
+   snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", *seq, folder);
 
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
@@ -411,7 +398,7 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
       if(strstr(buf, tagok)) break;
    }
 
- 
+
    p = buf;
    do {
       memset(puf, 0, sizeof(puf));
@@ -436,10 +423,10 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
                q++;
                fldrlen = strtol(q, NULL, 10);
             } else {
-               if(*q == '"') q++;
+               //if(*q == '"') q++;
 
-               if(q[strlen(q)-1] == ' ') q[strlen(q)-1] = '\0';
-               if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
+               //if(q[strlen(q)-1] == ' ') q[strlen(q)-1] = '\0';
+               //if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
                
                if(fldrlen) {
                   ruf = malloc(strlen(q) * 2 + 1);
