@@ -437,6 +437,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && (strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0 || strncasecmp(buf, "To:", strlen("To:")) == 0) ){
       state->is_header = 1;
       state->is_1st_header = 1;
+      sdata->ms_journal = 0;
       state->message_state = MSG_RECIPIENT;
    }
 
