@@ -215,7 +215,11 @@ class ModelSearchSearch extends Model {
 
 
       if(isset($data['aname']) && $data['aname']) {
-         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $data['aname'] . "') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+
+         $match = $data['aname'];
+         if($emailfilter) { $match = "( $match ) & $emailfilter"; }
+
+         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $match . "') ORDER BY `id` $order LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else if(isset($data['tag']) && $data['tag']) {
          $id_list = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag');
