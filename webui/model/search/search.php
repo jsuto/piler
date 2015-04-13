@@ -214,7 +214,10 @@ class ModelSearchSearch extends Model {
       }
 
 
-      if(isset($data['tag']) && $data['tag']) {
+      if(isset($data['aname']) && $data['aname']) {
+         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $data['aname'] . "') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+      }
+      else if(isset($data['tag']) && $data['tag']) {
          $id_list = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag');
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       }
@@ -243,7 +246,8 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
          foreach($query->rows as $a) {
-            array_push($ids, $a['id']);
+            if(isset($a['mid'])) { array_push($ids, $a['mid']); }
+            else { array_push($ids, $a['id']); }
 
             if($q) { $q .= ",?"; }
             else { $q = "?"; }
@@ -322,6 +326,7 @@ class ModelSearchSearch extends Model {
                     'date2'           => '',
                     'direction'       => '',
                     'size'            => '',
+                    'aname'           => '',
                     'attachment_type' => '',
                     'tag'             => '',
                     'note'            => '',
@@ -357,6 +362,7 @@ class ModelSearchSearch extends Model {
          else if($v == 'date1:') { $token = 'date1'; continue; }
          else if($v == 'date2:') { $token = 'date2'; continue; }
          else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
+         else if($v == 'aname:') { $token = 'aname'; continue; }
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
          else if($v == 'note:') { $token = 'note'; continue; }
@@ -370,6 +376,13 @@ class ModelSearchSearch extends Model {
          }
 
          if($token == 'match') { $a['match'][] = $v; }
+         else if($token == 'aname') {
+            if($v != '|') {
+               $a['aname'] .= '"' . $v . '"';
+            } else {
+               $a['aname'] .= ' | ';
+            }
+         }
          else if($token == 'date1') { $a['date1'] = ' ' . $v; }
          else if($token == 'date2') { $a['date2'] = ' ' . $v; }
          else if($token == 'tag') { $a['tag'] .= ' ' . $v; }
