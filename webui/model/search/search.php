@@ -102,7 +102,9 @@ class ModelSearchSearch extends Model {
 
             $sd = $this->fix_email_address_for_sphinx($session->get('domain'));
 
-            foreach ($session_domains as $d) { $sd .= '|' . $d; }
+            foreach ($session_domains as $d) {
+               if($d) { $sd .= '|' . $d; }
+            }
 
             $sd = preg_replace("/^\|/", "", $sd);
 
@@ -506,7 +508,7 @@ class ModelSearchSearch extends Model {
                $rcpt[$r['id']] = $r['to'];
             }
             else {
-               $rcpt[$r['id']] .= ",\n" . $r['to'];
+               if(Registry::get('auditor_user') == 1) { $rcpt[$r['id']] .= ",\n" . $r['to']; }
             }
          }
       }
