@@ -8,10 +8,10 @@ class ModelSearchMessage extends Model {
                                    );
 
 
-   public function verify_message($id = '', $data = '') {
-      if($id == '') { return 0; }
+   public function verify_message($piler_id = '', $data = '') {
+      if($piler_id == '') { return 0; }
 
-      $q = $this->db->query("SELECT `size`, `hlen`, `digest`, `bodydigest`,`attachments` FROM " . TABLE_META . " WHERE piler_id=?", array($id));
+      $q = $this->db->query("SELECT `size`, `hlen`, `digest`, `bodydigest`,`attachments` FROM " . TABLE_META . " WHERE piler_id=?", array($piler_id));
 
       $digest = $q->row['digest'];
       $bodydigest = $q->row['bodydigest'];
@@ -22,7 +22,14 @@ class ModelSearchMessage extends Model {
       $_digest = openssl_digest($data, "SHA256");
       $_bodydigest = openssl_digest(substr($data, $hlen), "SHA256");
 
-      if($_digest == $digest && $_bodydigest == $bodydigest) { return 1; }
+      if($_digest == $digest && $_bodydigest == $bodydigest) {
+
+         if(TSA_PUBLIC_KEY_FILE) {
+            $id = $this->get_id_by_piler_id($piler_id);
+            if($this->check_rfc3161_timestamp_for_id($id) == 1) { return 1; }
+         }
+         else { return 1; }
+      }
 
       return 0;
    }
@@ -759,6 +766,52 @@ class ModelSearchMessage extends Model {
       }
 
       return array();
+   }
+
+
+   public function check_rfc3161_timestamp_for_id($id = 0) {
+      $s = '';
+      $computed_hash = '';
+
+      /*
+       * determine which entry in the timestamp table holds the aggregated hash value,
+       * then compute the aggregated hash value for the digests between start_id and stop_id.
+       * If the hashes are the same, then verify by the public key as well
+       */
+
+      $query = $this->db->query("SELECT `start_id`, `stop_id`, `hash_value`, `response_time`, `response_string` FROM " . TABLE_TIMESTAMP . " WHERE start_id <= ? AND stop_id >= ?", array($id, $id));
+
+      if(isset($query->row['start_id']) && isset($query->row['stop_id'])) {
+
+         if(MEMCACHED_ENABLED) {
+            $cache_key = "rfc3161_" . $query->row['start_id'] . "+" . $query->row['stop_id'];
+            $memcache = Registry::get('memcache');
+            $computed_hash = $memcache->get($cache_key);
+         }
+
+         if($computed_hash == '') {
+
+            $query2 = $this->db->query("SELECT digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ?", array($query->row['start_id'], $query->row['stop_id']));
+
+            foreach($query2->rows as $q) {
+               $s .= $q['digest'];
+            }
+
+            $computed_hash = sha1($s);
+
+            if(MEMCACHED_ENABLED) {
+               $memcache->add($cache_key, $computed_hash, 0, MEMCACHED_TTL);
+            }
+         }
+
+         if($query->row['hash_value'] == $computed_hash) {
+            $validate = TrustedTimestamps::validate($query->row['hash_value'], $query->row['response_string'], $query->row['response_time'], TSA_PUBLIC_KEY_FILE);
+            if($validate == true) { return 1; }
+         }
+
+      }
+
+      return 0;
    }
 
 

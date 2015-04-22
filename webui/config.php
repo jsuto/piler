@@ -187,6 +187,12 @@ $config['DECRYPT_BINARY'] = '/usr/local/bin/pilerget';
 $config['DECRYPT_ATTACHMENT_BINARY'] = '/usr/local/bin/pileraget';
 $config['DECRYPT_BUFFER_LENGTH'] = 65536;
 
+$config['OPENSSL_BINARY'] = '/usr/bin/openssl';
+$config['TSA_URL'] = '';
+$config['TSA_PUBLIC_KEY_FILE'] = '';
+$config['TSA_START_ID'] = 1;
+$config['TSA_STAMP_REQUEST_UNIT_SIZE'] = 10000;
+
 $config['DB_DRIVER'] = 'mysql';
 $config['DB_PREFIX'] = '';
 $config['DB_HOSTNAME'] = 'localhost';
@@ -357,6 +363,7 @@ define('TABLE_GOOGLE', 'google');
 define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('TABLE_AUTOSEARCH', 'autosearch');
 define('TABLE_LEGAL_HOLD', 'legal_hold');
+define('TABLE_TIMESTAMP', 'timestamp');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('EOL', "\n");
