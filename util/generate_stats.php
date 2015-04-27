@@ -6,6 +6,8 @@ $start = NULL;
 $stop = NULL;
 $timestart = microtime(true);
 
+ini_set("session.save_path", "/tmp");
+
 // get options from command line
 $opts = 'h::';
 $lopts = array(

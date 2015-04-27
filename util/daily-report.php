@@ -5,6 +5,8 @@ $verbose = 0;
 
 $archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
 $averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
+
+ini_set("session.save_path", "/tmp");
    
 $_SERVER['HTTP_USER_AGENT'] = "daily/cron";
 
@@ -122,8 +124,8 @@ $mail = new ModelMailMail();
       $averagemessagesizeraw = $averagesqlsizeraw = $averagesphinxsizeraw = $daysleftatcurrentrate = 0;
 
 	  /* these next counters are for projecting space */
-	  $averagemessagesweekraw = ($processed_emails[1]) / 7;
-	  $averagemessagesmonthraw = ($processed_emails[2]) / 30;
+	  $averagemessagesweekraw = ($processed_emails['last_7_days_size']) / 7;
+	  $averagemessagesmonthraw = ($processed_emails['last_30_days_size']) / 30;
 
           if($counters['rcvd'] > 0) {
              $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];
@@ -175,8 +177,9 @@ $mail = new ModelMailMail();
 
       $rcpt = array(ADMIN_EMAIL);
 
-      $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
-
+      if(SMARTHOST) {
+         $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
+      }
 
 
 if($fp) {
