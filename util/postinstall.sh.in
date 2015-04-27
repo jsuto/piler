@@ -44,7 +44,7 @@ load_default_values() {
 make_certificate() {
    if [ ! -f $SYSCONFDIR/piler.pem ]; then
       echo -n "Making an ssl certificate ... "
-      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler.pem -out 1.cert
+      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler.pem -out 1.cert -sha1
       cat 1.cert >> $SYSCONFDIR/piler.pem
       chmod 600 $SYSCONFDIR/piler.pem
       rm 1.cert
@@ -281,6 +281,7 @@ make_cron_entries() {
    echo "### PILERSTART" >> $CRON_TMP
    echo "5,35 * * * * $LIBEXECDIR/piler/indexer.delta.sh" >> $CRON_TMP
    echo "30   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
+   echo "15,45 * * * * $LIBEXECDIR/piler/indexer.attachment.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
    echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php --webui $DOCROOT" >> $CRON_TMP
