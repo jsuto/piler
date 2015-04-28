@@ -44,9 +44,11 @@ case "$1" in
         status)
                 if check_status;
                  then
-                echo "${NAME} is running."
+                    echo "${NAME} is running."
+                    exit 0
                  else
-                echo "${NAME} is not running."
+                    echo "${NAME} is not running."
+                    exit 1
                 fi
         ;;
 
