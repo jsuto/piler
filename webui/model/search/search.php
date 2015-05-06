@@ -439,7 +439,7 @@ class ModelSearchSearch extends Model {
 
       $s = $this->fixup_sphinx_operators($s);
 
-      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') ");
+      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
       if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "sphinx query: " . $q->query . ", hits: " . $q->total_found); }
 
       foreach($q->rows as $a) {
