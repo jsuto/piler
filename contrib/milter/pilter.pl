@@ -8,6 +8,7 @@ use Data::Dumper;
 use Sys::Syslog;
 use Sys::Syslog qw(:DEFAULT setlogsock);
 use Time::HiRes qw(gettimeofday);
+use Getopt::Long;
 
 my $savedir = "/var/piler/imap";
 my $username = 'piler';
@@ -22,7 +23,17 @@ my $curdir = "cur";
 my $newname;
 my $curname;
 my $messageid;
+my $help = 0;
 
+my $opts = GetOptions(
+                     "conn=s" => \$conn,
+                     "username=s" => \$username,
+                     "savedir=s" => \$savedir,
+                     "h" => \$help,
+                     "help" => \$help
+                    );
+
+if($help == 1) { die("usage: $0 --conn inet:33333\@127.0.0.1 --username piler --savedir /var/piler/imap"); }
 
 chdir $savedir || die("cannot chdir to $savedir");
 
