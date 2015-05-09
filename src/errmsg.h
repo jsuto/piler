@@ -18,6 +18,7 @@
 #define ERR_OPEN_TMP_FILE "ERR: opening a tempfile"
 #define ERR_TIMED_OUT "ERR: timed out"
 #define ERR_FORK_FAILED "ERR: cannot fork()"
+#define ERR_OPEN_DEDUP_FILE "ERR: cannot open dedup file"
 
 #define ERR_MYSQL_CONNECT "Cannot connect to mysql server"
 #define ERR_PSQL_CONNECT "Cannot connect to PSql server"

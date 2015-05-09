@@ -263,6 +263,24 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: touch %s OK (%s)", sdata->ttmpfile, state->message_id_hash, state->message_id);
 
+
+
+   if(cfg->mmap_dedup_test == 1 && data->dedup != MAP_FAILED && data->child_serial >= 0 && data->child_serial < MAXCHILDREN){
+
+      if(strstr(data->dedup, state->message_id_hash)){
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: dedup string: %s", sdata->ttmpfile, data->dedup);
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: message-id-hash=%s, serial=%d", sdata->ttmpfile, state->message_id_hash, data->child_serial);
+
+         remove_stripped_attachments(state);
+         return ERR_EXISTS;
+      }
+
+      memcpy(data->dedup + data->child_serial*DIGEST_LENGTH*2, state->message_id_hash, DIGEST_LENGTH*2);
+   }
+
+
+
+
    /* store base64 encoded file attachments */
 
    if(state->n_attachments > 0){
