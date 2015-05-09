@@ -253,7 +253,7 @@ int process_message(struct session_data *sdata, struct _state *state, struct __d
       return ERR_EXISTS;
    }
 
-   fd = open(state->message_id_hash, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
+   fd = open(state->message_id_hash, O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
    if(fd == -1){
       remove_stripped_attachments(state);
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: touch %s FAILED (%s)", sdata->ttmpfile, state->message_id_hash, state->message_id);
