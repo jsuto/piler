@@ -107,8 +107,8 @@ $mail = new ModelMailMail();
 
       list ($uptime, $cpuload) = $health->uptime();
 
-      $cpuinfo = 100 - (int)file_get_contents(CPUSTAT);
-
+      $x = exec(CPU_USAGE_COMMAND);
+      $cpuinfo = 100 - (int)$x;
 
       list($totalmem, $meminfo, $totalswap, $swapinfo) = $health->meminfo();
       $shortdiskinfo = $health->diskinfo();
@@ -124,8 +124,8 @@ $mail = new ModelMailMail();
       $averagemessagesizeraw = $averagesqlsizeraw = $averagesphinxsizeraw = $daysleftatcurrentrate = 0;
 
 	  /* these next counters are for projecting space */
-	  $averagemessagesweekraw = ($processed_emails['last_7_days_size']) / 7;
-	  $averagemessagesmonthraw = ($processed_emails['last_30_days_size']) / 30;
+	  $averagemessagesweekraw = 0;
+	  $averagemessagesmonthraw = 0;
 
           if($counters['rcvd'] > 0) {
              $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];

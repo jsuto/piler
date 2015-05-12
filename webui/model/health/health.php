@@ -16,9 +16,9 @@ class ModelHealthHealth extends Model {
 
       $ret = $error;
       $time = 0;
+      $time_start = microtime(true);
 
       if($smtp[0] && $smtp[1] && is_numeric($smtp[1]) && $smtp[1] > 0 && $smtp[1] < 65536) {
-         $time_start = microtime(true);
 
          $s = @fsockopen($smtp[0], $smtp[1]);
 

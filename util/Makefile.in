@@ -36,6 +36,7 @@ install:
 	$(INSTALL) -m 0755 $(srcdir)/sign.php $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/indexer.delta.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/indexer.main.sh $(DESTDIR)$(libexecdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/indexer.attachment.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/import.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/purge.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/postinstall.sh $(DESTDIR)$(libexecdir)/piler
