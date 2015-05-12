@@ -192,6 +192,7 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    if(state->is_1st_header == 1 && sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
       if(sdata->import == 0){
          sdata->ms_journal = 1;
+         memset(state->message_id, 0, SMALLBUFSIZE);
       }
    }
 
