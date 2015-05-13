@@ -69,6 +69,7 @@ typedef void signal_func (int);
 
 struct child {
    pid_t pid;
+   int serial;
    int messages;
    int status;
 };
@@ -288,6 +289,8 @@ struct __data {
    struct node *mydomains[MAXHASH];
    struct node *imapfolders[MAXHASH];
    struct import *import;
+   char *dedup;
+   int child_serial;
 
 #ifdef NEED_MYSQL
    MYSQL_STMT *stmt_generic;

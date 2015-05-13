@@ -8,6 +8,7 @@
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/mman.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -79,6 +80,7 @@ static void takesig(int sig){
                    if(quit == 0){
                       i = search_slot_by_pid(pid);
                       if(i >= 0){
+                         children[i].serial = i;
                          children[i].status = READY;
                          children[i].pid = child_make(&children[i]);
                       }
@@ -108,7 +110,7 @@ static void child_main(struct child *ptr){
 
    ptr->messages = 0;
 
-   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d) started main()", getpid());
+   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) started main()", getpid(), ptr->serial);
 
    while(1){
       if(received_sighup == 1){
@@ -129,6 +131,7 @@ static void child_main(struct child *ptr){
 
       syslog(LOG_PRIORITY, "connection from %s", s);
 
+      data.child_serial = ptr->serial;
 
       sig_block(SIGHUP);
       ptr->messages += handle_smtp_session(new_sd, &data, &cfg);
@@ -137,7 +140,7 @@ static void child_main(struct child *ptr){
       close(new_sd);
 
       if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
-         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d) served enough: %d", getpid(), ptr->messages);
+         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
          break;
       }
 
@@ -184,10 +187,12 @@ int child_pool_create(){
       children[i].pid = 0;
       children[i].messages = 0;
       children[i].status = UNDEF;
+      children[i].serial = -1;
    }
 
    for(i=0; i<cfg.number_of_worker_processes; i++){
       children[i].status = READY;
+      children[i].serial = i;
       children[i].pid = child_make(&children[i]);
 
       if(children[i].pid == -1){
@@ -236,6 +241,8 @@ void p_clean_exit(){
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
    unlink(cfg.pidfile);
+
+   if(data.dedup != MAP_FAILED) munmap(data.dedup, MAXCHILDREN*DIGEST_LENGTH*2);
 
 #ifdef HAVE_STARTTLS
    if(data.ctx){
@@ -345,7 +352,7 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int i, rc, yes=1, daemonise=0;
+   int i, rc, yes=1, daemonise=0, dedupfd;
    char port_string[8];
    struct addrinfo hints, *res;
 
@@ -384,6 +391,7 @@ int main(int argc, char **argv){
    initrules(data.retention_rules);
    data.ctx = NULL;
    data.ssl = NULL;
+   data.dedup = MAP_FAILED;
    memset(data.starttls, 0, sizeof(data.starttls));
 
 
@@ -425,6 +433,13 @@ int main(int argc, char **argv){
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
 
+   dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
+   if(dedupfd == -1) fatal(ERR_OPEN_DEDUP_FILE);
+
+   data.dedup = mmap(NULL, MAXCHILDREN*DIGEST_LENGTH*2, PROT_READ|PROT_WRITE, MAP_SHARED, dedupfd, 0);
+   close(dedupfd);
+
+   if(data.dedup == MAP_FAILED) syslog(LOG_INFO, "cannot mmap() %s, errno=%d", MESSAGE_ID_DEDUP_FILE, errno);
 
    syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
 

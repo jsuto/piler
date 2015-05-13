@@ -89,6 +89,8 @@ struct __config {
 
    int syslog_recipients;
 
+   int mmap_dedup_test;
+
    int debug;
 };
 

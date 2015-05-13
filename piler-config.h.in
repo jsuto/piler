@@ -4,8 +4,11 @@
 
 #define CONFDIR "/usr/local/etc"
 #define DATADIR "/usr/local/var"
+#define DATAROOTDIR "/usr/local/share"
 
 #define KEYFILE CONFDIR "/piler.key"
+
+#define MESSAGE_ID_DEDUP_FILE DATAROOTDIR "/piler/deduphelper"
 
 #define HAVE_DAEMON 1
 

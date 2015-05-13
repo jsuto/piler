@@ -340,6 +340,27 @@ AC_SUBST(LIBEXECDIR)
 AC_DEFINE_UNQUOTED(LIBEXECDIR,"$libexec_dir",[where to look for the piler helpers])
 
 
+dnl configure dataroot directory
+
+dataroot_dir=`echo $datarootdir | grep prefix`
+
+if test -n "$dataroot_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        dataroot_dir="$ac_default_prefix/share"
+    else
+        dataroot_dir="$prefix/share"
+    fi
+else
+    dataroot_dir="$datarootdir"
+fi
+
+
+DATAROOTDIR=$dataroot_dir
+AC_SUBST(DATAROOTDIR)
+AC_DEFINE_UNQUOTED(DATAROOTDIR,"$dataroot_dir",[where to look for the share data files])
+
+
 AC_DEFINE_UNQUOTED(VIRUS_TEMPLATE, "$my_prefix/share/clapf/template.virus", [where the virus template is])
 AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "$my_prefix/share/clapf/zombienets.regex", [where the virus template is])
 

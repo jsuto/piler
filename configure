@@ -621,6 +621,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+DATAROOTDIR
 LIBEXECDIR
 DATADIR
 CFGDIR
@@ -4605,6 +4606,30 @@ LIBEXECDIR=$libexec_dir
 
 cat >>confdefs.h <<_ACEOF
 #define LIBEXECDIR "$libexec_dir"
+_ACEOF
+
+
+
+
+dataroot_dir=`echo $datarootdir | grep prefix`
+
+if test -n "$dataroot_dir"; then
+    if test "$prefix" = "NONE"
+    then
+        dataroot_dir="$ac_default_prefix/share"
+    else
+        dataroot_dir="$prefix/share"
+    fi
+else
+    dataroot_dir="$datarootdir"
+fi
+
+
+DATAROOTDIR=$dataroot_dir
+
+
+cat >>confdefs.h <<_ACEOF
+#define DATAROOTDIR "$dataroot_dir"
 _ACEOF
 
 

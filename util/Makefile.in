@@ -43,6 +43,7 @@ install:
 
 	$(INSTALL) -m 0755 $(srcdir)/db-mysql.sql $(DESTDIR)$(datarootdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/db-mysql-root.sql.in $(DESTDIR)$(datarootdir)/piler
+	$(INSTALL) -m 0644 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(srcdir)/deduphelper $(DESTDIR)$(datarootdir)/piler
 
 clean:
 	rm -f postinstall.sh
