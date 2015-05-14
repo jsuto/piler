@@ -433,13 +433,15 @@ int main(int argc, char **argv){
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
 
-   dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
-   if(dedupfd == -1) fatal(ERR_OPEN_DEDUP_FILE);
+   if(cfg.mmap_dedup_test == 1){
+      dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
+      if(dedupfd == -1) fatal(ERR_OPEN_DEDUP_FILE);
 
-   data.dedup = mmap(NULL, MAXCHILDREN*DIGEST_LENGTH*2, PROT_READ|PROT_WRITE, MAP_SHARED, dedupfd, 0);
-   close(dedupfd);
+      data.dedup = mmap(NULL, MAXCHILDREN*DIGEST_LENGTH*2, PROT_READ|PROT_WRITE, MAP_SHARED, dedupfd, 0);
+      close(dedupfd);
 
-   if(data.dedup == MAP_FAILED) syslog(LOG_INFO, "cannot mmap() %s, errno=%d", MESSAGE_ID_DEDUP_FILE, errno);
+      if(data.dedup == MAP_FAILED) syslog(LOG_INFO, "cannot mmap() %s, errno=%d", MESSAGE_ID_DEDUP_FILE, errno);
+   }
 
    syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
 
