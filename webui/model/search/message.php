@@ -600,6 +600,8 @@ class ModelSearchMessage extends Model {
 
          if(ENABLE_REMOTE_IMAGES == 0) { $chunk = preg_replace("/\<img([^\>]+)\>/i", "<img src=\"" . REMOTE_IMAGE_REPLACEMENT . "\" />", $chunk); }
 
+         $chunk = preg_replace("/\<base href/i", "<qqqq", $chunk);
+
          /* prevent scripts in the HTML part */
 
          $chunk = preg_replace("/document\.write/", "document.writeee", $chunk);
