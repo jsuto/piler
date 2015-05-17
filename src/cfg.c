@@ -94,7 +94,7 @@ struct _parse_rule config_parse_rules[] =
    { "number_of_worker_processes", "integer", (void*) int_parser, offsetof(struct __config, number_of_worker_processes), "10", sizeof(int)},
    { "pemfile", "string", (void*) string_parser, offsetof(struct __config, pemfile), "", MAXVAL-1},
    { "pidfile", "string", (void*) string_parser, offsetof(struct __config, pidfile), PIDFILE, MAXVAL-1},
-   { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "", MAXVAL-1},
+   { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "X-piler-id:", MAXVAL-1},
    { "pilergetd_listen_addr", "string", (void*) string_parser, offsetof(struct __config, pilergetd_listen_addr), "127.0.0.1", MAXVAL-1},
    { "pilergetd_listen_port", "integer", (void*) int_parser, offsetof(struct __config, pilergetd_listen_port), "10091", sizeof(int)},
    { "pilergetd_password", "string", (void*) string_parser, offsetof(struct __config, pilergetd_password), "xxxxxxxxxx", MAXVAL-1},

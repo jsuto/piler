@@ -181,19 +181,31 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
    state->line_num++;
    len = strlen(buf);
 
-   if(state->is_1st_header == 1 && (strncmp(buf, "Received: by piler", strlen("Received: by piler")) == 0 || strncmp(buf, "X-piler-id: ", strlen("X-piler-id: ")) == 0) ){
-      sdata->restored_copy = 1;
-   }
+   /*
+    * check a few things in the 1st header
+    */
 
-   if(state->is_1st_header == 1 && *(cfg->spam_header_line) != '\0' && strncmp(buf, cfg->spam_header_line, strlen(cfg->spam_header_line)) == 0){
-      sdata->spam_message = 1;
-   }
+   if(state->is_1st_header == 1){
 
-   if(state->is_1st_header == 1 && sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
-      if(sdata->import == 0){
-         sdata->ms_journal = 1;
-         memset(state->message_id, 0, SMALLBUFSIZE);
+      if(strncmp(buf, "Received: by piler", strlen("Received: by piler")) == 0){
+         sdata->restored_copy = 1;
       }
+
+      if(*(cfg->piler_header_field) != 0 && strncmp(buf, cfg->piler_header_field, strlen(cfg->piler_header_field)) == 0){
+         sdata->restored_copy = 1;
+      }
+
+      if(*(cfg->spam_header_line) != '\0' && strncmp(buf, cfg->spam_header_line, strlen(cfg->spam_header_line)) == 0){
+         sdata->spam_message = 1;
+      }
+
+      if(sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
+         if(sdata->import == 0){
+            sdata->ms_journal = 1;
+            memset(state->message_id, 0, SMALLBUFSIZE);
+         }
+      }
+
    }
 
 
