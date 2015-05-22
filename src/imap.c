@@ -104,7 +104,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
       trimBuffer(buf);
-      printf("error: %s\n", buf);
+      printf("select cmd error: %s\n", buf);
       return rc;
    }
 
