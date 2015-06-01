@@ -47,12 +47,12 @@ cp -f %{_topdir}/BUILD/%{name}-%{version}/etc/example.conf $RPM_BUILD_ROOT/etc/p
 %dir /var/piler/store
 %dir /var/piler/stat
 %dir /var/run/piler
-%attr(0655,piler,piler) /usr/bin/pileraget
-%attr(0655,piler,piler) /usr/bin/pilerexport
-%attr(0655,piler,piler) /usr/bin/pilerget
-%attr(0655,piler,piler) /usr/bin/pilerpurge
-%attr(0655,piler,piler) /usr/bin/pilerimport
-%attr(0655,piler,piler) /usr/bin/reindex
+%attr(6555,piler,piler) /usr/bin/pileraget
+%attr(6555,piler,piler) /usr/bin/pilerexport
+%attr(6555,piler,piler) /usr/bin/pilerget
+%attr(6555,piler,piler) /usr/bin/pilerpurge
+%attr(6555,piler,piler) /usr/bin/pilerimport
+%attr(6555,piler,piler) /usr/bin/reindex
 /etc/init.d/rc.piler
 /etc/init.d/rc.pilergetd
 /etc/init.d/rc.searchd
