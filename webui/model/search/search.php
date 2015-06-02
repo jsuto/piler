@@ -166,6 +166,24 @@ class ModelSearchSearch extends Model {
          $i++; 
       }
 
+      if(SEARCH_QUERY_QUOTING == 1) {
+         $quoting = 0;
+
+         for($i=2; $i<count($data['match']); $i++) {
+            if(preg_match("/^\"/", $data['match'][$i])) {
+               $quoting = 1;
+            }
+
+            if($quoting == 0) {
+               $data['match'][$i] = '"' . $data['match'][$i] . '"';
+            }
+
+            if(preg_match("/\"$/", $data['match'][$i])) {
+               $quoting = 0;
+            }
+         }
+      }
+
       $match = implode(" ", $data['match']);
 
       if($emailfilter) {

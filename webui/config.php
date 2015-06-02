@@ -47,6 +47,8 @@ $config['DEMO_MODE'] = 0;
 
 $config['SHOW_MENU_FOR_OUTLOOK'] = 0;
 
+$config['SEARCH_QUERY_QUOTING'] = 0;
+
 $config['TIMEZONE'] = 'Europe/Budapest';
 
 $config['PROVIDED_BY'] = 'www.mailpiler.org';
@@ -164,7 +166,7 @@ $config['MAX_SEARCH_HITS'] = 1000;
 $config['DEFAULT_RETENTION'] = 0;
 
 $config['LOCALHOST'] = '127.0.0.1';
-$config['PILER_HOST'] = '1.2.3.4';
+$config['PILER_HOST'] = '127.0.0.1';
 $config['PILER_PORT'] = 25;
 $config['SMARTHOST'] = '127.0.0.1';
 $config['SMARTHOST_PORT'] = 10026;
