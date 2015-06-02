@@ -24,9 +24,9 @@ Features:
 
 - AD / LDAP authentication
 
-- IMAP authentication
+- IMAP, POP3 authentication
 
-- single sign-on
+- single sign-on (SSO)
 
 - Google Apps support
 
