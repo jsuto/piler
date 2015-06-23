@@ -55,24 +55,27 @@ class ControllerLoginLogin extends Controller {
 
             else {
                $data = $session->get("auth_data");
-               $this->model_user_auth->apply_user_auth_session($data);
-               $session->remove("auth_data");
 
-               $this->model_user_prefs->get_user_preferences($session->get('username'));
+               if(isset($data['username'])) {
+                  $this->model_user_auth->apply_user_auth_session($data);
+                  $session->remove("auth_data");
 
-               if(ENABLE_SAAS == 1) {
-                  $this->model_saas_customer->online($session->get('email'));
-               }
+                  $this->model_user_prefs->get_user_preferences($session->get('username'));
 
-               LOGGER('logged in');
+                  if(ENABLE_SAAS == 1) {
+                     $this->model_saas_customer->online($session->get('email'));
+                  }
 
-               if(isAdminUser() == 1) {
-                  header("Location: " . SITE_URL . "index.php?route=health/health");
+                  LOGGER('logged in');
+
+                  if(isAdminUser() == 1) {
+                     header("Location: " . SITE_URL . "index.php?route=health/health");
+                     exit;
+                  }
+
+                  header("Location: " . SITE_URL . "search.php");
                   exit;
                }
-
-               header("Location: " . SITE_URL . "search.php");
-               exit;
             }
          }
          else {

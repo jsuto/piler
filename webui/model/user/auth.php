@@ -41,7 +41,13 @@ class ModelUserAuth extends Model {
 
       if(ENABLE_LDAP_AUTH == 1) {
          $ok = $this->checkLoginAgainstLDAP($username, $password, $data);
-         if($ok == 1) { return $ok; }
+         if($ok == 1) {
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
+            return $ok;
+         }
       }
 
       if(ENABLE_IMAP_AUTH == 1) {
