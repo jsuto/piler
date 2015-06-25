@@ -99,6 +99,7 @@ struct _parse_rule config_parse_rules[] =
    { "pilergetd_listen_port", "integer", (void*) int_parser, offsetof(struct __config, pilergetd_listen_port), "10091", sizeof(int)},
    { "pilergetd_password", "string", (void*) string_parser, offsetof(struct __config, pilergetd_password), "xxxxxxxxxx", MAXVAL-1},
    { "pilergetd_pidfile", "string", (void*) string_parser, offsetof(struct __config, pilergetd_pidfile), PILERGETD_PIDFILE, MAXVAL-1},
+   { "process_rcpt_to_addresses", "integer", (void*) int_parser, offsetof(struct __config, process_rcpt_to_addresses), "0", sizeof(int)},
    { "queuedir", "string", (void*) string_parser, offsetof(struct __config, queuedir), QUEUE_DIR, MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct __config, server_id), "0", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct __config, spam_header_line), "", MAXVAL-1},

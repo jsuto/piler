@@ -45,6 +45,8 @@ struct __config {
 
    int backlog;
 
+   int process_rcpt_to_addresses;
+
    char workdir[MAXVAL];
    char queuedir[MAXVAL];
 

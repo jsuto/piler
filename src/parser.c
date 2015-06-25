@@ -32,7 +32,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
    }
 
 
-   if(sdata->num_of_rcpt_to > 0){
+   if(sdata->num_of_rcpt_to > 0 && cfg->process_rcpt_to_addresses == 1){
       for(i=0; i<sdata->num_of_rcpt_to; i++){
 
          snprintf(puf, sizeof(puf)-1, "%s ", sdata->rcptto[i]);
