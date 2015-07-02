@@ -72,16 +72,16 @@ class ModelGroupGroup extends Model {
       $where_cond = "";
       $Q = array();
 
-      $search = preg_replace("/\s{1,}/", "", $search) . '%';
+      if($search) {
+         $search = preg_replace("/\s{1,}/", "", $search) . '%';
 
-      if($search){
          $where_cond .= " WHERE `groupname` like '?'";
          array_push($Q, $search);
       }
 
       $query = $this->db->query("SELECT COUNT(*) AS num FROM `" . TABLE_GROUP . "` $where_cond", $Q);
 
-      return $query->num_rows;
+      return $query->row['num'];
    }
 
 

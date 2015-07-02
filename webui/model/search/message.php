@@ -300,10 +300,10 @@ class ModelSearchMessage extends Model {
             $msg = $p;
             $p = '';
          }
-      }
 
-      if($boundary) {
-         $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
+         if($boundary) {
+            $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
+         }
       }
 
       return $has_journal;
