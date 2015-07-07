@@ -479,4 +479,6 @@ $_['text_ldap_delete_confirm_message'] = 'Do you wish to delete the LDAP entry';
 $_['text_customer_delete_confirm_message'] = 'Do you wish to delete the customer';
 $_['text_with_selected'] = 'With Selected';
 
+$_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+
 ?>

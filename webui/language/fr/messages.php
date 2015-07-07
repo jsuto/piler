@@ -479,4 +479,6 @@ $_['text_with_selected'] = 'Selection';
 $_['text_storage'] = "Stockage";
 $_['text_legal_hold'] = "Legal hold";
 
+$_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+
 ?>

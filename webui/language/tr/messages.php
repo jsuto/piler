@@ -480,4 +480,6 @@ $_['text_assigned_email_addresses'] = "Assigned email addresses";
 $_['text_storage'] = "Storage";
 $_['text_legal_hold'] = "Legal hold";
 
+$_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+
 ?>

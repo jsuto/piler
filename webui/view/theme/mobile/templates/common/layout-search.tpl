@@ -71,7 +71,7 @@
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
+         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" <?php if(ENABLE_DELETE == 1) { ?>style="background: #faafbe;"<?php } ?> />
 
       <?php if(OUTLOOK == 0) { ?>
          <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>

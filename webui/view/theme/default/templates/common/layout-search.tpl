@@ -72,7 +72,7 @@
             <div class="controls row-fluid">
                 <div id="input-span" class="span6">
                     <label for="_search"><?php print $text_search; ?></label>
-                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
+                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" <?php if(ENABLE_DELETE == 1) { ?>style="background: #faafbe;"<?php } ?> />
                 </div>
                 <div class="span6 input-append btn-group">
                     <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>

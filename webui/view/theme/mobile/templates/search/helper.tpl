@@ -115,6 +115,8 @@
               <button class="btn piler-right-margin<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"><?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', ''); return false;"><?php } ?><?php print $text_bulk_restore_selected_emails; ?></button>
            <?php } ?>
 
+              <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
+
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
               <button class="btn" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>'); return false;" >OK</button>
            </form>

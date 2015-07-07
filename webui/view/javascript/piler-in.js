@@ -340,6 +340,27 @@ var Piler =
     },
 
 
+    bulk_remove_messages:function(msg)
+    {
+        Piler.log("[bulk_remove_messages]");
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        var idlist = Piler.get_selected_messages_list();
+
+        if(!idlist) return;
+
+        jQuery.ajax('/bulkremove.php', {
+           data: { idlist: idlist },
+           type: "POST"
+        })
+        .done( function( a ) {})
+        .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', msg, 0.8);
+    },
+
+
     bulk_restore_messages:function(msg, email)
     {
         Piler.log("[bulk_restore_messages]", email);

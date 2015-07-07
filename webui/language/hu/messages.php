@@ -481,4 +481,6 @@ $_['text_ldap_delete_confirm_message'] = 'Törölni akarja az LDAP bejegyzést';
 $_['text_customer_delete_confirm_message'] = 'Törölni akarja az ügyfelet';
 $_['text_with_selected'] = 'Kiválasztott levelek';
 
+$_['text_compliance_warning'] = 'A törlés funkció engedélyezett, ezért az archívum NEM teljesíti a megfelelőséget!';
+
 ?>
