@@ -556,6 +556,8 @@ class ModelSearchSearch extends Model {
          $this->model_search_message->connect_to_pilergetd();
 
          foreach($query->rows as $m) {
+            if($m['retained'] < NOW) continue;
+
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
 

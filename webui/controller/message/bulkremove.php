@@ -15,8 +15,6 @@ class ControllerMessageBulkremove extends Controller {
 
       $this->load->model('search/search');
       $this->load->model('search/message');
-      //$this->load->model('message/remove');
-
       $this->load->model('user/user');
 
 
@@ -29,22 +27,20 @@ class ControllerMessageBulkremove extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $this->model_search_message->connect_to_pilergetd();
+      if(Registry::get('auditor_user') == 0) {
+         die("go away");
+      }
 
       foreach($idlist as $id) {
 
          AUDIT(ACTION_REMOVE_MESSAGE, '', '', $id, '');
 
-         $piler_id = $this->model_search_message->get_piler_id_by_id($id);
+         $db->query("UPDATE " . TABLE_META . " SET retained=? WHERE id=?", array(NOW, $id));
 
-syslog(LOG_INFO, "removing $piler_id");
+         syslog(LOG_INFO, $this->data['username'] . " removed message: $id");
 
-         $x = 1;
-
-         if($x == 1) { $this->data['removed']++; }
+         $this->data['removed']++;
       }
-
-      $this->model_search_message->disconnect_from_pilergetd();
 
       $this->render();
    }
