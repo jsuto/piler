@@ -132,7 +132,7 @@
             <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large muted"></i></span><?php } ?>
             &nbsp;
 
-            <i class="icon-exclamation-sign" title="<?php print $text_compliance_warning; ?>"></i>
+            <?php if(ENABLE_DELETE == 1) { ?><i class="icon-exclamation-sign" title="<?php print $text_compliance_warning; ?>"></i><?php } ?>
 
     <?php } else { print $text_none_found; } ?>
             </div>
