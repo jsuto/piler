@@ -532,7 +532,7 @@ class ModelSearchSearch extends Model {
       }
 
 
-      $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
+      $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `retained`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
 
       if(isset($query->rows)) {
 
@@ -556,7 +556,7 @@ class ModelSearchSearch extends Model {
          $this->model_search_message->connect_to_pilergetd();
 
          foreach($query->rows as $m) {
-            if($m['retained'] < NOW) continue;
+            if(ENABLE_DELETE == 1 && $m['retained'] < NOW) $m['deleted'] = 1; else $m['deleted'] = 0;
 
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
