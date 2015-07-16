@@ -75,6 +75,7 @@ class ControllerMessageRestore extends Controller {
          if(RESTORE_OVER_IMAP == 1) {
             if($this->model_mail_mail->connect_imap()) {
                $x = $this->imap->append(IMAP_RESTORE_FOLDER,  $msg);
+               syslog(LOG_INFO, "imap append " . $this->data['id'] . "/" . $this->data['piler_id'] . ", rc=$x");
                $this->model_mail_mail->disconnect_imap();
             }
             else {

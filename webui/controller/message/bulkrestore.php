@@ -89,6 +89,7 @@ class ControllerMessageBulkrestore extends Controller {
             if(RESTORE_OVER_IMAP == 1) {
                if($imap_ok) {
                   $x = $this->imap->append(IMAP_RESTORE_FOLDER,  $msg);
+                  syslog(LOG_INFO, "imap append $id/$piler_id, rc=$x");
                }
                else { $x = 0; }
             }

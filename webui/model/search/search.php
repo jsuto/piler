@@ -820,7 +820,7 @@ class ModelSearchSearch extends Model {
             if(ENABLE_FOLDER_RESTRICTIONS == 1) {
                if(in_array($q['folder'], $session->get("folders"))) { array_push($result, $q['id']); }
             }
-            else {
+            else if(!in_array($q['id'], $result)) {
                array_push($result, $q['id']);
             }
          }
