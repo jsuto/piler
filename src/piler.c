@@ -373,7 +373,8 @@ int main(int argc, char **argv){
                    return 0;
 
         case 'V' :
-                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\n\n", PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS);
+                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\n", PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS);
+                   get_extractor_list();
                    return 0;
 
         case 'h' :

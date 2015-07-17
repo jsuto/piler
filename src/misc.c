@@ -31,6 +31,41 @@ int get_build(){
 }
 
 
+void get_extractor_list(){
+   printf("Extractors: ");
+
+   #ifdef HAVE_PDFTOTEXT
+      printf("%s ", HAVE_PDFTOTEXT);
+   #endif
+
+   #ifdef HAVE_CATDOC
+      printf("%s ", HAVE_CATDOC);
+   #endif
+
+   #ifdef HAVE_CATPPT
+      printf("%s ", HAVE_CATPPT);
+   #endif
+
+   #ifdef HAVE_XLS2CSV
+      printf("%s ", HAVE_XLS2CSV);
+   #endif
+
+   #ifdef HAVE_PPTHTML
+      printf("%s ", HAVE_PPTHTML);
+   #endif
+
+   #ifdef HAVE_UNRTF
+      printf("%s ", HAVE_UNRTF);
+   #endif
+
+   #ifdef HAVE_TNEF
+      printf("%s ", HAVE_TNEF);
+   #endif
+
+   printf("\n\n");
+}
+
+
 void __fatal(char *s){
    fprintf(stderr, "%s\n", s);
    exit(1);

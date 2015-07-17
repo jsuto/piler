@@ -16,6 +16,7 @@
 #define CHK_SSL(err, msg) if ((err)==-1) { printf("ssl error: %s\n", msg); return ERR; }
 
 int get_build();
+void get_extractor_list();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
 int searchStringInBuffer(char *s, int len1, char *what, int len2);
