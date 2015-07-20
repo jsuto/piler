@@ -1,0 +1,13 @@
+setsebool -P allow_httpd_mod_auth_ntlm_winbind on
+setsebool -P httpd_can_network_connect on
+setsebool -P httpd_ssi_exec on
+
+setsebool -P httpd_use_nfs 1 (in case of nfs)
+
+
+checkmodule -M -m -o piler.mod piler.te 
+semodule_package -o piler.pp -m piler.mod 
+semodule -i piler.pp 
+
+chcon -R --type=httpd_sys_rw_content_t /var/piler/www/tmp
+

@@ -1,0 +1,38 @@
+module piler 1.2;
+
+require {
+        type devlog_t;
+        type httpd_sys_script_t;
+        type httpd_t;
+        type initrc_t;
+        type initrc_var_run_t;
+        type kernel_t;
+        type public_content_t;
+        type var_t;
+
+        class capability { kill setuid setgid sys_resource };
+        class dir search;
+        class file { read execute open getattr };
+        class netlink_audit_socket create;
+        class process { setrlimit signal };
+        class sock_file write;
+        class unix_dgram_socket sendto;
+
+}
+
+#============= httpd_sys_script_t ==============
+
+allow httpd_sys_script_t var_t:file { getattr open read };
+allow httpd_sys_script_t devlog_t:sock_file write;
+allow httpd_sys_script_t httpd_t:file { getattr read open };
+allow httpd_sys_script_t httpd_t:dir search;
+allow httpd_sys_script_t initrc_t:process signal;
+allow httpd_sys_script_t initrc_var_run_t:file { getattr open read };
+allow httpd_sys_script_t kernel_t:unix_dgram_socket sendto;
+allow httpd_sys_script_t self:capability { kill setuid setgid sys_resource };
+allow httpd_sys_script_t self:netlink_audit_socket create;
+allow httpd_sys_script_t self:process setrlimit;
+
+allow httpd_t var_t:file getattr;
+
+
