@@ -47,7 +47,9 @@ void p_bind_init(struct __data *data){
 }
 
 
-void p_query(struct session_data *sdata, char *s){
+void p_query(struct session_data *sdata, char *s, struct __config *cfg){
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: p_query=%s", sdata->ttmpfile, s);
+
    mysql_real_query(&(sdata->mysql), s, strlen(s));
 }
 
@@ -210,7 +212,7 @@ int p_get_affected_rows(MYSQL_STMT *stmt){
 
 int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s, struct __config *cfg){
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sql=%s", sdata->ttmpfile, s);
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: prepare statement=%s", sdata->ttmpfile, s);
 
    *stmt = mysql_stmt_init(&(sdata->mysql));
    if(!*stmt){
