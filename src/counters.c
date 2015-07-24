@@ -20,7 +20,7 @@ struct __counters load_counters(struct session_data *sdata, struct __data *data,
    snprintf(buf, SMALLBUFSIZE-1, "SELECT `rcvd`, `virus`, `duplicate`, `ignore`, `size`, `stored_size` FROM `%s`", SQL_COUNTER_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf) == ERR) return counters;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf, cfg) == ERR) return counters;
 
 
    p_bind_init(data);

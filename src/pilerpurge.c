@@ -33,7 +33,7 @@ unsigned long purged_size=0;
 int is_purge_allowed(struct session_data *sdata, struct __data *data, struct __config *cfg){
    int rc=0;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE, cfg) == ERR) return rc;
 
 
    p_bind_init(data);
@@ -124,7 +124,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    in[strlen(in)-1] = '\0';
    snprintf(a, len-1, "%s%s", SQL_STMT_SELECT_NON_REFERENCED_ATTACHMENTS, in);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a) == ERR){ free(a); return n; }
+   if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a, cfg) == ERR){ free(a); return n; }
 
    if(dryrun == 1) printf("running sql query: *%s*\n\n", a);
 
@@ -248,7 +248,7 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
 
    p_bind_init(data);
 
@@ -308,7 +308,7 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
 
    p_bind_init(data);
    if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == ERR) goto ENDE;

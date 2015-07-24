@@ -208,7 +208,9 @@ int p_get_affected_rows(MYSQL_STMT *stmt){
 }
 
 
-int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s){
+int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s, struct __config *cfg){
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sql=%s", sdata->ttmpfile, s);
 
    *stmt = mysql_stmt_init(&(sdata->mysql));
    if(!*stmt){

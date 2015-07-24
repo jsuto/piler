@@ -17,7 +17,7 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
    memset(s, 0, sizeof(s));
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS) == ERR) return;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS, cfg) == ERR) return;
 
 
    p_bind_init(data);

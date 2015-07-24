@@ -42,14 +42,14 @@ void p_clean_exit(char *msg, int rc){
 }
 
 
-uint64 get_max_meta_id(struct session_data *sdata, struct __data *data){
+uint64 get_max_meta_id(struct session_data *sdata, struct __data *data, struct __config *cfg){
    char s[SMALLBUFSIZE];
    uint64 id=0;
 
    snprintf(s, sizeof(s)-1, "SELECT MAX(`id`) FROM %s", SQL_METADATA_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return id;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return id;
 
 
    p_bind_init(data);
@@ -85,7 +85,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
    snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return reindexed;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return reindexed;
 
    p_bind_init(data);
 
@@ -233,7 +233,7 @@ int main(int argc, char **argv){
    }
 
    if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0);
+      data.folder = get_folder_id(&sdata, &data, folder, 0, &cfg);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;
@@ -245,7 +245,7 @@ int main(int argc, char **argv){
 
    if(all == 1){
       from_id = 1;
-      to_id = get_max_meta_id(&sdata, &data);
+      to_id = get_max_meta_id(&sdata, &data, &cfg);
    }
 
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);

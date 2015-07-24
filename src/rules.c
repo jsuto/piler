@@ -10,7 +10,7 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table){
+void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table, struct __config *cfg){
    char s[SMALLBUFSIZE];
    char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], body[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_name[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
    int size=0, attachment_size=0, spam=0, days=0;
@@ -28,7 +28,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 
    snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return;
 
 
    p_bind_init(data);

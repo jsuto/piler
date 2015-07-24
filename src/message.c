@@ -25,7 +25,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    if(*subj == ' ') subj++;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_sphinx_table), SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_sphinx_table), SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE, cfg) == ERR) return rc;
 
 
    fix_email_address_for_sphinx(state->b_from);
@@ -63,7 +63,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
 uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, char *message_id, struct __config *cfg){
    uint64 id=0;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID, cfg) == ERR) return id;
 
    p_bind_init(data);
    data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
@@ -91,7 +91,7 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
    int ret=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE, cfg) == ERR) return ret;
 
    p = to;
    do {
@@ -128,7 +128,7 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
    int ret = ERR;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata_reference), SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata_reference), SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE, cfg) == ERR) return ret;
 
    p_bind_init(data);
 
@@ -165,7 +165,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    }
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE, cfg) == ERR) return ERR;
 
    memset(s2, 0, sizeof(s2));
 

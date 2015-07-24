@@ -66,8 +66,8 @@ int main(int argc, char **argv){
 
    load_mydomains(&sdata, &data, &cfg);
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
 
 
    init_session_data(&sdata, &cfg);

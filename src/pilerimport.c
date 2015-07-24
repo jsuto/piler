@@ -134,9 +134,9 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
 
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
-                  folder = get_folder_id(sdata, data, fname, data->folder);
+                  folder = get_folder_id(sdata, data, fname, data->folder, cfg);
                   if(folder == ERR_FOLDER){
-                     folder = add_new_folder(sdata, data, fname, data->folder);
+                     folder = add_new_folder(sdata, data, fname, data->folder, cfg);
 
                      if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);
@@ -210,9 +210,9 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                      return ERR;
                   }
 
-                  folder = get_folder_id(sdata, data, p, data->folder);
+                  folder = get_folder_id(sdata, data, p, data->folder, cfg);
                   if(folder == ERR_FOLDER){
-                     folder = add_new_folder(sdata, data, p, data->folder);
+                     folder = add_new_folder(sdata, data, p, data->folder, cfg);
 
                      if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
@@ -415,7 +415,7 @@ int read_gui_import_data(struct session_data *sdata, struct __data *data, char *
    memset(s_password, 0, sizeof(s_password));
    memset(s_server, 0, sizeof(s_server));
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS, cfg) == ERR) return ERR;
 
    p_bind_init(data);
 
@@ -689,10 +689,10 @@ int main(int argc, char **argv){
 #endif
 
    if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0);
+      data.folder = get_folder_id(&sdata, &data, folder, 0, &cfg);
 
       if(data.folder == ERR_FOLDER){
-         data.folder = add_new_folder(&sdata, &data, folder, 0);
+         data.folder = add_new_folder(&sdata, &data, folder, 0, &cfg);
       }
 
       if(data.folder == ERR_FOLDER){
@@ -703,8 +703,8 @@ int main(int argc, char **argv){
 
    }
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
 
    load_mydomains(&sdata, &data, &cfg);
 

@@ -21,8 +21,8 @@ int store_attachments(struct session_data *sdata, struct _state *state, struct _
    int i, rc=1, found, affected_rows;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_attachment_table), SQL_PREPARED_STMT_INSERT_INTO_ATTACHMENT_TABLE) == ERR) return rc;
-   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_id_by_signature), SQL_PREPARED_STMT_GET_ATTACHMENT_ID_BY_SIGNATURE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_attachment_table), SQL_PREPARED_STMT_INSERT_INTO_ATTACHMENT_TABLE, cfg) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_id_by_signature), SQL_PREPARED_STMT_GET_ATTACHMENT_ID_BY_SIGNATURE, cfg) == ERR) return rc;
 
 
    for(i=1; i<=state->n_attachments; i++){
@@ -96,7 +96,7 @@ CLOSE:
 int query_attachment_pointers(struct session_data *sdata, struct __data *data, uint64 ptr, char *piler_id, int *id, struct __config *cfg){
    int rc=0;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_pointer), SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_pointer), SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER, cfg) == ERR) return rc;
 
 
    p_bind_init(data);
@@ -130,7 +130,7 @@ int query_attachments(struct session_data *sdata, struct __data *data, struct pt
 
    for(i=0; i<MAX_ATTACHMENTS; i++) memset((char*)&ptr_arr[i], 0, sizeof(struct ptr_array));
 
-   if(prepare_sql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT) == ERR) goto ENDE;
+   if(prepare_sql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT, cfg) == ERR) goto ENDE;
 
    p_bind_init(data);
 

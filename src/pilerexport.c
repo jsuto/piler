@@ -144,7 +144,7 @@ int export_emails_matching_to_query(struct session_data *sdata, struct __data *d
    int rc=0;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return ERR;
 
 
    p_bind_init(data);
