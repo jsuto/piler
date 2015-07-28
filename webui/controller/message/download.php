@@ -14,10 +14,13 @@ class ControllerMessageDownload extends Controller {
 
       $this->load->model('search/search');
       $this->load->model('search/message');
+      $this->load->model('audit/audit');
 
       $this->document->title = $this->data['text_message'];
 
       $this->data['id'] = @$this->request->get['id'];
+
+      if(!$this->model_audit_audit->can_download()) { die("you cannot download at the moment"); }
 
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown id: ' . $this->data['id']);

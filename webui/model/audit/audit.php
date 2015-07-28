@@ -155,6 +155,22 @@ class ModelAuditAudit extends Model {
    }
 
 
+   public function can_download() {
+
+      if(MAX_DOWNLOAD_PER_HOUR <= 0 || Registry::get('auditor_user') == 1) { return 1; }
+
+      $session = Registry::get('session');
+
+      $email = $session->get("email");
+
+      $query = $this->db->query("SELECT COUNT(*) AS num FROM " . TABLE_AUDIT . " WHERE email=? AND ts > ? AND action=?", array($email, NOW-3600, ACTION_DOWNLOAD_MESSAGE));
+
+      if($query->row['num'] <= MAX_DOWNLOAD_PER_HOUR) { return 1; }
+
+      return 0;
+   }
+
+
 }
 
 ?>

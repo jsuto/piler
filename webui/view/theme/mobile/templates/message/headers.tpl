@@ -11,7 +11,9 @@
 </div>
 
 <p>
+<?php if($can_download == 1) { ?>
    <a class="messagelink" href="index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="icon-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
+<?php } ?>
 <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { if(Registry::get('auditor_user') == 1) { ?>
    <a class="messagelink" href="#" onclick="$('#restorebox').show();"><i class="icon-gift"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a> |
 <?php } else { ?>

@@ -14,7 +14,7 @@ class ControllerMessageHeaders extends Controller {
 
       $this->load->model('search/search');
       $this->load->model('search/message');
-
+      $this->load->model('audit/audit');
       $this->load->model('user/user');
 
       $this->document->title = $this->data['text_message'];
@@ -38,6 +38,8 @@ class ControllerMessageHeaders extends Controller {
       $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
       $this->data['message'] = $this->model_search_message->get_message_headers($this->data['piler_id']);
+
+      $this->data['can_download'] = $this->model_audit_audit->can_download();
 
       $this->render();
    }

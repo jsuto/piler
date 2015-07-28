@@ -158,6 +158,7 @@ $config['RESTRICTED_AUDITOR'] = 0;
 
 $config['SHOW_ENVELOPE_JOURNAL'] = 0;
 $config['BULK_DOWNLOAD_FOR_USERS'] = 1;
+$config['MAX_DOWNLOAD_PER_HOUR'] = 0;
 
 $config['MAX_CGI_FROM_SUBJ_LEN'] = 34;
 $config['PAGE_LEN'] = 20;
