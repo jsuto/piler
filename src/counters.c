@@ -55,6 +55,8 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
    char key[MAX_MEMCACHED_KEY_LEN];
    unsigned int flags=0;
 
+   if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
+
    if(cfg->update_counters_to_memcached == 1){
 
       /* increment counters to memcached */
@@ -114,6 +116,8 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
    }
    else {
 #endif
+      if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
+
       snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=`rcvd`+%llu, `virus`=`virus`+%llu, `duplicate`=`duplicate`+%llu, `ignore`=`ignore`+%llu, `size`=`size`+%llu, `stored_size`=`stored_size`+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore, counters->c_size, counters->c_stored_size);
       p_query(sdata, buf, cfg);
 
