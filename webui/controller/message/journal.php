@@ -40,6 +40,7 @@ class ControllerMessageJournal extends Controller {
       $this->data['data'] = $this->model_search_message->get_message_journal($this->data['piler_id']);
 
       $this->data['can_download'] = $this->model_audit_audit->can_download();
+      $this->data['can_restore'] = $this->model_audit_audit->can_restore();
 
       $this->render();
    }

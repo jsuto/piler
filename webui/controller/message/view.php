@@ -81,6 +81,7 @@ class ControllerMessageView extends Controller {
       $this->data['images'] = array();
 
       $this->data['can_download'] = $this->model_audit_audit->can_download();
+      $this->data['can_restore'] = $this->model_audit_audit->can_restore();
 
       foreach($this->data['attachments'] as $a) {
          if(preg_match("/image/", $a['type'])) {

@@ -171,6 +171,21 @@ class ModelAuditAudit extends Model {
    }
 
 
+   public function can_restore() {
+
+      if(MAX_RESTORE_PER_HOUR <= 0 || Registry::get('auditor_user') == 1) { return 1; }
+
+      $session = Registry::get('session');
+
+      $email = $session->get("email");
+
+      $query = $this->db->query("SELECT COUNT(*) AS num FROM " . TABLE_AUDIT . " WHERE email=? AND ts > ? AND action=?", array($email, NOW-3600, ACTION_RESTORE_MESSAGE));
+
+      if($query->row['num'] <= MAX_RESTORE_PER_HOUR) { return 1; }
+
+      return 0;
+   }
+
 }
 
 ?>
