@@ -156,7 +156,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       msglen = 0;
       msg_written_len = 0;
 
-      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, 15, use_ssl, data->ssl)) > 0){
+      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, 60, use_ssl, data->ssl)) > 0){
 
          readlen += n;
 
