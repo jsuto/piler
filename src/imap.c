@@ -234,14 +234,15 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
       close(fd);
 
-      if(dryrun == 0 && msglen > 10) rc = import_message(filename, sdata, data, cfg);
-      else rc = OK;
+      if(dryrun == 0 && msglen > 10){
+         rc = import_message(filename, sdata, data, cfg);
 
-
-      if(data->import->processed_messages % 100 == 0){
-         time(&(data->import->updated));
-         update_import_job_stat(sdata, data);
+         if(data->import->processed_messages % 100 == 0){
+            time(&(data->import->updated));
+            update_import_job_stat(sdata, data);
+         }
       }
+      else rc = OK;
 
 
       if(rc == ERR) printf("error importing '%s'\n", filename);
