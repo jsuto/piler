@@ -277,6 +277,7 @@ struct import {
    int remove_after_import;
    int download_only;
    int keep_eml;
+   int timeout;
    long total_size;
    time_t started, updated, finished;
 };

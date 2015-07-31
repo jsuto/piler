@@ -65,7 +65,7 @@ int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, 
    memset(buf, 0, buflen);
 
    while(!strstr(buf, tagok)){
-      n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+      n = recvtimeoutssl(sd, puf, sizeof(puf), data->import->timeout, use_ssl, data->ssl);
 
       if(n + len < buflen) strncat(buf, puf, n);
       else goto END;
@@ -156,7 +156,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       msglen = 0;
       msg_written_len = 0;
 
-      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, 60, use_ssl, data->ssl)) > 0){
+      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, data->import->timeout, use_ssl, data->ssl)) > 0){
 
          readlen += n;
 
@@ -316,7 +316,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    }
 
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
    /* imap cmd: CAPABILITY */
 
@@ -378,7 +378,7 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    write1(sd, puf, strlen(puf), use_ssl, data->ssl);
 
    while(1){
-      n = recvtimeoutssl(sd, puf, sizeof(puf), 10, use_ssl, data->ssl);
+      n = recvtimeoutssl(sd, puf, sizeof(puf), data->import->timeout, use_ssl, data->ssl);
       if(n < 0) return ERR;
 
       if(pos + n >= len){

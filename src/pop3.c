@@ -75,19 +75,19 @@ int connect_to_pop3_server(int sd, char *username, char *password, int port, str
    }
 
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
 
    snprintf(buf, sizeof(buf)-1, "USER %s\r\n", username);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
 
    snprintf(buf, sizeof(buf)-1, "PASS %s\r\n", password);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 30, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
    if(strncmp(buf, "+OK", 3) == 0) return OK;
 
@@ -108,7 +108,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
    snprintf(buf, sizeof(buf)-1, "STAT\r\n");
    n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), 30, use_ssl, data->ssl);
+   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
    if(strncmp(buf, "+OK ", 4) == 0){
       p = strchr(&buf[4], ' ');
@@ -150,7 +150,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
       lastpos = 0;
 
 
-      while((n = recvtimeoutssl(sd, buf, sizeof(buf), 15, use_ssl, data->ssl)) > 0){
+      while((n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl)) > 0){
          nreads++;
          readlen += n;
 
@@ -204,7 +204,7 @@ int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data,
       if(dryrun == 0 && rc == OK && data->import->remove_after_import == 1){
          snprintf(buf, sizeof(buf)-1, "DELE %d\r\n", i);
          n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-         n = recvtimeoutssl(sd, buf, sizeof(buf), 10, use_ssl, data->ssl);
+         n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
       }
 
       if(i % 100 == 0){

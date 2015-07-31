@@ -500,6 +500,7 @@ int main(int argc, char **argv){
    import.extra_recipient = NULL;
    import.start_position = 1;
    import.download_only = 0;
+   import.timeout = 30;
 
    data.import = &import;
 
@@ -527,6 +528,7 @@ int main(int argc, char **argv){
             {"folder_imap",  required_argument,  0,  'f' },
             {"add-recipient",required_argument,  0,  'a' },
             {"batch-limit",  required_argument,  0,  'b' },
+            {"timeout",      required_argument,  0,  't' },
             {"start-position",required_argument,  0,  's' },
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
@@ -540,9 +542,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRroqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:GDRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:s:GDRroqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:GDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -622,6 +624,10 @@ int main(int argc, char **argv){
 
          case 'b' :
                     data.import->batch_processing_limit = atoi(optarg);
+                    break;
+
+         case 't' :
+                    data.import->timeout = atoi(optarg);
                     break;
 
          case 's' :
