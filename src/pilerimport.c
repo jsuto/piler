@@ -472,7 +472,7 @@ ENDE:
 
 void usage(){
    printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port>\n");
-   printf("                                                           [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-o] [-R] [-r] [-q]\n");
+   printf("                                         [-t <timeout in sec>] [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-o] [-R] [-r] [-q]\n");
    exit(0);
 }
 
