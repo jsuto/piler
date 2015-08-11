@@ -125,7 +125,9 @@
             &nbsp;
             <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $prev_page; ?>);"><i class="icon-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-angle-left icon-large muted"></i></span><?php } ?>
             &nbsp;
-            <?php print $hits_from; ?>-<?php print $hits_to; ?>, <?php print $text_total; ?>: <?php print $n; ?><?php if($total_found > $n) { ?> (<?php print $total_found; ?>)<?php } ?>
+
+            <?php print $hits_from; ?>-<?php print $hits_to; ?>, <?php print $text_total; ?>: <?php print $hits; ?><?php if($total_found > MAX_SEARCH_HITS) { ?> (<?php print $total_found; ?>)<?php } ?>
+
             &nbsp;
             <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $next_page; ?>);"><i class="icon-angle-right icon-large"></i></a> <?php } else { ?><span class="navlink"><i class="icon-angle-right icon-large muted"></i></span><?php } ?>
             &nbsp;
@@ -143,16 +145,12 @@
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
             <div id="functionbox" class="input-prepend input-append pull-right">
 
-            <?php if(ENABLE_DOWNLOADING_ALL_SEARCH_HITS == 1) { ?>
-                <button id="download_all_search_hits_as_eml" name="download_all_search_hits_as_eml" class="btn btn-custom btn-inverse" onclick="Piler.download_all_search_hits();"><?php print $text_download_all_hits_as_eml; ?></button>
-                <button id="download_all_search_hits_as_pdf" name="download_all_search_hits_as_pdf" class="btn btn-custom btn-warning" onclick="Piler.download_selected_as_pdf();"><?php print $text_download_selected_hits_as_pdf; ?></button>
-            <?php } ?>
-
                 <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
             <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
                 <a href="#" class="btn btn-custom btn-inverse<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"><?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><?php } ?><i class="icon-share-alt"></i></a>
             <?php } ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
+                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a>
                 <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>

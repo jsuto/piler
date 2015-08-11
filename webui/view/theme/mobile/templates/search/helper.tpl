@@ -104,18 +104,15 @@
    </span>
 
 <?php } else { ?>&nbsp;<?php } ?>
-           <?php if(ENABLE_DOWNLOADING_ALL_SEARCH_HITS == 1) { ?>
-              <button id="download_all_search_hits_as_eml" name="download_all_search_hits_as_eml" class="btn btn-custom btn-inverse" onclick="Piler.download_all_search_hits();"><?php print $text_download_all_hits_as_eml; ?></button>
-              <?php if(MOBILE_DEVICE == 0) { ?>
-                 <button id="download_all_search_hits_as_pdf" name="download_all_search_hits_as_pdf" class="btn btn-custom btn-warning" onclick="Piler.download_selected_as_pdf();"><?php print $text_download_selected_hits_as_pdf; ?></button>
-              <?php } ?>
-           <?php } ?>
 
            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-              <button class="btn piler-right-margin<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"><?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', ''); return false;"><?php } ?><?php print $text_bulk_restore_selected_emails; ?></button>
+              <a href="#" <?php if(Registry::get('auditor_user') == 1) { ?>class="confirm-delete"<?php } ?> onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
            <?php } ?>
 
-              <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
+              <a href="#" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
+              <a href="#" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a>
+              <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
+
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
               <button class="btn" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>'); return false;" >OK</button>

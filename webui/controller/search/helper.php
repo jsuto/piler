@@ -71,12 +71,17 @@ class ControllerSearchHelper extends Controller {
       $this->data['prev_page'] = $this->data['page'] - 1;
       $this->data['next_page'] = $this->data['page'] + 1;
 
-      $this->data['total_pages'] = ceil($this->data['n'] / $this->data['page_len'])-1;
+      if($this->data['total_found'] > MAX_SEARCH_HITS) {
+         $this->data['total_pages'] = ceil(MAX_SEARCH_HITS / $this->data['page_len'])-1;
+         $this->data['hits'] = MAX_SEARCH_HITS;
+      }
+      else {
+         $this->data['total_pages'] = $this->data['total_pages'] = ceil($this->data['total_found'] / $this->data['page_len'])-1;
+         $this->data['hits'] = $this->data['total_found'];
+      }
 
       $this->data['hits_from'] = $this->data['page'] * $this->data['page_len'] + 1;
-      $this->data['hits_to'] = ($this->data['page']+1) * $this->data['page_len'];
-
-      if($this->data['hits_to'] > $this->data['n']) { $this->data['hits_to'] = $this->data['n']; }
+      $this->data['hits_to'] = $this->data['page'] * $this->data['page_len'] + $this->data['n'];
 
       $this->data['sort'] = $this->request->post['sort'];
       $this->data['order'] = $this->request->post['order'];

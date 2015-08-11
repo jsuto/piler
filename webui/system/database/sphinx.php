@@ -63,12 +63,14 @@ class Sphinx {
 
       $query->exec_time = $time_end - $time_start;
 
-      $meta = $this->link->prepare("show meta");
+      $meta = $this->link->prepare("SHOW META LIKE 'total_found'");
       $meta->execute();
       $R = $meta->fetchAll();
       while(list ($k, $v) = each($R)){
-         if($v[0] == "total_found") { $query->total_found = $v[1]; break; }
+         if($v[0] == "total_found") { $query->total_found = $v[1]; }
       }
+
+      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $query->total_found)); }
 
       return $query;
    }

@@ -34,61 +34,26 @@ class ModelSearchSearch extends Model {
 
       $sortorder = "ORDER BY `$sort` $order";
 
-      $m = array();
+      // TODO: check if data is cached
 
-      if(MEMCACHED_ENABLED) {
-         $cache_key = $this->make_cache_file_name($data, $sortorder);
-         $memcache = Registry::get('memcache');
-         $m = $memcache->get($cache_key);
+
+      if(isset($data['ref']) && $data['ref']){
+         list ($total_hits, $ids) = $this->query_all_possible_IDs_by_reference($data['ref'], $page);
+      }
+      else {
+         list ($total_hits, $ids) = $this->get_results($data, $sort, $order, $sortorder, $page);
       }
 
 
-      if(isset($m['ids'])) {
-         $all_ids = $m['ids'];
-         $total_found = $m['total_found'];
-      } else {
+      $current_hits = count($ids);
 
-         if(isset($data['ref']) && $data['ref']){
-            list ($total_found, $all_ids) = $this->query_all_possible_IDs_by_reference($data['ref'], $cache_key);
-         }
-         else {
-            list ($total_found, $all_ids) = $this->query_all_possible_IDs($data, $sort, $order, $sortorder, $cache_key);
-         }
-      }
-
-
-      $total_hits = count($all_ids);
-
-
-      if($total_hits > 0) {
-         $session->set('last_search', serialize($all_ids));
+      if($current_hits > 0) {
+         $session->set('last_search', serialize($ids));
       } else {
          $session->set('last_search', '');
       }
 
-      $data['page_len'] = get_page_length();
-
-      if($total_hits > 0) {
-         $i = 0;
-
-         foreach($all_ids as $id) {
-
-            if($i >= $data['page_len'] * $page && $i < $data['page_len'] * ($page+1) ) {
-               array_push($one_page_of_ids, $id);
-               $all_ids_csv .= ",$id";
-
-               if($q) { $q .= ",?"; } else { $q = "?"; }
-            }
-
-            $i++;
-         }
-
-      }
-
-      $all_ids_csv = substr($all_ids_csv, 1, strlen($all_ids_csv));
-
-
-      return array($total_hits, $total_found, $all_ids_csv, $this->get_meta_data($one_page_of_ids, $q, $sortorder));
+      return array($current_hits, $total_hits, implode(",", $ids), $this->get_meta_data($ids, $sortorder));
    }
 
 
@@ -121,7 +86,7 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function query_all_possible_IDs($data = array(), $sort = 'sent', $order = 'DESC', $sortorder = '', $cache_key = '') {
+   private function get_results($data = array(), $sort = 'sent', $order = 'DESC', $sortorder = '', $page = 0) {
       $ids = array();
       $__folders = array();
       $match = '';
@@ -129,7 +94,13 @@ class ModelSearchSearch extends Model {
       $tag_id_list = '';
       $a = "";
       $id = "";
+      $offset = 0;
+      $total_sphx_hits = $num_rows = 0;
       $fields = array("@(subject,body)", "@from", "@to", "@subject", "@body", "@attachment_types");
+
+
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
 
       $emailfilter = $this->assemble_email_address_filter();
 
@@ -239,28 +210,28 @@ class ModelSearchSearch extends Model {
          $match = $data['aname'];
          if($emailfilter) { $match = "( $match ) & $emailfilter"; }
 
-         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $match . "') ORDER BY `id` $order LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $match . "') ORDER BY `id` $order LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+
+         $total_found = $query->total_found;
+         $num_rows = $query->num_rows;
       }
       else if(isset($data['tag']) && $data['tag']) {
-         $id_list = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag');
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag', $page);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else if(isset($data['note']) && $data['note']) {
-         $id_list = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note');
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note', $page);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && $data['extra_folders']) {
-         $ids_in_extra_folders = $this->get_sphinx_id_list_by_extra_folders($data['extra_folders']);
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         list ($total_found, $num_rows, $ids_in_extra_folders) = $this->get_sphinx_id_list_by_extra_folders($data['extra_folders'], $page);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size MATCH('$match') AND id IN ($ids_in_extra_folders) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+         $total_found = $query->total_found;
+         $num_rows = $query->num_rows;
       }
-
-      $total_found = $query->total_found;
-
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $total_found)); }
-
 
       /*
        * build an id list
@@ -296,24 +267,24 @@ class ModelSearchSearch extends Model {
 
       }
 
-
-      if(MEMCACHED_ENABLED && $cache_key) {
-         $memcache = Registry::get('memcache');
-         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'ids' => $ids, 'total_found' => $total_found), 0, MEMCACHED_TTL);
-      }
+      // TODO: add caching if necessary
 
       return array($total_found, $ids);
    }
 
 
-   private function query_all_possible_IDs_by_reference($reference = '', $cache_key = '') {
+   private function query_all_possible_IDs_by_reference($reference = '', $page = 0) {
       $ids = array();
+      $offset = 0;
 
       if($reference == '') { return $ids; }
 
       $session = Registry::get('session');
 
-      $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id=? OR reference=? ORDER BY id DESC", array($reference, $reference));
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
+
+      $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id=? OR reference=? ORDER BY id DESC LIMIT $offset,$pagelen", array($reference, $reference));
 
       foreach($query->rows as $q) {
          if($this->check_your_permission_by_id($q['id'])) {
@@ -331,10 +302,12 @@ class ModelSearchSearch extends Model {
 
       $total_found = count($ids);
 
-      if(MEMCACHED_ENABLED && $cache_key) {
-         $memcache = Registry::get('memcache');
-         $memcache->add($cache_key, array('ts' => time(), 'total_hits' => count($ids), 'total_found' => $total_found, 'ids' => $ids), 0, MEMCACHED_TTL);
+      if($total_found >= $pagelen) {
+         $query = $this->db->query("SELECT count(*) AS num FROM " . TABLE_META . " WHERE message_id=? OR reference=?", array($reference, $reference));
+         $total_found = $query->row['num'];
       }
+
+      // TODO: add caching if necessary
 
       return array($total_found, $ids);
    }
@@ -450,15 +423,17 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '') {
+   private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '', $page = 0) {
       $id_list = '';
 
       $session = Registry::get('session');
 
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
+
       $s = $this->fixup_sphinx_operators($s);
 
-      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT 0," . MAX_SEARCH_HITS . " OPTION max_matches=" . MAX_SEARCH_HITS);
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "sphinx query: " . $q->query . ", hits: " . $q->total_found); }
+      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
 
       foreach($q->rows as $a) {
          $id_list .= "," . $a['iid'];
@@ -467,16 +442,19 @@ class ModelSearchSearch extends Model {
       if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
 
       if($id_list == '') { $id_list = "-1"; }
-      return $id_list;
+      return array($q->total_found, $q->num_rows, $id_list);
    }
 
 
-   private function get_sphinx_id_list_by_extra_folders($extra_folders = '') {
+   private function get_sphinx_id_list_by_extra_folders($extra_folders = '', $page = 0) {
       $id_list = '';
       $q = '';
       $__folders = array();
 
       $session = Registry::get('session');
+
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
 
       $s = explode(" ", $extra_folders);
       while(list($k,$v) = each($s)) {
@@ -488,7 +466,7 @@ class ModelSearchSearch extends Model {
       }
 
 
-      $q = $this->db->query("SELECT iid FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id IN ($q)", $__folders);
+      $q = $this->db->query("SELECT iid FROM " . TABLE_FOLDER_MESSAGE . " WHERE folder_id IN ($q) $offset,$pagelen", $__folders);
 
       foreach($q->rows as $a) {
          $id_list .= "," . $a['iid'];
@@ -496,26 +474,25 @@ class ModelSearchSearch extends Model {
 
       if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
 
-      return $id_list;
+      return array($q->total_found, $q->num_rows, $id_list);
    }
 
 
-   private function get_meta_data($ids = array(), $q = '', $sortorder = '') {
+   private function get_meta_data($ids = array(), $sortorder = '') {
       $messages = array();
       $rcpt = $srcpt = array();
       $tag = array();
       $note = array();
+      $q = '';
 
       if(count($ids) == 0) return $messages;
 
-      if(MEMCACHED_ENABLED) {
-         $cache_key = $this->make_cache_file_name($ids, 'meta');
-         $memcache = Registry::get('memcache');
-         $m = $memcache->get($cache_key);
-         if(isset($m['meta'])) { return unserialize($m['meta']); }
-      }
+      // TODO: check if data in cache
 
       $session = Registry::get('session');
+
+      $q = str_repeat(",?", count($ids));
+      $q = substr($q, 1, strlen($q));
 
       $query = $this->db->query("SELECT `id`, `to` FROM `" . TABLE_RCPT . "` WHERE `id` IN ($q)", $ids);
 
@@ -599,9 +576,7 @@ class ModelSearchSearch extends Model {
 
       }
 
-      if(MEMCACHED_ENABLED) {
-         $memcache->add($cache_key, array('meta' => serialize($messages)), 0, MEMCACHED_TTL);
-      }
+      // TODO: add caching if necessary
 
       return $messages;
    }
@@ -917,20 +892,6 @@ class ModelSearchSearch extends Model {
       return $s;
    }
 
-
-   private function make_cache_file_name($data = array(), $sortorder = '') {
-      $s = '';
-      $session = Registry::get('session');
-
-      while(list($k, $v) = each($data)) {
-         if($v) {
-            if(is_array($v)) { $v = join("*", $v); }
-            $s .= "*$k=$v";
-         }
-      }
-
-      return sha1($session->get("email") . "/" . $s . "-" . (NOW - NOW % 3600) . "-" . $sortorder);
-   }
 
 }
 
