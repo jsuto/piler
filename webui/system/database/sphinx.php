@@ -72,6 +72,17 @@ class Sphinx {
 
       if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $query->total_found)); }
 
+      $session = Registry::get('session');
+      $sphx_query = '';
+
+      $b = preg_split("/\ ORDER\ /", $query->query);
+      $a = preg_split("/\ WHERE\ /", $b[0]);
+      if(isset($a[1])) {
+         $sphx_query = preg_replace("/\'/", "\'", $a[1]);
+      }
+
+      $session->set("sphx_query", $sphx_query);
+
       return $query;
    }
 

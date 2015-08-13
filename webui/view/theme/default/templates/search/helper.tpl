@@ -136,6 +136,10 @@
 
             <?php if(ENABLE_DELETE == 1) { ?><i class="icon-exclamation-sign" title="<?php print $text_compliance_warning; ?>"></i><?php } ?>
 
+         <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
+            <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php print $session->get("sphx_query"); ?>', 5);">sphinx</a></span>
+         <?php } ?>
+
     <?php } else { print $text_none_found; } ?>
             </div>
         </div>

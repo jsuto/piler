@@ -101,6 +101,10 @@
          <?php if($next_page <= $total_pages){ ?><a href="#" onclick="Piler.navigation(<?php print $next_page; ?>);">&gt; </a> <?php } else { ?><span class="navlink">&gt; </span><?php } ?>
          <?php if($page < $total_pages) { ?> &nbsp; <a href="#" onclick="Piler.navigation(<?php print $total_pages; ?>);"> &gt;&gt; </a><?php } else { ?> <span class="navlink"> &nbsp; &gt;&gt;</span><?php } ?>
 
+         <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
+            <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php print $session->get("sphx_query"); ?>', 5);">sphinx</a></span>
+         <?php } ?>
+
    </span>
 
 <?php } else { ?>&nbsp;<?php } ?>
