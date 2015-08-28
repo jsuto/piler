@@ -120,6 +120,7 @@ struct rule {
    int domainlen;
 
    int days;
+   int folder_id;
 
    char emptyfrom, emptyto, emptysubject, emptybody, emptyaname, emptyatype;
 
@@ -127,6 +128,20 @@ struct rule {
    char compiled;
 
    struct rule *r;
+};
+
+
+struct rule_cond {
+   char domain[SMALLBUFSIZE];
+   char from[SMALLBUFSIZE];
+   char to[SMALLBUFSIZE];
+   char subject[SMALLBUFSIZE];
+   char body[SMALLBUFSIZE];
+   char _size[SMALLBUFSIZE];
+   char attachment_name[SMALLBUFSIZE];
+   char attachment_type[SMALLBUFSIZE];
+   char _attachment_size[SMALLBUFSIZE];
+   int size, attachment_size, spam, days, folder_id;
 };
 
 
@@ -321,6 +336,7 @@ struct __data {
 #ifdef HAVE_TRE
    struct node *archiving_rules[1];
    struct node *retention_rules[1];
+   struct node *folder_rules[1];
 #endif
 
 #ifdef HAVE_MEMCACHED

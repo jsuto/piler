@@ -12,21 +12,21 @@
 
 void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table, struct __config *cfg){
    char s[SMALLBUFSIZE];
-   char domain[SMALLBUFSIZE], from[SMALLBUFSIZE], to[SMALLBUFSIZE], subject[SMALLBUFSIZE], body[SMALLBUFSIZE], _size[SMALLBUFSIZE], attachment_name[SMALLBUFSIZE], attachment_type[SMALLBUFSIZE], _attachment_size[SMALLBUFSIZE];
-   int size=0, attachment_size=0, spam=0, days=0;
+   struct rule_cond rule_cond;
 
-   memset(domain, 0, sizeof(domain));
-   memset(from, 0, sizeof(from));
-   memset(to, 0, sizeof(to));
-   memset(subject, 0, sizeof(subject));
-   memset(body, 0, sizeof(body));
-   memset(_size, 0, sizeof(_size));
-   memset(attachment_name, 0, sizeof(attachment_name));
-   memset(attachment_type, 0, sizeof(attachment_type));
-   memset(_attachment_size, 0, sizeof(_attachment_size));
+   memset(rule_cond.domain, 0, SMALLBUFSIZE);
+   memset(rule_cond.from, 0, SMALLBUFSIZE);
+   memset(rule_cond.to, 0, SMALLBUFSIZE);
+   memset(rule_cond.subject, 0, SMALLBUFSIZE);
+   memset(rule_cond.body, 0, SMALLBUFSIZE);
+   memset(rule_cond._size, 0, SMALLBUFSIZE);
+   memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
+   memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
+   memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
 
+   rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
 
-   snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days` FROM `%s`", table);
+   snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days`, `folder_id` FROM `%s`", table);
 
    if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return;
 
@@ -39,49 +39,49 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 
    p_bind_init(data);
 
-   data->sql[data->pos] = &domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(domain)-2; data->pos++;
-   data->sql[data->pos] = &from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(from)-2; data->pos++;
-   data->sql[data->pos] = &to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(to)-2; data->pos++;
-   data->sql[data->pos] = &subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(subject)-2; data->pos++;
-   data->sql[data->pos] = &body[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(body)-2; data->pos++;
-   data->sql[data->pos] = &_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_size)-2; data->pos++;
-   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(size); data->pos++;
-   data->sql[data->pos] = &attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(attachment_name)-2; data->pos++;
-   data->sql[data->pos] = &attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(attachment_type)-2; data->pos++;
-   data->sql[data->pos] = &_attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(_attachment_size)-2; data->pos++;
-   data->sql[data->pos] = (char *)&attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(attachment_size); data->pos++;
-   data->sql[data->pos] = (char *)&spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(spam); data->pos++;
-   data->sql[data->pos] = (char *)&days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(days); data->pos++;
+   data->sql[data->pos] = &rule_cond.domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond.from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond.to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond.subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond.body[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond._size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = (char *)&rule_cond.size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = &rule_cond.attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond.attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = &rule_cond._attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+   data->sql[data->pos] = (char *)&rule_cond.attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = (char *)&rule_cond.spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = (char *)&rule_cond.days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+   data->sql[data->pos] = (char *)&rule_cond.folder_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
 
 
    p_store_results(sdata, data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(xhash, domain, from, to, subject, body, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam, days, data);
+      append_rule(xhash, &rule_cond, data);
 
-      memset(domain, 0, sizeof(domain));
-      memset(from, 0, sizeof(from));
-      memset(to, 0, sizeof(to));
-      memset(subject, 0, sizeof(subject));
-      memset(body, 0, sizeof(body));
-      memset(_size, 0, sizeof(_size));
-      memset(attachment_name, 0, sizeof(attachment_name));
-      memset(attachment_type, 0, sizeof(attachment_type));
-      memset(_attachment_size, 0, sizeof(_attachment_size));
+      memset(rule_cond.domain, 0, SMALLBUFSIZE);
+      memset(rule_cond.from, 0, SMALLBUFSIZE);
+      memset(rule_cond.to, 0, SMALLBUFSIZE);
+      memset(rule_cond.subject, 0, SMALLBUFSIZE);
+      memset(rule_cond.body, 0, SMALLBUFSIZE);
+      memset(rule_cond._size, 0, SMALLBUFSIZE);
+      memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
+      memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
+      memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
 
-      size=0; attachment_size=0; spam=0; days=0;
+      rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
    }
 
    p_free_results(data->stmt_generic);
 
 ENDE:
    close_prepared_statement(data->stmt_generic);
-
 }
 
 
-int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *subject, char *body, char *_size, int size, char *attachment_name, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
+int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct __data *data){
    struct node *q, *Q=NULL, *node;
    struct rule *rule;
    int rc=0;
@@ -91,11 +91,11 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
    memset(node, 0, sizeof(struct node));
    node->r = NULL;
 
-   rule = create_rule_item(domain, from, to, subject, body, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam, days, data);
+   rule = create_rule_item(rule_cond, data);
 
    if(rule == NULL){
       free(node);
-      syslog(LOG_INFO, "could not load rule=%s/%s/%s/%s/%s/%s,%d", domain, from, to, subject, body, _size, size);
+      syslog(LOG_INFO, "could not load rule=%s/%s/%s/%s/%s/%s,%d", rule_cond->domain, rule_cond->from, rule_cond->to, rule_cond->subject, rule_cond->body, rule_cond->_size, rule_cond->size);
       return rc;
    }
 
@@ -119,7 +119,7 @@ int append_rule(struct node *xhash[], char *domain, char *from, char *to, char *
 }
 
 
-struct rule *create_rule_item(char *domain, char *from, char *to, char *subject, char *body, char *_size, int size, char *attachment_name, char *attachment_type, char *_attachment_size, int attachment_size, int spam, int days, struct __data *data){
+struct rule *create_rule_item(struct rule_cond *rule_cond, struct __data *data){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -135,54 +135,55 @@ struct rule *create_rule_item(char *domain, char *from, char *to, char *subject,
 
    if(h->domainlen > 2){
       h->domain = malloc(h->domainlen+2);
-      if(h->domain) snprintf(h->domain, h->domainlen, "%s", domain);
+      if(h->domain) snprintf(h->domain, h->domainlen, "%s", rule_cond->domain);
       else {
          h->compiled = 0;
-         syslog(LOG_INFO, "malloc error in create_rule_item() for '%s'", domain);
+         syslog(LOG_INFO, "malloc error in create_rule_item() for '%s'", rule_cond->domain);
       }
    }
 
    h->emptyfrom = h->emptyto = h->emptysubject = h->emptyaname = h->emptyatype = 0;
 
 
-   if(!from || strlen(from) < 1){ from = &empty; h->emptyfrom = 1; }
-   if(regcomp(&(h->from), from, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->from == NULL || strlen(rule_cond->from) < 1){ rule_cond->from[0] = empty; h->emptyfrom = 1; }
+   if(regcomp(&(h->from), rule_cond->from, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!to || strlen(to) < 1){ to = &empty; h->emptyto = 1; }
-   if(regcomp(&(h->to), to, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->to == NULL || strlen(rule_cond->to) < 1){ rule_cond->to[0] = empty; h->emptyto = 1; }
+   if(regcomp(&(h->to), rule_cond->to, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!subject || strlen(subject) < 1){ subject = &empty; h->emptysubject = 1; }
-   if(regcomp(&(h->subject), subject, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->subject == NULL || strlen(rule_cond->subject) < 1){ rule_cond->subject[0] = empty; h->emptysubject = 1; }
+   if(regcomp(&(h->subject), rule_cond->subject, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!body || strlen(body) < 1){ body = &empty; h->emptybody = 1; }
-   if(regcomp(&(h->body), body, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->body == NULL || strlen(rule_cond->body) < 1){ rule_cond->body[0] = empty; h->emptybody = 1; }
+   if(regcomp(&(h->body), rule_cond->body, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   h->spam = spam;
-   h->days = days;
+   h->spam = rule_cond->spam;
+   h->days = rule_cond->days;
+   h->folder_id = rule_cond->folder_id;
 
-   h->size = size;
+   h->size = rule_cond->size;
 
-   if(!_size) _size = &empty;
-   snprintf(h->_size, 3, "%s", _size);
+   if(rule_cond->_size == NULL) rule_cond->_size[0] = empty;
+   snprintf(h->_size, 3, "%s", rule_cond->_size);
 
-   if(!attachment_name || strlen(attachment_name) < 1){ attachment_name = &empty; h->emptyaname = 1; }
-   if(regcomp(&(h->attachment_name), attachment_name, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->attachment_name == NULL || strlen(rule_cond->attachment_name) < 1){ rule_cond->attachment_name[0] = empty; h->emptyaname = 1; }
+   if(regcomp(&(h->attachment_name), rule_cond->attachment_name, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(!attachment_type || strlen(attachment_type) < 1){ attachment_type = &empty; h->emptyatype = 1; }
-   if(regcomp(&(h->attachment_type), attachment_type, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
+   if(rule_cond->attachment_type == NULL || strlen(rule_cond->attachment_type) < 1){ rule_cond->attachment_type[0] = empty; h->emptyatype = 1; }
+   if(regcomp(&(h->attachment_type), rule_cond->attachment_type, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
 
-   h->attachment_size = attachment_size;
+   h->attachment_size = rule_cond->attachment_size;
 
-   if(!_attachment_size) _attachment_size = &empty;
-   snprintf(h->_attachment_size, 3, "%s", _attachment_size);
+   if(rule_cond->_attachment_size == NULL) rule_cond->_attachment_size[0] = empty;
+   snprintf(h->_attachment_size, 3, "%s", rule_cond->_attachment_size);
 
-   len = strlen(domain)+8 + strlen(from)+6 + strlen(to)+4 + strlen(subject)+9 + strlen(body)+6 + strlen(_size)+6 + strlen(attachment_name)+10 + strlen(attachment_type)+10 + strlen(_attachment_size)+10 + 9 + 15 + 15;
+   len = strlen(rule_cond->domain)+8 + strlen(rule_cond->from)+6 + strlen(rule_cond->to)+4 + strlen(rule_cond->subject)+9 + strlen(rule_cond->body)+6 + strlen(rule_cond->_size)+6 + strlen(rule_cond->attachment_name)+10 + strlen(rule_cond->attachment_type)+10 + strlen(rule_cond->_attachment_size)+10 + 9 + 15 + 15;
    h->rulestr = malloc(len);
 
 
 
-   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,body=%s,size%s%d,att.name=%s,att.type=%s,att.size%s%d,spam=%d", domain, from, to, subject, body, _size, size, attachment_name, attachment_type, _attachment_size, attachment_size, spam);
+   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,body=%s,size%s%d,att.name=%s,att.type=%s,att.size%s%d,spam=%d", rule_cond->domain, rule_cond->from, rule_cond->to, rule_cond->subject, rule_cond->body, rule_cond->_size, rule_cond->size, rule_cond->attachment_name, rule_cond->attachment_type, rule_cond->_attachment_size, rule_cond->attachment_size, rule_cond->spam);
    else h->compiled = 0;
 
    h->r = NULL;
@@ -313,6 +314,69 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
    state->retention = cfg->default_retention_days;
 
    return cfg->default_retention_days * 86400;
+}
+
+
+int get_folder_id_by_rule(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
+   size_t nmatch=0;
+   struct rule *p;
+   struct node *q;
+   int ismatch;
+
+   q = data->folder_rules[0];
+
+   while(q != NULL){
+
+      if(q->str){
+         p = q->str;
+
+         ismatch = 0;
+
+         if(p->domainlen > 2){
+            if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
+               return p->folder_id;
+            }
+         }
+         else {
+
+            ismatch += check_spam_rule(spam, p->spam);
+            ismatch += check_size_rule(size, p->size, p->_size);
+            ismatch += check_attachment_rule(state, p);
+
+            if(p->compiled == 1){
+               if(p->emptyfrom == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptyto == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptysubject == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+               if(p->emptybody == 1){
+                  ismatch += RULE_UNDEF;
+               }
+               else if(regexec(&(p->body), state->b_body, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+            }
+
+            if(ismatch > 0){
+               return p->folder_id;
+            }
+         }
+
+      }
+
+      q = q->r;
+   }
+
+   return 0; // default folder_id
 }
 
 

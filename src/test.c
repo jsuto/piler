@@ -63,11 +63,13 @@ int main(int argc, char **argv){
 
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
+   initrules(data.folder_rules);
 
    load_mydomains(&sdata, &data, &cfg);
 
    load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
    load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
 
 
    init_session_data(&sdata, &cfg);
@@ -108,10 +110,13 @@ int main(int argc, char **argv){
 
    sdata.retained = sdata.now + query_retain_period(&data, &state, st.st_size, sdata.spam_message, &cfg);
 
+   printf("folder: %d\n", get_folder_id_by_rule(&data, &state, st.st_size, sdata.spam_message, &cfg));
+
    printf("retention period: %ld\n", sdata.retained);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
+   clearrules(data.folder_rules);
 
    clearhash(data.mydomains);
 

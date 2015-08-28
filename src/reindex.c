@@ -224,6 +224,7 @@ int main(int argc, char **argv){
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
+   initrules(data.folder_rules);
 
    init_session_data(&sdata, &cfg);
 
@@ -231,6 +232,8 @@ int main(int argc, char **argv){
    if(open_database(&sdata, &cfg) == ERR){
       p_clean_exit("cannot connect to mysql server", 1);
    }
+
+   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
 
    if(folder){
       data.folder = get_folder_id(&sdata, &data, folder, 0, &cfg);
@@ -251,6 +254,8 @@ int main(int argc, char **argv){
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);
 
    printf("put %llu messages to %s table for reindexing\n", n, SQL_SPHINX_TABLE);
+
+   clearrules(data.folder_rules);
 
    clearhash(data.mydomains);
 

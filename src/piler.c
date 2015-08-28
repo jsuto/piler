@@ -235,6 +235,7 @@ void p_clean_exit(){
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
+   clearrules(data.folder_rules);
 
    clearhash(data.mydomains);
 
@@ -312,6 +313,7 @@ void initialise_configuration(){
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
+   clearrules(data.folder_rules);
 
    clearhash(data.mydomains);
 
@@ -321,6 +323,7 @@ void initialise_configuration(){
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
+   initrules(data.folder_rules);
 
 #ifdef HAVE_STARTTLS
    if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
@@ -335,6 +338,7 @@ void initialise_configuration(){
 
    load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
    load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
 
    load_mydomains(&sdata, &data, &cfg);
 
@@ -390,6 +394,7 @@ int main(int argc, char **argv){
    inithash(data.mydomains);
    initrules(data.archiving_rules);
    initrules(data.retention_rules);
+   initrules(data.folder_rules);
    data.ctx = NULL;
    data.ssl = NULL;
    data.dedup = MAP_FAILED;

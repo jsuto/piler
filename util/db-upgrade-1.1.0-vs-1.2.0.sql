@@ -26,3 +26,10 @@ create table if not exists `timestamp` (
 ) Engine=InnoDB;
 
 
+
+-- 2015.08.28
+
+alter table archiving_rule add column `folder_id` int default 0;
+alter table retention_rule add column `folder_id` int default 0;
+
+

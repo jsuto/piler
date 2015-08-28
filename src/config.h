@@ -14,7 +14,7 @@
 
 #define VERSION "1.2.0-master"
 
-#define BUILD 918
+#define BUILD 919
 
 #define HOSTID "mailarchiver"
 
@@ -84,6 +84,7 @@
 #define SQL_RECIPIENT_TABLE "rcpt"
 #define SQL_ARCHIVING_RULE_TABLE "archiving_rule"
 #define SQL_RETENTION_RULE_TABLE "retention_rule"
+#define SQL_FOLDER_RULE_TABLE "folder_rule"
 #define SQL_COUNTER_TABLE "counter"
 #define SQL_OPTION_TABLE "option"
 #define SQL_DOMAIN_TABLE "domain"
