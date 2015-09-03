@@ -221,6 +221,8 @@ class ModelUserAuth extends Model {
 
                $session->set("auth_data", $data);
 
+               $this->is_ga_code_needed($username);
+
                $this->is_four_eye_auth_needed($role);
 
                AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
@@ -365,6 +367,8 @@ class ModelUserAuth extends Model {
 
          $data = $this->fix_user_data($username, $username, $emails, 0);
 
+         $this->is_ga_code_needed($username);
+
          $session->set("auth_data", $data);
 
          $session->set("password", $password);
@@ -395,6 +399,8 @@ class ModelUserAuth extends Model {
                   $emails = array_merge($emails, $extra_emails);
 
                   $data = $this->fix_user_data($username, $username, $emails, 0);
+
+                  $this->is_ga_code_needed($username);
 
                   $session = Registry::get('session');
                   $session->set("auth_data", $data);
