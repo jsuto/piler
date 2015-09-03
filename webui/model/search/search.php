@@ -484,6 +484,7 @@ class ModelSearchSearch extends Model {
       $tag = array();
       $note = array();
       $q = '';
+      global $SUPPRESS_RECIPIENTS;
 
       if(count($ids) == 0) return $messages;
 
@@ -498,7 +499,7 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
          foreach($query->rows as $r) {
-            if(!isset($rcpt[$r['id']])) {
+            if(!isset($rcpt[$r['id']]) && !in_array($r['to'], $SUPPRESS_RECIPIENTS)) {
                $srcpt[$r['id']] = $r['to'];
                $rcpt[$r['id']] = $r['to'];
             }

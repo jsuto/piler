@@ -258,6 +258,9 @@ $config['FOUR_EYES_LOGIN_FOR_AUDITOR'] = 0;
 $config['MEMCACHED_PREFIX'] = '_piler:';
 $config['MEMCACHED_TTL'] = 900;
 
+$SUPPRESS_RECIPIENTS = array();
+
+
 $memcached_servers = array(
       array('127.0.0.1', 11211)
                           );
