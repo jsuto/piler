@@ -145,6 +145,7 @@ $_['text_failed_to_restore'] = "Hiba a visszaállítás során";
 $_['text_failed_to_update'] = "Nem sikerült módosítani";
 $_['text_first'] = "Elsõ";
 $_['text_folder'] = "Mappa";
+$_['text_folder_rules'] = "Mappa szabályok";
 $_['text_folders'] = "Mappák";
 $_['text_forward_selected_emails_to'] = "Kijelölt levelek továbbítása";
 $_['text_from'] = "Feladó";

@@ -144,6 +144,7 @@ $_['text_failed_to_restore'] = "Failed to restore";
 $_['text_failed_to_update'] = "Failed to update";
 $_['text_first'] = "First";
 $_['text_folder'] = "Folder";
+$_['text_folder_rules'] = "Folder rules";
 $_['text_folders'] = "Folders";
 $_['text_forward_selected_emails_to'] = "Forward selected emails to";
 $_['text_from'] = "From";

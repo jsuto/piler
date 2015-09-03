@@ -479,4 +479,7 @@ $_['text_ldap_delete_confirm_message'] = 'Czy chcesz usunąć wpis LDAP';
 $_['text_customer_delete_confirm_message'] = 'Czy chcesz usunąć klienta';
 $_['text_with_selected'] = 'wraz z zaznaczonymi';
 
+$_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+$_['text_folder_rules'] = "Folder rules";
+
 ?>

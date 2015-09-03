@@ -359,6 +359,7 @@ define('TABLE_COUNTER_MSG', 'counter_messages');
 define('TABLE_STAT_COUNTER', 'counter_stats');
 define('TABLE_AUDIT', 'audit');
 define('TABLE_ARCHIVING_RULE', 'archiving_rule');
+define('TABLE_FOLDER_RULE', 'folder_rule');
 define('TABLE_RETENTION_RULE', 'retention_rule');
 define('TABLE_OPTION', 'option');
 define('TABLE_LDAP', 'ldap');

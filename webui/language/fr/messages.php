@@ -480,5 +480,6 @@ $_['text_storage'] = "Stockage";
 $_['text_legal_hold'] = "Legal hold";
 
 $_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+$_['text_folder_rules'] = "Folder rules";
 
 ?>

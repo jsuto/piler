@@ -42,6 +42,19 @@ class ModelFolderFolder extends Model {
    }
 
 
+   public function get_top_level_folders() {
+      $folders = array();
+
+      $query = $this->db->query("SELECT `id`, `name` FROM `" . TABLE_FOLDER . "` WHERE parent_id=0");
+
+      foreach ($query->rows as $q) {
+         $folders[$q['id']] = $q['name'];
+      }
+
+      return $folders;
+   }
+
+
    public function get_folders_for_user() {
       $session = Registry::get('session');
 

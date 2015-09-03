@@ -18,14 +18,11 @@
 
 
 int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg){
-   int rc=ERR, folder_id=0;
+   int rc=ERR;
    char *subj;
 
-   if(data->folder > 0){
-      folder_id = data->folder;
-   }
-   else {
-      folder_id = get_folder_id_by_rule(data, state, sdata->tot_len, sdata->spam_message, cfg);
+   if(data->folder == 0){
+      data->folder = get_folder_id_by_rule(data, state, sdata->tot_len, sdata->spam_message, cfg);
    }
 
    subj = state->b_subject;
@@ -54,7 +51,7 @@ int store_index_data(struct session_data *sdata, struct _state *state, struct __
    data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&folder_id; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = sdata->attachments; data->type[data->pos] = TYPE_STRING; data->pos++;
 
