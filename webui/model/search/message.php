@@ -495,7 +495,7 @@ class ModelSearchMessage extends Model {
 
       while(list($k, $v) = each($a)) {
          if(strlen($v) >= 3 && !in_array($v, $fields)) {
-            //$v = preg_replace("/\W/", "", $v);
+            $v = preg_replace("/\*/", "", $v);
             if($v) { array_push($terms, $v); }
          }
       }
