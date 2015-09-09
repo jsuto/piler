@@ -315,6 +315,7 @@ struct __data {
    MYSQL_STMT *stmt_insert_into_sphinx_table;
    MYSQL_STMT *stmt_insert_into_meta_table;
    MYSQL_STMT *stmt_insert_into_attachment_table;
+   MYSQL_STMT *stmt_insert_into_folder_message_table;
    MYSQL_STMT *stmt_get_attachment_id_by_signature;
    MYSQL_STMT *stmt_get_attachment_pointer;
    MYSQL_STMT *stmt_query_attachment;

@@ -69,6 +69,7 @@ struct _parse_rule config_parse_rules[] =
    { "debug", "integer", (void*) int_parser, offsetof(struct __config, debug), "0", sizeof(int)},
    { "default_retention_days", "integer", (void*) int_parser, offsetof(struct __config, default_retention_days), "2557", sizeof(int)},
    { "enable_cjk", "integer", (void*) int_parser, offsetof(struct __config, enable_cjk), "0", sizeof(int)},
+   { "enable_folders", "integer", (void*) int_parser, offsetof(struct __config, enable_folders), "0", sizeof(int)},
    { "encrypt_messages", "integer", (void*) int_parser, offsetof(struct __config, encrypt_messages), "1", sizeof(int)},
    { "extra_to_field", "string", (void*) string_parser, offsetof(struct __config, extra_to_field), "", MAXVAL-1},
    { "extract_attachments", "integer", (void*) int_parser, offsetof(struct __config, extract_attachments), "1", sizeof(int)},
