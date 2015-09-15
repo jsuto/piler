@@ -488,7 +488,7 @@ class ModelSearchMessage extends Model {
    private function highlight_search_terms($s = '', $terms = '', $html = 0) {
       $fields = array("from:", "to:", "subject:", "body:");
 
-      $terms = preg_replace("/(\'|\"|\=|\>|\<)/", "", $terms);
+      $terms = preg_replace("/[^\w\s]/", "", $terms);
 
       $a = explode(" ", $terms);
       $terms = array();
