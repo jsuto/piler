@@ -36,6 +36,10 @@ class ControllerLoginLogin extends Controller {
       $this->data['title'] = $this->data['text_login'];
       $this->data['title_prefix'] = TITLE_PREFIX;
 
+      if(strstr($_SERVER['REQUEST_URI'], "logout.php")) {
+         logout();
+      }
+
       $this->data['failed_login_count'] = $this->model_user_auth->get_failed_login_count();
 
 
