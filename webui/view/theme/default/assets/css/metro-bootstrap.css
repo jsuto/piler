@@ -1658,6 +1658,7 @@ html,body{height:auto !important;height:100%;min-height:100%;}
 #popupx{position:absolute;right:10px;top:5px;margin:10px;cursor:pointer;}
 #restorebox{position:absolute;top:40px;left:15%;display:none;font-weight:bold;padding:15px;z-index:1;}
 #notesbox{position:absolute;top:8px;right:8px;}
+#folderbox{position:absolute;top:8px;right:380px;}
 #sspinner{display:none;}
 .message_highlight{background:lightblue;}
 #searchcontainer{text-align:center;min-width:320px;}
@@ -1669,7 +1670,7 @@ html,body{height:auto !important;height:100%;min-height:100%;}
 #searchcontainer #button_search,#searchcontainer #button_options{width:30%;}
 #mainscreen{position:absolute;top:120px;right:20px;bottom:20px;left:20px;min-width:320px;z-index:0;}
 #mailleftcontainer{position:absolute;top:0;left:0;bottom:0;width:195px;}
-#mailboxlist-container{position:absolute;top:0;left:0;width:100%;bottom:0;border:1px solid #999999;border-top:none;background-color:#f9f9f9;overflow:hidden;}
+#mailboxlist-container{position:absolute;top:0;left:0;width:100%;bottom:0;border:1px solid #999999;border-top:none;background-color:#f9f9f9;overflow:auto;}
 .boxlistcontent{position:absolute;top:0px;bottom:34px;left:0;right:0;width:100%;overflow-y:auto;overflow-x:hidden;height:auto;}
 .boxfooter{position:absolute;bottom:0px;left:0px;right:0px;overflow:hidden;height:33px;border-top:1px solid #ccc;background-color:#f6f6f6;min-width:320px;}
 #mailboxlist{position:relative;height:auto;margin:0px;padding:0px;list-style-image:none;list-style-type:none;overflow:hidden;white-space:nowrap;background-color:#FFF;}
@@ -1730,4 +1731,6 @@ body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 .control-group.success .fileupload .fileupload-preview{color:#468847;}
 .control-group.success .fileupload .thumbnail{border-color:#468847;}
 .bottomborder { border-bottom: 1px solid black; }
+.folderlabel{display: block; padding-left: 35px; text-indent: -15px;}
+.foldercheckbox{vertical-align: center; position: relative; top: -1px; margin:0; padding: 0; height: 13px; width: 13px;}
 @media (min-width:980px){body{padding-top:65px;}}@media (max-width:980px){.navbar-fixed-top{margin-bottom:10px;} .nav-collapse .nav>li>a,.nav-collapse .dropdown-menu a{font-weight:normal;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;} .nav-collapse .nav>li>a:hover,.nav-collapse ul.nav li.dropdown ul.dropdown-menu li a:hover{color:#fff;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;background-color:#555555;} .navbar .nav li.dropdown>a:hover .caret{border-top-color:#fff;border-bottom-color:#fff;} .dropdown-menu li>a:hover{background-color:#00f;}}@media (max-width:767px){#mainscreen{top:162px;} #pagingrow{border-bottom:1px solid #ccc;} #pagingbox{border-right:none;} #functionbox{border-left:none;} .boxlistcontent{bottom:68px;overflow:scroll;} .boxfooter{height:67px;}}

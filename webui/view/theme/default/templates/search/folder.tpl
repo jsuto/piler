@@ -2,16 +2,11 @@
 
 <div id="folders">
 
-
 <?php foreach ($extra_folders as $folder) { ?>
-   <blockquote class="folder">
-      <form class="form-search sleek">
-         <img src="<?php print ICON_EMPTY; ?>" width="12" height="12" alt="" /> <input type="checkbox" id="extra_folder_<?php print $folder['id']; ?>" name="extra_folder_<?php print $folder['id']; ?>" /> <input type="text" ondrop="Piler.copy_message_to_folder('<?php print $folder['id']; ?>', Piler.current_message_id, '<?php print $text_copied; ?>'); return false;" class="input-small bold" style="color: #850505; border:none; background: transparent; " value="<?php print $folder['name']; ?>" />
-      </form>
-   </blockquote>
+    <div>
+        <label class="folderlabel"><input type="checkbox" id="extra_folder_<?php print $folder['id']; ?>" name="extra_folder_<?php print $folder['id']; ?>" style="margin:0;" class="foldercheckbox" /> <?php print $folder['name']; ?></label>
+    </div>
 <?php } ?>
-
-
 
 <?php
 
@@ -43,7 +38,7 @@ function display_folders($arr = array(), &$i) {
 
 <?php
       $i = 0;
-      display_folders($folders_by_hier, $i);
+      //display_folders($folders_by_hier, $i);
 ?>
 
 

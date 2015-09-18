@@ -43,6 +43,18 @@
    <input type="button" class="btn btn-info" value="<?php print $text_save; ?>" class="message_button" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); " />
 </div>
 
+<?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
+<div id="folderbox" class="input-prepend input-append">
+   <span class="add-on"><i class="icon-folder-open-alt icon-large"></i>&nbsp;<?php print $text_folder; ?>:</span>
+   <select name="folder_id" id="folder_id" class="span2">
+         <option value="0" <?php if($folder_id == 0) { ?>selected="selected"<?php } ?>>---</option>
+      <?php foreach ($folders as $folder) { ?>
+         <option value="<?php print $folder['id']; ?>" <?php if($folder_id == $folder['id']) { ?>selected="selected"<?php } ?>><?php print $folder['name']; ?></option>
+      <?php } ?>
+   </select>
+   <input type="button" class="btn btn-info" value="<?php print $text_save; ?>" class="message_button" onclick="Piler.update_message_folder(<?php print $id; ?>, '<?php print $text_saved; ?>'); " />
+</div>
+<?php } ?>
 
 <div id="messageblock">
 

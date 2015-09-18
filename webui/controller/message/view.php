@@ -19,6 +19,10 @@ class ControllerMessageView extends Controller {
 
       $this->load->model('user/user');
 
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+         $this->load->model('folder/folder');
+      }
+
       $this->document->title = $this->data['text_message'];
 
       $this->data['id'] = '';
@@ -82,6 +86,11 @@ class ControllerMessageView extends Controller {
 
       $this->data['can_download'] = $this->model_audit_audit->can_download();
       $this->data['can_restore'] = $this->model_audit_audit->can_restore();
+
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
+         $this->data['folders'] = $this->model_folder_folder->get_folders_for_user();
+         $this->data['folder_id'] = $this->model_folder_folder->get_folder_id_by_id($this->data['id']);
+      }
 
       foreach($this->data['attachments'] as $a) {
          if(preg_match("/image/", $a['type'])) {

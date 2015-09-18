@@ -129,6 +129,23 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 }
 
 
+int store_folder_id(struct session_data *sdata, struct __data *data, uint64 id, struct __config *cfg){
+   int rc = ERR;
+
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_message_table), SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE, cfg) == ERR) return rc;
+
+   p_bind_init(data);
+
+   data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
+   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
+
+   if(p_exec_query(sdata, data->stmt_insert_into_folder_message_table, data) == OK) rc = OK;
+   close_prepared_statement(data->stmt_insert_into_folder_message_table);
+
+   return rc;
+}
+
+
 int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
    int ret = ERR;
 
@@ -222,6 +239,11 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
       rc = store_index_data(sdata, state, data, id, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
+
+      if(cfg->enable_folders == 1){
+         rc = store_folder_id(sdata, data, id, cfg);
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored folderdata, rc=%d", sdata->ttmpfile, rc);
+      }
 
       ret = OK;
    }

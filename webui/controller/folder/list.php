@@ -19,7 +19,7 @@ class ControllerFolderList extends Controller {
       $this->document->title = $this->data['text_folders'];
 
       if(isset($this->request->post['name']) && $this->request->post['name']) {
-         $this->model_folder_folder->add_extra_folder($this->request->post['name']);
+         $this->model_folder_folder->add_folder($this->request->post['name']);
 
          Header("Location: folders.php");
          return;
@@ -27,7 +27,7 @@ class ControllerFolderList extends Controller {
 
 
       if(isset($this->request->get['id']) && $this->request->get['id'] > 0) {
-         $this->model_folder_folder->remove_extra_folder($this->request->get['id']);
+         $this->model_folder_folder->remove_folder($this->request->get['id']);
 
          Header("Location: folders.php");
          return;
@@ -36,7 +36,7 @@ class ControllerFolderList extends Controller {
 
       $this->data['page_len'] = get_page_length();
 
-      $this->data['extra_folders'] = $this->model_folder_folder->get_extra_folders_for_user();
+      $this->data['extra_folders'] = $this->model_folder_folder->get_folders_for_user();
 
       $this->render();
    }
