@@ -198,9 +198,9 @@ class ModelFolderFolder extends Model {
 
    public function update_message_folder($id = 0, $folder_id = 0) {
       $query = $this->db->query("UPDATE `" . TABLE_FOLDER_MESSAGE . "` SET folder_id=? WHERE id=?", array($folder_id, $id));
-
-      //$query = $this->sphx->query("UPDATE " . SPHINX_MAIN_INDEX . " SET folder=? WHERE id=?", array($folder_id, $id));
-      $query = $this->sphx->query("UPDATE " . SPHINX_MAIN_INDEX . " SET folder=$folder_id WHERE id=$id");
+      if($this->db->countAffected() == 0) {
+         $query = $this->sphx->query("UPDATE " . SPHINX_MAIN_INDEX . " SET folder=$folder_id WHERE id=$id");
+      }
    }
 
 
