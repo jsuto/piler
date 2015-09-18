@@ -93,6 +93,8 @@ struct __config {
 
    int mmap_dedup_test;
 
+   int enable_folders;
+
    int debug;
 };
 

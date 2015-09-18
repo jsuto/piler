@@ -41,8 +41,7 @@ class ModelUserGoogle extends Model {
       $session->set("realname", $query->row['realname']);
 
       $session->set("emails", $this->model_user_user->get_users_all_email_addresses($user['uid']));
-      $session->set("folders", $this->model_folder_folder->get_all_folder_ids($user['uid']));
-      $session->set("extra_folders", $this->model_folder_folder->get_all_extra_folder_ids($user['uid']));
+      $session->set("folders", $this->model_folder_folder->get_folder_id_array_for_user($user['uid']));
 
       AUDIT(ACTION_LOGIN, $user['username'], '', '', 'successful auth against Google');
 
