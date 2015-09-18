@@ -425,6 +425,23 @@ var Piler =
     },
 
 
+    update_message_folder:function(id, msg)
+    {
+        Piler.log("[update_message_folder]", id, msg);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        jQuery.ajax('index.php?route=message/folder', {
+           data: { id: id, folder_id: $('#folder_id').val() },
+           type: "POST"
+        })
+        .done( function(a) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', msg, 0.85);
+    },
+
+
     tag_search_results:function(msg)
     {
         Piler.log("[tag_search_results]", msg);
