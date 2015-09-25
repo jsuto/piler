@@ -74,7 +74,7 @@ class ControllerGroupList extends Controller {
       $this->data['prev_page'] = $this->data['page'] - 1;
       $this->data['next_page'] = $this->data['page'] + 1;
 
-      $this->data['total_pages'] = floor($this->data['total_users'] / $this->data['page_len']);
+      $this->data['total_pages'] = floor($this->data['total_groups'] / $this->data['page_len']);
 
 
       $this->render();
