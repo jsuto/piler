@@ -187,6 +187,27 @@ class ModelFolderFolder extends Model {
    }
 
 
+   public function get_folder_by_id($id = 0) {
+      $query = $this->db->query("SELECT * FROM `" . TABLE_FOLDER . "` WHERE id=?", array($id));
+
+      if(isset($query->row)) { return $query->row; }
+
+      return array();
+   }
+
+
+   public function update_folder($data = array()) {
+      $rc = 0;
+
+      if(isset($data['id']) && isset($data['name'])) {
+         $query = $this->db->query("UPDATE `" . TABLE_FOLDER . "` SET name=? WHERE id=?", array($data['name'], $data['id']));
+         $rc = $this->db->countAffected();
+      }
+
+      return $rc;
+   }
+
+
    public function get_folder_id_by_id($id = 0) {
       $query = $this->db->query("SELECT folder_id FROM `" . TABLE_FOLDER_MESSAGE . "` WHERE id=?", array($id));
 

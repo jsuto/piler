@@ -1,19 +1,18 @@
 
-<?php if(!isset($x)){ ?>
-
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 
-<form action="folders.php" method="post" name="extra_folders" class="form-horizontal">
+<form action="index.php?route=folder/edit" method="post" name="extra_folders" class="form-horizontal">
 
     <div class="control-group">
 		<label class="control-label" for="domain"><?php print $text_folder; ?>:</label>
         <div class="controls">
-            <input type="text" id="name" name="name" value="" />
+            <input type="text" id="name" name="name" value="<?php print $folder['name']; ?>" />
+            <input type="hidden" id="id" name="id" value="<?php print $folder['id']; ?>" />
         </div>
     </div>
 
     <div class="form-actions">
-        <input type="submit" value="<?php print $text_add; ?>" class="btn btn-primary" />
+        <input type="submit" value="<?php print $text_modify; ?>" class="btn btn-primary" />
         <input type="reset" value="<?php print $text_clear; ?>" class="btn" />
     </div>
 
@@ -44,9 +43,5 @@
 
 <?php } ?>
 
-<?php } else { ?>
-<div class="alert alert-info"><?php print $x; ?>.</div>
-<p><a href="index.php?route=common/home"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
-<?php } ?>
 
 
