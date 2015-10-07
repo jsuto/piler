@@ -125,6 +125,13 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
    data->import->total_messages += messages;
 
    for(i=data->import->start_position; i<=messages; i++){
+
+      /* whether to quit after processing a batch of messages */
+
+      if(data->import->batch_processing_limit > 0 && data->import->processed_messages >= data->import->batch_processing_limit){
+         break;
+      }
+
       data->import->processed_messages++;
       if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/messages); fflush(stdout); }
 
