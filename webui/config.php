@@ -273,6 +273,7 @@ $config['DELIMITER'] = "\t";
 $config['TRACKING_CODE'] = '';
 
 $langs = array(
+                'cz',
                 'de',
                 'en',
                 'es',
