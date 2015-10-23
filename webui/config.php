@@ -41,6 +41,7 @@ $config['CAPTCHA_FAILED_LOGIN_COUNT'] = 0;
 
 $config['ENABLE_REFERENCES'] = 1;
 $config['ENABLE_DOWNLOADING_ALL_SEARCH_HITS'] = 0;
+$config['EML_NAME_BASED_ON_SUBJECT'] = 1;
 
 $config['ENABLE_TABLE_RESIZE'] = 0;
 $config['DEMO_MODE'] = 0;

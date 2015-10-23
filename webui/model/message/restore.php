@@ -4,25 +4,33 @@ class ModelMessageRestore extends Model {
 
 
    public function download_files_as_zip($idlist = array()) {
+      $i = 0;
 
       $zip = new ZipArchive();
 
       $randomid = generate_random_string(16);
 
-      $filename = DIR_BASE . "tmp/" . $randomid;
+      $zipname = DIR_BASE . "tmp/" . $randomid;
 
-      if($zip->open($filename, ZIPARCHIVE::CREATE) != true) { exit("cannot open <$filename>\n"); }
+      if($zip->open($zipname, ZIPARCHIVE::CREATE) != true) { exit("cannot open <$zipname>\n"); }
 
       $this->model_search_message->connect_to_pilergetd();
 
       foreach($idlist as $id) {
-         $piler_id = $this->model_search_message->get_piler_id_by_id($id);
+         $i++;
+
+         $filename = $piler_id = $this->model_search_message->get_piler_id_by_id($id);
+
+         if(EML_NAME_BASED_ON_SUBJECT == 1) {
+            $filename = $this->model_search_message->get_subject_id_by_id($id);
+            $filename = $this->model_search_message->fix_subject($filename) . "-" . $i;
+         }
 
          $rawemail = $this->model_search_message->get_raw_message($piler_id);
 
          $this->model_search_message->remove_journal($rawemail);
 
-         $zip->addFromString($piler_id . ".eml",  $rawemail);
+         $zip->addFromString($filename . ".eml",  $rawemail);
 
          AUDIT(ACTION_DOWNLOAD_MESSAGE, '', '', $id, '');
       }
@@ -37,13 +45,13 @@ class ModelMessageRestore extends Model {
       header("Pragma: no-cache");
       header("Content-Type: application/zip");
       header("Expires: 0");
-      header("Content-Length: " . filesize($filename));
+      header("Content-Length: " . filesize($zipname));
       header("Content-Disposition: attachment; filename=archive-$randomid.zip");
       header("Content-Transfer-Encoding: binary\n");
 
-      readfile($filename);
+      readfile($zipname);
 
-      unlink($filename);
+      unlink($zipname);
    }
 
 }

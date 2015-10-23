@@ -35,12 +35,18 @@ class ControllerMessageDownload extends Controller {
 
       AUDIT(ACTION_DOWNLOAD_MESSAGE, '', '', $this->data['id'], '');
 
-      $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
+      $filename = $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
+
+      if(EML_NAME_BASED_ON_SUBJECT == 1) {
+         $filename = $this->model_search_message->get_subject_id_by_id($this->data['id']);
+         $filename = $this->model_search_message->fix_subject($filename);
+      }
+
 
       header("Cache-Control: public, must-revalidate");
       header("Pragma: no-cache");
       header("Content-Type: application/octet-stream");
-      header("Content-Disposition: attachment; filename=" . $this->data['piler_id'] . ".eml");
+      header("Content-Disposition: attachment; filename=" . $filename . ".eml");
       header("Content-Transfer-Encoding: binary\n");
 
       $this->model_search_message->connect_to_pilergetd();
