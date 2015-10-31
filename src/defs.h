@@ -226,7 +226,8 @@ struct session_data {
    float __acquire, __parsed, __av, __store, __compress, __encrypt;
    char bodydigest[2*DIGEST_LENGTH+1];
    char digest[2*DIGEST_LENGTH+1];
-   time_t now, sent, delivered, retained;
+   time_t now, sent, delivered;
+   unsigned long retained;
    char ms_journal;
    char import;
    int journal_envelope_length, journal_bottom_length;

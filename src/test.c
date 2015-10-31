@@ -112,7 +112,7 @@ int main(int argc, char **argv){
 
    printf("folder: %d\n", get_folder_id_by_rule(&data, &state, st.st_size, sdata.spam_message, &cfg));
 
-   printf("retention period: %ld\n", sdata.retained);
+   printf("retention period: %lu\n", sdata.retained);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
