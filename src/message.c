@@ -214,7 +214,7 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
    data->sql[data->pos] = (char *)&sdata->spam_message; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->now; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->retained; data->type[data->pos] = TYPE_LONG; data->pos++;
+   data->sql[data->pos] = (char *)&sdata->retained; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->hdr_len; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
