@@ -249,7 +249,7 @@ char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size,
 }
 
 
-unsigned long query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
+time_t query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;
@@ -267,7 +267,7 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
          if(p->domainlen > 2){
             if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
                state->retention = p->days;
-               return p->days * 86400;
+               return (time_t)p->days * (time_t)86400;
             }
          }
          else {
@@ -301,7 +301,7 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
 
             if(ismatch > 0){
                state->retention = p->days;
-               return p->days * 86400;
+               return (time_t)p->days * (time_t)86400;
             }
          }
 
@@ -313,7 +313,7 @@ unsigned long query_retain_period(struct __data *data, struct _state *state, int
 
    state->retention = cfg->default_retention_days;
 
-   return cfg->default_retention_days * 86400;
+   return (time_t)cfg->default_retention_days * (time_t)86400;
 }
 
 

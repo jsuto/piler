@@ -96,7 +96,7 @@ int main(int argc, char **argv){
    printf("subject: *%s*\n", state.b_subject);
    printf("body: *%s*\n", state.b_body);
 
-   printf("sent: %ld, delivered-date: %ld\n", sdata.sent, sdata.delivered);
+   printf("sent: %lu, delivered-date: %lu\n", sdata.sent, sdata.delivered);
 
    make_digests(&sdata, &cfg);
 

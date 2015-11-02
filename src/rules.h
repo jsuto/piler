@@ -11,7 +11,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct __data *data);
 struct rule *create_rule_item(struct rule_cond *rule_cond, struct __data *data);
 char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size, int spam);
-unsigned long query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg);
+time_t query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg);
 int get_folder_id_by_rule(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg);
 int check_size_rule(int message_size, int size, char *_size);
 int check_spam_rule(int is_spam, int spam);

@@ -112,10 +112,10 @@ long get_local_timezone_offset(){
 }
 
 
-unsigned long parse_date_header(char *datestr, struct __config *cfg){
+time_t parse_date_header(char *datestr, struct __config *cfg){
    int n=0, len;
    long offset=0;
-   unsigned long ts=0;
+   time_t ts=0;
    char *p, *q, *r, *tz, s[SMALLBUFSIZE], tzh[4], tzm[3];
    struct tm tm;
 
