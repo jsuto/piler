@@ -79,9 +79,10 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
    char filename[SMALLBUFSIZE];
    char s[SMALLBUFSIZE];
    int rc=0;
-   uint64 stored_id=0, reindexed=0;
+   uint64 stored_id=0, reindexed=0, delta;
    struct _state state;
 
+   delta = to_id - from_id;
 
    snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
@@ -131,7 +132,11 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
             unlink(filename);
 
-            if(progressbar) printf("processed: %8llu\r", reindexed); fflush(stdout);
+            if(progressbar){
+               printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
+               fflush(stdout);
+            }
+
          }
          else printf("cannot open: %s\n", filename);
 
