@@ -25,11 +25,11 @@ int progressbar = 0;
 
 void usage(){
    printf("\nusage: reindex \n\n");
-   printf("    [-c|--config <config file>] \n");
-   printf("    -f <from id>\n");
-   printf("    -t <to id>\n");
-   printf("    -a\n");
-   printf("    [-p]\n");
+   printf("    [-c|--config <config file>]       Config file to use if not the default\n");
+   printf("    -f <from id>                      Start indexing from this id\n");
+   printf("    -t <to id>                        Up to this id\n");
+   printf("    -a                                Reindex all records\n");
+   printf("    -p                                Display progress counters\n");
 
    exit(0);
 }
