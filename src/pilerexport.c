@@ -34,17 +34,22 @@ int export_emails_matching_to_query(struct session_data *sdata, struct __data *d
 
 
 void usage(){
-   printf("\nusage: pilerexport \n\n");
-   printf("    [-c|--config <config file>] \n");
-   printf("    -a|--start-date <YYYY.MM.DD> -b|--stop-date <YYYY.MM.DD> \n");
-   printf("    -f|--from <email@address> -r|--to <email@address>\n");
-   printf("    -F|--from-domain <domain.com> -R|--to-domain <domain.com>\n");
-   printf("    -s|--minsize <number> -S|--maxsize <number>\n");
-   printf("    -w|--where-condition (eg. \"match('@subject: piler')\"\n");
-   printf("    -m|--max-matches (default: %d)\n", max_matches);
-   printf("    -i|--index-list (default: %s)\n", index_list);
-   printf("    -A|--all  -d|--dryrun \n");
-   printf("\n    use -A if you don't want to specify the start/stop time nor any from/to address\n\n");
+   printf("\nusage: pilerexport\n\n");
+
+   printf("    [-c <config file>]                Config file to use if not the default\n");
+   printf("    -a <start date>                   Start date in YYYY.MM.DD format\n");
+   printf("    -b <stop date>                    Stop date in YYYY.MM.DD format\n");
+   printf("    -f <email@address.com>            From address\n");
+   printf("    -r <email@address.com>            Recipient address\n");
+   printf("    -F <domain.com>                   From domain\n");
+   printf("    -R <domain.com>                   Recipient domain\n");
+   printf("    -s <size>                         Min. size\n");
+   printf("    -S <size>                         Max. size\n");
+   printf("    -w <where condition>              Where condition to pass to sphinx, eg. \"match('@subject: piler')\"\n");
+   printf("    -m <max. matches>                 Max. matches to apply to sphinx query (default: %d)\n", max_matches);
+   printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
+   printf("    -A                                Export all emails from archive\n");
+   printf("    -d                                Dry run\n");
 
    regfree(&regexp);
 

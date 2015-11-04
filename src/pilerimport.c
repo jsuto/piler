@@ -471,8 +471,28 @@ ENDE:
 
 
 void usage(){
-   printf("usage: pilerimport [-c <config file>] -e <eml file> | -m <mailbox file> | -d <directory> | -i <imap server> | -K <pop3 server> | -u <imap username> -p <imap password> -P <imap port>\n");
-   printf("                                         [-t <timeout in sec>] [-x <folder1,folder2,....,folderN,>] [-f <imap foldername>] [-F <foldername>] [-b <batchlimit>] [-s <start positiion>] [-D] [-o] [-R] [-r] [-q]\n");
+   printf("\nusage: pilerimport\n\n");
+   printf("    [-c <config file>]                Config file to use if not the default\n");
+   printf("    -e <eml file>                     EML file to import\n");
+   printf("    -m <mailbox file>                 Mbox file to import\n");
+   printf("    -d <dir>                          Directory with EML files to import\n");
+   printf("    -i <imap server>                  IMAP server to connect\n");
+   printf("    -K <pop3 server>                  POP3 server to connect\n");
+   printf("    -u <username>                     Username for imap/pop3 import\n");
+   printf("    -p <password>                     Password for imap/pop3 import\n");
+   printf("    -P <port>                         Port for imap/pop3 import (default: 143/110\n");
+   printf("    -t <timeout>                      Timeout in sec for imap/pop3 import\n");
+   printf("    -x <folder1,folder2,....folderN,> Comma separated list of imap folders to skip. Add the trailing comma!\n");
+   printf("    -f <imap folder>                  IMAP folder name to import\n");
+   printf("    -F <folder>                       Piler folder name to assign to this import\n");
+   printf("    -b <batch limit>                  Import only this many emails\n");
+   printf("    -s <start position>               Start importing POP3 emails from this position\n");
+   printf("    -D                                Dry-run, do not import anything\n");
+   printf("    -o                                Only download emails for POP3/IMAP import\n");
+   printf("    -R                                Recursive piler folder names\n");
+   printf("    -r                                Remove imported emails\n");
+   printf("    -q                                Quiet mode\n");
+
    exit(0);
 }
 
