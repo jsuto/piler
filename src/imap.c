@@ -261,13 +261,33 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
             read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
          }
 
+
+         if(data->import->move_folder && data->import->cap_uidplus == 1 && dryrun == 0){
+
+            snprintf(tagok, sizeof(tagok)-1, "A%d OK", *seq);
+            tagoklen = strlen(tagok);
+
+            snprintf(buf, sizeof(buf)-1, "A%d COPY %d %s\r\n", *seq, i, data->import->move_folder);
+            n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+            read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+
+            if(strncmp(buf, tagok, tagoklen) == 0){
+               snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
+               n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+               read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+
+            }
+         }
+
+
+
          if(data->import->download_only == 0) unlink(filename);
       }
 
 
    }
 
-   if(data->import->remove_after_import == 1 && dryrun == 0){
+   if((data->import->remove_after_import == 1 || data->import->move_folder) && dryrun == 0){
       snprintf(buf, sizeof(buf)-1, "A%d EXPUNGE\r\n", *seq);
       n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
       read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
@@ -286,6 +306,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    X509* server_cert;
    char *str;
 
+   data->import->cap_uidplus = 0;
 
    if(use_ssl == 1){
 
@@ -325,13 +346,6 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
 
    n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
-   /* imap cmd: CAPABILITY */
-
-   /*snprintf(buf, sizeof(buf)-1, "A%d CAPABILITY\r\n", *seq);
-
-   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   read_response(sd, buf, sizeof(buf), seq, data, use_ssl);*/
-
 
    /* imap cmd: LOGIN */
 
@@ -342,6 +356,22 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
       printf("login failed, server reponse: %s\n", buf);
       return ERR;
    }
+
+   if(strstr(buf, "UIDPLUS")){
+      data->import->cap_uidplus = 1;
+   }
+   else {
+
+      /* run the CAPABILITY command if the reply doesn't contain the UIDPLUS capability */
+
+      snprintf(buf, sizeof(buf)-1, "A%d CAPABILITY\r\n", *seq);
+
+      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+      read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+
+      if(strstr(buf, "UIDPLUS")) data->import->cap_uidplus = 1;
+   }
+
 
    return OK;
 }

@@ -484,6 +484,7 @@ void usage(){
    printf("    -t <timeout>                      Timeout in sec for imap/pop3 import\n");
    printf("    -x <folder1,folder2,....folderN,> Comma separated list of imap folders to skip. Add the trailing comma!\n");
    printf("    -f <imap folder>                  IMAP folder name to import\n");
+   printf("    -g <imap folder>                  Move email after import to this IMAP folder\n");
    printf("    -F <folder>                       Piler folder name to assign to this import\n");
    printf("    -b <batch limit>                  Import only this many emails\n");
    printf("    -s <start position>               Start importing POP3 emails from this position\n");
@@ -517,7 +518,7 @@ int main(int argc, char **argv){
 
    import.import_job_id = import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
-   import.extra_recipient = NULL;
+   import.extra_recipient = import.move_folder = NULL;
    import.start_position = 1;
    import.download_only = 0;
    import.timeout = 30;
@@ -554,6 +555,7 @@ int main(int argc, char **argv){
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
+            {"move-folder",  required_argument,  0,  'g' },
             {"only-download",no_argument,        0,  'o' },
             {"gui-import",   no_argument,        0,  'G' },
             {"dry-run",      no_argument,        0,  'D' },
@@ -563,9 +565,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:GDRroqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:GDRroqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -636,6 +638,10 @@ int main(int argc, char **argv){
 
          case 'r' :
                     data.import->remove_after_import = 1;
+                    break;
+
+         case 'g' :
+                    data.import->move_folder = optarg;
                     break;
 
          case 'o' :

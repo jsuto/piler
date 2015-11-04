@@ -283,6 +283,7 @@ struct memcached_server {
 
 struct import {
    char *extra_recipient;
+   char *move_folder;
    int status;
    int total_messages;
    int processed_messages;
@@ -293,6 +294,7 @@ struct import {
    int download_only;
    int keep_eml;
    int timeout;
+   int cap_uidplus;
    long total_size;
    time_t started, updated, finished;
 };
