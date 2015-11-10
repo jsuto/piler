@@ -120,8 +120,6 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
             snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
-            sdata->sent = 0;
-
             state = parse_message(sdata, 0, data, cfg);
             post_parse(sdata, &state, cfg);
 

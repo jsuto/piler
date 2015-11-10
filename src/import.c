@@ -73,22 +73,12 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
 
    
-   sdata->sent = 0;
    sdata->delivered = 0;
 
    sdata->import = 1;
 
    state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
-
-   if(sdata->sent <= 0 && sdata->delivered > 0) sdata->sent = sdata->delivered;
-
-   if(sdata->sent > sdata->now) sdata->sent = sdata->now;
-   if(sdata->sent == -1) sdata->sent = 0;
-
-   /* fat chances that you won't import emails before 1990.01.01 */
-
-   if(sdata->sent > 631148400) sdata->retained = sdata->sent;
 
    rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 

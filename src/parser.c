@@ -147,6 +147,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 
    digest_string(state->message_id, &(state->message_id_hash[0]));
 
+   if(sdata->sent == 0) sdata->sent = sdata->now;
 }
 
 
@@ -228,11 +229,6 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       state->is_header = 1;
       memset(state->b_body, 0, BIGBUFSIZE);
       state->bodylen = 0;
-
-      if(sdata->import == 1){
-         sdata->sent = 0;
-      }
-
    }
 
    if(take_into_pieces == 1){
@@ -381,24 +377,19 @@ int parse_line(char *buf, struct _state *state, struct session_data *sdata, int 
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
       else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
 
-      //else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
-
       /*
-       * in pilerimport:  sdata->sent = 0
-       * in piler daemon: sdata->sent = sdata->now
+       * by default sdata->sent = 0, and let the parser extract value from the Date: header
        */
 
-      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && state->is_1st_header == 1){
+      else if(strncasecmp(buf, "Date:", strlen("Date:")) == 0 && state->is_1st_header == 1 && sdata->sent == 0){
 
          if(strstr(buf, "=?") && strstr(buf, "?=")) fixupEncodedHeaderLine(buf, MAXBUFSIZE);
 
-         if(sdata->sent == 0) sdata->sent = parse_date_header(buf, cfg);
-         else {
-            sdata->sent = parse_date_header(buf, cfg);
+         sdata->sent = parse_date_header(buf, cfg);
 
-            /* allow -1 week ... +1 day drift in the parsed Date: value */
-            if(sdata->now - sdata->sent > 604800 || sdata->sent - sdata->now > 86400) sdata->sent = sdata->now;
-         }
+         /* allow +2 days drift in the parsed Date: value */
+
+         if(sdata->sent - sdata->now > 2*86400) sdata->sent = sdata->now;
       }
 
       else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf, cfg);

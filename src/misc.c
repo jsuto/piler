@@ -547,7 +547,8 @@ void init_session_data(struct session_data *sdata, struct __config *cfg){
    for(i=0; i<MAX_RCPT_TO; i++) memset(sdata->rcptto[i], 0, SMALLBUFSIZE);
 
    time(&(sdata->now));
-   sdata->sent = sdata->delivered = sdata->retained = sdata->now;
+   sdata->delivered = sdata->retained = sdata->now;
+   sdata->sent = 0;
 
    sdata->sql_errno = 0;
 

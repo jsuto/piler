@@ -74,7 +74,6 @@ int main(int argc, char **argv){
 
    init_session_data(&sdata, &cfg);
  
-   sdata.sent = 0;
    sdata.delivered = 0;
    sdata.tot_len = st.st_size;
    sdata.import = 1;
