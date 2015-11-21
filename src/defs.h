@@ -145,7 +145,7 @@ struct rule_cond {
 };
 
 
-struct _state {
+struct parser_state {
    int line_num;
    int message_state;
    int is_header;

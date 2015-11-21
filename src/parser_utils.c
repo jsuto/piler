@@ -19,7 +19,7 @@
 #include "trans.h"
 
 
-void init_state(struct _state *state){
+void init_state(struct parser_state *state){
    int i;
 
    state->message_state = MSG_UNDEF;
@@ -273,7 +273,7 @@ int isHexNumber(char *p){
 }
 
 
-int extract_boundary(char *p, struct _state *state){
+int extract_boundary(char *p, struct parser_state *state){
    char *q, *q2;
 
    p += strlen("boundary");
@@ -326,7 +326,11 @@ int extract_boundary(char *p, struct _state *state){
 
 void fixupEncodedHeaderLine(char *buf, int buflen){
    char *sb, *sq, *p, *q, *r, *s, *e, *start, *end;
-   char v[SMALLBUFSIZE], puf[MAXBUFSIZE], encoding[SMALLBUFSIZE], tmpbuf[2*SMALLBUFSIZE];
+   /*
+    * I thought SMALLBUFSIZE would be enough for v, encoding and tmpbuf(2*),
+    * but then I saw a 6-7000 byte long subject line, so I've switched to MAXBUFSIZE
+    */
+   char v[MAXBUFSIZE], puf[MAXBUFSIZE], encoding[MAXBUFSIZE], tmpbuf[2*MAXBUFSIZE];
    int need_encoding, ret;
 
    if(buflen < 5) return;
@@ -410,7 +414,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 }
 
 
-void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
+void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state){
    int i=0;
    char *p, puf[MAXBUFSIZE];
 
@@ -440,7 +444,7 @@ void fixupSoftBreakInQuotedPritableLine(char *buf, struct _state *state){
 }
 
 
-void fixupBase64EncodedLine(char *buf, struct _state *state){
+void fixupBase64EncodedLine(char *buf, struct parser_state *state){
    char *p, puf[MAXBUFSIZE];
 
    if(strlen(state->miscbuf) > 0){
@@ -464,7 +468,7 @@ void fixupBase64EncodedLine(char *buf, struct _state *state){
 }
 
 
-void markHTML(char *buf, struct _state *state){
+void markHTML(char *buf, struct parser_state *state){
    char *s, puf[MAXBUFSIZE], html[SMALLBUFSIZE];
    int k=0, j=0, pos=0;
 
@@ -541,7 +545,7 @@ void markHTML(char *buf, struct _state *state){
 }
 
 
-int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
+int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state){
    char *p, html[SMALLBUFSIZE];
    int len;
 
@@ -579,7 +583,7 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct _state *state){
 }
 
 
-void translateLine(unsigned char *p, struct _state *state){
+void translateLine(unsigned char *p, struct parser_state *state){
    int url=0;
    int has_url=0;
    unsigned char prev=' ';
@@ -924,7 +928,7 @@ char *get_attachment_extractor_by_filename(char *filename){
 }
 
 
-void parse_reference(struct _state *state, char *s){
+void parse_reference(struct parser_state *state, char *s){
    int len;
    char puf[SMALLBUFSIZE];
 

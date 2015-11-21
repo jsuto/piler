@@ -20,13 +20,13 @@
 
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
-   int i, ret, pos, n, inj=ERR, state, prevlen=0;
+   int i, ret, pos, n, inj=ERR, protocol_state, prevlen=0;
    char *p, *rcpt, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
    char *arule = NULL;
    char *status = NULL;
    struct session_data sdata;
-   struct _state sstate;
+   struct parser_state parser_state;
    int db_conn=0;
    int rc;
    struct __counters counters;
@@ -54,7 +54,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
    srand(getpid());
 
-   state = SMTP_STATE_INIT;
+   protocol_state = SMTP_STATE_INIT;
 
    init_session_data(&sdata, cfg);
    sdata.tls = 0;
@@ -97,7 +97,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
          /* accept mail data */
 
-         if(state == SMTP_STATE_DATA){
+         if(protocol_state == SMTP_STATE_DATA){
 
             /* join the last 2 buffer */
 
@@ -125,7 +125,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sdata.ttmpfile);
 
 
-               state = SMTP_STATE_PERIOD;
+               protocol_state = SMTP_STATE_PERIOD;
 
                /* make sure we had a successful read */
 
@@ -157,14 +157,14 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                data->folder = 0;
 
-               sstate = parse_message(&sdata, 1, data, cfg);
-               post_parse(&sdata, &sstate, cfg);
+               parser_state = parse_message(&sdata, 1, data, cfg);
+               post_parse(&sdata, &parser_state, cfg);
 
                gettimeofday(&tv2, &tz);
                sdata.__parsed = tvdiff(tv2, tv1);
 
                if(cfg->syslog_recipients == 1){
-                  rcpt = sstate.b_to;
+                  rcpt = parser_state.b_to;
                   do {
                      rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
 
@@ -177,13 +177,13 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata.ttmpfile);
 
                if(cfg->archive_only_mydomains == 1 && sdata.internal_sender == 0 && sdata.internal_recipient == 0){
-                  remove_stripped_attachments(&sstate);
+                  remove_stripped_attachments(&parser_state);
                   inj = ERR_MYDOMAINS;
 
                   snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s\r\n", sdata.ttmpfile);
                   write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
 
-                  syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata.ttmpfile, sdata.fromemail, sstate.message_id);
+                  syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata.ttmpfile, sdata.fromemail, parser_state.message_id);
 
                   goto END_OF_PROCESSING;
                }
@@ -232,20 +232,20 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                         /* check message against archiving rules */
 
-                        arule = check_againt_ruleset(data->archiving_rules, &sstate, sdata.tot_len, sdata.spam_message);
+                        arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata.tot_len, sdata.spam_message);
 
                         if(arule){
                            syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata.ttmpfile, arule);
                            inj = OK;
                            counters.c_ignore++;
 
-                           remove_stripped_attachments(&sstate);
+                           remove_stripped_attachments(&parser_state);
 
                            status = S_STATUS_DISCARDED;
                         }
                         else {
-                           inj = process_message(&sdata, &sstate, data, cfg);
-                           unlink(sstate.message_id_hash);
+                           inj = process_message(&sdata, &parser_state, data, cfg);
+                           unlink(parser_state.message_id_hash);
                            counters.c_size += sdata.tot_len;
                            counters.c_stored_size = sdata.stored_len;
 
@@ -274,7 +274,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   counters.c_rcvd++;
 
                   if(inj == ERR_EXISTS){
-                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata.ttmpfile, sdata.duplicate_id, sstate.message_id);
+                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata.ttmpfile, sdata.duplicate_id, parser_state.message_id);
                      counters.c_duplicate++;
                      status = S_STATUS_DUPLICATE;
                   }
@@ -283,7 +283,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                                (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
                                    sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
 
-                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sdata.stored_len, sstate.n_attachments, sstate.reference, sstate.message_id, sstate.retention, data->folder, delay, status);
+                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sdata.stored_len, parser_state.n_attachments, parser_state.reference, parser_state.message_id, parser_state.retention, data->folder, delay, status);
 
 
 
@@ -343,7 +343,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            if(state == SMTP_STATE_INIT) state = SMTP_STATE_HELO;
+            if(protocol_state == SMTP_STATE_INIT) protocol_state = SMTP_STATE_HELO;
 
             if(sdata.tls == 0) snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, data->starttls);
             else snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, "");
@@ -357,7 +357,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
-            if(state == SMTP_STATE_INIT) state = SMTP_STATE_HELO;
+            if(protocol_state == SMTP_STATE_INIT) protocol_state = SMTP_STATE_HELO;
 
             strncat(resp, SMTP_RESP_250_OK, MAXBUFSIZE-1);
 
@@ -378,7 +378,7 @@ AFTER_PERIOD:
                   if(SSL_set_fd(data->ssl, new_sd) == 1){
                      strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, MAXBUFSIZE-1);
                      starttls = 1;
-                     state = SMTP_STATE_INIT;
+                     protocol_state = SMTP_STATE_INIT;
 
                      continue;
                   } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", sdata.ttmpfile);
@@ -394,12 +394,12 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
 
-            if(state != SMTP_STATE_HELO && state != SMTP_STATE_PERIOD){
+            if(protocol_state != SMTP_STATE_HELO && protocol_state != SMTP_STATE_PERIOD){
                strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
             }
             else {
 
-               if(state == SMTP_STATE_PERIOD){
+               if(protocol_state == SMTP_STATE_PERIOD){
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: initiated new transaction", sdata.ttmpfile);
 
                   unlink(sdata.ttmpfile);
@@ -408,7 +408,7 @@ AFTER_PERIOD:
                   init_session_data(&sdata, cfg);
                }
 
-               state = SMTP_STATE_MAIL_FROM;
+               protocol_state = SMTP_STATE_MAIL_FROM;
 
                snprintf(sdata.mailfrom, SMALLBUFSIZE-1, "%s\r\n", buf);
 
@@ -425,7 +425,7 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
 
-            if(state == SMTP_STATE_MAIL_FROM || state == SMTP_STATE_RCPT_TO){
+            if(protocol_state == SMTP_STATE_MAIL_FROM || protocol_state == SMTP_STATE_RCPT_TO){
                if(strlen(buf) > SMALLBUFSIZE/2){
                   strncat(resp, SMTP_RESP_550_ERR_TOO_LONG_RCPT_TO, MAXBUFSIZE-1);
                   continue;
@@ -435,7 +435,7 @@ AFTER_PERIOD:
                   extractEmail(buf, sdata.rcptto[sdata.num_of_rcpt_to]);
                }
 
-               state = SMTP_STATE_RCPT_TO;
+               protocol_state = SMTP_STATE_RCPT_TO;
 
                if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;
 
@@ -457,7 +457,7 @@ AFTER_PERIOD:
             inj = ERR;
             prevlen = 0;
 
-            if(state != SMTP_STATE_RCPT_TO){
+            if(protocol_state != SMTP_STATE_RCPT_TO){
                strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
             }
             else {
@@ -467,7 +467,7 @@ AFTER_PERIOD:
                   strncat(resp, SMTP_RESP_451_ERR, MAXBUFSIZE-1);
                }
                else {
-                  state = SMTP_STATE_DATA;
+                  protocol_state = SMTP_STATE_DATA;
                   strncat(resp, SMTP_RESP_354_DATA_OK, MAXBUFSIZE-1);
                }
 
@@ -479,7 +479,7 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
 
-            state = SMTP_STATE_FINISHED;
+            protocol_state = SMTP_STATE_FINISHED;
 
             snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_221_GOODBYE, cfg->hostid);
             strncat(resp, buf, MAXBUFSIZE-1);
@@ -508,7 +508,7 @@ AFTER_PERIOD:
 
             init_session_data(&sdata, cfg);
 
-            state = SMTP_STATE_HELO;
+            protocol_state = SMTP_STATE_HELO;
 
             continue;
          }
@@ -550,7 +550,7 @@ AFTER_PERIOD:
 
       }
 
-      if(state == SMTP_STATE_FINISHED){
+      if(protocol_state == SMTP_STATE_FINISHED){
          goto QUITTING;
       }
 
@@ -561,7 +561,7 @@ AFTER_PERIOD:
     * ie. we have timed out than send back 421 error message
     */
 
-   if(state < SMTP_STATE_QUIT && inj == ERR){
+   if(protocol_state < SMTP_STATE_QUIT && inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
       write1(new_sd, buf, strlen(buf), sdata.tls, data->ssl);
 

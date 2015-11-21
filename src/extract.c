@@ -48,7 +48,7 @@ void remove_xml(char *buf, int *html){
 
 
 #ifdef HAVE_ZIP
-int extract_opendocument(struct session_data *sdata, struct _state *state, char *filename, char *prefix){
+int extract_opendocument(struct session_data *sdata, struct parser_state *state, char *filename, char *prefix){
    int errorp, i=0, len=0, html=0;
    int len2;
    char buf[MAXBUFSIZE];
@@ -98,7 +98,7 @@ int extract_opendocument(struct session_data *sdata, struct _state *state, char 
 }
 
 
-int unzip_file(struct session_data *sdata, struct _state *state, char *filename, int *rec, struct __config *cfg){
+int unzip_file(struct session_data *sdata, struct parser_state *state, char *filename, int *rec, struct __config *cfg){
    int errorp, i=0, len=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
@@ -168,7 +168,7 @@ int unzip_file(struct session_data *sdata, struct _state *state, char *filename,
 
 #ifdef HAVE_TNEF
 
-int extract_tnef(struct session_data *sdata, struct _state *state, char *filename, struct __config *cfg){
+int extract_tnef(struct session_data *sdata, struct parser_state *state, char *filename, struct __config *cfg){
    int rc=0, n, rec=1;
    char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
    struct dirent **namelist;
@@ -215,7 +215,7 @@ void kill_helper(){
 }
 
 
-void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec, struct __config *cfg){
+void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct __config *cfg){
    int link[2], n;
    pid_t pid;
    char outbuf[MAXBUFSIZE];

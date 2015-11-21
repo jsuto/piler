@@ -37,11 +37,11 @@ void digest_string(char *s, char *digest);
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg);
 int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cfg);
 
-void remove_stripped_attachments(struct _state *state);
-int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg);
+void remove_stripped_attachments(struct parser_state *state);
+int process_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
 int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg);
-int remove_stored_message_files(struct session_data *sdata, struct _state *state, struct __config *cfg);
-int store_attachments(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg);
+int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct __config *cfg);
+int store_attachments(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
 int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr, struct __config *cfg);
 
 struct __config read_config(char *configfile);
@@ -57,9 +57,9 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg);
 int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg);
 
-int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg);
+int store_index_data(struct session_data *sdata, struct parser_state *state, struct __data *data, uint64 id, struct __config *cfg);
 
-void extract_attachment_content(struct session_data *sdata, struct _state *state, char *filename, char *type, int *rec, struct __config *cfg);
+void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct __config *cfg);
 
 int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg);
 

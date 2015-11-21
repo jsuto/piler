@@ -22,7 +22,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    int rc=ERR, fd;
    char *rule;
    struct stat st;
-   struct _state state;
+   struct parser_state state;
    struct __counters counters;
 
 

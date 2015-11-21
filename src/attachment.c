@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-int store_attachments(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
+int store_attachments(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
    uint64 id=0;
    int i, rc=1, found, affected_rows;
 

@@ -182,7 +182,7 @@ ENDE:
 }
 
 
-int remove_stored_message_files(struct session_data *sdata, struct _state *state, struct __config *cfg){
+int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct __config *cfg){
    int i;
    char s[SMALLBUFSIZE];
 

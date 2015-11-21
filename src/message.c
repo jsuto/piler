@@ -17,7 +17,7 @@
 #include <zlib.h>
 
 
-int store_index_data(struct session_data *sdata, struct _state *state, struct __data *data, uint64 id, struct __config *cfg){
+int store_index_data(struct session_data *sdata, struct parser_state *state, struct __data *data, uint64 id, struct __config *cfg){
    int rc=ERR;
    char *subj;
 
@@ -146,7 +146,7 @@ int store_folder_id(struct session_data *sdata, struct __data *data, uint64 id, 
 }
 
 
-int update_metadata_reference(struct session_data *sdata, struct _state *state, struct __data *data, char *ref, struct __config *cfg){
+int update_metadata_reference(struct session_data *sdata, struct parser_state *state, struct __data *data, char *ref, struct __config *cfg){
    int ret = ERR;
 
    if(prepare_sql_statement(sdata, &(data->stmt_update_metadata_reference), SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE, cfg) == ERR) return ret;
@@ -166,7 +166,7 @@ int update_metadata_reference(struct session_data *sdata, struct _state *state, 
 }
 
 
-int store_meta_data(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
+int store_meta_data(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
    int rc, ret=ERR, result;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
@@ -254,14 +254,14 @@ int store_meta_data(struct session_data *sdata, struct _state *state, struct __d
 }
 
 
-void remove_stripped_attachments(struct _state *state){
+void remove_stripped_attachments(struct parser_state *state){
    int i;
 
    for(i=1; i<=state->n_attachments; i++) unlink(state->attachments[i].internalname);
 }
 
 
-int process_message(struct session_data *sdata, struct _state *state, struct __data *data, struct __config *cfg){
+int process_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
    int rc, fd;
 
    /* discard if existing message_id */

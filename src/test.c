@@ -19,7 +19,7 @@ int main(int argc, char **argv){
    int i;
    struct stat st;
    struct session_data sdata;
-   struct _state state;
+   struct parser_state state;
    struct __config cfg;
    struct __data data;
    struct import import;

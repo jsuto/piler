@@ -16,12 +16,12 @@
 #include <piler.h>
 
 
-struct _state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg){
+struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg){
    FILE *f;
    int i, len;
    char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
    char writebuffer[MAXBUFSIZE], abuffer[MAXBUFSIZE];
-   struct _state state;
+   struct parser_state state;
 
    init_state(&state);
 
@@ -98,7 +98,7 @@ struct _state parse_message(struct session_data *sdata, int take_into_pieces, st
 }
 
 
-void post_parse(struct session_data *sdata, struct _state *state, struct __config *cfg){
+void post_parse(struct session_data *sdata, struct parser_state *state, struct __config *cfg){
    int i, len, rec=0;
    char *p;
 
@@ -151,7 +151,7 @@ void post_parse(struct session_data *sdata, struct _state *state, struct __confi
 }
 
 
-void storno_attachment(struct _state *state){
+void storno_attachment(struct parser_state *state){
    state->has_to_dump = 0;
 
    if(state->n_attachments <= 0) return;
@@ -171,7 +171,7 @@ void storno_attachment(struct _state *state){
 }
 
 
-int parse_line(char *buf, struct _state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
+int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];

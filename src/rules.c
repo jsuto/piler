@@ -192,7 +192,7 @@ struct rule *create_rule_item(struct rule_cond *rule_cond, struct __data *data){
 }
 
 
-char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size, int spam){
+char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;
@@ -249,7 +249,7 @@ char *check_againt_ruleset(struct node *xhash[], struct _state *state, int size,
 }
 
 
-time_t query_retain_period(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
+time_t query_retain_period(struct __data *data, struct parser_state *state, int size, int spam, struct __config *cfg){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;
@@ -317,7 +317,7 @@ time_t query_retain_period(struct __data *data, struct _state *state, int size, 
 }
 
 
-int get_folder_id_by_rule(struct __data *data, struct _state *state, int size, int spam, struct __config *cfg){
+int get_folder_id_by_rule(struct __data *data, struct parser_state *state, int size, int spam, struct __config *cfg){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;
@@ -399,7 +399,7 @@ int check_spam_rule(int is_spam, int spam){
 }
 
 
-int check_attachment_rule(struct _state *state, struct rule *rule){
+int check_attachment_rule(struct parser_state *state, struct rule *rule){
    int i;
    size_t nmatch=0;
    int ismatch = 0;

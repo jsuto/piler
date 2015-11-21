@@ -80,7 +80,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
    char s[SMALLBUFSIZE];
    int rc=0;
    uint64 stored_id=0, reindexed=0, delta;
-   struct _state state;
+   struct parser_state state;
 
    delta = to_id - from_id;
 
