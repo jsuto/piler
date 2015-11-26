@@ -25,6 +25,7 @@ $config['BRANDING_FAVICON'] = '/view/theme/default/assets/ico/favicon.png';
 $config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
+$config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
 $config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
 
 $config['BOOTSTRAP_THEME'] = '-cosmo';

@@ -23,6 +23,8 @@ class ModelUserAuth extends Model {
       $session = Registry::get('session');
       $ok = 0;
 
+      $imap_server = array();
+
       $data = array();
 
       $data['username'] = '';
@@ -37,6 +39,11 @@ class ModelUserAuth extends Model {
 
       if($username == '' || $password == '') { return 0; }
 
+
+      if(CUSTOM_PRE_AUTH_FUNCTION && function_exists(CUSTOM_PRE_AUTH_FUNCTION)) {
+         call_user_func(CUSTOM_PRE_AUTH_FUNCTION, $username);
+      }
+
       if(ENABLE_LDAP_AUTH == 1) {
          $ok = $this->checkLoginAgainstLDAP($username, $password, $data);
          if($ok == 1) {
@@ -50,7 +57,12 @@ class ModelUserAuth extends Model {
 
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
-         $ok = $this->checkLoginAgainstIMAP($username, $password, $data);
+
+         if(!isset($imap_server['IMAP_HOST'])) { $imap_server['IMAP_HOST'] = IMAP_HOST;
+         if(!isset($imap_server['IMAP_PORT'])) { $imap_server['IMAP_PORT'] = IMAP_PORT;
+         if(!isset($imap_server['IMAP_SSL'])) { $imap_server['IMAP_SSL'] = IMAP_SSL;
+
+         $ok = $this->checkLoginAgainstIMAP($imap_server, $username, $password, $data);
 
          if($ok == 1) {
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
@@ -336,7 +348,7 @@ class ModelUserAuth extends Model {
    }
 
 
-   private function checkLoginAgainstIMAP($username = '', $password = '', $data = array()) {
+   private function checkLoginAgainstIMAP($imap_server = array(), $username = '', $password = '', $data = array()) {
       $session = Registry::get('session');
       $emails = array($username);
 
@@ -349,7 +361,7 @@ class ModelUserAuth extends Model {
          $login = $a[0];
       }
 
-      $imap = new Zend_Mail_Protocol_Imap(IMAP_HOST, IMAP_PORT, IMAP_SSL);
+      $imap = new Zend_Mail_Protocol_Imap($imap_server['IMAP_HOST'], $imap_server['IMAP_PORT'], $imap_server['IMAP_SSL']);
       if($imap->login($login, $password)) {
          $imap->logout();
 
