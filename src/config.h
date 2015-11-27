@@ -14,7 +14,7 @@
 
 #define VERSION "1.2.0-master"
 
-#define BUILD 927
+#define BUILD 928
 
 #define HOSTID "mailarchiver"
 

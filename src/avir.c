@@ -13,8 +13,10 @@
 int do_av_check(struct session_data *sdata, char *virusinfo, struct __data *data, struct __config *cfg){
    int rav = AVIR_OK;
    char avengine[SMALLBUFSIZE];
+   struct timezone tz;
+   struct timeval tv1, tv2;
 
-   if(sdata->need_scan == 0) return rav;
+   gettimeofday(&tv1, &tz);
 
    memset(avengine, 0, SMALLBUFSIZE);
 
@@ -49,6 +51,9 @@ int do_av_check(struct session_data *sdata, char *virusinfo, struct __data *data
 #endif
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: done virus scanning", sdata->ttmpfile);
+
+   gettimeofday(&tv2, &tz);
+   sdata->__av = tvdiff(tv2, tv1);
 
    return rav;
 }

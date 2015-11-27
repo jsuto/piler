@@ -19,6 +19,9 @@
 #include <piler.h>
 
 
+int is_blocked_by_tcp_wrappers(int sd);
+
+
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    int i, ret, pos, n, inj=ERR, protocol_state, prevlen=0;
    char *p, *rcpt, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
@@ -41,15 +44,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
 
 #ifdef HAVE_LIBWRAP
-   struct request_info req;
-
-   request_init(&req, RQ_DAEMON, PROGNAME, RQ_FILE, new_sd, 0);
-   fromhost(&req);
-   if(!hosts_access(&req)){
-      send(new_sd, SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY, strlen(SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY), 0);
-      syslog(LOG_PRIORITY, "denied connection from %s by tcp_wrappers", eval_client(&req));
-      return 0;
-   }
+   if(is_blocked_by_tcp_wrappers(new_sd) == 1) return 0;
 #endif
 
    srand(getpid());
@@ -188,16 +183,11 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   goto END_OF_PROCESSING;
                }
 
-               sdata.need_scan = 1;
-
                make_digests(&sdata, cfg);
 
             #ifdef HAVE_ANTIVIRUS
                if(cfg->use_antivirus == 1){
-                  gettimeofday(&tv1, &tz);
                   sdata.rav = do_av_check(&sdata, &virusinfo[0], data, cfg);
-                  gettimeofday(&tv2, &tz);
-                  sdata.__av = tvdiff(tv2, tv1);
                }
             #endif
 
@@ -600,4 +590,23 @@ QUITTING:
    return (int)counters.c_rcvd;
 }
 
+
+
+#ifdef HAVE_LIBWRAP
+int is_blocked_by_tcp_wrappers(int sd){
+   struct request_info req;
+
+   request_init(&req, RQ_DAEMON, PROGNAME, RQ_FILE, sd, 0);
+
+   fromhost(&req);
+
+   if(!hosts_access(&req)){
+      send(sd, SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY, strlen(SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY), 0);
+      syslog(LOG_PRIORITY, "denied connection from %s by tcp_wrappers", eval_client(&req));
+      return 1;
+   }
+
+   return 0;
+}
+#endif
 
