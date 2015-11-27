@@ -723,18 +723,18 @@ void degenerateToken(unsigned char *p){
 }
 
 
-void fixURL(char *url){
+void fixURL(char *buf, int buflen){
    int len=0;
    char *p, *q, fixed_url[SMALLBUFSIZE];
 
-   if(strlen(url) < 3) return;
+   if(strlen(buf) < 3) return;
 
    memset(fixed_url, 0, sizeof(fixed_url));
 
-   p = url;
+   p = buf;
 
-   if(strncasecmp(url, "http://", 7) == 0) p += 7;
-   if(strncasecmp(url, "https://", 8) == 0) p += 8;
+   if(strncasecmp(buf, "http://", 7) == 0) p += 7;
+   if(strncasecmp(buf, "https://", 8) == 0) p += 8;
 
    q = strchr(p, '/');
    if(q) *q = '\0';
@@ -748,12 +748,12 @@ void fixURL(char *url){
       fixed_url[len-1] = '\0';
    }
 
-   strcpy(url, fixed_url);   
+   snprintf(buf, buflen, "%s", fixed_url);   
 }
 
 
-int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
-   int rc=0, extended=0;
+void extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
+   int extended=0;
    char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q, *encoding;
 
    snprintf(buf, sizeof(buf)-1, "%s", s);
@@ -826,11 +826,9 @@ int extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
             snprintf(resultbuf, TINYBUFSIZE-1, "%s", puf);
          }
 
-         rc = 1;
       }
    }
 
-   return rc;
 }
 
 
