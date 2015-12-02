@@ -17,13 +17,13 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <piler.h>
-
+#include "smtp.h"
 
 int is_blocked_by_tcp_wrappers(int sd);
 
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
-   int i, ret, pos, n, inj=ERR, protocol_state, prevlen=0;
+   int i, ret, pos, readpos=0, result, n, inj=ERR, protocol_state, prevlen=0;
    char *p, *rcpt, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
    char *arule = NULL;
@@ -39,7 +39,6 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
 #ifdef HAVE_STARTTLS
    int starttls = 0;
-   char ssl_error[SMALLBUFSIZE];
 #endif
 
 
@@ -87,7 +86,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    send(new_sd, buf, strlen(buf), 0);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
-   while((n = recvtimeoutssl(new_sd, puf, MAXBUFSIZE, TIMEOUT, sdata.tls, data->ssl)) > 0){
+   while((n = recvtimeoutssl(new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, data->ssl)) > 0){
          pos = 0;
 
          /* accept mail data */
@@ -307,7 +306,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   pos = 0;
                }
 
-            } /* PERIOD found */
+            } /* pos > 0, PERIOD found */
             else {
                ret = write(sdata.fd, puf, n);
                sdata.tot_len += ret;
@@ -318,28 +317,37 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                continue;
             }
 
-         } /* SMTP DATA */
+         } /* if protocol_state == SMTP_STATE_DATA */
 
 AFTER_PERIOD:
 
       /* handle smtp commands */
 
-      memset(resp, 0, MAXBUFSIZE);
+      memset(resp, 0, sizeof(resp));
 
       p = &puf[pos];
+      readpos = 0;
 
-      while((p = split_str(p, "\r\n", buf, MAXBUFSIZE-1))){
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: command=*%s*", sdata.ttmpfile, p);
+
+      do {
+         p = split(p, '\n', buf, sizeof(buf)-1, &result);
+
+         if(result == 0){
+            if(strlen(buf) > 0){
+               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: *%s*", sdata.ttmpfile, buf);
+
+               snprintf(puf, sizeof(puf)-5, "%s", buf);
+               readpos = strlen(puf);
+            }
+
+            break;
+         }
+
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
 
-
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            if(protocol_state == SMTP_STATE_INIT) protocol_state = SMTP_STATE_HELO;
-
-            if(sdata.tls == 0) snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, data->starttls);
-            else snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, "");
-
-            strncat(resp, buf, MAXBUFSIZE-1);
-
+            process_command_ehlo_lhlo(&sdata, data, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue;
 
             /* FIXME: implement the ENHANCEDSTATUSCODE extensions */
@@ -348,197 +356,72 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
             if(protocol_state == SMTP_STATE_INIT) protocol_state = SMTP_STATE_HELO;
-
-            strncat(resp, SMTP_RESP_250_OK, MAXBUFSIZE-1);
-
+            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-1);
             continue;
          }
 
 
       #ifdef HAVE_STARTTLS
          if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(data->starttls) > 4 && sdata.tls == 0){
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata.ttmpfile);
-
-            if(data->ctx){
-               data->ssl = SSL_new(data->ctx);
-               if(data->ssl){
-
-                  SSL_set_options(data->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
-
-                  if(SSL_set_fd(data->ssl, new_sd) == 1){
-                     strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, MAXBUFSIZE-1);
-                     starttls = 1;
-                     protocol_state = SMTP_STATE_INIT;
-
-                     continue;
-                  } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", sdata.ttmpfile);
-               } syslog(LOG_PRIORITY, "%s: SSL_new() failed", sdata.ttmpfile);
-            } syslog(LOG_PRIORITY, "%s: SSL ctx is null!", sdata.ttmpfile);
-
-
-            strncat(resp, SMTP_RESP_454_ERR_TLS_TEMP_ERROR, MAXBUFSIZE-1);
+            process_command_starttls(&sdata, data, &protocol_state, &starttls, buf, new_sd, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
       #endif
 
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
-
-            if(protocol_state != SMTP_STATE_HELO && protocol_state != SMTP_STATE_PERIOD){
-               strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
-            }
-            else {
-
-               if(protocol_state == SMTP_STATE_PERIOD){
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: initiated new transaction", sdata.ttmpfile);
-
-                  unlink(sdata.ttmpfile);
-                  unlink(sdata.tmpframe);
-
-                  init_session_data(&sdata, cfg);
-               }
-
-               protocol_state = SMTP_STATE_MAIL_FROM;
-
-               snprintf(sdata.mailfrom, SMALLBUFSIZE-1, "%s\r\n", buf);
-
-               memset(sdata.fromemail, 0, SMALLBUFSIZE);
-               extractEmail(sdata.mailfrom, sdata.fromemail);
-
-               strncat(resp, SMTP_RESP_250_OK, strlen(SMTP_RESP_250_OK));
-
-            }
-
+            process_command_mail_from(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-
-            if(protocol_state == SMTP_STATE_MAIL_FROM || protocol_state == SMTP_STATE_RCPT_TO){
-               if(strlen(buf) > SMALLBUFSIZE/2){
-                  strncat(resp, SMTP_RESP_550_ERR_TOO_LONG_RCPT_TO, MAXBUFSIZE-1);
-                  continue;
-               }
-
-               if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1){
-                  extractEmail(buf, sdata.rcptto[sdata.num_of_rcpt_to]);
-               }
-
-               protocol_state = SMTP_STATE_RCPT_TO;
-
-               if(sdata.num_of_rcpt_to < MAX_RCPT_TO-1) sdata.num_of_rcpt_to++;
-
-
-               strncat(resp, SMTP_RESP_250_OK, MAXBUFSIZE-1);
-            }
-            else {
-               strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
-            }
-
+            process_command_rcpt_to(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
-
             memset(last2buf, 0, 2*MAXBUFSIZE+1);
             memset(prevbuf, 0, MAXBUFSIZE);
             inj = ERR;
             prevlen = 0;
 
-            if(protocol_state != SMTP_STATE_RCPT_TO){
-               strncat(resp, SMTP_RESP_503_ERR, MAXBUFSIZE-1);
-            }
-            else {
-               sdata.fd = open(sdata.filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
-               if(sdata.fd == -1){
-                  syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sdata.ttmpfile);
-                  strncat(resp, SMTP_RESP_451_ERR, MAXBUFSIZE-1);
-               }
-               else {
-                  protocol_state = SMTP_STATE_DATA;
-                  strncat(resp, SMTP_RESP_354_DATA_OK, MAXBUFSIZE-1);
-               }
-
-            }
-
+            process_command_data(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue; 
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
-
-            protocol_state = SMTP_STATE_FINISHED;
-
-            snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_221_GOODBYE, cfg->hostid);
-            strncat(resp, buf, MAXBUFSIZE-1);
-
-            unlink(sdata.ttmpfile);
-            unlink(sdata.tmpframe);
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sdata.ttmpfile);
-
+            process_command_quit(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_NOOP, strlen(SMTP_CMD_NOOP)) == 0){
-            strncat(resp, SMTP_RESP_250_OK, MAXBUFSIZE-1);
+            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-1);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
-
-            strncat(resp, SMTP_RESP_250_OK, MAXBUFSIZE-1);
-
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sdata.ttmpfile);
-            unlink(sdata.ttmpfile);
-            unlink(sdata.tmpframe);
-
-            init_session_data(&sdata, cfg);
-
-            protocol_state = SMTP_STATE_HELO;
-
+            process_command_reset(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
+
 
          /* by default send 502 command not implemented message */
 
          syslog(LOG_PRIORITY, "%s: invalid command: *%s*", sdata.ttmpfile, buf);
-         strncat(resp, SMTP_RESP_502_ERR, MAXBUFSIZE-1);
-      }
+         strncat(resp, SMTP_RESP_502_ERR, sizeof(resp)-1);
+      } while(p);
 
-
-      /* now we can send our buffered response */
 
       if(strlen(resp) > 0){
-         write1(new_sd, resp, strlen(resp), sdata.tls, data->ssl);
-
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, resp);
-         memset(resp, 0, MAXBUFSIZE);
-
-      #ifdef HAVE_STARTTLS
-         if(starttls == 1 && sdata.tls == 0){
-
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata.ttmpfile);
-
-            rc = SSL_accept(data->ssl);
-
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sdata.ttmpfile);
-
-            if(rc == 1){
-               sdata.tls = 1;
-            }
-            else {
-               ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-               syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata.ttmpfile, rc, SSL_get_error(data->ssl, rc), ssl_error);
-            }
-         }
-      #endif
-
-
+         send_buffered_response(&sdata, data, &protocol_state, starttls, buf, new_sd, &resp[0], sizeof(resp)-1, cfg);
+         memset(resp, 0, sizeof(resp));
       }
+
 
       if(protocol_state == SMTP_STATE_FINISHED){
          goto QUITTING;
@@ -609,4 +492,5 @@ int is_blocked_by_tcp_wrappers(int sd){
    return 0;
 }
 #endif
+
 

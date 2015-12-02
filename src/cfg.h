@@ -15,15 +15,9 @@ struct __config {
    int hostid_len;
 
    char pidfile[MAXVAL];
-   char pilergetd_pidfile[MAXVAL];
 
    char listen_addr[MAXVAL];
    int listen_port;
-
-   char pilergetd_listen_addr[MAXVAL];
-   int pilergetd_listen_port;
-
-   char pilergetd_password[MAXVAL];
 
    char clamd_addr[MAXVAL];
    int clamd_port;
