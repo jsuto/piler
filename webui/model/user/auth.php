@@ -58,9 +58,9 @@ class ModelUserAuth extends Model {
       if(ENABLE_IMAP_AUTH == 1) {
          require 'Zend/Mail/Protocol/Imap.php';
 
-         if(!isset($imap_server['IMAP_HOST'])) { $imap_server['IMAP_HOST'] = IMAP_HOST;
-         if(!isset($imap_server['IMAP_PORT'])) { $imap_server['IMAP_PORT'] = IMAP_PORT;
-         if(!isset($imap_server['IMAP_SSL'])) { $imap_server['IMAP_SSL'] = IMAP_SSL;
+         if(!isset($imap_server['IMAP_HOST'])) { $imap_server['IMAP_HOST'] = IMAP_HOST; }
+         if(!isset($imap_server['IMAP_PORT'])) { $imap_server['IMAP_PORT'] = IMAP_PORT; }
+         if(!isset($imap_server['IMAP_SSL'])) { $imap_server['IMAP_SSL'] = IMAP_SSL; }
 
          $ok = $this->checkLoginAgainstIMAP($imap_server, $username, $password, $data);
 
