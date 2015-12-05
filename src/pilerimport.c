@@ -486,11 +486,11 @@ void usage(){
    printf("    -f <imap folder>                  IMAP folder name to import\n");
    printf("    -g <imap folder>                  Move email after import to this IMAP folder\n");
    printf("    -F <folder>                       Piler folder name to assign to this import\n");
+   printf("    -R                                Assign IMAP folder names as Piler folder names\n");
    printf("    -b <batch limit>                  Import only this many emails\n");
    printf("    -s <start position>               Start importing POP3 emails from this position\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
-   printf("    -R                                Recursive piler folder names\n");
    printf("    -r                                Remove imported emails\n");
    printf("    -q                                Quiet mode\n");
 
@@ -700,6 +700,11 @@ int main(int argc, char **argv){
    if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
 
    cfg = read_config(configfile);
+
+   if((data.recursive_folder_names == 1 || folder) && cfg.enable_folders == 0){
+      printf("please set enable_folders=1 in piler.conf to use the folder options\n");
+      return ERR;
+   }
 
    /* make sure we don't discard messages without a valid Message-Id when importing manually */
    cfg.archive_emails_not_having_message_id = 1;

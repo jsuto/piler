@@ -132,6 +132,8 @@ int store_recipients(struct session_data *sdata, struct __data *data, char *to, 
 int store_folder_id(struct session_data *sdata, struct __data *data, uint64 id, struct __config *cfg){
    int rc = ERR;
 
+   if(data->folder == ERR_FOLDER) return rc;
+
    if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_message_table), SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE, cfg) == ERR) return rc;
 
    p_bind_init(data);

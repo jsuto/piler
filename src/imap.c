@@ -122,6 +122,13 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    if(messages <= 0) return OK;
 
+
+   if(data->recursive_folder_names == 1){
+      data->folder = get_folder_id(sdata, data, folder, 0, cfg);
+      if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, data, folder, 0, cfg);
+   }
+
+
    data->import->total_messages += messages;
 
    for(i=data->import->start_position; i<=messages; i++){
@@ -461,10 +468,6 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
                q++;
                fldrlen = strtol(q, NULL, 10);
             } else {
-               //if(*q == '"') q++;
-
-               //if(q[strlen(q)-1] == ' ') q[strlen(q)-1] = '\0';
-               //if(q[strlen(q)-1] == '"') q[strlen(q)-1] = '\0';
                
                if(fldrlen) {
                   ruf = malloc(strlen(q) * 2 + 1);
