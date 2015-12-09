@@ -32,6 +32,9 @@ check_parser_utils: check_parser_utils.c ../src/libpiler.a
 smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+install:
+	@echo
+
 clean:
 	rm -f check_parser_utils smtp
 

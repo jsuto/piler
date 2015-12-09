@@ -29,4 +29,7 @@
 
 #define ERR_READING_KEY "ERR: reading cipher key"
 
+#define ERR_LICENCE "ERR: licence validation error"
+#define ERR_LICENCE_IP "ERR: licenced IP-address doesn't match with listen_addr parameter"
+
 #endif /* _ERRMSG_H */

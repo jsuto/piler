@@ -300,6 +300,15 @@ struct import {
 };
 
 
+struct licence {
+   char customer[TINYBUFSIZE];
+   char hostname[TINYBUFSIZE];
+   char ip[TINYBUFSIZE];
+   time_t expiry;
+   int licenced_users;
+};
+
+
 struct __data {
    int folder, quiet;
    char recursive_folder_names;
@@ -307,6 +316,7 @@ struct __data {
    struct node *mydomains[MAXHASH];
    struct node *imapfolders[MAXHASH];
    struct import *import;
+   struct licence licence;
    char *dedup;
    int child_serial;
 
