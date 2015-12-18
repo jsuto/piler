@@ -36,18 +36,16 @@ int store_attachments(struct session_data *sdata, struct parser_state *state, st
          data->sql[data->pos] = state->attachments[i].digest; data->type[data->pos] = TYPE_STRING; data->pos++;
          data->sql[data->pos] = (char *)&(state->attachments[i].size); data->type[data->pos] = TYPE_LONG; data->pos++;
 
-         if(p_exec_query(sdata, data->stmt_get_attachment_id_by_signature, data) == ERR) goto NOT_FOUND;
+         if(p_exec_query(sdata, data->stmt_get_attachment_id_by_signature, data) == OK){
 
+            p_bind_init(data);
 
-         p_bind_init(data);
+            data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-         data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-
-         p_store_results(sdata, data->stmt_get_attachment_id_by_signature, data);
-         if(p_fetch_results(data->stmt_get_attachment_id_by_signature) == OK) found = 1;
-         p_free_results(data->stmt_get_attachment_id_by_signature);
-
-NOT_FOUND:
+            p_store_results(sdata, data->stmt_get_attachment_id_by_signature, data);
+            if(p_fetch_results(data->stmt_get_attachment_id_by_signature) == OK) found = 1;
+            p_free_results(data->stmt_get_attachment_id_by_signature);
+         }
 
          if(found == 0){
             if(store_file(sdata, state->attachments[i].internalname, 0, 0, cfg) == 0){
@@ -103,21 +101,19 @@ int query_attachment_pointers(struct session_data *sdata, struct __data *data, u
 
    data->sql[data->pos] = (char *)&ptr; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
 
-   if(p_exec_query(sdata, data->stmt_get_attachment_pointer, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_get_attachment_pointer, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = piler_id; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
+      data->sql[data->pos] = (char *)id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_get_attachment_pointer, data);
 
-   data->sql[data->pos] = piler_id; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
-   data->sql[data->pos] = (char *)id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      if(p_fetch_results(data->stmt_get_attachment_pointer) == OK) rc = 1;
+      p_free_results(data->stmt_get_attachment_pointer);
+   }
 
-   p_store_results(sdata, data->stmt_get_attachment_pointer, data);
-
-   if(p_fetch_results(data->stmt_get_attachment_pointer) == OK) rc = 1;
-   p_free_results(data->stmt_get_attachment_pointer);
-
-ENDE:
    close_prepared_statement(data->stmt_get_attachment_pointer);
 
    return rc;
@@ -130,7 +126,7 @@ int query_attachments(struct session_data *sdata, struct __data *data, struct pt
 
    for(i=0; i<MAX_ATTACHMENTS; i++) memset((char*)&ptr_arr[i], 0, sizeof(struct ptr_array));
 
-   if(prepare_sql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT, cfg) == ERR) goto ENDE;
+   if(prepare_sql_statement(sdata, &(data->stmt_query_attachment), SQL_PREPARED_STMT_QUERY_ATTACHMENT, cfg) == ERR) return attachments;
 
    p_bind_init(data);
 
@@ -169,8 +165,6 @@ int query_attachments(struct session_data *sdata, struct __data *data, struct pt
 
 CLOSE:
    close_prepared_statement(data->stmt_query_attachment);
-
-ENDE:
 
    return attachments;
 }

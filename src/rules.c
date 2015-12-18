@@ -33,50 +33,47 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = &rule_cond.domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond.from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond.to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond.subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond.body[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond._size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = (char *)&rule_cond.size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      data->sql[data->pos] = &rule_cond.attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond.attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = &rule_cond._attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
+      data->sql[data->pos] = (char *)&rule_cond.attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      data->sql[data->pos] = (char *)&rule_cond.spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      data->sql[data->pos] = (char *)&rule_cond.days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      data->sql[data->pos] = (char *)&rule_cond.folder_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_generic, data);
 
-   data->sql[data->pos] = &rule_cond.domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond.from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond.to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond.subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond.body[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond._size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = (char *)&rule_cond.size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-   data->sql[data->pos] = &rule_cond.attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond.attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = &rule_cond._attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-   data->sql[data->pos] = (char *)&rule_cond.attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-   data->sql[data->pos] = (char *)&rule_cond.spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-   data->sql[data->pos] = (char *)&rule_cond.days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-   data->sql[data->pos] = (char *)&rule_cond.folder_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      while(p_fetch_results(data->stmt_generic) == OK){
+         append_rule(xhash, &rule_cond, data);
 
+         memset(rule_cond.domain, 0, SMALLBUFSIZE);
+         memset(rule_cond.from, 0, SMALLBUFSIZE);
+         memset(rule_cond.to, 0, SMALLBUFSIZE);
+         memset(rule_cond.subject, 0, SMALLBUFSIZE);
+         memset(rule_cond.body, 0, SMALLBUFSIZE);
+         memset(rule_cond._size, 0, SMALLBUFSIZE);
+         memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
+         memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
+         memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
 
+         rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
+      }
 
-   p_store_results(sdata, data->stmt_generic, data);
+      p_free_results(data->stmt_generic);
 
-   while(p_fetch_results(data->stmt_generic) == OK){
-      append_rule(xhash, &rule_cond, data);
-
-      memset(rule_cond.domain, 0, SMALLBUFSIZE);
-      memset(rule_cond.from, 0, SMALLBUFSIZE);
-      memset(rule_cond.to, 0, SMALLBUFSIZE);
-      memset(rule_cond.subject, 0, SMALLBUFSIZE);
-      memset(rule_cond.body, 0, SMALLBUFSIZE);
-      memset(rule_cond._size, 0, SMALLBUFSIZE);
-      memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
-      memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
-      memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
-
-      rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
    }
 
-   p_free_results(data->stmt_generic);
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 }
 

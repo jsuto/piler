@@ -38,19 +38,17 @@ int is_purge_allowed(struct session_data *sdata, struct __data *data, struct __c
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = (char *)&rc; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_generic, data);
+      p_fetch_results(data->stmt_generic);
+      p_free_results(data->stmt_generic);
+   }
 
-   data->sql[data->pos] = (char *)&rc; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-
-   p_store_results(sdata, data->stmt_generic, data);
-   p_fetch_results(data->stmt_generic);
-   p_free_results(data->stmt_generic);
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 
    return rc;
@@ -252,46 +250,46 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == OK){
 
+      p_bind_init(data);
 
-   p_bind_init(data);
+      data->sql[data->pos] = &id[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(id)-2; data->pos++;
+      data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+      data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-   data->sql[data->pos] = &id[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(id)-2; data->pos++;
-   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
-   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
-   p_store_results(sdata, data->stmt_select_from_meta_table, data);
+      while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
 
-   while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
+         memcpy(&update_meta_sql[strlen(update_meta_sql)], id, strlen(id));
+         memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
 
-      memcpy(&update_meta_sql[strlen(update_meta_sql)], id, strlen(id));
-      memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
+         purged_size += size;
 
-      purged_size += size;
+         if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
 
-      if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
+            purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
 
-         purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
+            memset(buf, 0, sizeof(buf));
+            memset(update_meta_sql, 0, sizeof(update_meta_sql));
 
-         memset(buf, 0, sizeof(buf));
-         memset(update_meta_sql, 0, sizeof(update_meta_sql));
+            snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
+         }
 
-         snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
+         memcpy(&buf[strlen(buf)], s, strlen(s));
+         memcpy(&buf[strlen(buf)], " ", 1);
+
       }
 
-      memcpy(&buf[strlen(buf)], s, strlen(s));
-      memcpy(&buf[strlen(buf)], " ", 1);
+      p_free_results(data->stmt_select_from_meta_table);
+
+      if(strlen(buf) > 5 && strlen(update_meta_sql) > strlen(SQL_STMT_DELETE_FROM_META_TABLE)+5){
+         purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
+      }
 
    }
 
-   p_free_results(data->stmt_select_from_meta_table);
-
-   if(strlen(buf) > 5 && strlen(update_meta_sql) > strlen(SQL_STMT_DELETE_FROM_META_TABLE)+5){
-      purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
-   }
-
-ENDE:
    close_prepared_statement(data->stmt_select_from_meta_table);
 
    return purged;
@@ -311,37 +309,36 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
    if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
 
    p_bind_init(data);
-   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == OK){
 
+      p_bind_init(data);
 
-   p_bind_init(data);
+      data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+      data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
-   data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
-   p_store_results(sdata, data->stmt_select_from_meta_table, data);
+      while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
+         memcpy(&idlist[strlen(idlist)], s, strlen(s));
+         memcpy(&idlist[strlen(idlist)], "','", 3);
 
-   while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
-      memcpy(&idlist[strlen(idlist)], s, strlen(s));
-      memcpy(&idlist[strlen(idlist)], "','", 3);
+         purged_size += size;
 
-      purged_size += size;
+         if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
+            purged += remove_attachments(idlist, sdata, data, cfg);
 
-      if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
-         purged += remove_attachments(idlist, sdata, data, cfg);
-
-         memset(idlist, 0, sizeof(idlist));
+            memset(idlist, 0, sizeof(idlist));
+         }
       }
+
+      p_free_results(data->stmt_select_from_meta_table);
+
+      if(strlen(idlist) > 5){
+         purged += remove_attachments(idlist, sdata, data, cfg);
+      }
+
    }
 
-   p_free_results(data->stmt_select_from_meta_table);
-
-
-   if(strlen(idlist) > 5){
-      purged += remove_attachments(idlist, sdata, data, cfg);
-   }
-
-ENDE:
    close_prepared_statement(data->stmt_select_from_meta_table);
 
    return purged;

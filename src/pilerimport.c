@@ -419,27 +419,23 @@ int read_gui_import_data(struct session_data *sdata, struct __data *data, char *
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = (char *)&(data->import->import_job_id); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      data->sql[data->pos] = &s_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_type)-2; data->pos++;
+      data->sql[data->pos] = &s_username[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_username)-2; data->pos++;
+      data->sql[data->pos] = &s_password[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_password)-2; data->pos++;
+      data->sql[data->pos] = &s_server[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_server)-2; data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_generic, data);
 
-   data->sql[data->pos] = (char *)&(data->import->import_job_id); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-   data->sql[data->pos] = &s_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_type)-2; data->pos++;
-   data->sql[data->pos] = &s_username[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_username)-2; data->pos++;
-   data->sql[data->pos] = &s_password[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_password)-2; data->pos++;
-   data->sql[data->pos] = &s_server[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_server)-2; data->pos++;
+      if(p_fetch_results(data->stmt_generic) == OK) rc = OK;
 
-   p_store_results(sdata, data->stmt_generic, data);
+      p_free_results(data->stmt_generic);
+   }
 
-   if(p_fetch_results(data->stmt_generic) == OK) rc = OK;
-
-   p_free_results(data->stmt_generic);
-
-
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 
    data->import->processed_messages = 0;

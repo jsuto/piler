@@ -108,18 +108,17 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
    if(mysql_stmt_bind_param(stmt, bind)){
       sdata->sql_errno = mysql_stmt_errno(stmt);
       syslog(LOG_PRIORITY, "%s: mysql_stmt_bind_param() error: %s (errno: %d)", sdata->ttmpfile, mysql_stmt_error(stmt), sdata->sql_errno);
-      goto CLOSE;
+      return ret;
    }
 
    if(mysql_stmt_execute(stmt)){
       sdata->sql_errno = mysql_stmt_errno(stmt);
       syslog(LOG_PRIORITY, "%s: mysql_stmt_execute error: *%s* (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->sql_errno);
-      goto CLOSE;
+      return ret;
    }
 
    ret = OK;
 
-CLOSE:
    return ret;
 }
 
@@ -169,17 +168,15 @@ int p_store_results(struct session_data *sdata, MYSQL_STMT *stmt, struct __data 
    }
 
    if(mysql_stmt_bind_result(stmt, bind)){
-      goto CLOSE;
+      return ret;
    }
 
 
    if(mysql_stmt_store_result(stmt)){
-      goto CLOSE;
+      return ret;
    }
 
    ret = OK;
-
-CLOSE:
 
    return ret;
 }

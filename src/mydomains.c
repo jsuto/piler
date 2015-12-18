@@ -22,28 +22,26 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_generic, data);
 
-   data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+      while(p_fetch_results(data->stmt_generic) == OK){
+         rc = addnode(data->mydomains, s);
 
-   p_store_results(sdata, data->stmt_generic, data);
+         if(rc == 0) syslog(LOG_PRIORITY, "failed to append mydomain: '%s'", s);
+         else if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "added mydomain: '%s'", s);
 
-   while(p_fetch_results(data->stmt_generic) == OK){
-      rc = addnode(data->mydomains, s);
+         memset(s, 0, sizeof(s));
+      }
 
-      if(rc == 0) syslog(LOG_PRIORITY, "failed to append mydomain: '%s'", s);
-      else if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "added mydomain: '%s'", s);
-
-      memset(s, 0, sizeof(s));
+      p_free_results(data->stmt_generic);
    }
 
-   p_free_results(data->stmt_generic);
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 }
 

@@ -54,19 +54,17 @@ uint64 get_max_meta_id(struct session_data *sdata, struct __data *data, struct _
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
+      p_bind_init(data);
 
+      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-   p_bind_init(data);
+      p_store_results(sdata, data->stmt_generic, data);
+      p_fetch_results(data->stmt_generic);
+      p_free_results(data->stmt_generic);
+   }
 
-   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-
-   p_store_results(sdata, data->stmt_generic, data);
-   p_fetch_results(data->stmt_generic);
-   p_free_results(data->stmt_generic);
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 
 
@@ -90,63 +88,61 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
    p_bind_init(data);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
 
-   p_bind_init(data);
+      p_bind_init(data);
 
-   data->sql[data->pos] = (char *)&stored_id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN+2; data->pos++;
-   data->sql[data->pos] = (char *)&(sdata->now); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
-   data->sql[data->pos] = (char *)&(sdata->sent); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+      data->sql[data->pos] = (char *)&stored_id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN+2; data->pos++;
+      data->sql[data->pos] = (char *)&(sdata->now); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+      data->sql[data->pos] = (char *)&(sdata->sent); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
 
-   p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(sdata, data->stmt_generic, data);
 
-   while(p_fetch_results(data->stmt_generic) == OK){
+      while(p_fetch_results(data->stmt_generic) == OK){
 
-      if(stored_id > 0){
+         if(stored_id > 0){
 
-         snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
+            snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
 
-         f = fopen(filename, "w");
-         if(f){
-            rc = retrieve_email_from_archive(sdata, data, f, cfg);
-            fclose(f);
+            f = fopen(filename, "w");
+            if(f){
+               rc = retrieve_email_from_archive(sdata, data, f, cfg);
+               fclose(f);
 
-            if(rc){
-               printf("cannot retrieve: %s\n", filename);
+               if(rc){
+                  printf("cannot retrieve: %s\n", filename);
+                  unlink(filename);
+                  continue;
+               }
+
+               snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+               state = parse_message(sdata, 0, data, cfg);
+               post_parse(sdata, &state, cfg);
+
+               rc = store_index_data(sdata, &state, data, stored_id, cfg);
+
+               if(rc == OK) reindexed++;
+               else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
+
                unlink(filename);
-               continue;
+
+               if(progressbar){
+                  printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
+                  fflush(stdout);
+               }
+
             }
-
-            snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
-
-            state = parse_message(sdata, 0, data, cfg);
-            post_parse(sdata, &state, cfg);
-
-            rc = store_index_data(sdata, &state, data, stored_id, cfg);
-
-            if(rc == OK) reindexed++;
-            else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
-
-            unlink(filename);
-
-            if(progressbar){
-               printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
-               fflush(stdout);
-            }
+            else printf("cannot open: %s\n", filename);
 
          }
-         else printf("cannot open: %s\n", filename);
 
       }
 
+      p_free_results(data->stmt_generic);
    }
 
-
-   p_free_results(data->stmt_generic);
-
-
-ENDE:
    close_prepared_statement(data->stmt_generic);
 
 

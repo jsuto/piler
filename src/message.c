@@ -72,19 +72,18 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct __data *data, 
    p_bind_init(data);
    data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-   if(p_exec_query(sdata, data->stmt_get_meta_id_by_message_id, data) == ERR) goto CLOSE;
+   if(p_exec_query(sdata, data->stmt_get_meta_id_by_message_id, data) == OK){
 
+      p_bind_init(data);
+      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-   p_bind_init(data);
-   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      p_store_results(sdata, data->stmt_get_meta_id_by_message_id, data);
 
-   p_store_results(sdata, data->stmt_get_meta_id_by_message_id, data);
+      p_fetch_results(data->stmt_get_meta_id_by_message_id);
 
-   p_fetch_results(data->stmt_get_meta_id_by_message_id);
+      p_free_results(data->stmt_get_meta_id_by_message_id);
+   }
 
-   p_free_results(data->stmt_get_meta_id_by_message_id);
-
-CLOSE:
    mysql_stmt_close(data->stmt_get_meta_id_by_message_id);
 
    return id;
