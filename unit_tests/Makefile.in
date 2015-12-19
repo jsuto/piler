@@ -24,9 +24,12 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all:	check_parser_utils smtp
+all:	check_parser_utils check_rules smtp
 
 check_parser_utils: check_parser_utils.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
+check_rules: check_rules.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 smtp:	smtp.c ../src/libpiler.a
@@ -36,7 +39,7 @@ install:
 	@echo
 
 clean:
-	rm -f check_parser_utils smtp
+	rm -f check_parser_utils check_rules smtp
 
 distclean: clean
 	rm -f Makefile
