@@ -24,7 +24,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all:	check_parser_utils check_rules check_digest check_mydomains smtp
+all:	check_parser_utils check_rules check_digest check_mydomains check_parser smtp
 
 check_parser_utils: check_parser_utils.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
@@ -38,6 +38,9 @@ check_digest: check_digest.c ../src/libpiler.a
 check_mydomains: check_mydomains.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+check_parser: check_parser.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
 smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
@@ -45,7 +48,7 @@ install:
 	@echo
 
 clean:
-	rm -f check_parser_utils check_rules check_digest check_mydomains smtp
+	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser smtp
 
 distclean: clean
 	rm -f Makefile

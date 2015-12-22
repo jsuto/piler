@@ -1,0 +1,935 @@
+Return-Path: <update-49363-08f0f768@list.theregister.co.uk>
+Received: from [192.168.1.171] (HELO cxxxxxx.aaa.fu)
+  by mail.aaa.fu (CommuniGate Pro SMTP 11.8.1)
+  with ESMTP id 212624016 for hello@mail.aaa.fu; Fri, 20 Jul 2007 06:32:20 +0200
+Received: from cxxxxxx.aaa.fu (localhost.aaa.fu [127.0.0.1])
+	by AV-cxxxxxx (AAAA) with SMTP id F421C45093
+	for <hello@mail.aaa.fu>; Fri, 20 Jul 2007 06:32:19 +0200 (CEST)
+Received: from mx1.aaa.fu (mx1.aaa.fu [192.168.1.186])
+	by cxxxxxx.aaa.fu (AAAA) with ESMTP id 17D0445077
+	for <hello@mail.aaa.fu>; Fri, 20 Jul 2007 06:32:19 +0200 (CEST)
+Received: from admin4.theregister.co.uk (admin4.theregister.co.uk [212.100.234.60])
+	by mx1.aaa.fu (AAAA) with ESMTP id ED28E20DCA
+	for <hello@mail.aaa.fu>; Fri, 20 Jul 2007 06:32:18 +0200 (CEST)
+Received: from localhost ([127.0.0.1] helo=list.theregister.co.uk)
+	by admin4.theregister.co.uk with esmtp (Exim 4.50)
+	id 1IBifn-0001un-MD
+	for hello@mail.aaa.fu; Fri, 20 Jul 2007 03:56:55 +0100
+Content-Type: multipart/alternative; boundary="_=_=_aa"
+MIME-Version: 1.0
+X-Mailer: MIME::Lite 3.01 (F2.72; A1.62; B3.04; Q3.03)
+Subject: [sp@m]  Reg Headlines Friday July 20
+Date: Fri, 20 Jul 2007 03:56:55 +0100
+List-Id: <list.theregister.co.uk>
+Precedence: list
+To: hello@mail.aaa.fu
+From: The Register <update-49363-08f0f768@list.theregister.co.uk>
+Message-Id: <E1IBifn-0001un-MD@admin4.theregister.co.uk>
+Content-Transfer-Encoding: 7bit
+X-SpamTest-Info: Profile: Formal (1263/070709)
+X-SpamTest-Info: Profile: Detect Standard No RBL (4/030526)
+X-SpamTest-Info: Profile: SysLog
+X-SpamTest-Info: Profile: Marking Spam - Subject (2/030321)
+X-SpamTest-Status: Not detected
+
+
+This is a multi-part message in MIME format.
+
+--_=_=_aa
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-15"
+
+
+The Register=20
+Daily Headlines
+
+   20 July 2007
+
+   Check out our other feeds and services:
+
+     http://www.theregister.co.uk/Design/page/feeds.html
+
+Channel News
+
+     * Tesco beefs up under 20 quid software offering
+       Sausages: check, milk: check, word-processing app: check
+       http://go.theregister.com/news/http://www.channelregister.co.uk/2007=
+/07/19/tesco_home_software_apps/
+
+     * Avnet takes HP and IBM chunk out of distie Magirus
+       Today Europe, tomorrow, the world...
+       http://go.theregister.com/news/http://www.channelregister.co.uk/2007=
+/07/19/avnet_acquires_magirus_eid/
+
+     * Mobile phones are in the toilet, but no one's complaining
+       To subscribe to Channel Register's weekly newsletter - seven days
+       of channel news in a single hit - click here.
+       http://go.theregister.com/news/http://www.channelregister.co.uk/2007=
+/07/19/channel_weekly/
+
+     * Apple reclaims US' third biggest PC seller spot
+       Tied with Gateway
+       http://go.theregister.com/news/http://www.channelregister.co.uk/2007=
+/07/19/us_pc_sales_q2/
+
+Comms News
+
+     * Sprint boots 200 American patriots for using their phones
+       You're not good enough for our 'best' service, soldiers
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/sprint_accuses_soldiers_of_excessive_roaming/
+
+     * When 'God Machines' go back to their maker
+       Comment: All that glitters doesn't stay sold
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/god_machine_meets_maker/
+
+     * Digicel seeks legal redress in Caribbean
+       Takes Cable & Wireless to UK's High Court
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/digicel_candw/
+
+     * BT feels the need for 50Mb speed
+       Telco weighs up broadband options
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/bt_faster_broadband/
+
+     * Motorola discovers cheaper phones lead to lower profits
+       Slips to number three in phone rankings
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/motorola_broke_again/
+
+     * Vodafone figures show jump in 3G devices
+       Joy at data revenues leap
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/vodanumbers/
+
+     * EU says roaming case is soooo last month
+       Vodafone, O2, and T-Mobile escape anti-trust fines
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/vodafone_o2_tmobile_roaming_antitrust/
+
+     * Mobile websites fail to satisfy users
+       If you can't buy stuff, is it really m-commerce?
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/mobile_internet_disappointment/
+
+     * AmAze hopes to amaze with free mobile route planning
+       Sponsored directions and mapping
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/amaze_for_free/
+
+Developer News
+
+     * Use case style means handbags at 30 paces
+       Style is all that matters
+       http://go.theregister.com/news/http://www.regdeveloper.co.uk/2007/07=
+/19/use_case_style_wars/
+
+     * Bye bye SaaS, hello PaaS
+       Salesforce.com repackages Apex code as developer 'platform'
+       http://go.theregister.com/news/http://www.regdeveloper.co.uk/2007/07=
+/19/salesforce_apex_platform/
+
+Hardware News
+
+     * Broadcom signs licensing pact with Verizon
+       Income and revenue down, something about an ex-CEO and whores...
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+20/broadcom_inks_contract_with_verizon/
+
+     * Cheap flash sinks SanDisk's profits
+       Misty margin-filled memories
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/sandisk_q2_07_earnings/
+
+     * Seagate income soars with $359m tax break
+       Strong and confident about disk
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/seagate_q4_o7/
+
+     * AMD parts with profits in Q2
+       Must improve
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/amd_q2/
+
+     * Dell paddles 'blade everything' HP
+       Jealousy or Simplicity?
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/dell_hp_blade/
+
+Management News
+
+     * Citrix kinda' reports Q2 earnings
+       Revenue up 21 per cent, use your imagination from there
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/citrix_q2_07_earnings/
+
+     * Congress sniffing Google-DoubleClick deal
+       As FTC probe continues...
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/congress_probes_google_doubleclick_deal/
+
+     * Neteller reaches supergrass agreement with DOJ
+       US customers to get money back no later than 30 July
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/neteller_folds_doj/
+
+     * Firms unsure of liability for staff net use
+       Prosecuted? Really?
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/chambers_ebusiness_survey/
+
+     * Wall Street forks over Intel's future
+       How gross were the margins?
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/intel_q2_margins_divide/
+
+     * ICO creates IT forensics team
+       But keeps Focus for complex cases
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/ico_it_forensics/
+
+Music and Media News
+
+     * CD-meets-DVD launched
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/cdvu_plus_launched/
+
+     * European court protects file sharers
+       ISPs not obliged to hand over subscriber info
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/courts_protect_filesharers/
+
+     * The Beeb cuts off premium rate phone-in lines
+       Inform, educate and rip off
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/bbc_ofcom_phone_ins/
+
+Odds and Sods News
+
+     * eBayer offers a further Enigma
+       Brisk bidding for German code machine
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/ebay_enigma_machine/
+
+     * Wikipedia clarifies steam pipe menace
+       'They sometimes explode'
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/steam_pipe_menace/
+
+     * Daily Mail slammed for online bingo hypocrisy
+       Bonkers for bingo
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/online_bingo_growth/
+
+Reg Hardware News
+
+     * Voodoo's Envy H:171 is more than witchcraft
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/envy_h171/
+
+     * Arcam aims high-end music server at audiophiles
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/arcam_audiophile_music_server/
+
+     * Sainsbury's to hold Medion notebook launch
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/medion_sainsburys/
+
+     * Logic3 i-Station IS10 iPod alarm clock
+       Review: It's totally iTune-tastic. Mate.
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/review_logic3_i-station_is10/
+
+     * Nokia offers assistance for unresponsive GPS phones
+       Urban canyon? What urban canyon?
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/nokia_launches_a-gps_service/
+
+     * Ducati storage leaves the starting grid
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/ducati_sandisk/
+
+     * Toshiba asks for more batteries back
+       Another laptop goes foom
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/toshiba_japan_recalls_batteries/
+
+     * Retailers price up Microsoft Xbox 360 Elite
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/elite_uk_prices/
+
+     * Sony to tune slimline PSP into Japanese TV
+       Final Fantasy anniversary handheld coming too
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/psp_slim_tv_tuner/
+
+     * The IBM ThinkPad: 15 years old today
+       Forgotten Tech: The iconic black laptop celebrates its birthday
+       http://go.theregister.com/news/http://www.reghardware.co.uk/2007/07/=
+19/forgotten_tech_ibm_thinkpad/
+
+Science News
+
+     * DARPA robo-bug to start bugging once bugs are worked out
+       Harvard droid prof's flies undone
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/buggy_insect_bot_gets_airborne/
+
+     * Bush to gong top US boffins of 2006
+       Five leaders who have, um...led the way
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/gongs_4_boffins/
+
+Security News
+
+     * Governments' systems used to power phishing push
+       As US training firm aids penis pill purveyors
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/govt_phishing_hosts/
+
+     * The return of the ransom-ware Trojan
+       Malware with menaces
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/ransomware_trojan/
+
+     * 'Mac worm' hacker in death threat farce
+       Much ado about malware
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/mac_worm_farce/
+
+     * Security conferences versus practical knowledge
+       There needs to be a middle ground
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/security_conferences_practical_knowledge/
+
+     * LMH and InfoSec Sellout unmasked?
+       Month of Apple Bugs kingpin comes clean
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+19/lmh_infosec_sellout_unmasked/
+
+Software News
+
+     * Google earnings less astronomical than expected
+       CEO blames new employees
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+20/google_second_quarter_earnings/
+
+     * Microsoft grows despite Windows Vista
+       Wow not now
+       http://go.theregister.com/news/http://www.theregister.co.uk/2007/07/=
+20/microsoft_quarter_vista/
+
+   Advertisement
+
+   Find out what Reg readers think of Business Intelligence
+
+   Click below...
+http://ad.doubleclick.net/clk;95650200;13533154;v?http://www.theregister.co=
+..uk/2007/03/29/elreg_bi_webcast/
+
+Most Popular Stories
+
+    1. Burned by a MacBook
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/18/macbook_apple_support_hell/
+
+    2. Wikipedia clarifies steam pipe menace
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/19/steam_pipe_menace/
+
+    3. User panel says US should scrap GPS off switch
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/18/drop_sa_say_satnav_lovers/
+
+    4. 'Mac worm' hacker in death threat farce
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/19/mac_worm_farce/
+
+    5. Microsoft rigs Live Search traffic
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/18/microsoft_rigs_search_traffic/
+
+    6. BT feels the need for 50Mb speed
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/19/bt_faster_broadband/
+
+    7. Daily Mail slammed for online bingo hypocrisy
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/19/online_bingo_growth/
+
+    8. eBayer mails UK lad =A344k
+       http://go.theregister.com/i/popnews/http%3A//www.theregister.co.uk/2=
+007/07/18/ebay_cash_mystery/
+     _________________________________________________________________
+
+   To change your preferences, including which topics you see in these
+   emails, visit the following URL:
+
+     http://elreg.regaccount.com/register/?id=3D49491&x=3D08f01278
+
+   Or if you just want to quickly unsubscribe from ALL Reg mailings, use
+   this:
+
+     http://elreg.regaccount.com/unsub/?id=3D49491&x=3D08f01278
+     _________________________________________________________________
+
+   The Register and its contents are Copyright =A9 2007 Situation
+   Publishing. All rights reserved.
+   Tel:   +44 (0)20 7462 7744
+   Email: mailto:philip.mitchell@theregister.co.uk
+
+--_=_=_aa
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="US-ASCII"
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.=
+w3.org/TR/html4/loose.dtd">
+<html lang=3D"en">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUS-ASCII">
+<link rel=3D"stylesheet" href=3D"http://www.theregister.co.uk/Design/style/=
+print.css" media=3D"screen, print">
+<link rel=3D"stylesheet" href=3D"http://www.theregister.co.uk/Design/style/=
+newsletter.css">
+<title>Today's Headlines from The Register</title>
+</head>
+<body id=3D"Simple" class=3D"Mail">
+<table id=3D"Masthead"><tr>
+<td>
+<h1>
+<a href=3D"http://www.theregister.co.uk/"><img src=3D"http://go.theregister=
+..com/k/newsletterhtmllogo2" alt=3D"The Register" width=3D"310" height=3D"28=
+" style=3D"border: none"></a><br><span style=3D"margin-left: 45px; font-sty=
+le: italic; color: #000">Daily Headlines</span>
+</h1>
+<p style=3D"margin-left: 45px; font-size: 90%; font-style: italic">20 July =
+2007</p>
+</td>
+<td id=3D"PrefsBox">
+<p style=3D"color: #4C4C4C"><a href=3D"http://elreg.regaccount.com/register=
+/?id=3D49363&amp;x=3D08f0f768">Login</a> to alter your email preferences&#1=
+60;<a href=3D"http://elreg.regaccount.com/register/?id=3D49491&amp;x=3D08f0=
+1278"><img src=3D"http://www.theregister.co.uk/Design/graphics/Reg_default/=
+newsletter/arrow-icon.png" width=3D"21" height=3D"18" alt=3D"Login"></a> or=
+ simply <a href=3D"http://elreg.regaccount.com/unsub/?id=3D49491&amp;x=3D08=
+f01278">unsubscribe here</a></p>
+<p style=3D"color: #8E8E8E">Check out our other <a href=3D"http://www.there=
+gister.co.uk/Design/page/feeds.html">feeds and services</a></p>
+</td>
+</tr></table><blockquote>
+
+<p><a href=3D"http://ad.doubleclick.net/clk;118693193;13533154;f?http://clk=
+..atdmt.com/3B1/go/thrgkacc01400000023b1/direct/01/"><img src=3D"http://regm=
+edia.co.uk/2007/07/16/accenture_468x60_12k.gif" width=3D"468" height=3D"60"=
+ /></a></p>
+
+</blockquote>
+<table><tr>
+<td id=3D"SectionsCol">
+<div class=3D"Section">
+<h3>Channel News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+channelregister.co.uk/2007/07/19/tesco_home_software_apps/">Tesco beefs up =
+under 20 quid software offering</a></p>
+<p class=3D"Standfirst">Sausages: check, milk: check, word-processing app: =
+check</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+channelregister.co.uk/2007/07/19/avnet_acquires_magirus_eid/">Avnet takes H=
+P and IBM chunk out of distie Magirus</a></p>
+<p class=3D"Standfirst">Today Europe, tomorrow, the world...</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+channelregister.co.uk/2007/07/19/channel_weekly/">Mobile phones are in the =
+toilet, but no one's complaining</a></p>
+<p class=3D"Standfirst">To subscribe to <cite>Channel Register's</cite> wee=
+kly newsletter - seven days of channel news in a single hit - click <a href=
+=3D"http://channel.regaccount.com/register/?product=3Dchannel_weekly">here<=
+/a>.</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+channelregister.co.uk/2007/07/19/us_pc_sales_q2/">Apple reclaims US' third =
+biggest PC seller spot</a></p>
+<p class=3D"Standfirst">Tied with Gateway</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Comms News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/sprint_accuses_soldiers_of_excessive_roaming/"=
+>Sprint boots 200 American patriots for using their phones</a></p>
+<p class=3D"Standfirst">You're not good enough for our 'best' service, sold=
+iers</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/god_machine_meets_maker/">When 'God Machines' =
+go back to their maker</a></p>
+<p class=3D"Standfirst"><strong class=3D"Label">Comment</strong> All that g=
+litters doesn't stay sold</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/digicel_candw/">Digicel seeks legal redress in=
+ Caribbean</a></p>
+<p class=3D"Standfirst">Takes Cable &amp; Wireless to UK's High Court</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/bt_faster_broadband/">BT feels the need for 50=
+Mb speed</a></p>
+<p class=3D"Standfirst">Telco weighs up broadband options</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/motorola_broke_again/">Motorola discovers chea=
+per phones lead to lower profits</a></p>
+<p class=3D"Standfirst">Slips to number three in phone rankings</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/vodanumbers/">Vodafone figures show jump in 3G=
+ devices</a></p>
+<p class=3D"Standfirst">Joy at data revenues leap</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/vodafone_o2_tmobile_roaming_antitrust/">EU say=
+s roaming case is <em>soooo</em> last month</a></p>
+<p class=3D"Standfirst">Vodafone, O2, and T-Mobile escape anti-trust fines<=
+/p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/mobile_internet_disappointment/">Mobile websit=
+es fail to satisfy users</a></p>
+<p class=3D"Standfirst">If you can't buy stuff, is it really m-commerce?</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/amaze_for_free/">AmAze hopes to amaze with fre=
+e mobile route planning</a></p>
+<p class=3D"Standfirst">Sponsored directions and mapping</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Developer News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+regdeveloper.co.uk/2007/07/19/use_case_style_wars/">Use case style means ha=
+ndbags at 30 paces</a></p>
+<p class=3D"Standfirst">Style is all that matters</p>
+</div>
+<ul><li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+regdeveloper.co.uk/2007/07/19/salesforce_apex_platform/">Bye bye SaaS, hell=
+o PaaS</a></p>
+<p class=3D"Standfirst">Salesforce.com repackages Apex code as developer 'p=
+latform'</p>
+</li></ul>
+</div>
+<div class=3D"Section">
+<h3>Hardware News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/20/broadcom_inks_contract_with_verizon/">Broadcom=
+ signs licensing pact with Verizon</a></p>
+<p class=3D"Standfirst">Income and revenue down, something about an ex-CEO =
+and whores...</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/sandisk_q2_07_earnings/">Cheap flash sinks San=
+Disk's profits</a></p>
+<p class=3D"Standfirst">Misty margin-filled memories</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/seagate_q4_o7/">Seagate income soars with $359=
+m tax break</a></p>
+<p class=3D"Standfirst">Strong and confident about disk</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/amd_q2/">AMD parts with profits in Q2</a></p>
+<p class=3D"Standfirst">Must improve</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/dell_hp_blade/">Dell paddles 'blade everything=
+' HP</a></p>
+<p class=3D"Standfirst">Jealousy or Simplicity?</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Management News</h3>
+
+<div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/citrix_q2_07_earnings/">Citrix kinda' reports =
+Q2 earnings</a></p>
+<p class=3D"Standfirst">Revenue up 21 per cent, use your imagination from t=
+here</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/congress_probes_google_doubleclick_deal/">Cong=
+ress sniffing Google-DoubleClick deal</a></p>
+<p class=3D"Standfirst">As FTC probe continues...</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/neteller_folds_doj/">Neteller reaches supergra=
+ss agreement with DOJ</a></p>
+<p class=3D"Standfirst">US customers to get money back no later than 30 Jul=
+y</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/chambers_ebusiness_survey/">Firms unsure of li=
+ability for staff net use</a></p>
+<p class=3D"Standfirst">Prosecuted? Really?</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/intel_q2_margins_divide/">Wall Street forks ov=
+er Intel's future</a></p>
+<p class=3D"Standfirst">How gross were the margins?</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/ico_it_forensics/">ICO creates IT forensics te=
+am</a></p>
+<p class=3D"Standfirst">But keeps Focus for complex cases</p>
+</li>
+</ul>
+</div><blockquote>
+
+<p><a href=3D"http://ad.doubleclick.net/clk;112914643;13533154;v?http://www=
+..expansys.com/t.aspx?m=3D653&partner=3Dregister"><img src=3D"http://regmedi=
+a.co.uk/2007/06/20/expansys-tomtom.gif" width=3D"468" height=3D"60" /></a><=
+/p>
+
+</blockquote>
+<div class=3D"Section">
+<h3>Music and Media News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/cdvu_plus_launched/">CD-meets-DVD launched</a>=
+</p>
+<p class=3D"Standfirst"></p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/courts_protect_filesharers/">European court pr=
+otects file sharers</a></p>
+<p class=3D"Standfirst">ISPs not obliged to hand over subscriber info</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/bbc_ofcom_phone_ins/">The Beeb cuts off premiu=
+m rate phone-in lines</a></p>
+<p class=3D"Standfirst">Inform, educate and rip off</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Odds and Sods News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/ebay_enigma_machine/">eBayer offers a further =
+Enigma</a></p>
+<p class=3D"Standfirst">Brisk bidding for German code machine</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/steam_pipe_menace/">Wikipedia clarifies steam =
+pipe menace</a></p>
+<p class=3D"Standfirst">'They sometimes explode'</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/online_bingo_growth/"><cite>Daily Mail</cite> =
+slammed for online bingo hypocrisy</a></p>
+<p class=3D"Standfirst">Bonkers for bingo</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Reg Hardware News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/envy_h171/">Voodoo's Envy H:171 is more than w=
+itchcraft</a></p>
+<p class=3D"Standfirst"></p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/arcam_audiophile_music_server/">Arcam aims hig=
+h-end music server at audiophiles</a></p>
+<p class=3D"Standfirst"></p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/medion_sainsburys/">Sainsbury's to hold Medion=
+ notebook launch</a></p>
+<p class=3D"Standfirst"></p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/review_logic3_i-station_is10/">Logic3 i-Statio=
+n IS10 iPod alarm clock</a></p>
+<p class=3D"Standfirst"><strong class=3D"Label">Review</strong> It's totall=
+y iTune-tastic. Mate.</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/nokia_launches_a-gps_service/">Nokia offers as=
+sistance for unresponsive GPS phones</a></p>
+<p class=3D"Standfirst">Urban canyon? What urban canyon?</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/ducati_sandisk/">Ducati storage leaves the sta=
+rting grid</a></p>
+<p class=3D"Standfirst"></p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/toshiba_japan_recalls_batteries/">Toshiba asks=
+ for more batteries back</a></p>
+<p class=3D"Standfirst">Another laptop goes foom</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/elite_uk_prices/">Retailers price up Microsoft=
+ Xbox 360 Elite</a></p>
+<p class=3D"Standfirst"></p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/psp_slim_tv_tuner/">Sony to tune slimline PSP =
+into Japanese TV</a></p>
+<p class=3D"Standfirst"><em>Final Fantasy</em> anniversary handheld coming =
+too</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+reghardware.co.uk/2007/07/19/forgotten_tech_ibm_thinkpad/">The IBM ThinkPad=
+: 15 years old today</a></p>
+<p class=3D"Standfirst"><strong class=3D"Label">Forgotten Tech</strong> The=
+ iconic black laptop celebrates its birthday</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Science News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/buggy_insect_bot_gets_airborne/">DARPA robo-bu=
+g to start bugging once bugs are worked out</a></p>
+<p class=3D"Standfirst">Harvard droid prof's flies undone</p>
+</div>
+<ul><li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/gongs_4_boffins/">Bush to gong top US boffins =
+of 2006</a></p>
+<p class=3D"Standfirst">Five leaders who have, um...led the way</p>
+</li></ul>
+</div>
+<div class=3D"Section">
+<h3>Security News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/govt_phishing_hosts/">Governments' systems use=
+d to power phishing push</a></p>
+<p class=3D"Standfirst">As US training firm aids penis pill purveyors</p>
+</div>
+<ul>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/ransomware_trojan/">The return of the ransom-w=
+are Trojan</a></p>
+<p class=3D"Standfirst">Malware with menaces</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/mac_worm_farce/">'Mac worm' hacker in death th=
+reat farce</a></p>
+<p class=3D"Standfirst">Much ado about malware</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/security_conferences_practical_knowledge/">Sec=
+urity conferences versus practical knowledge</a></p>
+<p class=3D"Standfirst">There needs to be a middle ground</p>
+</li>
+<li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/19/lmh_infosec_sellout_unmasked/">LMH and InfoSec=
+ Sellout unmasked?</a></p>
+<p class=3D"Standfirst">Month of Apple Bugs kingpin comes clean</p>
+</li>
+</ul>
+</div>
+<div class=3D"Section">
+<h3>Software News</h3><div class=3D"LeadStory">
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/20/google_second_quarter_earnings/">Google earnin=
+gs less astronomical than expected</a></p>
+<p class=3D"Standfirst">CEO blames new employees</p>
+</div>
+<ul><li>
+<p class=3D"Headline"><a href=3D"http://go.theregister.com/news/http://www.=
+theregister.co.uk/2007/07/20/microsoft_quarter_vista/">Microsoft grows desp=
+ite Windows Vista</a></p>
+<p class=3D"Standfirst">Wow not now</p>
+</li></ul>
+</div></td>
+<td id=3D"ExtrasCol">
+<div id=3D"TopNBox" class=3D"SpotlightBox">
+<h3>Most Popular Stories</h3>
+<ol>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/18/macbook_apple_support_hell/" title=3D"In more ways than o=
+ne">Burned by a MacBook</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/19/steam_pipe_menace/" title=3D"'They sometimes explode'">Wi=
+kipedia clarifies steam pipe menace</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/18/drop_sa_say_satnav_lovers/" title=3D"Sat nav industry rec=
+kons degrading sat nav is bad">User panel says US should scrap GPS off swit=
+ch</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/19/mac_worm_farce/" title=3D"Much ado about malware">'Mac wo=
+rm' hacker in death threat farce</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/18/microsoft_rigs_search_traffic/" title=3D"The power of Din=
+gbats">Microsoft rigs Live Search traffic</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/19/bt_faster_broadband/" title=3D"Telco weighs up broadband =
+options">BT feels the need for 50Mb speed</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/19/online_bingo_growth/" title=3D"Bonkers for bingo"><cite>D=
+aily Mail</cite> slammed for online bingo hypocrisy</a></li>
+<li><a href=3D"http://go.theregister.com/i/popnews/http%3A//www.theregister=
+..co.uk/2007/07/18/ebay_cash_mystery/" title=3D"Got more than the PS2 he was=
+ expecting">eBayer mails UK lad &pound;44k</a></li>
+</ol>
+</div><div class=3D"FeatureBox">
+<div class=3D"FeatureBoxHeader">
+<a href=3D"http://events.theregister.co.uk/" target=3D"_blank">
+<img width=3D"151" height=3D"39" alt=3D"Event of the Week" src=3D"http://ww=
+w.theregister.co.uk/Design/graphics/Feature_Box/eotw_header.png"/>
+</a>
+</div>
+<p class=3D"Title">
+<a href=3D"http://events.theregister.co.uk/event/6843" target=3D"_blank">
+<strong>Ubuntu Live</strong>
+</a>
+</p>
+<p class=3D"Standfirst">
+<small>Attend the first official event for the global Ubuntu community!</sm=
+all>
+</p>
+<table>
+<tr>
+<td>
+<p>
+<small><span class=3D"Date">22nd&#8211;24th July</span><br/>Portland, Orego=
+n<br/><a href=3D"http://events.theregister.co.uk/ical/6843">Add to calendar=
+</a></small>
+</p>
+</td>
+<td>
+<p>
+<a target=3D"_blank" href=3D"http://events.theregister.co.uk/event/6843">Mo=
+re Details</a>
+</p>
+</td>
+</tr>
+</table>
+</div>
+
+
+<div class=3D"FeatureBox" style=3D"margin-top: 1em; width: 160px;">
+  <div class=3D"FeatureBoxHeader"><a href=3D"http://research.theregister.co=
+..uk/paper/view/211/?td=3Dwom" target=3D"_blank"><img src=3D"http://www.ther=
+egister.co.uk/Design/graphics/Feature_Box/wpotm_header.png" width=3D"158" h=
+eight=3D"41" alt=3D"Whitepaper of the Month" /></a></div>
+    <p class=3D"Title"><strong><a target=3D"_blank" href=3D"http://research=
+..theregister.co.uk/paper/view/211/?td=3Dwom">An Enterprise Data Management =
+Overview</a></strong></p>
+      <p><small>Treat information as an Enterprise asset and improve your c=
+ompetitive advantage.</small></p>
+        <p style=3D"text-align: center"><a target=3D"_blank" href=3D"http:/=
+/research.theregister.co.uk/paper/view/211/?td=3Dwom">Download here</a></p>
+	</div>
+
+
+<div class=3D"RelatedWhitepapers">
+<h3>Related Whitepapers</h3>
+<ul>
+<li class=3D"Even">
+<a href=3D"http://go.theregister.com/wp/related/204/wp-bi-for-it?td=3Drelat=
+ed">The Business Value of Business Intelligence</a>
+</li>
+<li class=3D"Odd">
+<a href=3D"http://go.theregister.com/wp/related/175/cr-server-whitepaper-en=
+glish?td=3Drelated">Crystal Reports Server XI</a>
+</li>
+<li class=3D"Even">
+<a href=3D"http://go.theregister.com/wp/related/203/dataflux-wp040-managing=
+-and-integrating-data-in-an-sap-environment-1?td=3Drelated">Managing and In=
+tegrating Data in an SAP Environment</a>
+</li>
+<li class=3D"Odd">
+<a href=3D"http://go.theregister.com/wp/related/183/messagelabs-epolicy-gui=
+debook?td=3Drelated">ePolicy Best Practices</a>
+</li>
+<li class=3D"Even">
+<a href=3D"http://go.theregister.com/wp/related/206/getting-it-right?td=3Dr=
+elated">A Guide To Effectively Selling Security</a>
+</li>
+<li class=3D"Odd">
+<a href=3D"http://go.theregister.com/wp/related/212/key-issues-for-security=
+-and-147484?td=3Drelated">Key Issues for Security and Risk Management Role =
+Research, 2007</a>
+</li>
+</ul>
+</div>
+
+</td>
+</tr></table>
+<div id=3D"Footer">
+<hr>
+<p>The Register and its contents are Copyright &#169; 2007 Situation Publis=
+hing.  All rights reserved.</p>
+<table>
+<tr>
+<td>Tel:</td>
+<td>+44 (0)20 7462 7744</td>
+</tr>
+<tr>
+<td>Email:</td>
+<td>mailto:philip.mitchell@theregister.co.uk</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+
+--_=_=_aa--
+
+
+

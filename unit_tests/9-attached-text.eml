@@ -1,0 +1,91 @@
+X-ListServer: CommuniGate Pro LIST 11.8.1
+List-ID: <aaa.aaa.fu>
+Message-ID: <list-507327664@mail.aaa.fu>
+Sender: "AAA aaa" <aaa@aaa.fu>
+Received: from [192.168.1.111] (HELO xxx.aaa.fu)
+  by mail.aaa.fu (CommuniGate Pro SMTP 11.8.1)
+  with ESMTP id 507327663 for postmaster@aaa.fu; Sat, 23 Oct 2010 07:12:09 +0200
+Received: from cxxxxxxxxx-filter.aaa.fu (localhost.backup [127.0.0.1])
+	by cxxxxxxxxx-fwd (AAAA) with ESMTP id A951650961
+	for <postmaster@aaa.fu>; Sat, 23 Oct 2010 07:12:09 +0200 (CEST)
+Received: from cxxxxxxxxx.aaa.fu (127.0.0.1)
+	by cxxxxxxxxx-filter.aaa.fu with ESMTP id o7C820Es21916;
+	Sat, 23 Oct 2010 07:12:08 +0200
+Received: from mx3.aaa.fu (unknown [192.168.1.180])
+	by cxxxxxxxxx.aaa.fu (AAAA) with ESMTP id 80ED950979
+	for <postmaster@aaa.fu>; Sat, 23 Oct 2010 07:12:08 +0200 (CEST)
+Received: from smtp244.efor.es (bender.efor.es [93.92.232.244])
+	by mx3.aaa.fu (AAAA) with ESMTP id 42B6278C9E
+	for <postmaster@aaa.fu>; Sat, 23 Oct 2010 07:12:08 +0200 (CEST)
+Received: from localhost (unknown [127.0.0.1])
+	by bender.efor.es (Postfix) with ESMTP id 22A782AE68F;
+	Sat, 23 Oct 2010 07:12:07 +0200 (CEST)
+Received: from User (unknown [61.178.74.38])
+	(Authenticated sender: clubzenit@zenithoteles.com)
+	by bender.efor.es (Postfix) with ESMTPA id 9202A2AE694;
+	Sat, 23 Oct 2010 07:08:50 +0200 (CEST)
+From: "Dr. Lucky Amechi"<clubzenit@zenithoteles.com>
+DDate: Sat, 23 Oct 2010 06:11:57 +0100
+Date: =?UTF-8?B?RnJpIEp1bCAxOSAxNToxMDoyNSAyMDEzCg==?=
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+	boundary="----=_NextPart_000_0091_01C2AA85.111E016A"
+X-Original-Message-Id: <20101023050853.9202A2AE694@bender.efor.es>
+To: usuarios-no-listados:;
+Subject: Please read my attached letter
+Status: RO
+X-Status: 
+X-Keywords:                 
+X-UID: 1
+
+
+------=_NextPart_000_0091_01C2AA85.111E016A
+Content-Type: text/plain;
+	charset="_iso-2022-jp$ESC"
+Content-Transfer-Encoding: 7bit
+
+Please read my attached letter
+
+------=_NextPart_000_0091_01C2AA85.111E016A
+Content-Type: text/plain;
+	name="MY LETTER.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="MY LETTER.txt"
+
+RGVhcmVzdCBvbmUsDQoNClBsZWFzZSBkbyBub3QgYXNzdW1lIHRoaXMgdG8g
+YmUgYW5vdGhlciBpbnRlcm5ldCBqb2tlLiBJIGFtIERyLiBMdWNreSBBbWVj
+aGkuIEkgYW0gYSBwb2xpdGljaWFuIGFuZCBhbHNvIGEgc2VuaW9yIHN0YWZm
+IG9mIHRoZSBNaW5pc3RyeSBvZiBIZWFsdGggaGVyZSBpbiBBYnVqYSwgTmln
+ZXJpYS4gSSBnb3QgeW91ciBlLW1haWwgZnJvbSBhbiBpbnRlcm5ldCBkYXRh
+IGZvbGxvd2luZyBteSBlZmZvcnQgc2VhcmNoaW5nIGZvciBhIHRydXN0d29y
+dGh5IHBlcnNvbiB0byBhc3Npc3QgbWUuIFRob3VnaCBjb25zdHJhaW5lZCBi
+eSBpbmFkZXF1YXRlIGluZm9ybWF0aW9uIGFib3V0IHlvdSwgSSBob3BlZCB0
+aGF0IHlvdSB3aWxsIG5vdCBleHBvc2Ugb3IgYmV0cmF5IHRoaXMgdHJ1c3Qg
+dGhhdCBJIGFtIGFib3V0IHRvIGltcG9zZSBvbiB5b3UgZm9yIG11dHVhbCBi
+ZW5lZml0IG9mIG91ciBmYW1pbGllcy4gVGhlIHRyYW5zYWN0aW9uIGluIHF1
+ZXN0aW9uIG9mIHdoaWNoIEkgYW0gYWJvdXQgdG8gcmV2ZWFsIHRvIHlvdSwg
+ZW1hbmF0ZWQgZnJvbSBvdmVyLWludm9pY2luZyBvZiBjb250cmFjdCBhd2Fy
+ZGVkIGluIG15IG1pbmlzdHJ5IGZvciB0aGUgc3VwcGxpZXMgb2YgbWVkaWNh
+bCBlcXVpcG1lbnQgYW5kIHF1YWxpdHkgaGVhbHRoIHByb2dyYW1zLiBJbiB0
+aGUgY291cnNlIG9mIHRoZSBjb250cmFjdCBhd2FyZGVkIGFuZCBleGVjdXRl
+ZCBieSBzZXZlcmFsIGZvcmVpZ24gZmVtYWxlIGFuZCBtYWxlIGNvbnRyYWN0
+b3JzLCB0aGUgYXBwcm92YWxzIGFuZCBwYXltZW50cyBhcmUgYmVpbmcgY29t
+cGxldGVkIG9uIG15IGRpcmVjdGl2ZXMsIFNvIEkgbWFkZSBzb21lIGFsdGVy
+YXRpb25zLiBOb3csIHRoZXJlIGlzIGEgdG9wIG92ZXIuIEkgYWxzbyBoYXZl
+IHNvbWUgZG9jdW1lbnRzIGluIG15IHBvc3Nlc3Npb24sIHRoZXNlIGRvY3Vt
+ZW50cyB3aWxsIHN0aXB1bGF0ZSB5b3UgYXMgb25lIG9mIHRoZSBjb250cmFj
+dG9ycyB0aGUgbWluaXN0cnkgaXMgeWV0IHRvIHNldHRsZS4gDQpGb3IgZnVs
+bCBkZXRhaWxzLCBwbGVhc2Uga2luZGx5IHJlc3BvbmQgdG8gbXkgcGVyc29u
+YWwgZW1haWwgYWRkcmVzczogYW1lY2hpQGluZm8uYWwNCg0KV2FybSBSZWdh
+cmRzLA0KRHIuIEx1Y2t5IEFtZWNoaQ0KVGVsOiArMjM0IDgwNyA3MTAzIDc5
+OA0KRW1haWw6IGFtZWNoaUBpbmZvLmFsDQoNCg0KTkI6IFlvdSBzZWUsIEkg
+c2VudCB0aGlzIHZlcnkgbWVzc2FnZSBsb25nIGJlZm9yZSBub3csIGluIGZh
+Y3QgbWFueSB0aW1lcy4uIGJ1dCBJIGRpZCBub3QgcmVjZWl2ZSBhbnkgIHJl
+c3BvbnNlIGZyb20geW91LiBTbyBJIHN1cHBvc2VkIG15IG1lc3NhZ2Ugd2Fz
+IHF1ZXVlZCBvciBkZWxheWVkPyBBbnl3YXksIEkgaGF2ZSBub3cgcGxhY2Vk
+IGl0IGluIGFuIGF0dGFjaG1lbnQgYW5kIEkgYW0gc2VuZGluZyB0byB5b3Ug
+YWdhaW4uIEtpbmRseSByZXNwb25kDQo=
+
+------=_NextPart_000_0091_01C2AA85.111E016A--
+
