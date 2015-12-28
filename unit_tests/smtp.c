@@ -40,6 +40,7 @@ void usage(){
 
 
 void send_smtp_command(int sd, char *cmd, char *buf, int buflen, int timeout, int use_ssl, struct __data *data){
+   if(data == NULL || cmd == NULL) return;
 
    printf("sent: %s", cmd);   
    write1(sd, cmd, strlen(cmd), use_ssl, data->ssl);
@@ -53,6 +54,8 @@ static void test_smtp_commands_one_at_a_time(char *server, int port, int timeout
    int sd, use_ssl = 0;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
    struct __data data;
+
+   data.ssl = NULL;
 
    sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
 
@@ -85,6 +88,8 @@ static void test_smtp_commands_pipelining(char *server, int port, int timeout){
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
    struct __data data;
 
+   data.ssl = NULL;
+
    sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
 
    send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
@@ -106,6 +111,8 @@ static void test_smtp_commands_with_reset_command(char *server, int port, int ti
    int sd, use_ssl = 0;
    char recvbuf[MAXBUFSIZE];
    struct __data data;
+
+   data.ssl = NULL;
 
    sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
 
@@ -132,6 +139,8 @@ static void test_smtp_commands_partial_command(char *server, int port, int timeo
    int sd, use_ssl = 0;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
    struct __data data;
+
+   data.ssl = NULL;
 
    sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
 
@@ -167,6 +176,8 @@ static void test_smtp_commands_partial_command_pipelining(char *server, int port
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
    struct __data data;
 
+   data.ssl = NULL;
+
    sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
 
    send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
@@ -191,6 +202,8 @@ int connect_to_smtp_server(char *server, int port, int timeout, int use_ssl, str
    int rc, sd = -1;
    char port_string[8], buf[MAXBUFSIZE];
    struct addrinfo hints, *res;
+
+   if(data == NULL) return sd;
 
    snprintf(port_string, sizeof(port_string)-1, "%d", port);
 
