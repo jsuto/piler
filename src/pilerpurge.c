@@ -104,7 +104,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    char filename[SMALLBUFSIZE];
    char *a, buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE], delete_attachment_stmt[BIGBUFSIZE];
    char piler_id[SMALLBUFSIZE], i[BUFLEN];
-   int n=0, len, attachment_id;
+   int n=0, len, attachment_id=0;
 #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
 #endif
@@ -148,6 +148,11 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    p_store_results(sdata, data->stmt_select_non_referenced_attachments, data);
 
    while(p_fetch_results(data->stmt_select_non_referenced_attachments) == OK){
+
+      if(strlen(piler_id) != RND_STR_LEN || attachment_id <= 0){
+         printf("invalid piler_id: '%s.a%d'\n", piler_id, attachment_id);
+         continue;
+      }
 
       snprintf(filename, sizeof(filename)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, piler_id[8], piler_id[9], piler_id[10], piler_id[RND_STR_LEN-4], piler_id[RND_STR_LEN-3], piler_id[RND_STR_LEN-2], piler_id[RND_STR_LEN-1], piler_id, attachment_id);
    #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT

@@ -15,6 +15,7 @@
 #define ERR_SETGID "ERR: setgid()"
 #define ERR_SELECT "ERR: select()"
 #define ERR_CHDIR "ERR: chdir() to working directory failed"
+#define ERR_DAEMON "ERR: daemon()"
 #define ERR_OPEN_TMP_FILE "ERR: opening a tempfile"
 #define ERR_TIMED_OUT "ERR: timed out"
 #define ERR_FORK_FAILED "ERR: cannot fork()"

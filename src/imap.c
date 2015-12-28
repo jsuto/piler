@@ -101,7 +101,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", *seq, folder);
 
-   n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
       trimBuffer(buf);
       printf("select cmd error: %s\n", buf);
@@ -161,7 +161,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
       }
 
 
-      n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
 
       readlen = 0;
       nreads = 0;
@@ -264,7 +264,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
          if(data->import->remove_after_import == 1 && dryrun == 0){
             snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
-            n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+            write1(sd, buf, strlen(buf), use_ssl, data->ssl);
             read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
          }
 
@@ -275,12 +275,12 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
             tagoklen = strlen(tagok);
 
             snprintf(buf, sizeof(buf)-1, "A%d COPY %d %s\r\n", *seq, i, data->import->move_folder);
-            n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+            write1(sd, buf, strlen(buf), use_ssl, data->ssl);
             read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
 
             if(strncmp(buf, tagok, tagoklen) == 0){
                snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
-               n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+               write1(sd, buf, strlen(buf), use_ssl, data->ssl);
                read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
 
             }
@@ -296,7 +296,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    if((data->import->remove_after_import == 1 || data->import->move_folder) && dryrun == 0){
       snprintf(buf, sizeof(buf)-1, "A%d EXPUNGE\r\n", *seq);
-      n = write1(sd, buf, strlen(buf), use_ssl, data->ssl);
+      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
       read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
    }
 
@@ -351,7 +351,7 @@ int connect_to_imap_server(int sd, int *seq, char *username, char *password, int
    }
 
 
-   n = recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
+   recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
 
 
    /* imap cmd: LOGIN */

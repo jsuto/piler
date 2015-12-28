@@ -300,7 +300,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                if(puf[n-2] != '\r' && puf[n-1] != '\n'){
                   memmove(puf, puf+pos, n-pos);
                   memset(puf+n-pos, 0, MAXBUFSIZE-n+pos);
-                  i = recvtimeout(new_sd, buf, MAXBUFSIZE, TIMEOUT);
+                  recvtimeout(new_sd, buf, MAXBUFSIZE, TIMEOUT);
                   strncat(puf, buf, MAXBUFSIZE-1-n+pos);
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sdata.ttmpfile, puf);
                   pos = 0;
@@ -356,7 +356,7 @@ AFTER_PERIOD:
 
          if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
             if(protocol_state == SMTP_STATE_INIT) protocol_state = SMTP_STATE_HELO;
-            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-1);
+            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-strlen(resp)-1);
             continue;
          }
 
@@ -399,7 +399,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_NOOP, strlen(SMTP_CMD_NOOP)) == 0){
-            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-1);
+            strncat(resp, SMTP_RESP_250_OK, sizeof(resp)-strlen(resp)-1);
             continue;
          }
 
@@ -413,7 +413,7 @@ AFTER_PERIOD:
          /* by default send 502 command not implemented message */
 
          syslog(LOG_PRIORITY, "%s: invalid command: *%s*", sdata.ttmpfile, buf);
-         strncat(resp, SMTP_RESP_502_ERR, sizeof(resp)-1);
+         strncat(resp, SMTP_RESP_502_ERR, sizeof(resp)-strlen(resp)-1);
       } while(p);
 
 

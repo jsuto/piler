@@ -132,7 +132,7 @@ static void test_archiving_rule(struct __config *cfg){
 
       unlink(sdata.tmpframe);
 
-      printf("%s, '%s'\n", rule_test[i].filename, rule);
+      //printf("%s, '%s'\n", rule_test[i].filename, rule);
 
       if(rule == NULL && rule == rule_test[i].expected_result) continue;
 

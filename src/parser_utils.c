@@ -220,12 +220,14 @@ time_t parse_date_header(char *datestr, struct __config *cfg){
          if((len == 5 && (*s == '+' || *s == '-')) || (len == 8 && (strncmp(s, "GMT+", 4) == 0 || strncmp(s, "GMT-", 4) == 0))){
             offset = 0;
             tz = strpbrk(s, "+-");
-            memset(tzh, 0, 4);
-            memset(tzm, 0, 3);
-            strncpy(tzh, tz, 3);
-            strncpy(tzm, tz+3, 2);
-            offset += atoi(tzh) * 3600;
-            offset += atoi(tzm) * 60;
+            if(tz){
+               memset(tzh, 0, 4);
+               memset(tzm, 0, 3);
+               strncpy(tzh, tz, 3);
+               strncpy(tzm, tz+3, 2);
+               offset += atoi(tzh) * 3600;
+               offset += atoi(tzm) * 60;
+            }
             continue;
          }
 
@@ -351,7 +353,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          if(start){
             *start = '\0';
             if(strlen(p) > 0){
-               strncat(puf, p, sizeof(puf)-1);
+               strncat(puf, p, sizeof(puf)-strlen(puf)-1);
             }
 
             start++;
@@ -386,27 +388,27 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
                   }
 
                   if(need_encoding == 1 && ret == OK)
-                     strncat(puf, tmpbuf, sizeof(puf)-1);
+                     strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
                   else 
-                     strncat(puf, s+3, sizeof(puf)-1);
+                     strncat(puf, s+3, sizeof(puf)-strlen(puf)-1);
 
                   p = end + 2;
                }
             }
             else {
-               strncat(puf, start, sizeof(puf)-1);
+               strncat(puf, start, sizeof(puf)-strlen(puf)-1);
 
                break;
             }
          }
          else {
-            strncat(puf, p, sizeof(puf)-1);
+            strncat(puf, p, sizeof(puf)-strlen(puf)-1);
             break;
          }
 
       } while(p);
 
-      if(q) strncat(puf, " ", sizeof(puf)-1);
+      if(q) strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
 
    } while(q);
 
@@ -450,7 +452,7 @@ void fixupBase64EncodedLine(char *buf, struct parser_state *state){
    if(strlen(state->miscbuf) > 0){
       memset(puf, 0, sizeof(puf));
       strncpy(puf, state->miscbuf, sizeof(puf)-1);
-      strncat(puf, buf, sizeof(puf)-1);
+      strncat(puf, buf, sizeof(puf)-strlen(puf)-1);
 
       memset(buf, 0, MAXBUFSIZE);
       memcpy(buf, puf, MAXBUFSIZE);
@@ -539,7 +541,7 @@ void markHTML(char *buf, struct parser_state *state){
    }
 
    //printf("append last in line:*%s*, html=+%s+, j=%d\n", puf, html, j);
-   if(j > 0){ k += appendHTMLTag(puf, html, pos, state); }
+   if(j > 0){ appendHTMLTag(puf, html, pos, state); }
 
    strcpy(buf, puf);
 }

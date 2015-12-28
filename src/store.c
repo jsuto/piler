@@ -48,7 +48,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    EVP_CIPHER_CTX ctx;
    unsigned char *outbuf=NULL;
-   int outlen, writelen, tmplen;
+   int outlen=0, writelen, tmplen;
 
    struct timezone tz;
    struct timeval tv1, tv2;
@@ -118,7 +118,7 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
 
    if(p){
       *p = '.';
-      strncat(s, p, sizeof(s)-1);
+      strncat(s, p, sizeof(s)-strlen(s)-1);
    }
 
 
@@ -131,9 +131,9 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
       p2 = strrchr(s, '/'); if(!p2) goto ENDE;
       *p2 = '\0';
 
-      rc = mkdir(s, 0750);
+      mkdir(s, 0750);
       *p2 = '/';
-      rc = mkdir(s, 0750);
+      mkdir(s, 0750);
       *p1 = '/';
       rc = mkdir(s, 0770); if(rc == -1) syslog(LOG_PRIORITY, "%s: mkdir %s: error=%s", sdata->ttmpfile, s, strerror(errno));
    }

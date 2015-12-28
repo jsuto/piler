@@ -121,6 +121,8 @@ struct rule *create_rule_item(struct rule_cond *rule_cond, struct __data *data){
    char empty = '\0';
    int len;
 
+   if(rule_cond == NULL) return NULL;
+
    if((h = malloc(sizeof(struct rule))) == NULL)
       return NULL;
 
