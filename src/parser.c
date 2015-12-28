@@ -83,7 +83,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
-      len = write(state.mfd, writebuffer, state.writebufpos);
+      write(state.mfd, writebuffer, state.writebufpos);
       memset(writebuffer, 0, sizeof(writebuffer));
       state.writebufpos = 0;
    }
@@ -241,10 +241,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                abuffer[state->abufpos] = '\0';
                if(state->base64 == 1){
                   n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
-                  n64 = write(state->b64fd, b64buffer, n64);
+                  write(state->b64fd, b64buffer, n64);
                }
                else {
-                  n64 = write(state->b64fd, abuffer, state->abufpos);
+                  write(state->b64fd, abuffer, state->abufpos);
                }
             }
 
@@ -578,10 +578,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                   abuffer[state->abufpos] = '\0';
                   if(state->base64 == 1){
                      n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
-                     n64 = write(state->b64fd, b64buffer, n64);
+                     write(state->b64fd, b64buffer, n64);
                   }
                   else {
-                     n64 = write(state->b64fd, abuffer, state->abufpos);
+                     write(state->b64fd, abuffer, state->abufpos);
                   }
                }
 
@@ -677,14 +677,16 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(puf[0] == '\0') continue;
 
-      strncat(puf, " ", sizeof(puf)-1);
-
-      if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0) fixURL(puf, sizeof(puf)-1);
-
-      if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || (strlen(puf) > MAX_WORD_LEN && cfg->enable_cjk == 0) || isHexNumber(puf)) ) continue;
-
-
       len = strlen(puf);
+
+      strncat(puf, " ", sizeof(puf)-len-1);
+
+      if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0){
+         fixURL(puf, sizeof(puf)-1);
+         len = strlen(puf);
+      }
+
+      if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || (len > MAX_WORD_LEN && cfg->enable_cjk == 0) || isHexNumber(puf)) ) continue;
 
 
       if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){

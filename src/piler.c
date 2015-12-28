@@ -127,7 +127,7 @@ static void child_main(struct child *ptr){
 
       ptr->status = BUSY;
 
-      inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof(s));
+      inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof(s)-1);
 
       syslog(LOG_PRIORITY, "connection from %s", s);
 
@@ -453,7 +453,7 @@ int main(int argc, char **argv){
 
 
 #if HAVE_DAEMON == 1
-   if(daemonise == 1) i = daemon(1, 0);
+   if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
 
    write_pid_file(cfg.pidfile);

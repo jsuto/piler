@@ -19,7 +19,7 @@ struct digest_test {
 
 
 struct digest_test tests[] = {
-   {"1.eml", "63e4649b52c0fb45571b32aecc502234e6414abb36317eea25a1bd2f4e3cbe9e", "93e71b5f72d195f51333e261d57bffc9b27c95ef44bf6478090db3067571e242"},
+   {"1.eml", "b675536ea7ba16adf9b19ccc2ef60351c2f82b1fa7b92fb18569bd3ba753cc60", "bcd87663be92f688d9cccb62e6e0504ee3f7cdec8e5b7679f8724bacc3b0c57f"},
    {"2.eml", "668cb3b91b944af786667323442576b9813d65f3cd3bc33e9d5da303c79de038", "de90475409dd6ab24e80c1b7a987715c40fe8d28d91337b7f063b477159c7b3c"},
    {"3.eml", "0d546d4cb4a8ce74ea5fd4cc51dbb4ebeaa7542f1c691817579da7eeab8d4771", "f585d011340d292ee52ddedb07cda662a8f1e46329d14a2ce92dca0604387bab"},
    {"4.eml", "6008daed3613af4af71aa1f82550fd592d19c14c1aa7d8d5db2be1552174c518", "5f0744384bc3f96167380442c108c04a762313c79778c928ee5274981632ff45"},
@@ -56,7 +56,7 @@ static void test_digest_file(){
 
    for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
       digest_file(tests[i].s, &digest[0]);
-      assert(strcmp(digest, tests[i].digest2) == 0 && "test_digest_string()");
+      assert(strcmp(digest, tests[i].digest2) == 0 && "test_digest_file()");
    }
 
    printf("test_digest_file() OK\n");

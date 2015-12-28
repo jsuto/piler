@@ -95,7 +95,7 @@ int addnode(struct node *xhash[], char *s){
             q = q->r;
          }
       }
-      p->r = makenewnode(xhash, s);
+      if(p) p->r = makenewnode(xhash, s);
    }
 
    return 1;
