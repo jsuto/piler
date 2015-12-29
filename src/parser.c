@@ -467,7 +467,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          if(strncmp(buf, "Subject:", strlen("Subject:")) == 0) p += strlen("Subject:");
          if(*p == ' ') p++;
 
-         strncat(state->b_subject, p, MAXBUFSIZE-1);
+         strncat(state->b_subject, p, MAXBUFSIZE-strlen(state->b_subject)-1);
       }
       else {
 
@@ -481,7 +481,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             while(isspace(*p)) p++;
          }
 
-         strncat(state->b_subject, p, MAXBUFSIZE-1);
+         strncat(state->b_subject, p, MAXBUFSIZE-strlen(state->b_subject)-1);
       }
    }
 

@@ -67,7 +67,6 @@ static void takesig(int sig){
                 break;
 
         case SIGTERM:
-        case SIGKILL:
                 quit = 1;
                 p_clean_exit();
                 break;
@@ -246,10 +245,9 @@ void p_clean_exit(){
    if(data.dedup != MAP_FAILED) munmap(data.dedup, MAXCHILDREN*DIGEST_LENGTH*2);
 
 #ifdef HAVE_STARTTLS
-   if(data.ctx){
-      SSL_CTX_free(data.ctx);
-      ERR_free_strings();
-   }
+   if(data.ctx) SSL_CTX_free(data.ctx);
+
+   ERR_free_strings();
 #endif
 
    exit(1);
@@ -463,7 +461,6 @@ int main(int argc, char **argv){
 
    set_signal_handler(SIGCHLD, takesig);
    set_signal_handler(SIGTERM, takesig);
-   set_signal_handler(SIGKILL, takesig);
    set_signal_handler(SIGHUP, takesig);
 
 

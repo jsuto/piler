@@ -225,8 +225,8 @@ int memcached_add(struct memcached_server *ptr, char *key, unsigned int keylen, 
    snprintf(ptr->buf, MAXBUFSIZE-1, "add %s %d %ld %d \r\n", key, flags, expiry, valuelen);
    len = strlen(ptr->buf);
 
-   strncat(ptr->buf, value, MAXBUFSIZE-1);
-   strncat(ptr->buf, "\r\n", MAXBUFSIZE-1);
+   strncat(ptr->buf, value, MAXBUFSIZE-strlen(ptr->buf)-1);
+   strncat(ptr->buf, "\r\n", MAXBUFSIZE-strlen(ptr->buf)-1);
 
    len += valuelen + 2;
 
@@ -248,8 +248,8 @@ int memcached_set(struct memcached_server *ptr, char *key, unsigned int keylen, 
    snprintf(ptr->buf, MAXBUFSIZE-1, "set %s %d %ld %d \r\n", key, flags, expiry, valuelen);
    len = strlen(ptr->buf);
 
-   strncat(ptr->buf, value, MAXBUFSIZE-1);
-   strncat(ptr->buf, "\r\n", MAXBUFSIZE-1);
+   strncat(ptr->buf, value, MAXBUFSIZE-strlen(ptr->buf)-1);
+   strncat(ptr->buf, "\r\n", MAXBUFSIZE-strlen(ptr->buf)-1);
 
    len += valuelen + 2;
 

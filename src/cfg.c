@@ -19,8 +19,8 @@ int string_parser(char *src, char *target, int limit){
 
 int multi_line_string_parser(char *src, char *target, int limit){
    if(strlen(src) > 0 && strlen(target) + strlen(src) + 3 < limit){
-      strncat(target, src, limit);
-      strncat(target, "\r\n", limit);
+      strncat(target, src, limit-strlen(target));
+      strncat(target, "\r\n", limit-strlen(target));
 
       return 0;
    }
