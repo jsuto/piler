@@ -677,14 +677,11 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(puf[0] == '\0') continue;
 
+      strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+
+      if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0) fixURL(puf, sizeof(puf)-1);
+
       len = strlen(puf);
-
-      strncat(puf, " ", sizeof(puf)-len-1);
-
-      if(strncasecmp(puf, "http://", 7) == 0 || strncasecmp(puf, "https://", 8) == 0){
-         fixURL(puf, sizeof(puf)-1);
-         len = strlen(puf);
-      }
 
       if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || (len > MAX_WORD_LEN && cfg->enable_cjk == 0) || isHexNumber(puf)) ) continue;
 
