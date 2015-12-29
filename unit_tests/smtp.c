@@ -50,148 +50,133 @@ void send_smtp_command(int sd, char *cmd, char *buf, int buflen, int timeout, in
 }
 
 
-static void test_smtp_commands_one_at_a_time(char *server, int port, int timeout){
-   int sd, use_ssl = 0;
+static void test_smtp_commands_one_at_a_time(char *server, int port, int timeout, int use_ssl, struct __data *data){
+   int sd;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
-   struct __data data;
 
-   data.ssl = NULL;
+   sd = connect_to_smtp_server(server, port, timeout, use_ssl, data);
 
-   sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
-
-   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
 
-   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
 
-   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "RCPT");
 
-   send_smtp_command(sd, "DATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "DATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "354 ", 4) == 0 && "DATA");
 
    snprintf(sendbuf, sizeof(sendbuf)-1, "%s\r\n.\r\n", testmessage);
 
-   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "PERIOD");
 
-   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "221 ", 4) == 0 && "QUIT");
 
    close(sd);
 }
 
 
-static void test_smtp_commands_pipelining(char *server, int port, int timeout){
-   int sd, use_ssl = 0;
+static void test_smtp_commands_pipelining(char *server, int port, int timeout, int use_ssl, struct __data *data){
+   int sd;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
-   struct __data data;
 
-   data.ssl = NULL;
+   sd = connect_to_smtp_server(server, port, timeout, use_ssl, data);
 
-   sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
-
-   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
 
-   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
 
    snprintf(sendbuf, sizeof(sendbuf)-1, "%s\r\n.\r\nQUIT\r\n", testmessage);
 
-   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "QUIT");
 
    close(sd);
 }
 
 
-static void test_smtp_commands_with_reset_command(char *server, int port, int timeout){
-   int sd, use_ssl = 0;
+static void test_smtp_commands_with_reset_command(char *server, int port, int timeout, int use_ssl, struct __data *data){
+   int sd;
    char recvbuf[MAXBUFSIZE];
-   struct __data data;
 
-   data.ssl = NULL;
+   sd = connect_to_smtp_server(server, port, timeout, use_ssl, data);
 
-   sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
-
-   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
 
-   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
 
-   send_smtp_command(sd, "RSET\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "RSET\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "RSET");
 
-   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "503 ", 4) == 0 && "RCPT");
 
-   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "221 ", 4) == 0 && "QUIT");
 
    close(sd);
 }
 
 
-static void test_smtp_commands_partial_command(char *server, int port, int timeout){
-   int sd, use_ssl = 0;
+static void test_smtp_commands_partial_command(char *server, int port, int timeout, int use_ssl, struct __data *data){
+   int sd;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
-   struct __data data;
 
-   data.ssl = NULL;
+   sd = connect_to_smtp_server(server, port, timeout, use_ssl, data);
 
-   sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
-
-   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
 
-   write1(sd, "M", 1, use_ssl, data.ssl);
+   write1(sd, "M", 1, use_ssl, data->ssl);
    printf("sent: M\n");
 
-   send_smtp_command(sd, "AIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "AIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
 
-   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "RCPT TO: <archive@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "RCPT");
 
-   send_smtp_command(sd, "DATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "DATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "354 ", 4) == 0 && "DATA");
 
    snprintf(sendbuf, sizeof(sendbuf)-1, "%s\r\n.\r\n", testmessage);
 
-   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "PERIOD");
 
-   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "QUIT\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "221 ", 4) == 0 && "QUIT");
 
    close(sd);
 }
 
 
-static void test_smtp_commands_partial_command_pipelining(char *server, int port, int timeout){
-   int sd, use_ssl = 0;
+static void test_smtp_commands_partial_command_pipelining(char *server, int port, int timeout, int use_ssl, struct __data *data){
+   int sd;
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
-   struct __data data;
 
-   data.ssl = NULL;
+   sd = connect_to_smtp_server(server, port, timeout, use_ssl, data);
 
-   sd = connect_to_smtp_server(server, port, timeout, use_ssl, &data);
-
-   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
 
-   write1(sd, "M", 1, use_ssl, data.ssl);
+   write1(sd, "M", 1, use_ssl, data->ssl);
    printf("sent: M\n");
 
-   send_smtp_command(sd, "AIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, "AIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
 
    snprintf(sendbuf, sizeof(sendbuf)-1, "%s\r\n.\r\nQUIT\r\n", testmessage);
 
-   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, &data);
+   send_smtp_command(sd, sendbuf, recvbuf, sizeof(recvbuf)-1, timeout, use_ssl, data);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "QUIT");
 
    close(sd);
@@ -237,8 +222,9 @@ ENDE:
 
 
 int main(int argc, char **argv){
-   int c, port=25, timeout = 10;
+   int c, port=25, timeout=10, use_ssl;
    char *server=NULL;
+   struct __data data;
 
    while(1){
 
@@ -289,12 +275,14 @@ int main(int argc, char **argv){
 
    if(!server) usage();
 
+   use_ssl = 0;
+   data.ssl = NULL;
 
-   test_smtp_commands_one_at_a_time(server, port, timeout);
-   test_smtp_commands_pipelining(server, port, timeout);
-   test_smtp_commands_with_reset_command(server, port, timeout);
-   test_smtp_commands_partial_command(server, port, timeout);
-   test_smtp_commands_partial_command_pipelining(server, port, timeout);
+   test_smtp_commands_one_at_a_time(server, port, timeout, use_ssl, &data);
+   test_smtp_commands_pipelining(server, port, timeout, use_ssl, &data);
+   test_smtp_commands_with_reset_command(server, port, timeout, use_ssl, &data);
+   test_smtp_commands_partial_command(server, port, timeout, use_ssl, &data);
+   test_smtp_commands_partial_command_pipelining(server, port, timeout, use_ssl, &data);
 
 
 
