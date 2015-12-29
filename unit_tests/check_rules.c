@@ -134,10 +134,12 @@ static void test_archiving_rule(struct __config *cfg){
 
       //printf("%s, '%s'\n", rule_test[i].filename, rule);
 
-      if(rule == NULL && rule == rule_test[i].expected_result) continue;
-
-      assert(strcmp(rule, rule_test[i].expected_result) == 0 && "test_archiving_rule()");
-
+      if(rule){
+         assert(strcmp(rule, rule_test[i].expected_result) == 0 && "test_archiving_rule()");
+      }
+      else {
+         assert(rule_test[i].expected_result == NULL && "test_archiving_rule()");
+      }
    }
 
    clearrules(data.archiving_rules);
