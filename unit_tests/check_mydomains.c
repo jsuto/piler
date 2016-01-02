@@ -42,7 +42,7 @@ static void fill_domain_table(struct __config *cfg){
 
    for(i=0; i<sizeof(domains)/sizeof(char*); i++){
       snprintf(buf, sizeof(buf)-1, "insert into domain (domain, mapped) values('%s', '%s')", domains[i], domains[i]);
-      p_query(&sdata, buf, cfg);
+      p_query(&sdata, buf);
    }
 
    close_database(&sdata);
@@ -63,7 +63,7 @@ static void restore_domain_table(struct __config *cfg){
 
    for(i=0; i<sizeof(domains)/sizeof(char*); i++){
       snprintf(buf, sizeof(buf)-1, "delete from domain where domain='%s'", domains[i]);
-      p_query(&sdata, buf, cfg);
+      p_query(&sdata, buf);
    }
 
    close_database(&sdata);

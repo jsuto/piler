@@ -92,7 +92,7 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
    if(dryrun == 1){
       printf("running sql query: *%s*\n\n", update_meta_sql);
    } else {
-      p_query(sdata, update_meta_sql, cfg);
+      p_query(sdata, update_meta_sql);
    }
 
 
@@ -191,7 +191,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
                if(dryrun == 1){
                   printf("delete sql: *%s*\n", delete_attachment_stmt);
                } else {
-                  p_query(sdata, delete_attachment_stmt, cfg);
+                  p_query(sdata, delete_attachment_stmt);
                }
             }
 
@@ -224,7 +224,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
       if(dryrun == 1){
          printf("delete sql: *%s*\n", delete_attachment_stmt);
       } else {
-         p_query(sdata, delete_attachment_stmt, cfg);
+         p_query(sdata, delete_attachment_stmt);
       }
 
    }
@@ -404,7 +404,7 @@ int main(int argc, char **argv){
    if(purged_size > 100){
       snprintf(buf, sizeof(buf)-1, "UPDATE `%s` SET size = size - %ld", SQL_COUNTER_TABLE, purged_size);
 
-      if(dryrun == 0) p_query(&sdata, buf, &cfg);
+      if(dryrun == 0) p_query(&sdata, buf);
    }
 
 

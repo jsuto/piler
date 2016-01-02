@@ -451,7 +451,7 @@ void fixupBase64EncodedLine(char *buf, struct parser_state *state){
 
    if(strlen(state->miscbuf) > 0){
       memset(puf, 0, sizeof(puf));
-      strncpy(puf, state->miscbuf, sizeof(puf)-1);
+      strncpy(puf, state->miscbuf, sizeof(puf)-strlen(puf)-1);
       strncat(puf, buf, sizeof(puf)-strlen(puf)-1);
 
       memset(buf, 0, MAXBUFSIZE);
@@ -750,7 +750,7 @@ void fixURL(char *buf, int buflen){
       fixed_url[len-1] = '\0';
    }
 
-   snprintf(buf, buflen, "%s", fixed_url);   
+   snprintf(buf, buflen, "%s", fixed_url);
 }
 
 

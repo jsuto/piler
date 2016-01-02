@@ -46,7 +46,7 @@ static void fill_rule_table(struct __config *cfg){
    printf("adding testing rules...\n");
 
    for(i=0; i<sizeof(rules)/sizeof(struct rule_query); i++){
-      p_query(&sdata, rules[i].query, cfg);
+      p_query(&sdata, rules[i].query);
       rules[i].id = mysql_insert_id(&(sdata.mysql)); 
    }
 
@@ -68,7 +68,7 @@ static void restore_rule_table(struct __config *cfg){
 
    for(i=0; i<sizeof(rules)/sizeof(struct rule_query); i++){
       snprintf(buf, sizeof(buf)-1, "delete from archiving_rule where id=%llu", rules[i].id);
-      p_query(&sdata, buf, cfg);
+      p_query(&sdata, buf);
    }
 
    close_database(&sdata);

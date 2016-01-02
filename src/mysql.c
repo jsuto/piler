@@ -47,7 +47,7 @@ void p_bind_init(struct __data *data){
 }
 
 
-void p_query(struct session_data *sdata, char *s, struct __config *cfg){
+void p_query(struct session_data *sdata, char *s){
    mysql_real_query(&(sdata->mysql), s, strlen(s));
 }
 

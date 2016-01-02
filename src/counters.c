@@ -94,7 +94,7 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
  
                //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
 
-               p_query(sdata, buf, cfg);
+               p_query(sdata, buf);
             }
          }
 
@@ -119,7 +119,7 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
       if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
 
       snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=`rcvd`+%llu, `virus`=`virus`+%llu, `duplicate`=`duplicate`+%llu, `ignore`=`ignore`+%llu, `size`=`size`+%llu, `stored_size`=`stored_size`+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore, counters->c_size, counters->c_stored_size);
-      p_query(sdata, buf, cfg);
+      p_query(sdata, buf);
 
 #ifdef HAVE_MEMCACHED
    }

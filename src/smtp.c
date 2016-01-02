@@ -27,7 +27,7 @@ void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, 
    if(sdata->tls == 0) snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, data->starttls);
    else snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, "");
 
-   strncat(resp, tmpbuf, resplen);
+   strncat(resp, tmpbuf, resplen-strlen(resp));
 }
 
 
