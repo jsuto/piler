@@ -171,10 +171,10 @@ $config['MAX_SEARCH_HITS'] = 1000;
 $config['DEFAULT_RETENTION'] = 0;
 
 $config['LOCALHOST'] = '127.0.0.1';
-$config['PILER_HOST'] = '127.0.0.1';
+$config['PILER_HOST'] = '0.0.0.0';
 $config['PILER_PORT'] = 25;
-$config['SMARTHOST'] = '127.0.0.1';
-$config['SMARTHOST_PORT'] = 10026;
+$config['SMARTHOST'] = '';
+$config['SMARTHOST_PORT'] = 25;
 $config['SMTP_DOMAIN'] = 'yourdomain.com';
 $config['SMTP_FROMADDR'] = 'no-reply@yourdomain.com';
 $config['ADMIN_EMAIL'] = 'admin@yourdomain.com';
