@@ -26,10 +26,12 @@ class ControllerLoginSSO extends Controller {
 
       if($this->model_user_auth->check_ntlm_auth() == 1) {
          header("Location: " . SITE_URL . "search.php");
-         exit;
+      } else {
+         header("Location: " . SITE_URL . "login.php");
       }
 
-      die("permission denied");
+      exit;
+
    }
 
 }
