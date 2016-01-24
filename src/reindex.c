@@ -82,7 +82,11 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
 
    delta = to_id - from_id;
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
+   if(cfg->enable_folders == 1)
+      snprintf(s, sizeof(s)-1, "SELECT m.`id`, `piler_id`, `arrived`, `sent`, f.folder_id FROM %s m, %s f WHERE m.id=f.id AND (m.id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, SQL_FOLDER_MESSAGE_TABLE, from_id, to_id);
+   else
+      snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
+
 
    if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return reindexed;
 
@@ -96,6 +100,9 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
       data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN+2; data->pos++;
       data->sql[data->pos] = (char *)&(sdata->now); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
       data->sql[data->pos] = (char *)&(sdata->sent); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+      if(cfg->enable_folders == 1){
+         data->sql[data->pos] = (char *)&(data->folder); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+      }
 
       p_store_results(sdata, data->stmt_generic, data);
 

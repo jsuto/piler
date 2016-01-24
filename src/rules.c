@@ -322,6 +322,8 @@ int get_folder_id_by_rule(struct __data *data, struct parser_state *state, int s
    struct node *q;
    int ismatch;
 
+   if(cfg->enable_folders == 0) return 0;
+
    q = data->folder_rules[0];
 
    while(q != NULL){
