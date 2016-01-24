@@ -61,9 +61,16 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
    }
 
    if(len == 0){
-      if(fstat(fd, &st)) return ret;
+      if(fstat(fd, &st)){
+         close(fd);
+         return ret;
+      }
+
       len = st.st_size;
-      if(len == 0) return 1;
+      if(len == 0){
+         close(fd);
+         return 1;
+      }
    }
 
    gettimeofday(&tv1, &tz);
