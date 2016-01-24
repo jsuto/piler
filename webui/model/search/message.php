@@ -409,8 +409,8 @@ class ModelSearchMessage extends Model {
                if(preg_match("/^To:/i", $l) || preg_match("/^Cc:/i", $l)){ $state = "TO"; }
                if(preg_match("/^Date:/i", $l)){ $state = "DATE"; }
                if(preg_match("/^Subject:/i", $l)){ $state = "SUBJECT"; }
-               if(preg_match("/^Content-Type:/", $l)){ $state = "CONTENT_TYPE"; }
-               if(preg_match("/^Content-Disposition:/", $l)){ $state = "CONTENT_DISPOSITION"; }
+               if(preg_match("/^Content-Type:/i", $l)){ $state = "CONTENT_TYPE"; }
+               if(preg_match("/^Content-Disposition:/i", $l)){ $state = "CONTENT_DISPOSITION"; }
 
                $l = preg_replace("/</", "&lt;", $l);
                $l = preg_replace("/>/", "&gt;", $l);
