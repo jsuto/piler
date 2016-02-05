@@ -22,6 +22,7 @@ extern int optind;
 int dryrun = 0;
 unsigned long purged_size=0;
 
+#define NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND 100
 
 #define SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE "SELECT `value` FROM `" SQL_OPTION_TABLE "` WHERE `key`='enable_purge'"
 #define SQL_STMT_DELETE_FROM_META_TABLE "UPDATE `" SQL_METADATA_TABLE "` SET `deleted`=1 WHERE `id` IN ("
@@ -90,7 +91,7 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
    update_meta_sql[strlen(update_meta_sql)-1] = ')';
 
    if(dryrun == 1){
-      printf("running sql query: *%s*\n\n", update_meta_sql);
+      printf("update metadata query: *%s*\n\n", update_meta_sql);
    } else {
       p_query(sdata, update_meta_sql);
    }
@@ -102,9 +103,9 @@ int remove_message_frame_files(char *s, char *update_meta_sql, struct session_da
 
 int remove_attachments(char *in, struct session_data *sdata, struct __data *data, struct __config *cfg){
    char filename[SMALLBUFSIZE];
-   char *a, buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE], delete_attachment_stmt[BIGBUFSIZE];
+   char *a, buf[NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND*(RND_STR_LEN+1)+10], update_meta_sql[strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND*(RND_STR_LEN+3)+10], delete_attachment_stmt[MAXBUFSIZE];
    char piler_id[SMALLBUFSIZE], i[BUFLEN];
-   int n=0, len, attachment_id=0;
+   int n=0, m=0, len, attachment_id=0, blen=0, ulen=0, dlen=0, piler_id_len;
 #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
 #endif
@@ -124,16 +125,17 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
 
    if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a, cfg) == ERR){ free(a); return n; }
 
-   if(dryrun == 1) printf("running sql query: *%s*\n\n", a);
-
+   if(dryrun == 1) printf("attachment select sql: *%s*\n\n", a);
 
    memset(buf, 0, sizeof(buf));
    memset(update_meta_sql, 0, sizeof(update_meta_sql));
    memset(delete_attachment_stmt, 0, sizeof(delete_attachment_stmt));
 
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
-   snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+   ulen = strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
 
+   snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+   dlen = strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
 
    p_bind_init(data);
    if(p_exec_query(sdata, data->stmt_select_non_referenced_attachments, data) == ERR) goto ENDE;
@@ -149,7 +151,9 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
 
    while(p_fetch_results(data->stmt_select_non_referenced_attachments) == OK){
 
-      if(strlen(piler_id) != RND_STR_LEN || attachment_id <= 0){
+      piler_id_len = strlen(piler_id);
+
+      if(piler_id_len != RND_STR_LEN || attachment_id <= 0){
          printf("invalid piler_id: '%s.a%d'\n", piler_id, attachment_id);
          continue;
       }
@@ -169,58 +173,69 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
 
 
       if(strlen(i) > 0){
-         memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], i, strlen(i));
-         memcpy(&delete_attachment_stmt[strlen(delete_attachment_stmt)], ",", 1);
+         if(dlen > sizeof(delete_attachment_stmt) - 200){
+
+            delete_attachment_stmt[dlen-1] = ')';
+            if(dryrun == 1){
+               printf("delete sql: *%s*\n", delete_attachment_stmt);
+            } else {
+               p_query(sdata, delete_attachment_stmt);
+            }
+
+            memset(delete_attachment_stmt, 0, sizeof(delete_attachment_stmt));
+            snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+            dlen = strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+         }
+
+         memcpy(&delete_attachment_stmt[dlen], i, strlen(i)); dlen += strlen(i);
+         memcpy(&delete_attachment_stmt[dlen], ",", 1); dlen++;
       }
+
 
       if(attachment_id == 1){
 
-         memcpy(&update_meta_sql[strlen(update_meta_sql)], piler_id, strlen(piler_id));
-         memcpy(&update_meta_sql[strlen(update_meta_sql)], "','", 3);
+         m++;
 
-         if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
-            if(strlen(update_meta_sql) > 10){
-               update_meta_sql[strlen(update_meta_sql)-2] = ')';
-               update_meta_sql[strlen(update_meta_sql)-1] = '\0';
+         if(m >= NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND){
+            if(ulen > strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+10){
+               update_meta_sql[ulen-2] = ')';
+               update_meta_sql[ulen-1] = '\0';
             }
 
             n += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
 
-            if(strlen(delete_attachment_stmt) > strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE)){
-               delete_attachment_stmt[strlen(delete_attachment_stmt)-1] = ')';
-               if(dryrun == 1){
-                  printf("delete sql: *%s*\n", delete_attachment_stmt);
-               } else {
-                  p_query(sdata, delete_attachment_stmt);
-               }
-            }
-
             memset(buf, 0, sizeof(buf));
             memset(update_meta_sql, 0, sizeof(update_meta_sql));
-            memset(delete_attachment_stmt, 0, sizeof(delete_attachment_stmt));
 
             snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
-            snprintf(delete_attachment_stmt, sizeof(delete_attachment_stmt)-1, "%s", SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE);
+
+            ulen = strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID);
+            blen = 0;
+
+            m = 0;
          }
 
-         memcpy(&buf[strlen(buf)], piler_id, strlen(piler_id));
-         memcpy(&buf[strlen(buf)], " ", 1);
+         memcpy(&buf[blen], piler_id, piler_id_len); blen += piler_id_len;
+         memcpy(&buf[blen], " ", 1); blen++;
+
+         memcpy(&update_meta_sql[ulen], piler_id, piler_id_len); ulen += piler_id_len;
+         memcpy(&update_meta_sql[ulen], "','", 3); ulen += 3;
       }
 
    }
 
    p_free_results(data->stmt_select_non_referenced_attachments);
 
+   if(ulen > strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+10){
 
-   if(strlen(buf) > 5 && strlen(update_meta_sql) > strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+10){
-      update_meta_sql[strlen(update_meta_sql)-2] = ')';
-      update_meta_sql[strlen(update_meta_sql)-1] = '\0';
+      update_meta_sql[ulen-2] = ')';
+      update_meta_sql[ulen-1] = '\0';
 
       n += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
    }
 
-   if(strlen(delete_attachment_stmt) > strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE)){
-      delete_attachment_stmt[strlen(delete_attachment_stmt)-1] = ')';
+   if(dlen > strlen(SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE)){
+      delete_attachment_stmt[dlen-1] = ')';
       if(dryrun == 1){
          printf("delete sql: *%s*\n", delete_attachment_stmt);
       } else {
@@ -239,17 +254,18 @@ ENDE:
 
 
 int purge_messages_round1(struct session_data *sdata, struct __data *data, char *attachment_condition, struct __config *cfg){
-   int purged=0, size;
-   char id[BUFLEN], s[SMALLBUFSIZE], buf[BIGBUFSIZE-300], update_meta_sql[BIGBUFSIZE];
+   int purged=0, size, blen=0, ulen=0;
+   char id[BUFLEN], s[SMALLBUFSIZE], buf[MAXBUFSIZE], update_meta_sql[MAXBUFSIZE];
 
    memset(buf, 0, sizeof(buf));
    memset(update_meta_sql, 0, sizeof(update_meta_sql));
 
    snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
+   ulen = strlen(SQL_STMT_DELETE_FROM_META_TABLE);
 
    snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND %s AND id NOT IN (SELECT id FROM `%s` WHERE `to` IN (SELECT email FROM `%s`)) AND id NOT IN (SELECT id FROM `%s` WHERE `from` IN (SELECT email FROM `%s`))", SQL_METADATA_TABLE, sdata->now, attachment_condition, SQL_RECIPIENT_TABLE, SQL_LEGAL_HOLD_TABLE, SQL_METADATA_TABLE, SQL_LEGAL_HOLD_TABLE);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
+   if(dryrun == 1) printf("purge sql: *%s*\n", s);
 
    if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
 
@@ -267,12 +283,12 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
       while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
 
-         memcpy(&update_meta_sql[strlen(update_meta_sql)], id, strlen(id));
-         memcpy(&update_meta_sql[strlen(update_meta_sql)], ",", 1);
+         memcpy(&update_meta_sql[ulen], id, strlen(id)); ulen += strlen(id);
+         memcpy(&update_meta_sql[ulen], ",", 1); ulen++;
 
          purged_size += size;
 
-         if(strlen(buf) >= sizeof(buf)-RND_STR_LEN-2-1){
+         if(blen >= sizeof(buf)-RND_STR_LEN-2-1){
 
             purged += remove_message_frame_files(buf, update_meta_sql, sdata, cfg);
 
@@ -280,10 +296,13 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
             memset(update_meta_sql, 0, sizeof(update_meta_sql));
 
             snprintf(update_meta_sql, sizeof(update_meta_sql)-1, "%s", SQL_STMT_DELETE_FROM_META_TABLE);
+
+            blen = 0;
+            ulen = strlen(SQL_STMT_DELETE_FROM_META_TABLE);
          }
 
-         memcpy(&buf[strlen(buf)], s, strlen(s));
-         memcpy(&buf[strlen(buf)], " ", 1);
+         memcpy(&buf[blen], s, strlen(s)); blen += strlen(s);
+         memcpy(&buf[blen], " ", 1); blen++;
 
       }
 
@@ -302,14 +321,14 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
 
 int purge_messages_with_attachments(struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int purged=0, size;
-   char s[SMALLBUFSIZE], idlist[BIGBUFSIZE];
+   int purged=0, size, idlist_len=0;
+   char s[SMALLBUFSIZE], idlist[MAXBUFSIZE];
 
    memset(idlist, 0, sizeof(idlist));
 
    snprintf(s, sizeof(s)-1, "SELECT `piler_id`, `size` FROM `%s` WHERE `deleted`=0 AND `retained` < %ld AND attachments > 0", SQL_METADATA_TABLE, sdata->now);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "purge sql: *%s*", s);
+   if(dryrun == 1) printf("purge sql: *%s*\n", s);
 
    if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
 
@@ -324,21 +343,22 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
       p_store_results(sdata, data->stmt_select_from_meta_table, data);
 
       while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
-         memcpy(&idlist[strlen(idlist)], s, strlen(s));
-         memcpy(&idlist[strlen(idlist)], "','", 3);
+         memcpy(&idlist[idlist_len], s, strlen(s)); idlist_len += strlen(s);
+         memcpy(&idlist[idlist_len], "','", 3); idlist_len += 3;
 
          purged_size += size;
 
-         if(strlen(idlist) >= sizeof(idlist)-2*RND_STR_LEN){
+         if(idlist_len >= sizeof(idlist)-2*RND_STR_LEN){
             purged += remove_attachments(idlist, sdata, data, cfg);
 
             memset(idlist, 0, sizeof(idlist));
+            idlist_len = 0;
          }
       }
 
       p_free_results(data->stmt_select_from_meta_table);
 
-      if(strlen(idlist) > 5){
+      if(idlist_len > 5){
          purged += remove_attachments(idlist, sdata, data, cfg);
       }
 
