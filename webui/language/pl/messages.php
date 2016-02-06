@@ -282,6 +282,7 @@ $_['text_refresh_qr_code'] = "Odśwież kod QR";
 $_['text_relay_details'] = "Informacje dotyczące przekazywania wiadomości";
 $_['text_relay_status'] = "Status przekazania";
 $_['text_remove'] = "Usuń";
+$_['text_removed'] = "Usuń";
 $_['text_remove_domain'] = "Usuń domenę";
 $_['text_remove_message'] = "Usuń wiadomość";
 $_['text_remove_message2'] = "Usuń wiadomość";

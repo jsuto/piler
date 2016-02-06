@@ -292,6 +292,7 @@ $_['text_remove_rule'] = "Remove rule";
 $_['text_remove_this_policy'] = "Remove this policy";
 $_['text_remove_this_group'] = "Remove this group";
 $_['text_remove_this_user'] = "Remove this user";
+$_['text_removed'] = "Removed";
 $_['text_reset_counters'] = "Reset counters";
 $_['text_restore'] = "Restore";
 $_['text_restored'] = "Restored";

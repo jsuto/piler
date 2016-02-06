@@ -280,6 +280,7 @@ $_['text_refresh_qr_code'] = "Очистить QR код";
 $_['text_relay_details'] = "Описание релея";                                                                                                                                  
 $_['text_relay_status'] = "Статус релея";                                                                                                                                     
 $_['text_remove'] = "Удалить";                                                                                                                                                
+$_['text_removed'] = "Удалить";                                                                                                                                                
 $_['text_remove_domain'] = "Удалить домен";                                                                                                                                   
 $_['text_remove_message'] = "Удалить сообщение";                                                                                                                              
 $_['text_remove_message2'] = "удалить сообщение";                                                                                                                             

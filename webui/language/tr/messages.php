@@ -278,6 +278,7 @@ $_['text_refresh_qr_code'] = "QR kodunu tazele";
 $_['text_relay_details'] = "Relay detayları";
 $_['text_relay_status'] = "Relay durumu";
 $_['text_remove'] = "Kaldır";
+$_['text_removed'] = "Kaldır";
 $_['text_remove_domain'] = "Alan adını kaldır";
 $_['text_remove_message'] = "Mesajı kaldır";
 $_['text_remove_message2'] = "mesajı kaldır";

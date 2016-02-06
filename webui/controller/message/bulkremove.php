@@ -24,6 +24,7 @@ class ControllerMessageBulkremove extends Controller {
 
       $idlist = $this->model_search_search->check_your_permission_by_id_list(explode(",", $this->request->post['idlist']));
 
+      $this->data['removed'] = 0;
 
       $this->data['username'] = Registry::get('username');
 

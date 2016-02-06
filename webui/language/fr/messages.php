@@ -281,6 +281,7 @@ $_['text_refresh_qr_code'] = "Rafraichissement du code QR";
 $_['text_relay_details'] = "Détails de rélai";
 $_['text_relay_status'] = "Statut de rélai";
 $_['text_remove'] = "Supprimer";
+$_['text_removed'] = "Supprimer";
 $_['text_remove_domain'] = "Supprimer domaine";
 $_['text_remove_message'] = "Supprimer message";
 $_['text_remove_message2'] = "supprimer message";

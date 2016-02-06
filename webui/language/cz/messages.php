@@ -281,6 +281,7 @@ $_['text_refresh_qr_code'] = "Obnovit QR kód";
 $_['text_relay_details'] = "Detaily předávání";
 $_['text_relay_status'] = "Status předávání";
 $_['text_remove'] = "Odebrat";
+$_['text_removed'] = "Odebrat";
 $_['text_remove_domain'] = "Odebrat doménu";
 $_['text_remove_message'] = "Odebrat zprávu";
 $_['text_remove_message2'] = "odebrat zprávu";

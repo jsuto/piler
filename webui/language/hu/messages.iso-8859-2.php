@@ -293,6 +293,7 @@ $_['text_remove_rule'] = "Szabály törlése";
 $_['text_remove_this_group'] = "Csoport törlése";
 $_['text_remove_this_policy'] = "Házirend törlése";
 $_['text_remove_this_user'] = "Felhasználó törlése";
+$_['text_removed'] = "Törölve";
 $_['text_reset_counters'] = "Számlálók nullázása";
 $_['text_restore'] = "Visszaállít";
 $_['text_restored'] = "Visszaállítva";

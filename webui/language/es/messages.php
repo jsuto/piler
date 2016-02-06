@@ -262,6 +262,7 @@ $_['text_refresh_period'] = "Período de refresco";
 $_['text_relay_details'] = "Detalles de relay";
 $_['text_relay_status'] = "Estado de relay";
 $_['text_remove'] = "Remover";
+$_['text_removed'] = "Remover";
 $_['text_remove_domain'] = "Remover dominio";
 $_['text_remove_message'] = "Remover mensaje";
 $_['text_remove_message2'] = "remover mensaje";

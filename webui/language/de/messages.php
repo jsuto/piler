@@ -262,6 +262,7 @@ $_['text_refresh_period'] = "Seitenaktualisierung";
 $_['text_relay_details'] = "Details Weiterleitung";
 $_['text_relay_status'] = "Status Weiterleitung";
 $_['text_remove'] = "Entfernen";
+$_['text_removed'] = "Entfernen";
 $_['text_remove_domain'] = "Domäne entfernen";
 $_['text_remove_message'] = "Nachricht entfernen";
 $_['text_remove_message2'] = "entferne Nachricht";
