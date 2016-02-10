@@ -314,6 +314,12 @@ create table if not exists `note` (
 ) ENGINE=InnoDB;
 
 
+create table if not exists `private` (
+   `id` bigint unsigned not null unique,
+   key (`id`)
+) ENGINE=InnoDB;
+
+
 create table if not exists `remote` (
    `remotedomain` char(64) not null primary key,
    `remotehost` char(64) not null,

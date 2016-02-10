@@ -265,6 +265,7 @@ $_['text_policy_group'] = "Policy group";
 $_['text_policy_name'] = "Policy name";
 $_['text_previous'] = "Previous";
 $_['text_print_message'] = "Print";
+$_['text_private'] = "Private";
 $_['text_processed_emails'] = "Processed emails";
 $_['text_progress'] = "Progress";
 $_['text_purge_all_messages_from_quarantine'] = "Purge all your own messages from quarantine";

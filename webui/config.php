@@ -377,6 +377,7 @@ define('TABLE_GOOGLE_IMAP', 'google_imap');
 define('TABLE_AUTOSEARCH', 'autosearch');
 define('TABLE_LEGAL_HOLD', 'legal_hold');
 define('TABLE_TIMESTAMP', 'timestamp');
+define('TABLE_PRIVATE', 'private');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('EOL', "\n");
@@ -448,6 +449,7 @@ define('ACTION_DOWNLOAD_ATTACHMENT', 15);
 define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 define('ACTION_VIEW_JOURNAL', 17);
 define('ACTION_NOT_SPAM', 18);
+define('ACTION_MARK_AS_PRIVATE', 19);
 
 $actions = array(
                   'unknown' => 1,
@@ -461,7 +463,8 @@ $actions = array(
                   'search' => 10,
                   'save_search' => 11,
                   'download_attachment' => 15,
-                  'journal' => 17
+                  'journal' => 17,
+                  'private' => 19
                 );
 
 

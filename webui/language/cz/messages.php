@@ -480,5 +480,6 @@ $_['text_customer_delete_confirm_message'] = 'Opravdu chcete smazat zákazníka'
 $_['text_with_selected'] = 'S označenými';
 
 $_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
+$_['text_private'] = "Private";
 
 ?>

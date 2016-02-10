@@ -1690,6 +1690,7 @@ html,body{height:auto !important;height:100%;min-height:100%;}
 .resultrow{font-style:italic;cursor:pointer;}
 .resultrow.new{font-style:normal;}
 .xxx{color:#aaa;}
+.private{color:red;}
 .table-striped tbody>tr.resultrow.selected:nth-child(odd)>td{background-color:#ffffdd;}
 .table-striped tbody>tr.resultrow.selected:nth-child(even)>td{background-color:#ffffdd;}
 table#resultstable{margin-bottom:0;}

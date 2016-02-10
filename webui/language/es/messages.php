@@ -485,5 +485,6 @@ $_['text_legal_hold'] = "Legal hold";
 
 $_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
 $_['text_folder_rules'] = "Folder rules";
+$_['text_private'] = "Private";
 
 ?>

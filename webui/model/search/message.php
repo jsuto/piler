@@ -870,6 +870,15 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function mark_as_private($id = 0) {
+      if($id > 0) {
+         $query = $this->db->query("INSERT INTO " . TABLE_PRIVATE . " (id) VALUES(?)", array($id));
+      }
+
+      return 1;
+   }
+
+
    public function get_message_tag($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 

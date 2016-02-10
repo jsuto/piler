@@ -484,6 +484,7 @@ class ModelSearchSearch extends Model {
       $rcpt = $srcpt = array();
       $tag = array();
       $note = array();
+      $private = array();
       $q = '';
       global $SUPPRESS_RECIPIENTS;
 
@@ -514,6 +515,12 @@ class ModelSearchSearch extends Model {
       $query = $this->db->query("SELECT `id`, `from`, `subject`, `piler_id`, `reference`, `retained`, `size`, `spam`, `sent`, `arrived`, `attachments` FROM `" . TABLE_META . "` WHERE `id` IN ($q) $sortorder", $ids);
 
       if(isset($query->rows)) {
+
+         $privates = $this->db->query("SELECT `id` FROM `" . TABLE_PRIVATE . "` WHERE id IN ($q)", $ids);
+
+         foreach ($privates->rows as $p) {
+            $private[$p['id']] = 1;
+         }
 
          array_unshift($ids, (int)$session->get("uid"));
 
@@ -570,6 +577,8 @@ class ModelSearchSearch extends Model {
 
             $m['note'] = preg_replace("/\"/", "*", strip_tags($m['note']));
             $m['tag'] = preg_replace("/\"/", "*", strip_tags($m['tag']));
+
+            if(isset($private[$m['id']])) { $m['private'] = 1; } else { $m['private'] = 0; }
 
             array_push($messages, $m);
          }
@@ -693,6 +702,12 @@ class ModelSearchSearch extends Model {
          }
       }
       else {
+
+         $query = $this->db->query("SELECT id FROM " . TABLE_PRIVATE . " WHERE id=?", array($id));
+         if(isset($query->row['id'])) {
+            return 0;
+         }
+
          $emails = $session->get("emails");
 
          while(list($k, $v) = each($emails)) {

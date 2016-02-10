@@ -328,6 +328,23 @@ var Piler =
     },
 
 
+    mark_as_private:function(id)
+    {
+       Piler.log("[mark_as_private]", id);
+
+       Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        jQuery.ajax('index.php?route=message/private', {
+           data: { id: id },
+           type: "POST"
+        })
+        .done( function( a ) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        Piler.show_message('messagebox1', "OK", 0.8);
+    },
+
+
     restore_message:function(id)
     {
         Piler.log("[restore_message]");

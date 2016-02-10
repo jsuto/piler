@@ -25,6 +25,9 @@
     <?php if($message['has_journal'] == 1 && Registry::get('auditor_user') == 1 && SHOW_ENVELOPE_JOURNAL == 1) { ?>
        | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="icon-envelope-alt"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
     <?php } ?>
+    <?php if(Registry::get('auditor_user') == 1) { ?>
+       | <a class="messagelink" href="#" onclick="Piler.mark_as_private(<?php print $id; ?>);"><i class="icon-bookmark-empty"></i>&nbsp;<?php print $text_private; ?></a>
+    <?php } ?>
     <?php if($spam == 1) { ?>
        | <a class="messagelink" href="#" onclick="Piler.not_spam(<?php print $id; ?>);"><i class="icon-exclamation-sign"></i>&nbsp;<?php print $text_not_spam; ?></a>
     <?php } ?>
