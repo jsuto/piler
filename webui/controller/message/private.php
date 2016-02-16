@@ -20,6 +20,7 @@ class ControllerMessagePrivate extends Controller {
       $this->document->title = $this->data['text_message'];
 
       $this->data['id'] = $this->request->post['id'];
+      $this->data['val'] = $this->request->post['val'];
 
       if(!verify_piler_id($this->data['id'])) {
          AUDIT(ACTION_UNKNOWN, '', '', $this->data['id'], 'unknown id: ' . $this->data['id']);
@@ -36,9 +37,11 @@ class ControllerMessagePrivate extends Controller {
       $this->data['username'] = Registry::get('username');
 
       if(Registry::get('auditor_user') == 1) {
-syslog(LOG_INFO, "hokamoka:" . $this->data['id']);
-
-         $this->model_search_message->mark_as_private($this->data['id']);
+         if($this->data['val'] == 1) {
+            $this->model_search_message->mark_as_private($this->data['id']);
+         } else {
+            $this->model_search_message->unmark_as_private($this->data['id']);
+         }
       }
 
 

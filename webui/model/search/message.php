@@ -879,6 +879,15 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function unmark_as_private($id = 0) {
+      if($id > 0) {
+         $query = $this->db->query("DELETE FROM " . TABLE_PRIVATE . " WHERE id=?", array($id));
+      }
+
+      return 1;
+   }
+
+
    public function get_message_tag($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 
@@ -946,6 +955,15 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function get_message_private($id = 0) {
+      if($id == 0) { return 0; }
+
+      $query = $this->db->query("SELECT `id` FROM " . TABLE_PRIVATE . " WHERE id=?", array($id));
+
+      if(isset($query->row['id'])) { return 1; }
+
+      return 0;
+   }
 
 }
 

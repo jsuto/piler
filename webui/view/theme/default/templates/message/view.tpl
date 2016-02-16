@@ -26,7 +26,7 @@
        | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="icon-envelope-alt"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
     <?php } ?>
     <?php if(Registry::get('auditor_user') == 1) { ?>
-       | <a class="messagelink" href="#" onclick="Piler.mark_as_private(<?php print $id; ?>);"><i class="icon-bookmark-empty"></i>&nbsp;<?php print $text_private; ?></a>
+       | <a class="messagelink" href="#" onclick="Piler.mark_as_private(<?php print $id; ?>, <?php $message['private'] == 1 ? print "0" : print "1" ?>);"><i class="icon-bookmark<?php if($message['private'] == 0) { ?>-empty<?php } ?>"></i>&nbsp;<?php print "private"; ?></a>
     <?php } ?>
     <?php if($spam == 1) { ?>
        | <a class="messagelink" href="#" onclick="Piler.not_spam(<?php print $id; ?>);"><i class="icon-exclamation-sign"></i>&nbsp;<?php print $text_not_spam; ?></a>

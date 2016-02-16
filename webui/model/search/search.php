@@ -742,7 +742,7 @@ class ModelSearchSearch extends Model {
 
    public function check_your_permission_by_id_list($id = array()) {
       $q = $q2 = '';
-      $arr = $a = $result = array();
+      $arr = $parr = $a = $result = array();
 
       if(count($id) < 1) { return $result; }
 
@@ -801,6 +801,14 @@ class ModelSearchSearch extends Model {
             if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
                $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `fromdomain` IN ($q) OR `todomain` IN ($q) )", $arr);
             } else {
+
+               $query = $this->db->query("SELECT id FROM " . TABLE_PRIVATE . " WHERE `id` IN ($q2)", $id);
+               if($query->num_rows > 0) {
+                  foreach ($query->rows as $r) {
+                     array_push($parr, $r['id']);
+                  }
+               }
+
                $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
             }
 
@@ -812,7 +820,7 @@ class ModelSearchSearch extends Model {
             if(ENABLE_FOLDER_RESTRICTIONS == 1) {
                if(in_array($q['folder'], $session->get("folders"))) { array_push($result, $q['id']); }
             }
-            else if(!in_array($q['id'], $result)) {
+            else if(!in_array($q['id'], $result) && !in_array($q['id'], $parr)) {
                array_push($result, $q['id']);
             }
          }

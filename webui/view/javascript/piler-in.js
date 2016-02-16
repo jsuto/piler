@@ -328,14 +328,14 @@ var Piler =
     },
 
 
-    mark_as_private:function(id)
+    mark_as_private:function(id, val)
     {
-       Piler.log("[mark_as_private]", id);
+       Piler.log("[mark_as_private]", id, val);
 
        Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax('index.php?route=message/private', {
-           data: { id: id },
+           data: { id: id, val: val },
            type: "POST"
         })
         .done( function( a ) {})
