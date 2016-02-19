@@ -230,20 +230,22 @@ void export_emails_matching_id_list(struct session_data *sdata, struct session_d
 
 
 int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain, int minsize, int maxsize, unsigned long startdate, unsigned long stopdate){
-   int where_condition=0;
+   int where_condition=1;
    char s[SMALLBUFSIZE];
 
    if(exportall == 1){
-      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
+      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM WHERE deleted=0");
       rc += append_string_to_buffer(&query, SQL_METADATA_TABLE);
       return rc;
    }
 
-   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE ", SQL_MESSAGES_VIEW);
+   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE deleted=0 ", SQL_MESSAGES_VIEW);
 
    rc = append_string_to_buffer(&query, s);
 
    if(from){
+      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+
       rc += append_string_to_buffer(&query, "`from` IN (");
       rc += append_string_to_buffer(&query, from);
       rc += append_string_to_buffer(&query, ")");
