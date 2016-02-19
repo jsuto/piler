@@ -234,8 +234,9 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    char s[SMALLBUFSIZE];
 
    if(exportall == 1){
-      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM WHERE deleted=0");
+      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
       rc += append_string_to_buffer(&query, SQL_METADATA_TABLE);
+      rc += append_string_to_buffer(&query, " WHERE deleted=0 ");
       return rc;
    }
 
