@@ -19,7 +19,7 @@
 
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int rc=ERR, fd;
+   int rc=ERR;
    char *rule;
    struct stat st;
    struct parser_state state;
@@ -57,20 +57,18 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
          return rc;
       }
 
-      fd = open(filename, O_RDONLY);
-      if(fd == -1){
-         printf("cannot open %s\n", filename);
-         return rc;
-      }
-      close(fd);
-
       snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
       sdata->tot_len = st.st_size;
-
-      data->import->total_size += st.st_size;
    }
 
+
+   if(sdata->tot_len < 30){
+      printf("%s is too short: %d bytes\n", sdata->filename, sdata->tot_len);
+      return rc;
+   }
+
+   data->import->total_size += sdata->tot_len;
 
    
    sdata->delivered = 0;
