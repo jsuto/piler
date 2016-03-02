@@ -83,6 +83,7 @@ struct _parse_rule config_parse_rules[] =
    { "memcached_servers", "string", (void*) string_parser, offsetof(struct __config, memcached_servers), "127.0.0.1", MAXVAL-1},
    { "memcached_to_db_interval", "integer", (void*) int_parser, offsetof(struct __config, memcached_to_db_interval), "900", sizeof(int)},
    { "memcached_ttl", "integer", (void*) int_parser, offsetof(struct __config, memcached_ttl), "86400", sizeof(int)},
+   { "min_message_size", "integer", (void*) int_parser, offsetof(struct __config, min_message_size), "100", sizeof(int)},
    { "min_word_len", "integer", (void*) int_parser, offsetof(struct __config, min_word_len), "1", sizeof(int)},
    { "mmap_dedup_test", "integer", (void*) int_parser, offsetof(struct __config, mmap_dedup_test), "0", sizeof(int)},
    { "mysqlhost", "string", (void*) string_parser, offsetof(struct __config, mysqlhost), "", MAXVAL-1},

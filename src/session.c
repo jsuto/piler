@@ -209,6 +209,10 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                         syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata.ttmpfile);
                         inj = OK;
                      }
+                     else if(sdata.tot_len < cfg->min_message_size){
+                        syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata.ttmpfile, sdata.tot_len);
+                        inj = OK;
+                     }
                      else if(AVIR_VIRUS == sdata.rav){
                         syslog(LOG_PRIORITY, "%s: found virus: %s", sdata.ttmpfile, virusinfo);
                         counters.c_virus++;

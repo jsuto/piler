@@ -63,7 +63,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    }
 
 
-   if(sdata->tot_len < 30){
+   if(sdata->tot_len < cfg->min_message_size){
       printf("%s is too short: %d bytes\n", sdata->filename, sdata->tot_len);
       return rc;
    }

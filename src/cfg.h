@@ -79,6 +79,8 @@ struct __config {
 
    int min_word_len;
 
+   int min_message_size;
+
    int tweak_sent_time_offset;
 
    int enable_cjk;
