@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <openssl/ssl.h>
+#include <openssl/err.h>
 #include "misc.h"
 #include "smtpcodes.h"
 #include "errmsg.h"
@@ -462,6 +463,18 @@ int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl
     else {
        return recvtimeout(s, buf, len-1, timeout);
     }
+}
+
+
+void close_connection(int sd, struct __data *data, int use_ssl){
+   close(sd);
+
+   if(use_ssl == 1){
+      SSL_shutdown(data->ssl);
+      SSL_free(data->ssl);
+      SSL_CTX_free(data->ctx);
+      ERR_free_strings();
+   }
 }
 
 

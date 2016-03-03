@@ -392,18 +392,6 @@ void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl){
 }
 
 
-void close_connection(int sd, struct __data *data, int use_ssl){
-   close(sd);
-
-   if(use_ssl == 1){
-      SSL_shutdown(data->ssl);
-      SSL_free(data->ssl);
-      SSL_CTX_free(data->ctx);
-      ERR_free_strings();
-   }
-}
-
-
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;

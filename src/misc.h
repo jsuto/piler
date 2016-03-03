@@ -33,6 +33,7 @@ int readFromEntropyPool(int fd, void *_s, size_t n);
 int recvtimeout(int s, char *buf, int len, int timeout);
 int write1(int sd, void *buf, int buflen, int use_ssl, SSL *ssl);
 int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl);
+void close_connection(int sd, struct __data *data, int use_ssl);
 
 void write_pid_file(char *pidfile);
 int drop_privileges(struct passwd *pwd);
