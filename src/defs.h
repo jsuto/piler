@@ -334,6 +334,7 @@ struct __data {
    MYSQL_STMT *stmt_get_folder_id;
    MYSQL_STMT *stmt_insert_into_folder_table;
    MYSQL_STMT *stmt_update_metadata_reference;
+   MYSQL_STMT *stmt_update_metadata;
    MYSQL_STMT *stmt_select_from_meta_table;
    MYSQL_STMT *stmt_select_non_referenced_attachments;
 #endif

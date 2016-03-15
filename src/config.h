@@ -13,7 +13,7 @@
 
 #define VERSION "1.2.0-master"
 
-#define BUILD 940
+#define BUILD 941
 
 #define HOSTID "mailarchiver"
 
@@ -105,6 +105,7 @@
 #define SQL_PREPARED_STMT_GET_FOLDER_ID              "SELECT `id` FROM " SQL_FOLDER_TABLE " WHERE `name`=? AND `parent_id`=?"
 #define SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE   "INSERT INTO `" SQL_FOLDER_TABLE "` (`name`, `parent_id`) VALUES(?,?)"
 #define SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE  "UPDATE " SQL_METADATA_TABLE " SET reference=? WHERE message_id=? AND reference=''"
+#define SQL_PREPARED_STMT_UPDATE_META_TABLE          "UPDATE " SQL_METADATA_TABLE " SET subject=?, attachments=? WHERE id=?"
 #define SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS        "SELECT id, type, username, password, server FROM " SQL_IMPORT_TABLE " WHERE started=0 ORDER BY id LIMIT 0,1"
 #define SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE      "INSERT INTO " SQL_FOLDER_MESSAGE_TABLE " (`folder_id`, `id`) VALUES(?,?)"
 
