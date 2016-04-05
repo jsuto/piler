@@ -53,7 +53,7 @@ int import_from_pop3_server(char *server, char *username, char *password, int po
    }
 
 
-   if(connect_to_pop3_server(sd, username, password, port, data, use_ssl) == ERR){
+   if(connect_to_pop3_server(sd, username, password, data, use_ssl) == ERR){
       close(sd);
       ret = ERR;
       goto ENDE_POP3;

@@ -36,7 +36,7 @@ int is_last_complete_pop3_packet(char *s, int len){
 }
 
 
-int connect_to_pop3_server(int sd, char *username, char *password, int port, struct __data *data, int use_ssl){
+int connect_to_pop3_server(int sd, char *username, char *password, struct __data *data, int use_ssl){
    int n;
    char buf[MAXBUFSIZE];
    X509* server_cert;

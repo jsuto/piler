@@ -53,9 +53,11 @@ void usage(){
    printf("    -R                                Assign IMAP folder names as Piler folder names\n");
    printf("    -b <batch limit>                  Import only this many emails\n");
    printf("    -s <start position>               Start importing POP3 emails from this position\n");
+   printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
    printf("    -r                                Remove imported emails\n");
+   printf("    -z                                Reimport emails\n");
    printf("    -q                                Quiet mode\n");
 
    exit(0);
@@ -81,7 +83,7 @@ int main(int argc, char **argv){
 
 
    import.import_job_id = import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
-   import.started = import.updated = import.finished = import.remove_after_import = 0;
+   import.started = import.updated = import.finished = import.remove_after_import = import.reimport = 0;
    import.extra_recipient = import.move_folder = NULL;
    import.start_position = 1;
    import.download_only = 0;
@@ -121,6 +123,7 @@ int main(int argc, char **argv){
             {"remove-after-import",no_argument,  0,  'r' },
             {"move-folder",  required_argument,  0,  'g' },
             {"only-download",no_argument,        0,  'o' },
+            {"reimport",     no_argument,        0,  'z' },
             {"gui-import",   no_argument,        0,  'G' },
             {"dry-run",      no_argument,        0,  'D' },
             {"help",         no_argument,        0,  'h' },
@@ -129,9 +132,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRrozqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRrozqh?");
 #endif
 
       if(c == -1) break;
@@ -230,6 +233,10 @@ int main(int argc, char **argv){
                     data.import->start_position = atoi(optarg);
                     break;
 
+         case 'z' :
+                    data.import->reimport = 1;
+                    break;
+
          case 'a' :
                     data.import->extra_recipient = optarg;
                     break;
@@ -291,10 +298,10 @@ int main(int argc, char **argv){
 #endif
 
    if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0, &cfg);
+      data.folder = get_folder_id(&sdata, &data, folder, 0);
 
       if(data.folder == ERR_FOLDER){
-         data.folder = add_new_folder(&sdata, &data, folder, 0, &cfg);
+         data.folder = add_new_folder(&sdata, &data, folder, 0);
       }
 
       if(data.folder == ERR_FOLDER){
@@ -305,9 +312,9 @@ int main(int argc, char **argv){
 
    }
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
-   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
-   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 

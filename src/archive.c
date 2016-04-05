@@ -222,7 +222,7 @@ int retrieve_email_from_archive(struct session_data *sdata, struct __data *data,
       return 1;
    }
 
-   attachments = query_attachments(sdata, data, &ptr_arr[0], cfg);
+   attachments = query_attachments(sdata, data, &ptr_arr[0]);
 
    if(attachments == -1){
       printf("problem querying the attachment of %s\n", sdata->ttmpfile);

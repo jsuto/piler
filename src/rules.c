@@ -10,7 +10,7 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table, struct __config *cfg){
+void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    struct rule_cond rule_cond;
 
@@ -28,7 +28,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 
    snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days`, `folder_id` FROM `%s`", table);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
 
 
    p_bind_init(data);
@@ -52,7 +52,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
       data->sql[data->pos] = (char *)&rule_cond.days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
       data->sql[data->pos] = (char *)&rule_cond.folder_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
 
       while(p_fetch_results(data->stmt_generic) == OK){
          append_rule(xhash, &rule_cond, data);

@@ -123,7 +123,7 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
 }
 
 
-int p_store_results(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *data){
+int p_store_results(MYSQL_STMT *stmt, struct __data *data){
    MYSQL_BIND bind[MAX_SQL_VARS];
    int i, ret=ERR;
 
@@ -205,7 +205,7 @@ int p_get_affected_rows(MYSQL_STMT *stmt){
 }
 
 
-int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s, struct __config *cfg){
+int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s){
 
    *stmt = mysql_stmt_init(&(sdata->mysql));
    if(!*stmt){

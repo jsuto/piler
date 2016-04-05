@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge reindex test fixmetadata
+all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge reindex test
 install: install-piler
 
 

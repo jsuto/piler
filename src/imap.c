@@ -124,8 +124,8 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
 
    if(data->recursive_folder_names == 1){
-      data->folder = get_folder_id(sdata, data, folder, 0, cfg);
-      if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, data, folder, 0, cfg);
+      data->folder = get_folder_id(sdata, data, folder, 0);
+      if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, data, folder, 0);
    }
 
 
@@ -307,7 +307,7 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 }
 
 
-int connect_to_imap_server(int sd, int *seq, char *username, char *password, int port, struct __data *data, int use_ssl){
+int connect_to_imap_server(int sd, int *seq, char *username, char *password, struct __data *data, int use_ssl){
    int n;
    char buf[MAXBUFSIZE];
    X509* server_cert;

@@ -18,7 +18,8 @@
 
 struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg){
    FILE *f;
-   int i, len;
+   int i;
+   unsigned int len;
    char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
    char writebuffer[MAXBUFSIZE], abuffer[MAXBUFSIZE];
    struct parser_state state;
@@ -99,7 +100,8 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
 
 void post_parse(struct session_data *sdata, struct parser_state *state, struct __config *cfg){
-   int i, len, rec=0;
+   int i, rec=0;
+   unsigned int len;
    char *p;
 
    clearhash(state->boundaries);
@@ -173,7 +175,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
-   int n64, len, writelen, boundary_line=0, result;
+   int n64, writelen, boundary_line=0, result;
+   unsigned int len;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -238,7 +241,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             if(state->b64fd != -1){
                abuffer[state->abufpos] = '\0';
                if(state->base64 == 1){
-                  n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
+                  n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
                   write(state->b64fd, b64buffer, n64);
                }
                else {
@@ -383,14 +386,14 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          if(strstr(buf, "=?") && strstr(buf, "?=")) fixupEncodedHeaderLine(buf, MAXBUFSIZE);
 
-         sdata->sent = parse_date_header(buf, cfg);
+         sdata->sent = parse_date_header(buf);
 
          /* allow +2 days drift in the parsed Date: value */
 
          if(sdata->sent - sdata->now > 2*86400) sdata->sent = sdata->now;
       }
 
-      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf, cfg);
+      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf);
       else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
       else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0) state->message_state = MSG_TO;
 
@@ -577,7 +580,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                if(state->b64fd != -1){
                   abuffer[state->abufpos] = '\0';
                   if(state->base64 == 1){
-                     n64 = base64_decode_attachment_buffer(abuffer, state->abufpos, &b64buffer[0], sizeof(b64buffer));
+                     n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
                      write(state->b64fd, b64buffer, n64);
                   }
                   else {

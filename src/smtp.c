@@ -17,9 +17,10 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <piler.h>
+#include <smtp.h>
 
 
-void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
+void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, int *protocol_state, char *resp, int resplen, struct __config *cfg){
    char tmpbuf[MAXBUFSIZE];
 
    if(*protocol_state == SMTP_STATE_INIT) *protocol_state = SMTP_STATE_HELO;
@@ -32,7 +33,7 @@ void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, 
 
 
 #ifdef HAVE_STARTTLS
-void process_command_starttls(struct session_data *sdata, struct __data *data, int *protocol_state, int *starttls, char *buf, int new_sd, char *resp, int resplen, struct __config *cfg){
+void process_command_starttls(struct session_data *sdata, struct __data *data, int *protocol_state, int *starttls, int new_sd, char *resp, int resplen, struct __config *cfg){
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata->ttmpfile);
 
@@ -85,7 +86,7 @@ void process_command_mail_from(struct session_data *sdata, int *protocol_state, 
 }
 
 
-void process_command_rcpt_to(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
+void process_command_rcpt_to(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen){
 
    if(*protocol_state == SMTP_STATE_MAIL_FROM || *protocol_state == SMTP_STATE_RCPT_TO){
 
@@ -110,7 +111,7 @@ void process_command_rcpt_to(struct session_data *sdata, int *protocol_state, ch
 }
 
 
-void process_command_data(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
+void process_command_data(struct session_data *sdata, int *protocol_state, char *resp, int resplen){
 
    if(*protocol_state != SMTP_STATE_RCPT_TO){
       strncat(resp, SMTP_RESP_503_ERR, resplen);
@@ -130,7 +131,7 @@ void process_command_data(struct session_data *sdata, int *protocol_state, char 
 }
 
 
-void process_command_quit(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
+void process_command_quit(struct session_data *sdata, int *protocol_state, char *resp, int resplen, struct __config *cfg){
    char tmpbuf[MAXBUFSIZE];
 
    *protocol_state = SMTP_STATE_FINISHED;
@@ -145,7 +146,7 @@ void process_command_quit(struct session_data *sdata, int *protocol_state, char 
 }
 
 
-void process_command_reset(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
+void process_command_reset(struct session_data *sdata, int *protocol_state, char *resp, int resplen, struct __config *cfg){
 
    strncat(resp, SMTP_RESP_250_OK, resplen);
 
@@ -160,7 +161,7 @@ void process_command_reset(struct session_data *sdata, int *protocol_state, char
 }
 
 
-void send_buffered_response(struct session_data *sdata, struct __data *data, int *protocol_state, int starttls, char *buf, int new_sd, char *resp, int resplen, struct __config *cfg){
+void send_buffered_response(struct session_data *sdata, struct __data *data, int starttls, int new_sd, char *resp, struct __config *cfg){
    int rc;
 #ifdef HAVE_STARTTLS
    char ssl_error[SMALLBUFSIZE];

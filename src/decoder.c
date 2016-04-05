@@ -158,7 +158,8 @@ int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
 
 
 void decodeQP(char *p){
-   int i, k=0, a, b;
+   unsigned int i;
+   int k=0, a, b;
    char c;
 
    if(p == NULL) return;
@@ -247,7 +248,8 @@ void decodeHTML(char *p, int utf8){
 
 
 void decodeURL(char *p){
-   int i, c, k=0, a, b;
+   unsigned int i;
+   int c, k=0, a, b;
 
    if(p == NULL) return;
 
@@ -303,18 +305,8 @@ inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, in
          count++;
       }
 
-      else if(c <= 0x7FF){
+      else {
          *(buf+count) = ( 0xC0 | (c >> 6) );
-         count++;
-         *(buf+count) = ( 0x80 | (c & 0x3F) );
-         count++;
-      }
-
-
-      else if (c <= 0xFFFF){
-         *(buf+count) = ( 0xE0 | (c >> 12) );
-         count++;
-         *(buf+count) = ( 0x80 | ((c >> 6) & 0x3F) );
          count++;
          *(buf+count) = ( 0x80 | (c & 0x3F) );
          count++;
@@ -326,7 +318,8 @@ inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, in
 
 int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *encoding){
    iconv_t cd;
-   size_t size, inbytesleft, outbytesleft;
+   size_t inbytesleft, outbytesleft;
+   int ret = ERR;
 
    memset(outbuf, 0, outbuflen);
 
@@ -336,13 +329,14 @@ int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *en
       inbytesleft = inbuflen;
       outbytesleft = outbuflen-1;
 
-      size = iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
+      if(iconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft) == (size_t) -1)
+         ret = ERR;
+      else
+         ret = OK;
 
       iconv_close(cd);
-
-      if(size >= 0) return OK;
    }
 
-   return ERR;
+   return ret;
 }
 

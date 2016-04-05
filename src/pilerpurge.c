@@ -31,10 +31,10 @@ unsigned long purged_size=0;
 #define SQL_STMT_DELETE_FROM_ATTACHMENT_TABLE "DELETE FROM `" SQL_ATTACHMENT_TABLE "` WHERE `id` IN ("
 
 
-int is_purge_allowed(struct session_data *sdata, struct __data *data, struct __config *cfg){
+int is_purge_allowed(struct session_data *sdata, struct __data *data){
    int rc=0;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE, cfg) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_STMT_SELECT_PURGE_FROM_OPTION_TABLE) == ERR) return rc;
 
 
    p_bind_init(data);
@@ -45,7 +45,7 @@ int is_purge_allowed(struct session_data *sdata, struct __data *data, struct __c
 
       data->sql[data->pos] = (char *)&rc; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
       p_fetch_results(data->stmt_generic);
       p_free_results(data->stmt_generic);
    }
@@ -105,7 +105,8 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    char filename[SMALLBUFSIZE];
    char *a, buf[NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND*(RND_STR_LEN+1)+10], update_meta_sql[strlen(SQL_STMT_DELETE_FROM_META_TABLE_BY_PILER_ID)+NUMBER_OF_ATTACHMENTS_TO_REMOVE_IN_ONE_ROUND*(RND_STR_LEN+3)+10], delete_attachment_stmt[MAXBUFSIZE];
    char piler_id[SMALLBUFSIZE], i[BUFLEN];
-   int n=0, m=0, len, attachment_id=0, blen=0, ulen=0, dlen=0, piler_id_len;
+   int n=0, m=0, len, attachment_id=0, piler_id_len;
+   unsigned int blen=0, ulen=0, dlen=0;
 #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
 #endif
@@ -123,7 +124,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    in[strlen(in)-1] = '\0';
    snprintf(a, len-1, "%s%s", SQL_STMT_SELECT_NON_REFERENCED_ATTACHMENTS, in);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a, cfg) == ERR){ free(a); return n; }
+   if(prepare_sql_statement(sdata, &(data->stmt_select_non_referenced_attachments), a) == ERR){ free(a); return n; }
 
    if(dryrun == 1) printf("attachment select sql: *%s*\n\n", a);
 
@@ -147,7 +148,7 @@ int remove_attachments(char *in, struct session_data *sdata, struct __data *data
    data->sql[data->pos] = (char *)&attachment_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
    data->sql[data->pos] = &i[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(i)-2; data->pos++;
 
-   p_store_results(sdata, data->stmt_select_non_referenced_attachments, data);
+   p_store_results(data->stmt_select_non_referenced_attachments, data);
 
    while(p_fetch_results(data->stmt_select_non_referenced_attachments) == OK){
 
@@ -254,7 +255,8 @@ ENDE:
 
 
 int purge_messages_round1(struct session_data *sdata, struct __data *data, char *attachment_condition, struct __config *cfg){
-   int purged=0, size, blen=0, ulen=0;
+   int purged=0, size;
+   unsigned int blen=0, ulen=0;
    char id[BUFLEN], s[SMALLBUFSIZE], buf[MAXBUFSIZE], update_meta_sql[MAXBUFSIZE];
 
    memset(buf, 0, sizeof(buf));
@@ -267,7 +269,7 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
    if(dryrun == 1) printf("purge sql: *%s*\n", s);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
 
    p_bind_init(data);
 
@@ -279,7 +281,7 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
       data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
       data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-      p_store_results(sdata, data->stmt_select_from_meta_table, data);
+      p_store_results(data->stmt_select_from_meta_table, data);
 
       while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
 
@@ -321,7 +323,8 @@ int purge_messages_round1(struct session_data *sdata, struct __data *data, char 
 
 
 int purge_messages_with_attachments(struct session_data *sdata, struct __data *data, struct __config *cfg){
-   int purged=0, size, idlist_len=0;
+   int purged=0, size;
+   unsigned int idlist_len=0;
    char s[SMALLBUFSIZE], idlist[MAXBUFSIZE];
 
    memset(idlist, 0, sizeof(idlist));
@@ -330,7 +333,7 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
 
    if(dryrun == 1) printf("purge sql: *%s*\n", s);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s, cfg) == ERR) return purged;
+   if(prepare_sql_statement(sdata, &(data->stmt_select_from_meta_table), s) == ERR) return purged;
 
    p_bind_init(data);
    if(p_exec_query(sdata, data->stmt_select_from_meta_table, data) == OK){
@@ -340,7 +343,7 @@ int purge_messages_with_attachments(struct session_data *sdata, struct __data *d
       data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
       data->sql[data->pos] = (char *)&size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
 
-      p_store_results(sdata, data->stmt_select_from_meta_table, data);
+      p_store_results(data->stmt_select_from_meta_table, data);
 
       while(p_fetch_results(data->stmt_select_from_meta_table) == OK){
          memcpy(&idlist[idlist_len], s, strlen(s)); idlist_len += strlen(s);
@@ -410,7 +413,7 @@ int main(int argc, char **argv){
 
    init_session_data(&sdata, &cfg);
 
-   i = is_purge_allowed(&sdata, &data, &cfg);
+   i = is_purge_allowed(&sdata, &data);
    if(i == 1){
       purged += purge_messages_round1(&sdata, &data, "attachments=0", &cfg);
       purged += purge_messages_with_attachments(&sdata, &data, &cfg);

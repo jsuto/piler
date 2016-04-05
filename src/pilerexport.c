@@ -343,7 +343,7 @@ int export_emails_matching_to_query(struct session_data *sdata, struct __data *d
    int rc=0;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return ERR;
 
 
    p_bind_init(data);
@@ -359,7 +359,7 @@ int export_emails_matching_to_query(struct session_data *sdata, struct __data *d
    data->sql[data->pos] = &digest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(digest)-2; data->pos++;
    data->sql[data->pos] = &bodydigest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(bodydigest)-2; data->pos++;
 
-   p_store_results(sdata, data->stmt_generic, data);
+   p_store_results(data->stmt_generic, data);
 
    while(p_fetch_results(data->stmt_generic) == OK){
 

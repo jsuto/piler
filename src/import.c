@@ -92,7 +92,10 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
          return ERR;
       }
 
-      rc = process_message(sdata, &state, data, cfg);
+      if(data->import->reimport == 1)
+         rc = reimport_message(sdata, &state, data, cfg);
+      else
+         rc = process_message(sdata, &state, data, cfg);
       unlink(state.message_id_hash);
    }
 
@@ -103,11 +106,13 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    switch(rc) {
       case OK:
-                        bzero(&counters, sizeof(counters));
-                        counters.c_rcvd = 1; 
-                        counters.c_size += sdata->tot_len;
-                        counters.c_stored_size = sdata->stored_len;
-                        update_counters(sdata, data, &counters, cfg);
+                        if(data->import->reimport == 0){
+                           bzero(&counters, sizeof(counters));
+                           counters.c_rcvd = 1;
+                           counters.c_size += sdata->tot_len;
+                           counters.c_stored_size = sdata->stored_len;
+                           update_counters(sdata, data, &counters, cfg);
+                        }
 
                         break;
 
@@ -130,10 +135,10 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 }
 
 
-int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg){
+int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    int id=ERR_FOLDER;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID, cfg) == ERR) return id;
+   if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) return id;
 
    p_bind_init(data);
    data->sql[data->pos] = foldername; data->type[data->pos] = TYPE_STRING; data->pos++;
@@ -144,7 +149,7 @@ int get_folder_id(struct session_data *sdata, struct __data *data, char *foldern
       p_bind_init(data);
       data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
 
-      p_store_results(sdata, data->stmt_get_folder_id, data);
+      p_store_results(data->stmt_get_folder_id, data);
       p_fetch_results(data->stmt_get_folder_id);
       p_free_results(data->stmt_get_folder_id);
    }
@@ -155,12 +160,12 @@ int get_folder_id(struct session_data *sdata, struct __data *data, char *foldern
 }
 
 
-int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg){
+int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
    int id=ERR_FOLDER;
 
    if(foldername == NULL) return id;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE, cfg) == ERR) return id;
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_table), SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE) == ERR) return id;
 
    p_bind_init(data);
    data->sql[data->pos] = foldername; data->type[data->pos] = TYPE_STRING; data->pos++;

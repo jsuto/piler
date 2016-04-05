@@ -112,7 +112,7 @@ long get_local_timezone_offset(){
 }
 
 
-time_t parse_date_header(char *datestr, struct __config *cfg){
+time_t parse_date_header(char *datestr){
    int n=0, len;
    long offset=0;
    time_t ts=0;
@@ -256,10 +256,6 @@ time_t parse_date_header(char *datestr, struct __config *cfg){
    ts = mktime(&tm);
 
    ts += get_local_timezone_offset() - offset;
-
-#ifdef HAVE_TWEAK_SENT_TIME
-   if(ts > 631148400) ts += cfg->tweak_sent_time_offset;
-#endif
 
    return ts;
 }
@@ -674,7 +670,8 @@ int does_it_seem_like_an_email_address(char *email){
  */
 
 void reassembleToken(char *p){
-   int i, k=0;
+   unsigned int i;
+   int k=0;
 
    for(i=0; i<strlen(p); i++){
 
@@ -947,7 +944,7 @@ void parse_reference(struct parser_state *state, char *s){
 }
 
 
-int base64_decode_attachment_buffer(char *p, int plen, unsigned char *b, int blen){
+int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen){
    int b64len=0;
    char puf[2*SMALLBUFSIZE];
 

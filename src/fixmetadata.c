@@ -30,7 +30,7 @@ int update_meta_data(struct session_data *sdata, struct parser_state *state, str
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata), SQL_PREPARED_STMT_UPDATE_META_TABLE, cfg) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata), SQL_PREPARED_STMT_UPDATE_META_TABLE) == ERR) return ret;
 
    p_bind_init(data);
 
@@ -81,16 +81,7 @@ int main(int argc, char **argv){
 
    inithash(data.mydomains);
 
-   //initrules(data.archiving_rules);
-   //initrules(data.retention_rules);
-   //initrules(data.folder_rules);
-
    load_mydomains(&sdata, &data, &cfg);
-
-   //load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, &cfg);
-   //load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE, &cfg);
-   //load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
-
 
    init_session_data(&sdata, &cfg);
  

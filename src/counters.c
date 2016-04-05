@@ -11,7 +11,7 @@
 #include <piler.h>
 
 
-struct __counters load_counters(struct session_data *sdata, struct __data *data, struct __config *cfg){
+struct __counters load_counters(struct session_data *sdata, struct __data *data){
    char buf[SMALLBUFSIZE];
    struct __counters counters;
 
@@ -20,7 +20,7 @@ struct __counters load_counters(struct session_data *sdata, struct __data *data,
    snprintf(buf, SMALLBUFSIZE-1, "SELECT `rcvd`, `virus`, `duplicate`, `ignore`, `size`, `stored_size` FROM `%s`", SQL_COUNTER_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf, cfg) == ERR) return counters;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf) == ERR) return counters;
 
 
    p_bind_init(data);
@@ -36,7 +36,7 @@ struct __counters load_counters(struct session_data *sdata, struct __data *data,
       data->sql[data->pos] = (char *)&counters.c_size; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
       data->sql[data->pos] = (char *)&counters.c_stored_size; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
       p_fetch_results(data->stmt_generic);
       p_free_results(data->stmt_generic);
    }
@@ -101,7 +101,7 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
       }
       else {
 
-         c = load_counters(sdata, data, cfg);
+         c = load_counters(sdata, data);
 
          snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
 

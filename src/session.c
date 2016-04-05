@@ -351,7 +351,7 @@ AFTER_PERIOD:
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
 
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            process_command_ehlo_lhlo(&sdata, data, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_ehlo_lhlo(&sdata, data, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
             continue;
 
             /* FIXME: implement the ENHANCEDSTATUSCODE extensions */
@@ -367,7 +367,7 @@ AFTER_PERIOD:
 
       #ifdef HAVE_STARTTLS
          if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(data->starttls) > 4 && sdata.tls == 0){
-            process_command_starttls(&sdata, data, &protocol_state, &starttls, buf, new_sd, &resp[0], sizeof(resp)-1, cfg);
+            process_command_starttls(&sdata, data, &protocol_state, &starttls, new_sd, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
       #endif
@@ -380,7 +380,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-            process_command_rcpt_to(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_rcpt_to(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1);
             continue;
          }
 
@@ -391,13 +391,13 @@ AFTER_PERIOD:
             inj = ERR;
             prevlen = 0;
 
-            process_command_data(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_data(&sdata, &protocol_state, &resp[0], sizeof(resp)-1);
             continue; 
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
-            process_command_quit(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_quit(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
@@ -409,7 +409,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
-            process_command_reset(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_reset(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
@@ -422,7 +422,7 @@ AFTER_PERIOD:
 
 
       if(strlen(resp) > 0){
-         send_buffered_response(&sdata, data, &protocol_state, starttls, buf, new_sd, &resp[0], sizeof(resp)-1, cfg);
+         send_buffered_response(&sdata, data, starttls, new_sd, &resp[0], cfg);
          memset(resp, 0, sizeof(resp));
       }
 

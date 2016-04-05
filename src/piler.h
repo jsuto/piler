@@ -40,10 +40,11 @@ int handle_pilerget_request(int new_sd, struct __data *data, struct __config *cf
 
 void remove_stripped_attachments(struct parser_state *state);
 int process_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
-int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg);
+int reimport_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
+int store_file(struct session_data *sdata, char *filename, int len, struct __config *cfg);
 int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct __config *cfg);
 int store_attachments(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
-int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr, struct __config *cfg);
+int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr);
 
 struct __config read_config(char *configfile);
 
@@ -54,8 +55,8 @@ void update_counters(struct session_data *sdata, struct __data *data, struct __c
 int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg);
 int file_from_archive_to_network(char *filename, int sd, int tls_enable, struct __data *data, struct __config *cfg);
 
-int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg);
-int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id, struct __config *cfg);
+int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
+int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id);
 
 int store_index_data(struct session_data *sdata, struct parser_state *state, struct __data *data, uint64 id, struct __config *cfg);
 

@@ -30,8 +30,8 @@ struct digest_test tests[] = {
 };
 
 
-void static test_digest_string(){
-   int i;
+static void test_digest_string(){
+   unsigned int i;
    char digest[2*DIGEST_LENGTH+1];
    struct digest_test tests[] = {
       {"Piler archives every email it receives.", "68bcdb6f15eeabdcedce3e4fc8faf7eb620272ebd55f365d08aca40adf18fe83", ""},
@@ -51,7 +51,7 @@ void static test_digest_string(){
 
 
 static void test_digest_file(){
-   int i;
+   unsigned int i;
    char digest[2*DIGEST_LENGTH+1];
 
    for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
@@ -64,7 +64,8 @@ static void test_digest_file(){
 
 
 static void test_make_digests(struct __config *cfg){
-   int i, j;
+   unsigned int i;
+   int j;
    struct session_data sdata;
    struct parser_state state;
    struct __data data;

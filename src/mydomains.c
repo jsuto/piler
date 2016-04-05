@@ -17,7 +17,7 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
    memset(s, 0, sizeof(s));
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS, cfg) == ERR) return;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS) == ERR) return;
 
 
    p_bind_init(data);
@@ -28,7 +28,7 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
 
       data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
 
       while(p_fetch_results(data->stmt_generic) == OK){
          rc = addnode(data->mydomains, s);

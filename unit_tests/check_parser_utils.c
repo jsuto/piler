@@ -27,7 +27,10 @@ struct str_pair {
 
 
 static void test_parse_date_header(){
-   int i;
+   unsigned int i;
+   int dst_fix = 0;
+   time_t t = time(NULL);
+   struct tm lt = {0};
    struct __config cfg;
    struct date_test date_test[] = {
       {"Date: Mon, 02 Nov 2015 09:39:31 -0000", 1446457171},
@@ -49,8 +52,11 @@ static void test_parse_date_header(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
+   localtime_r(&t, &lt);
+   if(lt.tm_isdst == 1) dst_fix = 3600;
+
    for(i=0; i<sizeof(date_test)/sizeof(struct date_test); i++){
-      assert(parse_date_header(date_test[i].date_str, &cfg) == date_test[i].timestamp && "test_parse_date_header()");
+      assert(parse_date_header(date_test[i].date_str)-dst_fix == date_test[i].timestamp && "test_parse_date_header()");
    }
 
    printf("test_parse_date_header() OK\n");
@@ -58,7 +64,7 @@ static void test_parse_date_header(){
 
 
 static void test_extractNameFromHeaderLine(){
-   int i;
+   unsigned int i;
    char resultbuf[SMALLBUFSIZE];
    struct name_from_header_test name_from_header_test[] = {
       {"Content-Type: text/plain; charset=UTF-8", "charset", "UTF-8"},
@@ -104,7 +110,7 @@ static void test_extractNameFromHeaderLine(){
 
 
 static void test_fixupEncodedHeaderLine(){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct str_pair pair[] = {
 
@@ -160,7 +166,7 @@ static void test_fixupEncodedHeaderLine(){
 
 
 static void test_translateLine(){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct parser_state state;
    struct str_pair pair[] = {
@@ -197,7 +203,7 @@ static void test_translateLine(){
 
 
 static void test_fixURL(){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct str_pair pair[] = {
       {"http://www.aaa.fu", "__URL__wwwXaaaXfu "},
@@ -227,7 +233,7 @@ static void test_fixURL(){
 
 
 static void test_degenerateToken(){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct str_pair pair[] = {
       {"Hello", "Hello"},

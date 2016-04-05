@@ -40,7 +40,7 @@ void clearhash(struct node *xhash[]){
 }
 
 
-struct node *makenewnode(struct node *xhash[], char *s){
+struct node *makenewnode(char *s){
    struct node *h;
    int len;
 
@@ -82,7 +82,7 @@ int addnode(struct node *xhash[], char *s){
    key = DJBHash(s, len);
 
    if(xhash[hash(key)] == NULL){
-      xhash[hash(key)] = makenewnode(xhash, s);
+      xhash[hash(key)] = makenewnode(s);
    }
    else {
       q = xhash[hash(key)];
@@ -95,7 +95,7 @@ int addnode(struct node *xhash[], char *s){
             q = q->r;
          }
       }
-      if(p) p->r = makenewnode(xhash, s);
+      if(p) p->r = makenewnode(s);
    }
 
    return 1;

@@ -25,7 +25,8 @@ struct parser_test {
 
 
 static void test_parser(struct __config *cfg){
-   int i, j;
+   unsigned int i;
+   int j;
    struct stat st;
    struct session_data sdata;
    struct parser_state state;

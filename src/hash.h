@@ -11,7 +11,7 @@
 
 void inithash(struct node *xhash[]);
 void clearhash(struct node *xhash[]);
-struct node *makenewnode(struct node *xhash[], char *s);
+struct node *makenewnode(char *s);
 int addnode(struct node *xhash[], char *s);
 struct node *findnode(struct node *xhash[], char *s);
 int is_substr_in_hash(struct node *xhash[], char *s);

@@ -31,7 +31,7 @@ int read_gui_import_data(struct session_data *sdata, struct __data *data, char *
    memset(s_password, 0, sizeof(s_password));
    memset(s_server, 0, sizeof(s_server));
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS, cfg) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS) == ERR) return ERR;
 
    p_bind_init(data);
 
@@ -45,7 +45,7 @@ int read_gui_import_data(struct session_data *sdata, struct __data *data, char *
       data->sql[data->pos] = &s_password[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_password)-2; data->pos++;
       data->sql[data->pos] = &s_server[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s_server)-2; data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
 
       if(p_fetch_results(data->stmt_generic) == OK) rc = OK;
 

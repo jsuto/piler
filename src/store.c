@@ -39,7 +39,7 @@ int read_key(struct __config *cfg){
 }
 
 
-int store_file(struct session_data *sdata, char *filename, int startpos, int len, struct __config *cfg){
+int store_file(struct session_data *sdata, char *filename, int len, struct __config *cfg){
    int ret=0, rc, fd, n;
    char *addr, *p, *p0, *p1, *p2, s[SMALLBUFSIZE];
    struct stat st;
@@ -146,6 +146,8 @@ int store_file(struct session_data *sdata, char *filename, int startpos, int len
    }
 
    *p0 = '/';
+
+   unlink(s);
 
    fd = open(s, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
    if(fd == -1){

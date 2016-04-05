@@ -35,7 +35,7 @@ struct rule_query rules[] = {
 
 
 static void fill_rule_table(struct __config *cfg){
-   int i;
+   unsigned int i;
    struct session_data sdata;
 
    if(open_database(&sdata, cfg) == ERR){
@@ -55,7 +55,7 @@ static void fill_rule_table(struct __config *cfg){
 
 
 static void restore_rule_table(struct __config *cfg){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
 
@@ -77,7 +77,8 @@ static void restore_rule_table(struct __config *cfg){
 
 
 static void test_archiving_rule(struct __config *cfg){
-   int i, j;
+   unsigned int i;
+   int j;
    char *rule;
    struct session_data sdata;
    struct parser_state state;
@@ -102,7 +103,7 @@ static void test_archiving_rule(struct __config *cfg){
 
    initrules(data.archiving_rules);
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE, cfg);
+   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
 
    for(i=0; i<sizeof(rule_test)/sizeof(struct rule_test); i++){
 

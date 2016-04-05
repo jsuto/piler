@@ -42,14 +42,14 @@ void p_clean_exit(char *msg, int rc){
 }
 
 
-uint64 get_max_meta_id(struct session_data *sdata, struct __data *data, struct __config *cfg){
+uint64 get_max_meta_id(struct session_data *sdata, struct __data *data){
    char s[SMALLBUFSIZE];
    uint64 id=0;
 
    snprintf(s, sizeof(s)-1, "SELECT MAX(`id`) FROM %s", SQL_METADATA_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return id;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return id;
 
 
    p_bind_init(data);
@@ -60,7 +60,7 @@ uint64 get_max_meta_id(struct session_data *sdata, struct __data *data, struct _
 
       data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
       p_fetch_results(data->stmt_generic);
       p_free_results(data->stmt_generic);
    }
@@ -88,7 +88,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
       snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s, cfg) == ERR) return reindexed;
+   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return reindexed;
 
    p_bind_init(data);
 
@@ -104,7 +104,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *
          data->sql[data->pos] = (char *)&(data->folder); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
       }
 
-      p_store_results(sdata, data->stmt_generic, data);
+      p_store_results(data->stmt_generic, data);
 
       while(p_fetch_results(data->stmt_generic) == OK){
 
@@ -239,10 +239,10 @@ int main(int argc, char **argv){
       p_clean_exit("cannot connect to mysql server", 1);
    }
 
-   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE, &cfg);
+   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0, &cfg);
+      data.folder = get_folder_id(&sdata, &data, folder, 0);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;
@@ -254,7 +254,7 @@ int main(int argc, char **argv){
 
    if(all == 1){
       from_id = 1;
-      to_id = get_max_meta_id(&sdata, &data, &cfg);
+      to_id = get_max_meta_id(&sdata, &data);
    }
 
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);

@@ -57,7 +57,7 @@ int import_from_imap_server(char *server, char *username, char *password, int po
       goto ENDE_IMAP;
    }
 
-   if(connect_to_imap_server(sd, &seq, username, password, port, data, use_ssl) == ERR){
+   if(connect_to_imap_server(sd, &seq, username, password, data, use_ssl) == ERR){
       close(sd);
       ret = ERR;
       goto ENDE_IMAP;

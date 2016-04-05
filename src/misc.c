@@ -345,7 +345,7 @@ int get_random_bytes(unsigned char *buf, int len, unsigned char server_id){
  * read random data from entropy pool
  */
 
-int readFromEntropyPool(int fd, void *_s, size_t n){
+int readFromEntropyPool(int fd, void *_s, ssize_t n){
    char *s = _s;
    ssize_t res, pos = 0;
 

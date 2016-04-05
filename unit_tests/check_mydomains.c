@@ -29,7 +29,7 @@ struct emails {
 
 
 static void fill_domain_table(struct __config *cfg){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
 
@@ -50,7 +50,7 @@ static void fill_domain_table(struct __config *cfg){
 
 
 static void restore_domain_table(struct __config *cfg){
-   int i;
+   unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
 
@@ -71,7 +71,7 @@ static void restore_domain_table(struct __config *cfg){
 
 
 static void test_mydomains(struct __config *cfg){
-   int i;
+   unsigned int i;
    struct session_data sdata;
    struct __data data;
    struct emails emails[] = {

@@ -60,9 +60,9 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
                      return ERR;
                   }
 
-                  folder = get_folder_id(sdata, data, p, data->folder, cfg);
+                  folder = get_folder_id(sdata, data, p, data->folder);
                   if(folder == ERR_FOLDER){
-                     folder = add_new_folder(sdata, data, p, data->folder, cfg);
+                     folder = add_new_folder(sdata, data, p, data->folder);
 
                      if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", p, data->folder);
