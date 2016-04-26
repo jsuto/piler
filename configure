@@ -4883,8 +4883,6 @@ echo "tnef: $tnef"
 id -u $RUNNING_USER 2>/dev/null 1>/dev/null
 if test $? -eq 1; then echo "the user \"$RUNNING_USER\" does not exists, please create it, first with adduser..."; exit 1; fi
 
-iv=`util/gen-iv.pl`
-
 echo; echo
 
 CFLAGS="$static -O2 -Wall -g"
