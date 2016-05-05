@@ -197,10 +197,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->restored_copy = 1;
       }
 
-      if(*(cfg->spam_header_line) != '\0' && strncmp(buf, cfg->spam_header_line, strlen(cfg->spam_header_line)) == 0){
-         sdata->spam_message = 1;
-      }
-
       if(sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
          if(sdata->import == 0){
             sdata->ms_journal = 1;
@@ -346,6 +342,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    /* header checks */
 
    if(state->is_header == 1){
+
+      if(*(cfg->spam_header_line) != '\0' && strncmp(buf, cfg->spam_header_line, strlen(cfg->spam_header_line)) == 0){
+         sdata->spam_message = 1;
+      }
 
       if(strncasecmp(buf, "From:", strlen("From:")) == 0) state->message_state = MSG_FROM;
 
