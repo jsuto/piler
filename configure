@@ -699,7 +699,6 @@ enable_static_build
 enable_compat_layout
 enable_clamd
 enable_memcached
-enable_starttls
 enable_tcpwrappers
 enable_tweak_sent_time
 with_database
@@ -1325,7 +1324,6 @@ Optional Features:
   --enable-compat-layout  support for older storage layout (default: no)
   --enable-clamd          build clamd antivirus support
   --enable-memcached      build memcached support
-  --enable-starttls       build starttls support
   --enable-tcpwrappers    build tcpwrappers support
   --tweak-sent-time       tweak sent time
 
@@ -3445,7 +3443,6 @@ have_psql="no"
 have_tre="no"
 have_zip="no"
 have_zlib="no"
-have_starttls="no"
 have_tcpwrappers="no"
 have_tweak_sent_time="no"
 
@@ -3533,15 +3530,6 @@ if test "${enable_memcached+set}" = set; then :
   enableval=$enable_memcached; want_memcached=$enableval
 else
   want_memcached="no"
-fi
-
-
-
-# Check whether --enable-starttls was given.
-if test "${enable_starttls+set}" = set; then :
-  enableval=$enable_starttls; have_starttls=$enableval
-else
-  have_starttls="no"
 fi
 
 
@@ -4736,15 +4724,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
    antispam_libs="$antispam_libs -lzip"
-fi
-
-if test "$have_starttls" = "yes"; then
-   echo "starttls support: yes"
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_STARTTLS 1
-_ACEOF
-
 fi
 
 if test "$have_tcpwrappers" = "yes"; then

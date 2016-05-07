@@ -37,9 +37,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    struct timezone tz;
    struct timeval tv1, tv2;
 
-#ifdef HAVE_STARTTLS
    int starttls = 0;
-#endif
 
 
 #ifdef HAVE_LIBWRAP
@@ -365,12 +363,10 @@ AFTER_PERIOD:
          }
 
 
-      #ifdef HAVE_STARTTLS
          if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(data->starttls) > 4 && sdata.tls == 0){
             process_command_starttls(&sdata, data, &protocol_state, &starttls, new_sd, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
-      #endif
 
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
@@ -465,12 +461,10 @@ QUITTING:
    close_database(&sdata);
 #endif
 
-#ifdef HAVE_STARTTLS
    if(sdata.tls == 1){
       SSL_shutdown(data->ssl);
       SSL_free(data->ssl);
    }
-#endif
 
    if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", counters.c_rcvd);
 

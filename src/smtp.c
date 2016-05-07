@@ -32,7 +32,6 @@ void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, 
 }
 
 
-#ifdef HAVE_STARTTLS
 void process_command_starttls(struct session_data *sdata, struct __data *data, int *protocol_state, int *starttls, int new_sd, char *resp, int resplen, struct __config *cfg){
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata->ttmpfile);
@@ -54,7 +53,6 @@ void process_command_starttls(struct session_data *sdata, struct __data *data, i
 
    strncat(resp, SMTP_RESP_454_ERR_TLS_TEMP_ERROR, resplen);
 }
-#endif
 
 
 void process_command_mail_from(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
@@ -163,16 +161,13 @@ void process_command_reset(struct session_data *sdata, int *protocol_state, char
 
 void send_buffered_response(struct session_data *sdata, struct __data *data, int starttls, int new_sd, char *resp, struct __config *cfg){
    int rc;
-#ifdef HAVE_STARTTLS
    char ssl_error[SMALLBUFSIZE];
-#endif
 
    write1(new_sd, resp, strlen(resp), sdata->tls, data->ssl);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, resp);
    memset(resp, 0, MAXBUFSIZE);
 
-#ifdef HAVE_STARTTLS
    if(starttls == 1 && sdata->tls == 0){
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata->ttmpfile);
@@ -189,7 +184,6 @@ void send_buffered_response(struct session_data *sdata, struct __data *data, int
          syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata->ttmpfile, rc, SSL_get_error(data->ssl, rc), ssl_error);
       }
    }
-#endif
 }
 
 

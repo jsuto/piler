@@ -244,11 +244,9 @@ void p_clean_exit(){
 
    if(data.dedup != MAP_FAILED) munmap(data.dedup, MAXCHILDREN*DIGEST_LENGTH*2);
 
-#ifdef HAVE_STARTTLS
    if(data.ctx) SSL_CTX_free(data.ctx);
 
    ERR_free_strings();
-#endif
 
    exit(1);
 }
@@ -260,7 +258,6 @@ void fatal(char *s){
 }
 
 
-#ifdef HAVE_STARTTLS
 int init_ssl(){
 
    SSL_library_init();
@@ -278,7 +275,6 @@ int init_ssl(){
 
    return OK;
 }
-#endif
 
 
 void initialise_configuration(){
@@ -323,11 +319,9 @@ void initialise_configuration(){
    initrules(data.retention_rules);
    initrules(data.folder_rules);
 
-#ifdef HAVE_STARTTLS
    if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
       snprintf(data.starttls, sizeof(data.starttls)-1, "250-STARTTLS\r\n");
    }
-#endif
 
    if(open_database(&sdata, &cfg) == ERR){
       syslog(LOG_PRIORITY, "cannot connect to mysql server");
