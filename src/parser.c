@@ -197,11 +197,11 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->restored_copy = 1;
       }
 
-      if(sdata->ms_journal == 0 && (strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || (sdata->import == 1 && strncmp(buf, "X-MS-Exchange-Organization-Auth", strlen("X-MS-Exchange-Organization-Auth")) == 0))){
-         if(sdata->import == 0){
+      if(sdata->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
+         //if(sdata->import == 0){
             sdata->ms_journal = 1;
             memset(state->message_id, 0, SMALLBUFSIZE);
-         }
+         //}
       }
 
    }
@@ -219,14 +219,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    }
 
-   if(sdata->ms_journal == 1 && strncasecmp(buf, "Received:", strlen("Received:")) == 0){
-      if(state->is_1st_header == 0) memset(state->b_subject, 0, MAXBUFSIZE);
-
-      state->is_1st_header = 1;
-      state->is_header = 1;
-      memset(state->b_body, 0, BIGBUFSIZE);
-      state->bodylen = 0;
-   }
 
    if(take_into_pieces == 1){
       if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
@@ -339,6 +331,14 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(state->is_header == 0 && buf[0] != ' ' && buf[0] != '\t') state->message_state = MSG_BODY;
 
 
+   // journal fix
+
+   if(state->message_state == MSG_BODY && sdata->ms_journal == 1){
+      state->is_header = 1;
+      state->is_1st_header = 1;
+   }
+
+
    /* header checks */
 
    if(state->is_header == 1){
@@ -377,6 +377,12 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
       else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
+
+      if(sdata->ms_journal == 1 && (state->message_state == MSG_TO || state->message_state == MSG_RECIPIENT) ){
+         p = strstr(buf, "Expanded:");
+         if(p) *p = '\0';
+      }
+
 
       /*
        * by default sdata->sent = 0, and let the parser extract value from the Date: header
@@ -433,26 +439,19 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
     *   Message-Id: ...
     *   To: user1@domain
     *   To: user2@domain, Forwarded: user1@domain
+    *
+    *
+    * Outlook.com has the following scheme, when expanded from a distribution list:
+    *
+    *   Sender: sender@domain
+    *   Subject: Test Email
+    *   Message-Id: ...
+    *   To: user1@domain, Expanded: listaddress@domain
+    *   To: user2@domain, Expanded: listaddress@domain
+    *
     */
 
-   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && (strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0 || strncasecmp(buf, "To:", strlen("To:")) == 0) ){
-      state->is_header = 1;
-      state->is_1st_header = 1;
-      sdata->ms_journal = 0;
-      state->message_state = MSG_RECIPIENT;
-   }
 
-   if(state->message_state == MSG_BODY && sdata->ms_journal == 1 && strncasecmp(buf, "Bcc:", 4) == 0){
-      state->is_header = 1;
-      state->is_1st_header = 1;
-      state->message_state = MSG_CC;
-   }
-
-
-   if(state->message_state == MSG_RECIPIENT){
-      p = strstr(buf, "Expanded:");
-      if(p) *p = '\0';
-   }
 
 
    if(state->is_1st_header == 1 && state->message_state == MSG_REFERENCES){
@@ -531,6 +530,20 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(strcasestr(buf, "message/rfc822")){
          state->message_rfc822 = 1;
          state->is_header = 1;
+
+         if(sdata->ms_journal == 1){
+            state->is_1st_header = 1;
+
+            // reset all headers, except To:
+
+            memset(state->b_subject, 0, MAXBUFSIZE);
+            memset(state->b_body, 0, BIGBUFSIZE);
+            memset(state->b_from, 0, SMALLBUFSIZE);
+            memset(state->b_from_domain, 0, SMALLBUFSIZE);
+            memset(state->message_id, 0, SMALLBUFSIZE);
+
+            sdata->ms_journal = 0;
+         }
       }
 
 
@@ -668,7 +681,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(state->is_header == 1) p = strchr(buf, ' ');
    else p = buf;
 
-   //printf("a: %d/%d/%d/%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, buf);
+   //printf("a: %d/%d/%d/%d/j=%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, sdata->ms_journal, buf);
 
    do {
       memset(puf, 0, sizeof(puf));
