@@ -90,8 +90,7 @@ create table if not exists `attachment` (
 ) Engine=InnoDB;
 
 create index `attachment_idx` on `attachment`(`piler_id`);
-create index `attachment_idx2` on `attachment`(`sig`);
-create index `attachment_idx3` on `attachment`(`ptr`);
+create index `attachment_idx2` on `attachment`(`sig`, `size`, `ptr`);
 
 drop view if exists `v_attachment`;
 create view `v_attachment` AS select `id` as `i`, `piler_id`, `attachment_id`, `ptr`, (select count(*) from `attachment` where `ptr`=`i`) as `refcount` from `attachment`;
