@@ -46,7 +46,6 @@ if ( $options = getopt( $opts, $lopts ) )
 }
 
 require_once($webuidir . "/config.php");
-require_once(DIR_SYSTEM . "/helper/TrustedTimestamps.php");
 
 if(ENABLE_SYSLOG == 1) { openlog("piler-timestamp", LOG_PID, LOG_MAIL); }
 

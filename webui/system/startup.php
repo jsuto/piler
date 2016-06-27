@@ -20,6 +20,11 @@ if(ENABLE_GOOGLE_LOGIN == 1) {
    require_once DIR_BASE . 'google-api/contrib/apiOauth2Service.php';
 }
 
+if(TSA_URL) {
+   require_once(DIR_SYSTEM . "/helper/TrustedTimestamps.php");
+}
+
+
 date_default_timezone_set(TIMEZONE);
 
 ?>
