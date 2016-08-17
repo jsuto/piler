@@ -23,7 +23,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    char *rule;
    struct stat st;
    struct parser_state state;
-   struct __counters counters;
+   struct counters counters;
 
 
    init_session_data(sdata, cfg);

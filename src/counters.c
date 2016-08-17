@@ -11,9 +11,9 @@
 #include <piler.h>
 
 
-struct __counters load_counters(struct session_data *sdata, struct __data *data){
+struct counters load_counters(struct session_data *sdata, struct __data *data){
    char buf[SMALLBUFSIZE];
-   struct __counters counters;
+   struct counters counters;
 
    bzero(&counters, sizeof(counters));
 
@@ -47,11 +47,11 @@ struct __counters load_counters(struct session_data *sdata, struct __data *data)
 }
 
 
-void update_counters(struct session_data *sdata, struct __data *data, struct __counters *counters, struct __config *cfg){
+void update_counters(struct session_data *sdata, struct __data *data, struct counters *counters, struct __config *cfg){
    char buf[MAXBUFSIZE];
 #ifdef HAVE_MEMCACHED
    unsigned long long mc, rcvd;
-   struct __counters c;
+   struct counters c;
    char key[MAX_MEMCACHED_KEY_LEN];
    unsigned int flags=0;
 

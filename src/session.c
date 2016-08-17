@@ -20,28 +20,31 @@
 #include "smtp.h"
 
 int is_blocked_by_tcp_wrappers(int sd);
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg);
 
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
-   int i, ret, pos, readpos=0, result, n, inj=ERR, protocol_state, prevlen=0;
-   char *p, *rcpt, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
-   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
-   char *arule = NULL;
-   char *status = NULL;
+   int ret, pos, readpos=0, result, n, protocol_state, prevlen=0;
+   char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    struct session_data sdata;
-   struct parser_state parser_state;
-   int db_conn=0;
    int rc;
-   struct __counters counters;
+   struct counters counters;
+   struct session_ctx sctx;
 
    struct timezone tz;
    struct timeval tv1, tv2;
 
    int starttls = 0;
 
+   bzero(&counters, sizeof(counters));
+
+   sctx.new_sd = new_sd;
+   sctx.inj = ERR;
+   sctx.db_conn = 0;
+   sctx.counters = &counters;
 
 #ifdef HAVE_LIBWRAP
-   if(is_blocked_by_tcp_wrappers(new_sd) == 1) return 0;
+   if(is_blocked_by_tcp_wrappers(sctx.new_sd) == 1) return 0;
 #endif
 
    srand(getpid());
@@ -51,24 +54,20 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    init_session_data(&sdata, cfg);
    sdata.tls = 0;
 
-   bzero(&counters, sizeof(counters));
-
 
    /* open database connection */
 
-   db_conn = 0;
-
 #ifdef NEED_MYSQL
    if(open_database(&sdata, cfg) == OK){
-      db_conn = 1;
+      sctx.db_conn = 1;
    }
    else
       syslog(LOG_PRIORITY, "%s", ERR_MYSQL_CONNECT);
 #endif
 
-   if(db_conn == 0){
+   if(sctx.db_conn == 0){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR_TMP, cfg->hostid);
-      send(new_sd, buf, strlen(buf), 0);
+      send(sctx.new_sd, buf, strlen(buf), 0);
       return 0;
    }
 
@@ -81,10 +80,10 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_220_BANNER, cfg->hostid);
 #endif
 
-   send(new_sd, buf, strlen(buf), 0);
+   send(sctx.new_sd, buf, strlen(buf), 0);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
-   while((n = recvtimeoutssl(new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, data->ssl)) > 0){
+   while((n = recvtimeoutssl(sctx.new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, data->ssl)) > 0){
          pos = 0;
 
          /* accept mail data */
@@ -119,13 +118,16 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
 
                protocol_state = SMTP_STATE_PERIOD;
 
+
                /* make sure we had a successful read */
 
                rc = fsync(sdata.fd);
                close(sdata.fd);
 
+
                gettimeofday(&tv2, &tz);
                sdata.__acquire = tvdiff(tv2, tv1);
+
 
                if(rc){
                   syslog(LOG_PRIORITY, "failed writing data: %s", sdata.ttmpfile);
@@ -134,7 +136,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   for(i=0; i<sdata.num_of_rcpt_to; i++){
                #endif
 
-                     write1(new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, data->ssl);
+                     write1(sctx.new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, data->ssl);
 
                #ifdef HAVE_LMTP
                   }
@@ -144,145 +146,9 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                   goto AFTER_PERIOD;
                }
 
-
-               gettimeofday(&tv1, &tz);
-
-               data->folder = 0;
-
-               parser_state = parse_message(&sdata, 1, data, cfg);
-               post_parse(&sdata, &parser_state, cfg);
-
-               gettimeofday(&tv2, &tz);
-               sdata.__parsed = tvdiff(tv2, tv1);
-
-               if(cfg->syslog_recipients == 1){
-                  rcpt = parser_state.b_to;
-                  do {
-                     rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
-
-                     if(does_it_seem_like_an_email_address(tmpbuf) == 1){
-                        syslog(LOG_PRIORITY, "%s: rcpt=%s", sdata.ttmpfile, tmpbuf);
-                     }
-                  } while(rcpt);
-               }
-
-               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata.ttmpfile);
-
-               if(cfg->archive_only_mydomains == 1 && sdata.internal_sender == 0 && sdata.internal_recipient == 0){
-                  remove_stripped_attachments(&parser_state);
-                  inj = ERR_MYDOMAINS;
-
-                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s\r\n", sdata.ttmpfile);
-                  write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
-
-                  syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata.ttmpfile, sdata.fromemail, parser_state.message_id);
-
-                  goto END_OF_PROCESSING;
-               }
-
-               make_digests(&sdata, cfg);
-
-            #ifdef HAVE_ANTIVIRUS
-               if(cfg->use_antivirus == 1){
-                  sdata.rav = do_av_check(&sdata, &virusinfo[0], data, cfg);
-               }
-            #endif
+               process_written_file(&sctx, &sdata, data, cfg);
 
 
-
-            #ifdef HAVE_LMTP
-               for(i=0; i<sdata.num_of_rcpt_to; i++){
-            #else
-               i = 0;
-            #endif
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata.ttmpfile, i);
-
-                  inj = ERR;
-                  status = S_STATUS_UNDEF;
-
-
-                  if(db_conn == 1){
-
-                     if(sdata.restored_copy == 1){
-                        syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata.ttmpfile);
-                        inj = OK;
-                     }
-                     else if(sdata.tot_len < cfg->min_message_size){
-                        syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata.ttmpfile, sdata.tot_len);
-                        inj = OK;
-                     }
-                     else if(AVIR_VIRUS == sdata.rav){
-                        syslog(LOG_PRIORITY, "%s: found virus: %s", sdata.ttmpfile, virusinfo);
-                        counters.c_virus++;
-                        inj = OK;
-                     } else if(strlen(sdata.bodydigest) < 10) {
-                        syslog(LOG_PRIORITY, "%s: invalid digest", sdata.ttmpfile);
-                        inj = ERR;
-                     } else {
-                        if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata.ttmpfile);
-
-                        /* check message against archiving rules */
-
-                        arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata.tot_len, sdata.spam_message);
-
-                        if(arule){
-                           syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata.ttmpfile, arule);
-                           inj = OK;
-                           counters.c_ignore++;
-
-                           remove_stripped_attachments(&parser_state);
-
-                           status = S_STATUS_DISCARDED;
-                        }
-                        else {
-                           inj = process_message(&sdata, &parser_state, data, cfg);
-                           unlink(parser_state.message_id_hash);
-                           counters.c_size += sdata.tot_len;
-                           counters.c_stored_size = sdata.stored_len;
-
-                           status = S_STATUS_STORED;
-                        }
-
-                     }
-
-                  }
-
-
-
-                  /* set the accept buffer */
-
-                  snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata.ttmpfile, sdata.rcptto[i]);
-
-                  if(inj == ERR){
-                     snprintf(sdata.acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata.ttmpfile, sdata.rcptto[i]);
-                     status = S_STATUS_ERROR;
-                  }
-
-                  write1(new_sd, sdata.acceptbuf, strlen(sdata.acceptbuf), sdata.tls, data->ssl);
-
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, sdata.acceptbuf);
-
-                  counters.c_rcvd++;
-
-                  if(inj == ERR_EXISTS){
-                     syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata.ttmpfile, sdata.duplicate_id, parser_state.message_id);
-                     counters.c_duplicate++;
-                     status = S_STATUS_DUPLICATE;
-                  }
-
-                  snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f", 
-                               (sdata.__acquire+sdata.__parsed+sdata.__av+sdata.__compress+sdata.__encrypt+sdata.__store)/1000000.0,
-                                   sdata.__acquire/1000000.0, sdata.__parsed/1000000.0, sdata.__av/1000000.0, sdata.__compress/1000000.0, sdata.__encrypt/1000000.0, sdata.__store/1000000.0);
-
-                  syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s", sdata.ttmpfile, sdata.fromemail, sdata.tot_len, sdata.stored_len, parser_state.n_attachments, parser_state.reference, parser_state.message_id, parser_state.retention, data->folder, delay, status);
-
-
-
-            #ifdef HAVE_LMTP
-               } /* for */
-            #endif
-
-            END_OF_PROCESSING:
 
                unlink(sdata.ttmpfile);
                unlink(sdata.tmpframe);
@@ -302,7 +168,7 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
                if(puf[n-2] != '\r' && puf[n-1] != '\n'){
                   memmove(puf, puf+pos, n-pos);
                   memset(puf+n-pos, 0, MAXBUFSIZE-n+pos);
-                  recvtimeout(new_sd, buf, MAXBUFSIZE, TIMEOUT);
+                  recvtimeout(sctx.new_sd, buf, MAXBUFSIZE, TIMEOUT);
                   strncat(puf, buf, MAXBUFSIZE-1-n+pos);
                   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sdata.ttmpfile, puf);
                   pos = 0;
@@ -384,7 +250,7 @@ AFTER_PERIOD:
          if(strncasecmp(buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
             memset(last2buf, 0, 2*MAXBUFSIZE+1);
             memset(prevbuf, 0, MAXBUFSIZE);
-            inj = ERR;
+            sctx.inj = ERR;
             prevlen = 0;
 
             process_command_data(&sdata, &protocol_state, &resp[0], sizeof(resp)-1);
@@ -434,7 +300,7 @@ AFTER_PERIOD:
     * ie. we have timed out than send back 421 error message
     */
 
-   if(protocol_state < SMTP_STATE_QUIT && inj == ERR){
+   if(protocol_state < SMTP_STATE_QUIT && sctx.inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
       write1(new_sd, buf, strlen(buf), sdata.tls, data->ssl);
 
@@ -455,7 +321,7 @@ AFTER_PERIOD:
 
 QUITTING:
 
-   update_counters(&sdata, data, &counters, cfg);
+   update_counters(&sdata, data, sctx.counters, cfg);
 
 #ifdef NEED_MYSQL
    close_database(&sdata);
@@ -466,9 +332,9 @@ QUITTING:
       SSL_free(data->ssl);
    }
 
-   if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", counters.c_rcvd);
+   if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", sctx.counters->c_rcvd);
 
-   return (int)counters.c_rcvd;
+   return (int)sctx.counters->c_rcvd;
 }
 
 
@@ -491,4 +357,150 @@ int is_blocked_by_tcp_wrappers(int sd){
 }
 #endif
 
+
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   int i;
+   char *rcpt, *status = NULL, *arule = NULL;
+   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
+   struct parser_state parser_state;
+   struct timezone tz;
+   struct timeval tv1, tv2;
+
+   gettimeofday(&tv1, &tz);
+
+   data->folder = 0;
+
+   parser_state = parse_message(sdata, 1, data, cfg);
+   post_parse(sdata, &parser_state, cfg);
+
+   gettimeofday(&tv2, &tz);
+   sdata->__parsed = tvdiff(tv2, tv1);
+
+   if(cfg->syslog_recipients == 1){
+      rcpt = parser_state.b_to;
+      do {
+         rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
+
+         if(does_it_seem_like_an_email_address(tmpbuf) == 1){
+            syslog(LOG_PRIORITY, "%s: rcpt=%s", sdata->ttmpfile, tmpbuf);
+         }
+      } while(rcpt);
+   }
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata->ttmpfile);
+
+   if(cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
+      remove_stripped_attachments(&parser_state);
+      sctx->inj = ERR_MYDOMAINS;
+
+      snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "250 Ok %s\r\n", sdata->ttmpfile);
+      write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
+
+      syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata->ttmpfile, sdata->fromemail, parser_state.message_id);
+
+      return;
+   }
+
+   make_digests(sdata, cfg);
+
+
+
+#ifdef HAVE_ANTIVIRUS
+   if(cfg->use_antivirus == 1){
+      sdata->rav = do_av_check(sdata, &virusinfo[0], data, cfg);
+   }
+#endif
+
+
+#ifdef HAVE_LMTP
+   for(i=0; i<sdata->num_of_rcpt_to; i++){
+#else
+   i = 0;
+#endif
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
+
+      sctx->inj = ERR;
+      status = S_STATUS_UNDEF;
+
+
+      if(sctx->db_conn == 1){
+
+         if(sdata->restored_copy == 1){
+            syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata->ttmpfile);
+            sctx->inj = OK;
+         }
+         else if(sdata->tot_len < cfg->min_message_size){
+            syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata->ttmpfile, sdata->tot_len);
+            sctx->inj = OK;
+         }
+         else if(AVIR_VIRUS == sdata->rav){
+            syslog(LOG_PRIORITY, "%s: found virus: %s", sdata->ttmpfile, virusinfo);
+            sctx->counters->c_virus++;
+            sctx->inj = OK;
+         } else if(strlen(sdata->bodydigest) < 10) {
+            syslog(LOG_PRIORITY, "%s: invalid digest", sdata->ttmpfile);
+            sctx->inj = ERR;
+         } else {
+            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata->ttmpfile);
+
+            /* check message against archiving rules */
+
+            arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
+
+            if(arule){
+               syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata->ttmpfile, arule);
+               sctx->inj = OK;
+               sctx->counters->c_ignore++;
+
+               remove_stripped_attachments(&parser_state);
+
+               status = S_STATUS_DISCARDED;
+            }
+            else {
+               sctx->inj = process_message(sdata, &parser_state, data, cfg);
+               unlink(parser_state.message_id_hash);
+               sctx->counters->c_size += sdata->tot_len;
+               sctx->counters->c_stored_size = sdata->stored_len;
+
+               status = S_STATUS_STORED;
+            }
+
+         }
+
+      } /* db_conn */
+
+      /* set the accept buffer */
+
+      snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata->ttmpfile, sdata->rcptto[i]);
+
+      if(sctx->inj == ERR){
+         snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata->ttmpfile, sdata->rcptto[i]);
+         status = S_STATUS_ERROR;
+      }
+
+      write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
+
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
+
+      sctx->counters->c_rcvd++;
+
+      if(sctx->inj == ERR_EXISTS){
+         syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata->ttmpfile, sdata->duplicate_id, parser_state.message_id);
+         sctx->counters->c_duplicate++;
+         status = S_STATUS_DUPLICATE;
+      }
+
+      snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f",
+                   (sdata->__acquire+sdata->__parsed+sdata->__av+sdata->__compress+sdata->__encrypt+sdata->__store)/1000000.0,
+                       sdata->__acquire/1000000.0, sdata->__parsed/1000000.0, sdata->__av/1000000.0, sdata->__compress/1000000.0, sdata->__encrypt/1000000.0, sdata->__store/1000000.0);
+
+      syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s", sdata->ttmpfile, sdata->fromemail, sdata->tot_len,
+                       sdata->stored_len, parser_state.n_attachments, parser_state.reference, parser_state.message_id, parser_state.retention, data->folder, delay, status);
+
+#ifdef HAVE_LMTP
+   } /* for */
+#endif
+
+
+}
 

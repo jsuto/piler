@@ -363,7 +363,7 @@ struct __data {
 };
 
 
-struct __counters {
+struct counters {
    unsigned long long c_rcvd;
    unsigned long long c_virus;
    unsigned long long c_duplicate;
@@ -371,6 +371,15 @@ struct __counters {
    unsigned long long c_size;
    unsigned long long c_stored_size;
 };
+
+
+struct session_ctx {
+   int new_sd;
+   int db_conn;
+   int inj;
+   struct counters *counters;
+};
+
 
 #endif /* _DEFS_H */
 
