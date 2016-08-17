@@ -20,7 +20,9 @@
 #include "smtp.h"
 
 int is_blocked_by_tcp_wrappers(int sd);
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, char *rcptto, struct __config *cfg);
 void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg);
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct parser_state *parser_state, struct __config *cfg);
 
 
 int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
@@ -41,6 +43,8 @@ int handle_smtp_session(int new_sd, struct __data *data, struct __config *cfg){
    sctx.new_sd = new_sd;
    sctx.inj = ERR;
    sctx.db_conn = 0;
+   sctx.status = NULL;
+   sctx.message_id = NULL;
    sctx.counters = &counters;
 
 #ifdef HAVE_LIBWRAP
@@ -360,8 +364,8 @@ int is_blocked_by_tcp_wrappers(int sd){
 
 void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg){
    int i;
-   char *rcpt, *status = NULL, *arule = NULL;
-   char virusinfo[SMALLBUFSIZE], delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
+   char *rcpt;
+   char delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
    struct parser_state parser_state;
    struct timezone tz;
    struct timeval tv1, tv2;
@@ -372,6 +376,8 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
    parser_state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &parser_state, cfg);
+
+   sctx->message_id = parser_state.message_id;
 
    gettimeofday(&tv2, &tz);
    sdata->__parsed = tvdiff(tv2, tv1);
@@ -403,8 +409,6 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
    make_digests(sdata, cfg);
 
-
-
 #ifdef HAVE_ANTIVIRUS
    if(cfg->use_antivirus == 1){
       sdata->rav = do_av_check(sdata, &virusinfo[0], data, cfg);
@@ -419,83 +423,22 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 #endif
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
 
-      sctx->inj = ERR;
-      status = S_STATUS_UNDEF;
+      process_data(sctx, sdata, data, &parser_state, cfg);
 
+      send_response_to_data(sctx, sdata, data, sdata->rcptto[i], cfg);
 
-      if(sctx->db_conn == 1){
-
-         if(sdata->restored_copy == 1){
-            syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata->ttmpfile);
-            sctx->inj = OK;
-         }
-         else if(sdata->tot_len < cfg->min_message_size){
-            syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata->ttmpfile, sdata->tot_len);
-            sctx->inj = OK;
-         }
-         else if(AVIR_VIRUS == sdata->rav){
-            syslog(LOG_PRIORITY, "%s: found virus: %s", sdata->ttmpfile, virusinfo);
-            sctx->counters->c_virus++;
-            sctx->inj = OK;
-         } else if(strlen(sdata->bodydigest) < 10) {
-            syslog(LOG_PRIORITY, "%s: invalid digest", sdata->ttmpfile);
-            sctx->inj = ERR;
-         } else {
-            if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata->ttmpfile);
-
-            /* check message against archiving rules */
-
-            arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
-
-            if(arule){
-               syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata->ttmpfile, arule);
-               sctx->inj = OK;
-               sctx->counters->c_ignore++;
-
-               remove_stripped_attachments(&parser_state);
-
-               status = S_STATUS_DISCARDED;
-            }
-            else {
-               sctx->inj = process_message(sdata, &parser_state, data, cfg);
-               unlink(parser_state.message_id_hash);
-               sctx->counters->c_size += sdata->tot_len;
-               sctx->counters->c_stored_size = sdata->stored_len;
-
-               status = S_STATUS_STORED;
-            }
-
-         }
-
-      } /* db_conn */
-
-      /* set the accept buffer */
-
-      snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata->ttmpfile, sdata->rcptto[i]);
-
-      if(sctx->inj == ERR){
-         snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata->ttmpfile, sdata->rcptto[i]);
-         status = S_STATUS_ERROR;
-      }
-
-      write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
-
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
-
-      sctx->counters->c_rcvd++;
-
-      if(sctx->inj == ERR_EXISTS){
-         syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata->ttmpfile, sdata->duplicate_id, parser_state.message_id);
-         sctx->counters->c_duplicate++;
-         status = S_STATUS_DUPLICATE;
-      }
 
       snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f",
-                   (sdata->__acquire+sdata->__parsed+sdata->__av+sdata->__compress+sdata->__encrypt+sdata->__store)/1000000.0,
-                       sdata->__acquire/1000000.0, sdata->__parsed/1000000.0, sdata->__av/1000000.0, sdata->__compress/1000000.0, sdata->__encrypt/1000000.0, sdata->__store/1000000.0);
+                                     (sdata->__acquire+sdata->__parsed+sdata->__av+sdata->__compress+sdata->__encrypt+sdata->__store)/1000000.0,
+                                     sdata->__acquire/1000000.0, sdata->__parsed/1000000.0,
+                                     sdata->__av/1000000.0, sdata->__compress/1000000.0,
+                                     sdata->__encrypt/1000000.0, sdata->__store/1000000.0);
 
-      syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s", sdata->ttmpfile, sdata->fromemail, sdata->tot_len,
-                       sdata->stored_len, parser_state.n_attachments, parser_state.reference, parser_state.message_id, parser_state.retention, data->folder, delay, status);
+      syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s",
+                                                                                         sdata->ttmpfile, sdata->fromemail, sdata->tot_len,
+                                                                                         sdata->stored_len, parser_state.n_attachments,
+                                                                                         parser_state.reference, parser_state.message_id,
+                                                                                         parser_state.retention, data->folder, delay, sctx->status);
 
 #ifdef HAVE_LMTP
    } /* for */
@@ -504,3 +447,82 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
 }
 
+
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct parser_state *parser_state, struct __config *cfg){
+   char *arule = NULL;
+   char virusinfo[SMALLBUFSIZE];
+
+   sctx->inj = ERR;
+   sctx->status = S_STATUS_UNDEF;
+
+   if(sctx->db_conn == 1){
+
+      if(sdata->restored_copy == 1){
+         syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata->ttmpfile);
+         sctx->inj = OK;
+      }
+      else if(sdata->tot_len < cfg->min_message_size){
+         syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata->ttmpfile, sdata->tot_len);
+         sctx->inj = OK;
+      }
+      else if(AVIR_VIRUS == sdata->rav){
+         syslog(LOG_PRIORITY, "%s: found virus: %s", sdata->ttmpfile, virusinfo);
+         sctx->counters->c_virus++;
+         sctx->inj = OK;
+      } else if(strlen(sdata->bodydigest) < 10) {
+         syslog(LOG_PRIORITY, "%s: invalid digest", sdata->ttmpfile);
+         sctx->inj = ERR;
+      } else {
+         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata->ttmpfile);
+
+         /* check message against archiving rules */
+
+         arule = check_againt_ruleset(data->archiving_rules, parser_state, sdata->tot_len, sdata->spam_message);
+
+         if(arule){
+            syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata->ttmpfile, arule);
+            sctx->inj = OK;
+            sctx->counters->c_ignore++;
+
+            remove_stripped_attachments(parser_state);
+
+            sctx->status = S_STATUS_DISCARDED;
+         }
+         else {
+            sctx->inj = process_message(sdata, parser_state, data, cfg);
+            unlink(parser_state->message_id_hash);
+            sctx->counters->c_size += sdata->tot_len;
+            sctx->counters->c_stored_size = sdata->stored_len;
+
+            sctx->status = S_STATUS_STORED;
+         }
+
+      }
+
+   }
+}
+
+
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, char *rcptto, struct __config *cfg){
+
+   /* set the accept buffer */
+
+   snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "250 Ok %s <%s>\r\n", sdata->ttmpfile, rcptto);
+
+   if(sctx->inj == ERR){
+      snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "451 %s <%s>\r\n", sdata->ttmpfile, rcptto);
+      sctx->status = S_STATUS_ERROR;
+   }
+
+   write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
+
+   sctx->counters->c_rcvd++;
+
+   if(sctx->inj == ERR_EXISTS){
+      syslog(LOG_PRIORITY, "%s: discarding: duplicate message, id: %llu, message-id: %s", sdata->ttmpfile, sdata->duplicate_id, sctx->message_id);
+      sctx->counters->c_duplicate++;
+      sctx->status = S_STATUS_DUPLICATE;
+   }
+}
