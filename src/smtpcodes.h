@@ -36,6 +36,9 @@
 #define SMTP_RESP_250_OK "250 Ok\r\n"
 #define SMTP_RESP_250_EXTENSIONS "250-%s\r\n250-PIPELINING\r\n%s250-SIZE\r\n250 8BITMIME\r\n"
 
+#define SMTP_EXTENSION_STARTTLS "250-STARTTLS\r\n"
+#define SMTP_EXTENSION_CHUNKING "250-CHUNKING\r\n"
+
 #define SMTP_RESP_354_DATA_OK "354 Send mail data; end it with <CRLF>.<CRLF>\r\n"
 
 #define SMTP_RESP_421_ERR "421 %s Error: timed out\r\n"

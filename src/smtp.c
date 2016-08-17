@@ -22,11 +22,16 @@
 
 void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, int *protocol_state, char *resp, int resplen, struct __config *cfg){
    char tmpbuf[MAXBUFSIZE];
+   char extensions[SMALLBUFSIZE];
+
+   memset(extensions, 0, sizeof(extensions));
 
    if(*protocol_state == SMTP_STATE_INIT) *protocol_state = SMTP_STATE_HELO;
 
-   if(sdata->tls == 0) snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, data->starttls);
-   else snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, "");
+   if(sdata->tls == 0) snprintf(extensions, sizeof(extensions)-1, "%s", data->starttls);
+   if(cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
+
+   snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, extensions);
 
    strncat(resp, tmpbuf, resplen-strlen(resp));
 }

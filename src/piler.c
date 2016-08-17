@@ -320,7 +320,7 @@ void initialise_configuration(){
    initrules(data.folder_rules);
 
    if(cfg.tls_enable > 0 && data.ctx == NULL && init_ssl() == OK){
-      snprintf(data.starttls, sizeof(data.starttls)-1, "250-STARTTLS\r\n");
+      snprintf(data.starttls, sizeof(data.starttls)-1, SMTP_EXTENSION_STARTTLS);
    }
 
    if(open_database(&sdata, &cfg) == ERR){

@@ -25,6 +25,7 @@ struct __config {
 
    int encrypt_messages;
 
+   int enable_chunking;
    int tls_enable;
    char pemfile[MAXVAL];
    char cipher_list[MAXVAL];
