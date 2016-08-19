@@ -26,7 +26,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
 
 
 int handle_smtp_session(struct session_ctx *sctx, struct __data *data, struct __config *cfg){
-   int ret, pos, readpos=0, result, n, protocol_state, prevlen=0;
+   int i, ret, pos, readpos=0, result, n, protocol_state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    struct session_data sdata;
    int rc;
@@ -257,6 +257,26 @@ AFTER_PERIOD:
 
             process_command_data(&sdata, &protocol_state, &resp[0], sizeof(resp)-1);
             continue; 
+         }
+
+
+         if(cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
+            process_command_bdat(sctx, &sdata, data, &protocol_state, buf, &resp[0], sizeof(resp)-1);
+
+            if(protocol_state == SMTP_STATE_BDAT){
+               snprintf(resp, sizeof(resp)-2, "250 octets received\r\n");
+
+               for(i=0; i<sctx->bdat_rounds-1; i++){
+                  send_buffered_response(&sdata, data, starttls, sctx->new_sd, &resp[0], cfg);
+               }
+
+               process_written_file(sctx, &sdata, data, cfg);
+
+               unlink(sdata.ttmpfile);
+               unlink(sdata.tmpframe);
+            }
+
+            continue;
          }
 
 

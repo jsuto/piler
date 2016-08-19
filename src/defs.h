@@ -378,6 +378,8 @@ struct session_ctx {
    int new_sd;
    int db_conn;
    int inj;
+   int bdat_rounds;
+   int bdat_last_round;
    struct parser_state *parser_state;
    struct counters *counters;
 };

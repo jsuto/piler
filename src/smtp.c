@@ -134,6 +134,95 @@ void process_command_data(struct session_data *sdata, int *protocol_state, char 
 }
 
 
+void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, int *protocol_state, char *buf, char *resp, int resplen){
+   int n, expected_bdat_len;
+   char puf[MAXBUFSIZE];
+
+   if(*protocol_state == SMTP_STATE_RCPT_TO){
+      strncat(resp, SMTP_RESP_503_ERR, resplen);
+      return;
+   }
+
+   sctx->bdat_rounds = 0;
+   sctx->bdat_last_round = 0;
+
+   while(sctx->bdat_last_round != 1){
+      sctx->bdat_rounds++;
+      expected_bdat_len = 0;
+
+      if(sctx->bdat_rounds == 1){
+         expected_bdat_len = extract_bdat_command(sctx, sdata, buf);
+
+         sdata->fd = open(sdata->filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
+         if(sdata->fd == -1){
+            syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sdata->ttmpfile);
+            strncat(resp, SMTP_RESP_451_ERR, resplen);
+            return;
+         }
+         else {
+            *protocol_state = SMTP_STATE_BDAT;
+         }
+      }
+      else if(sctx->bdat_last_round != 1){
+         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, data->ssl)) > 0){
+            expected_bdat_len = extract_bdat_command(sctx, sdata, puf);
+         }
+      }
+
+      if(expected_bdat_len > 0) sdata->tot_len += read_bdat_data(sctx, sdata, data, expected_bdat_len);
+   }
+
+   close(sdata->fd);
+   fsync(sdata->fd);
+
+}
+
+
+int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, char *buf){
+   int expected_bdat_len=0;
+   char *p;
+
+   // determine if this is the last BDAT command
+
+   p = strstr(buf, " LAST");
+   if(p){
+      sctx->bdat_last_round = 1;
+      syslog(LOG_INFO, "%s: BDAT LAST", sdata->ttmpfile);
+      *p = '\0';
+   }
+
+   // determine the size to be read
+
+   p = strchr(buf, ' ');
+   if(p){
+      expected_bdat_len = atoi(p);
+      syslog(LOG_INFO, "%s: BDAT len=%d", sdata->ttmpfile, expected_bdat_len);
+   }
+
+   if(!p || expected_bdat_len <= 0){
+      syslog(LOG_INFO, "%s: malformed BDAT command", sdata->ttmpfile);
+      return -1;
+   }
+
+   return expected_bdat_len;
+}
+
+
+int read_bdat_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, int expected_bdat_len){
+   int n, read_bdat_len=0, written_bdat_len=0;
+   char puf[MAXBUFSIZE];
+
+   while(read_bdat_len < expected_bdat_len){
+      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, data->ssl)) > 0){
+         read_bdat_len += n;
+         written_bdat_len += write(sdata->fd, puf, n);
+      }
+   }
+
+   return written_bdat_len;
+}
+
+
 void process_command_quit(struct session_data *sdata, int *protocol_state, char *resp, int resplen, struct __config *cfg){
    char tmpbuf[MAXBUFSIZE];
 

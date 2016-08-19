@@ -12,6 +12,7 @@
 #define SMTP_STATE_PERIOD 5
 #define SMTP_STATE_QUIT 6
 #define SMTP_STATE_FINISHED 7
+#define SMTP_STATE_BDAT 8
 
 // SMTP commands
 
@@ -20,6 +21,7 @@
 #define SMTP_CMD_MAIL_FROM "MAIL FROM:"
 #define SMTP_CMD_RCPT_TO "RCPT TO:"
 #define SMTP_CMD_DATA "DATA"
+#define SMTP_CMD_BDAT "BDAT"
 #define SMTP_CMD_PERIOD "\x0d\x0a\x2e\x0d\x0a"
 #define SMTP_CMD_QUIT "QUIT"
 #define SMTP_CMD_RESET "RSET"
