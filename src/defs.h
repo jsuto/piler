@@ -375,10 +375,10 @@ struct counters {
 
 struct session_ctx {
    char *status;
-   char *message_id;
    int new_sd;
    int db_conn;
    int inj;
+   struct parser_state *parser_state;
    struct counters *counters;
 };
 

@@ -102,10 +102,10 @@ static void child_sighup_handler(int sig){
 
 
 static void child_main(struct child *ptr){
-   int new_sd;
    char s[INET6_ADDRSTRLEN];
    struct sockaddr_storage client_addr;
    socklen_t addr_size;
+   struct session_ctx sctx;
 
    ptr->messages = 0;
 
@@ -120,9 +120,9 @@ static void child_main(struct child *ptr){
       ptr->status = READY;
 
       addr_size = sizeof(client_addr);
-      new_sd = accept(sd, (struct sockaddr *)&client_addr, &addr_size);
+      sctx.new_sd = accept(sd, (struct sockaddr *)&client_addr, &addr_size);
 
-      if(new_sd == -1) continue;
+      if(sctx.new_sd == -1) continue;
 
       ptr->status = BUSY;
 
@@ -133,10 +133,10 @@ static void child_main(struct child *ptr){
       data.child_serial = ptr->serial;
 
       sig_block(SIGHUP);
-      ptr->messages += handle_smtp_session(new_sd, &data, &cfg);
+      ptr->messages += handle_smtp_session(&sctx, &data, &cfg);
       sig_unblock(SIGHUP);
 
-      close(new_sd);
+      close(sctx.new_sd);
 
       if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
          if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
