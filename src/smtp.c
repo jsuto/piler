@@ -138,7 +138,7 @@ void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, 
    int n, expected_bdat_len;
    char puf[MAXBUFSIZE];
 
-   if(*protocol_state == SMTP_STATE_RCPT_TO){
+   if(*protocol_state != SMTP_STATE_RCPT_TO){
       strncat(resp, SMTP_RESP_503_ERR, resplen);
       return;
    }
@@ -166,15 +166,15 @@ void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, 
       else if(sctx->bdat_last_round != 1){
          if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, data->ssl)) > 0){
             expected_bdat_len = extract_bdat_command(sctx, sdata, puf);
+            if(expected_bdat_len <= 0 && sctx->bdat_rounds > 0) sctx->bdat_rounds--;
          }
       }
 
       if(expected_bdat_len > 0) sdata->tot_len += read_bdat_data(sctx, sdata, data, expected_bdat_len);
    }
 
-   close(sdata->fd);
    fsync(sdata->fd);
-
+   close(sdata->fd);
 }
 
 
@@ -184,7 +184,7 @@ int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, c
 
    // determine if this is the last BDAT command
 
-   p = strstr(buf, " LAST");
+   p = strcasestr(buf, " LAST");
    if(p){
       sctx->bdat_last_round = 1;
       syslog(LOG_INFO, "%s: BDAT LAST", sdata->ttmpfile);
@@ -218,6 +218,8 @@ int read_bdat_data(struct session_ctx *sctx, struct session_data *sdata, struct 
          written_bdat_len += write(sdata->fd, puf, n);
       }
    }
+
+   syslog(LOG_INFO, "%s: wrote %d bytes of BDAT data", sdata->ttmpfile, written_bdat_len);
 
    return written_bdat_len;
 }

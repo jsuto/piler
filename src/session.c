@@ -261,13 +261,14 @@ AFTER_PERIOD:
 
 
          if(cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
+
             process_command_bdat(sctx, &sdata, data, &protocol_state, buf, &resp[0], sizeof(resp)-1);
 
             if(protocol_state == SMTP_STATE_BDAT){
-               snprintf(resp, sizeof(resp)-2, "250 octets received\r\n");
 
                for(i=0; i<sctx->bdat_rounds-1; i++){
-                  send_buffered_response(&sdata, data, starttls, sctx->new_sd, &resp[0], cfg);
+                  syslog(LOG_INFO, "%d, sending bdat response", i);
+                  write1(sctx->new_sd, "250 octets received\r\n", strlen("250 octets received\r\n"), sdata.tls, data->ssl);
                }
 
                process_written_file(sctx, &sdata, data, cfg);
