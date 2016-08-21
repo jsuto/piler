@@ -105,14 +105,17 @@ parser.add_argument("--pem", type=str, help="pem file for starttls", default="")
 
 args = parser.parse_args()
 
+
 if args.starttls and args.pem == "":
-    sys.exit("make a pem file for starttls, and add --pem <pem file>")
+    sys.exit("make a pem file for starttls")
 
 
 with open(dictionary) as f:
     words = f.readlines()
 
 i = 0
+total_count = 0
+
 while i < args.count:
     server = smtplib.SMTP(args.server, args.port, args.helo, 10)
 
@@ -127,13 +130,15 @@ while i < args.count:
         server.sendmail(args.sender, args.rcpt, message)
 
         k += 1
-        i += 1
+        total_count += 1
  
         if args.debug == 0:
-            sys.stdout.write('%s\r' % str(i))
+            sys.stdout.write('%s\r' % str(total_count))
             sys.stdout.flush()
 
     server.quit()
+    i += 1
+
 
 if args.debug == 0:
     print
