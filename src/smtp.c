@@ -134,7 +134,7 @@ void process_command_data(struct session_data *sdata, int *protocol_state, char 
 }
 
 
-void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, int *protocol_state, char *buf, char *resp, int resplen){
+void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen){
    int n, expected_bdat_len;
    char puf[MAXBUFSIZE];
 
@@ -164,13 +164,13 @@ void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, 
          }
       }
       else if(sctx->bdat_last_round != 1){
-         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, data->ssl)) > 0){
+         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, sctx->data->ssl)) > 0){
             expected_bdat_len = extract_bdat_command(sctx, sdata, puf);
             if(expected_bdat_len <= 0 && sctx->bdat_rounds > 0) sctx->bdat_rounds--;
          }
       }
 
-      if(expected_bdat_len > 0) sdata->tot_len += read_bdat_data(sctx, sdata, data, expected_bdat_len);
+      if(expected_bdat_len > 0) sdata->tot_len += read_bdat_data(sctx, sdata, expected_bdat_len);
    }
 
    fsync(sdata->fd);
@@ -208,12 +208,12 @@ int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, c
 }
 
 
-int read_bdat_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, int expected_bdat_len){
+int read_bdat_data(struct session_ctx *sctx, struct session_data *sdata, int expected_bdat_len){
    int n, read_bdat_len=0, written_bdat_len=0;
    char puf[MAXBUFSIZE];
 
    while(read_bdat_len < expected_bdat_len){
-      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, data->ssl)) > 0){
+      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, sctx->data->ssl)) > 0){
          read_bdat_len += n;
          written_bdat_len += write(sdata->fd, puf, n);
       }

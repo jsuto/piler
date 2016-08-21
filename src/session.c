@@ -20,12 +20,12 @@
 #include "smtp.h"
 
 int is_blocked_by_tcp_wrappers(int sd);
-void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, char *rcptto, struct __config *cfg);
-void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg);
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct parser_state *parser_state, struct __config *cfg);
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto, struct __config *cfg);
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg);
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct parser_state *parser_state, struct __config *cfg);
 
 
-int handle_smtp_session(struct session_ctx *sctx, struct __data *data, struct __config *cfg){
+int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
    int i, ret, pos, readpos=0, result, n, protocol_state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    struct session_data sdata;
@@ -85,7 +85,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __data *data, struct __
    send(sctx->new_sd, buf, strlen(buf), 0);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
-   while((n = recvtimeoutssl(sctx->new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, data->ssl)) > 0){
+   while((n = recvtimeoutssl(sctx->new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, sctx->data->ssl)) > 0){
          pos = 0;
 
          /* accept mail data */
@@ -138,7 +138,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __data *data, struct __
                   for(i=0; i<sdata.num_of_rcpt_to; i++){
                #endif
 
-                     write1(sctx->new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, data->ssl);
+                     write1(sctx->new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, sctx->data->ssl);
 
                #ifdef HAVE_LMTP
                   }
@@ -148,7 +148,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __data *data, struct __
                   goto AFTER_PERIOD;
                }
 
-               process_written_file(sctx, &sdata, data, cfg);
+               process_written_file(sctx, &sdata, cfg);
 
 
 
@@ -217,7 +217,7 @@ AFTER_PERIOD:
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
 
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            process_command_ehlo_lhlo(&sdata, data, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
+            process_command_ehlo_lhlo(&sdata, sctx->data, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
             continue;
 
             /* FIXME: implement the ENHANCEDSTATUSCODE extensions */
@@ -231,8 +231,8 @@ AFTER_PERIOD:
          }
 
 
-         if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(data->starttls) > 4 && sdata.tls == 0){
-            process_command_starttls(&sdata, data, &protocol_state, &starttls, sctx->new_sd, &resp[0], sizeof(resp)-1, cfg);
+         if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(sctx->data->starttls) > 4 && sdata.tls == 0){
+            process_command_starttls(&sdata, sctx->data, &protocol_state, &starttls, sctx->new_sd, &resp[0], sizeof(resp)-1, cfg);
             continue;
          }
 
@@ -262,16 +262,16 @@ AFTER_PERIOD:
 
          if(cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
 
-            process_command_bdat(sctx, &sdata, data, &protocol_state, buf, &resp[0], sizeof(resp)-1);
+            process_command_bdat(sctx, &sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1);
 
             if(protocol_state == SMTP_STATE_BDAT){
 
                for(i=0; i<sctx->bdat_rounds-1; i++){
-                  syslog(LOG_INFO, "%d, sending bdat response", i);
-                  write1(sctx->new_sd, "250 octets received\r\n", strlen("250 octets received\r\n"), sdata.tls, data->ssl);
+                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: sending bdat response (%d)", sdata.ttmpfile, i);
+                  write1(sctx->new_sd, "250 octets received\r\n", strlen("250 octets received\r\n"), sdata.tls, sctx->data->ssl);
                }
 
-               process_written_file(sctx, &sdata, data, cfg);
+               process_written_file(sctx, &sdata, cfg);
 
                unlink(sdata.ttmpfile);
                unlink(sdata.tmpframe);
@@ -307,7 +307,7 @@ AFTER_PERIOD:
 
 
       if(strlen(resp) > 0){
-         send_buffered_response(&sdata, data, starttls, sctx->new_sd, &resp[0], cfg);
+         send_buffered_response(&sdata, sctx->data, starttls, sctx->new_sd, &resp[0], cfg);
          memset(resp, 0, sizeof(resp));
       }
 
@@ -325,7 +325,7 @@ AFTER_PERIOD:
 
    if(protocol_state < SMTP_STATE_QUIT && sctx->inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
-      write1(sctx->new_sd, buf, strlen(buf), sdata.tls, data->ssl);
+      write1(sctx->new_sd, buf, strlen(buf), sdata.tls, sctx->data->ssl);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
@@ -344,15 +344,15 @@ AFTER_PERIOD:
 
 QUITTING:
 
-   update_counters(&sdata, data, sctx->counters, cfg);
+   update_counters(&sdata, sctx->data, sctx->counters, cfg);
 
 #ifdef NEED_MYSQL
    close_database(&sdata);
 #endif
 
    if(sdata.tls == 1){
-      SSL_shutdown(data->ssl);
-      SSL_free(data->ssl);
+      SSL_shutdown(sctx->data->ssl);
+      SSL_free(sctx->data->ssl);
    }
 
    if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", sctx->counters->c_rcvd);
@@ -381,7 +381,7 @@ int is_blocked_by_tcp_wrappers(int sd){
 #endif
 
 
-void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct __config *cfg){
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg){
    int i;
    char *rcpt;
    char delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
@@ -391,9 +391,9 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
    gettimeofday(&tv1, &tz);
 
-   data->folder = 0;
+   sctx->data->folder = 0;
 
-   parser_state = parse_message(sdata, 1, data, cfg);
+   parser_state = parse_message(sdata, 1, sctx->data, cfg);
    post_parse(sdata, &parser_state, cfg);
 
    sctx->parser_state = &parser_state;
@@ -419,7 +419,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
       sctx->inj = ERR_MYDOMAINS;
 
       snprintf(sdata->acceptbuf, SMALLBUFSIZE-1, "250 Ok %s\r\n", sdata->ttmpfile);
-      write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
+      write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, sctx->data->ssl);
 
       syslog(LOG_PRIORITY, "%s: discarding: not on mydomains, from=%s, message-id=%s", sdata->ttmpfile, sdata->fromemail, parser_state.message_id);
 
@@ -430,7 +430,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
 #ifdef HAVE_ANTIVIRUS
    if(cfg->use_antivirus == 1){
-      sdata->rav = do_av_check(sdata, &virusinfo[0], data, cfg);
+      sdata->rav = do_av_check(sdata, &virusinfo[0], sctx->data, cfg);
    }
 #endif
 
@@ -442,9 +442,9 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 #endif
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
 
-      process_data(sctx, sdata, data, &parser_state, cfg);
+      process_data(sctx, sdata, &parser_state, cfg);
 
-      send_response_to_data(sctx, sdata, data, sdata->rcptto[i], cfg);
+      send_response_to_data(sctx, sdata, sdata->rcptto[i], cfg);
 
 
       snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f",
@@ -457,7 +457,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
                                                                                          sdata->ttmpfile, sdata->fromemail, sdata->tot_len,
                                                                                          sdata->stored_len, parser_state.n_attachments,
                                                                                          parser_state.reference, parser_state.message_id,
-                                                                                         parser_state.retention, data->folder, delay, sctx->status);
+                                                                                         parser_state.retention, sctx->data->folder, delay, sctx->status);
 
 #ifdef HAVE_LMTP
    } /* for */
@@ -467,7 +467,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 }
 
 
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, struct parser_state *parser_state, struct __config *cfg){
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct parser_state *parser_state, struct __config *cfg){
    char *arule = NULL;
    char virusinfo[SMALLBUFSIZE];
 
@@ -496,7 +496,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
 
          /* check message against archiving rules */
 
-         arule = check_againt_ruleset(data->archiving_rules, parser_state, sdata->tot_len, sdata->spam_message);
+         arule = check_againt_ruleset(sctx->data->archiving_rules, parser_state, sdata->tot_len, sdata->spam_message);
 
          if(arule){
             syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata->ttmpfile, arule);
@@ -508,7 +508,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
             sctx->status = S_STATUS_DISCARDED;
          }
          else {
-            sctx->inj = process_message(sdata, parser_state, data, cfg);
+            sctx->inj = process_message(sdata, parser_state, sctx->data, cfg);
             unlink(parser_state->message_id_hash);
             sctx->counters->c_size += sdata->tot_len;
             sctx->counters->c_stored_size = sdata->stored_len;
@@ -522,7 +522,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
 }
 
 
-void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, struct __data *data, char *rcptto, struct __config *cfg){
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto, struct __config *cfg){
 
    /* set the accept buffer */
 
@@ -533,7 +533,7 @@ void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata,
       sctx->status = S_STATUS_ERROR;
    }
 
-   write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, data->ssl);
+   write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, sctx->data->ssl);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
 
