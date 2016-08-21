@@ -109,6 +109,7 @@ static void child_main(struct child *ptr){
 
    ptr->messages = 0;
    sctx.data = &data;
+   sctx.cfg = &cfg;
 
    if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) started main()", getpid(), ptr->serial);
 
@@ -134,7 +135,7 @@ static void child_main(struct child *ptr){
       data.child_serial = ptr->serial;
 
       sig_block(SIGHUP);
-      ptr->messages += handle_smtp_session(&sctx, &cfg);
+      ptr->messages += handle_smtp_session(&sctx);
       sig_unblock(SIGHUP);
 
       close(sctx.new_sd);

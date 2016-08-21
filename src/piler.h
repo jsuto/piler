@@ -35,7 +35,7 @@ int make_digests(struct session_data *sdata, struct __config *cfg);
 void digest_file(char *filename, char *digest);
 void digest_string(char *s, char *digest);
 
-int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg);
+int handle_smtp_session(struct session_ctx *sctx);
 
 void remove_stripped_attachments(struct parser_state *state);
 int process_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);

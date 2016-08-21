@@ -20,7 +20,7 @@
 #include <smtp.h>
 
 
-void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, int *protocol_state, char *resp, int resplen, struct __config *cfg){
+void process_command_ehlo_lhlo(struct session_ctx *sctx, struct session_data *sdata, int *protocol_state, char *resp, int resplen){
    char tmpbuf[MAXBUFSIZE];
    char extensions[SMALLBUFSIZE];
 
@@ -28,26 +28,26 @@ void process_command_ehlo_lhlo(struct session_data *sdata, struct __data *data, 
 
    if(*protocol_state == SMTP_STATE_INIT) *protocol_state = SMTP_STATE_HELO;
 
-   if(sdata->tls == 0) snprintf(extensions, sizeof(extensions)-1, "%s", data->starttls);
-   if(cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
+   if(sdata->tls == 0) snprintf(extensions, sizeof(extensions)-1, "%s", sctx->data->starttls);
+   if(sctx->cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
 
-   snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, cfg->hostid, extensions);
+   snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, sctx->cfg->hostid, extensions);
 
    strncat(resp, tmpbuf, resplen-strlen(resp));
 }
 
 
-void process_command_starttls(struct session_data *sdata, struct __data *data, int *protocol_state, int *starttls, int new_sd, char *resp, int resplen, struct __config *cfg){
+void process_command_starttls(struct session_ctx *sctx, struct session_data *sdata, int *protocol_state, int *starttls, char *resp, int resplen){
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata->ttmpfile);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sdata->ttmpfile);
 
-   if(data->ctx){
-      data->ssl = SSL_new(data->ctx);
-      if(data->ssl){
+   if(sctx->data->ctx){
+      sctx->data->ssl = SSL_new(sctx->data->ctx);
+      if(sctx->data->ssl){
 
-         SSL_set_options(data->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
+         SSL_set_options(sctx->data->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
 
-         if(SSL_set_fd(data->ssl, new_sd) == 1){
+         if(SSL_set_fd(sctx->data->ssl, sctx->new_sd) == 1){
             strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, resplen);
             *starttls = 1;
             *protocol_state = SMTP_STATE_INIT;
@@ -255,29 +255,29 @@ void process_command_reset(struct session_data *sdata, int *protocol_state, char
 }
 
 
-void send_buffered_response(struct session_data *sdata, struct __data *data, int starttls, int new_sd, char *resp, struct __config *cfg){
+void send_buffered_response(struct session_ctx *sctx, struct session_data *sdata, int starttls, char *resp){
    int rc;
    char ssl_error[SMALLBUFSIZE];
 
-   write1(new_sd, resp, strlen(resp), sdata->tls, data->ssl);
+   write1(sctx->new_sd, resp, strlen(resp), sdata->tls, sctx->data->ssl);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, resp);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, resp);
    memset(resp, 0, MAXBUFSIZE);
 
    if(starttls == 1 && sdata->tls == 0){
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata->ttmpfile);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata->ttmpfile);
 
-      rc = SSL_accept(data->ssl);
+      rc = SSL_accept(sctx->data->ssl);
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sdata->ttmpfile);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sdata->ttmpfile);
 
       if(rc == 1){
          sdata->tls = 1;
       }
       else {
          ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata->ttmpfile, rc, SSL_get_error(data->ssl, rc), ssl_error);
+         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata->ttmpfile, rc, SSL_get_error(sctx->data->ssl, rc), ssl_error);
       }
    }
 }

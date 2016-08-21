@@ -20,12 +20,12 @@
 #include "smtp.h"
 
 int is_blocked_by_tcp_wrappers(int sd);
-void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto, struct __config *cfg);
-void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg);
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg);
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto);
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata);
+void process_data(struct session_ctx *sctx, struct session_data *sdata);
 
 
-int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
+int handle_smtp_session(struct session_ctx *sctx){
    int i, ret, pos, readpos=0, result, n, protocol_state, prevlen=0;
    char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], resp[MAXBUFSIZE], prevbuf[MAXBUFSIZE], last2buf[2*MAXBUFSIZE+1];
    struct session_data sdata;
@@ -53,14 +53,14 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
 
    protocol_state = SMTP_STATE_INIT;
 
-   init_session_data(&sdata, cfg);
+   init_session_data(&sdata, sctx->cfg);
    sdata.tls = 0;
 
 
    /* open database connection */
 
 #ifdef NEED_MYSQL
-   if(open_database(&sdata, cfg) == OK){
+   if(open_database(&sdata, sctx->cfg) == OK){
       sctx->db_conn = 1;
    }
    else
@@ -68,7 +68,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
 #endif
 
    if(sctx->db_conn == 0){
-      snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR_TMP, cfg->hostid);
+      snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR_TMP, sctx->cfg->hostid);
       send(sctx->new_sd, buf, strlen(buf), 0);
       return 0;
    }
@@ -77,13 +77,13 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
    gettimeofday(&tv1, &tz);
 
 #ifdef HAVE_LMTP
-   snprintf(buf, MAXBUFSIZE-1, LMTP_RESP_220_BANNER, cfg->hostid);
+   snprintf(buf, MAXBUFSIZE-1, LMTP_RESP_220_BANNER, sctx->cfg->hostid);
 #else
-   snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_220_BANNER, cfg->hostid);
+   snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_220_BANNER, sctx->cfg->hostid);
 #endif
 
    send(sctx->new_sd, buf, strlen(buf), 0);
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
    while((n = recvtimeoutssl(sctx->new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, sctx->data->ssl)) > 0){
          pos = 0;
@@ -105,7 +105,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
 	       /* fix position */
                pos = pos - prevlen;
 
-               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: period found", sdata.ttmpfile);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: period found", sdata.ttmpfile);
 
 
                /* write data only to (and including) the trailing period (.) */
@@ -115,7 +115,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
                /* fix posistion! */
                pos += strlen(SMTP_CMD_PERIOD);
 
-               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sdata.ttmpfile);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sdata.ttmpfile);
 
 
                protocol_state = SMTP_STATE_PERIOD;
@@ -148,7 +148,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
                   goto AFTER_PERIOD;
                }
 
-               process_written_file(sctx, &sdata, cfg);
+               process_written_file(sctx, &sdata);
 
 
 
@@ -172,7 +172,7 @@ int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
                   memset(puf+n-pos, 0, MAXBUFSIZE-n+pos);
                   recvtimeout(sctx->new_sd, buf, MAXBUFSIZE, TIMEOUT);
                   strncat(puf, buf, MAXBUFSIZE-1-n+pos);
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sdata.ttmpfile, puf);
+                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sdata.ttmpfile, puf);
                   pos = 0;
                }
 
@@ -198,14 +198,14 @@ AFTER_PERIOD:
       p = &puf[pos];
       readpos = 0;
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: command=*%s*", sdata.ttmpfile, p);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: command=*%s*", sdata.ttmpfile, p);
 
       do {
          p = split(p, '\n', buf, sizeof(buf)-1, &result);
 
          if(result == 0){
             if(strlen(buf) > 0){
-               if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: *%s*", sdata.ttmpfile, buf);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: *%s*", sdata.ttmpfile, buf);
 
                snprintf(puf, sizeof(puf)-5, "%s", buf);
                readpos = strlen(puf);
@@ -214,10 +214,10 @@ AFTER_PERIOD:
             break;
          }
 
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
+         if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
 
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            process_command_ehlo_lhlo(&sdata, sctx->data, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
+            process_command_ehlo_lhlo(sctx, &sdata, &protocol_state, &resp[0], sizeof(resp)-1);
             continue;
 
             /* FIXME: implement the ENHANCEDSTATUSCODE extensions */
@@ -231,14 +231,14 @@ AFTER_PERIOD:
          }
 
 
-         if(cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(sctx->data->starttls) > 4 && sdata.tls == 0){
-            process_command_starttls(&sdata, sctx->data, &protocol_state, &starttls, sctx->new_sd, &resp[0], sizeof(resp)-1, cfg);
+         if(sctx->cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(sctx->data->starttls) > 4 && sdata.tls == 0){
+            process_command_starttls(sctx, &sdata, &protocol_state, &starttls, &resp[0], sizeof(resp)-1);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
-            process_command_mail_from(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, cfg);
+            process_command_mail_from(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, sctx->cfg);
             continue;
          }
 
@@ -260,18 +260,18 @@ AFTER_PERIOD:
          }
 
 
-         if(cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
+         if(sctx->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
 
             process_command_bdat(sctx, &sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1);
 
             if(protocol_state == SMTP_STATE_BDAT){
 
                for(i=0; i<sctx->bdat_rounds-1; i++){
-                  if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: sending bdat response (%d)", sdata.ttmpfile, i);
+                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: sending bdat response (%d)", sdata.ttmpfile, i);
                   write1(sctx->new_sd, "250 octets received\r\n", strlen("250 octets received\r\n"), sdata.tls, sctx->data->ssl);
                }
 
-               process_written_file(sctx, &sdata, cfg);
+               process_written_file(sctx, &sdata);
 
                unlink(sdata.ttmpfile);
                unlink(sdata.tmpframe);
@@ -282,7 +282,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
-            process_command_quit(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
+            process_command_quit(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, sctx->cfg);
             continue;
          }
 
@@ -294,7 +294,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
-            process_command_reset(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, cfg);
+            process_command_reset(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, sctx->cfg);
             continue;
          }
 
@@ -307,7 +307,7 @@ AFTER_PERIOD:
 
 
       if(strlen(resp) > 0){
-         send_buffered_response(&sdata, sctx->data, starttls, sctx->new_sd, &resp[0], cfg);
+         send_buffered_response(sctx, &sdata, starttls, &resp[0]);
          memset(resp, 0, sizeof(resp));
       }
 
@@ -324,10 +324,10 @@ AFTER_PERIOD:
     */
 
    if(protocol_state < SMTP_STATE_QUIT && sctx->inj == ERR){
-      snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, cfg->hostid);
+      snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, sctx->cfg->hostid);
       write1(sctx->new_sd, buf, strlen(buf), sdata.tls, sctx->data->ssl);
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
 
       if(sdata.fd != -1){
 
@@ -344,7 +344,7 @@ AFTER_PERIOD:
 
 QUITTING:
 
-   update_counters(&sdata, sctx->data, sctx->counters, cfg);
+   update_counters(&sdata, sctx->data, sctx->counters, sctx->cfg);
 
 #ifdef NEED_MYSQL
    close_database(&sdata);
@@ -355,7 +355,7 @@ QUITTING:
       SSL_free(sctx->data->ssl);
    }
 
-   if(cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", sctx->counters->c_rcvd);
+   if(sctx->cfg->verbosity >= _LOG_INFO) syslog(LOG_PRIORITY, "processed %llu messages", sctx->counters->c_rcvd);
 
    return (int)sctx->counters->c_rcvd;
 }
@@ -381,7 +381,7 @@ int is_blocked_by_tcp_wrappers(int sd){
 #endif
 
 
-void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg){
+void process_written_file(struct session_ctx *sctx, struct session_data *sdata){
    int i;
    char *rcpt;
    char delay[SMALLBUFSIZE], tmpbuf[SMALLBUFSIZE];
@@ -393,15 +393,15 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
    sctx->data->folder = 0;
 
-   parser_state = parse_message(sdata, 1, sctx->data, cfg);
-   post_parse(sdata, &parser_state, cfg);
+   parser_state = parse_message(sdata, 1, sctx->data, sctx->cfg);
+   post_parse(sdata, &parser_state, sctx->cfg);
 
    sctx->parser_state = &parser_state;
 
    gettimeofday(&tv2, &tz);
    sdata->__parsed = tvdiff(tv2, tv1);
 
-   if(cfg->syslog_recipients == 1){
+   if(sctx->cfg->syslog_recipients == 1){
       rcpt = parser_state.b_to;
       do {
          rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
@@ -412,9 +412,9 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
       } while(rcpt);
    }
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata->ttmpfile);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: parsed message", sdata->ttmpfile);
 
-   if(cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
+   if(sctx->cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
       remove_stripped_attachments(&parser_state);
       sctx->inj = ERR_MYDOMAINS;
 
@@ -426,11 +426,11 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
       return;
    }
 
-   make_digests(sdata, cfg);
+   make_digests(sdata, sctx->cfg);
 
 #ifdef HAVE_ANTIVIRUS
-   if(cfg->use_antivirus == 1){
-      sdata->rav = do_av_check(sdata, &virusinfo[0], sctx->data, cfg);
+   if(sctx->cfg->use_antivirus == 1){
+      sdata->rav = do_av_check(sdata, &virusinfo[0], sctx->data, sctx->cfg);
    }
 #endif
 
@@ -440,11 +440,11 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 #else
    i = 0;
 #endif
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
 
-      process_data(sctx, sdata, cfg);
+      process_data(sctx, sdata);
 
-      send_response_to_data(sctx, sdata, sdata->rcptto[i], cfg);
+      send_response_to_data(sctx, sdata, sdata->rcptto[i]);
 
 
       snprintf(delay, SMALLBUFSIZE-1, "delay=%.2f, delays=%.2f/%.2f/%.2f/%.2f/%.2f/%.2f",
@@ -467,7 +467,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 }
 
 
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg){
+void process_data(struct session_ctx *sctx, struct session_data *sdata){
    char *arule = NULL;
    char virusinfo[SMALLBUFSIZE];
 
@@ -480,7 +480,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
          syslog(LOG_PRIORITY, "%s: discarding: restored copy", sdata->ttmpfile);
          sctx->inj = OK;
       }
-      else if(sdata->tot_len < cfg->min_message_size){
+      else if(sdata->tot_len < sctx->cfg->min_message_size){
          syslog(LOG_PRIORITY, "%s: discarding: too short message (%d bytes)", sdata->ttmpfile, sdata->tot_len);
          sctx->inj = OK;
       }
@@ -492,7 +492,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
          syslog(LOG_PRIORITY, "%s: invalid digest", sdata->ttmpfile);
          sctx->inj = ERR;
       } else {
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata->ttmpfile);
+         if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: processing message", sdata->ttmpfile);
 
          /* check message against archiving rules */
 
@@ -508,7 +508,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
             sctx->status = S_STATUS_DISCARDED;
          }
          else {
-            sctx->inj = process_message(sdata, sctx->parser_state, sctx->data, cfg);
+            sctx->inj = process_message(sdata, sctx->parser_state, sctx->data, sctx->cfg);
             unlink(sctx->parser_state->message_id_hash);
             sctx->counters->c_size += sdata->tot_len;
             sctx->counters->c_stored_size = sdata->stored_len;
@@ -522,7 +522,7 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct _
 }
 
 
-void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto, struct __config *cfg){
+void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto){
 
    /* set the accept buffer */
 
@@ -535,7 +535,7 @@ void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata,
 
    write1(sctx->new_sd, sdata->acceptbuf, strlen(sdata->acceptbuf), sdata->tls, sctx->data->ssl);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, sdata->acceptbuf);
 
    sctx->counters->c_rcvd++;
 
