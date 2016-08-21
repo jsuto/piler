@@ -22,7 +22,7 @@
 int is_blocked_by_tcp_wrappers(int sd);
 void send_response_to_data(struct session_ctx *sctx, struct session_data *sdata, char *rcptto, struct __config *cfg);
 void process_written_file(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg);
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct parser_state *parser_state, struct __config *cfg);
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg);
 
 
 int handle_smtp_session(struct session_ctx *sctx, struct __config *cfg){
@@ -442,7 +442,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 #endif
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: round %d in injection", sdata->ttmpfile, i);
 
-      process_data(sctx, sdata, &parser_state, cfg);
+      process_data(sctx, sdata, cfg);
 
       send_response_to_data(sctx, sdata, sdata->rcptto[i], cfg);
 
@@ -455,9 +455,9 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 
       syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s",
                                                                                          sdata->ttmpfile, sdata->fromemail, sdata->tot_len,
-                                                                                         sdata->stored_len, parser_state.n_attachments,
-                                                                                         parser_state.reference, parser_state.message_id,
-                                                                                         parser_state.retention, sctx->data->folder, delay, sctx->status);
+                                                                                         sdata->stored_len, sctx->parser_state->n_attachments,
+                                                                                         sctx->parser_state->reference, sctx->parser_state->message_id,
+                                                                                         sctx->parser_state->retention, sctx->data->folder, delay, sctx->status);
 
 #ifdef HAVE_LMTP
    } /* for */
@@ -467,7 +467,7 @@ void process_written_file(struct session_ctx *sctx, struct session_data *sdata, 
 }
 
 
-void process_data(struct session_ctx *sctx, struct session_data *sdata, struct parser_state *parser_state, struct __config *cfg){
+void process_data(struct session_ctx *sctx, struct session_data *sdata, struct __config *cfg){
    char *arule = NULL;
    char virusinfo[SMALLBUFSIZE];
 
@@ -496,20 +496,20 @@ void process_data(struct session_ctx *sctx, struct session_data *sdata, struct p
 
          /* check message against archiving rules */
 
-         arule = check_againt_ruleset(sctx->data->archiving_rules, parser_state, sdata->tot_len, sdata->spam_message);
+         arule = check_againt_ruleset(sctx->data->archiving_rules, sctx->parser_state, sdata->tot_len, sdata->spam_message);
 
          if(arule){
             syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", sdata->ttmpfile, arule);
             sctx->inj = OK;
             sctx->counters->c_ignore++;
 
-            remove_stripped_attachments(parser_state);
+            remove_stripped_attachments(sctx->parser_state);
 
             sctx->status = S_STATUS_DISCARDED;
          }
          else {
-            sctx->inj = process_message(sdata, parser_state, sctx->data, cfg);
-            unlink(parser_state->message_id_hash);
+            sctx->inj = process_message(sdata, sctx->parser_state, sctx->data, cfg);
+            unlink(sctx->parser_state->message_id_hash);
             sctx->counters->c_size += sdata->tot_len;
             sctx->counters->c_stored_size = sdata->stored_len;
 
