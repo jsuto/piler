@@ -382,6 +382,7 @@ struct session_ctx {
    int bdat_last_round;
    struct __config *cfg;
    struct __data *data;
+   struct session_data *sdata;
    struct parser_state *parser_state;
    struct counters *counters;
 };

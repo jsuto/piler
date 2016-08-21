@@ -134,7 +134,7 @@ void process_command_data(struct session_data *sdata, int *protocol_state, char 
 }
 
 
-void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen){
+void process_command_bdat(struct session_ctx *sctx, int *protocol_state, char *buf, char *resp, int resplen){
    int n, expected_bdat_len;
    char puf[MAXBUFSIZE];
 
@@ -151,11 +151,11 @@ void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, 
       expected_bdat_len = 0;
 
       if(sctx->bdat_rounds == 1){
-         expected_bdat_len = extract_bdat_command(sctx, sdata, buf);
+         expected_bdat_len = extract_bdat_command(sctx, buf);
 
-         sdata->fd = open(sdata->filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
-         if(sdata->fd == -1){
-            syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sdata->ttmpfile);
+         sctx->sdata->fd = open(sctx->sdata->filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
+         if(sctx->sdata->fd == -1){
+            syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sctx->sdata->ttmpfile);
             strncat(resp, SMTP_RESP_451_ERR, resplen);
             return;
          }
@@ -164,21 +164,21 @@ void process_command_bdat(struct session_ctx *sctx, struct session_data *sdata, 
          }
       }
       else if(sctx->bdat_last_round != 1){
-         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, sctx->data->ssl)) > 0){
-            expected_bdat_len = extract_bdat_command(sctx, sdata, puf);
+         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sctx->sdata->tls, sctx->data->ssl)) > 0){
+            expected_bdat_len = extract_bdat_command(sctx, puf);
             if(expected_bdat_len <= 0 && sctx->bdat_rounds > 0) sctx->bdat_rounds--;
          }
       }
 
-      if(expected_bdat_len > 0) sdata->tot_len += read_bdat_data(sctx, sdata, expected_bdat_len);
+      if(expected_bdat_len > 0) sctx->sdata->tot_len += read_bdat_data(sctx, expected_bdat_len);
    }
 
-   fsync(sdata->fd);
-   close(sdata->fd);
+   fsync(sctx->sdata->fd);
+   close(sctx->sdata->fd);
 }
 
 
-int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, char *buf){
+int extract_bdat_command(struct session_ctx *sctx, char *buf){
    int expected_bdat_len=0;
    char *p;
 
@@ -187,7 +187,7 @@ int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, c
    p = strcasestr(buf, " LAST");
    if(p){
       sctx->bdat_last_round = 1;
-      syslog(LOG_INFO, "%s: BDAT LAST", sdata->ttmpfile);
+      syslog(LOG_INFO, "%s: BDAT LAST", sctx->sdata->ttmpfile);
       *p = '\0';
    }
 
@@ -196,11 +196,11 @@ int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, c
    p = strchr(buf, ' ');
    if(p){
       expected_bdat_len = atoi(p);
-      syslog(LOG_INFO, "%s: BDAT len=%d", sdata->ttmpfile, expected_bdat_len);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: BDAT len=%d", sctx->sdata->ttmpfile, expected_bdat_len);
    }
 
    if(!p || expected_bdat_len <= 0){
-      syslog(LOG_INFO, "%s: malformed BDAT command", sdata->ttmpfile);
+      syslog(LOG_INFO, "%s: malformed BDAT command", sctx->sdata->ttmpfile);
       return -1;
    }
 
@@ -208,18 +208,18 @@ int extract_bdat_command(struct session_ctx *sctx, struct session_data *sdata, c
 }
 
 
-int read_bdat_data(struct session_ctx *sctx, struct session_data *sdata, int expected_bdat_len){
+int read_bdat_data(struct session_ctx *sctx, int expected_bdat_len){
    int n, read_bdat_len=0, written_bdat_len=0;
    char puf[MAXBUFSIZE];
 
    while(read_bdat_len < expected_bdat_len){
-      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sdata->tls, sctx->data->ssl)) > 0){
+      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sctx->sdata->tls, sctx->data->ssl)) > 0){
          read_bdat_len += n;
-         written_bdat_len += write(sdata->fd, puf, n);
+         written_bdat_len += write(sctx->sdata->fd, puf, n);
       }
    }
 
-   syslog(LOG_INFO, "%s: wrote %d bytes of BDAT data", sdata->ttmpfile, written_bdat_len);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes of BDAT data", sctx->sdata->ttmpfile, written_bdat_len);
 
    return written_bdat_len;
 }
@@ -255,29 +255,29 @@ void process_command_reset(struct session_data *sdata, int *protocol_state, char
 }
 
 
-void send_buffered_response(struct session_ctx *sctx, struct session_data *sdata, int starttls, char *resp){
+void send_buffered_response(struct session_ctx *sctx, int starttls, char *resp){
    int rc;
    char ssl_error[SMALLBUFSIZE];
 
-   write1(sctx->new_sd, resp, strlen(resp), sdata->tls, sctx->data->ssl);
+   write1(sctx->new_sd, resp, strlen(resp), sctx->sdata->tls, sctx->data->ssl);
 
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata->ttmpfile, resp);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sctx->sdata->ttmpfile, resp);
    memset(resp, 0, MAXBUFSIZE);
 
-   if(starttls == 1 && sdata->tls == 0){
+   if(starttls == 1 && sctx->sdata->tls == 0){
 
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sdata->ttmpfile);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sctx->sdata->ttmpfile);
 
       rc = SSL_accept(sctx->data->ssl);
 
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sdata->ttmpfile);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sctx->sdata->ttmpfile);
 
       if(rc == 1){
-         sdata->tls = 1;
+         sctx->sdata->tls = 1;
       }
       else {
          ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sdata->ttmpfile, rc, SSL_get_error(sctx->data->ssl, rc), ssl_error);
+         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sctx->sdata->ttmpfile, rc, SSL_get_error(sctx->data->ssl, rc), ssl_error);
       }
    }
 }
