@@ -100,8 +100,13 @@ parser.add_argument("-s", "--server", type=str, help="smtp server", required=Tru
 parser.add_argument("-p", "--port", type=int, help="smtp port", default=25)
 parser.add_argument("--subject", type=str, help="subject", default="This is test subject")
 parser.add_argument("-l", "--msglen", type=int, help="message length (approx.)", default=20000)
+parser.add_argument("--starttls", help="use STARTTLS", action="store_true")
+parser.add_argument("--pem", type=str, help="pem file for starttls", default="")
 
 args = parser.parse_args()
+
+if args.starttls and args.pem == "":
+    sys.exit("make a pem file for starttls, and add --pem <pem file>")
 
 
 with open(dictionary) as f:
@@ -110,6 +115,9 @@ with open(dictionary) as f:
 i = 0
 while i < args.count:
     server = smtplib.SMTP(args.server, args.port, args.helo, 10)
+
+    if args.starttls:
+        server.starttls(args.pem, args.pem)
 
     k = 0
 
