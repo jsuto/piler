@@ -17,9 +17,8 @@ check out http://blog.magiksys.net/generate-and-send-mail-with-python-tutorial
 for a real professional solution
 """
 
-
 eol = "\r\n"
-dictionary = "dictionary.txt"
+dictionary = '/'.join(__file__.split('/')[:-1]) + "/dictionary.txt"
 checkpoint_for_newline = 300
 
 
