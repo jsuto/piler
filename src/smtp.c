@@ -62,7 +62,7 @@ void process_command_starttls(struct session_ctx *sctx, struct session_data *sda
 
 void process_command_mail_from(struct session_data *sdata, int *protocol_state, char *buf, char *resp, int resplen, struct __config *cfg){
 
-   if(*protocol_state != SMTP_STATE_HELO && *protocol_state != SMTP_STATE_PERIOD){
+   if(*protocol_state != SMTP_STATE_HELO && *protocol_state != SMTP_STATE_PERIOD && *protocol_state != SMTP_STATE_BDAT){
       strncat(resp, SMTP_RESP_503_ERR, resplen);
    }
    else {
