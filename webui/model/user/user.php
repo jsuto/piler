@@ -244,7 +244,7 @@ class ModelUserUser extends Model {
 
       if($page_len > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$page_len; }
 
-      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, MIN(email) FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond GROUP BY " . TABLE_USER . ".uid $_order $limit", $q);
+      $query = $this->db->query("SELECT " . TABLE_USER . ".uid, isadmin, username, realname, domain, MIN(email) as email FROM " . TABLE_USER . "," . TABLE_EMAIL . " $where_cond GROUP BY " . TABLE_USER . ".uid $_order $limit", $q);
 
       foreach ($query->rows as $q) {
 
