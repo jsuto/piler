@@ -7,6 +7,7 @@ import string
 import quopri
 import time
 import sys
+import os
 import email.utils
 
 from email.mime.text import MIMEText
@@ -18,6 +19,7 @@ for a real professional solution
 """
 
 eol = "\r\n"
+emails = []
 dictionary = '/'.join(__file__.split('/')[:-1]) + "/dictionary.txt"
 checkpoint_for_newline = 300
 
@@ -87,6 +89,22 @@ def create_message(words, args):
     return msg
 
 
+def read_emails_from_dir(directory):
+    for dir, dirs, files in os.walk(directory):
+        for file in files:
+            emails.append(os.path.join(dir, file))
+
+    args.count = len(emails)
+
+
+def get_next_email_text():
+    if emails == []: return ''
+
+    filename = emails.pop()
+    with open(filename) as f:
+        return f.read()
+
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--helo", type=str, help="ehlo hostname", default="myhost.aaa.fu")
@@ -101,6 +119,7 @@ parser.add_argument("--subject", type=str, help="subject", default="This is test
 parser.add_argument("-l", "--msglen", type=int, help="message length (approx.)", default=20000)
 parser.add_argument("--starttls", help="use STARTTLS", action="store_true")
 parser.add_argument("--pem", type=str, help="pem file for starttls", default="")
+parser.add_argument("--dir", type=str, help="directory to send emails (must be eml files) from", default="")
 
 args = parser.parse_args()
 
@@ -109,11 +128,15 @@ if args.starttls and args.pem == "":
     sys.exit("make a pem file for starttls")
 
 
-with open(dictionary) as f:
-    words = f.readlines()
-
 i = 0
 total_count = 0
+
+if args.dir:
+    read_emails_from_dir(args.dir)
+else:
+    with open(dictionary) as f:
+        words = f.readlines()
+
 
 while i < args.count:
     server = smtplib.SMTP(args.server, args.port, args.helo, 10)
@@ -124,7 +147,12 @@ while i < args.count:
     k = 0
 
     while i < args.count and k < args.session:
-        message = create_message(words, args)
+
+        if args.dir:
+            message = get_next_email_text()
+        else:
+            message = create_message(words, args)
+
         server.set_debuglevel(args.debug)
         server.sendmail(args.sender, args.rcpt, message)
 
