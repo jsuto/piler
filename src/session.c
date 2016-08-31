@@ -81,9 +81,9 @@ int handle_smtp_session(struct session_ctx *sctx){
 #endif
 
    send(sctx->new_sd, buf, strlen(buf), 0);
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sctx->sdata->ttmpfile, buf);
 
-   while((n = recvtimeoutssl(sctx->new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sdata.tls, sctx->data->ssl)) > 0){
+   while((n = recvtimeoutssl(sctx->new_sd, &puf[readpos], sizeof(puf)-readpos, TIMEOUT, sctx->sdata->tls, sctx->data->ssl)) > 0){
          pos = 0;
 
          /* accept mail data */
@@ -103,17 +103,17 @@ int handle_smtp_session(struct session_ctx *sctx){
 	       /* fix position */
                pos = pos - prevlen;
 
-               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: period found", sdata.ttmpfile);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: period found", sctx->sdata->ttmpfile);
 
 
                /* write data only to (and including) the trailing period (.) */
-               ret = write(sdata.fd, puf, pos);
-               sdata.tot_len += ret;
+               ret = write(sctx->sdata->fd, puf, pos);
+               sctx->sdata->tot_len += ret;
 
                /* fix posistion! */
                pos += strlen(SMTP_CMD_PERIOD);
 
-               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sdata.ttmpfile);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: (.)", sctx->sdata->ttmpfile);
 
 
                protocol_state = SMTP_STATE_PERIOD;
@@ -121,8 +121,8 @@ int handle_smtp_session(struct session_ctx *sctx){
 
                /* make sure we had a successful read */
 
-               rc = fsync(sdata.fd);
-               close(sdata.fd);
+               rc = fsync(sctx->sdata->fd);
+               close(sctx->sdata->fd);
 
 
                gettimeofday(&tv2, &tz);
@@ -130,13 +130,13 @@ int handle_smtp_session(struct session_ctx *sctx){
 
 
                if(rc){
-                  syslog(LOG_PRIORITY, "failed writing data: %s", sdata.ttmpfile);
+                  syslog(LOG_PRIORITY, "failed writing data: %s", sctx->sdata->ttmpfile);
 
                #ifdef HAVE_LMTP
-                  for(i=0; i<sdata.num_of_rcpt_to; i++){
+                  for(i=0; i<sctx->sdata->num_of_rcpt_to; i++){
                #endif
 
-                     write1(sctx->new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sdata.tls, sctx->data->ssl);
+                     write1(sctx->new_sd, SMTP_RESP_421_ERR_WRITE_FAILED, strlen(SMTP_RESP_421_ERR_WRITE_FAILED), sctx->sdata->tls, sctx->data->ssl);
 
                #ifdef HAVE_LMTP
                   }
@@ -150,8 +150,8 @@ int handle_smtp_session(struct session_ctx *sctx){
 
 
 
-               unlink(sdata.ttmpfile);
-               unlink(sdata.tmpframe);
+               unlink(sctx->sdata->ttmpfile);
+               unlink(sctx->sdata->tmpframe);
 
 
                /* if we have nothing after the trailing (.), we can read
@@ -170,14 +170,14 @@ int handle_smtp_session(struct session_ctx *sctx){
                   memset(puf+n-pos, 0, MAXBUFSIZE-n+pos);
                   recvtimeout(sctx->new_sd, buf, MAXBUFSIZE, TIMEOUT);
                   strncat(puf, buf, MAXBUFSIZE-1-n+pos);
-                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sdata.ttmpfile, puf);
+                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: %s", sctx->sdata->ttmpfile, puf);
                   pos = 0;
                }
 
             } /* pos > 0, PERIOD found */
             else {
-               ret = write(sdata.fd, puf, n);
-               sdata.tot_len += ret;
+               ret = write(sctx->sdata->fd, puf, n);
+               sctx->sdata->tot_len += ret;
 
                memcpy(prevbuf, puf, n);
                prevlen = n;
@@ -196,14 +196,14 @@ AFTER_PERIOD:
       p = &puf[pos];
       readpos = 0;
 
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: command=*%s*", sdata.ttmpfile, p);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: command=*%s*", sctx->sdata->ttmpfile, p);
 
       do {
          p = split(p, '\n', buf, sizeof(buf)-1, &result);
 
          if(result == 0){
             if(strlen(buf) > 0){
-               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: *%s*", sdata.ttmpfile, buf);
+               if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: partial read: *%s*", sctx->sdata->ttmpfile, buf);
 
                snprintf(puf, sizeof(puf)-5, "%s", buf);
                readpos = strlen(puf);
@@ -212,10 +212,10 @@ AFTER_PERIOD:
             break;
          }
 
-         if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sdata.ttmpfile, buf);
+         if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: got: %s", sctx->sdata->ttmpfile, buf);
 
          if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 || strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-            process_command_ehlo_lhlo(sctx, &sdata, &protocol_state, &resp[0], sizeof(resp)-1);
+            process_command_ehlo_lhlo(sctx, &protocol_state, &resp[0], sizeof(resp)-1);
             continue;
 
             /* FIXME: implement the ENHANCEDSTATUSCODE extensions */
@@ -229,20 +229,20 @@ AFTER_PERIOD:
          }
 
 
-         if(sctx->cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(sctx->data->starttls) > 4 && sdata.tls == 0){
-            process_command_starttls(sctx, &sdata, &protocol_state, &starttls, &resp[0], sizeof(resp)-1);
+         if(sctx->cfg->tls_enable > 0 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && strlen(sctx->data->starttls) > 4 && sctx->sdata->tls == 0){
+            process_command_starttls(sctx, &protocol_state, &starttls, &resp[0], sizeof(resp)-1);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
-            process_command_mail_from(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1, sctx->cfg);
+            process_command_mail_from(sctx, &protocol_state, buf, &resp[0], sizeof(resp)-1);
             continue;
          }
 
 
          if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-            process_command_rcpt_to(&sdata, &protocol_state, buf, &resp[0], sizeof(resp)-1);
+            process_command_rcpt_to(sctx, &protocol_state, buf, &resp[0], sizeof(resp)-1);
             continue;
          }
 
@@ -253,7 +253,7 @@ AFTER_PERIOD:
             sctx->inj = ERR;
             prevlen = 0;
 
-            process_command_data(&sdata, &protocol_state, &resp[0], sizeof(resp)-1);
+            process_command_data(sctx, &protocol_state, &resp[0], sizeof(resp)-1);
             continue; 
          }
 
@@ -265,14 +265,14 @@ AFTER_PERIOD:
             if(protocol_state == SMTP_STATE_BDAT){
 
                for(i=0; i<sctx->bdat_rounds-1; i++){
-                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: sending bdat response (%d)", sdata.ttmpfile, i);
-                  write1(sctx->new_sd, SMTP_RESP_250_BDAT, strlen(SMTP_RESP_250_BDAT), sdata.tls, sctx->data->ssl);
+                  if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: sending bdat response (%d)", sctx->sdata->ttmpfile, i);
+                  write1(sctx->new_sd, SMTP_RESP_250_BDAT, strlen(SMTP_RESP_250_BDAT), sctx->sdata->tls, sctx->data->ssl);
                }
 
                process_written_file(sctx);
 
-               unlink(sdata.ttmpfile);
-               unlink(sdata.tmpframe);
+               unlink(sctx->sdata->ttmpfile);
+               unlink(sctx->sdata->tmpframe);
             }
 
             continue;
@@ -280,7 +280,7 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
-            process_command_quit(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, sctx->cfg);
+            process_command_quit(sctx, &protocol_state, &resp[0], sizeof(resp)-1);
             continue;
          }
 
@@ -292,14 +292,14 @@ AFTER_PERIOD:
 
 
          if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
-            process_command_reset(&sdata, &protocol_state, &resp[0], sizeof(resp)-1, sctx->cfg);
+            process_command_reset(sctx, &protocol_state, &resp[0], sizeof(resp)-1);
             continue;
          }
 
 
          /* by default send 502 command not implemented message */
 
-         syslog(LOG_PRIORITY, "%s: invalid command: *%s*", sdata.ttmpfile, buf);
+         syslog(LOG_PRIORITY, "%s: invalid command: *%s*", sctx->sdata->ttmpfile, buf);
          strncat(resp, SMTP_RESP_502_ERR, sizeof(resp)-strlen(resp)-1);
       } while(p);
 
@@ -323,17 +323,17 @@ AFTER_PERIOD:
 
    if(protocol_state < SMTP_STATE_QUIT && sctx->inj == ERR){
       snprintf(buf, MAXBUFSIZE-1, SMTP_RESP_421_ERR, sctx->cfg->hostid);
-      write1(sctx->new_sd, buf, strlen(buf), sdata.tls, sctx->data->ssl);
+      write1(sctx->new_sd, buf, strlen(buf), sctx->sdata->tls, sctx->data->ssl);
 
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sdata.ttmpfile, buf);
+      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sctx->sdata->ttmpfile, buf);
 
-      if(sdata.fd != -1){
+      if(sctx->sdata->fd != -1){
 
-         syslog(LOG_PRIORITY, "%s: removing stale files: %s, %s", sdata.ttmpfile, sdata.ttmpfile, sdata.tmpframe);
+         syslog(LOG_PRIORITY, "%s: removing stale files: %s, %s", sctx->sdata->ttmpfile, sctx->sdata->ttmpfile, sctx->sdata->tmpframe);
 
-         close(sdata.fd);
-         unlink(sdata.ttmpfile);
-         unlink(sdata.tmpframe);
+         close(sctx->sdata->fd);
+         unlink(sctx->sdata->ttmpfile);
+         unlink(sctx->sdata->tmpframe);
       }
 
       goto QUITTING;
@@ -342,10 +342,10 @@ AFTER_PERIOD:
 
 QUITTING:
 
-   update_counters(&sdata, sctx->data, sctx->counters, sctx->cfg);
+   update_counters(sctx->sdata, sctx->data, sctx->counters, sctx->cfg);
 
 #ifdef NEED_MYSQL
-   close_database(&sdata);
+   close_database(sctx->sdata);
 #endif
 
    if(sdata.tls == 1){
