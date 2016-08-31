@@ -66,7 +66,7 @@ void process_command_mail_from(struct session_ctx *sctx, int *protocol_state, ch
       strncat(resp, SMTP_RESP_503_ERR, resplen);
    }
    else {
-      if(*protocol_state == SMTP_STATE_PERIOD){
+      if(*protocol_state == SMTP_STATE_PERIOD || *protocol_state == SMTP_STATE_BDAT){
          if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: initiated new transaction", sctx->sdata->ttmpfile);
 
          unlink(sctx->sdata->ttmpfile);
