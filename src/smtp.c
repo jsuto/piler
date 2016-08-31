@@ -99,7 +99,7 @@ void process_command_rcpt_to(struct session_ctx *sctx, int *protocol_state, char
       }
 
       if(sctx->sdata->num_of_rcpt_to < MAX_RCPT_TO-1){
-         extractEmail(buf, sctx->sdata->rcptto[sdata->num_of_rcpt_to]);
+         extractEmail(buf, sctx->sdata->rcptto[sctx->sdata->num_of_rcpt_to]);
       }
 
       *protocol_state = SMTP_STATE_RCPT_TO;
