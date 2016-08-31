@@ -126,7 +126,7 @@ int handle_smtp_session(struct session_ctx *sctx){
 
 
                gettimeofday(&tv2, &tz);
-               sdata.__acquire = tvdiff(tv2, tv1);
+               sctx->sdata->__acquire = tvdiff(tv2, tv1);
 
 
                if(rc){
@@ -348,7 +348,7 @@ QUITTING:
    close_database(sctx->sdata);
 #endif
 
-   if(sdata.tls == 1){
+   if(sctx->sdata->tls == 1){
       SSL_shutdown(sctx->data->ssl);
       SSL_free(sctx->data->ssl);
    }
