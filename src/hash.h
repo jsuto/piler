@@ -15,7 +15,6 @@ struct node *makenewnode(char *s);
 int addnode(struct node *xhash[], char *s);
 struct node *findnode(struct node *xhash[], char *s);
 int is_substr_in_hash(struct node *xhash[], char *s);
-inline int hash(unsigned int key);
 unsigned int DJBHash(char* str, unsigned int len);
 
 #endif /* _HASH_H */

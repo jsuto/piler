@@ -9,6 +9,11 @@
 #include <piler.h>
 
 
+inline int hash(unsigned int key){
+   return key % MAXHASH;
+}
+
+
 void inithash(struct node *xhash[]){
    int i;
 
@@ -145,11 +150,6 @@ int is_substr_in_hash(struct node *xhash[], char *s){
    }
 
    return 0;
-}
-
-
-inline int hash(unsigned int key){
-   return key % MAXHASH;
 }
 
 
