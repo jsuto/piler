@@ -1,5 +1,7 @@
 <?php
 
+require 'Zend/Mime/Decode.php';
+
 class ModelSearchMessage extends Model {
 
    public $encoding_aliases = array(
@@ -192,32 +194,24 @@ class ModelSearchMessage extends Model {
 
 
    public function get_message_headers($id = '') {
-      $data = '';
+      $headers = '';
 
       $this->connect_to_pilergetd();
       $msg = $this->get_raw_message($id);
       $this->disconnect_from_pilergetd();
 
-      $has_journal = $this->remove_journal($msg);
+      Zend_Mime_Decode::splitMessageRaw($msg, $headers, $body);
+
+      $has_journal = $this->remove_journal($headers);
 
       if(Registry::get('auditor_user') == 0 && HEADER_LINE_TO_HIDE) {
-         $msg = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $msg);
+         $headers = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $headers);
       }
 
-      $pos = strpos($msg, "\n\r\n");
-      if($pos == false) {
-         $pos = strpos($msg, "\n\n");
-      }
+      $headers = preg_replace("/\</", "&lt;", $headers);
+      $headers = preg_replace("/\>/", "&gt;", $headers);
 
-      if($pos == false) { return $msg; }
-
-      $data = substr($msg, 0, $pos);
-      $msg = '';
-
-      $data = preg_replace("/\</", "&lt;", $data);
-      $data = preg_replace("/\>/", "&gt;", $data);
-
-      return array('headers' => $data, 'has_journal' => $has_journal);
+      return array('headers' => $headers, 'has_journal' => $has_journal);
    }
 
 

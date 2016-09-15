@@ -92,6 +92,10 @@ class Zend_Mail_Protocol_Imap
         $errno  =  0;
         $errstr = '';
 
+        /*
+         * http://stackoverflow.com/questions/32211301/ssl-error-ssl3-get-server-certificatecertificate-verify-failed
+         */
+
         $contextOptions = array(
            'ssl' => array(
               'verify_peer' => false,

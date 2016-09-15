@@ -350,7 +350,11 @@ class ModelUserAuth extends Model {
       $session = Registry::get('session');
       $emails = array($username);
 
-      if(!strchr($username, '@')) { return 0; }
+      /*
+       * usernames without the domain part are allowed, though
+       * they won't see any emails unless a post auth hook is run
+       * to assign some email addresses to them
+       */
 
       $login = $username;
 
