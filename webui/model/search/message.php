@@ -8,6 +8,7 @@ class ModelSearchMessage extends Model {
                                      'GB2312'   => 'GBK',
                                      'GB231280' => 'GBK'
                                    );
+   public $message;
 
 
    public function get_boundary($line='') {
@@ -212,6 +213,11 @@ class ModelSearchMessage extends Model {
 
 
    public function extract_message($id = '', $terms = '') {
+      $from = "From: ";
+      $to = "To: ";
+      $subject = "Subject: ";
+      $date = "Date: ";
+
       $msg = $this->get_raw_message($id);
 
       if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
@@ -225,17 +231,37 @@ class ModelSearchMessage extends Model {
 
       if(is_array($headers['date'])) { $headers['date'] = $headers['date'][0]; }
 
-      $from = "From: " . $this->escape_lt_gt_symbols($headers['from']);
-      $to = "To: " . $this->escape_lt_gt_symbols($headers['to']);
-      $subject = "Subject: " . $headers['subject'];
-      $date = "Date: " . $headers['date'];
+      if(isset($headers['from'])) $from .= $this->escape_lt_gt_symbols($headers['from']);
+      if(isset($headers['to'])) $to .= $this->escape_lt_gt_symbols($headers['to']);
+      if(isset($headers['subject'])) $subject .= $this->escape_lt_gt_symbols($headers['subject']);
+      if(isset($headers['date'])) $date .= $headers['date'];
 
-      $message = array(
-                       'text' => '',
-                       'html' => ''
-                      );
+      $this->message = array(
+                             'text/plain' => '',
+                             'text/html' => ''
+                            );
 
-      $mime_parts = Zend_Mime_Decode::splitMessageStruct($body, $boundary);
+      $this->extract_textuals_from_mime_parts($headers, $body, $boundary);
+
+      return array('from' => $from,
+                   'to' => $to,
+                   'subject' => $this->highlight_search_terms($subject, $terms),
+                   'date' => $date,
+                   'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],
+                   'has_journal' => $has_journal,
+                   'verification' => $verification
+            );
+   }
+
+
+   private function extract_textuals_from_mime_parts($headers = array(), $body = '', $boundary = '') {
+      $mime_parts = array();
+
+      if($boundary) {
+         $mime_parts = Zend_Mime_Decode::splitMessageStruct($body, $boundary);
+      } else {
+         $mime_parts[] = array('header' => $headers, 'body' => $body);
+      }
 
       for($i=0; $i<count($mime_parts); $i++) {
          $mime = array(
@@ -246,63 +272,58 @@ class ModelSearchMessage extends Model {
          if(isset($mime_parts[$i]['header']['content-type']))
             $mime['content-type'] = Zend_Mime_Decode::splitContentType($mime_parts[$i]['header']['content-type']);
 
+         if(in_array($mime['content-type']['type'], array('multipart/mixed', 'multipart/related', 'multipart/alternative')))
+            $this->extract_textuals_from_mime_parts($mime_parts[$i]['header'], $mime_parts[$i]['body'], $mime['content-type']['boundary']);
+
          if(isset($mime_parts[$i]['header']['content-transfer-encoding']))
             $mime['encoding'] = $mime_parts[$i]['header']['content-transfer-encoding'];
 
-         if($mime['encoding'] == 'quoted-printable')
-            $mime_parts[$i]['body'] = Zend_Mime_Decode::decodeQuotedPrintable($mime_parts[$i]['body']);
-
-         if($mime['encoding'] == 'base64')
-            $mime_parts[$i]['body'] = base64_decode($mime_parts[$i]['body']);
-
-         if(strtolower($mime['content-type']['charset']) != 'utf-8')
-            $mime_parts[$i]['body'] = iconv($mime['content-type']['charset'], 'utf-8' . '//IGNORE', $mime_parts[$i]['body']);
-
-         // some text/plain fixes
-
-         if(strtolower($mime['content-type']['type']) == 'text/plain') {
-
-            $mime_parts[$i]['body'] = $this->escape_lt_gt_symbols($mime_parts[$i]['body']);
-
-            $mime_parts[$i]['body'] = preg_replace("/\n/", "<br />\n", $mime_parts[$i]['body']);
-            $mime_parts[$i]['body'] = "\n" . $this->print_nicely($mime_parts[$i]['body']);
-
-            $message['text'] .= $mime_parts[$i]['body'];
-         }
-
-         if(strtolower($mime['content-type']['type']) == 'text/html') {
-
-            $mime_parts[$i]['body'] = preg_replace("/\<style([\w\W]+)style\>/", "", $mime_parts[$i]['body']);
-
-            if(ENABLE_REMOTE_IMAGES == 0) {
-               $mime_parts[$i]['body'] = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $mime_parts[$i]['body']);
-               $mime_parts[$i]['body'] = preg_replace("/style([\s]{0,}=[\s]{0,})\'([^\']+)/", "style='xxxx", $mime_parts[$i]['body']);
-
-               $mime_parts[$i]['body'] = preg_replace("/\<img([^\>]+)\>/i", "<img src=\"" . REMOTE_IMAGE_REPLACEMENT . "\" />", $mime_parts[$i]['body']);
-            }
-
-            $mime_parts[$i]['body'] = preg_replace("/\<body ([\w\s\;\"\'\#\d\:\-\=]+)\>/i", "<body>", $mime_parts[$i]['body']);
-
-            $mime_parts[$i]['body'] = preg_replace("/\<a\s{1,}href/i", "<qqqq", $mime_parts[$i]['body']);
-            $mime_parts[$i]['body'] = preg_replace("/\<base href/i", "<qqqq", $mime_parts[$i]['body']);
-
-            $mime_parts[$i]['body'] = preg_replace("/document\.write/", "document.writeee", $mime_parts[$i]['body']);
-            $mime_parts[$i]['body'] = preg_replace("/<\s{0,}script([\w\W]+)\/script\s{0,}\>/i", "<!-- disabled javascript here -->", $mime_parts[$i]['body']);
+         if(in_array($mime['content-type']['type'], array('text/plain', 'text/html')))
+            $this->message[$mime['content-type']['type']] .= $this->fix_mime_body_part($mime, $mime_parts[$i]['body']);
+      }
+   }
 
 
-            $message['html'] .= $mime_parts[$i]['body'];
-         }
+   private function fix_mime_body_part($mime = array(), $body = '') {
+      if($mime['encoding'] == 'quoted-printable')
+         $body = Zend_Mime_Decode::decodeQuotedPrintable($body);
 
+      if($mime['encoding'] == 'base64')
+         $body = base64_decode($body);
+
+      if(strtolower($mime['content-type']['charset']) != 'utf-8')
+         $body = iconv($mime['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
+
+
+      if(strtolower($mime['content-type']['type']) == 'text/plain') {
+
+         $body = $this->escape_lt_gt_symbols($body);
+
+         $body = preg_replace("/\n/", "<br />\n", $body);
+         $body = "\n" . $this->print_nicely($body);
       }
 
-      return array('from' => $from,
-                   'to' => $to,
-                   'subject' => $this->highlight_search_terms($subject, $terms),
-                   'date' => $date,
-                   'message' => $message['html'] ? $message['html'] : $message['text'],
-                   'has_journal' => $has_journal,
-                   'verification' => $verification
-            );
+      if(strtolower($mime['content-type']['type']) == 'text/html') {
+
+         $body = preg_replace("/\<style([\w\W]+)style\>/", "", $body);
+
+         if(ENABLE_REMOTE_IMAGES == 0) {
+            $body = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $body);
+            $body = preg_replace("/style([\s]{0,}=[\s]{0,})\'([^\']+)/", "style='xxxx", $body);
+
+            $body = preg_replace("/\<img([^\>]+)\>/i", "<img src=\"" . REMOTE_IMAGE_REPLACEMENT . "\" />", $body);
+         }
+
+         $body = preg_replace("/\<body ([\w\s\;\"\'\#\d\:\-\=]+)\>/i", "<body>", $body);
+
+         $body = preg_replace("/\<a\s{1,}([\w=\"\'\s]+){0,}\s{0,}href/i", "<qqqq", $body);
+         $body = preg_replace("/\<base href/i", "<qqqq", $body);
+
+         $body = preg_replace("/document\.write/", "document.writeee", $body);
+         $body = preg_replace("/<\s{0,}script([\w\W]+)\/script\s{0,}\>/i", "<!-- disabled javascript here -->", $body);
+      }
+
+      return $body;
    }
 
 
