@@ -539,8 +539,6 @@ class ModelSearchSearch extends Model {
          $lang = Registry::get('language');
 
 
-         $this->model_search_message->connect_to_pilergetd();
-
          foreach($query->rows as $m) {
             if(ENABLE_DELETE == 1 && $m['retained'] < NOW) $m['deleted'] = 1; else $m['deleted'] = 0;
 
@@ -582,8 +580,6 @@ class ModelSearchSearch extends Model {
 
             array_push($messages, $m);
          }
-
-         $this->model_search_message->disconnect_from_pilergetd();
 
       }
 

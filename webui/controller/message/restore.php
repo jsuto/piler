@@ -70,9 +70,7 @@ class ControllerMessageRestore extends Controller {
 
          $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
 
-         $this->model_search_message->connect_to_pilergetd();
          $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
-         $this->model_search_message->disconnect_from_pilergetd();
 
          $this->model_search_message->remove_journal($msg);
 

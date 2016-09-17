@@ -14,8 +14,6 @@ class ModelMessageRestore extends Model {
 
       if($zip->open($zipname, ZIPARCHIVE::CREATE) != true) { exit("cannot open <$zipname>\n"); }
 
-      $this->model_search_message->connect_to_pilergetd();
-
       foreach($idlist as $id) {
          $i++;
 
@@ -34,8 +32,6 @@ class ModelMessageRestore extends Model {
 
          AUDIT(ACTION_DOWNLOAD_MESSAGE, '', '', $id, '');
       }
-
-      $this->model_search_message->disconnect_from_pilergetd();
 
 
       $zip->close();
