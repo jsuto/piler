@@ -285,6 +285,8 @@ int main(int argc, char **argv){
       return ERR;
    }
 
+   /* enable using the extra email address */
+   if(data.import->extra_recipient) cfg.process_rcpt_to_addresses = 1;
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
