@@ -13,11 +13,11 @@
 
 #define VERSION "1.2.0-master"
 
-#define BUILD 951
+#define BUILD 952
 
 #define HOSTID "mailarchiver"
 
-#define CONFIG_FILE CONFDIR "/piler.conf"
+#define CONFIG_FILE CONFDIR "/piler/piler.conf"
 #define WORK_DIR DATADIR "/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
 
