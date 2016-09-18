@@ -6,8 +6,8 @@
 #define DATADIR "/usr/local/var"
 #define DATAROOTDIR "/usr/local/share"
 
-#define KEYFILE CONFDIR "/piler.key"
-#define LICENCE_SIGNATURE_FILE CONFDIR "/piler.lic"
+#define KEYFILE CONFDIR "/piler/piler.key"
+#define LICENCE_SIGNATURE_FILE CONFDIR "/piler/piler.lic"
 
 #define MESSAGE_ID_DEDUP_FILE DATAROOTDIR "/piler/deduphelper"
 

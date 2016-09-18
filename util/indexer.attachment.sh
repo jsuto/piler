@@ -2,7 +2,7 @@
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 DELTATMPFILE=/var/run/piler/delta.attachment.indexer.tmp
-INDEXER=indexer
+INDEXER="indexer --config SYSCONFDIR/piler/sphinx.conf"
 PRIORITY=mail.error
 TOUCHFILE=/var/piler/stat/indexer.attachment
 

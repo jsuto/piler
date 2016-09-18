@@ -18,7 +18,7 @@ load_default_values() {
    DATAROOTDIR=__DATAROOTDIR
 
    KEYTMPFILE="piler.key"
-   KEYFILE="$SYSCONFDIR/piler.key"
+   KEYFILE="$SYSCONFDIR/piler/piler.key"
 
    HOSTNAME=`hostname --fqdn`
 
@@ -29,7 +29,7 @@ load_default_values() {
    MYSQL_ROOT_PASSWORD=""
    MYSQL_SOCKET=""
 
-   SPHINXCFG="/usr/local/etc/sphinx.conf"
+   SPHINXCFG="/usr/local/etc/piler/sphinx.conf"
 
    WWWGROUP="apache"
    DOCROOT="/var/www/piler"
@@ -42,11 +42,11 @@ load_default_values() {
 
 
 make_certificate() {
-   if [ ! -f $SYSCONFDIR/piler.pem ]; then
+   if [ ! -f $SYSCONFDIR/piler/piler.pem ]; then
       echo -n "Making an ssl certificate ... "
-      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler.pem -out 1.cert -sha1
-      cat 1.cert >> $SYSCONFDIR/piler.pem
-      chmod 600 $SYSCONFDIR/piler.pem
+      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler/piler.pem -out 1.cert -sha1
+      cat 1.cert >> $SYSCONFDIR/piler/piler.pem
+      chmod 600 $SYSCONFDIR/piler/piler.pem
       rm 1.cert
    fi
 }
@@ -241,11 +241,6 @@ gather_mysql_account() {
 
 
 gather_sphinx_data() {
-
-   if [ $INDEXER = "/usr/bin/indexer" ]; then SPHINXCFG="/etc/sphinx/sphinx.conf"; fi
-
-   if test -f /etc/sphinxsearch/sphinx.conf || test -f /etc/sphinxsearch/sphinx.conf.sample ; then SPHINXCFG="/etc/sphinxsearch/sphinx.conf"; fi
-
    askNonBlank "Please enter the path of sphinx.conf" "$SPHINXCFG"
    SPHINXCFG=$response
 }
@@ -282,8 +277,8 @@ make_cron_entries() {
    echo "5,35 * * * * $LIBEXECDIR/piler/indexer.delta.sh" >> $CRON_TMP
    echo "30   2 * * * $LIBEXECDIR/piler/indexer.main.sh" >> $CRON_TMP
    echo "15,45 * * * * $LIBEXECDIR/piler/indexer.attachment.sh" >> $CRON_TMP
-   echo "*/15 * * * * $INDEXER --quiet tag1 --rotate" >> $CRON_TMP
-   echo "*/15 * * * * $INDEXER --quiet note1 --rotate" >> $CRON_TMP
+   echo "*/15 * * * * $INDEXER --quiet tag1 --rotate --config $SYSCONFDIR/piler/sphinx.conf" >> $CRON_TMP
+   echo "*/15 * * * * $INDEXER --quiet note1 --rotate --config $SYSCONFDIR/piler/sphinx.conf" >> $CRON_TMP
    echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php --webui $DOCROOT" >> $CRON_TMP
    echo "*/5 * * * * /usr/bin/find $DOCROOT/tmp -type f -name i.\* -exec rm -f {} \;" >> $CRON_TMP
    echo "### PILEREND" >> $CRON_TMP
@@ -354,7 +349,7 @@ execute_post_install_tasks() {
    echo "Done."
 
    echo -n "Writing sphinx configuration... ";
-   sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" $SYSCONFDIR/sphinx.conf.dist > $SPHINXCFG
+   sed -e "s%MYSQL_HOSTNAME%$MYSQL_HOSTNAME%" -e "s%MYSQL_DATABASE%$MYSQL_DATABASE%" -e "s%MYSQL_USERNAME%$MYSQL_USERNAME%" -e "s%MYSQL_PASSWORD%$MYSQL_PASSWORD%" $SYSCONFDIR/piler/sphinx.conf.dist > $SPHINXCFG
    echo "Done."
 
    echo -n "Initializing sphinx indices... ";
@@ -384,8 +379,8 @@ SOCKHELPER
 
    MYSQL_SOCKET=`perl $SOCKET_HELPER_SCRIPT $MYSQL_SOCKET`
 
-   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler.conf > $PILERCONF_TMP
-   cat $PILERCONF_TMP > $SYSCONFDIR/piler.conf
+   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler/piler.conf > $PILERCONF_TMP
+   cat $PILERCONF_TMP > $SYSCONFDIR/piler/piler.conf
    rm -f $PILERCONF_TMP
 
    chmod 755 $LOCALSTATEDIR/piler/stat

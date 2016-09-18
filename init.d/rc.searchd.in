@@ -27,7 +27,7 @@ start() {
 	fi
 
         if [ `id -u` -eq 0 ]; then
-		su piler -c searchd
+		su piler -c "searchd --config SYSCONFDIR/piler/sphinx.conf"
 	else
 		searchd
 	fi

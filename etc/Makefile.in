@@ -26,14 +26,14 @@ INSTALL = @INSTALL@
 
 all:
 	sed -e 's%pidfile=.*%pidfile=$(localstatedir)/run/piler/piler.pid%g' \
-	-e 's%pemfile=%pemfile=$(sysconfdir)/piler.pem%g' \
+	-e 's%pemfile=%pemfile=$(sysconfdir)/piler/piler.pem%g' \
 	-e 's%workdir=.*%workdir=$(localstatedir)/piler/tmp%g' < $(srcdir)/example.conf | grep -v ^\; | grep '=' | sort > $(srcdir)/piler.conf
 
 install:
-	$(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf.dist
-	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler.conf; fi
+	$(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler/piler.conf.dist
+	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler/piler.conf; fi
 	sed -e 's%LOCALSTATEDIR%$(localstatedir)%g' $(srcdir)/sphinx.conf.in > sphinx.conf.dist
-	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.dist $(DESTDIR)$(sysconfdir)/sphinx.conf.dist
+	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.dist $(DESTDIR)$(sysconfdir)/piler/sphinx.conf.dist
 
 clean:
 	rm -f piler.conf cron.jobs sphinx.conf.dist
