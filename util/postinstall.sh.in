@@ -353,7 +353,7 @@ execute_post_install_tasks() {
    echo "Done."
 
    echo -n "Initializing sphinx indices... ";
-   su $PILERUSER -c "indexer --all"
+   su $PILERUSER -c "indexer --all --config $SPHINXCFG"
    echo "Done."
 
 
