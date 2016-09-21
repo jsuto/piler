@@ -22,7 +22,7 @@ $language = new Language();
 Registry::set('language', $language);
 
 
-if(ENABLE_SYSLOG == 1) { openlog("piler-webui", LOG_PID, LOG_MAIL); }
+openlog("piler-webui", LOG_PID, LOG_MAIL);
 
 
 /* check if user has authenticated himself. If not, we send him to login */

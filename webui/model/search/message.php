@@ -62,6 +62,8 @@ class ModelSearchMessage extends Model {
 
       if($id == '' || !preg_match("/^([0-9a-f]+)$/", $id)) { return $s; }
 
+      if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, DECRYPT_BINARY . " $id"); }
+
       $handle = popen(DECRYPT_BINARY . " $id", "r");
       while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))) {
          $s .= $buf;
@@ -88,6 +90,8 @@ class ModelSearchMessage extends Model {
       $data = '';
 
       if($piler_id == '' || $attachment_id == '' || !preg_match("/^([0-9a-f]+)$/", $piler_id) || !preg_match("/^([0-9m]+)$/", $attachment_id)) { return $data; }
+
+      if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id"); }
 
       $handle = popen(DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id", "r");
       while(($buf = fread($handle, DECRYPT_BUFFER_LENGTH))){

@@ -30,6 +30,8 @@ class MySQL {
    public function query($sql, $arr = array()) {
       $query = new stdClass();
 
+      if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "sql=$sql, arr=" . implode(";", $arr)); }
+
       $query->error = 1;
       $query->errmsg = "Error";
       $query->query = $sql;

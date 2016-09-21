@@ -85,7 +85,7 @@ class ModelAccountingAccounting extends Model
         
         }
         
-		if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("processed %s to %s: %d records deleted, %d records added",date(DATE_TEMPLATE, $return['starttimestamp']),date(DATE_TEMPLATE, $return['stoptimestamp']),$return['deletedstats'],$return['addedstats'])); }
+		if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("processed %s to %s: %d records deleted, %d records added",date(DATE_TEMPLATE, $return['starttimestamp']),date(DATE_TEMPLATE, $return['stoptimestamp']),$return['deletedstats'],$return['addedstats'])); }
 		
         return $return;
     }

@@ -74,7 +74,7 @@ class ModelAuditAudit extends Model {
          $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_AUDIT . " $where", $arr);
          $n = $query->row['count'];
 
-         if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("audit query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->row['count'])); }
+         if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("audit query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->row['count'])); }
       }
       else { $n = MAX_AUDIT_HITS; }
 
@@ -87,7 +87,7 @@ class ModelAuditAudit extends Model {
 
          $this->session->set("audit_query", array('where' => $where, 'sortorder' => $sortorder, 'arr' => $arr));
 
-         if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("audit query: '%s', param: '%s' in %.2f s, %d hits", $query->query, implode(' ', $arr), $query->exec_time, $query->num_rows)); }
+         if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("audit query: '%s', param: '%s' in %.2f s, %d hits", $query->query, implode(' ', $arr), $query->exec_time, $query->num_rows)); }
 
          if(isset($query->rows)) {
 

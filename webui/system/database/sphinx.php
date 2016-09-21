@@ -70,7 +70,7 @@ class Sphinx {
          if($v[0] == "total_found") { $query->total_found = $v[1]; }
       }
 
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $query->total_found)); }
+      if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("sphinx query: '%s' in %.2f s, %d hits, %d total found", $query->query, $query->exec_time, $query->num_rows, $query->total_found)); }
 
       $session = Registry::get('session');
       $sphx_query = '';

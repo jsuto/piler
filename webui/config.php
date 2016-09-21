@@ -1,6 +1,7 @@
 <?php
 
-define('BUILD', '2014-01-29 858');
+define('NORMAL', 1);
+define('DEBUG', 5);
 
 $config = array();
 
@@ -9,12 +10,6 @@ $config = array();
  * you can override any of these values by putting the
  * variable to be overridden in config-site.php
  */
-
-$config['PILERGETD_HOST'] = '';
-$config['PILERGETD_PORT'] = 10091;
-$config['PILERGETD_READ_LENGTH'] = 8192;
-$config['PILERGETD_TIMEOUT'] = 5;
-$config['PILERGETD_PASSWORD'] = '';
 
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
@@ -153,7 +148,7 @@ $config['ENABLE_LDAP_IMPORT_FEATURE'] = 0;
 $config['ENABLE_FOLDER_RESTRICTIONS'] = 0;
 $config['SEARCH_RESULT_CHECKBOX_CHECKED'] = 0;
 $config['HELPER_URL'] = '';
-$config['ENABLE_SYSLOG'] = 1;
+$config['LOG_LEVEL'] = NORMAL;
 $config['REWRITE_MESSAGE_ID'] = 0;
 $config['RESTORE_EMAILS_AS_ATTACHMENT'] = 0;
 $config['RESTRICTED_AUDITOR'] = 0;

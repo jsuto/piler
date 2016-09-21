@@ -55,7 +55,7 @@ class ModelPolicyRetention extends Model {
 
       $query = $this->db->query("UPDATE " . VIEW_MESSAGES . " SET retained = ? WHERE arrived > ? AND (todomain=? OR fromdomain=?)", array($retained, $start_ts, $data['domain'], $data['domain']));
 
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, sprintf("update retention date: domain='%s', days=%d, hits=%d, exec time=%.2f sec", $data['domain'], $data['days'], $this->db->countAffected(), $query->exec_time)); }
+      if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("update retention date: domain='%s', days=%d, hits=%d, exec time=%.2f sec", $data['domain'], $data['days'], $this->db->countAffected(), $query->exec_time)); }
 
       return $this->db->countAffected();
    }

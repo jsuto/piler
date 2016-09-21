@@ -24,7 +24,7 @@ Registry::set('load', $loader);
 $language = new Language();
 Registry::set('language', $language);
 
-if(ENABLE_SYSLOG == 1) { openlog("piler-webui", LOG_PID, LOG_MAIL); }
+openlog("piler-webui", LOG_PID, LOG_MAIL);
 
 
 $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PREFIX);

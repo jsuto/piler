@@ -148,7 +148,7 @@ class ModelUserAuth extends Model {
          foreach($params as $param) {
             $ret = $this->checkLoginAgainstLDAP_real($username, $password, $data, $param);
 
-            syslog(LOG_INFO, "ldap auth result against " . $param['ldap_host'] . " / " . $param['ldap_type'] . ": $ret");
+            if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "ldap auth result against " . $param['ldap_host'] . " / " . $param['ldap_type'] . ": $ret"); }
 
             if($ret == 1) { return $ret; }
          }
@@ -208,7 +208,7 @@ class ModelUserAuth extends Model {
 
             $ldap_auth = new LDAP($ldap_host, $a['dn'], $password);
 
-            if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
+            if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
             if($ldap_auth->is_bind_ok()) {
 
@@ -241,7 +241,7 @@ class ModelUserAuth extends Model {
             }
          }
       }
-      else if(ENABLE_SYSLOG == 1) {
+      else if(LOG_LEVEL >= NORMAL) {
          syslog(LOG_INFO, "cannot bind to '" . $ldap_host . "' as '" . $ldap_helper_dn . "'");
       }
 
@@ -281,7 +281,7 @@ class ModelUserAuth extends Model {
       $data = array();
 
       foreach($e as $a) {
-         //syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']);
+         if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
          foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
             if(isset($a[$mailattr])) {
@@ -289,7 +289,7 @@ class ModelUserAuth extends Model {
                if(is_array($a[$mailattr])) {
                   for($i = 0; $i < $a[$mailattr]['count']; $i++) {
 
-                     //syslog(LOG_INFO, "checking entry: " . $a[$mailattr][$i]);
+                     if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking entry: " . $a[$mailattr][$i]); }
 
                      $a[$mailattr][$i] = strtolower($a[$mailattr][$i]);
 
@@ -305,7 +305,7 @@ class ModelUserAuth extends Model {
                   }
                }
                else {
-                  //syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]);
+                  if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]); }
 
                   $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
                   if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
@@ -440,7 +440,7 @@ class ModelUserAuth extends Model {
       if(isset($u[1])) { $username = $u[1]; }
       else { $username = $_SERVER['REMOTE_USER']; }
 
-      if(ENABLE_SYSLOG == 1) { syslog(LOG_INFO, "sso login: $username"); }
+      if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $username"); }
 
       $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
@@ -455,7 +455,7 @@ class ModelUserAuth extends Model {
             $username = strtolower(preg_replace("/^smtp\:/i", "", $username));
 
             if($username == '') {
-               syslog(LOG_INFO, "no email address found for " . $a['dn']);
+               if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "no email address found for " . $a['dn']); }
                return 0;
             }
 
