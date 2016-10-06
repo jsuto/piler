@@ -69,9 +69,6 @@ pilerconf: pilerconf.c libpiler.a
 reindex: reindex.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
-fixmetadata: fixmetadata.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
-
 test: test.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
@@ -96,7 +93,7 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilertest $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge pilertest reindex fixmetadata
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge pilertest reindex
 
 distclean: clean
 	rm -f Makefile

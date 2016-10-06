@@ -92,10 +92,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
          return ERR;
       }
 
-      if(data->import->reimport == 1)
-         rc = reimport_message(sdata, &state, data, cfg);
-      else
-         rc = process_message(sdata, &state, data, cfg);
+      rc = process_message(sdata, &state, data, cfg);
       unlink(state.message_id_hash);
    }
 
@@ -106,13 +103,11 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    switch(rc) {
       case OK:
-                        if(data->import->reimport == 0){
-                           bzero(&counters, sizeof(counters));
-                           counters.c_rcvd = 1;
-                           counters.c_size += sdata->tot_len;
-                           counters.c_stored_size = sdata->stored_len;
-                           update_counters(sdata, data, &counters, cfg);
-                        }
+                        bzero(&counters, sizeof(counters));
+                        counters.c_rcvd = 1;
+                        counters.c_size += sdata->tot_len;
+                        counters.c_stored_size = sdata->stored_len;
+                        update_counters(sdata, data, &counters, cfg);
 
                         break;
 

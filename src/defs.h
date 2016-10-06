@@ -294,7 +294,6 @@ struct import {
    int download_only;
    int keep_eml;
    int timeout;
-   int reimport;
    int cap_uidplus;
    long total_size;
    time_t started, updated, finished;

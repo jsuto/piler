@@ -186,7 +186,7 @@ int update_metadata_reference(struct session_data *sdata, struct parser_state *s
 }
 
 
-int store_meta_data(struct session_data *sdata, struct parser_state *state, struct __data *data, uint64 old_id, struct __config *cfg){
+int store_meta_data(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
    int rc, ret=ERR, result;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
@@ -206,11 +206,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    }
 
 
-   if(old_id > 0){
-      if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_UPDATE_META_TABLE) == ERR) return ERR;
-   } else {
-      if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
-   }
+   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
 
    memset(s2, 0, sizeof(s2));
 
@@ -243,35 +239,18 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    data->sql[data->pos] = (char *)&sdata->hdr_len; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
    data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
-
-   if(old_id == 0){
-      data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
-      data->sql[data->pos] = state->message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
-   }
-
+   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
+   data->sql[data->pos] = state->message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = &ref[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = sdata->digest; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = sdata->bodydigest; data->type[data->pos] = TYPE_STRING; data->pos++;
    data->sql[data->pos] = &vcode[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-   if(old_id > 0){
-      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
-   }
-
-
    if(p_exec_query(sdata, data->stmt_insert_into_meta_table, data) == ERR){
       ret = ERR_EXISTS;
    }
    else {
-      if(old_id > 0){
-         remove_recipients(sdata, old_id);
-         remove_folder_id(sdata, old_id);
-         id = old_id;
-      }
-      else {
-         id = p_get_insert_id(data->stmt_insert_into_meta_table);
-      }
-
+      id = p_get_insert_id(data->stmt_insert_into_meta_table);
       rc = store_recipients(sdata, data, state->b_to, id, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
@@ -368,7 +347,7 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
 
    sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
 
-   rc = store_meta_data(sdata, state, data, 0, cfg);
+   rc = store_meta_data(sdata, state, data, cfg);
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
    if(rc == ERR_EXISTS){
 
@@ -376,59 +355,6 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
 
       return ERR_EXISTS;
    }
-
-   return OK;
-}
-
-
-int reimport_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
-   int i, rc;
-   char piler_id[SMALLBUFSIZE];
-   char oldfile[SMALLBUFSIZE], newfile[SMALLBUFSIZE];
-
-   memset(piler_id, 0, sizeof(piler_id));
-
-   sdata->duplicate_id = get_metaid_by_messageid(sdata, data, state->message_id, &piler_id[0]);
-
-   if(sdata->duplicate_id == 0){
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "cannot find this message: %s", state->message_id);
-      return ERR;
-   }
-
-
-   /* store base64 encoded file attachments */
-
-   if(state->n_attachments > 0){
-
-      // rename .a* files!
-
-      for(i=1; i<=state->n_attachments; i++){
-         snprintf(oldfile, sizeof(oldfile)-1, "%s.a%d", sdata->ttmpfile, i);
-         snprintf(newfile, sizeof(newfile)-1, "%s.a%d", piler_id, i);
-         rename(oldfile, newfile);
-      }
-
-      rc = store_attachments(sdata, state, data, cfg);
-      remove_stripped_attachments(state);
-      if(rc) return ERR;
-   }
-
-   // rename .m file!
-
-   snprintf(oldfile, sizeof(oldfile)-1, "%s.m", sdata->ttmpfile);
-   snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", piler_id);
-   rename(oldfile, sdata->tmpframe);
-
-   rc = store_file(sdata, sdata->tmpframe, 0, cfg);
-   if(rc == 0){
-      syslog(LOG_PRIORITY, "%s: error storing message for reimport: %s", sdata->ttmpfile, sdata->tmpframe);
-      return ERR;
-   }
-
-   sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
-
-   rc = store_meta_data(sdata, state, data, sdata->duplicate_id, cfg);
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update metadata, rc=%d",  sdata->ttmpfile, rc);
 
    return OK;
 }
