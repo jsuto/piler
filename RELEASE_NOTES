@@ -1,0 +1,68 @@
+1.2.0:
+------
+
+Heavy SQL scheme changes throughout the development of 1.2.0!
+
+2016.10.06.
+
+Removed deb and rpm packaging metadata.
+
+2016.09.21.
+
+Improved logging for the GUI. See the new config option: $config['LOG_LEVEL'] = NORMAL;
+
+2016.09.18.
+
+Moved all piler configuration from ${sysconfdir} to ${sysconfdir}/piler, eg.
+
+root@01b74b787c26:/# ls -la /usr/local/etc/piler/
+total 36
+drwxr-xr-x 1 root root    24 Oct  6 20:49 .
+drwxr-xr-x 1 root root    74 Oct  6 20:49 ..
+-rw-r--r-- 4 root root  1008 Oct  6 20:39 piler.conf
+-rw-r----- 5 root piler 1066 Oct  6 20:39 piler.conf.dist
+-rw-r----- 5 root piler   56 Oct  6 20:40 piler.key
+-rw------- 5 root root  5256 Oct  6 20:40 piler.pem
+-rw-r--r-- 1 root root  6270 Oct  6 20:49 sphinx.conf
+-rw-r--r-- 5 root piler 6299 Oct  6 20:39 sphinx.conf.dist
+
+Make sure to update the piler shipped shell scripts
+(rc.searchd, indexer.*.sh, ...) as well!
+
+2016.08.31.
+
+Added chunking / BDAT support for the piler daemon.
+You may turn it on by setting enable_chunking=1 in piler.conf
+
+2016.06.19.
+
+Improved attachment table indexing.
+
+2016.05.07.
+
+Obsoleted the --enable-starttls configure option.
+
+2016.03.02.
+
+Discard messages shorther than 100 bytes.
+
+2016.02.10.
+
+Added the private feature (for auditors only).
+
+
+2015.11.26.
+
+Removed the pilergetd stuff.
+
+2015.07.08.
+
+Delete option for auditors.
+
+2015.05.07.
+
+Added milter script to contrib directory.
+
+2015.04.22.
+
+Added timestamp support.

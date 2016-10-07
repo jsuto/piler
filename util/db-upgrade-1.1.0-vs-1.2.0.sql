@@ -61,3 +61,13 @@ drop view if exists `v_messages`;
 create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`retained` AS `retained`, `metadata`.`arrived` AS `arrived`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest`, `metadata`.`deleted` AS `deleted` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 
+-- 2016.10.07
+
+drop index `attachment_idx2` on `attachment`;
+drop index `attachment_idx3` on `attachment`;
+create index `attachment_idx2` on `attachment`(`sig`, `size`, `ptr`);
+
+create table if not exists `private` (
+   `id` bigint unsigned not null unique,
+   key (`id`)
+) ENGINE=InnoDB;

@@ -26,9 +26,9 @@ INSTALL = @INSTALL@
 
 all:
 	sed -e "s%BINDIR%$(bindir)%" -e "s%__SYSCONFDIR%$(sysconfdir)%" -e "s%__LOCALSTATEDIR%$(localstatedir)%" -e "s%__LIBEXECDIR%$(libexecdir)%" -e "s%__DATAROOTDIR%$(datarootdir)%" $(srcdir)/postinstall.sh.in > $(srcdir)/postinstall.sh
-	sed -i -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.delta.sh
-	sed -i -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.main.sh
-	sed -i -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.attachment.sh
+	sed -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.delta.sh.in > $(srcdir)/indexer.delta.sh
+	sed -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.main.sh.in > $(srcdir)/indexer.main.sh
+	sed -e "s%SYSCONFDIR%$(sysconfdir)%" $(srcdir)/indexer.attachment.sh.in > $(srcdir)/indexer.attachment.sh
 
 install:
 	$(INSTALL) -m 0755 $(srcdir)/automated-search.php $(DESTDIR)$(libexecdir)/piler
