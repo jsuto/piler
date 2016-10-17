@@ -64,7 +64,6 @@ create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id`
 -- 2016.10.07
 
 drop index `attachment_idx2` on `attachment`;
-drop index `attachment_idx3` on `attachment`;
 create index `attachment_idx2` on `attachment`(`sig`, `size`, `ptr`);
 
 create table if not exists `private` (
