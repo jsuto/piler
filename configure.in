@@ -372,7 +372,7 @@ dnl let us know if we are building on FreeBSD
 
 if test "$os" = "FreeBSD"; then
    defs="$defs -DFREEBSD"
-   antispam_libs="-lz -lm -lcrypto -lssl"
+   antispam_libs="-lz -lm -lcrypto -lssl -liconv"
    MAKE="gmake"
 fi
 

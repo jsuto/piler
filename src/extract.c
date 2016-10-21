@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <signal.h>
 #include <piler.h>
 
 #ifdef HAVE_ZIP
