@@ -102,16 +102,24 @@ static void child_sighup_handler(int sig){
 
 
 static void child_main(struct child *ptr){
-   char s[INET6_ADDRSTRLEN];
-   struct sockaddr_storage client_addr;
-   socklen_t addr_size;
-   struct session_ctx sctx;
+   struct import import;
+   struct session_data sdata;
+   int tot_msgs = 0;
+   char dir[TINYBUFSIZE];
+
+   /* open directory, then process its files, then sleep 2 sec, and repeat */
+
+   import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
+   import.remove_after_import = 1;
+   import.extra_recipient = import.move_folder = NULL;
+
+   data.import = &import;
 
    ptr->messages = 0;
-   sctx.data = &data;
-   sctx.cfg = &cfg;
 
-   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) started main()", getpid(), ptr->serial);
+   snprintf(dir, sizeof(dir)-1, "%d", ptr->serial);
+
+   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) started main() working on '%s'", getpid(), ptr->serial, dir);
 
    while(1){
       if(received_sighup == 1){
@@ -119,35 +127,30 @@ static void child_main(struct child *ptr){
          break;
       }
 
-      ptr->status = READY;
-
-      addr_size = sizeof(client_addr);
-      sctx.new_sd = accept(sd, (struct sockaddr *)&client_addr, &addr_size);
-
-      if(sctx.new_sd == -1) continue;
-
-      ptr->status = BUSY;
-
-      inet_ntop(client_addr.ss_family, get_in_addr((struct sockaddr *)&client_addr), s, sizeof(s)-1);
-
-      syslog(LOG_PRIORITY, "connection from %s", s);
-
-      data.child_serial = ptr->serial;
-
       sig_block(SIGHUP);
-      ptr->messages += handle_smtp_session(&sctx);
-      sig_unblock(SIGHUP);
 
-      close(sctx.new_sd);
+      if(open_database(&sdata, &cfg) == OK){
+         import_from_maildir(dir, &sdata, &data, &tot_msgs, &cfg);
+         ptr->messages += tot_msgs;
+         close_database(&sdata);
 
-      if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
-         if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
-         break;
+         sleep(2);
+      }
+      else {
+         syslog(LOG_PRIORITY, "ERROR: cannot open database");
+         sleep(10);
       }
 
-   }
+      sig_unblock(SIGHUP);
 
-   ptr->status = UNDEF;
+      // TODO: do we want to quit after processing a certain number of messages?
+
+      //if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
+      //   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
+      //   break;
+      //}
+
+   }
 
 #ifdef HAVE_MEMCACHED
    memcached_shutdown(&(data.memc));
@@ -409,7 +412,8 @@ int main(int argc, char **argv){
 
    snprintf(port_string, sizeof(port_string)-1, "%d", cfg.listen_port);
 
-   if((rc = getaddrinfo(cfg.listen_addr, port_string, &hints, &res)) != 0){
+   //if((rc = getaddrinfo(cfg.listen_addr, port_string, &hints, &res)) != 0){
+   if((rc = getaddrinfo("127.0.0.1", "5678", &hints, &res)) != 0){
       fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg.listen_addr, gai_strerror(rc));
       return 1;
    }
@@ -466,4 +470,3 @@ int main(int argc, char **argv){
 
    return 0;
 }
-

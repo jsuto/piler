@@ -101,6 +101,7 @@ struct _parse_rule config_parse_rules[] =
    { "process_rcpt_to_addresses", "integer", (void*) int_parser, offsetof(struct __config, process_rcpt_to_addresses), "0", sizeof(int)},
    { "queuedir", "string", (void*) string_parser, offsetof(struct __config, queuedir), QUEUE_DIR, MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct __config, server_id), "0", sizeof(int)},
+   { "smtp_timeout", "integer", (void*) int_parser, offsetof(struct __config, smtp_timeout), "60", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct __config, spam_header_line), "", MAXVAL-1},
    { "syslog_recipients", "integer", (void*) int_parser, offsetof(struct __config, syslog_recipients), "0", sizeof(int)},
    { "tls_enable", "integer", (void*) int_parser, offsetof(struct __config, tls_enable), "0", sizeof(int)},

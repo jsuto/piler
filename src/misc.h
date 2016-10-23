@@ -20,6 +20,7 @@ void get_extractor_list();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
 int searchStringInBuffer(char *s, int len1, char *what, int len2);
+int search_char_backward(char *buf, int buflen, char c);
 int countCharacterInBuffer(char *p, char c);
 void replaceCharacterInBuffer(char *p, char from, char to);
 char *split(char *str, int ch, char *buf, int buflen, int *result);
@@ -45,6 +46,8 @@ void strtolower(char *s);
 void *get_in_addr(struct sockaddr *sa);
 
 int can_i_write_current_directory();
+
+void move_email(struct smtp_session *session);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);

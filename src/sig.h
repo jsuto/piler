@@ -5,6 +5,8 @@
 #ifndef _SIG_H
  #define _SIG_H
 
+typedef void signal_func (int);
+
 void sig_block(int sig);
 void sig_unblock(int sig);
 void sig_catch(int sig, void (*f)());

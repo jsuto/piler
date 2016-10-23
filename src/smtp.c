@@ -1,285 +1,319 @@
-/*
- * smtp.c, SJ
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <fcntl.h>
-#include <unistd.h>
-#include <signal.h>
 #include <syslog.h>
-#include <time.h>
+#include <unistd.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <piler.h>
-#include <smtp.h>
+#include "smtp.h"
 
 
-void process_command_ehlo_lhlo(struct session_ctx *sctx, int *protocol_state, char *resp, int resplen){
-   char tmpbuf[MAXBUFSIZE];
+void process_smtp_command(struct smtp_session *session, char *buf){
+   char response[SMALLBUFSIZE];
+
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "processing command: *%s*", buf);
+
+   if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
+      process_command_helo(session, response, sizeof(response));
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 ||
+         strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
+      process_command_ehlo_lhlo(session, response, sizeof(response));
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
+      process_command_mail_from(session, buf);
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
+      process_command_rcpt_to(session, buf);
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
+      process_command_data(session);
+      return;
+   }
+
+   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0){
+      get_bdat_size_to_read(session, buf);
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
+      process_command_quit(session, response, sizeof(response));
+      return;
+   }
+
+   if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
+      process_command_reset(session);
+      return;
+   }
+
+   if(session->cfg->tls_enable == 1 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && session->use_ssl == 0){
+      process_command_starttls(session);
+      return;
+   }
+
+   send_smtp_response(session, SMTP_RESP_502_ERR);
+}
+
+
+void process_data(struct smtp_session *session, char *readbuf, int readlen){
+   char puf[SMALLBUFSIZE+BIGBUFSIZE];
+   int n, pos, len;
+
+   memset(puf, 0, sizeof(puf));
+
+   if(session->buflen > 0){
+      memcpy(&puf[0], session->buf, session->buflen);
+      memcpy(&puf[session->buflen], readbuf, readlen);
+      len = session->buflen + readlen;
+   }
+   else {
+      memcpy(&puf[0], readbuf, readlen);
+      len = readlen;
+   }
+
+   pos = searchStringInBuffer(&puf[0], len, SMTP_CMD_PERIOD, 5);
+
+   if(pos > 0){
+      //write(session->fd, puf, pos+2);
+      //session->tot_len += pos+2;
+      write(session->fd, puf, pos);
+      session->tot_len += pos;
+      process_command_period(session);
+   }
+   else {
+      n = search_char_backward(&puf[0], len, '\r');
+
+      if(n == -1 || len - n > 4){
+         write(session->fd, puf, len);
+         session->tot_len += len;
+      }
+      else {
+         write(session->fd, puf, n);
+         session->tot_len += n;
+
+         snprintf(session->buf, SMALLBUFSIZE-1, "%s", &puf[n]);
+         session->buflen = len - n;
+      }
+   }
+}
+
+
+void send_smtp_response(struct smtp_session *session, char *buf){
+   int rc;
+   char ssl_error[SMALLBUFSIZE];
+
+   write1(session->socket, buf, strlen(buf), session->use_ssl, session->ssl);
+
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent: %s", buf);
+
+   if(session->starttls == 1 && session->use_ssl == 0){
+
+      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "waiting for ssl handshake");
+
+      rc = SSL_accept(session->ssl);
+
+      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "SSL_accept() finished");
+
+      if(rc == 1){
+         session->use_ssl = 1;
+      }
+      else {
+         ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
+         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", session->ttmpfile, rc, SSL_get_error(session->ssl, rc), ssl_error);
+      }
+   }
+}
+
+
+void process_command_helo(struct smtp_session *session, char *buf, int buflen){
+   if(session->protocol_state == SMTP_STATE_INIT) session->protocol_state = SMTP_STATE_HELO;
+
+   snprintf(buf, buflen-1, "220 %s ESMTP\r\n", session->cfg->hostid);
+   send_smtp_response(session, buf);
+}
+
+
+void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int buflen){
    char extensions[SMALLBUFSIZE];
 
    memset(extensions, 0, sizeof(extensions));
 
-   if(*protocol_state == SMTP_STATE_INIT) *protocol_state = SMTP_STATE_HELO;
+   if(session->protocol_state == SMTP_STATE_INIT) session->protocol_state = SMTP_STATE_HELO;
 
-   if(sctx->sdata->tls == 0) snprintf(extensions, sizeof(extensions)-1, "%s", sctx->data->starttls);
-   if(sctx->cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
+   // if tls is not started, but it's enabled in the config
+   if(session->use_ssl == 0 && session->cfg->tls_enable == 1) snprintf(extensions, sizeof(extensions)-1, "%s", SMTP_EXTENSION_STARTTLS);
+   if(session->cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
 
-   snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_250_EXTENSIONS, sctx->cfg->hostid, extensions);
+   snprintf(buf, buflen-1, SMTP_RESP_250_EXTENSIONS, session->cfg->hostid, extensions);
 
-   strncat(resp, tmpbuf, resplen-strlen(resp));
+   send_smtp_response(session, buf);
 }
 
 
-void process_command_starttls(struct session_ctx *sctx, int *protocol_state, int *starttls, char *resp, int resplen){
+int init_ssl(struct smtp_session *session){
+   session->ctx = SSL_CTX_new(TLSv1_server_method());
 
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: starttls request from client", sctx->sdata->ttmpfile);
+   if(session->ctx == NULL){
+      syslog(LOG_PRIORITY, "%s: SSL ctx is null!", session->ttmpfile);
+      return 0;
+   }
 
-   if(sctx->data->ctx){
-      sctx->data->ssl = SSL_new(sctx->data->ctx);
-      if(sctx->data->ssl){
+   if(SSL_CTX_set_cipher_list(session->ctx, session->cfg->cipher_list) == 0){
+      syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", session->cfg->cipher_list);
+      return 0;
+   }
 
-         SSL_set_options(sctx->data->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
+   if(SSL_CTX_use_PrivateKey_file(session->ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
+      syslog(LOG_PRIORITY, "cannot load private key from %s", session->cfg->pemfile);
+      return 0;
+   }
 
-         if(SSL_set_fd(sctx->data->ssl, sctx->new_sd) == 1){
-            strncat(resp, SMTP_RESP_220_READY_TO_START_TLS, resplen);
-            *starttls = 1;
-            *protocol_state = SMTP_STATE_INIT;
+   if(SSL_CTX_use_certificate_file(session->ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
+      syslog(LOG_PRIORITY, "cannot load certificate from %s", session->cfg->pemfile);
+      return 0;
+   }
+
+   return 1;
+}
+
+
+void process_command_starttls(struct smtp_session *session){
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "starttls request from client");
+
+   if(init_ssl(session) == 1){
+
+      session->ssl = SSL_new(session->ctx);
+      if(session->ssl){
+
+         SSL_set_options(session->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
+
+         if(SSL_set_fd(session->ssl, session->socket) == 1){
+            session->starttls = 1;
+            send_smtp_response(session, SMTP_RESP_220_READY_TO_START_TLS);
+            session->protocol_state = SMTP_STATE_INIT;
+            session->use_ssl = 1;
             return;
-         } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", sctx->sdata->ttmpfile);
-      } syslog(LOG_PRIORITY, "%s: SSL_new() failed", sctx->sdata->ttmpfile);
-   } syslog(LOG_PRIORITY, "%s: SSL ctx is null!", sctx->sdata->ttmpfile);
+         } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", session->ttmpfile);
+      } syslog(LOG_PRIORITY, "%s: SSL_new() failed", session->ttmpfile);
+   } syslog(LOG_PRIORITY, "%s: SSL ctx is null!", session->ttmpfile);
 
-   strncat(resp, SMTP_RESP_454_ERR_TLS_TEMP_ERROR, resplen);
+   send_smtp_response(session, SMTP_RESP_454_ERR_TLS_TEMP_ERROR);
 }
 
 
-void process_command_mail_from(struct session_ctx *sctx, int *protocol_state, char *buf, char *resp, int resplen){
+void process_command_mail_from(struct smtp_session *session, char *buf){
+   memset(session->mailfrom, 0, SMALLBUFSIZE);
 
-   if(*protocol_state != SMTP_STATE_HELO && *protocol_state != SMTP_STATE_PERIOD && *protocol_state != SMTP_STATE_BDAT){
-      strncat(resp, SMTP_RESP_503_ERR, resplen);
+   if(session->protocol_state != SMTP_STATE_HELO && session->protocol_state != SMTP_STATE_PERIOD && session->protocol_state != SMTP_STATE_BDAT){
+      send(session->socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
    }
    else {
-      if(*protocol_state == SMTP_STATE_PERIOD || *protocol_state == SMTP_STATE_BDAT){
-         if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: initiated new transaction", sctx->sdata->ttmpfile);
+      create_id(&(session->ttmpfile[0]), 15);
+      session->protocol_state = SMTP_STATE_MAIL_FROM;
 
-         unlink(sctx->sdata->ttmpfile);
-         unlink(sctx->sdata->tmpframe);
+      extractEmail(buf, session->mailfrom);
 
-         init_session_data(sctx->sdata, sctx->cfg);
-      }
+      reset_bdat_counters(session);
+      session->tot_len = 0;
 
-      *protocol_state = SMTP_STATE_MAIL_FROM;
-
-      snprintf(sctx->sdata->mailfrom, SMALLBUFSIZE-1, "%s\r\n", buf);
-
-      memset(sctx->sdata->fromemail, 0, SMALLBUFSIZE);
-      extractEmail(sctx->sdata->mailfrom, sctx->sdata->fromemail);
-
-      strncat(resp, SMTP_RESP_250_OK, strlen(SMTP_RESP_250_OK));
-
-   }
-
-}
-
-
-void process_command_rcpt_to(struct session_ctx *sctx, int *protocol_state, char *buf, char *resp, int resplen){
-
-   if(*protocol_state == SMTP_STATE_MAIL_FROM || *protocol_state == SMTP_STATE_RCPT_TO){
-
-      if(strlen(buf) > SMALLBUFSIZE/2){
-         strncat(resp, SMTP_RESP_550_ERR_TOO_LONG_RCPT_TO, resplen);
-         return;
-      }
-
-      if(sctx->sdata->num_of_rcpt_to < MAX_RCPT_TO-1){
-         extractEmail(buf, sctx->sdata->rcptto[sctx->sdata->num_of_rcpt_to]);
-      }
-
-      *protocol_state = SMTP_STATE_RCPT_TO;
-
-      if(sctx->sdata->num_of_rcpt_to < MAX_RCPT_TO-1) sctx->sdata->num_of_rcpt_to++;
-
-      strncat(resp, SMTP_RESP_250_OK, resplen);
-   }
-   else {
-      strncat(resp, SMTP_RESP_503_ERR, resplen);
+      send_smtp_response(session, SMTP_RESP_250_OK);
    }
 }
 
 
-void process_command_data(struct session_ctx *sctx, int *protocol_state, char *resp, int resplen){
+void process_command_rcpt_to(struct smtp_session *session, char *buf){
 
-   if(*protocol_state != SMTP_STATE_RCPT_TO){
-      strncat(resp, SMTP_RESP_503_ERR, resplen);
+   if(session->protocol_state == SMTP_STATE_MAIL_FROM || session->protocol_state == SMTP_STATE_RCPT_TO){
+
+      // For now, we are not interested in the envelope recipients
+
+      session->protocol_state = SMTP_STATE_RCPT_TO;
+      send_smtp_response(session, SMTP_RESP_250_OK);
    }
    else {
-      sctx->sdata->fd = open(sctx->sdata->filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
-      if(sctx->sdata->fd == -1){
-         syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sctx->sdata->ttmpfile);
-         strncat(resp, SMTP_RESP_451_ERR, resplen);
+      send_smtp_response(session, SMTP_RESP_503_ERR);
+   }
+}
+
+
+void process_command_data(struct smtp_session *session){
+   session->tot_len = 0;
+
+   if(session->protocol_state != SMTP_STATE_RCPT_TO){
+      send_smtp_response(session, SMTP_RESP_503_ERR);
+   }
+   else {
+      session->fd = open(session->ttmpfile, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
+      if(session->fd == -1){
+         syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, session->ttmpfile);
+         send_smtp_response(session, SMTP_RESP_451_ERR);
       }
       else {
-         *protocol_state = SMTP_STATE_DATA;
-         strncat(resp, SMTP_RESP_354_DATA_OK, resplen-1);
+         session->protocol_state = SMTP_STATE_DATA;
+         send_smtp_response(session, SMTP_RESP_354_DATA_OK);
       }
    }
 
 }
 
+void process_command_period(struct smtp_session *session){
+   char buf[SMALLBUFSIZE];
 
-void process_command_bdat(struct session_ctx *sctx, int *protocol_state, char *buf, char *resp, int resplen){
-   int n, expected_bdat_len;
-   char puf[MAXBUFSIZE];
+   session->protocol_state = SMTP_STATE_PERIOD;
 
-   if(*protocol_state != SMTP_STATE_RCPT_TO){
-      strncat(resp, SMTP_RESP_503_ERR, resplen);
-      return;
-   }
+   // TODO: add some error handling
 
-   sctx->bdat_rounds = 0;
-   sctx->bdat_last_round = 0;
+   fsync(session->fd);
+   close(session->fd);
 
-   while(sctx->bdat_last_round != 1){
-      sctx->bdat_rounds++;
-      expected_bdat_len = 0;
+   session->fd = -1;
 
-      if(sctx->bdat_rounds == 1){
-         expected_bdat_len = extract_bdat_command(sctx, buf);
+   syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d", session->ttmpfile, session->mailfrom, session->tot_len);
 
-         sctx->sdata->fd = open(sctx->sdata->filename, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
-         if(sctx->sdata->fd == -1){
-            syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, sctx->sdata->ttmpfile);
-            strncat(resp, SMTP_RESP_451_ERR, resplen);
-            return;
-         }
-         else {
-            *protocol_state = SMTP_STATE_BDAT;
-         }
-      }
-      else if(sctx->bdat_last_round != 1){
-         if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sctx->sdata->tls, sctx->data->ssl)) > 0){
-            expected_bdat_len = extract_bdat_command(sctx, puf);
-            if(expected_bdat_len <= 0 && sctx->bdat_rounds > 0) sctx->bdat_rounds--;
-         }
-      }
+   move_email(session);
 
-      if(expected_bdat_len > 0) sctx->sdata->tot_len += read_bdat_data(sctx, expected_bdat_len);
-   }
+   snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
 
-   fsync(sctx->sdata->fd);
-   close(sctx->sdata->fd);
+   session->buflen = 0;
+   memset(session->buf, 0, SMALLBUFSIZE);
+
+   send_smtp_response(session, buf);
 }
 
 
-int extract_bdat_command(struct session_ctx *sctx, char *buf){
-   int expected_bdat_len=0;
-   char *p;
+void process_command_quit(struct smtp_session *session, char *buf, int buflen){
+   session->protocol_state = SMTP_STATE_FINISHED;
 
-   // determine if this is the last BDAT command
+   snprintf(buf, buflen-1, SMTP_RESP_221_GOODBYE, session->cfg->hostid);
 
-   p = strcasestr(buf, " LAST");
-   if(p){
-      sctx->bdat_last_round = 1;
-      syslog(LOG_INFO, "%s: BDAT LAST", sctx->sdata->ttmpfile);
-      *p = '\0';
-   }
-
-   // determine the size to be read
-
-   p = strchr(buf, ' ');
-   if(p){
-      expected_bdat_len = atoi(p);
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: BDAT len=%d", sctx->sdata->ttmpfile, expected_bdat_len);
-   }
-
-   if(!p || expected_bdat_len <= 0){
-      syslog(LOG_INFO, "%s: malformed BDAT command", sctx->sdata->ttmpfile);
-      return -1;
-   }
-
-   return expected_bdat_len;
+   send_smtp_response(session, buf);
 }
 
 
-int read_bdat_data(struct session_ctx *sctx, int expected_bdat_len){
-   int n, read_bdat_len=0, written_bdat_len=0;
-   char puf[MAXBUFSIZE];
+void process_command_reset(struct smtp_session *session){
+   send_smtp_response(session, SMTP_RESP_250_OK);
 
-   while(read_bdat_len < expected_bdat_len){
-      if((n = recvtimeoutssl(sctx->new_sd, &puf[0], sizeof(puf), TIMEOUT, sctx->sdata->tls, sctx->data->ssl)) > 0){
-         read_bdat_len += n;
-         written_bdat_len += write(sctx->sdata->fd, puf, n);
-      }
-   }
+   session->tot_len = 0;
+   session->fd = -1;
+   session->protocol_state = SMTP_STATE_HELO;
 
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes of BDAT data", sctx->sdata->ttmpfile, written_bdat_len);
+   reset_bdat_counters(session);
 
-   return written_bdat_len;
+   create_id(&(session->ttmpfile[0]), 15);
 }
-
-
-void process_command_quit(struct session_ctx *sctx, int *protocol_state, char *resp, int resplen){
-   char tmpbuf[MAXBUFSIZE];
-
-   *protocol_state = SMTP_STATE_FINISHED;
-
-   snprintf(tmpbuf, sizeof(tmpbuf)-1, SMTP_RESP_221_GOODBYE, sctx->cfg->hostid);
-   strncat(resp, tmpbuf, resplen);
-
-   unlink(sctx->sdata->ttmpfile);
-   unlink(sctx->sdata->tmpframe);
-
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sctx->sdata->ttmpfile);
-}
-
-
-void process_command_reset(struct session_ctx *sctx, int *protocol_state, char *resp, int resplen){
-
-   strncat(resp, SMTP_RESP_250_OK, resplen);
-
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: removed", sctx->sdata->ttmpfile);
-
-   unlink(sctx->sdata->ttmpfile);
-   unlink(sctx->sdata->tmpframe);
-
-   init_session_data(sctx->sdata, sctx->cfg);
-
-   *protocol_state = SMTP_STATE_HELO;
-}
-
-
-void send_buffered_response(struct session_ctx *sctx, int starttls, char *resp){
-   int rc;
-   char ssl_error[SMALLBUFSIZE];
-
-   write1(sctx->new_sd, resp, strlen(resp), sctx->sdata->tls, sctx->data->ssl);
-
-   if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: sent: %s", sctx->sdata->ttmpfile, resp);
-   memset(resp, 0, MAXBUFSIZE);
-
-   if(starttls == 1 && sctx->sdata->tls == 0){
-
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: waiting for ssl handshake", sctx->sdata->ttmpfile);
-
-      rc = SSL_accept(sctx->data->ssl);
-
-      if(sctx->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: SSL_accept() finished", sctx->sdata->ttmpfile);
-
-      if(rc == 1){
-         sctx->sdata->tls = 1;
-      }
-      else {
-         ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", sctx->sdata->ttmpfile, rc, SSL_get_error(sctx->data->ssl, rc), ssl_error);
-      }
-   }
-}
-
 

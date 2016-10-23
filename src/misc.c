@@ -107,6 +107,21 @@ int searchStringInBuffer(char *s, int len1, char *what, int len2){
 }
 
 
+int search_char_backward(char *buf, int buflen, char c){
+   int n, m;
+
+   m = buflen - 1 - 5;
+   if(m < 0) m = 0;
+
+   for(n=m; n<buflen; n++){
+      if(*(buf + n) == c){
+         return n;
+      }
+   }
+   return -1;
+}
+
+
 /*
  * count a character in buffer
  */
@@ -627,6 +642,17 @@ int can_i_write_current_directory(){
 }
 
 
+void move_email(struct smtp_session *session){
+   char buf[SMALLBUFSIZE];
+
+   snprintf(buf, sizeof(buf)-1, "%d/%s", session->ttmpfile[RND_STR_LEN-1] % session->cfg->number_of_worker_processes, session->ttmpfile);
+
+   if(rename(session->ttmpfile, buf)){
+      syslog(LOG_PRIORITY, "ERROR: couldn't rename %s to %s", session->ttmpfile, buf);
+   }
+}
+
+
 #ifndef _GNU_SOURCE
 char *strcasestr(const char *s, const char *find){
    char c, sc;
@@ -647,4 +673,3 @@ char *strcasestr(const char *s, const char *find){
    return((char*)s);
 }
 #endif
-

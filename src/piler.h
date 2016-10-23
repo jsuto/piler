@@ -19,6 +19,7 @@
 #include <rules.h>
 #include <sql.h>
 #include <import.h>
+#include <smtp.h>
 #include <config.h>
 #include <unistd.h>
 
@@ -28,6 +29,8 @@
 
 int read_key(struct __config *cfg);
 void insert_offset(struct session_data *sdata, int server_id);
+
+void tear_down_client(int n);
 
 int do_av_check(struct session_data *sdata, char *virusinfo, struct __data *data, struct __config *cfg);
 
@@ -69,7 +72,6 @@ int is_email_address_on_my_domains(char *email, struct __data *data);
 int is_blocked_by_tcp_wrappers(int sd);
 void send_response_to_data(struct session_ctx *sctx, char *rcptto);
 void process_written_file(struct session_ctx *sctx);
-void process_data(struct session_ctx *sctx);
 
 #endif /* _PILER_H */
 

@@ -18,6 +18,7 @@ void createdir(char *path, uid_t uid, gid_t gid, mode_t mode);
 
 void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
    char *p, s[SMALLBUFSIZE];
+   int i;
 
    p = strrchr(cfg->workdir, '/');
    if(p){
@@ -43,6 +44,11 @@ void check_and_create_directories(struct __config *cfg, uid_t uid, gid_t gid){
       *p = '\0';
       createdir(cfg->pidfile, uid, gid, 0755);
       *p = '/';
+   }
+
+   for(i=0; i<cfg->number_of_worker_processes; i++){
+      snprintf(s, sizeof(s)-1, "%s/%d", cfg->workdir, i);
+      createdir(s, uid, gid, 0700);
    }
 
 }

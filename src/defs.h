@@ -22,6 +22,7 @@
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
+#include <netinet/in.h>
 #include "tai.h"
 #include "config.h"
 
@@ -62,9 +63,6 @@
 #define RULE_UNDEF 0
 #define RULE_MATCH 1
 #define RULE_NO_MATCH -100
-
-
-typedef void signal_func (int);
 
 
 struct child {
@@ -386,6 +384,26 @@ struct session_ctx {
    struct counters *counters;
 };
 
+struct smtp_session {
+   char ttmpfile[SMALLBUFSIZE];
+   char mailfrom[SMALLBUFSIZE];
+   char buf[SMALLBUFSIZE];
+   char remote_host[INET6_ADDRSTRLEN];
+   time_t lasttime;
+   int protocol_state;
+   int fd;
+   int bad;
+   int buflen;
+   int tot_len;
+   int bdat_rounds;
+   int bdat_last_round;
+   int bdat_bytes_to_read;
+   int socket;
+   struct __config *cfg;
+   SSL_CTX *ctx;
+   SSL *ssl;
+   int use_ssl;
+   int starttls;
+};
 
 #endif /* _DEFS_H */
-
