@@ -21,12 +21,14 @@
 #include <syslog.h>
 #include <time.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <locale.h>
 #include <errno.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <piler.h>
 
+#define PROGNAME "piler"
 
 extern char *optarg;
 extern int optind;
@@ -101,10 +103,77 @@ static void child_sighup_handler(int sig){
 }
 
 
+int process_dir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
+   DIR *dir;
+   struct dirent *de;
+   int rc=ERR, tot_msgs=0;
+   char fname[SMALLBUFSIZE];
+   char *status;
+   struct stat st;
+   struct timezone tz;
+   struct timeval tv1, tv2;
+
+   dir = opendir(directory);
+   if(!dir){
+      syslog(LOG_PRIORITY, "cannot open directory: %s", directory);
+      return tot_msgs;
+   }
+
+   while((de = readdir(dir))){
+      if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
+
+      snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
+
+      if(stat(fname, &st) == 0){
+         if(S_ISREG(st.st_mode)){
+
+            status = NULL;
+
+            gettimeofday(&tv1, &tz);
+
+	    // ide kene az import_message fv roviden, es akkor mindent tudna loggolni!
+            rc = import_message(fname, sdata, data, cfg);
+            gettimeofday(&tv2, &tz);
+
+            if(rc == OK){
+               tot_msgs++;
+               status = S_STATUS_STORED;
+            }
+            else if(rc == ERR_EXISTS){
+               tot_msgs++;
+               status = S_STATUS_DUPLICATE;
+            }
+            else {
+               status = S_STATUS_ERROR;
+            }
+
+            //Oct 25 20:37:55 f5e88a047257 piler[3236]: 1/40000000580fc29234488f440fdc735c1869: size=172527/128280, delay=36067, status=stored
+
+            syslog(LOG_PRIORITY, "%s: size=%d/%d, delay=%ld, status=%s", fname, sdata->tot_len, sdata->stored_len, tvdiff(tv2, tv1), status);
+
+            /*syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, %s, status=%s",
+                                                                                         fname, sdata->fromemail, sdata->tot_len,
+                                                                                         sdata->stored_len, parser_state->n_attachments,
+                                                                                         sctx->parser_state->reference, sctx->parser_state->message_id,
+                                                                                         sctx->parser_state->retention, sctx->data->folder, delay, sctx->status);*/
+
+            if(rc != ERR) unlink(fname);
+         }
+      }
+      else {
+         syslog(LOG_PRIORITY, "ERROR: cannot stat: %s", fname);
+      }
+   }
+
+   closedir(dir);
+
+   return tot_msgs;
+}
+
+
 static void child_main(struct child *ptr){
    struct import import;
    struct session_data sdata;
-   int tot_msgs = 0;
    char dir[TINYBUFSIZE];
 
    /* open directory, then process its files, then sleep 2 sec, and repeat */
@@ -130,8 +199,7 @@ static void child_main(struct child *ptr){
       sig_block(SIGHUP);
 
       if(open_database(&sdata, &cfg) == OK){
-         import_from_maildir(dir, &sdata, &data, &tot_msgs, &cfg);
-         ptr->messages += tot_msgs;
+         ptr->messages += process_dir(dir, &sdata, &data, &cfg);
          close_database(&sdata);
 
          sleep(2);
@@ -287,7 +355,7 @@ void initialise_configuration(){
 
    cfg = read_config(configfile);
 
-   if(cfg.number_of_worker_processes < 5) cfg.number_of_worker_processes = 5;
+   if(cfg.number_of_worker_processes < 2) cfg.number_of_worker_processes = 2;
    if(cfg.number_of_worker_processes > MAXCHILDREN) cfg.number_of_worker_processes = MAXCHILDREN;
 
    if(strlen(cfg.username) > 1){

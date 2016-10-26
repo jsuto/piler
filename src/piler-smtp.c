@@ -25,6 +25,7 @@
 #include <openssl/err.h>
 #include <piler.h>
 
+#define PROGNAME "piler-smtp"
 #define POLL_SIZE 256
 
 extern char *optarg;
@@ -381,7 +382,7 @@ int main(int argc, char **argv){
       }
    }
 
-   (void) openlog("piler-poll", LOG_PID, LOG_MAIL);
+   (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
    memset(sessions, '\0', sizeof(sessions));
    memset(poll_set, '\0', sizeof(poll_set));
@@ -410,6 +411,8 @@ int main(int argc, char **argv){
    SSL_load_error_strings();
 
    srand(getpid());
+
+   syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
 
 #if HAVE_DAEMON == 1
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);

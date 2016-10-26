@@ -9,8 +9,6 @@
 #include "piler-config.h"
 #include "params.h"
 
-#define PROGNAME "piler"
-
 #define VERSION "1.3.0-master"
 
 #define BUILD 975
