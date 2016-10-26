@@ -118,6 +118,8 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
    sdata->tot_len = size;
 
+   snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
    /*if(data->import->extra_recipient){
       snprintf(sdata->rcptto[0], SMALLBUFSIZE-1, "%s", data->import->extra_recipient);
       sdata->num_of_rcpt_to = 1;
