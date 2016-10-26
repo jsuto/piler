@@ -354,7 +354,6 @@ struct __data {
 #ifdef HAVE_MEMCACHED
    struct memcached_server memc;
 #endif
-
    SSL_CTX *ctx;
    SSL *ssl;
 };
@@ -369,20 +368,6 @@ struct counters {
    unsigned long long c_stored_size;
 };
 
-
-struct session_ctx {
-   char *status;
-   int new_sd;
-   int db_conn;
-   int inj;
-   int bdat_rounds;
-   int bdat_last_round;
-   struct __config *cfg;
-   struct __data *data;
-   struct session_data *sdata;
-   struct parser_state *parser_state;
-   struct counters *counters;
-};
 
 struct smtp_session {
    char ttmpfile[SMALLBUFSIZE];

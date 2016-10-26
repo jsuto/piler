@@ -111,7 +111,8 @@
 #define OK 0
 #define ERR 1
 #define ERR_EXISTS 2
-#define ERR_MYDOMAINS 3
+#define ERR_DISCARDED 3
+#define ERR_MYDOMAINS 4
 #define ERR_FOLDER -1
 
 #define AVIR_OK 0
