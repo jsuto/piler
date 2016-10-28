@@ -105,6 +105,7 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
    sdata->tot_len = size;
 
    snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+   snprintf(sdata->ttmpfile, SMALLBUFSIZE-1, "%s", filename);
 
    parser_state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &parser_state, cfg);
