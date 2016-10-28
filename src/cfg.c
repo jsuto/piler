@@ -94,7 +94,7 @@ struct _parse_rule config_parse_rules[] =
    { "mysqlpwd", "string", (void*) string_parser, offsetof(struct __config, mysqlpwd), "", MAXVAL-1},
    { "mysqldb", "string", (void*) string_parser, offsetof(struct __config, mysqldb), "piler", MAXVAL-1},
    { "mysql_connect_timeout", "integer", (void*) int_parser, offsetof(struct __config, mysql_connect_timeout), "2", sizeof(int)},
-   { "number_of_worker_processes", "integer", (void*) int_parser, offsetof(struct __config, number_of_worker_processes), "10", sizeof(int)},
+   { "number_of_worker_processes", "integer", (void*) int_parser, offsetof(struct __config, number_of_worker_processes), "2", sizeof(int)},
    { "pemfile", "string", (void*) string_parser, offsetof(struct __config, pemfile), "", MAXVAL-1},
    { "pidfile", "string", (void*) string_parser, offsetof(struct __config, pidfile), PIDFILE, MAXVAL-1},
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct __config, piler_header_field), "X-piler-id:", MAXVAL-1},
