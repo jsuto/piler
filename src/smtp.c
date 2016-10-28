@@ -89,8 +89,6 @@ void process_data(struct smtp_session *session, char *readbuf, int readlen){
    pos = searchStringInBuffer(&puf[0], len, SMTP_CMD_PERIOD, 5);
 
    if(pos > 0){
-      //write(session->fd, puf, pos+2);
-      //session->tot_len += pos+2;
       write(session->fd, puf, pos);
       session->tot_len += pos;
       process_command_period(session);
