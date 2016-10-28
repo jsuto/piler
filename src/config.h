@@ -35,6 +35,7 @@
 #define RANDOM_POOL "/dev/urandom"
 #define RND_STR_LEN 36
 #define BUFLEN 32
+#define QUEUE_ID_LEN 16
 #define IPLEN 16+1
 #define KEYLEN 56
 

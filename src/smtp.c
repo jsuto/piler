@@ -223,7 +223,8 @@ void process_command_mail_from(struct smtp_session *session, char *buf){
       send(session->socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
    }
    else {
-      create_id(&(session->ttmpfile[0]), 15);
+      memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
+      make_random_string(&(session->ttmpfile[0]), QUEUE_ID_LEN);
       session->protocol_state = SMTP_STATE_MAIL_FROM;
 
       extractEmail(buf, session->mailfrom);
@@ -314,6 +315,6 @@ void process_command_reset(struct smtp_session *session){
 
    reset_bdat_counters(session);
 
-   create_id(&(session->ttmpfile[0]), 15);
+   memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
+   make_random_string(&(session->ttmpfile[0]), QUEUE_ID_LEN);
 }
-

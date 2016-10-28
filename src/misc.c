@@ -299,7 +299,7 @@ int extractEmail(char *rawmail, char *email){
 
 void make_random_string(char *buf, int buflen){
    int i, len;
-   static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+   static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
    len = strlen(alphanum);
 
