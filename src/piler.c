@@ -31,7 +31,6 @@
 extern char *optarg;
 extern int optind;
 
-int sd;
 int quit = 0;
 int received_sighup = 0;
 char *configfile = CONFIG_FILE;
@@ -42,20 +41,7 @@ struct passwd *pwd;
 struct child children[MAXCHILDREN];
 
 
-static void takesig(int sig);
-static void child_sighup_handler(int sig);
-static void child_main(struct child *ptr);
-static pid_t child_make(struct child *ptr);
-int search_slot_by_pid(pid_t pid);
-void kill_children(int sig);
-void p_clean_exit();
-void fatal(char *s);
-void initialise_configuration();
-
-
-
-
-static void takesig(int sig){
+void takesig(int sig){
    int i, status;
    pid_t pid;
 
@@ -94,7 +80,7 @@ static void takesig(int sig){
 }
 
 
-static void child_sighup_handler(int sig){
+void child_sighup_handler(int sig){
    if(sig == SIGHUP){
       received_sighup = 1;
    }
@@ -175,11 +161,11 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
    gettimeofday(&tv2, &tz);
 
-   syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, message-id=%s, retention=%d, folder=%d, delay=%.4f, status=%s",
-                                                                                         filename, sdata->fromemail, sdata->tot_len,
-                                                                                         sdata->stored_len, parser_state.n_attachments,
-                                                                                         parser_state.reference, parser_state.message_id,
-                                                                                         parser_state.retention, data->folder, tvdiff(tv2,tv1)/1000000.0, status);
+   syslog(LOG_PRIORITY, "%s: from=%s, size=%d/%d, attachments=%d, reference=%s, "
+                        "message-id=%s, retention=%d, folder=%d, delay=%.4f, status=%s",
+                             filename, sdata->fromemail, sdata->tot_len, sdata->stored_len,
+                             parser_state.n_attachments, parser_state.reference, parser_state.message_id,
+                             parser_state.retention, data->folder, tvdiff(tv2,tv1)/1000000.0, status);
 
    return rc;
 }
@@ -188,7 +174,7 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 int process_dir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
    DIR *dir;
    struct dirent *de;
-   int rc=ERR, tot_msgs=0;
+   int tot_msgs=0;
    char fname[SMALLBUFSIZE];
    struct stat st;
 
@@ -204,16 +190,8 @@ int process_dir(char *directory, struct session_data *sdata, struct __data *data
       snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
 
       if(stat(fname, &st) == 0){
-         if(S_ISREG(st.st_mode)){
-            rc = process_email(fname, sdata, data, st.st_size, cfg);
-
-            if(rc == OK || rc == ERR_EXISTS){
-               tot_msgs++;
-	       unlink(fname);
-            }
-
-            //Oct 25 20:37:55 f5e88a047257 piler[3236]: 1/40000000580fc29234488f440fdc735c1869: size=172527/128280, delay=36067, status=stored
-            //syslog(LOG_PRIORITY, "%s: size=%d/%d, delay=%ld, status=%s", fname, sdata->tot_len, sdata->stored_len, tvdiff(tv2, tv1), status);
+         if(S_ISREG(st.st_mode) && process_email(fname, sdata, data, st.st_size, cfg) != ERR){
+            tot_msgs++;
          }
       }
       else {
@@ -227,7 +205,7 @@ int process_dir(char *directory, struct session_data *sdata, struct __data *data
 }
 
 
-static void child_main(struct child *ptr){
+void child_main(struct child *ptr){
    struct session_data sdata;
    char dir[TINYBUFSIZE];
 
@@ -279,7 +257,7 @@ static void child_main(struct child *ptr){
 }
 
 
-static pid_t child_make(struct child *ptr){
+pid_t child_make(struct child *ptr){
    pid_t pid;
 
    if((pid = fork()) > 0) return pid;
@@ -350,8 +328,6 @@ void kill_children(int sig){
 
 
 void p_clean_exit(){
-   if(sd != -1) close(sd);
-
    kill_children(SIGTERM);
 
    clearrules(data.archiving_rules);
@@ -443,9 +419,7 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int i, rc, yes=1, daemonise=0, dedupfd;
-   char port_string[8];
-   struct addrinfo hints, *res;
+   int i, daemonise=0, dedupfd;
 
 
    while((i = getopt(argc, argv, "c:dvVh")) > 0){
@@ -483,8 +457,6 @@ int main(int argc, char **argv){
    initrules(data.retention_rules);
    initrules(data.folder_rules);
    data.dedup = MAP_FAILED;
-   memset(data.starttls, 0, sizeof(data.starttls));
-
 
    initialise_configuration();
 
@@ -492,35 +464,6 @@ int main(int argc, char **argv){
 
 
    if(read_key(&cfg)) fatal(ERR_READING_KEY);
-
-
-   memset(&hints, 0, sizeof(hints));
-   hints.ai_family = AF_UNSPEC;
-   hints.ai_socktype = SOCK_STREAM;
-
-   snprintf(port_string, sizeof(port_string)-1, "%d", cfg.listen_port);
-
-   //if((rc = getaddrinfo(cfg.listen_addr, port_string, &hints, &res)) != 0){
-   if((rc = getaddrinfo("127.0.0.1", "5678", &hints, &res)) != 0){
-      fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg.listen_addr, gai_strerror(rc));
-      return 1;
-   }
-
-
-   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1)
-      fatal(ERR_OPEN_SOCKET);
-
-   if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-      fatal(ERR_SET_SOCK_OPT);
-
-   if(bind(sd, res->ai_addr, res->ai_addrlen) == -1)
-      fatal(ERR_BIND_TO_PORT);
-
-   if(listen(sd, cfg.backlog) == -1)
-      fatal(ERR_LISTEN);
-
-
-   freeaddrinfo(res);
 
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
@@ -537,20 +480,17 @@ int main(int argc, char **argv){
 
    syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
 
-
 #if HAVE_DAEMON == 1
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
 
    write_pid_file(cfg.pidfile);
 
-
    child_pool_create();
 
    set_signal_handler(SIGCHLD, takesig);
    set_signal_handler(SIGTERM, takesig);
    set_signal_handler(SIGHUP, takesig);
-
 
    for(;;){ sleep(1); }
 

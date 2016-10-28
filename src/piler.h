@@ -38,8 +38,6 @@ int make_digests(struct session_data *sdata, struct __config *cfg);
 void digest_file(char *filename, char *digest);
 void digest_string(char *s, char *digest);
 
-int handle_smtp_session(struct session_ctx *sctx);
-
 void remove_stripped_attachments(struct parser_state *state);
 int process_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
 int reimport_message(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg);
@@ -69,9 +67,13 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
 int is_email_address_on_my_domains(char *email, struct __data *data);
 
-int is_blocked_by_tcp_wrappers(int sd);
-void send_response_to_data(struct session_ctx *sctx, char *rcptto);
-void process_written_file(struct session_ctx *sctx);
+void child_sighup_handler(int sig);
+void child_main(struct child *ptr);
+pid_t child_make(struct child *ptr);
+int search_slot_by_pid(pid_t pid);
+void kill_children(int sig);
+void p_clean_exit();
+void fatal(char *s);
+void initialise_configuration();
 
 #endif /* _PILER_H */
-
