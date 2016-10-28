@@ -156,7 +156,7 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
    gettimeofday(&tv2, &tz);
 
-   syslog(LOG_PRIORITY, "%s: piler-id=%s, size=%d/%d, attachments=%d, reference=%s, "
+   syslog(LOG_PRIORITY, "%s: %s, size=%d/%d, attachments=%d, reference=%s, "
                         "message-id=%s, retention=%d, folder=%d, delay=%.4f, status=%s",
                              filename, sdata->ttmpfile, sdata->tot_len, sdata->stored_len,
                              parser_state.n_attachments, parser_state.reference, parser_state.message_id,

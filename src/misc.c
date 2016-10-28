@@ -297,11 +297,32 @@ int extractEmail(char *rawmail, char *email){
 }
 
 
+/*
+ * Generate a random string from /dev/urandom or
+ * using the rand() function if not possible
+ */
+
 void make_random_string(char *buf, int buflen){
-   int i, len;
+   int i, len, fd;
+   int urandom=0;
    static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+   unsigned char s[QUEUE_ID_LEN];
 
    len = strlen(alphanum);
+
+   fd = open(RANDOM_POOL, O_RDONLY);
+   if(fd != -1){
+      if(readFromEntropyPool(fd, s, sizeof(s)) == sizeof(s)){
+         for(i=0; i<QUEUE_ID_LEN; i++){
+            *(buf+i) = alphanum[s[i] % len];
+         }
+
+         urandom = 1;
+      }
+      close(fd);
+   }
+
+   if(urandom == 1) return;
 
    for(i=0; i<buflen; i++){
       *(buf+i) = alphanum[rand() % len];
