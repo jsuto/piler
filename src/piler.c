@@ -89,8 +89,10 @@ void child_sighup_handler(int sig){
 
 int process_email(char *filename, struct session_data *sdata, struct __data *data, int size, struct __config *cfg){
    int rc;
+   char tmpbuf[SMALLBUFSIZE];
    char *status=S_STATUS_UNDEF;
    char *arule;
+   char *rcpt;
    struct timezone tz;
    struct timeval tv1, tv2;
    struct parser_state parser_state;
@@ -108,6 +110,18 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
    parser_state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &parser_state, cfg);
+
+   if(cfg->syslog_recipients == 1){
+      rcpt = parser_state.b_to;
+      do {
+         rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
+
+         if(does_it_seem_like_an_email_address(tmpbuf) == 1){
+            syslog(LOG_PRIORITY, "%s: rcpt=%s", sdata->ttmpfile, tmpbuf);
+         }
+      } while(rcpt);
+   }
+
 
    arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
 
