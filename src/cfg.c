@@ -80,6 +80,7 @@ struct _parse_rule config_parse_rules[] =
    { "listen_addr", "string", (void*) string_parser, offsetof(struct __config, listen_addr), "0.0.0.0", MAXVAL-1},
    { "listen_port", "integer", (void*) int_parser, offsetof(struct __config, listen_port), "25", sizeof(int)},
    { "locale", "string", (void*) string_parser, offsetof(struct __config, locale), "", MAXVAL-1},
+   { "max_connections", "integer", (void*) int_parser, offsetof(struct __config, max_connections), "256", sizeof(int)},
    { "max_requests_per_child", "integer", (void*) int_parser, offsetof(struct __config, max_requests_per_child), "1000", sizeof(int)},
    { "memcached_servers", "string", (void*) string_parser, offsetof(struct __config, memcached_servers), "127.0.0.1", MAXVAL-1},
    { "memcached_to_db_interval", "integer", (void*) int_parser, offsetof(struct __config, memcached_to_db_interval), "900", sizeof(int)},

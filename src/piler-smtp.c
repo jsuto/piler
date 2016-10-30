@@ -26,12 +26,11 @@
 #include <piler.h>
 
 #define PROGNAME "piler-smtp"
-#define POLL_SIZE 256
 
 extern char *optarg;
 extern int optind;
  
-struct pollfd poll_set[POLL_SIZE];
+struct pollfd *poll_set=NULL;
 int timeout = 20; // checking for timeout this often [sec]
 int numfds = 0;
 int listenerfd = -1;
@@ -39,7 +38,7 @@ int listenerfd = -1;
 char *configfile = CONFIG_FILE;
 struct __config cfg;
 struct passwd *pwd;
-struct smtp_session *session, *sessions[POLL_SIZE];
+struct smtp_session *session, **sessions=NULL;
 
 
 void handle_data(struct smtp_session *session, char *readbuf, int readlen){
@@ -130,10 +129,8 @@ void init_smtp_session(struct smtp_session *session, int fd_index, int sd){
 void free_smtp_session(struct smtp_session *session){
 
    if(session){
-      //printf("freeing session\n");
 
       if(session->use_ssl == 1){
-         //printf("shutdown ssl\n");
          SSL_shutdown(session->ssl);
          SSL_free(session->ssl);
       }
@@ -155,6 +152,9 @@ void p_clean_exit(){
       close(poll_set[i].fd);
       free_smtp_session(sessions[i]);
    }
+
+   if(sessions) free(sessions);
+   if(poll_set) free(poll_set);
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
@@ -180,7 +180,6 @@ void tear_down_client(int n){
 
    syslog(LOG_PRIORITY, "disconnected from %s", sessions[n]->remote_host);
 
-   // new code
    free_smtp_session(sessions[n]);
    sessions[n] = NULL;
 
@@ -286,7 +285,7 @@ void start_new_session(int socket, struct sockaddr_storage client_address, int f
    char smtp_banner[SMALLBUFSIZE], remote_host[INET6_ADDRSTRLEN];
 
    // Uh-oh! We have enough connections to serve already
-   if(numfds >= POLL_SIZE){
+   if(numfds >= cfg.max_connections){
       inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remote_host, sizeof(remote_host));
       syslog(LOG_PRIORITY, "too many connections (%d), cannot accept %s", numfds, remote_host);
       send(socket, SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY, strlen(SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY), 0);
@@ -384,10 +383,11 @@ int main(int argc, char **argv){
 
    (void) openlog(PROGNAME, LOG_PID, LOG_MAIL);
 
-   memset(sessions, '\0', sizeof(sessions));
-   memset(poll_set, '\0', sizeof(poll_set));
-
    initialise_configuration();
+
+   // The max_connections variable mustn't be affected by a reload!
+   if(cfg.max_connections < 10) cfg.max_connections = 10;
+   if(cfg.max_connections > 10000) cfg.max_connections = 10000;
 
    listenerfd = create_listener_socket(cfg.listen_addr, cfg.listen_port);
    if(listenerfd == -1){
@@ -397,11 +397,19 @@ int main(int argc, char **argv){
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
 
+   set_signal_handler(SIGINT, p_clean_exit);
    set_signal_handler(SIGTERM, p_clean_exit);
    set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
 
    alarm(timeout);
+
+   // calloc() initialitizes the allocated memory
+
+   sessions = calloc(cfg.max_connections, sizeof(struct smtp_session));
+   poll_set = calloc(cfg.max_connections, sizeof(struct pollfd));
+
+   if(!sessions || !poll_set) fatal("calloc() error");
 
    poll_set[0].fd = listenerfd;
    poll_set[0].events = POLLIN;

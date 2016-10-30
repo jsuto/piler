@@ -35,6 +35,7 @@ struct __config {
    char memcached_servers[MAXVAL];
    int memcached_ttl;
 
+   int max_connections;
    int number_of_worker_processes;
    int max_requests_per_child;
 
