@@ -385,10 +385,6 @@ int main(int argc, char **argv){
 
    initialise_configuration();
 
-   // The max_connections variable mustn't be affected by a reload!
-   if(cfg.max_connections < 10) cfg.max_connections = 10;
-   if(cfg.max_connections > 10000) cfg.max_connections = 10000;
-
    listenerfd = create_listener_socket(cfg.listen_addr, cfg.listen_port);
    if(listenerfd == -1){
       syslog(LOG_PRIORITY, "create_listener_socket() error");
