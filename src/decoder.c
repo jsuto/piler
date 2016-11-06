@@ -110,7 +110,7 @@ void sanitiseBase64(char *s){
 }
 
 
-inline void pack_4_into_3(char *s, char *s2){
+inline static void pack_4_into_3(char *s, char *s2){
    int j, n[4], k1, k2;
 
    memset(s2, 0, 3);

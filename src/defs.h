@@ -376,6 +376,7 @@ struct smtp_session {
    char remote_host[INET6_ADDRSTRLEN];
    time_t lasttime;
    int protocol_state;
+   int slot;
    int fd;
    int bad;
    int buflen;

@@ -44,6 +44,8 @@ int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
 
 void *get_in_addr(struct sockaddr *sa);
+int make_socket_non_blocking(int fd);
+int create_and_bind(char *listen_addr, int listen_port);
 
 int can_i_write_current_directory();
 

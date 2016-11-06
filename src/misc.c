@@ -645,6 +645,68 @@ void *get_in_addr(struct sockaddr *sa){
 }
 
 
+int make_socket_non_blocking(int fd){
+   int flags, s;
+
+   flags = fcntl(fd, F_GETFL, 0);
+   if(flags == -1){
+      return -1;
+   }
+
+   flags |= O_NONBLOCK;
+
+   s = fcntl(fd, F_SETFL, flags);
+   if(s == -1){
+      return -1;
+   }
+
+   return 0;
+}
+
+
+int create_and_bind(char *listen_addr, int listen_port){
+   struct addrinfo hints;
+   struct addrinfo *result, *rp;
+   char port_string[8];
+   int rc, fd;
+
+   memset(&hints, 0, sizeof (struct addrinfo));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+   hints.ai_flags = AI_PASSIVE;
+
+   snprintf(port_string, sizeof(port_string)-1, "%d", listen_port);
+
+   rc = getaddrinfo(listen_addr, port_string, &hints, &result);
+   if(rc != 0){
+      syslog(LOG_PRIORITY, "getaddrinfo for '%s': %s", listen_addr, gai_strerror(rc));
+      return -1;
+   }
+
+   for(rp = result; rp != NULL; rp = rp->ai_next){
+      fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+      if(fd == -1)
+         continue;
+
+      rc = bind(fd, rp->ai_addr, rp->ai_addrlen);
+      if(rc == 0){
+          break;
+      }
+
+      close(fd);
+   }
+
+   if(rp == NULL){
+      syslog(LOG_PRIORITY, "cannot bind to port: %s:%d", listen_addr, listen_port);
+      return -1;
+   }
+
+   freeaddrinfo(result);
+
+   return fd;
+}
+
+
 int can_i_write_current_directory(){
    int fd;
    char filename[SMALLBUFSIZE];

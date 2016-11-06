@@ -14,7 +14,7 @@
 #include <pwd.h>
 #include <sys/ioctl.h>
 #include <signal.h>
-#include <poll.h>
+#include <sys/epoll.h>
 #include <netinet/in.h>
 #include <locale.h>
 #include <errno.h>
@@ -29,10 +29,10 @@
 
 extern char *optarg;
 extern int optind;
- 
-struct pollfd *poll_set=NULL;
+
+struct epoll_event event, *events=NULL;
 int timeout = 20; // checking for timeout this often [sec]
-int numfds = 0;
+int num_connections = 0;
 int listenerfd = -1;
 
 char *configfile = CONFIG_FILE;
@@ -105,7 +105,9 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
 }
 
 
-void init_smtp_session(struct smtp_session *session, int fd_index, int sd){
+void init_smtp_session(struct smtp_session *session, int slot, int sd){
+   session->slot = slot;
+
    session->socket = sd;
    session->buflen = 0;
    session->protocol_state = SMTP_STATE_INIT;
@@ -148,13 +150,12 @@ void p_clean_exit(){
 
    if(listenerfd != -1) close(listenerfd);
 
-   for(i=1; i<numfds; i++){
-      close(poll_set[i].fd);
-      free_smtp_session(sessions[i]);
+   for(i=0; i<cfg.max_connections; i++){
+      if(sessions[i]) free_smtp_session(sessions[i]);
    }
 
    if(sessions) free(sessions);
-   if(poll_set) free(poll_set);
+   if(events) free(events);
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
@@ -172,23 +173,37 @@ void fatal(char *s){
 }
 
 
-void tear_down_client(int n){
+int get_session_slot(){
    int i;
 
-   close(poll_set[n].fd);
-   poll_set[n].events = 0;
-
-   syslog(LOG_PRIORITY, "disconnected from %s", sessions[n]->remote_host);
-
-   free_smtp_session(sessions[n]);
-   sessions[n] = NULL;
-
-   for(i=n; i<numfds; i++){
-      poll_set[i] = poll_set[i+1];
-      sessions[i] = sessions[i+1];
+   for(i=0; i<cfg.max_connections; i++){
+      if(sessions[i] == NULL) return i;
    }
 
-   numfds--;
+   return -1;
+}
+
+
+struct smtp_session *get_session_by_socket(int socket){
+   int i;
+
+   for(i=0; i<cfg.max_connections; i++){
+      if(sessions[i] && sessions[i]->socket == socket) return sessions[i];
+   }
+
+   return NULL;
+}
+
+
+void tear_down_client(int slot){
+   syslog(LOG_PRIORITY, "disconnected from %s", sessions[slot]->remote_host);
+
+   close(sessions[slot]->socket);
+
+   free_smtp_session(sessions[slot]);
+   sessions[slot] = NULL;
+
+   num_connections--;
 }
 
 
@@ -196,13 +211,13 @@ void check_for_client_timeout(){
    time_t now;
    int i;
 
-   if(numfds > 1){
+   if(num_connections > 0){
       time(&now);
 
-      for(i=1; i<numfds; i++){
-         if(now - sessions[i]->lasttime >= cfg.smtp_timeout){
+      for(i=0; i<cfg.max_connections; i++){
+         if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
             syslog(LOG_PRIORITY, "client %s timeout", sessions[i]->remote_host);
-            tear_down_client(i);
+            tear_down_client(sessions[i]->slot);
          }
       }
    }
@@ -230,99 +245,52 @@ int is_blocked_by_tcp_wrappers(int sd){
 #endif
 
 
-int create_listener_socket(char *listen_addr, int listen_port){
-   int rc, sd, yes=1;
-   char port_string[8];
-   struct addrinfo hints, *res;
-
-   memset(&hints, 0, sizeof(hints));
-   hints.ai_family = AF_UNSPEC;
-   hints.ai_socktype = SOCK_STREAM;
-
-   snprintf(port_string, sizeof(port_string)-1, "%d", listen_port);
-
-   if((rc = getaddrinfo(listen_addr, port_string, &hints, &res)) != 0){
-      syslog(LOG_PRIORITY, "getaddrinfo for '%s': %s", listen_addr, gai_strerror(rc));
-      return -1;
-   }
-
-   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
-      syslog(LOG_PRIORITY, "socket() error");
-      return -1;
-   }
-
-   if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1){
-      syslog(LOG_PRIORITY, "setsockopt() error");
-      close(sd);
-      return -1;
-   }
-
-   if(ioctl(sd, FIONBIO, (char *)&yes) == -1){
-      syslog(LOG_PRIORITY, "ioctl() failed");
-      close(sd);
-      return -1;
-   }
-
-   if(bind(sd, res->ai_addr, res->ai_addrlen) == -1){
-      syslog(LOG_PRIORITY, "cannot bind to port: %s:%d", listen_addr, listen_port);
-      close(sd);
-      return -1;
-   }
-
-   freeaddrinfo(res);
-
-   if(listen(sd, cfg.backlog) == -1){
-      syslog(LOG_PRIORITY, "listen() error");
-      close(sd);
-      return -1;
-   }
-
-   return sd;
-}
-
-
-void start_new_session(int socket, struct sockaddr_storage client_address, int fd_index){
-   char smtp_banner[SMALLBUFSIZE], remote_host[INET6_ADDRSTRLEN];
+int start_new_session(int socket){
+   char smtp_banner[SMALLBUFSIZE];
+   int slot;
 
    // Uh-oh! We have enough connections to serve already
-   if(numfds >= cfg.max_connections){
-      inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), remote_host, sizeof(remote_host));
-      syslog(LOG_PRIORITY, "too many connections (%d), cannot accept %s", numfds, remote_host);
+   if(num_connections >= cfg.max_connections){
+      syslog(LOG_PRIORITY, "too many connections (%d), cannot accept socket %d", num_connections, socket);
       send(socket, SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY, strlen(SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY), 0);
       close(socket);
-      return;
+      return -1;
    }
 
 #ifdef HAVE_LIBWRAP
    if(is_blocked_by_tcp_wrappers(socket) == 1){
       close(socket);
-      return;
+      return -1;
    }
 #endif
 
-   sessions[numfds] = malloc(sizeof(struct smtp_session));
+   slot = get_session_slot();
 
-   if(sessions[numfds] == NULL){
-      syslog(LOG_PRIORITY, "malloc error()");
-      send(socket, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
-      close(socket);
-      return;
+   syslog(LOG_PRIORITY, "INFO: found slot: %d", slot);
+
+   if(slot >= 0 && sessions[slot] == NULL){
+      sessions[slot] = malloc(sizeof(struct smtp_session));
+      if(sessions[slot]){
+         init_smtp_session(sessions[slot], slot, socket);
+         snprintf(smtp_banner, sizeof(smtp_banner)-1, SMTP_RESP_220_BANNER, cfg.hostid);
+         send(socket, smtp_banner, strlen(smtp_banner), 0);
+
+         num_connections++;
+
+         return 0;
+      }
+      else {
+         syslog(LOG_PRIORITY, "ERROR: malloc() in start_new_session()");
+      }
+   }
+   else {
+      syslog(LOG_PRIORITY, "ERROR: couldn't find a slot for the connection");
    }
 
+   send(socket, SMTP_RESP_421_ERR_TMP, strlen(SMTP_RESP_421_ERR_TMP), 0);
+   close(socket);
 
-   init_smtp_session(sessions[numfds], fd_index, socket);
-
-   snprintf(smtp_banner, sizeof(smtp_banner)-1, SMTP_RESP_220_BANNER, cfg.hostid);
-   send(socket, smtp_banner, strlen(smtp_banner), 0);
-
-   inet_ntop(client_address.ss_family, get_in_addr((struct sockaddr*)&client_address), sessions[numfds]->remote_host, INET6_ADDRSTRLEN);
-
-   syslog(LOG_PRIORITY, "connected from %s", sessions[numfds]->remote_host);
-
-   poll_set[numfds].fd = socket;
-   poll_set[numfds].events = POLLIN|POLLHUP;
-
-   numfds++;
+   return -1;
 }
 
 
@@ -352,12 +320,12 @@ void initialise_configuration(){
 
 int main(int argc, char **argv){
    int listenerfd, client_sockfd;
-   int i, daemonise=0;
+   int i, n, daemonise=0;
    int client_len = sizeof(struct sockaddr_storage);
-   int readlen;
-   int bytes_to_read;
    struct sockaddr_storage client_address;
+   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
    char readbuf[BIGBUFSIZE];
+   int efd;
 
    while((i = getopt(argc, argv, "c:dvVh")) > 0){
       switch(i){
@@ -385,13 +353,27 @@ int main(int argc, char **argv){
 
    initialise_configuration();
 
-   listenerfd = create_listener_socket(cfg.listen_addr, cfg.listen_port);
+   listenerfd = create_and_bind(cfg.listen_addr, cfg.listen_port);
    if(listenerfd == -1){
-      syslog(LOG_PRIORITY, "create_listener_socket() error");
       exit(1);
    }
 
+   if(listen(listenerfd, cfg.backlog) == -1){
+      fatal("ERROR: listen()");
+   }
+
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
+
+   efd = epoll_create1(0);
+   if(efd == -1){
+      fatal("ERROR: epoll_create()");
+   }
+
+   event.data.fd = listenerfd;
+   event.events = EPOLLIN | EPOLLET;
+   if(epoll_ctl(efd, EPOLL_CTL_ADD, listenerfd, &event) == -1){
+      fatal("ERROR: epoll_ctl() on efd");
+   }
 
    set_signal_handler(SIGINT, p_clean_exit);
    set_signal_handler(SIGTERM, p_clean_exit);
@@ -403,13 +385,9 @@ int main(int argc, char **argv){
    // calloc() initialitizes the allocated memory
 
    sessions = calloc(cfg.max_connections, sizeof(struct smtp_session));
-   poll_set = calloc(cfg.max_connections, sizeof(struct pollfd));
+   events = calloc(cfg.max_connections, sizeof(struct epoll_event));
 
-   if(!sessions || !poll_set) fatal("calloc() error");
-
-   poll_set[0].fd = listenerfd;
-   poll_set[0].events = POLLIN;
-   numfds = 1;
+   if(!sessions || !events) fatal("ERROR: calloc()");
 
    SSL_library_init();
    SSL_load_error_strings();
@@ -423,55 +401,118 @@ int main(int argc, char **argv){
 #endif
 
    for(;;){
-      int fd_index;
- 
-      poll(poll_set, numfds, -1);
+      n = epoll_wait(efd, events, cfg.max_connections, -1);
+      for(i=0; i<n; i++){
 
-      for(fd_index = 0; fd_index < numfds; fd_index++){
-         if(poll_set[fd_index].revents & POLLIN){
+         if((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))){
+            syslog(LOG_PRIORITY, "ERROR: epoll error");
+            close(events[i].data.fd);
+            // we have to tear_down_client as well if not the listening socket?
+            continue;
+         }
 
-            // process new connection
+         // We have 1 or more incoming connections to process
 
-            if(poll_set[fd_index].fd == listenerfd){
+         else if(listenerfd == events[i].data.fd){
+
+            while(1){
+
                client_sockfd = accept(listenerfd, (struct sockaddr *)&client_address, (socklen_t *)&client_len);
-               start_new_session(client_sockfd, client_address, fd_index);
+               if(client_sockfd == -1){
+                  if((errno == EAGAIN) || (errno == EWOULDBLOCK)){
+                     // We have processed all incoming connections
+                     break;
+                  }
+                  else {
+                     syslog(LOG_PRIORITY, "ERROR: accept()");
+                     break;
+                  }
+               }
+
+               if(getnameinfo((struct sockaddr *)&client_address, client_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
+                  syslog(LOG_PRIORITY, "connected from %s:%s on descriptor %d", hbuf, sbuf, client_sockfd);
+               }
+
+               if(make_socket_non_blocking(client_sockfd) == -1){
+                  syslog(LOG_PRIORITY, "ERROR: cannot make the socket non blocking");
+                  break;
+               }
+
+               event.data.fd = client_sockfd;
+               event.events = EPOLLIN | EPOLLET;
+               if(epoll_ctl(efd, EPOLL_CTL_ADD, client_sockfd, &event) == -1){
+                  syslog(LOG_PRIORITY, "ERROR: epoll_ctl() on client_sockfd");
+                  break;
+               }
+
+               start_new_session(client_sockfd);
             }
 
-            // handle data from an existing connection
+            continue;
+         }
 
-            else {
-               ioctl(poll_set[fd_index].fd, FIONREAD, &bytes_to_read);
 
-               if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got %d bytes to read", bytes_to_read);
+         // handle data from an existing connection
 
-               if(bytes_to_read == 0){
-                  tear_down_client(fd_index);
+         else {
+            int done = 0;
+            ssize_t count;
+
+            // should the following work here as well?
+            // ioctl(events[i].data.fd, FIONREAD, &bytes_to_read);
+
+            session = get_session_by_socket(events[i].data.fd);
+            if(session == NULL){
+               syslog(LOG_PRIORITY, "ERROR: cannot find session for this socket: %d", events[i].data.fd);
+               close(events[i].data.fd);
+               continue;
+            }
+
+            time(&(session->lasttime));
+
+            while(1){
+               memset(readbuf, 0, sizeof(readbuf));
+
+               if(session->use_ssl == 1)
+                  count = SSL_read(session->ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
+               else
+                  count = read(events[i].data.fd, (char*)&readbuf[0], sizeof(readbuf)-1);
+
+               if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got %ld bytes to read", count);
+
+               if(count == -1){
+                  /* If errno == EAGAIN, that means we have read all data. So go back to the main loop. */
+                  if(errno != EAGAIN){
+                     syslog(LOG_PRIORITY, "read");
+                     done = 1;
+                  }
+                  break;
                }
-               else {
-                  session = sessions[fd_index];
-
-                  time(&(session->lasttime));
-
-                  // readbuf must be large enough to hold 'bytes_to_read' data
-                  // I think there shouldn't be more than MTU size data to be
-                  // read from the socket at a time
-                  memset(readbuf, 0, sizeof(readbuf));
-
-                  if(session->use_ssl == 1)
-                     readlen = SSL_read(session->ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
-                  else
-                     readlen = recv(poll_set[fd_index].fd, &readbuf[0], sizeof(readbuf)-1, 0);
-
-                  if(readlen < 1) break;
-
-                  readbuf[readlen] = '\0'; // we need either this or memset(readbuf, ...) above
-
-                  handle_data(session, &readbuf[0], readlen);
-
-                  if(session->protocol_state == SMTP_STATE_BDAT && session->bad == 1) tear_down_client(fd_index);
+               else if(count == 0){
+                  /* End of file. The remote has closed the connection. */
+                  done = 1;
+                  break;
                }
+
+               handle_data(session, &readbuf[0], count);
+
+               if(session->protocol_state == SMTP_STATE_BDAT && session->bad == 1){
+                  tear_down_client(session->slot);
+                  done = 0; // to prevent the repeated tear down of connection
+                  break;
+               }
+            }
+
+            if(done){
+               printf("Closed connection on descriptor %d\n", events[i].data.fd);
+
+               /* Closing the descriptor will make epoll remove it from the set of descriptors which are monitored. */
+               //close(events[i].data.fd);
+               tear_down_client(session->slot);
             }
          }
+
+
       }
    }
 
