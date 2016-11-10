@@ -358,6 +358,10 @@ int main(int argc, char **argv){
       exit(1);
    }
 
+   if(make_socket_non_blocking(listenerfd) == -1){
+      fatal("make_socket_non_blocking()");
+   }
+
    if(listen(listenerfd, cfg.backlog) == -1){
       fatal("ERROR: listen()");
    }
