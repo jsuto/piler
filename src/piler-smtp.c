@@ -266,8 +266,6 @@ int start_new_session(int socket){
 
    slot = get_session_slot();
 
-   syslog(LOG_PRIORITY, "INFO: found slot: %d", slot);
-
    if(slot >= 0 && sessions[slot] == NULL){
       sessions[slot] = malloc(sizeof(struct smtp_session));
       if(sessions[slot]){
