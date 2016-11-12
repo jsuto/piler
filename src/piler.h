@@ -67,6 +67,12 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg);
 int is_email_address_on_my_domains(char *email, struct __data *data);
 
+int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct __config *cfg);
+void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections);
+struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int max_connections, int socket);
+void handle_data(struct smtp_session *session, char *readbuf, int readlen);
+void free_smtp_session(struct smtp_session *session);
+
 void child_sighup_handler(int sig);
 void child_main(struct child *ptr);
 pid_t child_make(struct child *ptr);
