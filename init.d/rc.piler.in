@@ -17,8 +17,12 @@ NAME=piler
 OPTIONS=""
 PID_FILE=`SBINDIR/pilerconf $OPTIONS -q pidfile | cut -f2 -d=`
 PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
+PILER_SMTP_PID=$(ps uaxw | grep -w piler-smtp | grep -v grep | awk '{print $2}')
 
 start() {
+	echo "starting piler-smtp . . . "
+	SBINDIR/piler-smtp -d
+
 	echo "starting $NAME . . ."
 	SBINDIR/piler -d $OPTIONS
 }
@@ -26,10 +30,18 @@ start() {
 stop() {
 	echo "stopping $NAME"
 	kill ${PID_NUMBER}
+
+	if [ $PILER_SMTP_PID != '' ]; then echo "stopping piler-smtp"; kill $PILER_SMTP_PID; fi
 }
 
 check_status(){
         test -f /proc/${PID_NUMBER}/status
+
+        if [ "${PILER_SMTP_PID}" != '' ]; then
+           echo "piler-smtp is running, pid: ${PILER_SMTP_PID}";
+        else
+           echo "piler-smtp is NOT running";
+        fi
 }
 
 case "$1" in

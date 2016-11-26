@@ -272,7 +272,7 @@ int main(int argc, char **argv){
                else
                   readlen = read(events[i].data.fd, (char*)&readbuf[0], sizeof(readbuf)-1);
 
-               if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got %ld bytes to read", readlen);
+               if(cfg.verbosity >= _LOG_DEBUG && readlen > 0) syslog(LOG_PRIORITY, "got %ld bytes to read", readlen);
 
                if(readlen == -1){
                   /* If errno == EAGAIN, that means we have read all data. So go back to the main loop. */

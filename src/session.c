@@ -174,7 +174,6 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
    // process other SMTP commands
 
    else {
-      //printf("len=%d, buf=*%s*\n\n\n", readlen, readbuf);
 
       if(session->buflen > 0){
          snprintf(puf, sizeof(puf)-1, "%s%s", session->buf, readbuf);
