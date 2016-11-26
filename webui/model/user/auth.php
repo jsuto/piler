@@ -486,6 +486,9 @@ class ModelUserAuth extends Model {
          }
 
       }
+      else {
+         syslog(LOG_INFO, LDAP_HELPER_DN . " cannot bind to " . LDAP_HOST);
+      }
 
       return 0; 
    }
