@@ -400,8 +400,6 @@ define('ICON_PLUS', '/view/theme/' . THEME . '/images/plus.gif');
 define('ICON_MINUS', '/view/theme/' . THEME . '/images/minus.gif');
 define('ICON_EMPTY', '/view/theme/' . THEME . '/images/1x1.gif');
 
-define('LOG_FILE', DIR_LOG . 'webui.log');
-
 define('QSHAPE_ACTIVE_INCOMING', DIR_STAT . '/active+incoming');
 define('QSHAPE_ACTIVE_INCOMING_SENDER', DIR_STAT . '/active+incoming-sender');
 define('QSHAPE_DEFERRED', DIR_STAT . '/deferred');
