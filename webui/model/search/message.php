@@ -273,8 +273,16 @@ class ModelSearchMessage extends Model {
                        'encoding' => ''
                       );
 
-         if(isset($mime_parts[$i]['header']['content-type']))
+         if(isset($mime_parts[$i]['header']['content-type'])) {
             $mime['content-type'] = Zend_Mime_Decode::splitContentType($mime_parts[$i]['header']['content-type']);
+         }
+         /*
+           Fix the mime type for some emails having a single textual body part
+           without the Content-type header.
+          */
+         else if (count($mime_parts) == 1) {
+            $mime['content-type']['type'] = 'text/plain';
+         }
 
          if(in_array($mime['content-type']['type'], array('multipart/mixed', 'multipart/related', 'multipart/alternative')))
             $this->extract_textuals_from_mime_parts($mime_parts[$i]['header'], $mime_parts[$i]['body'], $mime['content-type']['boundary']);
