@@ -26,7 +26,7 @@ class ModelPolicyArchiving extends Model {
 
 
    public function add_new_rule($data = array()) {
-      $query = $this->db->query("INSERT INTO " . TABLE_ARCHIVING_RULE . " (`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array($data['from'], $data['to'], $data['subject'], $data['body'], $data['_size'], $data['size'], $data['attachment_name'], $data['attachment_type'], $data['_attachment_size'], $data['attachment_size'], $data['spam']));
+      $query = $this->db->query("INSERT INTO " . TABLE_ARCHIVING_RULE . " (`from`,`to`,`subject`,`body`,`_size`,`size`,`attachment_name`,`attachment_type`,`_attachment_size`,`attachment_size`,`spam`) VALUES(?,?,?,?,?,?,?,?,?,?,?)", array($data['from'], $data['to'], $data['subject'], $data['body'], $data['_size'], (int)$data['size'], $data['attachment_name'], $data['attachment_type'], $data['_attachment_size'], (int)$data['attachment_size'], $data['spam']));
 
       return $this->db->countAffected();
    }
