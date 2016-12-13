@@ -18,7 +18,7 @@ source base
 source delta : base
 {
    sql_query_pre = SET NAMES utf8
-   sql_query_pre  = REPLACE INTO sph_counter SELECT 1, MAX(id) FROM sph_index
+   sql_query_pre  = REPLACE INTO sph_counter SELECT 1, IFNULL(MAX(id), 0) FROM sph_index
    sql_query_post_index  = DELETE FROM sph_index WHERE id<=(SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
         WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
