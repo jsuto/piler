@@ -39,8 +39,8 @@ class ModelAccountingAccounting extends Model
         $return['stoptimestamp'] = $stop;
         
         // run query to return all messages
-        $tousers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`to`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `to`;');
-        $fromusers = $this->db->query('SELECT `sent`-(`sent`%86400) as `day`,`from`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `from`;');
+        $tousers = $this->db->query('SELECT ANY_VALUE(`sent`-(`sent`%86400)) as `day`,`to`,count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `to`;');
+        $fromusers = $this->db->query('SELECT ANY_VALUE(`sent`-(`sent`%86400)) as `day`,ANY_VALUE(`from`),count(*) as `count`,sum(`size`) as `size` FROM ' . VIEW_MESSAGES . ' WHERE `sent` >= '.$start.' AND `sent` < '.$stop.' GROUP BY FROM_UNIXTIME(`day`, "%Y.%m.%d."), `from`;');
         
         // process results from above four queries
         if($tousers->num_rows > 0)
