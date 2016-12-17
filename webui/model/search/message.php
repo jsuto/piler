@@ -267,6 +267,13 @@ class ModelSearchMessage extends Model {
          $mime_parts[] = array('header' => $headers, 'body' => $body);
       }
 
+      require_once DIR_SYSTEM . 'helper/HTMLPurifier.standalone.php';
+
+      $config = HTMLPurifier_Config::createDefault();
+      $config->set('URI', 'DisableExternal', 'true');
+      $config->set('URI', 'DisableExternalResources', 'true');
+      $purifier = new HTMLPurifier($config);
+
       for($i=0; $i<count($mime_parts); $i++) {
          $mime = array(
                        'content-type' => '',
@@ -291,12 +298,12 @@ class ModelSearchMessage extends Model {
             $mime['encoding'] = $mime_parts[$i]['header']['content-transfer-encoding'];
 
          if(in_array($mime['content-type']['type'], array('text/plain', 'text/html')))
-            $this->message[$mime['content-type']['type']] .= $this->fix_mime_body_part($mime, $mime_parts[$i]['body']);
+            $this->message[$mime['content-type']['type']] .= $this->fix_mime_body_part($purifier, $mime, $mime_parts[$i]['body']);
       }
    }
 
 
-   private function fix_mime_body_part($mime = array(), $body = '') {
+   private function fix_mime_body_part($purifier, $mime = array(), $body = '') {
       if($mime['encoding'] == 'quoted-printable')
          $body = Zend_Mime_Decode::decodeQuotedPrintable($body);
 
@@ -316,23 +323,7 @@ class ModelSearchMessage extends Model {
       }
 
       if(strtolower($mime['content-type']['type']) == 'text/html') {
-
-         $body = preg_replace("/\<style([\w\W]+)style\>/", "", $body);
-
-         if(ENABLE_REMOTE_IMAGES == 0) {
-            $body = preg_replace("/style([\s]{0,}=[\s]{0,})\"([^\"]+)/", "style=\"xxxx", $body);
-            $body = preg_replace("/style([\s]{0,}=[\s]{0,})\'([^\']+)/", "style='xxxx", $body);
-
-            $body = preg_replace("/\<img([^\>]+)\>/i", "<img src=\"" . REMOTE_IMAGE_REPLACEMENT . "\" />", $body);
-         }
-
-         $body = preg_replace("/\<body ([\w\s\;\"\'\#\d\:\-\=]+)\>/i", "<body>", $body);
-
-         $body = preg_replace("/\<a\s{1,}([\w=\"\'\s]+){0,}\s{0,}href/i", "<qqqq", $body);
-         $body = preg_replace("/\<base href/i", "<qqqq", $body);
-
-         $body = preg_replace("/document\.write/", "document.writeee", $body);
-         $body = preg_replace("/<\s{0,}script([\w\W]+)\/script\s{0,}\>/i", "<!-- disabled javascript here -->", $body);
+         $body = $purifier->purify($body);
       }
 
       return $body;
