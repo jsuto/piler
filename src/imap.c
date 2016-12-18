@@ -99,7 +99,10 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    /* imap cmd: SELECT */
 
-   snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", *seq, folder);
+   if(strchr(folder, '"'))
+      snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", *seq, folder);
+   else
+      snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, folder);
 
    write1(sd, buf, strlen(buf), use_ssl, data->ssl);
    if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
@@ -394,6 +397,7 @@ void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl){
 
 int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
+   char attrs[SMALLBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;
 
    printf("List of IMAP folders:\n");
@@ -408,6 +412,8 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
 
    write1(sd, puf, strlen(puf), use_ssl, data->ssl);
+
+   p = NULL;
 
    while(1){
       n = recvtimeoutssl(sd, puf, sizeof(puf), data->import->timeout, use_ssl, data->ssl);
@@ -428,9 +434,14 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
       memcpy(buf + pos, puf, n);
       pos += n;
 
-      if(strstr(buf, tagok)) break;
+      p = strstr(buf, tagok);
+      if(p) break;
    }
 
+   // trim the "A3 OK LIST completed" trailer off
+   if(p) *p = '\0';
+
+   memset(attrs, 0, sizeof(attrs));
 
    p = buf;
    do {
@@ -446,6 +457,9 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
             q = strstr(puf, ") \"");
          if(q){
             if (!fldrlen) {
+               *q = '\0';
+               snprintf(attrs, sizeof(attrs)-1, "%s", &puf[8]);
+
                q += 3;
                while(*q != '"') q++;
                q++;
@@ -469,21 +483,29 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
                      }
                      r++;
                   }
-                  addnode(data->imapfolders, ruf);
-                  printf("=> '%s'\n", ruf);
+
+                  if(!strstr(attrs, "\\Noselect")){
+                     addnode(data->imapfolders, ruf);
+                  }
+                  else printf("skipping ");
+
+                  printf("=> '%s' {%d} [%s]\n", ruf, fldrlen, attrs);
+
                   free(ruf);
                   fldrlen = 0;
                } else {
-                  addnode(data->imapfolders, q);
-                  printf("=> '%s'\n", q);
+                  if(!strstr(attrs, "\\Noselect")){
+                     addnode(data->imapfolders, q);
+                  }
+                  else printf("skipping ");
+
+                  printf("=> '%s [%s]'\n", q, attrs);
                }
-               
+
+               memset(attrs, 0, sizeof(attrs));
             }
 
          }
-      }
-      else {
-         if(strncmp(puf, tagok, strlen(tagok)) == 0) {}
       }
 
    } while(p);
