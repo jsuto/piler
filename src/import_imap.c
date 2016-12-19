@@ -64,18 +64,7 @@ int import_from_imap_server(char *server, char *username, char *password, int po
    }
 
 
-   /* 
-    * if the user gives -f <foldername>, then don't iterate through the folder list
-    * rather build the folderlist based on the <foldername> option, 2014.10.14, SJ
-    */
-
-   if(folder_imap){
-      addnode(data->imapfolders, folder_imap);
-   } else {
-      rc = list_folders(sd, &seq, use_ssl, data);
-      if(rc == ERR) goto ENDE_IMAP;
-   }
-
+   if(list_folders(sd, &seq, use_ssl, folder_imap, data) == ERR) goto ENDE_IMAP;
 
    for(i=0;i<MAXHASH;i++){
       q = data->imapfolders[i];
@@ -88,10 +77,6 @@ int import_from_imap_server(char *server, char *username, char *password, int po
             if(skiplist && strlen(skiplist) > 0){
                snprintf(puf, sizeof(puf)-1, "%s,", (char *)q->str);
                if(strstr(skiplist, puf)) skipmatch = 1;
-            }
-
-            if(folder_imap && strstr(q->str, folder_imap) == NULL){
-               skipmatch = 1;
             }
 
             if(skipmatch == 1){

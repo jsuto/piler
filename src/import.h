@@ -21,7 +21,7 @@ int connect_to_pop3_server(int sd, char *username, char *password, struct __data
 int process_pop3_emails(int sd, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
 
 int connect_to_imap_server(int sd, int *seq, char *username, char *password, struct __data *data, int use_ssl);
-int list_folders(int sd, int *seq, int use_ssl, struct __data *data);
+int list_folders(int sd, int *seq, int use_ssl, char *folder_name, struct __data *data);
 int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg);
 void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl);
 

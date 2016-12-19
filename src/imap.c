@@ -395,9 +395,9 @@ void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl){
 }
 
 
-int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
+int list_folders(int sd, int *seq, int use_ssl, char *folder_name, struct __data *data){
    char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
-   char attrs[SMALLBUFSIZE];
+   char attrs[SMALLBUFSIZE], folder[SMALLBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;
 
    printf("List of IMAP folders:\n");
@@ -408,8 +408,10 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
    memset(buf, 0, len);
 
    snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   //snprintf(puf, sizeof(puf)-1, "%s LIST \"\" %%\r\n", tag);
-   snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
+   if(folder_name == NULL)
+      snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
+   else
+      snprintf(puf, sizeof(puf)-1, "%s LIST \"%s\" \"*\"\r\n", tag, folder_name);
 
    write1(sd, puf, strlen(puf), use_ssl, data->ssl);
 
@@ -484,23 +486,20 @@ int list_folders(int sd, int *seq, int use_ssl, struct __data *data){
                      r++;
                   }
 
-                  if(!strstr(attrs, "\\Noselect")){
-                     addnode(data->imapfolders, ruf);
-                  }
-                  else printf("skipping ");
-
-                  printf("=> '%s' {%d} [%s]\n", ruf, fldrlen, attrs);
+                  snprintf(folder, sizeof(folder)-1, "%s", ruf);
 
                   free(ruf);
                   fldrlen = 0;
                } else {
-                  if(!strstr(attrs, "\\Noselect")){
-                     addnode(data->imapfolders, q);
-                  }
-                  else printf("skipping ");
-
-                  printf("=> '%s [%s]'\n", q, attrs);
+                  snprintf(folder, sizeof(folder)-1, "%s", q);
                }
+
+               if(!strstr(attrs, "\\Noselect")){
+                  addnode(data->imapfolders, folder);
+               }
+               else printf("skipping ");
+
+               printf("=> '%s [%s]'\n", folder, attrs);
 
                memset(attrs, 0, sizeof(attrs));
             }
