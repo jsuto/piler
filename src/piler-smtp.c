@@ -46,11 +46,14 @@ void p_clean_exit(){
 
    if(listenerfd != -1) close(listenerfd);
 
-   for(i=0; i<cfg.max_connections; i++){
-      if(sessions[i]) free_smtp_session(sessions[i]);
+   if(sessions){
+      for(i=0; i<cfg.max_connections; i++){
+         if(sessions[i]) free_smtp_session(sessions[i]);
+      }
+
+      free(sessions);
    }
 
-   if(sessions) free(sessions);
    if(events) free(events);
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
