@@ -50,6 +50,8 @@ class ControllerMessageBulkrestore extends Controller {
          require_once 'Zend/Mail/Protocol/Imap.php';
          require_once 'Zend/Mail/Storage/Imap.php';
 
+         $emails = $session->get("emails");
+
          $imap_ok = $this->model_mail_mail->connect_imap();
 
          if(!$imap_ok) {
@@ -86,8 +88,15 @@ class ControllerMessageBulkrestore extends Controller {
 
             if(RESTORE_OVER_IMAP == 1) {
                if($imap_ok) {
-                  $x = $this->imap->append(IMAP_RESTORE_FOLDER,  $msg);
-                  syslog(LOG_INFO, "imap append $id/$piler_id, rc=$x");
+                  $imap_folder = IMAP_RESTORE_FOLDER_INBOX;
+
+                  $meta = $this->model_search_message->get_metadata_by_id($id);
+                  if(in_array($meta['from'], $emails)) {
+                     $imap_folder = IMAP_RESTORE_FOLDER_SENT;
+                  }
+
+                  $x = $this->imap->append($imap_folder,  $msg);
+                  syslog(LOG_INFO, "imap append $id/$piler_id, to " . $imap_folder . ", rc=$x");
                }
                else { $x = 0; }
             }

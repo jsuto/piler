@@ -107,7 +107,8 @@ $config['STRIP_DOMAIN_NAME_FROM_USERNAME'] = 0;
 
 $config['ENABLE_IMAP_AUTH'] = 0;
 $config['RESTORE_OVER_IMAP'] = 0;
-$config['IMAP_RESTORE_FOLDER'] = 'INBOX';
+$config['IMAP_RESTORE_FOLDER_INBOX'] = 'INBOX';
+$config['IMAP_RESTORE_FOLDER_SENT'] = 'Sent';
 $config['IMAP_HOST'] = 'mail.yourdomain.com';
 $config['IMAP_PORT'] =  993;
 $config['IMAP_SSL'] = true;

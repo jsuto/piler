@@ -445,6 +445,13 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function get_metadata_by_id($id = 0) {
+      $query = $this->db->query("SELECT * FROM `" . TABLE_META . "` WHERE id=?", array($id));
+      if(isset($query->row['piler_id'])) { return $query->row; }
+      return '';
+   }
+
+
    public function fix_subject($s = '') {
       if($s == '') { $s = 'nosubject'; }
       return preg_replace("/^\-{1,}/", "", preg_replace("/\W{1,}/", "-", $s));

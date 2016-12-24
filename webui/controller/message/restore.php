@@ -67,8 +67,8 @@ class ControllerMessageRestore extends Controller {
       $this->data['data'] = $this->data['text_failed_to_restore'];
 
       if(count($rcpt) > 0) {
-
-         $this->data['piler_id'] = $this->model_search_message->get_piler_id_by_id($this->data['id']);
+         $this->data['meta'] = $this->model_search_message->get_metadata_by_id($this->data['id']);
+         $this->data['piler_id'] = $this->data['meta']['piler_id'];
 
          $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
 
@@ -76,8 +76,16 @@ class ControllerMessageRestore extends Controller {
 
          if(RESTORE_OVER_IMAP == 1) {
             if($this->model_mail_mail->connect_imap()) {
-               $x = $this->imap->append(IMAP_RESTORE_FOLDER,  $msg);
-               syslog(LOG_INFO, "imap append " . $this->data['id'] . "/" . $this->data['piler_id'] . ", rc=$x");
+
+               $imap_folder = IMAP_RESTORE_FOLDER_INBOX;
+
+               $emails = $session->get("emails");
+               if(in_array($this->data['meta']['from'], $emails)) {
+                  $imap_folder = IMAP_RESTORE_FOLDER_SENT;
+               }
+
+               $x = $this->imap->append($imap_folder,  $msg);
+               syslog(LOG_INFO, "imap append " . $this->data['id'] . "/" . $this->data['piler_id'] . " to " . $imap_folder . ", rc=$x");
                $this->model_mail_mail->disconnect_imap();
             }
             else {
