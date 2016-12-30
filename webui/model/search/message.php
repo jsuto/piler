@@ -9,7 +9,7 @@ class ModelSearchMessage extends Model {
                                      'GB231280' => 'GBK'
                                    );
    public $message;
-
+   private $verification = 0;
 
    public function get_boundary($line='') {
       $parts = explode(";", $line);
@@ -78,6 +78,10 @@ class ModelSearchMessage extends Model {
          pclose($handle);
       }
 
+      if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
+         $this->verification = $this->verify_message($id, $s);
+      }
+
       if(Registry::get('auditor_user') == 0 && HEADER_LINE_TO_HIDE) {
          $s = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $s);
       }
@@ -120,10 +124,6 @@ class ModelSearchMessage extends Model {
       Zend_Mime_Decode::splitMessageRaw($msg, $headers, $body);
 
       $has_journal = $this->remove_journal($headers);
-
-      if(Registry::get('auditor_user') == 0 && HEADER_LINE_TO_HIDE) {
-         $headers = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $headers);
-      }
 
       $headers = $this->escape_lt_gt_symbols($headers);
 
@@ -224,10 +224,6 @@ class ModelSearchMessage extends Model {
 
       $msg = $this->get_raw_message($id);
 
-      if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
-         $verification = $this->verify_message($id, $msg);
-      }
-
       $has_journal = $this->remove_journal($msg);
 
       Zend_Mime_Decode::splitMessage($msg, $headers, $body);
@@ -253,7 +249,7 @@ class ModelSearchMessage extends Model {
                    'date' => $date,
                    'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],
                    'has_journal' => $has_journal,
-                   'verification' => $verification
+                   'verification' => $this->verification
             );
    }
 
