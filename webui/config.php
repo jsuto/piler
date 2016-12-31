@@ -179,7 +179,7 @@ $config['PILER_HEADER_FIELD'] = 'X-piler-id: ';
 
 $config['DEFAULT_POLICY'] = 'default_policy';
 
-$config['DIR_BASE'] = '/var/www/piler.yourdomain.com/';
+$config['DIR_BASE'] = '/var/piler/www/';
 
 $config['DIR_SPHINX'] = '/var/piler/sphinx/';
 $config['DIR_STAT'] = '/var/piler/stat';
