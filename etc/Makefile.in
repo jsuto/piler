@@ -34,6 +34,11 @@ install:
 	if [ ! -f "$(DESTDIR)$(sysconfdir)/piler/piler.conf" ]; then $(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler/piler.conf; fi
 	sed -e 's%LOCALSTATEDIR%$(localstatedir)%g' $(srcdir)/sphinx.conf.in > sphinx.conf.dist
 	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.dist $(DESTDIR)$(sysconfdir)/piler/sphinx.conf.dist
+	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/cron.jobs.in $(DESTDIR)$(datarootdir)/piler/piler.cron
+	sed -i -e 's%LOCALSTATEDIR%$(localstatedir)%g' $(DESTDIR)$(datarootdir)/piler/piler.cron
+	sed -i -e 's%LIBEXECDIR%$(libexecdir)%g' $(DESTDIR)$(datarootdir)/piler/piler.cron
+	sed -i -e 's%BINDIR%$(bindir)%g' $(DESTDIR)$(datarootdir)/piler/piler.cron
+	sed -i -e 's%SYSCONFDIR%$(sysconfdir)%g' $(DESTDIR)$(datarootdir)/piler/piler.cron
 
 clean:
 	rm -f piler.conf cron.jobs sphinx.conf.dist

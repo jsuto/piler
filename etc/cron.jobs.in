@@ -1,25 +1,19 @@
-#########################################################
-###     all the cron jobs you may need for piler      ###
-### be sure to review it and adjust it for your needs ###
-#########################################################
-
-piler's crontab:
-
-### mandatory
-
+### PILERSTART
 5,35 * * * * LIBEXECDIR/piler/indexer.delta.sh
 30   2 * * * LIBEXECDIR/piler/indexer.main.sh
-*/15 * * * * /usr/local/bin/indexer --quiet tag1 --rotate
-*/15 * * * * /usr/local/bin/indexer --quiet note1 --rotate
-*/5 * * * *  /usr/bin/find /srv/www/webui.yourdomain.com/tmp -type f -name i.\* -exec rm -f {} \;
+15,45 * * * * LIBEXECDIR/piler/indexer.attachment.sh
+*/15 * * * * /usr/bin/indexer --config SYSCONFDIR/piler/sphinx.conf --quiet tag1 --rotate
+*/15 * * * * /usr/bin/indexer --config SYSCONFDIR/piler/sphinx.conf --quiet note1 --rotate
+*/5 * * * *  /usr/bin/find LOCALSTATEDIR/piler/www/tmp -type f -name i.\* -exec rm -f {} \;
 
 ### optional: the same report you can see on the health page
-30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui /srv/www/webui.yourdomain.com
+###30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui LOCALSTATEDIR/piler/www
 
 ### optional: populate accouting data
-30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui /srv/www/webui.yourdomain.com
+###30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui LOCALSTATEDIR/piler/www
 
 ### optional: purge aged emails
-2 0 * * * /usr/local/bin/pilerpurge
+###2 0 * * * BINDIR/pilerpurge
 
 
+### PILEREND
