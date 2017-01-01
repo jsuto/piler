@@ -1,5 +1,5 @@
 <?php
-// init/set default values
+
 $webuidir = '';
 $process_all = false;
 $start = NULL;
@@ -8,44 +8,41 @@ $timestart = microtime(true);
 
 ini_set("session.save_path", "/tmp");
 
-// get options from command line
 $opts = 'h::';
 $lopts = array(
-    'webui:',
-    'start::',
-    'stop::',
-    );
+               'start:',
+               'stop:',
+               'webui:',
+              );
     
-if ( $options = getopt( $opts, $lopts ) )
-{
-    if ( isset($options['webui']) ) 
-    {
-        $webuidir = $options['webui'];
-    } else
-    {
-        echo("\nError: must provide path to WebUI directory\n\n");  // todo: language
-    
-        display_help();
-        exit;
-    }
-    
-    if ( isset($options['h']) ) 
-    {
-        display_help();
-        exit;
-    }
-    if ( isset($options['start']) )
-    {
-        $start = $options['start'];
-    }
-    if ( isset($options['stop']) )
-    {
-        $stop = $options['stop'];
-    }
+if($options = getopt($opts, $lopts)) {
+
+   if(isset($options['h'])) {
+      display_help();
+   }
+
+   if(isset($options['start'])) {
+      $start = $options['start'];
+   }
+
+   if(isset($options['stop'])) {
+      $stop = $options['stop'];
+   }
+
+   if(isset($options['webui'])) {
+      $webuidir = $options['webui'];
+   }
+
 } else {
     display_help();
-    exit;   
 }
+
+
+if(webuidir == '') {
+   echo("\nError: must provide path to WebUI directory\n\n");
+   display_help();
+}
+
 
 require_once($webuidir . "/config.php");
 require(DIR_SYSTEM . "/startup.php");
@@ -69,6 +66,7 @@ $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_P
 Registry::set('db', $db);
 
 $loader->model('accounting/accounting');
+$loader->model('domain/domain');
 $messagestats = new ModelAccountingAccounting();
 
 $_SESSION['username'] = 'cli-admin';
@@ -76,7 +74,7 @@ $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
 extract($language->data);
 
-$records = $messagestats->run_counters($start,$stop);
+$records = $messagestats->run_counters($start, $stop, 'sent');
 
 $timeend = microtime(true);
 $timegone = $timeend - $timestart;
@@ -89,15 +87,16 @@ echo("Removed ".$records['deletedstats']." records\n");
 echo("Added ".$records['addedstats']." records\n");
 echo("Completed Run in ".$timegone." seconds\n\n");
 
-# Functions
+
 function display_help() {
-    $phpself = basename(__FILE__);
-    echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
-    echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
-    echo("options:\n");
-    echo("\t-a Reruns statistics for all records in the message view\n");
-    echo("\t-h Prints this help screen and exits\n");
-    echo("\t--start=\"Beginning of date range to process, ok values are today, yesterday or DDMMMYYYY...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n");
-    echo("\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n");
+   $phpself = basename(__FILE__);
+   echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
+   echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
+   echo("options:\n");
+   echo("\t-a Reruns statistics for all records in the message view\n");
+   echo("\t-h Prints this help screen and exits\n");
+   echo("\t--start=\"Beginning of date range to process, ok values are today, yesterday or MYYYY/MM/DD...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n");
+   echo("\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n");
+
+   exit;
 }
-?>
