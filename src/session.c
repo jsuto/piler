@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netdb.h>
 #include <piler.h>
 
 
@@ -100,6 +101,10 @@ struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int m
 
 
 void init_smtp_session(struct smtp_session *session, int slot, int sd, struct __config *cfg){
+   struct sockaddr_in addr;
+   socklen_t addr_size = sizeof(struct sockaddr_in);
+   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
    session->slot = slot;
 
    session->socket = sd;
@@ -119,6 +124,11 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct __
    reset_bdat_counters(session);
 
    time(&(session->lasttime));
+
+   if(getpeername(sd, (struct sockaddr *)&addr, &addr_size) == 0 &&
+      getnameinfo((struct sockaddr *)&addr, addr_size, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
+         snprintf(session->remote_host, INET6_ADDRSTRLEN-1, "%s", hbuf);
+   }
 }
 
 
@@ -211,4 +221,3 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
    }
 
 }
-

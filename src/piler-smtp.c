@@ -299,7 +299,9 @@ int main(int argc, char **argv){
                }
             }
 
-            if(done){
+            /* Don't wait until the remote client closes the connection after he sent the QUIT command */
+
+            if(done || session->protocol_state == SMTP_STATE_FINISHED){
                tear_down_session(sessions, session->slot, &num_connections);
             }
          }
