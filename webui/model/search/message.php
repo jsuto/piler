@@ -272,6 +272,8 @@ class ModelSearchMessage extends Model {
       $config = HTMLPurifier_Config::createDefault();
       $config->set('URI', 'DisableExternal', 'true');
       $config->set('URI', 'DisableExternalResources', 'true');
+      $config->set('Cache.SerializerPath', DIR_BASE . 'tmp');
+
       $purifier = new HTMLPurifier($config);
 
       for($i=0; $i<count($mime_parts); $i++) {
