@@ -32,7 +32,7 @@ void insert_offset(struct session_data *sdata, int server_id);
 
 void tear_down_client(int n);
 
-int do_av_check(struct session_data *sdata, char *virusinfo, struct __data *data, struct __config *cfg);
+int do_av_check(char *filename, struct __config *cfg);
 
 int make_digests(struct session_data *sdata, struct __config *cfg);
 void digest_file(char *filename, char *digest);

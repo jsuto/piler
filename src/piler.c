@@ -102,6 +102,14 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
    bzero(&counters, sizeof(counters));
 
+#ifdef HAVE_ANTIVIRUS
+   if(do_av_check(filename, cfg) == AVIR_VIRUS){
+      syslog(LOG_PRIORITY, "%s: discarding: virus", filename);
+      unlink(filename);
+      return OK;
+   }
+#endif
+
    init_session_data(sdata, cfg);
 
    sdata->tot_len = size;
