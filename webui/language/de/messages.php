@@ -478,14 +478,14 @@ $_['text_delete_confirm_message'] = "Wirklich löschen?";
 $_['text_existing'] = "existiert";
 $_['text_new'] = "neu";
 
-$_['text_cumulative_counts'] = "Cumulative counts";
-$_['text_message_disposition'] = "Message Disposition";
-$_['text_assigned_email_addresses'] = "Assigned email addresses";
-$_['text_storage'] = "Storage";
-$_['text_legal_hold'] = "Legal hold";
+$_['text_cumulative_counts'] = "Nachrichtenzähler";
+$_['text_message_disposition'] = "Nachrichtenzustellung";
+$_['text_assigned_email_addresses'] = "Zugeordnete Mailadresse";
+$_['text_storage'] = "Speicher";
+$_['text_legal_hold'] = "Aufbewahrungsfrist";
 
-$_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
-$_['text_folder_rules'] = "Folder rules";
-$_['text_private'] = "Private";
+$_['text_compliance_warning'] = 'Die Löschfunktion ist aktiviert, aus diesem Grund ist das Archiv NICHT gesetzeskonform!';
+$_['text_folder_rules'] = "Verzeichnisregeln";
+$_['text_private'] = "Privat";
 
 ?>
