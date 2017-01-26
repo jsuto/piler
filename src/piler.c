@@ -104,7 +104,6 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 
 #ifdef HAVE_ANTIVIRUS
    if(do_av_check(filename, cfg) == AVIR_VIRUS){
-      syslog(LOG_PRIORITY, "%s: discarding: virus", filename);
       unlink(filename);
       return OK;
    }

@@ -64,7 +64,7 @@ int clamd_scan(char *tmpfile, struct __config *cfg){
          if(q){
             *q = '\0';
             p++;
-            syslog(LOG_PRIORITY, "VIRUS <%s> found in %s", p, tmpfile);
+            syslog(LOG_PRIORITY, "%s: VIRUS <%s> found, status=%s", tmpfile, p, S_STATUS_DISCARDED);
          }
       }
 
