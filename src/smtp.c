@@ -167,7 +167,7 @@ int init_ssl(struct smtp_session *session){
    session->ctx = SSL_CTX_new(TLSv1_server_method());
 
    if(session->ctx == NULL){
-      syslog(LOG_PRIORITY, "%s: SSL ctx is null!", session->ttmpfile);
+      syslog(LOG_PRIORITY, "SSL ctx is null");
       return 0;
    }
 
@@ -208,7 +208,7 @@ void process_command_starttls(struct smtp_session *session){
             return;
          } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", session->ttmpfile);
       } syslog(LOG_PRIORITY, "%s: SSL_new() failed", session->ttmpfile);
-   } syslog(LOG_PRIORITY, "%s: SSL ctx is null!", session->ttmpfile);
+   } syslog(LOG_PRIORITY, "SSL ctx is null!");
 
    send_smtp_response(session, SMTP_RESP_454_ERR_TLS_TEMP_ERROR);
 }
