@@ -154,7 +154,7 @@
                 <a href="#" class="btn btn-custom btn-inverse<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"><?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><?php } ?><i class="icon-share-alt"></i></a>
             <?php } ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
-                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a>
+                <!--a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a-->
                 <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>
