@@ -604,7 +604,7 @@ void translateLine(unsigned char *p, struct parser_state *state){
          if(*p == '\'' && prev == '"') { *p = ' '; }
          if(*p == '\'' && *(p+1) == '"'){ *p = ' '; }
 
-         if(*p == '_' || *p == '\'' || *p == '&'){ continue; }
+         if(*p == '_' || *p == '\'' || *p == '&' || *p == '+'){ continue; }
 
          prev = *p;
       }
@@ -958,3 +958,16 @@ int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen){
 }
 
 
+void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len){
+   int n;
+   char *r;
+
+   r = strchr(puf, '+');
+   if(r){
+      n = strlen(*at_sign);
+      memmove(r, *at_sign, n);
+      *(r+n) = '\0';
+      *len = strlen(puf);
+      *at_sign = r;
+   }
+}

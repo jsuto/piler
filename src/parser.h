@@ -34,5 +34,6 @@ char *determine_attachment_type(char *filename, char *type);
 char *get_attachment_extractor_by_filename(char *filename);
 void parse_reference(struct parser_state *state, char *s);
 int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen);
+void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len);
 
 #endif /* _PARSER_H */

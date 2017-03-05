@@ -705,10 +705,12 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          strtolower(puf);
 
+         q = strchr(puf, '@');
+         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
          if(does_it_seem_like_an_email_address(puf) == 1 && state->b_from_domain[0] == '\0' && len > 5){
-            q = strchr(puf, '@');
             if(q && strlen(q) > 5){
                memcpy(&(state->b_from_domain), q+1, strlen(q+1)-1);
                if(strstr(sdata->mailfrom, "<>")){
@@ -728,6 +730,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
          strtolower(puf);
 
+         /* fix aaa+bbb@ccc.fu address to aaa@ccc.fu, 2017.02.04, SJ */
+         q = strchr(puf, '@');
+         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+
          if(state->message_state == MSG_RECIPIENT && findnode(state->journal_recipient, puf) == NULL){
             addnode(state->journal_recipient, puf);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
@@ -738,7 +744,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          if(findnode(state->rcpt, puf) == NULL){
 
             /* skip any address matching ...@cfg->hostid, 2013.10.29, SJ */
-            q = strchr(puf, '@');
             if(q && strncmp(q+1, cfg->hostid, cfg->hostid_len) == 0){
                continue;
             }
