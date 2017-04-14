@@ -111,30 +111,35 @@ void process_data(struct smtp_session *session, char *readbuf, int readlen){
 }
 
 
-void send_smtp_response(struct smtp_session *session, char *buf){
+void wait_for_ssl_accept(struct smtp_session *session){
    int rc;
    char ssl_error[SMALLBUFSIZE];
 
-   write1(session->socket, buf, strlen(buf), session->use_ssl, session->ssl);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "waiting for ssl handshake");
 
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent: %s", buf);
+   rc = SSL_accept(session->ssl);
 
-   if(session->starttls == 1 && session->use_ssl == 0){
+   // Since we use non-blocking IO, SSL_accept() is likely to return with -1
+   // "In this case a call to SSL_get_error() with the return value of SSL_accept()
+   // will yield SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE."
+   //
+   // In this case we may proceed.
 
-      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "waiting for ssl handshake");
-
-      rc = SSL_accept(session->ssl);
-
-      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "SSL_accept() finished");
-
-      if(rc == 1){
-         session->use_ssl = 1;
-      }
-      else {
-         ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
-         syslog(LOG_PRIORITY, "%s: SSL_accept() failed, rc=%d, errorcode: %d, error text: %s\n", session->ttmpfile, rc, SSL_get_error(session->ssl, rc), ssl_error);
-      }
+   if(rc == 1 || SSL_get_error(session->ssl, rc) == SSL_ERROR_WANT_READ){
+      session->use_ssl = 1;
    }
+
+   if(session->cfg->verbosity >= _LOG_DEBUG || session->use_ssl == 0){
+      ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
+      syslog(LOG_PRIORITY, "SSL_accept() result, rc=%d, errorcode: %d, error text: %s",
+             rc, SSL_get_error(session->ssl, rc), ssl_error);
+   }
+}
+
+
+void send_smtp_response(struct smtp_session *session, char *buf){
+   write1(session->socket, buf, strlen(buf), session->use_ssl, session->ssl);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent: %s", buf);
 }
 
 
