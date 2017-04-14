@@ -280,7 +280,6 @@ int main(int argc, char **argv){
                if(readlen == -1){
                   /* If errno == EAGAIN, that means we have read all data. So go back to the main loop. */
                   if(errno != EAGAIN){
-                     syslog(LOG_PRIORITY, "read");
                      done = 1;
                   }
                   break;
