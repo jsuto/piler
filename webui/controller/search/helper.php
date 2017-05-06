@@ -148,18 +148,8 @@ class ControllerSearchHelper extends Controller {
             $from .= " $v";
          }
          else {
-            if($prev_token_is_email == 1) {
-               $prev_token_is_email = 0;
-               $from .= " $v";
-            }
-            else {
-               $match .= ' ' . $v;
-            }
+            $match .= ' ' . $v;
          }
-      }
-
-      if($match && $match != ' ' . $this->data['text_enter_search_terms']) {
-         $match = "@(subject,body) $match";
       }
 
 

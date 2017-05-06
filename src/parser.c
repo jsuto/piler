@@ -710,7 +710,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
-         if(does_it_seem_like_an_email_address(puf) == 1 && state->b_from_domain[0] == '\0' && len > 5){
+         if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf) == 1 && state->b_from_domain[0] == '\0'){
             if(q && strlen(q) > 5){
                memcpy(&(state->b_from_domain), q+1, strlen(q+1)-1);
                if(strstr(sdata->mailfrom, "<>")){
@@ -752,11 +752,11 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             memcpy(&(state->b_to[state->tolen]), puf, len);
             state->tolen += len;
 
-            if(does_it_seem_like_an_email_address(puf) == 1){
+            if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf) == 1){
+
                if(is_email_address_on_my_domains(puf, data) == 1) sdata->internal_recipient = 1;
                else sdata->external_recipient = 1;
 
-               //q = strchr(puf, '@');
                if(q){
                   if(findnode(state->rcpt_domain, q+1) == NULL){
                      addnode(state->rcpt_domain, q+1);
@@ -775,6 +775,11 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       }
       else if(state->message_state == MSG_BODY && len >= cfg->min_word_len && state->bodylen < BIGBUFSIZE-len-1){
+         // 99% of email addresses are longer than 8 characters
+         if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf)){
+            fix_email_address_for_sphinx(puf);
+         }
+
          memcpy(&(state->b_body[state->bodylen]), puf, len);
          state->bodylen += len;
       }
@@ -783,4 +788,3 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    return 0;
 }
-

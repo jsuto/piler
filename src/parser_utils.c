@@ -623,8 +623,6 @@ void translateLine(unsigned char *p, struct parser_state *state){
          if(url == 1) url = 0;
       }
 
-      if(*p == '@') *p = 'X';
-
       if(delimiter_characters[(unsigned int)*p] != ' ') *p = ' ';
       /* we MUSTN'T convert it to lowercase in the 'else' case, because it breaks utf-8 encoding! */
 

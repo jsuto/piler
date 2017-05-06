@@ -38,6 +38,7 @@
 #define QUEUE_ID_LEN 16
 #define IPLEN 16+1
 #define KEYLEN 56
+#define MIN_EMAIL_ADDRESS_LEN 9
 
 #define CRLF "\n"
 
