@@ -209,7 +209,10 @@ void process_command_starttls(struct smtp_session *session){
             session->starttls = 1;
             send_smtp_response(session, SMTP_RESP_220_READY_TO_START_TLS);
             session->protocol_state = SMTP_STATE_INIT;
-            session->use_ssl = 1;
+
+            if(session->starttls == 1 && session->use_ssl == 0)
+               wait_for_ssl_accept(session);
+
             return;
          } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", session->ttmpfile);
       } syslog(LOG_PRIORITY, "%s: SSL_new() failed", session->ttmpfile);
