@@ -53,6 +53,7 @@ void usage(){
    printf("    -R                                Assign IMAP folder names as Piler folder names\n");
    printf("    -b <batch limit>                  Import only this many emails\n");
    printf("    -s <start position>               Start importing POP3 emails from this position\n");
+   printf("    -j <failed folder>                Move failed to import emails to this folder\n");
    printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
@@ -83,7 +84,7 @@ int main(int argc, char **argv){
 
    import.import_job_id = import.total_messages = import.total_size = import.processed_messages = import.batch_processing_limit = 0;
    import.started = import.updated = import.finished = import.remove_after_import = 0;
-   import.extra_recipient = import.move_folder = NULL;
+   import.extra_recipient = import.move_folder = import.failed_folder = NULL;
    import.start_position = 1;
    import.download_only = 0;
    import.timeout = 30;
@@ -120,6 +121,7 @@ int main(int argc, char **argv){
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    required_argument,  0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
+            {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
             {"only-download",no_argument,        0,  'o' },
             {"gui-import",   no_argument,        0,  'G' },
@@ -130,9 +132,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:GDRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:GDRroqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:GDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -209,6 +211,10 @@ int main(int argc, char **argv){
                     data.import->move_folder = optarg;
                     break;
 
+         case 'j' :
+                    data.import->failed_folder = optarg;
+                    break;
+
          case 'o' :
                     data.import->download_only = 1;
                     dryrun = 1;
@@ -262,7 +268,12 @@ int main(int argc, char **argv){
 
    if(!mbox[0] && !mboxdir && !emlfile && !directory && !imapserver && !pop3server && import_from_gui == 0) usage();
 
-   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+   if(data.import->failed_folder && !can_i_write_directory(data.import->failed_folder)){
+      printf("cannot write failed directory '%s'\n", data.import->failed_folder);
+      return ERR;
+   }
+
+   if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    cfg = read_config(configfile);
 

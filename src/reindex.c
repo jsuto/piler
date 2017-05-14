@@ -211,7 +211,7 @@ int main(int argc, char **argv){
 
    if(all == 0 && (from_id <= 0 || to_id <= 0) ) usage();
 
-   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+   if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    (void) openlog("reindex", LOG_PID, LOG_MAIL);
 

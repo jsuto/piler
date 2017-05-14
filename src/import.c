@@ -20,7 +20,7 @@
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
    int rc=ERR;
-   char *rule;
+   char *rule, newpath[SMALLBUFSIZE];
    struct stat st;
    struct parser_state state;
    struct counters counters;
@@ -125,6 +125,11 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
                         printf("failed to import: %s (id: %s)\n", filename, sdata->ttmpfile);
                         break;
    } 
+
+   if(rc != OK && data->import->failed_folder){
+      snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, filename);
+      rename(filename, newpath);
+   }
 
    return rc;
 }

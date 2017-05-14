@@ -47,7 +47,7 @@ void *get_in_addr(struct sockaddr *sa);
 int make_socket_non_blocking(int fd);
 int create_and_bind(char *listen_addr, int listen_port);
 
-int can_i_write_current_directory();
+int can_i_write_directory(char *dir);
 
 void move_email(struct smtp_session *session);
 
