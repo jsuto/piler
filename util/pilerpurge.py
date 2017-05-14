@@ -10,16 +10,6 @@ import sys
 import syslog
 import time
 
-# Purging of emails works as follows:
-#
-# 1. Find from metadata table which piler IDs we should remove
-#
-# 2. Remove the .m files, and set deleted=1 for for those piler IDs
-#    in metadata table
-#
-# 3. Find non-referenced attachments, and remove them from filesystem
-#    then remove them from attachment table
-
 SQL_PURGE_SELECT_QUERY = "SELECT piler_id, size FROM " +\
     "metadata WHERE deleted=0 AND retained < UNIX_TIMESTAMP(NOW()) " +\
     "AND id NOT IN (SELECT id FROM rcpt WHERE `to` IN " +\
@@ -49,7 +39,7 @@ def purge_m_files(ids=[], opts={}):
         remove_m_files(ids, opts)
 
         if opts['dry_run'] is False:
-            # Set deleted=1 for remove metadata entries
+            # Set deleted=1 for aged metadata entries
 
             cursor = opts['db'].cursor()
             format = ", ".join(['%s'] * len(ids))
@@ -85,8 +75,8 @@ def purge_attachments(ids=[], opts={}):
 
         # Delete these IDs from attachment table
         if opts['dry_run'] is False:
-            format = ", ".join(['%d'] * len(remove_ids))
-            cursor.execute("DELETE FROM attachment WHERE piler_id IN (%s)" %
+            format = ", ".join(['%s'] * len(remove_ids))
+            cursor.execute("DELETE FROM attachment WHERE id IN (%s)" %
                            (format), remove_ids)
             opts['db'].commit()
         else:
@@ -168,6 +158,14 @@ def main():
             purge_m_files(piler_id, opts)
 
             purge_attachments(piler_id, opts)
+
+        # Update the counter table
+        if opts['dry_run'] is False:
+            cursor.execute("UPDATE counter SET rcvd=rcvd-%s, size=size-%s, " +
+                           "stored_size=stored_size-%s",
+                           (str(opts['count']), str(opts['purged_size']),
+                            str(opts['purged_stored_size'])))
+            opts['db'].commit()
 
     except dbapi.DatabaseError, e:
         print "Error %s" % e
