@@ -42,6 +42,7 @@ install:
 	$(INSTALL) -m 0755 $(srcdir)/indexer.attachment.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/import.sh $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/purge.sh $(DESTDIR)$(libexecdir)/piler
+	$(INSTALL) -m 0755 $(srcdir)/pilerpurge.py $(DESTDIR)$(libexecdir)/piler
 	$(INSTALL) -m 0755 $(srcdir)/postinstall.sh $(DESTDIR)$(libexecdir)/piler
 
 	$(INSTALL) -m 0755 $(srcdir)/db-mysql.sql $(DESTDIR)$(datarootdir)/piler

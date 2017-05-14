@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge reindex test piler-smtp
+all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport reindex test piler-smtp
 install: install-piler
 
 
@@ -62,9 +62,6 @@ pilerimport: pilerimport.c libpiler.a
 pilerexport: pilerexport.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
-pilerpurge: pilerpurge.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
-
 pilerconf: pilerconf.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
@@ -91,12 +88,11 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pileraget $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerimport $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerexport $(DESTDIR)$(bindir)
-	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerpurge $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) reindex $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilertest $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilerpurge pilertest reindex piler-smtp
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilertest reindex piler-smtp
 
 distclean: clean
 	rm -f Makefile
