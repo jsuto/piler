@@ -20,7 +20,7 @@
 
 int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
    int rc=ERR;
-   char *rule, newpath[SMALLBUFSIZE];
+   char *p, *rule, newpath[SMALLBUFSIZE];
    struct stat st;
    struct parser_state state;
    struct counters counters;
@@ -127,8 +127,16 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    } 
 
    if(rc != OK && data->import->failed_folder){
-      snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, filename);
-      rename(filename, newpath);
+      p = strrchr(filename, '/');
+      if(p)
+         p++;
+      else
+         p = filename;
+
+      snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, p);
+
+      if(rename(filename, newpath))
+         printf("cannot move %s to %s\n", filename, newpath);
    }
 
    return rc;
