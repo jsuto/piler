@@ -1,6 +1,7 @@
 <?php
 
 require 'Zend/Mime/Decode.php';
+require 'Zend/Exception.php';
 
 class ModelSearchMessage extends Model {
 
@@ -258,7 +259,12 @@ class ModelSearchMessage extends Model {
       $mime_parts = array();
 
       if($boundary) {
-         $mime_parts = Zend_Mime_Decode::splitMessageStruct($body, $boundary);
+         try {
+            $mime_parts = Zend_Mime_Decode::splitMessageStruct($body, $boundary);
+         }
+         catch (Exception $e) {
+            syslog(LOG_INFO, "Caught exception: " . $e->getMessage());
+         }
       } else {
          $mime_parts[] = array('header' => $headers, 'body' => $body);
       }
