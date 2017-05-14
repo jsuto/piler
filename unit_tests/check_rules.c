@@ -158,7 +158,7 @@ static void test_archiving_rule(struct __config *cfg){
 int main(){
    struct __config cfg;
 
-   if(!can_i_write_current_directory()) __fatal("cannot write current directory!");
+   if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    (void) openlog("rule_test", LOG_PID, LOG_MAIL);
 
