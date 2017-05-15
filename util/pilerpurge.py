@@ -35,6 +35,18 @@ def read_options(filename="", opts={}):
     opts['server_id'] = "%02x" % config.getint('piler', 'server_id')
 
 
+def is_purge_enabled(opts={}):
+    cursor = opts['db'].cursor()
+
+    cursor.execute("SELECT `value` FROM `option` WHERE `key`='enable_purge'")
+
+    row = cursor.fetchone()
+    if row and row[0] == '1':
+        return True
+
+    return False
+
+
 def purge_m_files(ids=[], opts={}):
     if len(ids) > 0:
         remove_m_files(ids, opts)
@@ -186,6 +198,10 @@ def main():
     try:
         opts['db'] = dbapi.connect("localhost", opts['username'],
                                    opts['password'], opts['database'])
+
+        if is_purge_enabled(opts) is False:
+            syslog.syslog("Purging emails is disabled")
+            sys.exit(1)
 
         cursor = opts['db'].cursor()
         cursor.execute(SQL_PURGE_SELECT_QUERY)
