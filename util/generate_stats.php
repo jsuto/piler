@@ -38,7 +38,7 @@ if($options = getopt($opts, $lopts)) {
 }
 
 
-if(webuidir == '') {
+if($webuidir == '') {
    echo("\nError: must provide path to WebUI directory\n\n");
    display_help();
 }
