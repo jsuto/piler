@@ -15,7 +15,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 void init_state(struct parser_state *state);
 time_t parse_date_header(char *s);
-int isHexNumber(char *p);
 int extract_boundary(char *p, struct parser_state *state);
 void fixupEncodedHeaderLine(char *buf, int buflen);
 void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state);

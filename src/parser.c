@@ -699,8 +699,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       len = strlen(puf);
 
-      if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || (len > MAX_WORD_LEN && cfg->enable_cjk == 0) || isHexNumber(puf)) ) continue;
-
+      // skip body tokens if not an URL && (empty token || too long)
+      if(state->is_header == 0 && strncmp(puf, "__URL__", 7) && (puf[0] == ' ' || (len > MAX_WORD_LEN && cfg->enable_cjk == 0)) ){
+         continue;
+      }
 
       if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          strtolower(puf);

@@ -261,16 +261,6 @@ time_t parse_date_header(char *datestr){
 }
 
 
-int isHexNumber(char *p){
-   for(; *p; p++){
-      if(!(*p == '-' || (*p >= 0x30 && *p <= 0x39) || (*p >= 0x41 && *p <= 0x46) || (*p >= 0x61 && *p <= 0x66)) )
-         return 0;
-   }
-
-   return 1;
-}
-
-
 int extract_boundary(char *p, struct parser_state *state){
    char *q, *q2;
 
