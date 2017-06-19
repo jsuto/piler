@@ -230,6 +230,9 @@ class ModelSearchMessage extends Model {
       Zend_Mime_Decode::splitMessage($msg, $headers, $body);
       $boundary = $this->get_boundary($headers['content-type']);
 
+      if(is_array($headers['from'])) { $headers['from'] = $headers['from'][0]; }
+      if(is_array($headers['to'])) { $headers['to'] = $headers['to'][0]; }
+      if(is_array($headers['subject'])) { $headers['subject'] = $headers['subject'][0]; }
       if(is_array($headers['date'])) { $headers['date'] = $headers['date'][0]; }
 
       if(isset($headers['from'])) $from .= $this->escape_lt_gt_symbols($headers['from']);
