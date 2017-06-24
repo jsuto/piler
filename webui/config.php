@@ -202,6 +202,7 @@ $config['DB_HOSTNAME'] = 'localhost';
 $config['DB_USERNAME'] = 'piler';
 $config['DB_PASSWORD'] = 'piler';
 $config['DB_DATABASE'] = 'piler';
+$config['DB_CHARSET'] = 'utf8mb4';
 
 $config['SPHINX_DRIVER'] = 'sphinx';
 $config['SPHINX_DATABASE'] = 'sphinx';

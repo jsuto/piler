@@ -17,7 +17,7 @@ source base
 
 source delta : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query_pre  = REPLACE INTO sph_counter SELECT 1, IFNULL(MAX(id), 0) FROM sph_index
    sql_query_post_index  = DELETE FROM sph_index WHERE id<=(SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
@@ -28,37 +28,37 @@ source delta : base
 
 source main1 : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
 }
 
 source main2 : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
 }
 
 source main3 : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
 }
 
 source main4 : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
 }
 
 source dailydelta : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
 }
 
 source tag : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query  = SELECT `_id`, `id` AS iid, `uid`, `tag` FROM `tag`
 
    sql_attr_uint = iid
@@ -68,7 +68,7 @@ source tag : base
 
 source note : base
 {
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query  = SELECT `_id`, `id` AS iid, `uid`, `note` FROM `note`
 
    sql_attr_uint = iid
@@ -79,7 +79,7 @@ source note : base
 source att : base
 {
 
-   sql_query_pre = SET NAMES utf8
+   sql_query_pre = SET NAMES utf8mb4
    sql_query  =  select a.id as aid, m.id as mid, a.name AS aname, a.size, REPLACE(REPLACE(m.`from`, '@', 'X'), '.', 'X') as `from`, REPLACE(REPLACE((select group_concat(rcpt.`to` ORDER BY `to` ASC SEPARATOR ' ') from rcpt where rcpt.id=mid group by rcpt.id), '@', 'X'), '.', 'X') as `to` from attachment a, metadata m where m.piler_id=a.piler_id
 
    sql_attr_uint = size

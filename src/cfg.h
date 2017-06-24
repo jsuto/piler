@@ -65,6 +65,7 @@ struct __config {
 
    // mysql stuff
 
+   char mysqlcharset[MAXVAL];
    char mysqlhost[MAXVAL];
    int mysqlport;
    char mysqlsocket[MAXVAL];

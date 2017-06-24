@@ -11,6 +11,7 @@
 
 int open_database(struct session_data *sdata, struct __config *cfg){
    int rc=1;
+   char buf[BUFLEN];
 
    mysql_init(&(sdata->mysql));
 
@@ -22,8 +23,11 @@ int open_database(struct session_data *sdata, struct __config *cfg){
       return ERR;
    }
 
-   mysql_real_query(&(sdata->mysql), "SET NAMES utf8", strlen("SET NAMES utf8"));
-   mysql_real_query(&(sdata->mysql), "SET CHARACTER SET utf8", strlen("SET CHARACTER SET utf8"));
+   snprintf(buf, sizeof(buf)-2, "SET NAMES %s", cfg->mysqlcharset);
+   mysql_real_query(&(sdata->mysql), buf, strlen(buf));
+
+   snprintf(buf, sizeof(buf)-2, "SET CHARACTER SET %s", cfg->mysqlcharset);
+   mysql_real_query(&(sdata->mysql), buf, strlen(buf));
 
    return OK;
 }

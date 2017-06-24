@@ -9,7 +9,7 @@ class Sphinx {
       list($host, $port) = explode(":", $hostname);
 
       try {
-         $this->link = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=utf8", $username, $password);
+         $this->link = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=" . DB_CHARSET, $username, $password);
       }
       catch(PDOException $exception) {
          exit('Error: ' . $exception->getMessage() . " on database: $database<br />");
