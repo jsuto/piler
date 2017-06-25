@@ -3,10 +3,28 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-# image: docker-image:tag
+
+image: sutoj/builder:xenial
+clone:
+  depth: 5
 
 pipelines:
   default:
     - step:
         script:
           - echo "Everything is awesome!"
+
+  branches:
+    epoll:
+      - step:
+          script:
+            - service mysql start
+            - ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-database=mariadb --enable-tcpwrappers
+            - make clean all install
+            - echo "create database piler character set 'utf8mb4'" | mysql
+            - echo "grant all privileges on piler.* to piler@localhost identified by 'piler123'" | mysql
+            - echo "flush privileges" | mysql
+            - mysql -u piler -ppiler123 piler < /usr/share/piler/db-mysql.sql
+            - cd unit_tests
+            - ./run.sh
+
