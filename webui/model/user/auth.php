@@ -283,7 +283,7 @@ class ModelUserAuth extends Model {
       foreach($e as $a) {
          if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
-         foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup") as $mailattr) {
+         foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox") as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(is_array($a[$mailattr])) {
@@ -460,10 +460,15 @@ class ModelUserAuth extends Model {
             }
 
             $ldap_mail_attr = LDAP_MAIL_ATTR;
-            if(LDAP_MAIL_ATTR == 'proxyAddresses') { $ldap_mail_attr = 'proxyAddresses=smtp:'; }
+
+            if(LDAP_MAIL_ATTR == 'proxyAddresses') {
+               $ldap_mail_attr = 'proxyAddresses=smtp:';
+            }
+            else {
+               $ldap_mail_attr .= '=';
+            }
 
             $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
-
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows);
 
