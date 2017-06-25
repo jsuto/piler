@@ -9,7 +9,7 @@
 #include "piler-config.h"
 #include "params.h"
 
-#define VERSION "1.3.0-master"
+#define VERSION "1.3.0-epoll"
 
 #define BUILD 977
 

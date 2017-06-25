@@ -1,3 +1,18 @@
+1.3.0:
+-----
+
+- Switched from utf8 to utf8mb4 encoding.
+
+- Switched from preforking model to epoll
+
+- Removed PDF support
+
+- GUI fixes
+
+- Added HTML purifier support
+
+- Rewritten pilerpurge in Python
+
 1.2.0:
 ------
 
