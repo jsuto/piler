@@ -12,6 +12,8 @@ class ModelMailMail extends Model {
          $msg = preg_replace("/Message-ID:([^\n]+)\n/i", "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">\n", $msg);
       }
 
+      $msg = preg_replace("/^\..*$/m", ".$0", $msg);
+
       $r = fsockopen($smtphost, $smtpport);
       if(!$r){ return -1; }
 
