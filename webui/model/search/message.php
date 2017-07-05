@@ -220,6 +220,7 @@ class ModelSearchMessage extends Model {
    public function extract_message($id = '', $terms = '') {
       $from = "From: ";
       $to = "To: ";
+      $cc = "Cc: ";
       $subject = "Subject: ";
       $date = "Date: ";
 
@@ -232,11 +233,13 @@ class ModelSearchMessage extends Model {
 
       if(is_array($headers['from'])) { $headers['from'] = $headers['from'][0]; }
       if(is_array($headers['to'])) { $headers['to'] = $headers['to'][0]; }
+      if(is_array($headers['cc'])) { $headers['cc'] = $headers['cc'][0]; }
       if(is_array($headers['subject'])) { $headers['subject'] = $headers['subject'][0]; }
       if(is_array($headers['date'])) { $headers['date'] = $headers['date'][0]; }
 
       if(isset($headers['from'])) $from .= $this->escape_lt_gt_symbols($headers['from']);
       if(isset($headers['to'])) $to .= $this->escape_lt_gt_symbols($headers['to']);
+      if(isset($headers['cc'])) $cc .= $this->escape_lt_gt_symbols($headers['cc']);
       if(isset($headers['subject'])) $subject .= $this->escape_lt_gt_symbols($headers['subject']);
       if(isset($headers['date'])) $date .= $headers['date'];
 
@@ -249,6 +252,7 @@ class ModelSearchMessage extends Model {
 
       return array('from' => $from,
                    'to' => $to,
+                   'cc' => $cc,
                    'subject' => $this->highlight_search_terms($subject, $terms),
                    'date' => $date,
                    'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],

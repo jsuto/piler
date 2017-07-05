@@ -65,6 +65,7 @@
     <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
     <strong><?php print $message['from']; ?></strong><br />
     <strong><?php print $message['to']; ?></strong><br />
+    <?php if(strlen($message['cc']) > 6) { ?><strong><?php print $message['cc']; ?></strong><br /><?php } ?>
     <strong><?php print $message['date']; ?></strong><br />
     <?php foreach($attachments as $a) { ?>
        <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
