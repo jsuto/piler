@@ -3,6 +3,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <locale.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -53,9 +54,17 @@ static void test_parse_date_header(){
    setlocale(LC_CTYPE, cfg.locale);
 
    localtime_r(&t, &lt);
-   if(lt.tm_isdst == 1) dst_fix = 3600;
+   if(lt.tm_isdst == 1){
+      printf("DST is on\n");
+      dst_fix = 3600;
+   }
+   else {
+      printf("DST is off\n");
+   }
 
    for(i=0; i<sizeof(date_test)/sizeof(struct date_test); i++){
+      printf("%s parsed=%ld, control=%ld\n", date_test[i].date_str, parse_date_header(date_test[i].date_str), date_test[i].timestamp);
+
       assert(parse_date_header(date_test[i].date_str)-dst_fix == date_test[i].timestamp && "test_parse_date_header()");
    }
 
