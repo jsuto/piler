@@ -51,7 +51,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
             }
             else unlink(fname);
 
-            if(data->quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
+            if(data->quiet == 0){ printf("processed: %7d\r", tot_msgs); fflush(stdout); }
          }
 
          snprintf(fname, sizeof(fname)-1, "%ld-%d", t, tot_msgs);
@@ -71,7 +71,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
       }
       else unlink(fname);
 
-      if(data->quiet == 0) printf("processed: %7d\r", tot_msgs); fflush(stdout);
+      if(data->quiet == 0){ printf("processed: %7d\r", tot_msgs); fflush(stdout); }
    }
 
    fclose(F);

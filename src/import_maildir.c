@@ -87,7 +87,7 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
                i++;
 
-               if(data->quiet == 0) printf("processed: %7d\r", *tot_msgs); fflush(stdout);
+               if(data->quiet == 0){ printf("processed: %7d\r", *tot_msgs); fflush(stdout); }
             }
             else {
                printf("%s is not a file\n", fname);
