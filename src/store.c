@@ -130,7 +130,7 @@ int store_file(struct session_data *sdata, char *filename, int len, struct __con
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_cleanup(&ctx);
    #else
-      EVP_CIPHER_CTX_cleanup(ctx);
+      EVP_CIPHER_CTX_free(ctx);
    #endif
 
       gettimeofday(&tv2, &tz);
