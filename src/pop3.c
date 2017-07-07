@@ -48,7 +48,11 @@ int connect_to_pop3_server(int sd, char *username, char *password, struct __data
       SSL_library_init();
       SSL_load_error_strings();
 
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       data->ctx = SSL_CTX_new(TLSv1_client_method());
+   #else
+      data->ctx = SSL_CTX_new(TLS_client_method());
+   #endif
       CHK_NULL(data->ctx, "internal SSL error");
 
       data->ssl = SSL_new(data->ctx);
