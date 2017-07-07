@@ -169,7 +169,11 @@ void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int bufl
 
 
 int init_ssl(struct smtp_session *session){
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
    session->ctx = SSL_CTX_new(TLSv1_server_method());
+#else
+   session->ctx = SSL_CTX_new(TLS_server_method());
+#endif
 
    if(session->ctx == NULL){
       syslog(LOG_PRIORITY, "SSL ctx is null");

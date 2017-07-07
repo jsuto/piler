@@ -46,7 +46,11 @@ int store_file(struct session_data *sdata, char *filename, int len, struct __con
    Bytef *z=NULL;
    uLongf dstlen;
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
    EVP_CIPHER_CTX ctx;
+#else
+   EVP_CIPHER_CTX *ctx;
+#endif
    unsigned char *outbuf=NULL;
    int outlen=0, writelen, tmplen;
 
@@ -101,16 +105,33 @@ int store_file(struct session_data *sdata, char *filename, int len, struct __con
    if(cfg->encrypt_messages == 1){
       gettimeofday(&tv1, &tz);
 
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
       EVP_EncryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+   #else
+      ctx = EVP_CIPHER_CTX_new();
+      if(!ctx) goto ENDE;
+
+      EVP_CIPHER_CTX_init(ctx);
+      EVP_EncryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+   #endif
 
       outbuf = malloc(dstlen + EVP_MAX_BLOCK_LENGTH);
       if(outbuf == NULL) goto ENDE;
 
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       if(!EVP_EncryptUpdate(&ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
       if(!EVP_EncryptFinal_ex(&ctx, outbuf + outlen, &tmplen)) goto ENDE;
+   #else
+      if(!EVP_EncryptUpdate(ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
+      if(!EVP_EncryptFinal_ex(ctx, outbuf + outlen, &tmplen)) goto ENDE;
+   #endif
       outlen += tmplen;
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_cleanup(&ctx);
+   #else
+      EVP_CIPHER_CTX_cleanup(ctx);
+   #endif
 
       gettimeofday(&tv2, &tz);
       sdata->__encrypt += tvdiff(tv2, tv1);

@@ -135,7 +135,11 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    int rc=0, n, olen, tlen, len, fd=-1;
    unsigned char *s=NULL, *addr=NULL, inbuf[REALLYBIGBUFSIZE];
    struct stat st;
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
    EVP_CIPHER_CTX ctx;
+#else
+   EVP_CIPHER_CTX *ctx;
+#endif
 
 
    if(filename == NULL) return 1;
@@ -156,8 +160,16 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 
    if(cfg->encrypt_messages == 1){
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
       EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+   #else
+      ctx = EVP_CIPHER_CTX_new();
+      if(!ctx) goto CLEANUP;
+
+      EVP_CIPHER_CTX_init(ctx);
+      EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+   #endif
 
       len = st.st_size+EVP_MAX_BLOCK_LENGTH;
 
@@ -172,7 +184,11 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
       while((n = read(fd, inbuf, sizeof(inbuf)))){
 
+      #if OPENSSL_VERSION_NUMBER < 0x10100000L
          if(!EVP_DecryptUpdate(&ctx, s+tlen, &olen, inbuf, n)){
+      #else
+         if(!EVP_DecryptUpdate(ctx, s+tlen, &olen, inbuf, n)){
+      #endif
             syslog(LOG_PRIORITY, "%s: EVP_DecryptUpdate()", filename);
             goto CLEANUP;
          }
@@ -181,7 +197,11 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       }
 
 
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       if(EVP_DecryptFinal(&ctx, s + tlen, &olen) != 1){
+   #else
+      if(EVP_DecryptFinal(ctx, s + tlen, &olen) != 1){
+   #endif
          syslog(LOG_PRIORITY, "%s: EVP_DecryptFinal()", filename);
          goto CLEANUP;
       }
@@ -203,7 +223,12 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 CLEANUP:
    if(fd != -1) close(fd);
    if(s) free(s);
-   if(cfg->encrypt_messages == 1) EVP_CIPHER_CTX_cleanup(&ctx);
+   if(cfg->encrypt_messages == 1)
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
+      EVP_CIPHER_CTX_cleanup(&ctx);
+   #else
+      EVP_CIPHER_CTX_cleanup(ctx);
+   #endif
 
    return 0;
 }
