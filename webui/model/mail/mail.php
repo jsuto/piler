@@ -36,9 +36,7 @@ class ModelMailMail extends Model {
 
       fputs($r, $msg);
 
-      if(!preg_match("/\r\n\.\r\n$/", $msg)){
-         fputs($r, "\r\n.\r\n");
-      }
+      fputs($r, "\r\n.\r\n");
 
       $l = fgets($r, 4096);
 
