@@ -17,6 +17,7 @@
 
 int main(int argc, char **argv){
    int i;
+   time_t retention_seconds=0;
    struct stat st;
    struct session_data sdata;
    struct parser_state state;
@@ -107,11 +108,12 @@ int main(int argc, char **argv){
 
    printf("rules check: %s\n", rule);
 
-   sdata.retained = sdata.now + query_retain_period(&data, &state, st.st_size, sdata.spam_message, &cfg);
+   retention_seconds = query_retain_period(&data, &state, st.st_size, sdata.spam_message, &cfg);
+   sdata.retained = sdata.now + retention_seconds;
 
    printf("folder: %d\n", get_folder_id_by_rule(&data, &state, st.st_size, sdata.spam_message, &cfg));
 
-   printf("retention period: %lu\n", sdata.retained);
+   printf("retention period: %lu (%ld days)\n", sdata.retained, retention_seconds/86400);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
