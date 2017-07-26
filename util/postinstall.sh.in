@@ -379,7 +379,7 @@ SOCKHELPER
 
    MYSQL_SOCKET=`perl $SOCKET_HELPER_SCRIPT $MYSQL_SOCKET`
 
-   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler/piler.conf > $PILERCONF_TMP
+   sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=$MYSQL_PASSWORD/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=$MYSQL_SOCKET/" $SYSCONFDIR/piler/piler.conf.dist > $PILERCONF_TMP
    cat $PILERCONF_TMP > $SYSCONFDIR/piler/piler.conf
    rm -f $PILERCONF_TMP
 
