@@ -826,7 +826,7 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function fix_email_address_for_sphinx($email = '') {
+   public function fix_email_address_for_sphinx($email = '') {
       $email = preg_replace("/\|@/", "|", $email);
       return preg_replace("/[\@\.\+\-\_]/", "X", $email);
    }
