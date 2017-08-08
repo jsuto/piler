@@ -152,7 +152,7 @@ void send_smtp_response(struct smtp_session *session, char *buf){
 void process_command_helo(struct smtp_session *session, char *buf, int buflen){
    if(session->protocol_state == SMTP_STATE_INIT) session->protocol_state = SMTP_STATE_HELO;
 
-   snprintf(buf, buflen-1, "220 %s ESMTP\r\n", session->cfg->hostid);
+   snprintf(buf, buflen-1, "250 %s\r\n", session->cfg->hostid);
    send_smtp_response(session, buf);
 }
 
