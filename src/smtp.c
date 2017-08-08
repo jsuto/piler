@@ -61,7 +61,7 @@ void process_smtp_command(struct smtp_session *session, char *buf){
       return;
    }
 
-   if(session->cfg->tls_enable == 1 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && session->use_ssl == 0){
+   if(session->cfg->tls_enable == 1 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && session->net.use_ssl == 0){
       process_command_starttls(session);
       return;
    }
@@ -89,20 +89,26 @@ void process_data(struct smtp_session *session, char *readbuf, int readlen){
    pos = searchStringInBuffer(&puf[0], len, SMTP_CMD_PERIOD, 5);
 
    if(pos > 0){
-      write(session->fd, puf, pos);
-      session->tot_len += pos;
-      process_command_period(session);
+      if(write(session->fd, puf, pos) != -1){
+         session->tot_len += pos;
+         process_command_period(session);
+      }
+      else syslog(LOG_PRIORITY, "ERROR: process_data(): failed to write %d bytes", pos);
    }
    else {
       n = search_char_backward(&puf[0], len, '\r');
 
       if(n == -1 || len - n > 4){
-         write(session->fd, puf, len);
-         session->tot_len += len;
+         if(write(session->fd, puf, len) != -1){
+            session->tot_len += len;
+         }
+         else syslog(LOG_PRIORITY, "ERROR: process_data(): failed to write %d bytes", len);
       }
       else {
-         write(session->fd, puf, n);
-         session->tot_len += n;
+         if(write(session->fd, puf, n) != -1){
+            session->tot_len += n;
+         }
+         else syslog(LOG_PRIORITY, "process_data(): failed to write %d bytes", n);
 
          snprintf(session->buf, SMALLBUFSIZE-1, "%s", &puf[n]);
          session->buflen = len - n;
@@ -117,7 +123,7 @@ void wait_for_ssl_accept(struct smtp_session *session){
 
    if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "waiting for ssl handshake");
 
-   rc = SSL_accept(session->ssl);
+   rc = SSL_accept(session->net.ssl);
 
    // Since we use non-blocking IO, SSL_accept() is likely to return with -1
    // "In this case a call to SSL_get_error() with the return value of SSL_accept()
@@ -125,20 +131,20 @@ void wait_for_ssl_accept(struct smtp_session *session){
    //
    // In this case we may proceed.
 
-   if(rc == 1 || SSL_get_error(session->ssl, rc) == SSL_ERROR_WANT_READ){
-      session->use_ssl = 1;
+   if(rc == 1 || SSL_get_error(session->net.ssl, rc) == SSL_ERROR_WANT_READ){
+      session->net.use_ssl = 1;
    }
 
-   if(session->cfg->verbosity >= _LOG_DEBUG || session->use_ssl == 0){
+   if(session->cfg->verbosity >= _LOG_DEBUG || session->net.use_ssl == 0){
       ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
       syslog(LOG_PRIORITY, "SSL_accept() result, rc=%d, errorcode: %d, error text: %s",
-             rc, SSL_get_error(session->ssl, rc), ssl_error);
+             rc, SSL_get_error(session->net.ssl, rc), ssl_error);
    }
 }
 
 
 void send_smtp_response(struct smtp_session *session, char *buf){
-   write1(session->socket, buf, strlen(buf), session->use_ssl, session->ssl);
+   write1(&(session->net), buf, strlen(buf));
    if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent: %s", buf);
 }
 
@@ -159,7 +165,7 @@ void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int bufl
    if(session->protocol_state == SMTP_STATE_INIT) session->protocol_state = SMTP_STATE_HELO;
 
    // if tls is not started, but it's enabled in the config
-   if(session->use_ssl == 0 && session->cfg->tls_enable == 1) snprintf(extensions, sizeof(extensions)-1, "%s", SMTP_EXTENSION_STARTTLS);
+   if(session->net.use_ssl == 0 && session->cfg->tls_enable == 1) snprintf(extensions, sizeof(extensions)-1, "%s", SMTP_EXTENSION_STARTTLS);
    if(session->cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
 
    snprintf(buf, buflen-1, SMTP_RESP_250_EXTENSIONS, session->cfg->hostid, extensions);
@@ -170,27 +176,27 @@ void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int bufl
 
 int init_ssl(struct smtp_session *session){
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-   session->ctx = SSL_CTX_new(TLSv1_server_method());
+   session->net.ctx = SSL_CTX_new(TLSv1_server_method());
 #else
-   session->ctx = SSL_CTX_new(TLS_server_method());
+   session->net.ctx = SSL_CTX_new(TLS_server_method());
 #endif
 
-   if(session->ctx == NULL){
+   if(session->net.ctx == NULL){
       syslog(LOG_PRIORITY, "SSL ctx is null");
       return 0;
    }
 
-   if(SSL_CTX_set_cipher_list(session->ctx, session->cfg->cipher_list) == 0){
+   if(SSL_CTX_set_cipher_list(session->net.ctx, session->cfg->cipher_list) == 0){
       syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", session->cfg->cipher_list);
       return 0;
    }
 
-   if(SSL_CTX_use_PrivateKey_file(session->ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
+   if(SSL_CTX_use_PrivateKey_file(session->net.ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
       syslog(LOG_PRIORITY, "cannot load private key from %s", session->cfg->pemfile);
       return 0;
    }
 
-   if(SSL_CTX_use_certificate_file(session->ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
+   if(SSL_CTX_use_certificate_file(session->net.ctx, session->cfg->pemfile, SSL_FILETYPE_PEM) != 1){
       syslog(LOG_PRIORITY, "cannot load certificate from %s", session->cfg->pemfile);
       return 0;
    }
@@ -204,17 +210,17 @@ void process_command_starttls(struct smtp_session *session){
 
    if(init_ssl(session) == 1){
 
-      session->ssl = SSL_new(session->ctx);
-      if(session->ssl){
+      session->net.ssl = SSL_new(session->net.ctx);
+      if(session->net.ssl){
 
-         SSL_set_options(session->ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
+         SSL_set_options(session->net.ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
 
-         if(SSL_set_fd(session->ssl, session->socket) == 1){
-            session->starttls = 1;
+         if(SSL_set_fd(session->net.ssl, session->net.socket) == 1){
+            session->net.starttls = 1;
             send_smtp_response(session, SMTP_RESP_220_READY_TO_START_TLS);
             session->protocol_state = SMTP_STATE_INIT;
 
-            if(session->starttls == 1 && session->use_ssl == 0)
+            if(session->net.starttls == 1 && session->net.use_ssl == 0)
                wait_for_ssl_accept(session);
 
             return;
@@ -230,7 +236,7 @@ void process_command_mail_from(struct smtp_session *session, char *buf){
    memset(session->mailfrom, 0, SMALLBUFSIZE);
 
    if(session->protocol_state != SMTP_STATE_HELO && session->protocol_state != SMTP_STATE_PERIOD && session->protocol_state != SMTP_STATE_BDAT){
-      send(session->socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
+      send(session->net.socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
    }
    else {
       memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);

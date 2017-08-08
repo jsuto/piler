@@ -22,10 +22,10 @@
 #include <piler.h>
 
 
-int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data *data, struct __config *cfg){
+int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *data, struct config *cfg){
    FILE *F, *f=NULL;
    int rc=ERR, tot_msgs=0, ret=OK;
-   char buf[MAXBUFSIZE], fname[SMALLBUFSIZE];
+   char buf[MAXBUFSIZE];
    time_t t;
 
 
@@ -44,18 +44,18 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
          if(f){
             fclose(f);
             f = NULL;
-            rc = import_message(fname, sdata, data, cfg);
+            rc = import_message(sdata, data, cfg);
             if(rc == ERR){
-               printf("error importing: '%s'\n", fname);
+               printf("error importing: '%s'\n", data->import->filename);
                ret = ERR;
             }
-            else unlink(fname);
+            else unlink(data->import->filename);
 
-            if(data->quiet == 0){ printf("processed: %7d\r", tot_msgs); fflush(stdout); }
+            if(data->quiet == 0){ printf("processed: %7d\r", data->import->tot_msgs); fflush(stdout); }
          }
 
-         snprintf(fname, sizeof(fname)-1, "%ld-%d", t, tot_msgs);
-         f = fopen(fname, "w+");
+         snprintf(data->import->filename, sizeof(data->import->filename)-1, "%ld-%d", t, data->import->tot_msgs);
+         f = fopen(data->import->filename, "w+");
          continue;
       }
 
@@ -64,14 +64,14 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
 
    if(f){
       fclose(f);
-      rc = import_message(fname, sdata, data, cfg);
+      rc = import_message(sdata, data, cfg);
       if(rc == ERR){
-         printf("error importing: '%s'\n", fname);
+         printf("ERROR: error importing: '%s'\n", data->import->filename);
          ret = ERR;
       }
-      else unlink(fname);
+      else unlink(data->import->filename);
 
-      if(data->quiet == 0){ printf("processed: %7d\r", tot_msgs); fflush(stdout); }
+      if(data->quiet == 0){ printf("processed: %7d\r", data->import->tot_msgs); fflush(stdout); }
    }
 
    fclose(F);
@@ -80,7 +80,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct __data
 }
 
 
-int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
+int import_mbox_from_dir(char *directory, struct session_data *sdata, struct data *data, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
@@ -103,7 +103,7 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
-            rc = import_mbox_from_dir(fname, sdata, data, tot_msgs, cfg);
+            rc = import_mbox_from_dir(fname, sdata, data, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
@@ -127,7 +127,7 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct __d
                }
 
                rc = import_from_mailbox(fname, sdata, data, cfg);
-               if(rc == OK) (*tot_msgs)++;
+               if(rc == OK) (data->import->tot_msgs)++;
                else ret = ERR;
 
                i++;

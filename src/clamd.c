@@ -18,7 +18,7 @@
 #include <piler.h>
 
 
-int clamd_scan(char *tmpfile, struct __config *cfg){
+int clamd_scan(char *tmpfile, struct config *cfg){
    int s, n;
    char *p, *q, buf[MAXBUFSIZE], scan_cmd[SMALLBUFSIZE];
    struct sockaddr_un server;

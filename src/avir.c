@@ -10,7 +10,7 @@
 #include <piler.h>
 
 
-int do_av_check(char *filename, struct __config *cfg){
+int do_av_check(char *filename, struct config *cfg){
    int rav = AVIR_OK;
 
    if(clamd_scan(filename, cfg) == AV_VIRUS) rav = AVIR_VIRUS;

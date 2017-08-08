@@ -12,13 +12,13 @@ extern char *optarg;
 extern int optind;
 
 
-void print_config_all(struct __config *cfg, char *key);
-void print_config(char *configfile, struct __config *cfg);
+void print_config_all(struct config *cfg, char *key);
+void print_config(char *configfile, struct config *cfg);
 
 int main(int argc, char **argv){
    int i, print_from_file=0;
    char *configfile=CONFIG_FILE, *query=NULL;
-   struct __config cfg;
+   struct config cfg;
 
    while((i = getopt(argc, argv, "c:q:nh?")) > 0){
        switch(i){

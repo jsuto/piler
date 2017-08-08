@@ -99,7 +99,7 @@ int extract_opendocument(struct session_data *sdata, struct parser_state *state,
 }
 
 
-int unzip_file(struct session_data *sdata, struct parser_state *state, char *filename, int *rec, struct __config *cfg){
+int unzip_file(struct session_data *sdata, struct parser_state *state, char *filename, int *rec, struct config *cfg){
    int errorp, i=0, len=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
@@ -132,7 +132,7 @@ int unzip_file(struct session_data *sdata, struct parser_state *state, char *fil
                zf = zip_fopen_index(z, i, 0);
                if(zf){
                   while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
-                     write(fd, buf, len);
+                     if(write(fd, buf, len) == -1) syslog(LOG_PRIORITY, "ERROR: error writing to fd in %s", __func__);
                   }
                   zip_fclose(zf);
                }
@@ -169,7 +169,7 @@ int unzip_file(struct session_data *sdata, struct parser_state *state, char *fil
 
 #ifdef HAVE_TNEF
 
-int extract_tnef(struct session_data *sdata, struct parser_state *state, char *filename, struct __config *cfg){
+int extract_tnef(struct session_data *sdata, struct parser_state *state, char *filename, struct config *cfg){
    int rc=0, n, rec=1;
    char tmpdir[BUFLEN], buf[SMALLBUFSIZE];
    struct dirent **namelist;
@@ -216,7 +216,7 @@ void kill_helper(){
 }
 
 
-void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct __config *cfg){
+void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct config *cfg){
    int link[2], n;
    pid_t pid;
    char outbuf[MAXBUFSIZE];

@@ -22,7 +22,7 @@ int main(int argc, char **argv){
 #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
 #endif
-   struct __config cfg;
+   struct config cfg;
 
 
    if(argc < 3){

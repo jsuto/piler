@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct __data *data, struct __config *cfg){
+struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct data *data, struct config *cfg){
    FILE *f;
    int i;
    unsigned int len;
@@ -84,7 +84,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    }
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
-      write(state.mfd, writebuffer, state.writebufpos);
+      if(write(state.mfd, writebuffer, state.writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: %s: write(), %s, %d, %s", sdata->ttmpfile, __func__, __LINE__, __FILE__);
       memset(writebuffer, 0, sizeof(writebuffer));
       state.writebufpos = 0;
    }
@@ -99,7 +99,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 }
 
 
-void post_parse(struct session_data *sdata, struct parser_state *state, struct __config *cfg){
+void post_parse(struct session_data *sdata, struct parser_state *state, struct config *cfg){
    int i, rec=0;
    unsigned int len;
    char *p;
@@ -171,7 +171,7 @@ void storno_attachment(struct parser_state *state){
 }
 
 
-int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct __data *data, struct __config *cfg){
+int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct data *data, struct config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
@@ -224,16 +224,16 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
          //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
-            write(state->fd, abuffer, state->abufpos); 
+            if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
 
             if(state->b64fd != -1){
                abuffer[state->abufpos] = '\0';
                if(state->base64 == 1){
                   n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
-                  write(state->b64fd, b64buffer, n64);
+                  if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
                }
                else {
-                  write(state->b64fd, abuffer, state->abufpos);
+                  if(write(state->b64fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
                }
             }
 
@@ -247,7 +247,9 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
-            write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+            if(write(state->mfd, writebuffer, state->writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
+            state->writebufpos = 0;
+            memset(writebuffer, 0, writebuffersize);
          }
          memcpy(writebuffer+state->writebufpos, buf, len); state->writebufpos += len;
       }
@@ -296,9 +298,12 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                //n = write(state->mfd, puf, strlen(puf)); // WRITE
                writelen = strlen(puf);
                if(writelen + state->writebufpos > writebuffersize-1){
-                  write(state->mfd, writebuffer, state->writebufpos); state->writebufpos = 0; memset(writebuffer, 0, writebuffersize);
+                  if(write(state->mfd, writebuffer, state->writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
+                  state->writebufpos = 0;
+                  memset(writebuffer, 0, writebuffersize);
                }
-               memcpy(writebuffer+state->writebufpos, puf, writelen); state->writebufpos += writelen;
+               memcpy(writebuffer+state->writebufpos, puf, writelen);
+               state->writebufpos += writelen;
             }
          }
 
@@ -588,16 +593,16 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(state->has_to_dump == 1){
          if(take_into_pieces == 1 && state->fd != -1){
             if(state->abufpos > 0){
-               write(state->fd, abuffer, state->abufpos);
+               if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
 
                if(state->b64fd != -1){
                   abuffer[state->abufpos] = '\0';
                   if(state->base64 == 1){
                      n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
-                     write(state->b64fd, b64buffer, n64);
+                     if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
                   }
                   else {
-                     write(state->b64fd, abuffer, state->abufpos);
+                     if(write(state->b64fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
                   }
                }
 

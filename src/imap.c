@@ -23,9 +23,6 @@
 #include <piler.h>
 
 
-void update_import_job_stat(struct session_data *sdata, struct __data *data);
-
-
 int get_message_length_from_imap_answer(char *s){
    char *p, *q;
    int len=0;
@@ -54,18 +51,18 @@ int get_message_length_from_imap_answer(char *s){
 }
 
 
-int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, int use_ssl){
+int read_response(char *buf, int buflen, struct data *data){
    int i=0, n, len=0, rc=0;
    char puf[MAXBUFSIZE], tagok[SMALLBUFSIZE], tagno[SMALLBUFSIZE], tagbad[SMALLBUFSIZE];
 
-   snprintf(tagok, sizeof(tagok)-1, "A%d OK", *seq);
-   snprintf(tagno, sizeof(tagno)-1, "A%d NO", *seq);
-   snprintf(tagbad, sizeof(tagbad)-1, "A%d BAD", *seq);
+   snprintf(tagok, sizeof(tagok)-1, "A%d OK", data->import->seq);
+   snprintf(tagno, sizeof(tagno)-1, "A%d NO", data->import->seq);
+   snprintf(tagbad, sizeof(tagbad)-1, "A%d BAD", data->import->seq);
 
    memset(buf, 0, buflen);
 
    while(!strstr(buf, tagok)){
-      n = recvtimeoutssl(sd, puf, sizeof(puf), data->import->timeout, use_ssl, data->ssl);
+      n = recvtimeoutssl(data->net, puf, sizeof(puf));
 
       if(n + len < buflen) strncat(buf, puf, n);
       else goto END;
@@ -87,28 +84,104 @@ int read_response(int sd, char *buf, int buflen, int *seq, struct __data *data, 
 
 END:
 
-   (*seq)++;
+   (data->import->seq)++;
 
    return rc;
 }
 
 
-int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sdata, struct __data *data, int use_ssl, int dryrun, struct __config *cfg){
-   int rc=ERR, i, n, messages=0, len, readlen, fd, nreads, readpos, finished, msglen, msg_written_len, tagoklen, tagbadlen, result;
-   char *p, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE], buf[MAXBUFSIZE], puf[MAXBUFSIZE], filename[SMALLBUFSIZE];
+int connect_to_imap_server(struct data *data){
+   int n;
+   char buf[MAXBUFSIZE];
+   X509* server_cert;
+   char *str;
 
-   /* imap cmd: SELECT */
+   data->import->cap_uidplus = 0;
+
+   if(data->net->use_ssl == 1){
+      SSL_library_init();
+      SSL_load_error_strings();
+
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
+      data->net->ctx = SSL_CTX_new(TLSv1_client_method());
+   #else
+      data->net->ctx = SSL_CTX_new(TLS_client_method());
+   #endif
+      CHK_NULL(data->net->ctx, "internal SSL error");
+
+      data->net->ssl = SSL_new(data->net->ctx);
+      CHK_NULL(data->net->ssl, "internal ssl error");
+
+      SSL_set_fd(data->net->ssl, data->net->socket);
+      n = SSL_connect(data->net->ssl);
+      CHK_SSL(n, "internal ssl error");
+
+      printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
+
+      server_cert = SSL_get_peer_certificate(data->net->ssl);
+      CHK_NULL(server_cert, "server cert error");
+
+      str = X509_NAME_oneline(X509_get_subject_name(server_cert), 0, 0);
+      CHK_NULL(str, "error in server cert");
+      printf("server cert:\n\t subject: %s\n", str);
+      OPENSSL_free(str);
+
+      str = X509_NAME_oneline(X509_get_issuer_name(server_cert), 0, 0);
+      CHK_NULL(str, "error in server cert");
+      printf("\t issuer: %s\n\n", str);
+      OPENSSL_free(str);
+
+      X509_free(server_cert);
+   }
+
+
+   recvtimeoutssl(data->net, buf, sizeof(buf));
+
+
+   /* imap cmd: LOGIN */
+
+   snprintf(buf, sizeof(buf)-1, "A%d LOGIN %s \"%s\"\r\n", data->import->seq, data->import->username, data->import->password);
+
+   write1(data->net, buf, strlen(buf));
+   if(read_response(buf, sizeof(buf), data) == 0){
+      printf("login failed, server reponse: %s\n", buf);
+      return ERR;
+   }
+
+   if(strstr(buf, "UIDPLUS")){
+      data->import->cap_uidplus = 1;
+   }
+   else {
+
+      /* run the CAPABILITY command if the reply doesn't contain the UIDPLUS capability */
+
+      snprintf(buf, sizeof(buf)-1, "A%d CAPABILITY\r\n", data->import->seq);
+
+      write1(data->net, buf, strlen(buf));
+      read_response(buf, sizeof(buf), data);
+
+      if(strstr(buf, "UIDPLUS")) data->import->cap_uidplus = 1;
+   }
+
+
+   return OK;
+}
+
+
+int imap_select_cmd_on_folder(char *folder, struct data *data){
+   int messages=0;
+   char *p, buf[MAXBUFSIZE];
 
    if(strchr(folder, '"'))
-      snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", *seq, folder);
+      snprintf(buf, sizeof(buf)-1, "A%d SELECT %s\r\n", data->import->seq, folder);
    else
-      snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", *seq, folder);
+      snprintf(buf, sizeof(buf)-1, "A%d SELECT \"%s\"\r\n", data->import->seq, folder);
 
-   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
+   write1(data->net, buf, strlen(buf));
+   if(read_response(buf, sizeof(buf), data) == 0){
       trimBuffer(buf);
-      printf("select cmd error: %s\n", buf);
-      return rc;
+      printf("ERROR: select cmd error: %s\n", buf);
+      return messages;
    }
 
    p = strstr(buf, " EXISTS");
@@ -123,184 +196,198 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 
    printf("found %d messages\n", messages);
 
-   if(messages <= 0) return OK;
+   data->import->total_messages += messages;
 
+   return messages;
+}
+
+
+int imap_download_email(struct data *data, int i){
+   int fd, len, result, tagoklen, tagbadlen;
+   int n, readlen=0, nreads=0, readpos=0, finished=0, msglen=0, msg_written_len=0;
+   char *p, buf[MAXBUFSIZE], puf[MAXBUFSIZE], tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], tagbad[SMALLBUFSIZE];
+
+   data->import->processed_messages++;
+
+   snprintf(data->import->filename, SMALLBUFSIZE-1, "%d-imap-%d.txt", getpid(), data->import->processed_messages);
+
+   unlink(data->import->filename);
+
+   fd = open(data->import->filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
+   if(fd == -1){
+      printf("cannot open: %s\n", data->import->filename);
+      return ERR;
+   }
+
+   snprintf(tag, sizeof(tag)-1, "A%d", data->import->seq);
+   snprintf(tagok, sizeof(tagok)-1, "A%d OK", (data->import->seq)++);
+   snprintf(tagbad, sizeof(tagbad)-1, "%s BAD", tag);
+
+   tagoklen = strlen(tagok);
+   tagbadlen = strlen(tagbad);
+
+   snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
+   write1(data->net, buf, strlen(buf));
+
+   while((n = recvtimeoutssl(data->net, &buf[readpos], sizeof(buf)-readpos)) > 0){
+
+      readlen += n;
+
+      if(strchr(buf, '\n')){
+         readpos = 0;
+         p = &buf[0];
+         do {
+            nreads++;
+            memset(puf, 0, sizeof(puf));
+            p = split(p, '\n', puf, sizeof(puf)-1, &result);
+            len = strlen(puf);
+
+            if(result == 1){
+               // process a complete line
+
+               if(nreads == 1){
+
+                  if(strcasestr(puf, " FETCH ")){
+                     msglen = get_message_length_from_imap_answer(puf);
+
+                     if(msglen == 0){
+                        finished = 1;
+                        break;
+                     }
+                     continue;
+                  }
+
+                  if(strcasestr(puf, " BYE")){
+                     printf("imap server sent BYE response: '%s'\n", puf);
+                     close(fd);
+                     unlink(data->import->filename);
+                     return ERR;
+                  }
+
+               }
+
+               if(len > 0 && msg_written_len < msglen){
+                  if(write(fd, puf, len) == -1) printf("ERROR: writing to fd\n");
+                  if(write(fd, "\n", 1) == -1) printf("ERROR: writing to fd\n");
+                  msg_written_len += len + 1;
+               }
+
+               if(strncmp(puf, tagok, tagoklen) == 0){
+                  finished = 1;
+                  break;
+               }
+
+               if(strncmp(puf, tagbad, tagbadlen) == 0){
+                  printf("ERROR happened reading the message!\n");
+                  finished = 1;
+                  break;
+               }
+
+            }
+            else {
+               // prepend the last incomplete line back to 'buf'
+
+               snprintf(buf, sizeof(buf)-2, "%s", puf);
+               readpos = len;
+               break;
+            }
+
+         } while(p);
+
+
+      }
+      else {
+         readpos += n;
+      }
+
+      if(finished == 1) break;
+   }
+
+   close(fd);
+
+   if(msglen > 10) return OK;
+
+   return ERR;
+}
+
+
+void imap_delete_message(struct data *data, int i){
+   char buf[SMALLBUFSIZE];
+
+   snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", data->import->seq, i);
+   write1(data->net, buf, strlen(buf));
+   read_response(buf, sizeof(buf), data);
+}
+
+
+void imap_move_message_to_folder(struct data *data, int i){
+   int tagoklen;
+   char buf[SMALLBUFSIZE], tagok[SMALLBUFSIZE];
+
+   snprintf(tagok, sizeof(tagok)-1, "A%d OK", data->import->seq);
+   tagoklen = strlen(tagok);
+
+   snprintf(buf, sizeof(buf)-1, "A%d COPY %d %s\r\n", data->import->seq, i, data->import->move_folder);
+   write1(data->net, buf, strlen(buf));
+   read_response(buf, sizeof(buf), data);
+
+   if(strncmp(buf, tagok, tagoklen) == 0){
+      snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", data->import->seq, i);
+      write1(data->net, buf, strlen(buf));
+      read_response(buf, sizeof(buf), data);
+   }
+}
+
+
+void imap_expunge_message(struct data *data){
+   char buf[SMALLBUFSIZE];
+
+   snprintf(buf, sizeof(buf)-1, "A%d EXPUNGE\r\n", data->import->seq);
+   write1(data->net, buf, strlen(buf));
+   read_response(buf, sizeof(buf), data);
+}
+
+
+int process_imap_folder(char *folder, struct session_data *sdata, struct data *data, struct config *cfg){
+   int rc=ERR, i, messages=0;
+
+   messages = imap_select_cmd_on_folder(folder, data);
+
+   if(messages <= 0) return OK;
 
    if(data->recursive_folder_names == 1){
       data->folder = get_folder_id(sdata, data, folder, 0);
       if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, data, folder, 0);
    }
 
-
-   data->import->total_messages += messages;
-
    for(i=data->import->start_position; i<=messages; i++){
+      if(imap_download_email(data, i) == OK){
+         if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/messages); fflush(stdout); }
+
+         if(data->import->dryrun == 0){
+            rc = import_message(sdata, data, cfg);
+
+            if(data->import->remove_after_import == 1 && rc == OK){
+               imap_delete_message(data, i);
+            }
+
+            if(data->import->move_folder && data->import->cap_uidplus == 1){
+               imap_move_message_to_folder(data, i);
+            }
+         }
+
+         if(data->import->download_only == 0) unlink(data->import->filename);
+      }
 
       /* whether to quit after processing a batch of messages */
 
       if(data->import->batch_processing_limit > 0 && data->import->processed_messages >= data->import->batch_processing_limit){
          break;
       }
-
-      data->import->processed_messages++;
-      if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/messages); fflush(stdout); }
-
-      snprintf(tag, sizeof(tag)-1, "A%d", *seq);
-      snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-      snprintf(tagbad, sizeof(tagbad)-1, "%s BAD", tag);
-
-      tagoklen = strlen(tagok);
-      tagbadlen = strlen(tagbad);
-
-      snprintf(buf, sizeof(buf)-1, "%s FETCH %d (BODY.PEEK[])\r\n", tag, i);
-
-      snprintf(filename, sizeof(filename)-1, "%d-imap-%d.txt", getpid(), data->import->processed_messages);
-      unlink(filename);
-
-      fd = open(filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
-      if(fd == -1){
-         printf("cannot open: %s\n", filename);
-         return rc;
-      }
-
-
-      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-
-      readlen = 0;
-      nreads = 0;
-      readpos = 0;
-      finished = 0;
-      msglen = 0;
-      msg_written_len = 0;
-
-      while((n = recvtimeoutssl(sd, &buf[readpos], sizeof(buf)-readpos, data->import->timeout, use_ssl, data->ssl)) > 0){
-
-         readlen += n;
-
-         if(strchr(buf, '\n')){
-            readpos = 0;
-            p = &buf[0];
-            do {
-               nreads++;
-               memset(puf, 0, sizeof(puf));
-               p = split(p, '\n', puf, sizeof(puf)-1, &result);
-               len = strlen(puf);
-
-               if(result == 1){
-                  // process a complete line
-
-                  if(nreads == 1){
-
-                     if(strcasestr(puf, " FETCH ")){
-                        msglen = get_message_length_from_imap_answer(puf);
-
-                        if(msglen == 0){
-                           finished = 1;
-                           break;
-                        }
-                        continue;
-                     }
-
-                     if(strcasestr(puf, " BYE")){
-                        printf("imap server sent BYE response: '%s'\n", puf);
-                        close(fd);
-                        unlink(filename);
-                        return ERR;
-                     }
-
-                  }
- 
-                  if(len > 0 && msg_written_len < msglen){
-                     write(fd, puf, len);
-                     write(fd, "\n", 1);
-                     msg_written_len += len + 1;
-                  }
-
-                  if(strncmp(puf, tagok, tagoklen) == 0){
-                     finished = 1;
-                     break;
-                  }
-
-                  if(strncmp(puf, tagbad, tagbadlen) == 0){
-                     printf("ERROR happened reading the message!\n");
-                     finished = 1;
-                     break;
-                  }
-
-               }
-               else {
-                  // prepend the last incomplete line back to 'buf'
-
-                  snprintf(buf, sizeof(buf)-2, "%s", puf);
-                  readpos = len;
-                  break;
-               }
-
-            } while(p);
-
-
-
-         }
-         else {
-            readpos += n;
-         }
-
-         if(finished == 1) break;
-      }
-
-
-      close(fd);
-
-      if(dryrun == 0 && msglen > 10){
-         rc = import_message(filename, sdata, data, cfg);
-
-         if(data->import->processed_messages % 100 == 0){
-            time(&(data->import->updated));
-            update_import_job_stat(sdata, data);
-         }
-      }
-      else rc = OK;
-
-
-      if(rc == ERR) printf("error importing '%s'\n", filename);
-      else {
-
-         if(data->import->remove_after_import == 1 && dryrun == 0){
-            snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
-            write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-            read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
-         }
-
-
-         if(data->import->move_folder && data->import->cap_uidplus == 1 && dryrun == 0){
-
-            snprintf(tagok, sizeof(tagok)-1, "A%d OK", *seq);
-            tagoklen = strlen(tagok);
-
-            snprintf(buf, sizeof(buf)-1, "A%d COPY %d %s\r\n", *seq, i, data->import->move_folder);
-            write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-            read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
-
-            if(strncmp(buf, tagok, tagoklen) == 0){
-               snprintf(buf, sizeof(buf)-1, "A%d STORE %d +FLAGS.SILENT (\\Deleted)\r\n", *seq, i);
-               write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-               read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
-
-            }
-         }
-
-
-
-         if(data->import->download_only == 0) unlink(filename);
-      }
-
-
    }
 
-   if((data->import->remove_after_import == 1 || data->import->move_folder) && dryrun == 0){
-      snprintf(buf, sizeof(buf)-1, "A%d EXPUNGE\r\n", *seq);
-      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-      read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
+   if((data->import->remove_after_import == 1 || data->import->move_folder) && data->import->dryrun == 0){
+      imap_expunge_message(data);
    }
 
 
@@ -310,96 +397,15 @@ int process_imap_folder(int sd, int *seq, char *folder, struct session_data *sda
 }
 
 
-int connect_to_imap_server(int sd, int *seq, char *username, char *password, struct __data *data, int use_ssl){
-   int n;
-   char buf[MAXBUFSIZE];
-   X509* server_cert;
-   char *str;
-
-   data->import->cap_uidplus = 0;
-
-   if(use_ssl == 1){
-
-      SSL_library_init();
-      SSL_load_error_strings();
-
-   #if OPENSSL_VERSION_NUMBER < 0x10100000L
-      data->ctx = SSL_CTX_new(TLSv1_client_method());
-   #else
-      data->ctx = SSL_CTX_new(TLS_client_method());
-   #endif
-      CHK_NULL(data->ctx, "internal SSL error");
-
-      data->ssl = SSL_new(data->ctx);
-      CHK_NULL(data->ssl, "internal ssl error");
-
-      SSL_set_fd(data->ssl, sd);
-      n = SSL_connect(data->ssl);
-      CHK_SSL(n, "internal ssl error");
-
-      printf("Cipher: %s\n", SSL_get_cipher(data->ssl));
-
-      server_cert = SSL_get_peer_certificate(data->ssl);
-      CHK_NULL(server_cert, "server cert error");
-
-      //if(verbose){
-         str = X509_NAME_oneline(X509_get_subject_name(server_cert), 0, 0);
-         CHK_NULL(str, "error in server cert");
-         printf("server cert:\n\t subject: %s\n", str);
-         OPENSSL_free(str);
-
-         str = X509_NAME_oneline(X509_get_issuer_name(server_cert), 0, 0);
-         CHK_NULL(str, "error in server cert");
-         printf("\t issuer: %s\n\n", str);
-         OPENSSL_free(str);
-      //}
-
-      X509_free(server_cert);
-   }
-
-
-   recvtimeoutssl(sd, buf, sizeof(buf), data->import->timeout, use_ssl, data->ssl);
-
-
-   /* imap cmd: LOGIN */
-
-   snprintf(buf, sizeof(buf)-1, "A%d LOGIN %s \"%s\"\r\n", *seq, username, password);
-
-   write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-   if(read_response(sd, buf, sizeof(buf), seq, data, use_ssl) == 0){
-      printf("login failed, server reponse: %s\n", buf);
-      return ERR;
-   }
-
-   if(strstr(buf, "UIDPLUS")){
-      data->import->cap_uidplus = 1;
-   }
-   else {
-
-      /* run the CAPABILITY command if the reply doesn't contain the UIDPLUS capability */
-
-      snprintf(buf, sizeof(buf)-1, "A%d CAPABILITY\r\n", *seq);
-
-      write1(sd, buf, strlen(buf), use_ssl, data->ssl);
-      read_response(sd, buf, sizeof(buf), seq, data, use_ssl);
-
-      if(strstr(buf, "UIDPLUS")) data->import->cap_uidplus = 1;
-   }
-
-
-   return OK;
-}
-
-
-void send_imap_close(int sd, int *seq, struct __data *data, int use_ssl){
+void send_imap_close(struct data *data){
    char puf[SMALLBUFSIZE];  
-   snprintf(puf, sizeof(puf)-1, "A%d CLOSE\r\n", *seq);
+   snprintf(puf, sizeof(puf)-1, "A%d CLOSE\r\n", data->import->seq);
 
-   write1(sd, puf, strlen(puf), use_ssl, data->ssl);
+   write1(data->net, puf, strlen(puf));
 }
 
 
-int list_folders(int sd, int *seq, int use_ssl, char *folder_name, struct __data *data){
+int list_folders(struct data *data){
    char *p, *q, *r, *buf, *ruf, tag[SMALLBUFSIZE], tagok[SMALLBUFSIZE], puf[MAXBUFSIZE];
    char attrs[SMALLBUFSIZE], folder[SMALLBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;
@@ -411,18 +417,18 @@ int list_folders(int sd, int *seq, int use_ssl, char *folder_name, struct __data
 
    memset(buf, 0, len);
 
-   snprintf(tag, sizeof(tag)-1, "A%d", *seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (*seq)++);
-   if(folder_name == NULL)
+   snprintf(tag, sizeof(tag)-1, "A%d", data->import->seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (data->import->seq)++);
+   if(data->import->folder_name == NULL)
       snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
    else
-      snprintf(puf, sizeof(puf)-1, "%s LIST \"%s\" \"*\"\r\n", tag, folder_name);
+      snprintf(puf, sizeof(puf)-1, "%s LIST \"%s\" \"*\"\r\n", tag, data->import->folder_name);
 
-   write1(sd, puf, strlen(puf), use_ssl, data->ssl);
+   write1(data->net, puf, strlen(puf));
 
    p = NULL;
 
    while(1){
-      n = recvtimeoutssl(sd, puf, sizeof(puf), data->import->timeout, use_ssl, data->ssl);
+      n = recvtimeoutssl(data->net, puf, sizeof(puf));
       if(n < 0) return ERR;
 
       if(pos + n >= len){
@@ -522,5 +528,3 @@ ENDE_FOLDERS:
 
    return rc;
 }
-
-

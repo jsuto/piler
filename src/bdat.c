@@ -78,7 +78,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
    session->bdat_bytes_to_read -= readlen;
 
    if(session->fd != -1){
-      write(session->fd, readbuf, readlen);
+      if(write(session->fd, readbuf, readlen) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
       session->tot_len += readlen;
 
       if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes, %d bytes to go", session->ttmpfile, readlen, session->bdat_bytes_to_read);

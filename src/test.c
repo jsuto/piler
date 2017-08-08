@@ -21,8 +21,8 @@ int main(int argc, char **argv){
    struct stat st;
    struct session_data sdata;
    struct parser_state state;
-   struct __config cfg;
-   struct __data data;
+   struct config cfg;
+   struct data data;
    struct import import;
    char *rule;
 

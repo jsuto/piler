@@ -10,7 +10,7 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct __data *data, struct node *xhash[], char *table){
+void load_rules(struct session_data *sdata, struct data *data, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    struct rule_cond rule_cond;
 
@@ -78,7 +78,7 @@ void load_rules(struct session_data *sdata, struct __data *data, struct node *xh
 }
 
 
-int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct __data *data){
+int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct data *data){
    struct node *q, *Q=NULL, *node;
    struct rule *rule;
    int rc=0;
@@ -116,7 +116,7 @@ int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct __data
 }
 
 
-struct rule *create_rule_item(struct rule_cond *rule_cond, struct __data *data){
+struct rule *create_rule_item(struct rule_cond *rule_cond, struct data *data){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -248,7 +248,7 @@ char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int
 }
 
 
-time_t query_retain_period(struct __data *data, struct parser_state *state, int size, int spam, struct __config *cfg){
+time_t query_retain_period(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;
@@ -316,7 +316,7 @@ time_t query_retain_period(struct __data *data, struct parser_state *state, int 
 }
 
 
-int get_folder_id_by_rule(struct __data *data, struct parser_state *state, int size, int spam, struct __config *cfg){
+int get_folder_id_by_rule(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg){
    size_t nmatch=0;
    struct rule *p;
    struct node *q;

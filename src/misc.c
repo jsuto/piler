@@ -422,13 +422,13 @@ int recvtimeout(int s, char *buf, int len, int timeout){
 }
 
 
-int write1(int sd, void *buf, int buflen, int use_ssl, SSL *ssl){
+int write1(struct net *net, void *buf, int buflen){
    int n;
 
-   if(use_ssl == 1)
-      n = SSL_write(ssl, buf, buflen);
+   if(net->use_ssl == 1)
+      n = SSL_write(net->ssl, buf, buflen);
    else
-      n = send(sd, buf, buflen, 0);
+      n = send(net->socket, buf, buflen, 0);
 
    return n;
 }
@@ -489,26 +489,26 @@ int ssl_read_timeout(SSL *ssl, void *buf, int len, int timeout){
 }
 
 
-int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl){
+int recvtimeoutssl(struct net *net, char *buf, int len){
 
     memset(buf, 0, len);
 
-    if(use_ssl == 1){
-       return ssl_read_timeout(ssl, buf, len-1, timeout);
+    if(net->use_ssl == 1){
+       return ssl_read_timeout(net->ssl, buf, len-1, net->timeout);
     }
     else {
-       return recvtimeout(s, buf, len-1, timeout);
+       return recvtimeout(net->socket, buf, len-1, net->timeout);
     }
 }
 
 
-void close_connection(int sd, struct __data *data, int use_ssl){
-   close(sd);
+void close_connection(struct net *net){
+   close(net->socket);
 
-   if(use_ssl == 1){
-      SSL_shutdown(data->ssl);
-      SSL_free(data->ssl);
-      SSL_CTX_free(data->ctx);
+   if(net->use_ssl == 1){
+      SSL_shutdown(net->ssl);
+      SSL_free(net->ssl);
+      SSL_CTX_free(net->ctx);
       ERR_free_strings();
    }
 }
@@ -544,7 +544,7 @@ int drop_privileges(struct passwd *pwd){
 }
 
 
-void init_session_data(struct session_data *sdata, struct __config *cfg){
+void init_session_data(struct session_data *sdata, struct config *cfg){
    int i;
 
 

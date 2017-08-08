@@ -64,12 +64,12 @@ static void test_digest_file(){
 }
 
 
-static void test_make_digests(struct __config *cfg){
+static void test_make_digests(struct config *cfg){
    unsigned int i;
    int j;
    struct session_data sdata;
    struct parser_state state;
-   struct __data data;
+   struct data data;
    struct stat st;
 
 
@@ -120,7 +120,7 @@ static void test_make_digests(struct __config *cfg){
 
 
 int main(){
-   struct __config cfg;
+   struct config cfg;
 
    (void) openlog("digest_test", LOG_PID, LOG_MAIL);
 

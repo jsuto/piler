@@ -19,8 +19,8 @@
 int main(int argc, char **argv){
    int readkey=1;
    struct session_data sdata;
-   struct __data data;
-   struct __config cfg;
+   struct data data;
+   struct config cfg;
 
 
    if(argc < 2){

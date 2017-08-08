@@ -33,7 +33,7 @@ int search_header_end(char *p, int n){
 }
 
 
-int make_digests(struct session_data *sdata, struct __config *cfg){
+int make_digests(struct session_data *sdata, struct config *cfg){
    int i=0, n, fd, offset=3, hdr_len=0, len=0;
    char *body=NULL;
    unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];

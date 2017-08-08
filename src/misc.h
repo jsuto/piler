@@ -32,14 +32,14 @@ void create_id(char *id, unsigned char server_id);
 int get_random_bytes(unsigned char *buf, int len, unsigned char server_id);
 int readFromEntropyPool(int fd, void *_s, ssize_t n);
 int recvtimeout(int s, char *buf, int len, int timeout);
-int write1(int sd, void *buf, int buflen, int use_ssl, SSL *ssl);
-int recvtimeoutssl(int s, char *buf, int len, int timeout, int use_ssl, SSL *ssl);
-void close_connection(int sd, struct __data *data, int use_ssl);
+int write1(struct net *net, void *buf, int buflen);
+int recvtimeoutssl(struct net *net, char *buf, int len);
+void close_connection(struct net *net);
 
 void write_pid_file(char *pidfile);
 int drop_privileges(struct passwd *pwd);
 
-void init_session_data(struct session_data *sdata, struct __config *cfg);
+void init_session_data(struct session_data *sdata, struct config *cfg);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
 

@@ -28,7 +28,7 @@ struct emails {
 };
 
 
-static void fill_domain_table(struct __config *cfg){
+static void fill_domain_table(struct config *cfg){
    unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
@@ -49,7 +49,7 @@ static void fill_domain_table(struct __config *cfg){
 }
 
 
-static void restore_domain_table(struct __config *cfg){
+static void restore_domain_table(struct config *cfg){
    unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
@@ -70,10 +70,10 @@ static void restore_domain_table(struct __config *cfg){
 }
 
 
-static void test_mydomains(struct __config *cfg){
+static void test_mydomains(struct config *cfg){
    unsigned int i;
    struct session_data sdata;
-   struct __data data;
+   struct data data;
    struct emails emails[] = {
       {"ajaja@aaaa.fu ", 1},
       {"ajahahah@aaa.fu ", 0},
@@ -113,7 +113,7 @@ static void test_mydomains(struct __config *cfg){
 
 
 int main(){
-   struct __config cfg;
+   struct config cfg;
 
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 

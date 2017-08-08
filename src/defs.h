@@ -99,6 +99,16 @@ struct node {
 };
 
 
+struct net {
+   int socket;
+   int use_ssl;
+   int starttls;
+   int timeout;
+   SSL_CTX *ctx;
+   SSL *ssl;
+};
+
+
 struct rule {
 #ifdef HAVE_TRE
    regex_t from;
@@ -295,6 +305,21 @@ struct import {
    int timeout;
    int cap_uidplus;
    long total_size;
+   int dryrun;
+   int tot_msgs;
+   int port;
+   int seq;
+   char *server;
+   char *username;
+   char *password;
+   char *database;
+   char *skiplist;
+   char *folder_imap;
+   char *folder_name;
+   char *directory;
+   char *mboxdir;
+   char *folder;
+   char filename[SMALLBUFSIZE];
    time_t started, updated, finished;
 };
 
@@ -308,7 +333,7 @@ struct licence {
 };
 
 
-struct __data {
+struct data {
    int folder, quiet;
    char recursive_folder_names;
    char starttls[TINYBUFSIZE];
@@ -355,8 +380,8 @@ struct __data {
 #ifdef HAVE_MEMCACHED
    struct memcached_server memc;
 #endif
-   SSL_CTX *ctx;
-   SSL *ssl;
+
+   struct net *net;
 };
 
 
@@ -385,12 +410,8 @@ struct smtp_session {
    int bdat_rounds;
    int bdat_last_round;
    int bdat_bytes_to_read;
-   int socket;
-   struct __config *cfg;
-   SSL_CTX *ctx;
-   SSL *ssl;
-   int use_ssl;
-   int starttls;
+   struct config *cfg;
+   struct net net;
 };
 
 #endif /* _DEFS_H */

@@ -131,7 +131,7 @@ int inf(unsigned char *in, int len, int mode, char **buffer, FILE *dest){
 }
 
 
-int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct __config *cfg){
+int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *dest, struct config *cfg){
    int rc=0, n, olen, tlen, len, fd=-1;
    unsigned char *s=NULL, *addr=NULL, inbuf[REALLYBIGBUFSIZE];
    struct stat st;
@@ -234,7 +234,7 @@ CLEANUP:
 }
 
 
-int retrieve_email_from_archive(struct session_data *sdata, struct __data *data, FILE *dest, struct __config *cfg){
+int retrieve_email_from_archive(struct session_data *sdata, struct data *data, FILE *dest, struct config *cfg){
    int i, attachments;
    char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];

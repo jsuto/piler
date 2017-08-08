@@ -8,9 +8,8 @@ static char hex[16] = "0123456789abcdef";
 
 
 void tai_pack(char *s, struct tai *t){
-   unsigned long long x;
+   uint64 x = t->x;
 
-   x = t->x;
    s[7] = x & 255; x >>= 8;
    s[6] = x & 255; x >>= 8;
    s[5] = x & 255; x >>= 8;
@@ -33,6 +32,7 @@ void taia_pack(char *s, struct taia *t){
    s[6] = x & 255; x >>= 8;
    s[5] = x & 255; x >>= 8;
    s[4] = x;
+
    x = t->nano;
    s[3] = x & 255; x >>= 8;
    s[2] = x & 255; x >>= 8;
@@ -43,8 +43,10 @@ void taia_pack(char *s, struct taia *t){
 
 void taia_now(struct taia *t){
    struct timeval now;
+
    gettimeofday(&now,(struct timezone *) 0);
-   t->sec.x = 4611686018427387914ULL + (uint64) now.tv_sec;
+
+   t->sec.x = 4611686018427387914ULL + (uint64)now.tv_sec;
    t->nano = 1000 * now.tv_usec + 500;
    t->atto = 0;
 }
@@ -55,7 +57,7 @@ void tai_timestamp(char *s){
    char nowpack[TAI_PACK];
    int i;
 
-   now.x = 4611686018427387914ULL + (unsigned long long) time((long *) 0);
+   now.x = 4611686018427387914ULL + (uint64)time((long *) 0);
 
    tai_pack(nowpack, &now);
 
@@ -66,4 +68,3 @@ void tai_timestamp(char *s){
 
    *(s+2*TAI_PACK) = '\0';
 }
-

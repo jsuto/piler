@@ -9,7 +9,7 @@
 #include <piler.h>
 
 
-int open_database(struct session_data *sdata, struct __config *cfg){
+int open_database(struct session_data *sdata, struct config *cfg){
    int rc=1;
    char buf[BUFLEN];
 
@@ -38,7 +38,7 @@ void close_database(struct session_data *sdata){
 }
 
 
-void p_bind_init(struct __data *data){
+void p_bind_init(struct data *data){
    int i;
 
    data->pos = 0;
@@ -56,7 +56,7 @@ void p_query(struct session_data *sdata, char *s){
 }
 
 
-int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *data){
+int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data){
    MYSQL_BIND bind[MAX_SQL_VARS];
    unsigned long length[MAX_SQL_VARS];
    int i, ret=ERR;
@@ -127,7 +127,7 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct __data *da
 }
 
 
-int p_store_results(MYSQL_STMT *stmt, struct __data *data){
+int p_store_results(MYSQL_STMT *stmt, struct data *data){
    MYSQL_BIND bind[MAX_SQL_VARS];
    int i, ret=ERR;
 

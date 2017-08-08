@@ -30,7 +30,7 @@ char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
 
 
-int export_emails_matching_to_query(struct session_data *sdata, struct __data *data, char *s, struct __config *cfg);
+int export_emails_matching_to_query(struct session_data *sdata, struct data *data, char *s, struct config *cfg);
 
 
 void usage(){
@@ -151,7 +151,7 @@ int append_string_to_buffer(char **buffer, char *str){
 }
 
 
-uint64 run_query(struct session_data *sdata, struct session_data *sdata2, struct __data *data, char *where_condition, uint64 last_id, int *num, struct __config *cfg){
+uint64 run_query(struct session_data *sdata, struct session_data *sdata2, struct data *data, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_RES *res;
    MYSQL_ROW row;
    int rc=0;
@@ -212,7 +212,7 @@ uint64 get_total_found(struct session_data *sdata){
 }
 
 
-void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, struct __data *data, char *where_condition, struct __config *cfg){
+void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, struct data *data, char *where_condition, struct config *cfg){
    int n;
    uint64 count=0, last_id=0, total_found=0;
 
@@ -335,7 +335,7 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 }
 
 
-int export_emails_matching_to_query(struct session_data *sdata, struct __data *data, char *s, struct __config *cfg){
+int export_emails_matching_to_query(struct session_data *sdata, struct data *data, char *s, struct config *cfg){
    FILE *f;
    uint64 id, n=0;
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
@@ -416,8 +416,8 @@ int main(int argc, char **argv){
    char *configfile=CONFIG_FILE;
    char *to=NULL, *from=NULL, *todomain=NULL, *fromdomain=NULL, *where_condition=NULL;
    struct session_data sdata, sdata2;
-   struct __data data;
-   struct __config cfg;
+   struct data data;
+   struct config cfg;
 
 
    if(regcomp(&regexp, "^([\\+a-z0-9_\\.@\\-]+)$", REG_ICASE | REG_EXTENDED)){

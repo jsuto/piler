@@ -42,7 +42,7 @@ void p_clean_exit(char *msg, int rc){
 }
 
 
-uint64 get_max_meta_id(struct session_data *sdata, struct __data *data){
+uint64 get_max_meta_id(struct session_data *sdata, struct data *data){
    char s[SMALLBUFSIZE];
    uint64 id=0;
 
@@ -72,7 +72,7 @@ uint64 get_max_meta_id(struct session_data *sdata, struct __data *data){
 }
 
 
-uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct __data *data, uint64 from_id, uint64 to_id, struct __config *cfg){
+uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *data, uint64 from_id, uint64 to_id, struct config *cfg){
    FILE *f;
    char filename[SMALLBUFSIZE];
    char s[SMALLBUFSIZE];
@@ -164,8 +164,8 @@ int main(int argc, char **argv){
    uint64 from_id=0, to_id=0, n=0;
    char *configfile=CONFIG_FILE, *folder=NULL;
    struct session_data sdata;
-   struct __data data;
-   struct __config cfg;
+   struct data data;
+   struct config cfg;
 
 
    while(1){

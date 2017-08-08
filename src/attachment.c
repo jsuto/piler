@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-int store_attachments(struct session_data *sdata, struct parser_state *state, struct __data *data, struct __config *cfg){
+int store_attachments(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
    uint64 id=0;
    int i, rc=1, found, affected_rows;
 
@@ -91,7 +91,7 @@ CLOSE:
 }
 
 
-int query_attachment_pointers(struct session_data *sdata, struct __data *data, uint64 ptr, char *piler_id, int *id){
+int query_attachment_pointers(struct session_data *sdata, struct data *data, uint64 ptr, char *piler_id, int *id){
    int rc=0;
 
    if(prepare_sql_statement(sdata, &(data->stmt_get_attachment_pointer), SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER) == ERR) return rc;
@@ -120,7 +120,7 @@ int query_attachment_pointers(struct session_data *sdata, struct __data *data, u
 }
 
 
-int query_attachments(struct session_data *sdata, struct __data *data, struct ptr_array *ptr_arr){
+int query_attachments(struct session_data *sdata, struct data *data, struct ptr_array *ptr_arr){
    int i, rc, id, attachments=0;
    uint64 ptr;
 

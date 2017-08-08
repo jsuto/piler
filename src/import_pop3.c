@@ -22,50 +22,46 @@
 #include <piler.h>
 
 
-int import_from_pop3_server(char *server, char *username, char *password, int port, struct session_data *sdata, struct __data *data, int dryrun, struct __config *cfg){
-   int rc, ret=OK, sd, use_ssl=0;
+void import_from_pop3_server(struct session_data *sdata, struct data *data, struct config *cfg){
+   int rc;
    char port_string[8];
    struct addrinfo hints, *res;
 
-   snprintf(port_string, sizeof(port_string)-1, "%d", port);
+   data->net->use_ssl = 0;
+
+   snprintf(port_string, sizeof(port_string)-1, "%d", data->import->port);
 
    memset(&hints, 0, sizeof(hints));
    hints.ai_family = AF_UNSPEC;
    hints.ai_socktype = SOCK_STREAM;
 
-   if((rc = getaddrinfo(server, port_string, &hints, &res)) != 0){
-      printf("getaddrinfo for '%s': %s\n", server, gai_strerror(rc));
-      return ERR;
+   if((rc = getaddrinfo(data->import->server, port_string, &hints, &res)) != 0){
+      printf("getaddrinfo for '%s': %s\n", data->import->server, gai_strerror(rc));
+      return;
    }
 
-   if(port == 995) use_ssl = 1;
+   if(data->import->port == 995) data->net->use_ssl = 1;
 
-   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
+   if((data->net->socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
       printf("cannot create socket\n");
-      ret = ERR;
       goto ENDE_POP3;
    }
 
-   if(connect(sd, res->ai_addr, res->ai_addrlen) == -1){
+   if(connect(data->net->socket, res->ai_addr, res->ai_addrlen) == -1){
       printf("connect()\n");
-      ret = ERR;
       goto ENDE_POP3;
    }
 
 
-   if(connect_to_pop3_server(sd, username, password, data, use_ssl) == ERR){
-      close(sd);
-      ret = ERR;
+   if(connect_to_pop3_server(data) == ERR){
+      close(data->net->socket);
       goto ENDE_POP3;
    }
 
-   if(process_pop3_emails(sd, sdata, data, use_ssl, dryrun, cfg) == ERR) ret = ERR;
+   process_pop3_emails(sdata, data, cfg);
 
-   close_connection(sd, data, use_ssl);
+   close_connection(data->net);
 
 ENDE_POP3:
    freeaddrinfo(res);
-
-   return ret;
 }
-

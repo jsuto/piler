@@ -32,7 +32,7 @@ static void test_parse_date_header(){
    int dst_fix = 0;
    time_t t = time(NULL);
    struct tm lt = {0};
-   struct __config cfg;
+   struct config cfg;
    struct date_test date_test[] = {
       {"Date: Mon, 02 Nov 2015 09:39:31 -0000", 1446457171},
       {"Date: Mon, 2 Nov 2015 10:39:45 +0100", 1446457185},

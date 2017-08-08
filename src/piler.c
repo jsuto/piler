@@ -34,8 +34,8 @@ extern int optind;
 int quit = 0;
 int received_sighup = 0;
 char *configfile = CONFIG_FILE;
-struct __config cfg;
-struct __data data;
+struct config cfg;
+struct data data;
 struct passwd *pwd;
 
 struct child children[MAXCHILDREN];
@@ -87,7 +87,7 @@ void child_sighup_handler(int sig){
 }
 
 
-int process_email(char *filename, struct session_data *sdata, struct __data *data, int size, struct __config *cfg){
+int process_email(char *filename, struct session_data *sdata, struct data *data, int size, struct config *cfg){
    int rc;
    char tmpbuf[SMALLBUFSIZE];
    char *status=S_STATUS_UNDEF;
@@ -187,7 +187,7 @@ int process_email(char *filename, struct session_data *sdata, struct __data *dat
 }
 
 
-int process_dir(char *directory, struct session_data *sdata, struct __data *data, struct __config *cfg){
+int process_dir(char *directory, struct session_data *sdata, struct data *data, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int tot_msgs=0;

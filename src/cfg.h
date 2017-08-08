@@ -7,7 +7,7 @@
 
 #include "config.h"
 
-struct __config {
+struct config {
    int server_id;
    char username[MAXVAL];
 

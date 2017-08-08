@@ -6,7 +6,7 @@
 
 
 int get_session_slot(struct smtp_session **sessions, int max_connections);
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct __config *cfg);
+void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg);
 
 
 #ifdef HAVE_LIBWRAP
@@ -28,7 +28,7 @@ int is_blocked_by_tcp_wrappers(int sd){
 #endif
 
 
-int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct __config *cfg){
+int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg){
    char smtp_banner[SMALLBUFSIZE];
    int slot;
 
@@ -37,7 +37,7 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
     */
 
    if(*num_connections >= cfg->max_connections){
-      syslog(LOG_PRIORITY, "too many connections (%d), cannot accept socket %d", *num_connections, socket);
+      syslog(LOG_PRIORITY, "ERROR: too many connections (%d), cannot accept socket %d", *num_connections, socket);
       send(socket, SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY, strlen(SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY), 0);
       close(socket);
       return -1;
@@ -93,30 +93,30 @@ struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int m
    int i;
 
    for(i=0; i<max_connections; i++){
-      if(sessions[i] && sessions[i]->socket == socket) return sessions[i];
+      if(sessions[i] && sessions[i]->net.socket == socket) return sessions[i];
    }
 
    return NULL;
 }
 
 
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct __config *cfg){
+void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg){
    struct sockaddr_in addr;
    socklen_t addr_size = sizeof(struct sockaddr_in);
    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
 
    session->slot = slot;
 
-   session->socket = sd;
    session->buflen = 0;
    session->protocol_state = SMTP_STATE_INIT;
 
    session->cfg = cfg;
 
-   session->use_ssl = 0;  // use SSL/TLS
-   session->starttls = 0; // SSL/TLS communication is active (1) or not (0)
-   session->ctx = NULL;
-   session->ssl = NULL;
+   session->net.socket = sd;
+   session->net.use_ssl = 0;  // use SSL/TLS
+   session->net.starttls = 0; // SSL/TLS communication is active (1) or not (0)
+   session->net.ctx = NULL;
+   session->net.ssl = NULL;
 
    memset(session->buf, 0, SMALLBUFSIZE);
    memset(session->remote_host, 0, INET6_ADDRSTRLEN);
@@ -125,7 +125,7 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct __
 
    time(&(session->lasttime));
 
-   if(getpeername(sd, (struct sockaddr *)&addr, &addr_size) == 0 &&
+   if(getpeername(session->net.socket, (struct sockaddr *)&addr, &addr_size) == 0 &&
       getnameinfo((struct sockaddr *)&addr, addr_size, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
          snprintf(session->remote_host, INET6_ADDRSTRLEN-1, "%s", hbuf);
    }
@@ -136,12 +136,12 @@ void free_smtp_session(struct smtp_session *session){
 
    if(session){
 
-      if(session->use_ssl == 1){
-         SSL_shutdown(session->ssl);
-         SSL_free(session->ssl);
+      if(session->net.use_ssl == 1){
+         SSL_shutdown(session->net.ssl);
+         SSL_free(session->net.ssl);
       }
 
-      if(session->ctx) SSL_CTX_free(session->ctx);
+      if(session->net.ctx) SSL_CTX_free(session->net.ctx);
 
       free(session);
    }
@@ -151,7 +151,7 @@ void free_smtp_session(struct smtp_session *session){
 void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections){
    syslog(LOG_PRIORITY, "disconnected from %s", sessions[slot]->remote_host);
 
-   close(sessions[slot]->socket);
+   close(sessions[slot]->net.socket);
 
    free_smtp_session(sessions[slot]);
    sessions[slot] = NULL;

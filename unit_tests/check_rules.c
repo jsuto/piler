@@ -35,7 +35,7 @@ struct rule_query rules[] = {
 };
 
 
-static void fill_rule_table(struct __config *cfg){
+static void fill_rule_table(struct config *cfg){
    unsigned int i;
    struct session_data sdata;
 
@@ -55,7 +55,7 @@ static void fill_rule_table(struct __config *cfg){
 }
 
 
-static void restore_rule_table(struct __config *cfg){
+static void restore_rule_table(struct config *cfg){
    unsigned int i;
    char buf[SMALLBUFSIZE];
    struct session_data sdata;
@@ -77,13 +77,13 @@ static void restore_rule_table(struct __config *cfg){
 
 
 
-static void test_archiving_rule(struct __config *cfg){
+static void test_archiving_rule(struct config *cfg){
    unsigned int i;
    int j;
    char *rule;
    struct session_data sdata;
    struct parser_state state;
-   struct __data data;
+   struct data data;
    struct stat st;
    struct rule_test rule_test[] = {
       {"1.eml", "domain=,from=hirlevel@jatekokbirodalma.hu,to=,subject=,body=,size0,att.name=,att.type=,att.size0,spam=-1", 0},
@@ -157,7 +157,7 @@ static void test_archiving_rule(struct __config *cfg){
 
 
 int main(){
-   struct __config cfg;
+   struct config cfg;
 
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 

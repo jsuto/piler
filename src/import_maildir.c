@@ -22,17 +22,17 @@
 #include <piler.h>
 
 
-int import_from_maildir(char *directory, struct session_data *sdata, struct __data *data, int *tot_msgs, struct __config *cfg){
+int import_from_maildir(struct session_data *sdata, struct data *data, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
    int folder;
-   char *p, fname[SMALLBUFSIZE];
+   char *p;
    struct stat st;
 
-   dir = opendir(directory);
+   dir = opendir(data->import->directory);
    if(!dir){
-      printf("cannot open directory: %s\n", directory);
+      printf("cannot open directory: %s\n", data->import->directory);
       return ERR;
    }
 
@@ -40,12 +40,13 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
    while((de = readdir(dir))){
       if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
 
-      snprintf(fname, sizeof(fname)-1, "%s/%s", directory, de->d_name);
+      snprintf(data->import->filename, SMALLBUFSIZE-1, "%s/%s", data->import->directory, de->d_name);
 
-      if(stat(fname, &st) == 0){
+      if(stat(data->import->filename, &st) == 0){
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
-            rc = import_from_maildir(fname, sdata, data, tot_msgs, cfg);
+            data->import->directory = data->import->filename;
+            rc = import_from_maildir(sdata, data, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
@@ -53,10 +54,10 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
-                  p = strrchr(directory, '/');
+                  p = strrchr(data->import->directory, '/');
                   if(p) p++;
                   else {
-                     printf("invalid directory name: '%s'\n", directory);
+                     printf("ERROR: invalid directory name: '%s'\n", data->import->directory);
                      return ERR;
                   }
 
@@ -75,28 +76,28 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
                }
 
-               rc = import_message(fname, sdata, data, cfg);
+               rc = import_message(sdata, data, cfg);
 
-               if(rc == OK) (*tot_msgs)++;
+               if(rc == OK) (data->import->tot_msgs)++;
                else if(rc == ERR){
-                  printf("error importing: '%s'\n", fname);
+                  printf("ERROR: error importing: '%s'\n", data->import->filename);
                   ret = ERR;
                }
  
-               if(data->import->remove_after_import == 1 && rc != ERR) unlink(fname);
+               if(data->import->remove_after_import == 1 && rc != ERR) unlink(data->import->filename);
 
                i++;
 
-               if(data->quiet == 0){ printf("processed: %7d\r", *tot_msgs); fflush(stdout); }
+               if(data->quiet == 0){ printf("processed: %7d\r", data->import->tot_msgs); fflush(stdout); }
             }
             else {
-               printf("%s is not a file\n", fname);
+               printf("%s is not a file\n", data->import->filename);
             }
 
          }
       }
       else {
-         printf("cannot stat() %s\n", fname);
+         printf("cannot stat() %s\n", data->import->filename);
       }
 
    }
@@ -104,5 +105,3 @@ int import_from_maildir(char *directory, struct session_data *sdata, struct __da
 
    return ret;
 }
-
-

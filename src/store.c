@@ -20,7 +20,7 @@
 #include <errno.h>
 
 
-int read_key(struct __config *cfg){
+int read_key(struct config *cfg){
    int fd, n;
 
    fd = open(KEYFILE, O_RDONLY);
@@ -39,7 +39,7 @@ int read_key(struct __config *cfg){
 }
 
 
-int store_file(struct session_data *sdata, char *filename, int len, struct __config *cfg){
+int store_file(struct session_data *sdata, char *filename, int len, struct config *cfg){
    int ret=0, rc, fd, n;
    char *addr, *p, *p0, *p1, *p2, s[SMALLBUFSIZE];
    struct stat st;
@@ -212,7 +212,7 @@ ENDE:
 }
 
 
-int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct __config *cfg){
+int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct config *cfg){
    int i;
    char s[SMALLBUFSIZE];
 

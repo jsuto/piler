@@ -20,6 +20,6 @@
 #define CLAMD_RESP_INFECTED "FOUND"
 #define CLAMD_RESP_ERROR "ERROR"
 
-int clamd_scan(char *tmpfile, struct __config *cfg);
+int clamd_scan(char *tmpfile, struct config *cfg);
 
 #endif /* _AV_H */

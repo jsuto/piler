@@ -10,7 +10,7 @@
 #include <piler.h>
 
 
-void load_mydomains(struct session_data *sdata, struct __data *data, struct __config *cfg){
+void load_mydomains(struct session_data *sdata, struct data *data, struct config *cfg){
    int rc;
    char s[SMALLBUFSIZE];
 
@@ -46,7 +46,7 @@ void load_mydomains(struct session_data *sdata, struct __data *data, struct __co
 }
 
 
-int is_email_address_on_my_domains(char *email, struct __data *data){
+int is_email_address_on_my_domains(char *email, struct data *data){
    int rc=0;
    char *q, *s;
 

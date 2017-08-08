@@ -25,13 +25,13 @@ struct parser_test {
 };
 
 
-static void test_parser(struct __config *cfg){
+static void test_parser(struct config *cfg){
    unsigned int i;
    int j;
    struct stat st;
    struct session_data sdata;
    struct parser_state state;
-   struct __data data;
+   struct data data;
    struct parser_test tests[] = {
 
       {"1.eml", "<ajahhdddhjdhddh@jatekokbirodalma.hu>", "játékok birodalma játékbolt hirlevel@jatekokbirodalma.hu hirlevel jatekokbirodalma hu ", "jatekokbirodalma.hu", "architerv m sj@acts.hu sj acts hu ", "acts.hu ", "", "BLACK FRIDAY - Hihetetlen kedvezmények csak 1 napig november 27-én", 2},
@@ -103,7 +103,7 @@ static void test_parser(struct __config *cfg){
 
 int main(){
 
-   struct __config cfg;
+   struct config cfg;
 
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 

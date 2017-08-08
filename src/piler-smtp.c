@@ -36,7 +36,7 @@ int num_connections = 0;
 int listenerfd = -1;
 
 char *configfile = CONFIG_FILE;
-struct __config cfg;
+struct config cfg;
 struct passwd *pwd;
 struct smtp_session *session, **sessions=NULL;
 
@@ -270,8 +270,8 @@ int main(int argc, char **argv){
             while(1){
                memset(readbuf, 0, sizeof(readbuf));
 
-               if(session->use_ssl == 1)
-                  readlen = SSL_read(session->ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
+               if(session->net.use_ssl == 1)
+                  readlen = SSL_read(session->net.ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
                else
                   readlen = read(events[i].data.fd, (char*)&readbuf[0], sizeof(readbuf)-1);
 

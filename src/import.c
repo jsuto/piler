@@ -18,7 +18,7 @@
 #include <piler.h>
 
 
-int import_message(char *filename, struct session_data *sdata, struct __data *data, struct __config *cfg){
+int import_message(struct session_data *sdata, struct data *data, struct config *cfg){
    int rc=ERR;
    char *p, *rule, newpath[SMALLBUFSIZE];
    struct stat st;
@@ -33,12 +33,12 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
       sdata->num_of_rcpt_to = 1;
    }
 
-   if(cfg->verbosity > 1) printf("processing: %s\n", filename);
+   if(cfg->verbosity > 1) printf("processing: %s\n", data->import->filename);
 
-   if(strcmp(filename, "-") == 0){
+   if(strcmp(data->import->filename, "-") == 0){
 
       if(read_from_stdin(sdata) == ERR){
-         printf("error reading from stdin\n");
+         printf("ERROR: error reading from stdin\n");
          return rc;
       }
 
@@ -47,17 +47,17 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    }
    else {
 
-      if(stat(filename, &st) != 0){
-         printf("cannot stat() %s\n", filename);
+      if(stat(data->import->filename, &st) != 0){
+         printf("ERROR: cannot stat() %s\n", data->import->filename);
          return rc;
       }
 
       if(S_ISREG(st.st_mode) == 0){
-         printf("%s is not a file\n", filename);
+         printf("ERROR: %s is not a file\n", data->import->filename);
          return rc;
       }
 
-      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+      snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", data->import->filename);
 
       sdata->tot_len = st.st_size;
    }
@@ -81,14 +81,14 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
    rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 
    if(rule){
-      if(data->quiet == 0) printf("discarding %s by archiving policy: %s\n", filename, rule);
+      if(data->quiet == 0) printf("discarding %s by archiving policy: %s\n", data->import->filename, rule);
       rc = OK;
    }
    else {
       make_digests(sdata, cfg);
 
       if(sdata->hdr_len < 10){
-         printf("%s: invalid message, hdr_len: %d\n", filename, sdata->hdr_len);
+         printf("%s: invalid message, hdr_len: %d\n", data->import->filename, sdata->hdr_len);
          return ERR;
       }
 
@@ -98,7 +98,7 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
 
    unlink(sdata->tmpframe);
 
-   if(strcmp(filename, "-") == 0) unlink(sdata->ttmpfile);
+   if(strcmp(data->import->filename, "-") == 0) unlink(sdata->ttmpfile);
 
 
    switch(rc) {
@@ -118,32 +118,32 @@ int import_message(char *filename, struct session_data *sdata, struct __data *da
                         counters.c_duplicate = 1;
                         update_counters(sdata, data, &counters, cfg);
 
-                        if(data->quiet == 0) printf("duplicate: %s (duplicate id: %llu)\n", filename, sdata->duplicate_id);
+                        if(data->quiet == 0) printf("duplicate: %s (duplicate id: %llu)\n", data->import->filename, sdata->duplicate_id);
                         break;
 
       default:
-                        printf("failed to import: %s (id: %s)\n", filename, sdata->ttmpfile);
+                        printf("failed to import: %s (id: %s)\n", data->import->filename, sdata->ttmpfile);
                         break;
    } 
 
    if(rc != OK && data->import->failed_folder){
-      p = strrchr(filename, '/');
+      p = strrchr(data->import->filename, '/');
       if(p)
          p++;
       else
-         p = filename;
+         p = data->import->filename;
 
       snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, p);
 
-      if(rename(filename, newpath))
-         printf("cannot move %s to %s\n", filename, newpath);
+      if(rename(data->import->filename, newpath))
+         printf("cannot move %s to %s\n", data->import->filename, newpath);
    }
 
    return rc;
 }
 
 
-int get_folder_id(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
+int get_folder_id(struct session_data *sdata, struct data *data, char *foldername, int parent_id){
    int id=ERR_FOLDER;
 
    if(prepare_sql_statement(sdata, &(data->stmt_get_folder_id), SQL_PREPARED_STMT_GET_FOLDER_ID) == ERR) return id;
@@ -168,7 +168,7 @@ int get_folder_id(struct session_data *sdata, struct __data *data, char *foldern
 }
 
 
-int add_new_folder(struct session_data *sdata, struct __data *data, char *foldername, int parent_id){
+int add_new_folder(struct session_data *sdata, struct data *data, char *foldername, int parent_id){
    int id=ERR_FOLDER;
 
    if(foldername == NULL) return id;
@@ -187,15 +187,3 @@ int add_new_folder(struct session_data *sdata, struct __data *data, char *folder
 
    return id;
 }
-
-
-void update_import_job_stat(struct session_data *sdata, struct __data *data){
-   char buf[SMALLBUFSIZE];
-
-   snprintf(buf, sizeof(buf)-1, "update import set status=%d, started=%ld, updated=%ld, finished=%ld, total=%d, imported=%d where id=%d", data->import->status, data->import->started, data->import->updated, data->import->finished, data->import->total_messages, data->import->processed_messages, data->import->import_job_id);
-
-   p_query(sdata, buf);
-}
-
-
-

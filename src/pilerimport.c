@@ -30,9 +30,6 @@
 extern char *optarg;
 extern int optind;
 
-int dryrun=0;
-int import_from_gui=0;
-
 
 void usage(){
    printf("\nusage: pilerimport\n\n");
@@ -65,13 +62,14 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, c, rc=0, n_mbox=0, tot_msgs=0, port=143;
-   char *configfile=CONFIG_FILE, *emlfile=NULL, *mboxdir=NULL, *mbox[MBOX_ARGS], *directory=NULL;
-   char *imapserver=NULL, *pop3server=NULL, *username=NULL, *password=NULL, *skiplist=SKIPLIST, *folder=NULL, *folder_imap=NULL;
+   int i, c, n_mbox=0;
+   char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS];
+   char *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
-   struct __config cfg;
-   struct __data data;
+   struct config cfg;
+   struct data data;
    struct import import;
+   struct net net;
 
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
@@ -87,9 +85,26 @@ int main(int argc, char **argv){
    import.extra_recipient = import.move_folder = import.failed_folder = NULL;
    import.start_position = 1;
    import.download_only = 0;
-   import.timeout = 30;
+   import.dryrun = 0;
+   import.port = 143;
+   import.server = NULL;
+   import.username = NULL;
+   import.password = NULL;
+   import.database = NULL;
+   import.skiplist = SKIPLIST;
+   import.folder_imap = NULL;
+   memset(import.filename, 0, SMALLBUFSIZE);
+   import.directory = NULL;
+   import.mboxdir = NULL;
+   import.tot_msgs = 0;
+   import.folder = NULL;
 
    data.import = &import;
+
+   net.socket = -1;
+   net.timeout = 30;
+
+   data.net = &net;
 
    inithash(data.mydomains);
    initrules(data.archiving_rules);
@@ -124,7 +139,6 @@ int main(int argc, char **argv){
             {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
             {"only-download",no_argument,        0,  'o' },
-            {"gui-import",   no_argument,        0,  'G' },
             {"dry-run",      no_argument,        0,  'D' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
@@ -132,9 +146,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:GDRroqh?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:GDRroqh?");
+      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?");
 #endif
 
       if(c == -1) break;
@@ -146,11 +160,11 @@ int main(int argc, char **argv){
                     break;
 
          case 'e' :
-                    emlfile = optarg;
+                    snprintf(data.import->filename, SMALLBUFSIZE-1, "%s", optarg);
                     break;
 
          case 'd' :
-                    directory = optarg;
+                    data.import->directory = optarg;
                     break;
 
          case 'm' :
@@ -163,40 +177,42 @@ int main(int argc, char **argv){
                     break;
 
          case 'M' :
-                    mboxdir = optarg;
+                    data.import->mboxdir = optarg;
                     break;
 
          case 'i' :
                     imapserver = optarg;
+                    data.import->server = optarg;
                     break;
 
          case 'K' :
                     pop3server = optarg;
-                    if(port == 143) port = 110;
+                    data.import->server = optarg;
+                    if(data.import->port == 143) data.import->port = 110;
                     break;
 
          case 'u' :
-                    username = optarg;
+                    data.import->username = optarg;
                     break;
 
          case 'p' :
-                    password = optarg;
+                    data.import->password = optarg;
                     break;
 
          case 'P' :
-                    port = atoi(optarg);
+                    data.import->port = atoi(optarg);
                     break;
 
          case 'x' :
-                    skiplist = optarg;
+                    data.import->skiplist = optarg;
                     break;
 
          case 'F' :
-                    folder = optarg;
+                    data.import->folder = optarg;
                     break;
 
          case 'f' :
-                    folder_imap = optarg;
+                    data.import->folder_imap = optarg;
                     break;
 
          case 'R' :
@@ -217,7 +233,7 @@ int main(int argc, char **argv){
 
          case 'o' :
                     data.import->download_only = 1;
-                    dryrun = 1;
+                    data.import->dryrun = 1;
                     break;
 
          case 'b' :
@@ -241,12 +257,8 @@ int main(int argc, char **argv){
                     data.import->extra_recipient = optarg;
                     break;
 
-         case 'G' :
-                    import_from_gui = 1;
-                    break;
-
          case 'D' :
-                    dryrun = 1;
+                    data.import->dryrun = 1;
                     break;
 
          case 'q' :
@@ -265,8 +277,7 @@ int main(int argc, char **argv){
    }
 
 
-
-   if(!mbox[0] && !mboxdir && !emlfile && !directory && !imapserver && !pop3server && import_from_gui == 0) usage();
+   if(!mbox[0] && !data.import->mboxdir && !data.import->filename && !data.import->directory && !imapserver && !pop3server) usage();
 
    if(data.import->failed_folder && !can_i_write_directory(data.import->failed_folder)){
       printf("cannot write failed directory '%s'\n", data.import->failed_folder);
@@ -277,7 +288,7 @@ int main(int argc, char **argv){
 
    cfg = read_config(configfile);
 
-   if((data.recursive_folder_names == 1 || folder) && cfg.enable_folders == 0){
+   if((data.recursive_folder_names == 1 || data.import->folder) && cfg.enable_folders == 0){
       printf("please set enable_folders=1 in piler.conf to use the folder options\n");
       return ERR;
    }
@@ -304,15 +315,15 @@ int main(int argc, char **argv){
    memcached_init(&(data.memc), cfg.memcached_servers, 11211);
 #endif
 
-   if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0);
+   if(data.import->folder){
+      data.folder = get_folder_id(&sdata, &data, data.import->folder, 0);
 
       if(data.folder == ERR_FOLDER){
-         data.folder = add_new_folder(&sdata, &data, folder, 0);
+         data.folder = add_new_folder(&sdata, &data, data.import->folder, 0);
       }
 
       if(data.folder == ERR_FOLDER){
-         printf("error: cannot get/add folder '%s'\n", folder);
+         printf("ERROR: cannot get/add folder '%s'\n", data.import->folder);
          close_database(&sdata);
          return 0;
       }
@@ -325,18 +336,17 @@ int main(int argc, char **argv){
 
    load_mydomains(&sdata, &data, &cfg);
 
-   if(emlfile) rc = import_message(emlfile, &sdata, &data, &cfg);
+   if(data.import->filename[0] != '\0') import_message(&sdata, &data, &cfg);
 
    if(mbox[0]){
       for(i=0; i<n_mbox; i++){
-         rc = import_from_mailbox(mbox[i], &sdata, &data, &cfg);
+         import_from_mailbox(mbox[i], &sdata, &data, &cfg);
       }
    }
-   if(mboxdir) rc = import_mbox_from_dir(mboxdir, &sdata, &data, &tot_msgs, &cfg);
-   if(directory) rc = import_from_maildir(directory, &sdata, &data, &tot_msgs, &cfg);
-   if(imapserver && username && password) rc = import_from_imap_server(imapserver, username, password, port, &sdata, &data, folder_imap, skiplist, dryrun, &cfg);
-   if(pop3server && username && password) rc = import_from_pop3_server(pop3server, username, password, port, &sdata, &data, dryrun, &cfg);
-   if(import_from_gui == 1) rc = read_gui_import_data(&sdata, &data, folder_imap, skiplist, dryrun, &cfg);
+   if(data.import->mboxdir) import_mbox_from_dir(data.import->mboxdir, &sdata, &data, &cfg);
+   if(data.import->directory) import_from_maildir(&sdata, &data, &cfg);
+   if(imapserver) import_from_imap_server(&sdata, &data, &cfg);
+   if(pop3server) import_from_pop3_server(&sdata, &data, &cfg);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
@@ -348,7 +358,5 @@ int main(int argc, char **argv){
 
    if(data.quiet == 0) printf("\n");
 
-   return rc;
+   return 0;
 }
-
-
