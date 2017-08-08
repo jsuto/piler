@@ -418,10 +418,10 @@ int list_folders(struct data *data){
    memset(buf, 0, len);
 
    snprintf(tag, sizeof(tag)-1, "A%d", data->import->seq); snprintf(tagok, sizeof(tagok)-1, "A%d OK", (data->import->seq)++);
-   if(data->import->folder_name == NULL)
+   if(data->import->folder_imap == NULL)
       snprintf(puf, sizeof(puf)-1, "%s LIST \"\" \"*\"\r\n", tag);
    else
-      snprintf(puf, sizeof(puf)-1, "%s LIST \"%s\" \"*\"\r\n", tag, data->import->folder_name);
+      snprintf(puf, sizeof(puf)-1, "%s LIST \"%s\" \"*\"\r\n", tag, data->import->folder_imap);
 
    write1(data->net, puf, strlen(puf));
 
