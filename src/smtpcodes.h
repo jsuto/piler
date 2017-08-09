@@ -49,18 +49,12 @@
 #define SMTP_RESP_421_ERR_TMP "421 %s service not available\r\n"
 #define SMTP_RESP_421_ERR_WRITE_FAILED "421 writing queue file failed\r\n"
 #define SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY "421 All server ports are busy\r\n"
-#define SMTP_RESP_450_ERR_CMD_NOT_IMPLEMENTED "450 command not implemented\r\n"
 #define SMTP_RESP_451_ERR "451 Error in processing, try again later\r\n"
 #define SMTP_RESP_454_ERR_TLS_TEMP_ERROR "454 TLS not available currently\r\n"
 
 #define SMTP_RESP_502_ERR "502 Command not implemented\r\n"
 #define SMTP_RESP_503_ERR "503 Bad command sequence\r\n"
-#define SMTP_RESP_530_ERR_MUST_ISSUE_STARTTLS_FIRST "530 MUST issue STARTTLS command first\r\n"
-#define SMTP_RESP_550_ERR "550 Access denied.\r\n"
-#define SMTP_RESP_550_INVALID_RECIPIENT "550 Unknown recipient\r\n"
-#define SMTP_RESP_550_ERR_TOO_LONG_RCPT_TO "550 too long recipient\r\n"
 #define SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY "550 You are banned by local policy\r\n"
-#define SMTP_RESP_552_ERR "552 Too many recipients\r\n"
 
 
 // LMTP commands
