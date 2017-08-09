@@ -25,6 +25,7 @@ extern int optind;
 
 char *testmessage = "From: aaa@aaa.fu\nTo: bela@aaa.fu\nMessage-Id: ajajajaja\nSubject: this is a test\n\nAaaaaa.";
 
+int helo = 0; // 0=HELO, 1=EHLO
 
 void usage(){
    printf("\nusage: smtp\n\n");
@@ -89,13 +90,26 @@ void send_smtp_command(struct net *net, char *cmd, char *buf, int buflen){
 }
 
 
+void send_helo_command(struct net *net){
+   char recvbuf[MAXBUFSIZE];
+
+   if(helo == 0){
+      send_smtp_command(net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
+      assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   }
+   else {
+      send_smtp_command(net, "EHLO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
+      assert(strncmp(recvbuf, "250-", 4) == 0 && "HELO");
+   }
+}
+
+
 static void test_smtp_commands_one_at_a_time(char *server, int port, struct data *data){
    char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
 
    connect_to_smtp_server(server, port, data);
 
-   send_smtp_command(data->net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
-   assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   send_helo_command(data->net);
 
    send_smtp_command(data->net, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
@@ -123,8 +137,7 @@ static void test_smtp_commands_pipelining(char *server, int port, struct data *d
 
    connect_to_smtp_server(server, port, data);
 
-   send_smtp_command(data->net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
-   assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   send_helo_command(data->net);
 
    send_smtp_command(data->net, "MAIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
@@ -143,8 +156,7 @@ static void test_smtp_commands_with_reset_command(char *server, int port, struct
 
    connect_to_smtp_server(server, port, data);
 
-   send_smtp_command(data->net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
-   assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   send_helo_command(data->net);
 
    send_smtp_command(data->net, "MAIL FROM: <sender@aaa.fu>\r\n", recvbuf, sizeof(recvbuf)-1);
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
@@ -167,8 +179,7 @@ static void test_smtp_commands_partial_command(char *server, int port, struct da
 
    connect_to_smtp_server(server, port, data);
 
-   send_smtp_command(data->net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
-   assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   send_helo_command(data->net);
 
    write1(data->net, "M", 1);
    printf("sent: M\n");
@@ -199,8 +210,7 @@ static void test_smtp_commands_partial_command_pipelining(char *server, int port
 
    connect_to_smtp_server(server, port, data);
 
-   send_smtp_command(data->net, "HELO aaaa.fu\r\n", recvbuf, sizeof(recvbuf)-1);
-   assert(strncmp(recvbuf, "250 ", 4) == 0 && "HELO");
+   send_helo_command(data->net);
 
    write1(data->net, "M", 1);
    printf("sent: M\n");
@@ -214,6 +224,13 @@ static void test_smtp_commands_partial_command_pipelining(char *server, int port
    assert(strncmp(recvbuf, "250 ", 4) == 0 && "QUIT");
 
    close(data->net->socket);
+}
+
+
+static void test_smtp_commands_starttls(char *server, int port, struct data *data){
+   char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
+
+   // TODO: implement starttls logic
 }
 
 
@@ -235,15 +252,16 @@ int main(int argc, char **argv){
             {"server",       required_argument,  0,  's' },
             {"port",         required_argument,  0,  'p' },
             {"timeout",      required_argument,  0,  't' },
+            {"lhlo",         no_argument,        0,  'l' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:s:p:t:h?", long_options, &option_index);
+      c = getopt_long(argc, argv, "c:s:p:t:lh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:s:p:t:h?");
+      c = getopt(argc, argv, "c:s:p:t:lh?");
 #endif
 
 
@@ -261,6 +279,10 @@ int main(int argc, char **argv){
 
          case 't' :
                     net.timeout = atoi(optarg);
+                    break;
+
+         case 'l' :
+                    helo = 1;
                     break;
 
          case 'h' :
@@ -283,7 +305,7 @@ int main(int argc, char **argv){
    test_smtp_commands_with_reset_command(server, port, &data);
    test_smtp_commands_partial_command(server, port, &data);
    test_smtp_commands_partial_command_pipelining(server, port, &data);
-
+   test_smtp_commands_starttls(server, port, &data);
 
 
    return 0;
