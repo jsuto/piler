@@ -20,6 +20,7 @@
 int store_index_data(struct session_data *sdata, struct parser_state *state, struct data *data, uint64 id, struct config *cfg){
    int rc=ERR;
    char *subj;
+   struct sql sql;
 
    if(data->folder == 0){
       data->folder = get_folder_id_by_rule(data, state, sdata->tot_len, sdata->spam_message, cfg);
@@ -29,7 +30,7 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    if(*subj == ' ') subj++;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_sphinx_table), SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
 
 
    fix_email_address_for_sphinx(state->b_from);
@@ -38,26 +39,26 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    fix_email_address_for_sphinx(state->b_to_domain);
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
-   data->sql[data->pos] = state->b_from; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->b_to; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->b_from_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->b_to_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = subj; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->b_body; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->now; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = sdata->attachments; data->type[data->pos] = TYPE_STRING; data->pos++;
+   sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+   sql.sql[sql.pos] = state->b_from; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->b_to; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->b_from_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->b_to_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->b_body; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->now; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->sent; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->tot_len; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->direction; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&data->folder; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&state->n_attachments; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = sdata->attachments; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
-   if(p_exec_query(sdata, data->stmt_insert_into_sphinx_table, data) == OK) rc = OK;
+   if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
 
-   close_prepared_statement(data->stmt_insert_into_sphinx_table);
+   close_prepared_statement(&sql);
 
 
    return rc;
@@ -66,26 +67,28 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
 
 uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, char *message_id, char *piler_id){
    uint64 id=0;
+   struct sql sql;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_get_meta_id_by_message_id), SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
 
-   p_bind_init(data);
+   p_bind_init(&sql);
    data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
 
-   if(p_exec_query(sdata, data->stmt_get_meta_id_by_message_id, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
-      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = piler_id; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
+      p_bind_init(&sql);
 
-      p_store_results(data->stmt_get_meta_id_by_message_id, data);
+      sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = piler_id; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
 
-      p_fetch_results(data->stmt_get_meta_id_by_message_id);
+      p_store_results(&sql);
 
-      p_free_results(data->stmt_get_meta_id_by_message_id);
+      p_fetch_results(&sql);
+
+      p_free_results(&sql);
    }
 
-   mysql_stmt_close(data->stmt_get_meta_id_by_message_id);
+   close_prepared_statement(&sql);
 
    return id;
 }
@@ -94,8 +97,9 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, ch
 int store_recipients(struct session_data *sdata, struct data *data, char *to, uint64 id, struct config *cfg){
    int ret=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
+   struct sql sql;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_rcpt_table), SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ret;
 
    p = to;
    do {
@@ -106,14 +110,13 @@ int store_recipients(struct session_data *sdata, struct data *data, char *to, ui
       if(q && strlen(q) > 3 && does_it_seem_like_an_email_address(puf) == 1){
          q++;
 
-         p_bind_init(data);
+         p_bind_init(&sql);
 
-         data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
-         data->sql[data->pos] = &puf[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
-         data->sql[data->pos] = q; data->type[data->pos] = TYPE_STRING; data->pos++;
+         sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+         sql.sql[sql.pos] = &puf[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+         sql.sql[sql.pos] = q; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
-
-         if(p_exec_query(sdata, data->stmt_insert_into_rcpt_table, data) == ERR){
+         if(p_exec_stmt(sdata, &sql) == ERR){
             if(sdata->sql_errno != ER_DUP_ENTRY) ret = ERR;
          }
          else n++;
@@ -121,7 +124,7 @@ int store_recipients(struct session_data *sdata, struct data *data, char *to, ui
 
    } while(p);
 
-   mysql_stmt_close(data->stmt_insert_into_rcpt_table);
+   close_prepared_statement(&sql);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
 
@@ -140,18 +143,19 @@ void remove_recipients(struct session_data *sdata, uint64 id){
 
 int store_folder_id(struct session_data *sdata, struct data *data, uint64 id){
    int rc = ERR;
+   struct sql sql;
 
    if(data->folder == ERR_FOLDER) return rc;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_folder_message_table), SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE) == ERR) return rc;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE) == ERR) return rc;
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   data->sql[data->pos] = (char *)&data->folder; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
-   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
+   sql.sql[sql.pos] = (char *)&data->folder; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
 
-   if(p_exec_query(sdata, data->stmt_insert_into_folder_message_table, data) == OK) rc = OK;
-   close_prepared_statement(data->stmt_insert_into_folder_message_table);
+   if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
+   close_prepared_statement(&sql);
 
    return rc;
 }
@@ -168,17 +172,18 @@ void remove_folder_id(struct session_data *sdata, uint64 id){
 
 int update_metadata_reference(struct session_data *sdata, struct parser_state *state, struct data *data, char *ref, struct config *cfg){
    int ret = ERR;
+   struct sql sql;
 
-   if(prepare_sql_statement(sdata, &(data->stmt_update_metadata_reference), SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE) == ERR) return ret;
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   data->sql[data->pos] = ref; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->reference; data->type[data->pos] = TYPE_STRING; data->pos++;
+   sql.sql[sql.pos] = ref; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->reference; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
-   if(p_exec_query(sdata, data->stmt_update_metadata_reference, data) == OK) ret = OK;
+   if(p_exec_stmt(sdata, &sql) == OK) ret = OK;
 
-   mysql_stmt_close(data->stmt_update_metadata_reference);
+   close_prepared_statement(&sql);
 
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: updated meta reference for '%s', rc=%d", sdata->ttmpfile, state->reference, ret);
 
@@ -190,7 +195,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    int rc, ret=ERR, result;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
-
+   struct sql sql;
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
@@ -206,7 +211,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    }
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_insert_into_meta_table), SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
 
    memset(s2, 0, sizeof(s2));
 
@@ -226,31 +231,31 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    }
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   data->sql[data->pos] = &s2[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->b_from_domain; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = subj; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->spam_message; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->now; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->sent; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->retained; data->type[data->pos] = TYPE_LONGLONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->tot_len; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->hdr_len; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&sdata->direction; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = (char *)&state->n_attachments; data->type[data->pos] = TYPE_LONG; data->pos++;
-   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = state->message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = &ref[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = sdata->digest; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = sdata->bodydigest; data->type[data->pos] = TYPE_STRING; data->pos++;
-   data->sql[data->pos] = &vcode[0]; data->type[data->pos] = TYPE_STRING; data->pos++;
+   sql.sql[sql.pos] = &s2[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->b_from_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->spam_message; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->now; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->sent; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->retained; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->tot_len; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->hdr_len; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&sdata->direction; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&state->n_attachments; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = sdata->ttmpfile; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = state->message_id; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = &ref[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sdata->digest; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sdata->bodydigest; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = &vcode[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
-   if(p_exec_query(sdata, data->stmt_insert_into_meta_table, data) == ERR){
+   if(p_exec_stmt(sdata, &sql) == ERR){
       ret = ERR_EXISTS;
    }
    else {
-      id = p_get_insert_id(data->stmt_insert_into_meta_table);
+      id = p_get_insert_id(&sql);
       rc = store_recipients(sdata, data, state->b_to, id, cfg);
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
@@ -267,7 +272,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
       ret = OK;
    }
 
-   close_prepared_statement(data->stmt_insert_into_meta_table);
+   close_prepared_statement(&sql);
 
    return ret;
 }

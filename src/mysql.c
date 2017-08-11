@@ -38,15 +38,15 @@ void close_database(struct session_data *sdata){
 }
 
 
-void p_bind_init(struct data *data){
+void p_bind_init(struct sql *sql){
    int i;
 
-   data->pos = 0;
+   sql->pos = 0;
 
    for(i=0; i<MAX_SQL_VARS; i++){
-      data->sql[i] = NULL;
-      data->type[i] = TYPE_UNDEF;
-      data->len[i] = 0;
+      sql->sql[i] = NULL;
+      sql->type[i] = TYPE_UNDEF;
+      sql->len[i] = 0;
    }
 }
 
@@ -56,7 +56,7 @@ void p_query(struct session_data *sdata, char *s){
 }
 
 
-int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data){
+int p_exec_stmt(struct session_data *sdata, struct sql *sql){
    MYSQL_BIND bind[MAX_SQL_VARS];
    unsigned long length[MAX_SQL_VARS];
    int i, ret=ERR;
@@ -65,10 +65,10 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data
    memset(bind, 0, sizeof(bind));
 
    for(i=0; i<MAX_SQL_VARS; i++){
-      if(data->type[i] > TYPE_UNDEF){
+      if(sql->type[i] > TYPE_UNDEF){
 
 
-         switch(data->type[i]) {
+         switch(sql->type[i]) {
              case TYPE_SHORT:
                                   bind[i].buffer_type = MYSQL_TYPE_SHORT;
                                   bind[i].length = 0;
@@ -88,7 +88,7 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data
 
              case TYPE_STRING:
                                   bind[i].buffer_type = MYSQL_TYPE_STRING;
-                                  length[i] = strlen(data->sql[i]);
+                                  length[i] = strlen(sql->sql[i]);
                                   bind[i].length = &length[i];
                                   break;
 
@@ -101,7 +101,7 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data
          };
 
 
-         bind[i].buffer = data->sql[i];
+         bind[i].buffer = sql->sql[i];
          bind[i].is_null = 0;
 
          
@@ -109,15 +109,15 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data
       else { break; }
    }
 
-   if(mysql_stmt_bind_param(stmt, bind)){
-      sdata->sql_errno = mysql_stmt_errno(stmt);
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_bind_param() error: %s (errno: %d)", sdata->ttmpfile, mysql_stmt_error(stmt), sdata->sql_errno);
+   if(mysql_stmt_bind_param(sql->stmt, bind)){
+      sdata->sql_errno = mysql_stmt_errno(sql->stmt);
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_bind_param() '%s' (errno: %d)", sdata->ttmpfile, mysql_stmt_error(sql->stmt), sdata->sql_errno);
       return ret;
    }
 
-   if(mysql_stmt_execute(stmt)){
-      sdata->sql_errno = mysql_stmt_errno(stmt);
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_execute error: *%s* (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->sql_errno);
+   if(mysql_stmt_execute(sql->stmt)){
+      sdata->sql_errno = mysql_stmt_errno(sql->stmt);
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_execute() '%s' (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->sql_errno);
       return ret;
    }
 
@@ -127,16 +127,16 @@ int p_exec_query(struct session_data *sdata, MYSQL_STMT *stmt, struct data *data
 }
 
 
-int p_store_results(MYSQL_STMT *stmt, struct data *data){
+int p_store_results(struct sql *sql){
    MYSQL_BIND bind[MAX_SQL_VARS];
    int i, ret=ERR;
 
    memset(bind, 0, sizeof(bind));
 
    for(i=0; i<MAX_SQL_VARS; i++){
-      if(data->type[i] > TYPE_UNDEF){
+      if(sql->type[i] > TYPE_UNDEF){
 
-         switch(data->type[i]) {
+         switch(sql->type[i]) {
              case TYPE_SHORT:     bind[i].buffer_type = MYSQL_TYPE_SHORT;
                                   break;
 
@@ -152,7 +152,7 @@ int p_store_results(MYSQL_STMT *stmt, struct data *data){
 
              case TYPE_STRING:
                                   bind[i].buffer_type = MYSQL_TYPE_STRING;
-                                  bind[i].buffer_length = data->len[i];
+                                  bind[i].buffer_length = sql->len[i];
                                   break;
 
              default:
@@ -162,21 +162,21 @@ int p_store_results(MYSQL_STMT *stmt, struct data *data){
          };
 
 
-         bind[i].buffer = (char *)data->sql[i];
-         bind[i].is_null = &(data->is_null[i]);
-         bind[i].length = &(data->length[i]);
-         bind[i].error = &(data->error[i]);
+         bind[i].buffer = (char *)sql->sql[i];
+         bind[i].is_null = &(sql->is_null[i]);
+         bind[i].length = &(sql->length[i]);
+         bind[i].error = &(sql->error[i]);
 
       }
       else { break; }
    }
 
-   if(mysql_stmt_bind_result(stmt, bind)){
+   if(mysql_stmt_bind_result(sql->stmt, bind)){
       return ret;
    }
 
 
-   if(mysql_stmt_store_result(stmt)){
+   if(mysql_stmt_store_result(sql->stmt)){
       return ret;
    }
 
@@ -186,43 +186,48 @@ int p_store_results(MYSQL_STMT *stmt, struct data *data){
 }
 
 
-int p_fetch_results(MYSQL_STMT *stmt){
+int p_fetch_results(struct sql *sql){
 
-   if(mysql_stmt_fetch(stmt) == 0) return OK;
+   if(mysql_stmt_fetch(sql->stmt) == 0) return OK;
 
    return ERR;
 }
 
 
-void p_free_results(MYSQL_STMT *stmt){
-   mysql_stmt_free_result(stmt);
+void p_free_results(struct sql *sql){
+   mysql_stmt_free_result(sql->stmt);
 }
 
 
-uint64 p_get_insert_id(MYSQL_STMT *stmt){
-   return mysql_stmt_insert_id(stmt);
+uint64 p_get_insert_id(struct sql *sql){
+   return mysql_stmt_insert_id(sql->stmt);
 }
 
 
-int p_get_affected_rows(MYSQL_STMT *stmt){
-   return mysql_stmt_affected_rows(stmt);
+int p_get_affected_rows(struct sql *sql){
+   return mysql_stmt_affected_rows(sql->stmt);
 }
 
 
-int prepare_sql_statement(struct session_data *sdata, MYSQL_STMT **stmt, char *s){
+int prepare_sql_statement(struct session_data *sdata, struct sql *sql, char *s){
 
-   *stmt = mysql_stmt_init(&(sdata->mysql));
-   if(!*stmt){
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_init() error", sdata->ttmpfile);
+   sql->stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!(sql->stmt)){
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_init()", sdata->ttmpfile);
       return ERR;
    }
 
-   if(mysql_stmt_prepare(*stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: mysql_stmt_prepare() error: %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(*stmt), s);
+   if(mysql_stmt_prepare(sql->stmt, s, strlen(s))){
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_prepare() %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(sql->stmt), s);
       return ERR;
    }
 
    return OK; 
+}
+
+
+void close_prepared_statement(struct sql *sql){
+   if(sql->stmt) mysql_stmt_close(sql->stmt);
 }
 
 
@@ -234,10 +239,3 @@ void insert_offset(struct session_data *sdata, int server_id){
 
    mysql_real_query(&(sdata->mysql), s, strlen(s));
 }
-
-
-void close_prepared_statement(MYSQL_STMT *stmt){
-   if(stmt) mysql_stmt_close(stmt);
-}
-
-

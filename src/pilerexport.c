@@ -341,27 +341,27 @@ int export_emails_matching_to_query(struct session_data *sdata, struct data *dat
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    int rc=0;
+   struct sql sql;
+
+   if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return ERR;
+   p_bind_init(&sql);
 
-
-   p_bind_init(data);
-
-   if(p_exec_query(sdata, data->stmt_generic, data) == ERR) goto ENDE;
+   if(p_exec_stmt(sdata, &sql) == ERR) goto ENDE;
 
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-   data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN; data->pos++;
-   data->sql[data->pos] = &digest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(digest)-2; data->pos++;
-   data->sql[data->pos] = &bodydigest[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(bodydigest)-2; data->pos++;
+   sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+   sql.sql[sql.pos] = sdata->ttmpfile; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
+   sql.sql[sql.pos] = &digest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(digest)-2; sql.pos++;
+   sql.sql[sql.pos] = &bodydigest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(bodydigest)-2; sql.pos++;
 
-   p_store_results(data->stmt_generic, data);
+   p_store_results(&sql);
 
-   while(p_fetch_results(data->stmt_generic) == OK){
+   while(p_fetch_results(&sql) == OK){
 
       if(id > 0){
 
@@ -397,10 +397,10 @@ int export_emails_matching_to_query(struct session_data *sdata, struct data *dat
 
    }
 
-   p_free_results(data->stmt_generic);
+   p_free_results(&sql);
 
 ENDE:
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 
 
    printf("\n");

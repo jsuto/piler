@@ -14,34 +14,35 @@
 struct counters load_counters(struct session_data *sdata, struct data *data){
    char buf[SMALLBUFSIZE];
    struct counters counters;
+   struct sql sql;
 
    bzero(&counters, sizeof(counters));
 
    snprintf(buf, SMALLBUFSIZE-1, "SELECT `rcvd`, `virus`, `duplicate`, `ignore`, `size`, `stored_size` FROM `%s`", SQL_COUNTER_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), buf) == ERR) return counters;
+   if(prepare_sql_statement(sdata, &sql, buf) == ERR) return counters;
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
+      p_bind_init(&sql);
 
-      data->sql[data->pos] = (char *)&counters.c_rcvd; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = (char *)&counters.c_virus; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = (char *)&counters.c_duplicate; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = (char *)&counters.c_ignore; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = (char *)&counters.c_size; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = (char *)&counters.c_stored_size; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_rcvd; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_virus; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_duplicate; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_ignore; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_size; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&counters.c_stored_size; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
 
-      p_store_results(data->stmt_generic, data);
-      p_fetch_results(data->stmt_generic);
-      p_free_results(data->stmt_generic);
+      p_store_results(&sql);
+      p_fetch_results(&sql);
+      p_free_results(&sql);
    }
 
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 
    return counters;
 }

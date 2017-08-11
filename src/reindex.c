@@ -45,27 +45,28 @@ void p_clean_exit(char *msg, int rc){
 uint64 get_max_meta_id(struct session_data *sdata, struct data *data){
    char s[SMALLBUFSIZE];
    uint64 id=0;
+   struct sql sql;
 
    snprintf(s, sizeof(s)-1, "SELECT MAX(`id`) FROM %s", SQL_METADATA_TABLE);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return id;
+   if(prepare_sql_statement(sdata, &sql, s) == ERR) return id;
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
+      p_bind_init(&sql);
 
-      data->sql[data->pos] = (char *)&id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
+      sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
 
-      p_store_results(data->stmt_generic, data);
-      p_fetch_results(data->stmt_generic);
-      p_free_results(data->stmt_generic);
+      p_store_results(&sql);
+      p_fetch_results(&sql);
+      p_free_results(&sql);
    }
 
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 
 
    return id;
@@ -79,6 +80,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
    int rc=0;
    uint64 stored_id=0, reindexed=0, delta;
    struct parser_state state;
+   struct sql sql;
 
    delta = to_id - from_id;
 
@@ -88,25 +90,25 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
       snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `arrived`, `sent` FROM %s WHERE (id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, from_id, to_id);
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return reindexed;
+   if(prepare_sql_statement(sdata, &sql, s) == ERR) return reindexed;
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
+      p_bind_init(&sql);
 
-      data->sql[data->pos] = (char *)&stored_id; data->type[data->pos] = TYPE_LONGLONG; data->len[data->pos] = sizeof(uint64); data->pos++;
-      data->sql[data->pos] = sdata->ttmpfile; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = RND_STR_LEN+2; data->pos++;
-      data->sql[data->pos] = (char *)&(sdata->now); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
-      data->sql[data->pos] = (char *)&(sdata->sent); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+      sql.sql[sql.pos] = (char *)&stored_id; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = sdata->ttmpfile; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN+2; sql.pos++;
+      sql.sql[sql.pos] = (char *)&(sdata->now); sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(unsigned long); sql.pos++;
+      sql.sql[sql.pos] = (char *)&(sdata->sent); sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(unsigned long); sql.pos++;
       if(cfg->enable_folders == 1){
-         data->sql[data->pos] = (char *)&(data->folder); data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(unsigned long); data->pos++;
+         sql.sql[sql.pos] = (char *)&(data->folder); sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(unsigned long); sql.pos++;
       }
 
-      p_store_results(data->stmt_generic, data);
+      p_store_results(&sql);
 
-      while(p_fetch_results(data->stmt_generic) == OK){
+      while(p_fetch_results(&sql) == OK){
 
          if(stored_id > 0){
 
@@ -147,10 +149,10 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
       }
 
-      p_free_results(data->stmt_generic);
+      p_free_results(&sql);
    }
 
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 
 
    if(progressbar) printf("\n");
@@ -269,5 +271,3 @@ int main(int argc, char **argv){
 
    return 0;
 }
-
-

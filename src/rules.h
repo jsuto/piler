@@ -8,8 +8,8 @@
 #include "defs.h"
 
 void load_rules(struct session_data *sdata, struct data *data, struct node *xhash[], char *table);
-int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct data *data);
-struct rule *create_rule_item(struct rule_cond *rule_cond, struct data *data);
+int append_rule(struct node *xhash[], struct rule_cond *rule_cond);
+struct rule *create_rule_item(struct rule_cond *rule_cond);
 char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam);
 time_t query_retain_period(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg);
 int get_folder_id_by_rule(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg);

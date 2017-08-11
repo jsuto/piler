@@ -13,6 +13,7 @@
 void load_rules(struct session_data *sdata, struct data *data, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    struct rule_cond rule_cond;
+   struct sql sql;
 
    memset(rule_cond.domain, 0, SMALLBUFSIZE);
    memset(rule_cond.from, 0, SMALLBUFSIZE);
@@ -28,34 +29,35 @@ void load_rules(struct session_data *sdata, struct data *data, struct node *xhas
 
    snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days`, `folder_id` FROM `%s`", table);
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), s) == ERR) return;
+   if(prepare_sql_statement(sdata, &sql, s) == ERR) return;
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
+      p_bind_init(&sql);
 
-      data->sql[data->pos] = &rule_cond.domain[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond.from[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond.to[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond.subject[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond.body[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond._size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = (char *)&rule_cond.size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-      data->sql[data->pos] = &rule_cond.attachment_name[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond.attachment_type[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = &rule_cond._attachment_size[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = SMALLBUFSIZE-2; data->pos++;
-      data->sql[data->pos] = (char *)&rule_cond.attachment_size; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-      data->sql[data->pos] = (char *)&rule_cond.spam; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-      data->sql[data->pos] = (char *)&rule_cond.days; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
-      data->sql[data->pos] = (char *)&rule_cond.folder_id; data->type[data->pos] = TYPE_LONG; data->len[data->pos] = sizeof(int); data->pos++;
+      sql.sql[sql.pos] = &rule_cond.domain[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.domain)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.from[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.from)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.to[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.to)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.subject[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.subject)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.body[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.body)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond._size[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond._size)-2; sql.pos++;
+      sql.sql[sql.pos] = (char *)&rule_cond.size; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(rule_cond.size); sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.attachment_name[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.attachment_name)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond.attachment_type[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond.attachment_type)-2; sql.pos++;
+      sql.sql[sql.pos] = &rule_cond._attachment_size[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(rule_cond._attachment_size)-2; sql.pos++;
+      sql.sql[sql.pos] = (char *)&rule_cond.attachment_size; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(rule_cond.attachment_size); sql.pos++;
+      sql.sql[sql.pos] = (char *)&rule_cond.spam; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(rule_cond.spam); sql.pos++;
+      sql.sql[sql.pos] = (char *)&rule_cond.days; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(rule_cond.days); sql.pos++;
+      sql.sql[sql.pos] = (char *)&rule_cond.folder_id; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(rule_cond.folder_id); sql.pos++;
 
-      p_store_results(data->stmt_generic, data);
 
-      while(p_fetch_results(data->stmt_generic) == OK){
-         append_rule(xhash, &rule_cond, data);
+      p_store_results(&sql);
+
+      while(p_fetch_results(&sql) == OK){
+         append_rule(xhash, &rule_cond);
 
          memset(rule_cond.domain, 0, SMALLBUFSIZE);
          memset(rule_cond.from, 0, SMALLBUFSIZE);
@@ -70,15 +72,15 @@ void load_rules(struct session_data *sdata, struct data *data, struct node *xhas
          rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
       }
 
-      p_free_results(data->stmt_generic);
+      p_free_results(&sql);
 
    }
 
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 }
 
 
-int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct data *data){
+int append_rule(struct node *xhash[], struct rule_cond *rule_cond){
    struct node *q, *Q=NULL, *node;
    struct rule *rule;
    int rc=0;
@@ -88,7 +90,7 @@ int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct data *
    memset(node, 0, sizeof(struct node));
    node->r = NULL;
 
-   rule = create_rule_item(rule_cond, data);
+   rule = create_rule_item(rule_cond);
 
    if(rule == NULL){
       free(node);
@@ -116,7 +118,7 @@ int append_rule(struct node *xhash[], struct rule_cond *rule_cond, struct data *
 }
 
 
-struct rule *create_rule_item(struct rule_cond *rule_cond, struct data *data){
+struct rule *create_rule_item(struct rule_cond *rule_cond){
    struct rule *h=NULL;
    char empty = '\0';
    int len;
@@ -130,7 +132,7 @@ struct rule *create_rule_item(struct rule_cond *rule_cond, struct data *data){
    h->compiled = 1;
 
    h->domain = NULL;
-   h->domainlen = data->length[0];
+   h->domainlen = strlen(rule_cond->domain);
 
    if(h->domainlen > 2){
       h->domain = malloc(h->domainlen+2);

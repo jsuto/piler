@@ -9,9 +9,6 @@
   #include <mysql.h>
   #include <mysqld_error.h>
 #endif
-#ifdef NEED_PSQL
-  #include <libpq-fe.h>
-#endif
 #ifdef HAVE_TRE
    #include <tre/tre.h>
    #include <tre/regex.h>
@@ -343,32 +340,6 @@ struct data {
    struct licence licence;
    char *dedup;
    int child_serial;
-
-#ifdef NEED_MYSQL
-   MYSQL_STMT *stmt_generic;
-   MYSQL_STMT *stmt_get_meta_id_by_message_id;
-   MYSQL_STMT *stmt_insert_into_rcpt_table;
-   MYSQL_STMT *stmt_insert_into_sphinx_table;
-   MYSQL_STMT *stmt_insert_into_meta_table;
-   MYSQL_STMT *stmt_insert_into_attachment_table;
-   MYSQL_STMT *stmt_insert_into_folder_message_table;
-   MYSQL_STMT *stmt_get_attachment_id_by_signature;
-   MYSQL_STMT *stmt_get_attachment_pointer;
-   MYSQL_STMT *stmt_query_attachment;
-   MYSQL_STMT *stmt_get_folder_id;
-   MYSQL_STMT *stmt_insert_into_folder_table;
-   MYSQL_STMT *stmt_update_metadata_reference;
-   MYSQL_STMT *stmt_update_metadata;
-   MYSQL_STMT *stmt_select_from_meta_table;
-   MYSQL_STMT *stmt_select_non_referenced_attachments;
-#endif
-
-   char *sql[MAX_SQL_VARS];
-   int type[MAX_SQL_VARS];
-   int len[MAX_SQL_VARS];
-   unsigned long length[MAX_SQL_VARS];
-   my_bool is_null[MAX_SQL_VARS];
-   my_bool error[MAX_SQL_VARS];
    int pos;
 
 #ifdef HAVE_TRE
@@ -382,6 +353,20 @@ struct data {
 #endif
 
    struct net *net;
+};
+
+
+struct sql {
+#ifdef NEED_MYSQL
+   MYSQL_STMT *stmt;
+#endif
+   char *sql[MAX_SQL_VARS];
+   int type[MAX_SQL_VARS];
+   int len[MAX_SQL_VARS];
+   unsigned long length[MAX_SQL_VARS];
+   my_bool is_null[MAX_SQL_VARS];
+   my_bool error[MAX_SQL_VARS];
+   int pos;
 };
 
 

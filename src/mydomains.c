@@ -13,24 +13,25 @@
 void load_mydomains(struct session_data *sdata, struct data *data, struct config *cfg){
    int rc;
    char s[SMALLBUFSIZE];
+   struct sql sql;
 
    memset(s, 0, sizeof(s));
 
 
-   if(prepare_sql_statement(sdata, &(data->stmt_generic), SQL_PREPARED_STMT_GET_DOMAINS) == ERR) return;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_DOMAINS) == ERR) return;
 
 
-   p_bind_init(data);
+   p_bind_init(&sql);
 
-   if(p_exec_query(sdata, data->stmt_generic, data) == OK){
+   if(p_exec_stmt(sdata, &sql) == OK){
 
-      p_bind_init(data);
+      p_bind_init(&sql);
 
-      data->sql[data->pos] = &s[0]; data->type[data->pos] = TYPE_STRING; data->len[data->pos] = sizeof(s)-2; data->pos++;
+      sql.sql[sql.pos] = &s[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(s)-2; sql.pos++;
 
-      p_store_results(data->stmt_generic, data);
+      p_store_results(&sql);
 
-      while(p_fetch_results(data->stmt_generic) == OK){
+      while(p_fetch_results(&sql) == OK){
          rc = addnode(data->mydomains, s);
 
          if(rc == 0) syslog(LOG_PRIORITY, "failed to append mydomain: '%s'", s);
@@ -39,10 +40,10 @@ void load_mydomains(struct session_data *sdata, struct data *data, struct config
          memset(s, 0, sizeof(s));
       }
 
-      p_free_results(data->stmt_generic);
+      p_free_results(&sql);
    }
 
-   close_prepared_statement(data->stmt_generic);
+   close_prepared_statement(&sql);
 }
 
 
@@ -65,5 +66,3 @@ int is_email_address_on_my_domains(char *email, struct data *data){
 
    return rc;
 }
-
-
