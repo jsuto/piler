@@ -72,7 +72,7 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, ch
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID) == ERR) return id;
 
    p_bind_init(&sql);
-   data->sql[data->pos] = message_id; data->type[data->pos] = TYPE_STRING; data->pos++;
+   sql.sql[sql.pos] = message_id; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
    if(p_exec_stmt(sdata, &sql) == OK){
 
