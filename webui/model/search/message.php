@@ -279,8 +279,8 @@ class ModelSearchMessage extends Model {
       require_once DIR_SYSTEM . 'helper/HTMLPurifier.standalone.php';
 
       $config = HTMLPurifier_Config::createDefault();
-      $config->set('URI', 'DisableExternal', 'true');
-      $config->set('URI', 'DisableExternalResources', 'true');
+      $config->set('URI.DisableExternal', 'true');
+      $config->set('URI.DisableExternalResources', 'true');
       $config->set('Cache.SerializerPath', DIR_BASE . 'tmp');
 
       $purifier = new HTMLPurifier($config);
