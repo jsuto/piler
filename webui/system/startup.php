@@ -6,8 +6,6 @@ require(DIR_SYSTEM . "/front.php");
 require(DIR_SYSTEM . "/language.php");
 require(DIR_SYSTEM . "/loader.php");
 require(DIR_SYSTEM . "/model.php");
-//require(DIR_SYSTEM . "/registry.php");
-//require(DIR_SYSTEM . "/request.php");
 require(DIR_SYSTEM . "/router.php");
 
 require(DIR_SYSTEM . "/misc.php");
@@ -26,5 +24,3 @@ if(TSA_URL) {
 
 
 date_default_timezone_set(TIMEZONE);
-
-?>

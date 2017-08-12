@@ -1,5 +1,11 @@
 <?php
 
+ini_set('session.cookie_httponly', true);
+ini_set('session.use_strict_mode', 1);
+ini_set('session.use_only_cookies', 1);
+if(isset($_SERVER['HTTP_HOST'])) { ini_set('session.cookie_domain', $_SERVER['HTTP_HOST']); }
+
+
 define('NORMAL', 1);
 define('DEBUG', 5);
 
@@ -31,6 +37,8 @@ $config['THEME'] = 'default';
 
 $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
+
+$config['SESSION_EXPIRY'] = 3600;
 
 $config['ENABLE_SAAS'] = 0;
 $config['CAPTCHA_FAILED_LOGIN_COUNT'] = 0;
@@ -312,6 +320,8 @@ define('NOW', time());
  */
 
 require_once 'config-site.php';
+
+ini_set('session.cookie_lifetime', $config['SESSION_EXPIRY']);
 
 require($config['DIR_BASE'] . "/system/registry.php");
 require($config['DIR_BASE'] . "/system/request.php");
