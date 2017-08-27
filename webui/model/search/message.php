@@ -302,6 +302,8 @@ class ModelSearchMessage extends Model {
             $mime['content-type']['type'] = 'text/plain';
          }
 
+         $mime['content-type']['type'] = strtolower($mime['content-type']['type']);
+
          if(in_array($mime['content-type']['type'], array('multipart/mixed', 'multipart/related', 'multipart/alternative')))
             $this->extract_textuals_from_mime_parts($mime_parts[$i]['header'], $mime_parts[$i]['body'], $mime['content-type']['boundary']);
 
