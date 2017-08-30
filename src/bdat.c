@@ -55,7 +55,7 @@ void get_bdat_size_to_read(struct smtp_session *session, char *buf){
 
    if(!p || session->bdat_bytes_to_read <= 0){
       session->bdat_bytes_to_read = 0;
-      syslog(LOG_INFO, "%s: malformed BDAT command", session->ttmpfile);
+      syslog(LOG_INFO, "%s: ERROR: malformed BDAT command", session->ttmpfile);
    }
 }
 
@@ -65,8 +65,6 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
    char buf[SMALLBUFSIZE];
 
    if(readlen <= 0) return;
-
-   //printf("readbuf in process_bdat (%d): *%s*\n", readlen, readbuf);
 
    if(session->bdat_rounds == 1){
       session->fd = open(session->ttmpfile, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
@@ -78,10 +76,12 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
    session->bdat_bytes_to_read -= readlen;
 
    if(session->fd != -1){
-      if(write(session->fd, readbuf, readlen) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-      session->tot_len += readlen;
+      if(write(session->fd, readbuf, readlen) != -1){
+         session->tot_len += readlen;
 
-      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes, %d bytes to go", session->ttmpfile, readlen, session->bdat_bytes_to_read);
+         if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes, %d bytes to go", session->ttmpfile, readlen, session->bdat_bytes_to_read);
+      }
+      else syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
    }
 
    
