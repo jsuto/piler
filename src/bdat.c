@@ -66,7 +66,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
 
    if(readlen <= 0) return;
 
-   if(session->bdat_rounds == 1){
+   if(session->bdat_rounds == 1 && session->fd == -1){
       session->fd = open(session->ttmpfile, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
       if(session->fd == -1){
          syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, session->ttmpfile);
