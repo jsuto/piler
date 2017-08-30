@@ -244,7 +244,7 @@ create table if not exists `email_groups` (
 
 create table if not exists `group` (
    `id` bigint unsigned not null auto_increment primary key,
-   `groupname` char(255) not null unique
+   `groupname` char(128) not null unique
 ) ENGINE=InnoDB;
 
 
@@ -410,7 +410,7 @@ create table if not exists `ldap` (
 
 create table if not exists `customer_settings` (
    `id` int not null auto_increment primary key,
-   `domain` varchar(255) not null unique,
+   `domain` varchar(128) not null unique,
    `branding_text` varchar(255) default null,
    `branding_url` varchar(255) default null,
    `branding_logo` varchar(255) default null,
@@ -421,10 +421,10 @@ create table if not exists `customer_settings` (
 
 
 create table if not exists `online` (
-   `username` varchar(255) not null,
+   `username` varchar(128) not null,
    `ts` int default 0,
    `last_activity` int default 0,
-   `ipaddr` varchar(255) default null,
+   `ipaddr` varchar(64) default null,
    unique(`username`,`ipaddr`)
 ) Engine=InnoDB;
 
