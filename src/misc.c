@@ -231,13 +231,13 @@ int trimBuffer(char *s){
    int n=0;
    char *p;
 
-   p = strrchr(s, '\n');
+   p = strchr(s, '\n');
    if(p){
       *p = '\0';
       n++;
    }
 
-   p = strrchr(s, '\r');
+   p = strchr(s, '\r');
    if(p){
       *p = '\0';
       n++;

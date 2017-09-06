@@ -197,7 +197,14 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->restored_copy = 1;
       }
 
-      if(sdata->ms_journal == 0 && strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0){
+      if(sdata->ms_journal == 0 && ( strncmp(buf, "X-MS-Journal-Report:", strlen("X-MS-Journal-Report:")) == 0 || strncmp(buf, "X-WM-Journal-Report: journal", strlen("X-WM-Journal-Report: journal")) == 0) ){
+
+         memset(state->b_to, 0, MAXBUFSIZE);
+         state->tolen = 0;
+         memset(state->b_to_domain, 0, SMALLBUFSIZE);
+
+         clearhash(state->rcpt);
+
          //if(sdata->import == 0){
             sdata->ms_journal = 1;
             memset(state->message_id, 0, SMALLBUFSIZE);
@@ -659,8 +666,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    }
 
 
-   /* remove all HTML tags */
-   if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
 
    if(state->message_state == MSG_BODY && state->qp == 1){
       fixupSoftBreakInQuotedPritableLine(buf, state); // 2011.12.07
@@ -669,6 +674,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    /* I believe that we can live without this function call */
    //decodeURL(buf);
+
+   /* remove all HTML tags */
+   if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
+
 
    if(state->texthtml == 1) decodeHTML(buf, state->utf8);
 
