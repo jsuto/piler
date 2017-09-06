@@ -47,7 +47,7 @@ if ( $options = getopt( $opts, $lopts ) )
 
 require_once($webuidir . "/config.php");
 
-if(ENABLE_SYSLOG == 1) { openlog("piler-timestamp", LOG_PID, LOG_MAIL); }
+openlog("piler-timestamp", LOG_PID, LOG_MAIL);
 
 require(DIR_SYSTEM . "/startup.php");
 

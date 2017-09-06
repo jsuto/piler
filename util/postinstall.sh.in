@@ -417,10 +417,6 @@ webui_install() {
 
    echo >> $DOCROOT/config-site.php
 
-   echo "\$config['ENABLE_SYSLOG'] = 1;" >> $DOCROOT/config-site.php
-
-   echo >> $DOCROOT/config-site.php
-
    echo "\$config['SMTP_DOMAIN'] = '$HOSTNAME';" >> $DOCROOT/config-site.php
    echo "\$config['SMTP_FROMADDR'] = 'no-reply@$HOSTNAME';" >> $DOCROOT/config-site.php
    echo "\$config['ADMIN_EMAIL'] = 'admin@$HOSTNAME';" >> $DOCROOT/config-site.php
