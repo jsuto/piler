@@ -83,6 +83,8 @@ class ControllerLoginLogin extends Controller {
             }
          }
          else {
+            LOGGER('login failed', $this->request->post['username']);
+
             $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
             $this->data['failed_login_count']++;
          }

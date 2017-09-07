@@ -1,7 +1,11 @@
 <?php
 
 function LOGGER($event = '', $username = '') {
+   $ipaddr = '';
+
    if($event == "") { return 0; }
+
+   if(isset($_SERVER['REMOTE_ADDR'])) { $ipaddr = $_SERVER['REMOTE_ADDR']; }
 
    $session = Registry::get('session');
 
@@ -10,7 +14,7 @@ function LOGGER($event = '', $username = '') {
       else { $username = 'unknown'; }
    }
 
-   syslog(LOG_INFO, "username=$username, event='$event'");
+   syslog(LOG_INFO, "username=$username, event='$event', ipaddr=$ipaddr");
 }
 
 
