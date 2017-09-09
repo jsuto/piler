@@ -215,6 +215,8 @@ function do_search($data = array(), $automated_search_recipients = array())
       $a['date1'] = $a['date2'] = date("Y.m.d", time() - 86400);
    }
 
+   $boundary = "--=_NextPart_000_ABCDEFGHI";
+
    list ($n, $total_found, $all_ids, $messages) = $search->search_messages($a, 0);
 
    if($dry_run == 0)
@@ -225,12 +227,18 @@ function do_search($data = array(), $automated_search_recipients = array())
       $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
       $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
       $msg .= "MIME-Version: 1.0" . EOL;
-      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
+      $msg .= "Content-Type: multipart/alternative;" . EOL;
+      $msg .= "\tboundary=\"$boundary\"" . EOL;
       $msg .= EOL . EOL;
+
+      $msg .= "--$boundary" . EOL;
+      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL . EOL;
 
       ob_start();
       include($webuidir . "/view/theme/default/templates/search/auto.tpl");
       $msg .= ob_get_contents();
+
+      $msg .= "--" . $boundary . EOL . EOL;
 
       ob_end_clean();
 

@@ -47,7 +47,7 @@
             <td id="c4_r<?php print $i; ?>" class="resultcell from"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
             <td id="c5_r<?php print $i; ?>" class="resultcell to"><?php if($message['to'] != $message['shortto']) { ?><span title="<?php print $message['to']; ?>"><?php print $message['shortto']; ?>&nbsp;<i class=" muted icon-group"></i></span><?php } else { print $message['to']; } ?></td>
 
-            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="<?php print SITE_URL; ?>/message.php/a<?php print $message['id']; ?>"><?php print $message['subject']; ?></a></td>
+            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="<?php print SITE_URL; ?>message.php/a<?php print $message['id']; ?>"><?php print $message['subject']; ?></a></td>
 
             <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
             <td align="center" id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?>!<?php } else { ?>&nbsp;<?php } ?></td>
