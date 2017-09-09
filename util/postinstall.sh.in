@@ -20,7 +20,7 @@ load_default_values() {
    KEYTMPFILE="piler.key"
    KEYFILE="$SYSCONFDIR/piler/piler.key"
 
-   HOSTNAME=`hostname --fqdn`
+   HOSTNAME=$(hostname --fqdn)
 
    MYSQL_HOSTNAME="localhost"
    MYSQL_DATABASE="piler"
@@ -44,9 +44,10 @@ load_default_values() {
 make_certificate() {
    if [ ! -f $SYSCONFDIR/piler/piler.pem ]; then
       echo -n "Making an ssl certificate ... "
-      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout $SYSCONFDIR/piler/piler.pem -out 1.cert -sha1
-      cat 1.cert >> $SYSCONFDIR/piler/piler.pem
-      chmod 600 $SYSCONFDIR/piler/piler.pem
+      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout "$SYSCONFDIR/piler/piler.pem" -out 1.cert -sha1
+      cat 1.cert >> "$SYSCONFDIR/piler/piler.pem"
+      chmod 640 "$SYSCONFDIR/piler/piler.pem"
+      chgrp "$PILERUSER" "$SYSCONFDIR/piler/piler.pem"
       rm 1.cert
    fi
 }
@@ -60,7 +61,7 @@ display_install_intro() {
   echo ""
 
   askYN "Continue? [Y/N]" "N"
-  if [ $response != "yes" ]; then
+  if [ "$response" != "yes" ]; then
      echo "Aborted."
      exit
   fi
@@ -72,7 +73,7 @@ display_install_intro() {
 check_user() {
    user=$1
 
-   if [ x`whoami` != x$user ]; then echo "ERROR: postinstaller must be run as $user user"; exit 1; fi
+   if [ x`whoami` != x$user ]; then echo "ERROR: postinstaller must be run as ${user} user"; exit 1; fi
 }
 
 
@@ -279,7 +280,7 @@ make_cron_entries() {
    echo "15,45 * * * * $LIBEXECDIR/piler/indexer.attachment.sh" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet tag1 --rotate --config $SYSCONFDIR/piler/sphinx.conf" >> $CRON_TMP
    echo "*/15 * * * * $INDEXER --quiet note1 --rotate --config $SYSCONFDIR/piler/sphinx.conf" >> $CRON_TMP
-   echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php --webui $DOCROOT" >> $CRON_TMP
+   echo "30   6 * * * /usr/bin/php $LIBEXECDIR/piler/generate_stats.php --webui $DOCROOT >/dev/null" >> $CRON_TMP
    echo "*/5 * * * * /usr/bin/find $DOCROOT/tmp -type f -name i.\* -exec rm -f {} \;" >> $CRON_TMP
    echo "### PILEREND" >> $CRON_TMP
 }
