@@ -10,7 +10,7 @@
 ###30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui LOCALSTATEDIR/piler/www
 
 ### optional: populate accouting data
-###30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui LOCALSTATEDIR/piler/www
+###30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui LOCALSTATEDIR/piler/www >/dev/null
 
 ### optional: purge aged emails
 ###2 0 * * * BINDIR/pilerpurge
