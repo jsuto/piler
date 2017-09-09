@@ -3,7 +3,6 @@
 ini_set('session.cookie_httponly', true);
 ini_set('session.use_strict_mode', 1);
 ini_set('session.use_only_cookies', 1);
-if(isset($_SERVER['HTTP_HOST'])) { ini_set('session.cookie_domain', $_SERVER['HTTP_HOST']); }
 
 
 define('NORMAL', 1);
