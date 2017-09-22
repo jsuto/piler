@@ -197,6 +197,8 @@ function do_search($data = array(), $automated_search_recipients = array())
    global $search_expression;
    global $page_len;
 
+   $EOL = "\r\n";
+
    $lang = Registry::get('language');
    extract($lang->data);
 
@@ -221,24 +223,26 @@ function do_search($data = array(), $automated_search_recipients = array())
 
    if($dry_run == 0)
    {
-      $msg = "From: " . SMTP_FROMADDR . EOL;
-      $msg .= "To: " . ADMIN_EMAIL . EOL;
-      $msg .= "Date: " . date(DATE_RFC2822) . EOL;
-      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . EOL;
-      $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . EOL;
-      $msg .= "MIME-Version: 1.0" . EOL;
-      $msg .= "Content-Type: multipart/alternative;" . EOL;
-      $msg .= "\tboundary=\"$boundary\"" . EOL;
-      $msg .= EOL . EOL;
+      $msg = "From: " . SMTP_FROMADDR . $EOL;
+      $msg .= "To: " . ADMIN_EMAIL . $EOL;
+      $msg .= "Date: " . date(DATE_RFC2822) . $EOL;
+      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($title)) . "?=" . $EOL;
+      $msg .= "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">" . $EOL;
+      $msg .= "MIME-Version: 1.0" . $EOL;
+      $msg .= "Content-Type: multipart/alternative;" . $EOL;
+      $msg .= "\tboundary=\"$boundary\"" . $EOL;
+      $msg .= $EOL . $EOL;
 
-      $msg .= "--$boundary" . EOL;
-      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL . EOL;
+      $msg .= "--$boundary" . $EOL;
+      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . $EOL;
+      $msg .= "Content-Transfer-Encoding: base64" . $EOL . $EOL;
 
       ob_start();
       include($webuidir . "/view/theme/default/templates/search/auto.tpl");
-      $msg .= ob_get_contents();
 
-      $msg .= "--" . $boundary . EOL . EOL;
+      $msg .= chunk_split(base64_encode(ob_get_contents()), 76, $EOL);
+
+      $msg .= "--" . $boundary . $EOL . $EOL;
 
       ob_end_clean();
 
@@ -247,7 +251,7 @@ function do_search($data = array(), $automated_search_recipients = array())
    else {
       print "search = " . $data['search'] . "\n";
       print_r($all_ids);
-      print EOL . EOL;
+      print $EOL . $EOL;
    }
 
 }
