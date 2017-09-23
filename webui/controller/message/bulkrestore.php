@@ -46,7 +46,7 @@ class ControllerMessageBulkrestore extends Controller {
 
       $this->data['restored'] = 0;
 
-      if(RESTORE_OVER_IMAP == 1) {
+      if(RESTORE_OVER_IMAP == 1 && Registry::get('auditor_user') == 0) {
          require_once 'Zend/Mail/Protocol/Imap.php';
          require_once 'Zend/Mail/Storage/Imap.php';
 
@@ -86,7 +86,7 @@ class ControllerMessageBulkrestore extends Controller {
             $msg = $this->model_search_message->get_raw_message($piler_id);
             $this->model_search_message->remove_journal($msg);
 
-            if(RESTORE_OVER_IMAP == 1) {
+            if(RESTORE_OVER_IMAP == 1 && Registry::get('auditor_user') == 0) {
                if($imap_ok) {
                   $imap_folder = IMAP_RESTORE_FOLDER_INBOX;
 
