@@ -72,18 +72,19 @@ void process_smtp_command(struct smtp_session *session, char *buf){
 
 void process_data(struct smtp_session *session, char *readbuf, int readlen){
    char puf[SMALLBUFSIZE+BIGBUFSIZE];
-   int n, pos, len;
+   int n, pos, len, writelen;
 
    memset(puf, 0, sizeof(puf));
+   len = readlen;
 
    if(session->buflen > 0){
       memcpy(&puf[0], session->buf, session->buflen);
       memcpy(&puf[session->buflen], readbuf, readlen);
-      len = session->buflen + readlen;
+
+      len += session->buflen;
    }
    else {
       memcpy(&puf[0], readbuf, readlen);
-      len = readlen;
    }
 
    pos = searchStringInBuffer(&puf[0], len, SMTP_CMD_PERIOD, 5);
@@ -93,26 +94,36 @@ void process_data(struct smtp_session *session, char *readbuf, int readlen){
          session->tot_len += pos;
          process_command_period(session);
       }
-      else syslog(LOG_PRIORITY, "ERROR: process_data(): failed to write %d bytes", pos);
+      else syslog(LOG_PRIORITY, "ERROR (line: %d): process_data(): failed to write %d bytes", __LINE__, pos);
    }
-   else {
+   else if(pos < 0){
       n = search_char_backward(&puf[0], len, '\r');
 
       if(n == -1 || len - n > 4){
-         if(write(session->fd, puf, len) != -1){
-            session->tot_len += len;
+
+         if(n == -1) writelen = len;
+         else writelen = n-1;
+
+         if(writelen > 0){
+            if(write(session->fd, puf, writelen) != -1){
+               session->tot_len += writelen;
+            }
+            else syslog(LOG_PRIORITY, "ERROR (line: %d): process_data(): failed to write %d bytes", __LINE__, writelen);
          }
-         else syslog(LOG_PRIORITY, "ERROR: process_data(): failed to write %d bytes", len);
       }
       else {
          if(write(session->fd, puf, n) != -1){
             session->tot_len += n;
          }
-         else syslog(LOG_PRIORITY, "process_data(): failed to write %d bytes", n);
+         else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): failed to write %d bytes", __LINE__, n);
 
          snprintf(session->buf, SMALLBUFSIZE-1, "%s", &puf[n]);
          session->buflen = len - n;
       }
+   }
+   else {
+      // The buffer contains only the CR-LF-DOT-CR-LF sequence
+      process_command_period(session);
    }
 }
 

@@ -309,6 +309,56 @@ static void test_smtp_commands_starttls(char *server, int port, struct data *dat
 }
 
 
+static void test_smtp_commands_period_command_in_2_parts(char *server, int port, char *part1, char *part2, struct data *data){
+   char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
+
+   connect_to_smtp_server(server, port, data);
+
+   send_helo_command(data->net);
+
+   send_smtp_command(data->net, "MAIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1);
+   assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
+
+   snprintf(sendbuf, sizeof(sendbuf)-1, "%s%s", testmessage, part1);
+   write1(data->net, sendbuf, strlen(sendbuf));
+
+   snprintf(sendbuf, sizeof(sendbuf), "%s", part2);
+   send_smtp_command(data->net, sendbuf, recvbuf, sizeof(recvbuf)-1);
+
+   snprintf(sendbuf, sizeof(sendbuf)-1, "QUIT\r\n");
+   send_smtp_command(data->net, sendbuf, recvbuf, sizeof(recvbuf)-1);
+
+   assert(strncmp(recvbuf, "250 ", 4) == 0 && "QUIT");
+
+   close(data->net->socket);
+}
+
+
+static void test_smtp_commands_period_command_in_its_own_packet(char *server, int port, struct data *data){
+   char recvbuf[MAXBUFSIZE], sendbuf[MAXBUFSIZE];
+
+   connect_to_smtp_server(server, port, data);
+
+   send_helo_command(data->net);
+
+   send_smtp_command(data->net, "MAIL FROM: <sender@aaa.fu>\r\nRCPT TO: <archive@aaa.fu>\r\nDATA\r\n", recvbuf, sizeof(recvbuf)-1);
+   assert(strncmp(recvbuf, "250 ", 4) == 0 && "MAIL");
+
+   snprintf(sendbuf, sizeof(sendbuf)-1, "%s", testmessage);
+   write1(data->net, sendbuf, strlen(sendbuf));
+
+   snprintf(sendbuf, sizeof(sendbuf), "\r\n.\r\n");
+   send_smtp_command(data->net, sendbuf, recvbuf, sizeof(recvbuf)-1);
+
+   snprintf(sendbuf, sizeof(sendbuf)-1, "QUIT\r\n");
+   send_smtp_command(data->net, sendbuf, recvbuf, sizeof(recvbuf)-1);
+
+   assert(strncmp(recvbuf, "250 ", 4) == 0 && "QUIT");
+
+   close(data->net->socket);
+}
+
+
 int main(int argc, char **argv){
    int c, port=25;
    char *server=NULL;
@@ -380,6 +430,11 @@ int main(int argc, char **argv){
    test_smtp_commands_with_reset_command(server, port, &data);
    test_smtp_commands_partial_command(server, port, &data);
    test_smtp_commands_partial_command_pipelining(server, port, &data);
+   test_smtp_commands_period_command_in_2_parts(server, port, "\r", "\n.\r\n", &data);
+   test_smtp_commands_period_command_in_2_parts(server, port, "\r\n", ".\r\n", &data);
+   test_smtp_commands_period_command_in_2_parts(server, port, "\r\n.", "\r\n", &data);
+   test_smtp_commands_period_command_in_2_parts(server, port, "\r\n.\r", "\n", &data);
+   test_smtp_commands_period_command_in_its_own_packet(server, port, &data);
 
    helo = 1; // we must use EHLO to get the STARTTLS in the response
    test_smtp_commands_starttls(server, port, &data);

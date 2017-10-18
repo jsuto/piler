@@ -103,7 +103,7 @@ int searchStringInBuffer(char *s, int len1, char *what, int len2){
          return i;
    }
 
-   return 0;
+   return -1;
 }
 
 
