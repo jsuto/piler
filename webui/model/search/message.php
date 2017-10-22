@@ -1,7 +1,7 @@
 <?php
 
-require 'Zend/Mime/Decode.php';
-require 'Zend/Exception.php';
+require DIR_SYSTEM . 'helper/mime.php';
+
 
 class ModelSearchMessage extends Model {
 
@@ -11,24 +11,6 @@ class ModelSearchMessage extends Model {
                                    );
    public $message;
    private $verification = 0;
-
-   public function get_boundary($line='') {
-      $parts = explode(";", $line);
-
-      for($i=0; $i<count($parts); $i++) {
-         if(stristr($parts[$i], "boundary")) {
-            $parts[$i] = preg_replace("/boundary\s{0,}=\s{0,}/i", "boundary=", $parts[$i]);
-            $parts[$i] = preg_replace("/\"\;{0,1}/", "", $parts[$i]);
-            $parts[$i] = preg_replace("/\'/", "", $parts[$i]);
-
-            $b = explode("boundary=", $parts[$i]);
-
-            return rtrim($b[count($b)-1]);
-         }
-      }
-
-      return "";
-   }
 
 
    public function verify_message($piler_id = '', $data = '') {
@@ -122,11 +104,11 @@ class ModelSearchMessage extends Model {
 
       $msg = $this->get_raw_message($id);
 
-      Zend_Mime_Decode::splitMessageRaw($msg, $headers, $body);
+      Piler_Mime_Decode::splitMessageRaw($msg, $headers, $body);
 
       $has_journal = $this->remove_journal($headers);
 
-      $headers = $this->escape_lt_gt_symbols($headers);
+      $headers = Piler_Mime_Decode::escape_lt_gt_symbols($headers);
 
       return array('headers' => $headers, 'has_journal' => $has_journal);
    }
@@ -170,7 +152,7 @@ class ModelSearchMessage extends Model {
 
          $p = '';
 
-         $data = $this->escape_lt_gt_symbols($data);
+         $data = Piler_Mime_Decode::escape_lt_gt_symbols($data);
       }
 
       return $data;
@@ -228,53 +210,22 @@ class ModelSearchMessage extends Model {
 
       $has_journal = $this->remove_journal($msg);
 
-      Zend_Mime_Decode::splitMessage($msg, $headers, $body);
-      $boundary = $this->get_boundary($headers['content-type']);
+      Piler_Mime_Decode::splitMessage($msg, $headers, $body);
 
-      if(is_array($headers['from'])) { $headers['from'] = $headers['from'][0]; }
-      if(is_array($headers['to'])) { $headers['to'] = $headers['to'][0]; }
-      if(is_array($headers['cc'])) { $headers['cc'] = $headers['cc'][0]; }
-      if(is_array($headers['subject'])) { $headers['subject'] = $headers['subject'][0]; }
-      if(is_array($headers['date'])) { $headers['date'] = $headers['date'][0]; }
-
-      if(isset($headers['from'])) $from .= $this->escape_lt_gt_symbols($headers['from']);
-      if(isset($headers['to'])) $to .= $this->escape_lt_gt_symbols($headers['to']);
-      if(isset($headers['cc'])) $cc .= $this->escape_lt_gt_symbols($headers['cc']);
-      if(isset($headers['subject'])) $subject .= $this->escape_lt_gt_symbols($headers['subject']);
-      if(isset($headers['date'])) $date .= $headers['date'];
-
-      $this->message = array(
-                             'text/plain' => '',
-                             'text/html' => ''
-                            );
-
-      $this->extract_textuals_from_mime_parts($headers, $body, $boundary);
-
-      return array('from' => $from,
-                   'to' => $to,
-                   'cc' => $cc,
-                   'subject' => $this->highlight_search_terms($subject, $terms),
-                   'date' => $date,
-                   'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],
-                   'has_journal' => $has_journal,
-                   'verification' => $this->verification
-            );
-   }
-
-
-   private function extract_textuals_from_mime_parts($headers = array(), $body = '', $boundary = '') {
-      $mime_parts = array();
-
-      if($boundary) {
-         try {
-            $mime_parts = Zend_Mime_Decode::splitMessageStruct($body, $boundary);
+      for($i=0; $i<count(Piler_Mime_Decode::HEADER_FIELDS); $i++) {
+         if(isset($headers[Piler_Mime_Decode::HEADER_FIELDS[$i]]) && is_array($headers[Piler_Mime_Decode::HEADER_FIELDS[$i]])) {
+            $headers[Piler_Mime_Decode::HEADER_FIELDS[$i]] = $headers[Piler_Mime_Decode::HEADER_FIELDS[$i][0]];
          }
-         catch (Exception $e) {
-            syslog(LOG_INFO, "Caught exception: " . $e->getMessage());
+
+         if(Piler_Mime_Decode::HEADER_FIELDS[$i] == 'date') {
+            ${Piler_Mime_Decode::HEADER_FIELDS[$i]} .= $headers[Piler_Mime_Decode::HEADER_FIELDS[$i]];
+         } else {
+            ${Piler_Mime_Decode::HEADER_FIELDS[$i]} .= Piler_Mime_Decode::escape_lt_gt_symbols($headers[Piler_Mime_Decode::HEADER_FIELDS[$i]]);
          }
-      } else {
-         $mime_parts[] = array('header' => $headers, 'body' => $body);
       }
+
+
+      Piler_Mime_Decode::parseMessage($msg, $parts);
 
       require_once DIR_SYSTEM . 'helper/HTMLPurifier.standalone.php';
 
@@ -285,69 +236,33 @@ class ModelSearchMessage extends Model {
 
       $purifier = new HTMLPurifier($config);
 
-      for($i=0; $i<count($mime_parts); $i++) {
-         $mime = array(
-                       'content-type' => '',
-                       'encoding' => ''
-                      );
+      $this->message = array(
+                             'text/plain' => '',
+                             'text/html' => ''
+                            );
 
-         if(isset($mime_parts[$i]['header']['content-type'])) {
-            $mime['content-type'] = Zend_Mime_Decode::splitContentType($mime_parts[$i]['header']['content-type']);
+      for($i=0; $i<count($parts); $i++) {
+
+         $body = Piler_Mime_Decode::fixMimeBodyPart($parts[$i]['headers'], $parts[$i]['body']);
+
+         if($parts[$i]['headers']['content-type']['type'] == 'text/html') {
+            $this->message['text/html'] = $purifier->purify($body);
          }
-         /*
-           Fix the mime type for some emails having a single textual body part
-           without the Content-type header.
-          */
-         else if (count($mime_parts) == 1) {
-            $mime['content-type']['type'] = 'text/plain';
+         else {
+            $this->message['text/plain'] = $body;
          }
 
-         $mime['content-type']['type'] = strtolower($mime['content-type']['type']);
-
-         if(in_array($mime['content-type']['type'], array('multipart/mixed', 'multipart/related', 'multipart/alternative')))
-            $this->extract_textuals_from_mime_parts($mime_parts[$i]['header'], $mime_parts[$i]['body'], $mime['content-type']['boundary']);
-
-         if(isset($mime_parts[$i]['header']['content-transfer-encoding']))
-            $mime['encoding'] = $mime_parts[$i]['header']['content-transfer-encoding'];
-
-         if(in_array($mime['content-type']['type'], array('text/plain', 'text/html')))
-            $this->message[$mime['content-type']['type']] .= $this->fix_mime_body_part($purifier, $mime, $mime_parts[$i]['body']);
-      }
-   }
-
-
-   private function fix_mime_body_part($purifier, $mime = array(), $body = '') {
-      if($mime['encoding'] == 'quoted-printable')
-         $body = Zend_Mime_Decode::decodeQuotedPrintable($body);
-
-      if($mime['encoding'] == 'base64')
-         $body = base64_decode($body);
-
-      if(strtolower($mime['content-type']['charset']) != 'utf-8')
-         $body = iconv($mime['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
-
-
-      if(strtolower($mime['content-type']['type']) == 'text/plain') {
-
-         $body = $this->escape_lt_gt_symbols($body);
-
-         $body = preg_replace("/\n/", "<br />\n", $body);
-         $body = "\n" . $this->print_nicely($body);
       }
 
-      if(strtolower($mime['content-type']['type']) == 'text/html') {
-         $body = $purifier->purify($body);
-      }
-
-      return $body;
-   }
-
-
-   private function escape_lt_gt_symbols($s = '') {
-      $s = preg_replace("/</", "&lt;", $s);
-      $s = preg_replace("/>/", "&gt;", $s);
-
-      return $s;
+      return array('from' => $from,
+                   'to' => $to,
+                   'cc' => $cc,
+                   'subject' => $this->highlight_search_terms($subject, $terms),
+                   'date' => $date,
+                   'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],
+                   'has_journal' => $has_journal,
+                   'verification' => $this->verification
+            );
    }
 
 
@@ -402,25 +317,6 @@ class ModelSearchMessage extends Model {
       }
 
       return $s;
-   }
-
-
-   private function print_nicely($chunk) {
-      $k = 0;
-      $nice_chunk = "";
-
-      $x = explode(" ", $chunk);
-
-      for($i=0; $i<count($x); $i++){
-         $nice_chunk .= $x[$i] . " ";
-         $k += strlen($x[$i]);
-
-         if(strstr($x[$i], "\n")){ $k = 0; }
-
-         if($k > 70){ $nice_chunk .= "\n"; $k = 0; }
-      }
-
-      return $nice_chunk;
    }
 
 
