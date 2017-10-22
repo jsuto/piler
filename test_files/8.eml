@@ -1,0 +1,2061 @@
+Return-Path: <ml-bounce-newsletter@mlsend3.com>
+Delivered-To: sj@acts.hu
+Received: from antispam.localhost (localhost [127.0.0.1])
+	by mail.acts.hu (Postfix) with ESMTP id 6F5AC10084E
+	for <1000000@acts.hu>; Mon, 22 Aug 2016 19:55:15 +0200 (CEST)
+Received: 4000000057bb3c8d13d6451c0074246a482c
+Received: from mail2.mlsend3.com (mail2.mlsend3.com [195.12.186.53])
+	by mail.acts.hu (Postfix) with ESMTPS id 240AD10084D
+	for <1000000@acts.hu>; Mon, 22 Aug 2016 19:55:15 +0200 (CEST)
+Received: from mail2.mlsend3.com (mail2.mlsend3.com [195.12.186.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(Client CN "mlsend3.com", Issuer "mlsend3.com" (verified OK))
+	by mail2.mlsend3.com (Postfix) with ESMTPS id 8830B2801A344
+	for <1000000@acts.hu>; Mon, 22 Aug 2016 20:52:37 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=chemoltravel.hu; s=ml;
+	t=1471888357; bh=A/l/HLQe3HM4Xc4jFxAmhaWVCMU=;
+	h=Date:To:From:Subject:Sender:From:To:Subject:Date;
+	b=JlEqXiAKBOoT/YyXKTMsXnEphh2J6sXxgNmbKbGybjo3cU1rgQEL0m1h26gl5AaBP
+	 60JafeWW4NLeXFMiHzp0J9RHmhnq3Bo5L6es6V8r8DjKbL3KajJcUxchQfQk9ShCl4
+	 icU3qVYNuKCyfb9SYQwEL9BXyExBhuYGn159rF0Y=
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=mlsend3.com; s=ml;
+	t=1471888357; bh=A/l/HLQe3HM4Xc4jFxAmhaWVCMU=;
+	h=Date:To:From:Subject:Sender:From:To:Subject:Date;
+	b=PLT2ABB7ufmqce6M1JWxhpvjEzmc2OmbHwD49GDh6PaDYHpPmbpuaC4whPpB/5fAa
+	 BrcSoP2lOkZz/FMqjgQrtFjjQcCV8ShfeQ5FZxJa49Wy5QXDMkbM8mVewLWjgmTM5Z
+	 1ATlmEoMqwlHmi2kyHbN6lUeqq4xxM5/2ykAbc+o=
+Date: Mon, 22 Aug 2016 17:49:05 +0000
+To: 1000000@acts.hu
+From: Chemol Travel <info@chemoltravel.hu>
+Reply-To: Chemol Travel <info@chemoltravel.hu>
+Subject: =?utf-8?Q?Kihagyhatatlan_csoportos_k=C3=B6rutaz=C3=A1sok!?=
+Message-ID: <516168030c773d179d7048cda0947f45@mlsend3.com>
+X-Priority: 3
+X-Mailer-PostfixId: 100
+X-Mailer-SubscriberID: 434708953675335507;i3a9;87064282af8912494668d09971f1866e
+X-Mailru-Msgtype: 87064282af8912494668d09971f1866e
+Feedback-ID: k2d0s3:87064282af8912494668d09971f1866e:1556782751:MailerLite
+List-Unsubscribe: <mailto:unsubscribe-434708953675335507-i3a9-87064282af8912494668d09971f1866e@mlsend3.com?body=unsubscribe>, <http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTUyMSZkPWIwdzFxOHo=.emHkd0ah6KjbvjrTZ2oJA1rwZnOl5pDNLnvUb48q5a8>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="b1_516168030c773d179d7048cda0947f45"
+X-Clapf-spamicity: 4000000057bb3c8d13d6451c0074246a482c
+X-Clapf-spamicity: 1.0000
+X-Clapf-spamicity: Yes
+
+
+
+--b1_516168030c773d179d7048cda0947f45
+Content-Type: text/plain; charset = "utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+You have received a newsletter from Chemol Travel.
+
+However, your email software can't display HTML emails. You can view the =
+newsletter by clicking here:
+
+http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9M=
+zkyNTUzMTcmYj01NjM4MTUxNyZkPXUzajV0MGM=3D.nMaO-fUMWU452L_RojNeXIw8D06tKb9=
+Yoe-dVbSMU9w
+
+
+
+You're receiving this newsletter because you have shown interest in Chemo=
+l Travel.
+Not interested anymore? Click here to unsubscribe:
+http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9M=
+zkyNTUzMTcmYj01NjM4MTUyMyZkPXowZjdyNnA=3D.jY7W-JpDhx9G4_y3DpoigHoP4TNJx3F=
+iww9XYJo_Q6E
+
+
+--b1_516168030c773d179d7048cda0947f45
+Content-Type: text/html; charset = "utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns=3D"http://www.w3.org/1999/xhtml" xmlns:v=3D"urn:schemas-micro=
+soft-com:vml" xmlns:o=3D"urn:schemas-microsoft-com:office:office">
+ =20
+  <head>
+    <!--[if gte mso 9]>
+      <xml>
+        <o:OfficeDocumentSettings>
+          <o:AllowPNG/>
+          <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+      </xml>
+    <![endif]-->
+    <meta http-equiv=3D"Content-Type" content=3D"text/html;" charset=3D"u=
+tf-8">
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scal=
+e=3D1">
+    <meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+    <meta name=3D"format-detection" content=3D"address=3Dno">
+    <meta name=3D"format-detection" content=3D"telephone=3Dno">
+    <meta name=3D"format-detection" content=3D"email=3Dno">
+    <!--[if !mso]>
+      <!-->
+      <link href=3D"https://fonts.googleapis.com/css?family=3DOpen+Sans:4=
+00,400italic,700,700italic" rel=3D"stylesheet" type=3D"text/css">
+      <style type=3D"text/css">
+        @import url(https://fonts.googleapis.com/css?family=3DOpen+Sans:4=
+00,400italic,700,700italic);
+      </style>
+    <!--<![endif]-->
+    <style type=3D"text/css">
+      .ReadMsgBody { width: 100%; background-color: #ffffff; }
+      .ExternalClass { width: 100%; background-color: #ffffff; }
+      .ExternalClass * { line-height: 130%; }
+      body {
+      margin: 0;
+      padding: 0;
+      }
+      body, table, td, p, a, li {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      }
+      table td { border-collapse: collapse; }
+      table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      }
+      table, td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      }
+      a[x-apple-data-detectors] {
+      color: inherit !important;
+      text-decoration: none !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+      }
+      @media only screen and (max-width: 600px) {
+      body { background: none!important; padding:0px!important; margin:0p=
+x!important; }
+      td[class=3D"margin_bottom"] { margin: 0px auto 20px!important;  flo=
+at: none!important; }
+      td[class=3D"frame"] { padding:0px 20px !important; min-width: 0px !=
+important; height: auto!important; }
+      td[class=3D"small_frame"] { padding:0px 10px !important; min-width:=
+ 0px !important; height: auto!important; }
+      td[class=3D"devicewidth frame"] { padding:0px 20px !important; min-=
+width: 0px !important; width:100% !important; }
+      td[class=3D"bodyTitle frame"], td[class=3D"bodyText frame"], td[cla=
+ss=3D"button frame"] { padding:0px 20px !important; min-width: 0px !impor=
+tant; }
+      td[class=3D"bodyTitle small_frame"], td[class=3D"bodyText small_fra=
+me"], td[class=3D"button small_frame"] { padding:0px 10px !important; min=
+-width: 0px !important; }
+      table[class=3D"no_float"] { float: none!important; margin: 0 auto!i=
+mportant;  min-width: 0px !important; }
+      table[class=3D"no_float margin_bottom"] { float: none!important; ma=
+rgin: 0 auto 20px!important; min-width: 0px !important; }
+      td[class=3D"none"], span[class=3D"none"], table[class=3D"none"] { d=
+isplay:none !important; }
+      td[class=3D"textCenter"] { text-align:center!important; }
+      td[class=3D"bodyTitle textCenter"], td[class=3D"bodyText textCenter=
+"], td[class=3D"button textCenter"] { text-align:center!important; }
+      table[class=3D"devicewidth"],td[class=3D"devicewidth"] { min-width:=
+1% !important; width:100% !important;float:none!important; margin: 0 auto=
+!important; }
+      table[class=3D"devicewidth margin_bottom"] { min-width:1% !importan=
+t; width:100% !important;float:none!important; margin: 0 auto 20px!import=
+ant; }
+      td[class=3D"devicewidthimage"], td[class=3D"fullimage"] { min-width=
+:1% !important; width: 100%!important; margin: 0 auto!important; }
+      td[class=3D"devicewidth"] img, td[class=3D"devicewidthimage"] img {=
+ margin: 0 auto!important; }
+      td[class=3D"fullimage"] img { width:100%!important; height: auto!im=
+portant; margin: 0 auto!important; }
+      td[class=3D"space"] { height: 20px !important; min-height:1px!impor=
+tant; line-height:20px!important; }
+      td[class=3D"small_space"] { height: 10px !important; }
+      td[class=3D"height_auto"] { height: auto !important; }
+      td[class=3D"button"] a { width: 100%!important; border-radius: 0px!=
+important; }
+      td[class=3D"button2"] a { width: 100%!important; }
+      }
+      @media only screen and (max-width: 355px) {
+      td[class=3D"devicewidthimage"] img { width: 100%!important; height:=
+ auto!important; }
+      }
+      @media only screen and (max-width: 310px) {
+      td[class=3D"devicewidthimage2"] img { width: 100%!important; height=
+: auto!important; }
+      }
+      @media only screen and (max-width: 480px) {
+      table[class=3D"social-links-table"] { width: 100% !important; }
+      table[class=3D"social-links-table"] td { padding: 0 10px !important=
+; }
+      table[class=3D"social-links-table"] td img {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 48px;
+      }
+      }
+    </style>
+    <!--[if mso]>
+      <style type=3D"text/css">
+        .bodyText, .bodyTitle { font-family: Arial, Helvetica, sans-serif=
+ !important; }
+        .bodyText *, .bodyTitle * { font-family: Arial, Helvetica, sans-s=
+erif !important; }
+        .bodyText a, .bodyTitle a { font-family: Arial, Helvetica, sans-s=
+erif !important; }
+        .bodyText a span, .bodyTitle a span { font-family: Arial, Helveti=
+ca, sans-serif !important; }
+        .bodyText span, .bodyTitle span { font-family: Arial, Helvetica, =
+sans-serif !important; }
+        .bodyText p, .bodyTitle p { font-family: Arial, Helvetica, sans-s=
+erif !important; }
+      </style>
+    <![endif]-->
+    <style tyep=3D"text/css">
+      @media only screen and (max-width: 600px) {
+      table[id=3D"logo"],table[id=3D"logo-center"],table[id=3D"separator"=
+],table[id=3D"divider"],table[id=3D"slogan"] {
+      float: none !important;
+      min-width: 10% !important;
+      width: 100% !important;
+      }
+      table[id=3D"logo"] td,table[id=3D"slogan"] td { text-align: center =
+!important; }
+      table[id=3D"logo"] img,table[id=3D"logo-center"] img {
+      margin: 0 auto !important;
+      max-width: 340px !important;
+      width: 100% !important;
+      }
+      table[id=3D"separator"] td {
+      height: 20px !important;
+      border: none !important;
+      }
+      table[id=3D"slogan"] td { height: auto !important; }
+      }
+    </style>
+    <style tyep=3D"text/css">
+      @media only screen and (max-width: 600px) {
+      #main-image-2 {
+      height: auto
+      max-width: 680px !important;
+      width: 100% !important;
+      }
+      }
+    </style>
+    <style>
+      #content-8 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-11 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-12 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-15 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-16 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-18 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-20 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-22 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-24 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-26 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-30 a {
+      color: #7fa712
+      }
+    </style>
+    <style>
+      #content-32 a {
+      color: #7fa712
+      }
+    </style>
+    <style type=3D"text/css">
+      #content-36 a {
+      color: #222222;
+      }
+    </style>
+    <title>Kihagyhatatlan csoportos k=C3=B6rutaz=C3=A1sok!</title>
+    <meta name=3D"robots" content=3D"noindex, nofollow">
+  </head>
+ =20
+  <body bgcolor=3D"#ffffff" style=3D"background-color: #ffffff; margin: 0=
+; padding: 0; -webkit-font-smoothing: antialiased; -webkit-text-size-adju=
+st: none; width: 100%;">
+    <style>
+      div.OutlookMessageHeader, table.moz-email-headers-table, blockquote=
+ #_t, #MailContainerBody #_t {background-image:url("http://track.mlsend3.=
+com/link/f/cnM9NDM0NzA4OTUzNjc1MzM1NTA3JmNvZGU9aTNhOSZyPTQzNDI2ODc=3D.Pz2=
+o0V024TtxD336UaLGsqFCgff9Ua9gcDnubdiMl-o")}
+    </style>
+    <img src=3D"http://track.mlsend3.com/link/o/YT00MzQ3MDg5NTM2NzUzMzU1M=
+DcmYz1pM2E5JmU9MzkyNTUzMTc=3D.l1Jrm3Nj7cmbNFCHg-Pp8VrRk0a8J1bth5EcIUxpiAw=
+" class=3D"open_img" style=3D"display:block; height:0px; width:0px; max-w=
+idth:0px; max-height:0px; overflow:hidden;" width=3D"1" height=3D"1" bord=
+er=3D"0" alt=3D"" />
+    <!--[if !mso]>
+      <!-- -->
+      <table bgcolor=3D"#ffffff" border=3D"0" cellpadding=3D"0" cellspaci=
+ng=3D"0" style=3D"background-color: #ffffff" width=3D"100%">
+        <tr>
+          <td align=3D"center" class=3D"small_frame">
+          <!--<![endif]-->
+          <!-- Content starts here -->
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>            <tr>
+              <td class=3D"none">
+                <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" w=
+idth=3D"100%">
+                  <tr>
+                    <td align=3D"left" valign=3D"middle" style=3D"font-fa=
+mily: 'Open Sans', Arial, Helvetica, sans-serif; color: #222222; font-siz=
+e: 12px; font-weight: 400; line-height: 18px;" class=3D"bodyText">Chemol =
+Travel h=C3=ADrlev=C3=A9l</td>
+                    <td align=3D"right" valign=3D"middle" style=3D"font-f=
+amily: 'Open Sans', Arial, Helvetica, sans-serif; color: #222222; font-si=
+ze: 12px; font-weight: 400; line-height: 18px;" class=3D"bodyText">
+                      <a style=3D"color:#222222;" href=3D"http://track.ml=
+send3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01=
+NjM4MTM4MyZkPW45djZhMmU=3D.2bcEJpSURk94WsbXUdCH_ssMlCDdGUiQDe4EBv-2yMo" d=
+ata-link-id=3D"56381383" target=3D"_blank">
+<span style=3D"color: #222222;">
+Megtekint=C3=A9s b=C3=B6ng=C3=A9sz=C5=91ben
+</span>
+</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>            <tr>
+              <td height=3D"20" class=3D"none"></td>
+            </tr>
+          </table>
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td class=3D"fullwidth">
+                <table align=3D"left" border=3D"0" cellpadding=3D"0" cell=
+spacing=3D"0" id=3D"logo" style=3D"width: 340px;">
+                  <tr>
+                    <td align=3D"left" style=3D"text-align: left; width: =
+340px;">
+                      <a href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTM4NSZkPXc0cDNvNnQ=3D=
+.7FTbOwrUvIvuqbxu665Ltnmsc-fAIzUeIBsiNczIGVk" data-link-id=3D"56381385" t=
+arget=3D"_blank">
+<img class=3D"logo-2" src=3D"https://bucket.mlcdn.com/a/246/246797/images=
+/dde2fc0335d0397ac2beb883545fbec8de586af0.png/485cb4e98d403e17f47a1e1d257=
+912846b1adb10.png" width=3D"340" alt=3D"" style=3D"display: block;" borde=
+r=3D"0">
+</a>
+                    </td>
+                  </tr>
+                </table>
+                <table align=3D"left" border=3D"0" cellpadding=3D"0" cell=
+spacing=3D"0" id=3D"separator">
+                  <tr>
+                    <td class=3D"no-separator" style=3D"height: 113.5px; =
+width: 0px;"></td>
+                  </tr>
+                </table>
+                <table align=3D"right" border=3D"0" cellpadding=3D"0" cel=
+lspacing=3D"0" id=3D"slogan" style=3D"width: 320px;">
+                  <tr>
+                    <td valign=3D"middle" class=3D"headerNavigation left"=
+ style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; height:=
+ 113.5px; color: #252B33; font-size: 16px; font-weight: 400; line-height:=
+ 22px; text-align: right;">
+                      <span class=3D"menu-item">
+<a style=3D"color: #252B33; text-decoration: none;" href=3D"http://track.=
+mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj=
+01NjM4MTM4NyZkPXk4Zzl1MHQ=3D.YOb1Ts_rLks858yXnASktBVs9_lbC6miijLtKoV8P5k"=
+ data-link-id=3D"56381387" target=3D"_blank">K=C3=B6rutak</a>
+<span style=3D"padding: 0 5px;" class=3D"none">&nbsp;&nbsp;</span></span>
+                      <span class=3D"menu-item">
+<a style=3D"color: #252B33; text-decoration: none;" href=3D"http://track.=
+mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj=
+01NjM4MTM4OSZkPXQ5eTZvNXU=3D.CCuFjgfHPuoQfSHPv0R7WjvsgMNPDDlEAlem4DAY_A4"=
+ data-link-id=3D"56381389" target=3D"_blank">Haj=C3=B3utak</a>
+<span style=3D"padding: 0 5px;" class=3D"none">&nbsp;&nbsp;</span></span>
+                      <span class=3D"menu-item">
+<a style=3D"color: #252B33; text-decoration: none;" href=3D"http://track.=
+mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj=
+01NjM4MTM5MSZkPWc5cjJsOWg=3D.SXHY78umhZne7yEJaAt85YNOAKkVrxlGpl4cXQ3ec4A"=
+ data-link-id=3D"56381391" target=3D"_blank">Rep=C3=BCl=C5=91jegy</a>
+</span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td height=3D"30" class=3D"space"></td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td class=3D"space" height=3D"30" style=3D"height: 30px; li=
+ne-height: 30px;">
+                <img src=3D"https://bucket.mlcdn.com/images/default/space=
+r.gif" width=3D"1" height=3D"1" border=3D"0" style=3D"display: block;">
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <table width=3D"100%" cellpadding=3D"0" border=3D"0" cell=
+spacing=3D"0" align=3D"center">
+                  <tr>
+                    <td align=3D"center" class=3D"bodyTitle" style=3D"fon=
+t-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #00335f; font=
+-size: 25px; line-height: 31px; font-weight: normal; text-align: center; =
+letter-spacing: 0; font-style: normal;">
+                      <a style=3D"text-decoration: none; color: #00335f;"=
+ href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1p=
+M2E5JmU9MzkyNTUzMTcmYj01NjM4MTM5MyZkPW42YzV3OWc=3D.PFU-wFdxAiOf0R4QKQYGCa=
+US8vdt7sPMYkn1XbzIj80" data-link-id=3D"56381393" target=3D"_blank" border=
+=3D"0">KIHAGYHATATLAN CSOPORTOS K=C3=96RUTAZ=C3=81SOK</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align=3D"center" height=3D"10"></td>
+                  </tr>
+                  <tr>
+                    <td align=3D"center" class=3D"bodyTitle" style=3D"fon=
+t-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #666666; font=
+-size: 16px; line-height: 22px; font-weight: bold; text-align: center; le=
+tter-spacing: 5; font-style: normal;">2016 =C5=90SZ / T=C3=89L</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table width=3D"100%" cellpadding=3D"0" border=3D"0" ce=
+llspacing=3D"0" align=3D"center"></table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0" a=
+lign=3D"center" width=3D"100%">
+                  <tr>
+                    <td align=3D"center">
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"left" width=3D"325" style=3D"width:325px; min-width:325px;" =
+class=3D"devicewidth margin_bottom" bgcolor=3D"#f7f7f7">
+                        <tr>
+                          <td align=3D"center" class=3D"devicewidthimage"=
+>
+                            <a href=3D"http://track.mlsend3.com/link/c/YT=
+00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTM5NSZkPXM2djJ=
+qNGk=3D.sLfkVx1HP18vbIY3W_RWi-1ajW-j2l2_C4HFVpOxOLE" data-link-id=3D"5638=
+1395" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com=
+/a/246/246797/images/52f9abf705bd61fba8fa9bc51c7917bb63aebe7b.jpeg/23a6ec=
+f1a4efd19fb71b4bdeb99fae36217484a1.jpeg" border=3D"0" width=3D"325" style=
+=3D"display: block;"></a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td height=3D"10"></td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" class=3D"bodyTitle" style=3D=
+"font-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #00335f; =
+font-size: 30px; line-height: 36px; font-weight: normal; text-align: left=
+; letter-spacing: 0; padding: 0px 10px; font-style: normal;">
+                            <a style=3D"text-decoration: none; color: #00=
+335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MD=
+cmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTM5NyZkPWk0dzdiOHo=3D.LQSpEUoy57f-4v5x=
+KY84Cv7v0N64Y6OCKtusLC52ieg" data-link-id=3D"56381397" target=3D"_blank" =
+border=3D"0">Peking - Shanghai k=C3=ADnai k=C3=B6rutaz=C3=A1s a szuperexp=
+resszel</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" class=3D"bodyText" id=3D"c=
+ontent-11" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-seri=
+f; color: #666666; font-size: 16px; line-height: 22px; text-align: left; =
+padding: 0px 10px;">
+                            <div class=3D"text">
+                              <p style=3D"margin-top: 0px; margin-bottom:=
+ 10px;">2016. szeptember 14 - 21.<br>8 nap / 6 =C3=A9jszaka</p>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td height=3D"10" class=3D"none"></td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" style=3D" padding: 0px 10p=
+x;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td rowspan=3D"2" valign=3D"middle" align=
+=3D"right" class=3D"bodyText" style=3D"font-family: 'Open Sans', Arial, H=
+elvetica, sans-serif; color: #ffcb00; font-size: 16px; line-height: 22px;=
+ font-weight: bold;">UTOLS=C3=93 2 HELY!</td>
+                              </tr>
+                              <tr></tr>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" style=3D"padding-left: 10p=
+x;" class=3D"small_frame">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                    <tr>
+                                      <td height=3D"40" class=3D"height_a=
+uto" align=3D"center" valign=3D"middle">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left">
+                                          <tr>
+                                            <td valign=3D"middle" class=3D=
+"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Arial, Hel=
+vetica, sans-serif; color: #00335f; font-size: 24px; line-height: 30px; f=
+ont-weight: bold;">259 000 Ft/f=C5=91 - t=C5=91l</td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  <!--[if mso]>
+                                </td>
+                                <td align=3D"center">
+                                <![endif]-->
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      <!--[if mso]>
+                    </td>
+                    <td width=3D"30">
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"left" width=3D"30" style=3D"width:30px; min-width:30px;" cla=
+ss=3D"none">
+                        <tr>
+                          <td align=3D"center" width=3D"30">
+                            <img src=3D"https://bucket.mlcdn.com/images/d=
+efault/spacer.gif" width=3D"1" height=3D"1" />
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width=3D"325">
+                    <![endif]-->
+                    <table cellpadding=3D"0" cellspacing=3D"0" border=3D"=
+0" align=3D"right" width=3D"325" style=3D"width:325px; min-width:325px;" =
+class=3D"devicewidth" bgcolor=3D"#f7f7f7">
+                      <tr>
+                        <td align=3D"center" class=3D"devicewidthimage">
+                          <a href=3D"http://track.mlsend3.com/link/c/YT00=
+MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTM5OSZkPXc0eTBnO=
+HE=3D.1GNI_ngsPzi3yO3x1ShF5-qZcU0aZMV_4bfsYVXSa3M" data-link-id=3D"563813=
+99" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com/a=
+/246/246797/images/c98ac208649ee5e953562ac122bcec886906d42a.jpeg/ef43ca5e=
+275f7ac6e2e37ba635927a48a56b4339.jpeg" border=3D"0" width=3D"325" style=3D=
+"display: block;"></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td height=3D"10"></td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" class=3D"bodyTitle" style=3D=
+"font-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #00335f; =
+font-size: 30px; line-height: 36px; font-weight: normal; text-align: left=
+; letter-spacing: 0; padding: 0px 10px; font-style: normal;">
+                          <a style=3D"text-decoration: none; color: #0033=
+5f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcm=
+Yz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQwMSZkPWs4ajNuM2M=3D.Bip9S7CREvRVZnRv9N=
+PoggD5b2m3cD2PUU4-QDMfLHg" data-link-id=3D"56381401" target=3D"_blank" bo=
+rder=3D"0">K=C3=ADna cs=C3=A1sz=C3=A1rv=C3=A1rosok</a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" class=3D"bodyText" id=3D"con=
+tent-12" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif;=
+ color: #666666; font-size: 16px; line-height: 22px; text-align: left; pa=
+dding: 0px 10px;">
+                          <div class=3D"text">
+                            <p style=3D"margin-top: 0px; margin-bottom: 1=
+0px;">2016. okt=C3=B3ber 19 - november 2.<br>15 nap / 13 =C3=A9jszaka</p>
+                            <p style=3D"margin-top: 0px; margin-bottom: 1=
+0px;"><strong><span style=3D"color: #f04736;">GARANT=C3=81LT INDUL=C3=81S=
+!</span></strong></p>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td height=3D"10" class=3D"none"></td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" style=3D" padding: 0px 10px;=
+">
+                          <table cellpadding=3D"0" cellspacing=3D"0" bord=
+er=3D"0" align=3D"center" width=3D"100%">
+                            <tr></tr>
+                            <tr></tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" style=3D"padding-left: 10px;=
+" class=3D"small_frame">
+                          <table cellpadding=3D"0" cellspacing=3D"0" bord=
+er=3D"0" align=3D"center" width=3D"100%">
+                            <tr>
+                              <td align=3D"center">
+                                <table cellpadding=3D"0" cellspacing=3D"0=
+" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                  <tr>
+                                    <td height=3D"40" class=3D"height_aut=
+o" align=3D"center" valign=3D"middle">
+                                      <table cellpadding=3D"0" cellspacin=
+g=3D"0" border=3D"0" align=3D"left">
+                                        <tr>
+                                          <td valign=3D"middle" class=3D"=
+bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Arial, Helv=
+etica, sans-serif; color: #00335f; font-size: 24px; line-height: 30px; fo=
+nt-weight: bold;">459 000 Ft/f=C5=91 - t=C5=91l</td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                                <!--[if mso]>
+                              </td>
+                              <td align=3D"center">
+                              <![endif]-->
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0" a=
+lign=3D"center" width=3D"100%">
+                  <tr>
+                    <td align=3D"center">
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"left" width=3D"325" style=3D"width:325px; min-width:325px;" =
+class=3D"devicewidth margin_bottom" bgcolor=3D"#f7f7f7">
+                        <tr>
+                          <td align=3D"center" class=3D"devicewidthimage"=
+>
+                            <a href=3D"http://track.mlsend3.com/link/c/YT=
+00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQwMyZkPXUwZDF=
+zM2w=3D.2YpopnzCHgoYsAFJTIxS_YYZGOhBgXlcKTMIJAcbs_A" data-link-id=3D"5638=
+1403" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com=
+/a/246/246797/images/cd2dbed43cd5961f4dde027afc3f3ac65e74c39b.jpeg/d3ce65=
+7986a41b277fe27a864bf4d1edd7ec968e.jpeg" border=3D"0" width=3D"325" style=
+=3D"display: block;"></a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td height=3D"10"></td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" class=3D"bodyTitle" style=3D=
+"font-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #00335f; =
+font-size: 30px; line-height: 36px; font-weight: normal; text-align: left=
+; letter-spacing: 0; padding: 0px 10px; font-style: normal;">
+                            <a style=3D"text-decoration: none; color: #00=
+335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MD=
+cmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQwNSZkPXo2czNnNGM=3D.9VaosKfrXqGIjP2V=
+vnSjp0iae4dbdn-ZoS-ZEyPjbRo" data-link-id=3D"56381405" target=3D"_blank" =
+border=3D"0">Nyugat - mediterr=C3=A1n elegancia</a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" class=3D"bodyText" id=3D"c=
+ontent-15" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-seri=
+f; color: #666666; font-size: 16px; line-height: 22px; text-align: left; =
+padding: 0px 10px;">
+                            <div class=3D"text">
+                              <p style=3D"margin-top: 0px; margin-bottom:=
+ 10px;">2016. okt=C3=B3ber 22 - 30.=C2=A0<br>9 nap / 7 =C3=A9jszaka</p>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td height=3D"10" class=3D"none"></td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" style=3D" padding: 0px 10p=
+x;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td valign=3D"middle" align=3D"left" clas=
+s=3D"bodyText" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-=
+serif; color: #666666; font-size: 12px; line-height: 18px; font-weight: n=
+ormal;">Bels=C5=91 Fantastica kabinban</td>
+                                <td rowspan=3D"2" valign=3D"middle" align=
+=3D"right" class=3D"bodyText" style=3D"font-family: 'Open Sans', Arial, H=
+elvetica, sans-serif; color: #ffcb00; font-size: 16px; line-height: 22px;=
+ font-weight: bold;">UTOLS=C3=93 KABINOK</td>
+                              </tr>
+                              <tr></tr>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align=3D"center" style=3D"padding-left: 10p=
+x;" class=3D"small_frame">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                    <tr>
+                                      <td height=3D"40" class=3D"height_a=
+uto" align=3D"center" valign=3D"middle">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left">
+                                          <tr>
+                                            <td valign=3D"middle" class=3D=
+"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Arial, Hel=
+vetica, sans-serif; color: #00335f; font-size: 24px; line-height: 30px; f=
+ont-weight: bold;">219 000 Ft/f=C5=91 - t=C5=91l</td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                  <!--[if mso]>
+                                </td>
+                                <td align=3D"center">
+                                <![endif]-->
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      <!--[if mso]>
+                    </td>
+                    <td width=3D"30">
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"left" width=3D"30" style=3D"width:30px; min-width:30px;" cla=
+ss=3D"none">
+                        <tr>
+                          <td align=3D"center" width=3D"30">
+                            <img src=3D"https://bucket.mlcdn.com/images/d=
+efault/spacer.gif" width=3D"1" height=3D"1" />
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td width=3D"325">
+                    <![endif]-->
+                    <table cellpadding=3D"0" cellspacing=3D"0" border=3D"=
+0" align=3D"right" width=3D"325" style=3D"width:325px; min-width:325px;" =
+class=3D"devicewidth" bgcolor=3D"#f7f7f7">
+                      <tr>
+                        <td align=3D"center" class=3D"devicewidthimage">
+                          <a href=3D"http://track.mlsend3.com/link/c/YT00=
+MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQwNyZkPXIzdzFsN=
+GM=3D.BVs6dr8ywzJeoUTZKby8m7pBXEqME8n3r-oLWXvV-18" data-link-id=3D"563814=
+07" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com/a=
+/246/246797/images/bdf55e643afe764fbd16c167704605032c343d0d.jpeg/4b83de32=
+23bbb53d07e4c8248fe0208f421d310a.jpeg" border=3D"0" width=3D"325" style=3D=
+"display: block;"></a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td height=3D"10"></td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" class=3D"bodyTitle" style=3D=
+"font-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #00335f; =
+font-size: 30px; line-height: 36px; font-weight: normal; text-align: left=
+; letter-spacing: 0; padding: 0px 10px; font-style: normal;">
+                          <a style=3D"text-decoration: none; color: #0033=
+5f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcm=
+Yz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQwOSZkPWQ1ZjZ2N2I=3D.kzsDxZhBM6VQ5wbnyJ=
+7a9espVXiS5wVLyoAQQ29TFTY" data-link-id=3D"56381409" target=3D"_blank" bo=
+rder=3D"0">Szic=C3=ADliai k=C3=B6rutaz=C3=A1s tengerparti =C3=BCd=C3=BCl=C3=
+=A9ssel</a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" class=3D"bodyText" id=3D"con=
+tent-16" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif;=
+ color: #666666; font-size: 16px; line-height: 22px; text-align: left; pa=
+dding: 0px 10px;">
+                          <div class=3D"text">
+                            <p style=3D"margin-top: 0px; margin-bottom: 1=
+0px;">2016. okt=C3=B3ber 23 - 30.<br> 8 nap / 7 =C3=A9jszaka</p>
+                            <p style=3D"margin-top: 0px; margin-bottom: 1=
+0px;"><span style=3D"color: #f04736;"><strong>=C2=A0</strong></span></p>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td height=3D"10" class=3D"none"></td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" style=3D" padding: 0px 10px;=
+">
+                          <table cellpadding=3D"0" cellspacing=3D"0" bord=
+er=3D"0" align=3D"center" width=3D"100%">
+                            <tr></tr>
+                            <tr></tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align=3D"center" style=3D"padding-left: 10px;=
+" class=3D"small_frame">
+                          <table cellpadding=3D"0" cellspacing=3D"0" bord=
+er=3D"0" align=3D"center" width=3D"100%">
+                            <tr>
+                              <td align=3D"center">
+                                <table cellpadding=3D"0" cellspacing=3D"0=
+" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                  <tr>
+                                    <td height=3D"40" class=3D"height_aut=
+o" align=3D"center" valign=3D"middle">
+                                      <table cellpadding=3D"0" cellspacin=
+g=3D"0" border=3D"0" align=3D"left">
+                                        <tr>
+                                          <td valign=3D"middle" class=3D"=
+bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Arial, Helv=
+etica, sans-serif; color: #00335f; font-size: 24px; line-height: 30px; fo=
+nt-weight: bold;">199 000 Ft/f=C5=91 - t=C5=91l</td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                </table>
+                                <!--[if mso]>
+                              </td>
+                              <td align=3D"center">
+                              <![endif]-->
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#f7f7f7">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"250" style=3D"width:250px; min-width:250px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" class=3D"devicewidthimag=
+e2">
+                              <a href=3D"http://track.mlsend3.com/link/c/=
+YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQxMSZkPXY2Y=
+zFhOHQ=3D.BgvBMCHNN2B2ZVkkxi389u20t1Y69-cGMxyqkjMPKPE" data-link-id=3D"56=
+381411" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.c=
+om/a/246/246797/images/a5aef43648b9e2d2dafe9645e93acf5929702814.jpeg/963d=
+d59d0415483e47104dd4008efa1f40956499.jpeg" border=3D"0" style=3D"display:=
+ block;"></a>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"410">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"410" style=3D"width:410px; min-width:410px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"135" style=3D"height:135px; min-height:135px;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td height=3D"20" class=3D"none"></td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: left; letter-spacing: 0; font-style: normal;">
+                                              <a style=3D"text-decoration=
+: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQxMyZkPWs3azd3Nnk=3D=
+.cWtHqV6gzzXtE58k-dwQNcM2fH7ZGSNE-IqTW3_RRV0" data-link-id=3D"56381413" t=
+arget=3D"_blank" border=3D"0">Kuba nagy k=C3=B6rutaz=C3=A1s, =C3=BCd=C3=BC=
+l=C3=A9ssel Varader=C3=B3n</a>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyText" id=3D"content-18" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                              <div class=3D"text">
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px;">2016. okt=C3=B3ber 22 - november 4.<br>14 nap /=
+ 12 =C3=A9jszaka</p>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td height=3D"10" class=3D"no=
+ne"></td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td width=3D"20" class=3D"none">
+                                        <img src=3D"https://bucket.mlcdn.=
+com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"display:=
+ block;" border=3D"0">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                          <tr>
+                                            <td height=3D"40" class=3D"he=
+ight_auto" align=3D"center" valign=3D"middle">
+                                              <table cellpadding=3D"0" ce=
+llspacing=3D"0" border=3D"0" align=3D"left">
+                                                <tr>
+                                                  <td valign=3D"middle" c=
+lass=3D"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Ari=
+al, Helvetica, sans-serif; color: #00335f; font-size: 24px; line-height: =
+30px; font-weight: bold;">599 900 Ft/f=C5=91 - t=C5=91l</td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        <!--[if mso]>
+                                      </td>
+                                      <td align=3D"center">
+                                      <![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#f7f7f7">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"250" style=3D"width:250px; min-width:250px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" class=3D"devicewidthimag=
+e2">
+                              <a href=3D"http://track.mlsend3.com/link/c/=
+YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQxNSZkPXM1b=
+DdoNXE=3D._WK_BmPBBKLjvCFaoyG90HGFDJhoyrr_dYul_0mu1hw" data-link-id=3D"56=
+381415" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.c=
+om/a/246/246797/images/d66c0f1bae7ffc805b3f6c6f112706298ac3e2cd.jpeg/0ef6=
+23ba41fa51c24dfe2492b4bf3d3a6edf20e3.jpeg" border=3D"0" style=3D"display:=
+ block;"></a>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"410">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"410" style=3D"width:410px; min-width:410px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"135" style=3D"height:135px; min-height:135px;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td height=3D"20" class=3D"none"></td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: right; letter-spacing: 0; font-style: normal;">
+                                              <a style=3D"text-decoration=
+: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQxNyZkPWg1cDdrM3o=3D=
+.qgtoV4ysKGhNDpdQrWh3_Ia30PqmVt36giUuusf1IAA" data-link-id=3D"56381417" t=
+arget=3D"_blank" border=3D"0">Portug=C3=A1lia klasszikus k=C3=B6rutaz=C3=A1=
+s</a>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyText" id=3D"content-20" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                              <div class=3D"text">
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px; text-align: left;">2016. okt=C3=B3ber 24 - 30.<b=
+r>7 nap / 6 =C3=A9jszaka</p>
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px; text-align: left;"><span style=3D"color: #c0392b=
+;">AKCI=C3=93S =C3=81R, AK=C3=81R B=C3=89CSI INDUL=C3=81SSAL IS!</span></=
+p>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td height=3D"10" class=3D"no=
+ne"></td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center">
+                                              <table cellpadding=3D"0" ce=
+llspacing=3D"0" border=3D"0" align=3D"right">
+                                                <tr>
+                                                  <td valign=3D"bottom" c=
+lass=3D"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Ari=
+al, Helvetica, sans-serif; color: #666666; font-size: 12px; line-height: =
+18px; font-weight: normal; text-decoration: line-through;">219 000 Ft/f=C5=
+=91 - t=C5=91l</td>
+                                                  <td align=3D"center" wi=
+dth=3D"5">
+                                                    <img src=3D"https://b=
+ucket.mlcdn.com/images/default/spacer.gif" width=3D"1" height=3D"1" style=
+=3D"display: block;" border=3D"0">
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td width=3D"20" class=3D"none">
+                                        <img src=3D"https://bucket.mlcdn.=
+com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"display:=
+ block;" border=3D"0">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                          <tr>
+                                            <td height=3D"40" class=3D"he=
+ight_auto" align=3D"center" valign=3D"middle">
+                                              <table cellpadding=3D"0" ce=
+llspacing=3D"0" border=3D"0" align=3D"left">
+                                                <tr>
+                                                  <td valign=3D"middle" c=
+lass=3D"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Ari=
+al, Helvetica, sans-serif; color: #00335f; font-size: 24px; line-height: =
+30px; font-weight: bold;">179 000 Ft/f=C5=91 - t=C5=91l</td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        <!--[if mso]>
+                                      </td>
+                                      <td align=3D"center">
+                                      <![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#f7f7f7">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"250" style=3D"width:250px; min-width:250px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" class=3D"devicewidthimag=
+e2">
+                              <a href=3D"http://track.mlsend3.com/link/c/=
+YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQxOSZkPWc5Y=
+TVwMHU=3D.N3qqNVtZj1kaD2laRQz747uaP5SEsgmngEqA0APOR0Q" data-link-id=3D"56=
+381419" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.c=
+om/a/246/246797/images/1a8fd16125752d92119d99d5fe89942f0822bf8a.jpeg/387f=
+2cdf244f800949f8caf7f406f1009a352edc.jpeg" border=3D"0" style=3D"display:=
+ block;"></a>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"410">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"410" style=3D"width:410px; min-width:410px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"135" style=3D"height:135px; min-height:135px;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td height=3D"20" class=3D"none"></td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: left; letter-spacing: 0; font-style: normal;">
+                                              <a style=3D"text-decoration=
+: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQyMSZkPWoyZDF4NW0=3D=
+.EMYmdukqXgjONmUH9FLOeMr8a9Xo-diC9HSky94Eij4" data-link-id=3D"56381421" t=
+arget=3D"_blank" border=3D"0">Peking, =C3=81zsia metropolisza</a>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyText" id=3D"content-22" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                              <div class=3D"text">
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px;">2016. november 2 - 7.<br>6 nap / 4 =C3=A9jszaka=
+</p>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td height=3D"10" class=3D"no=
+ne"></td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td width=3D"20" class=3D"none">
+                                        <img src=3D"https://bucket.mlcdn.=
+com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"display:=
+ block;" border=3D"0">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                          <tr>
+                                            <td height=3D"40" class=3D"he=
+ight_auto" align=3D"center" valign=3D"middle">
+                                              <table cellpadding=3D"0" ce=
+llspacing=3D"0" border=3D"0" align=3D"left">
+                                                <tr>
+                                                  <td valign=3D"middle" c=
+lass=3D"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Ari=
+al, Helvetica, sans-serif; color: #00335f; font-size: 24px; line-height: =
+30px; font-weight: bold;">129 000 Ft/f=C5=91 - t=C5=91l</td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        <!--[if mso]>
+                                      </td>
+                                      <td align=3D"center">
+                                      <![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#f7f7f7">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"250" style=3D"width:250px; min-width:250px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" class=3D"devicewidthimag=
+e2">
+                              <a href=3D"http://track.mlsend3.com/link/c/=
+YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQyMyZkPWY1Y=
+jNhN3Q=3D.ULAqf-5Ba-WMI03FKBAbJ9TL-Ub0ZwuriQrGCuF6eoI" data-link-id=3D"56=
+381423" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.c=
+om/a/246/246797/images/7d5b831df05319b4570767b1d772edab9e6ac873.jpeg/d8a3=
+52144bd44064cdaf95952675ad0498b61a02.jpeg" border=3D"0" style=3D"display:=
+ block;"></a>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"410">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"410" style=3D"width:410px; min-width:410px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"135" style=3D"height:135px; min-height:135px;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td height=3D"20" class=3D"none"></td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: left; letter-spacing: 0; font-style: normal;">
+                                              <a style=3D"text-decoration=
+: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQyNSZkPXk1dTNkNmY=3D=
+.c3I41pa7IRgjgUsuH34SdjS5Sp7plpCbg-VmiRNAFH0" data-link-id=3D"56381425" t=
+arget=3D"_blank" border=3D"0">Az azt=C3=A9k Mexik=C3=B3, k=C3=B6rutaz=C3=A1=
+s =C3=BCd=C3=BCl=C3=A9ssel Acapulc=C3=B3ban</a>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyText" id=3D"content-24" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                              <div class=3D"text">
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px;">2016. november 15 - 24.<br>10 nap / 8 =C3=A9jsz=
+aka</p>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td height=3D"10" class=3D"no=
+ne"></td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td width=3D"20" class=3D"none">
+                                        <img src=3D"https://bucket.mlcdn.=
+com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"display:=
+ block;" border=3D"0">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"left" class=3D"no_float margin_bottom">
+                                          <tr>
+                                            <td height=3D"40" class=3D"he=
+ight_auto" align=3D"center" valign=3D"middle">
+                                              <table cellpadding=3D"0" ce=
+llspacing=3D"0" border=3D"0" align=3D"left">
+                                                <tr>
+                                                  <td valign=3D"middle" c=
+lass=3D"bodyText" align=3D"center" style=3D"font-family: 'Open Sans', Ari=
+al, Helvetica, sans-serif; color: #00335f; font-size: 24px; line-height: =
+30px; font-weight: bold;">359 000 Ft/f=C5=91 - t=C5=91l</td>
+                                                </tr>
+                                              </table>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                        <!--[if mso]>
+                                      </td>
+                                      <td align=3D"center">
+                                      <![endif]-->
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table width=3D"100%" cellpadding=3D"0" border=3D"0" ce=
+llspacing=3D"0" align=3D"center">
+                    <tr>
+                      <td align=3D"center" class=3D"fullimage">
+                        <a href=3D"http://track.mlsend3.com/link/c/YT00Mz=
+Q3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQyNyZkPXQweDdvNGg=
+=3D.2Ds8usisZ5CYsjrsk8wSyT5ES41U0lIGSn6HiuHezWQ" data-link-id=3D"56381427=
+" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com/a/2=
+46/246797/images/2294753e6b2a1235f68657e16ad0fe6b2e43f68e.jpeg/fee1eed0d5=
+3dbf2c8023f8732bfe67a3e6b9b77b.jpeg" border=3D"0" width=3D"620" style=3D"=
+display: block;"></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td height=3D"20" class=3D"small_space"></td>
+                    </tr>
+                    <tr>
+                      <td align=3D"center" class=3D"bodyTitle" style=3D"f=
+ont-family: 'Open Sans', Arial, Helvetica, sans-serif; color: #073772; fo=
+nt-size: 30px; line-height: 36px; font-weight: normal; text-align: center=
+; letter-spacing: 0; font-style: normal;">
+                        <a style=3D"text-decoration: none; color: #073772=
+;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz=
+1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQyOSZkPWI1YTRtOXI=3D.5LgQQjWDiOIAa_ECyE_c=
+Z8zub1mGkcie3pVmt0J_Kkc" data-link-id=3D"56381429" target=3D"_blank" bord=
+er=3D"0">F=C3=B6ldk=C3=B6zi - tengeri haj=C3=B3=C3=BAt</a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td height=3D"20" class=3D"small_space"></td>
+                    </tr>
+                    <tr>
+                      <td align=3D"center" class=3D"bodyText" id=3D"conte=
+nt-26" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; c=
+olor: #666666; font-size: 14px; line-height: 20px; text-align: center;">
+                        <div class=3D"text">
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">Indul=C3=A1si id=C5=91pontok: 2016.=C2=
+=A0szeptember 11., 16., 18., 25.,okt=C3=B3ber=C2=A016., 28., 30., novembe=
+r 4., 6., 11., 13.</span></p>
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">=C3=9Atvonal: Genova - N=C3=A1poly -=
+ Messina - Valletta - Palma de Mallorca - Barcelona - Marseille - Genova<=
+/span></p>
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">Indul=C3=A1si kik=C3=B6t=C5=91k: Gen=
+ova, Barcelona</span></p>
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">Id=C5=91tartam: 8 nap / 7 =C3=A9j</s=
+pan></p>
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">Ell=C3=A1t=C3=A1s: teljes ell=C3=A1t=
+=C3=A1s</span></p>
+                          <p style=3D"margin-top: 0px; margin-bottom: 10p=
+x;"><span style=3D"font-size: 12px;">Utaz=C3=A1s: egy=C3=A9nileg</span></=
+p>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td height=3D"10" class=3D"none"></td>
+                    </tr>
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth">
+                          <tr>
+                            <td height=3D"40" align=3D"center" class=3D"b=
+utton2" valign=3D"middle" style=3D"font-family: 'Open Sans', Arial, Helve=
+tica, sans-serif;">
+                              <div>
+                                <!--[if mso]>
+                                  <v:roundrect xmlns:v=3D"urn:schemas-mic=
+rosoft-com:vml" xmlns:w=3D"urn:schemas-microsoft-com:office:word" href=3D=
+"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9=
+MzkyNTUzMTcmYj01NjM4MTQzMSZkPW45cDZkMXA=3D.m06l9lehCeuJYZMqQ3W6KyXUqe5dKc=
+gHlEglNkpsU9E" data-link-id=3D"56381431" style=3D"height:40px;v-text-anch=
+or:middle;width:160px;" arcsize=3D"10%" strokecolor=3D"#ffcb00" fillcolor=
+=3D"#ffffff">
+                                    <w:anchorlock/>
+                                    <center style=3D"color:#666666;font-f=
+amily:sans-serif;font-size:14px;font-weight:bold;">289 EUR/f=C5=91 - t=C5=
+=91l</center>
+                                  </v:roundrect>
+                                <![endif]-->
+                                <a class=3D"bodyButton" href=3D"http://tr=
+ack.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMT=
+cmYj01NjM4MTQzMyZkPWgwazBuMG4=3D.RxtJlieVZ34gE0nHTJlj2VXJ0dP_BtQfUW8RqHB7=
+Vcg" data-link-id=3D"56381433" target=3D"_blank" style=3D"background-colo=
+r:#ffffff;border:1px solid #ffcb00;border-radius:5px;color:#666666;displa=
+y:inline-block;font-family:sans-serif;font-size:14px;font-weight:bold;lin=
+e-height:38px;text-align:center;text-decoration:none;width:160px;-webkit-=
+text-size-adjust:none;mso-hide:all;">289 EUR/f=C5=91 - t=C5=91l</a>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <table cellpadding=3D"0" border=3D"0" cellspacing=3D"0" a=
+lign=3D"center" class=3D"devicewidth">
+                  <tr>
+                    <td height=3D"40" align=3D"center" class=3D"button2" =
+valign=3D"middle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sa=
+ns-serif;">
+                      <div>
+                        <!--[if mso]>
+                          <v:roundrect xmlns:v=3D"urn:schemas-microsoft-c=
+om:vml" xmlns:w=3D"urn:schemas-microsoft-com:office:word" href=3D"http://=
+track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUz=
+MTcmYj01NjM4MTQzNSZkPWMwbDJkOXo=3D.vSQ6JiJTclfzs4HHNqBHwn2s1g8tJy6EEhjGop=
+nH8Co" data-link-id=3D"56381435" style=3D"height:40px;v-text-anchor:middl=
+e;width:540px;" arcsize=3D"10%" stroke=3D"f" fillcolor=3D"#ffcb00">
+                            <w:anchorlock/>
+                            <center>
+                            <![endif]-->
+                            <a class=3D"bodyButton" href=3D"http://track.=
+mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj=
+01NjM4MTQzNyZkPXczbzNvM2E=3D.BKw1co37mJiX15aPYsF0Vebe9kBNQXQZWDUrzQPFJKY"=
+ data-link-id=3D"56381437" target=3D"_blank" style=3D"background-color:#f=
+fcb00; border-radius:5px; color:#ffffff;display:inline-block;font-family:=
+sans-serif;font-size:14px;font-weight:bold;line-height:40px;text-align:ce=
+nter;text-decoration:none;width:540px;-webkit-text-size-adjust:none;">FEL=
+T=C3=89TELEK =C3=89S A TELJES AKCI=C3=93S AJ=C3=81NLATI LISTA LET=C3=96LT=
+=C3=89SE</a>
+                            <!--[if mso]>
+                            </center>
+                          </v:roundrect>
+                        <![endif]-->
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#ffffff">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"410" style=3D"width:410px; min-width:410px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"250" style=3D"height:250px; min-height:250px;">
+                              <table cellpadding=3D"0" cellspacing=3D"0" =
+border=3D"0" align=3D"center" width=3D"100%">
+                                <tr>
+                                  <td height=3D"20"></td>
+                                </tr>
+                                <tr>
+                                  <td align=3D"center">
+                                    <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                      <tr>
+                                        <td width=3D"20" class=3D"none">
+                                          <img src=3D"https://bucket.mlcd=
+n.com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"displa=
+y: block;" border=3D"0">
+                                        </td>
+                                        <td align=3D"center">
+                                          <table cellpadding=3D"0" cellsp=
+acing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                            <tr>
+                                              <td height=3D"20" class=3D"=
+none"></td>
+                                            </tr>
+                                            <tr>
+                                              <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: left; letter-spacing: 0; font-style: normal;">
+                                                <a style=3D"text-decorati=
+on: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00Mz=
+Q3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQzOSZkPWMzZDNzMXE=
+=3D.dA7-PyV3Pn-npuCnMtezALroRkO81JGQyNd0ZiUL5YY" data-link-id=3D"56381439=
+" target=3D"_blank" border=3D"0">MSC haj=C3=B3utak online</a>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td align=3D"center" class=3D=
+"bodyText" id=3D"content-30" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                                <div class=3D"text">
+                                                  <p style=3D"margin-top:=
+ 0px; margin-bottom: 10px;">Foglaljon gyorsan =C3=A9s egyszer=C5=B1en MSC=
+ tengeri haj=C3=B3utakat online foglal=C3=B3 rendszer=C3=BCnk seg=C3=ADts=
+=C3=A9g=C3=A9vel, =C3=A9s utazzon a F=C3=B6ld sz=C3=A1mos tenger=C3=A9nek=
+ vagy =C3=B3ce=C3=A1nj=C3=A1nak egyik=C3=A9n.</p>
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          </table>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"250">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"250" style=3D"width:250px; min-width:250px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" class=3D"devicewidthimage2=
+">
+                            <a href=3D"http://track.mlsend3.com/link/c/YT=
+00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ0MSZkPXM0aTJ=
+uM3M=3D.4DoZ2ajRskZnSjlc8W_SQbdGRxafk0h_GUjBkfoZwBI" data-link-id=3D"5638=
+1441" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.com=
+/a/246/246797/images/0110683d19c90aafb260cd65b396e79cac85316b.jpeg/adcb0b=
+dfeba6d3ea1273284cfd6d25cc4e883db3.jpeg" border=3D"0" style=3D"display: b=
+lock;"></a>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table width=3D"680" cellpadding=3D"0" border=3D"0" cellspacing=
+=3D"0" align=3D"center" class=3D"devicewidth" style=3D"width: 680px; min-=
+width: 680px;" bgcolor=3D"#ffffff">
+            <tr>
+              <td align=3D"center" style=3D"padding: 0px 0px 30px 0px; " =
+class=3D"">
+                <selector>
+                  <table cellpadding=3D"0" cellspacing=3D"0" border=3D"0"=
+ align=3D"center" width=3D"100%" bgcolor=3D"#ffffff">
+                    <tr>
+                      <td align=3D"center">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"250" style=3D"width:250px; min-width:250px=
+;" class=3D"devicewidth margin_bottom">
+                          <tr>
+                            <td align=3D"center" class=3D"devicewidthimag=
+e2">
+                              <a href=3D"http://track.mlsend3.com/link/c/=
+YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ0MyZkPXcxb=
+DNvMHE=3D.vB-qCjxvhAIPBQjhJvQgUvjBfo3OrQzO8oVu7c0tXig" data-link-id=3D"56=
+381443" target=3D"_blank" border=3D"0"><img src=3D"https://bucket.mlcdn.c=
+om/a/246/246797/images/b23ef375ab2c09164e2f7ef00496bb71ea2dd4ad.jpeg/d93e=
+24bf31a578b2cd3d3094eb1cc1a3b04b5f8e.jpeg" border=3D"0" style=3D"display:=
+ block;"></a>
+                            </td>
+                          </tr>
+                        </table>
+                        <!--[if mso]>
+                      </td>
+                      <td width=3D"20">
+                        <table cellpadding=3D"0" cellspacing=3D"0" border=
+=3D"0" align=3D"left" width=3D"20" style=3D"width:20px; min-width:20px;" =
+class=3D"none">
+                          <tr>
+                            <td align=3D"center" width=3D"20">
+                              <img src=3D"https://bucket.mlcdn.com/images=
+/default/spacer.gif" width=3D"1" height=3D"1" />
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                      <td width=3D"410">
+                      <![endif]-->
+                      <table cellpadding=3D"0" cellspacing=3D"0" border=3D=
+"0" align=3D"right" width=3D"410" style=3D"width:410px; min-width:410px;"=
+ class=3D"devicewidth">
+                        <tr>
+                          <td align=3D"center" valign=3D"bottom" class=3D=
+"small_frame" height=3D"250" style=3D"height:250px; min-height:250px;">
+                            <table cellpadding=3D"0" cellspacing=3D"0" bo=
+rder=3D"0" align=3D"center" width=3D"100%">
+                              <tr>
+                                <td height=3D"20" class=3D"none"></td>
+                              </tr>
+                              <tr>
+                                <td align=3D"center">
+                                  <table cellpadding=3D"0" cellspacing=3D=
+"0" border=3D"0" align=3D"center" width=3D"100%">
+                                    <tr>
+                                      <td align=3D"center">
+                                        <table cellpadding=3D"0" cellspac=
+ing=3D"0" border=3D"0" align=3D"center" width=3D"100%">
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyTitle" style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-ser=
+if; color: #00335f; font-size: 30px; line-height: 36px; font-weight: norm=
+al; text-align: left; letter-spacing: 0; font-style: normal;">
+                                              <a style=3D"text-decoration=
+: none; color: #00335f;" href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ0NSZkPXY5dDlyMGw=3D=
+.x93dFzJNvsU7pEZM82Ef2Zcnt1RIRk0WZviFThhuI4c" data-link-id=3D"56381445" t=
+arget=3D"_blank" border=3D"0">Rep=C3=BCl=C5=91jegy foglal=C3=A1s</a>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td align=3D"center" class=3D=
+"bodyText" id=3D"content-32" style=3D"font-family: 'Open Sans', Arial, He=
+lvetica, sans-serif; color: #666666; font-size: 16px; line-height: 22px; =
+text-align: left;">
+                                              <div class=3D"text">
+                                                <p style=3D"margin-top: 0=
+px; margin-bottom: 10px;">Online rep=C3=BCl=C5=91jegy helyfoglal=C3=A1si =
+rendszer=C3=BCnk seg=C3=ADts=C3=A9g=C3=A9vel egyszer=C5=B1en =C3=A9s gyor=
+san tud foglalni rep=C3=BCl=C5=91jegyet b=C3=A1rmely orsz=C3=A1gba.</p>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </table>
+                                      </td>
+                                      <td width=3D"20" class=3D"none">
+                                        <img src=3D"https://bucket.mlcdn.=
+com/images/default/spacer.gif" width=3D"1" height=3D"1" style=3D"display:=
+ block;" border=3D"0">
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+                      </td>
+                    </tr>
+                  </table>
+                </selector>
+              </td>
+            </tr>
+          </table>
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>
+            <tr>
+              <td align=3D"center">
+                <table cellpadding=3D"0" border=3D"0" cellspacing=3D"0" a=
+lign=3D"center">
+                  <tr>
+                    <td width=3D"15"></td>
+                    <td width=3D"17">
+                      <a href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ0NyZkPWswbzFpNXo=3D=
+.A3z4Cr-XEfi2Bc3LRzSa0lnQbtEojKuNRp-EIU836ao" data-link-id=3D"56381447" t=
+arget=3D"_blank">
+<img src=3D"https://bucket.mlcdn.com/images/icons/share/black/facebook.pn=
+g" width=3D"17" height=3D"17" alt=3D"megoszt=C3=A1s facebookon" border=3D=
+"0" style=3D"display: block;">
+</a>
+                    </td>
+                    <td width=3D"10"></td>
+                    <td align=3D"left" class=3D"none" style=3D"color: #22=
+2222; font-size: 11px; font-weight: 400; line-height: 17px; text-transfor=
+m: uppercase;">
+                      <a style=3D"text-decoration: none; color: #000000;"=
+ href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1p=
+M2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ0OSZkPWk3bzhtNm0=3D.gqtw6HaHxeLrucBhVnpdsE=
+QrY1aK3aa_Dkh9Cs34LGM" data-link-id=3D"56381449" target=3D"_blank">
+<span style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; co=
+lor: #000000;" class=3D"bodyText">
+megoszt=C3=A1s facebookon
+</span>
+</a>
+                    </td>
+                    <td width=3D"15"></td>
+                    <td width=3D"15"></td>
+                    <td width=3D"17">
+                      <a href=3D"http://track.mlsend3.com/link/c/YT00MzQ3=
+MDg5NTM2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ1MSZkPXM3eTh4Mnk=3D=
+.nnTOGzLQ7nrP2nrPX8NR9FH4kjgp20ti3qJ4ykk63RA" data-link-id=3D"56381451" t=
+arget=3D"_blank">
+<img src=3D"https://bucket.mlcdn.com/images/icons/share/black/forward.png=
+" width=3D"17" height=3D"17" alt=3D"aj=C3=A1nlat tov=C3=A1bb=C3=ADt=C3=A1=
+sa" border=3D"0" style=3D"display: block;">
+</a>
+                    </td>
+                    <td width=3D"10"></td>
+                    <td align=3D"left" class=3D"none" style=3D"color: #22=
+2222; font-size: 11px; font-weight: 400; line-height: 17px; text-transfor=
+m: uppercase;">
+                      <a style=3D"text-decoration: none; color: #000000;"=
+ href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NTM2NzUzMzU1MDcmYz1p=
+M2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ1MyZkPXgyeDhpOG4=3D.itrW5TNjKC66ugKGr-NDX3=
+c4cjT_SFzf8JPD0_tyVq8" data-link-id=3D"56381453" target=3D"_blank">
+<span style=3D"font-family: 'Open Sans', Arial, Helvetica, sans-serif; co=
+lor: #000000;" class=3D"bodyText">
+aj=C3=A1nlat tov=C3=A1bb=C3=ADt=C3=A1sa
+</span>
+</a>
+                    </td>
+                    <td width=3D"15"></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>
+          </table>
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>
+            <tr>
+              <td align=3D"center">
+                <a href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NT=
+M2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTQ1NSZkPWYzdjJqMng=3D.ve9k=
+g2KJUtBChdj70VjZBQYfVQQqksz-KW5ft3urc-0" data-link-id=3D"56381455" target=
+=3D"_blank">
+<img src=3D"https://bucket.mlcdn.com/a/246/246797/images/dde2fc0335d0397a=
+c2beb883545fbec8de586af0.png/485cb4e98d403e17f47a1e1d257912846b1adb10.png=
+" height=3D"35" alt=3D"undefined" style=3D"display: block;" border=3D"0">
+</a>
+              </td>
+            </tr>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>
+            <tr>
+              <td style=3D"font-family: 'Open Sans', Arial, Helvetica, sa=
+ns-serif; color: #222222; font-size: 12px; font-weight: 400; line-height:=
+ 18px; text-align: center;" class=3D"bodyText" id=3D"content-36">
+                <p style=3D"margin: 0px 0px 10px 0px;">Chemol Travel - Ma=
+rshaller idegenforgalmi Kft. | MKEH: U - 001307</p>
+                <p style=3D"margin: 0px 0px 20px 0px;">1015 Budapest, Hat=
+ty=C3=BA utca 14. 7/718. | <a href=3D"mailto:info@chemoltravel.hu" target=
+=3D"_blank" style=3D"color: #222222;">info@chemoltravel.hu</a> | <a href=3D=
+"tel:06%201%20445%2035%2045" target=3D"_blank" style=3D"color: #222222;">=
+06 1 445 35 45</a></p>
+              </td>
+            </tr>
+            <tr>
+              <td height=3D"10"></td>
+            </tr>            <tr>
+              <td style=3D"font-family: 'Open Sans', Arial, Helvetica, sa=
+ns-serif; color: #222222; font-size: 12px; font-weight: 400; line-height:=
+ 18px; text-align: center;" class=3D"bodyText">
+                <a href=3D"http://track.mlsend3.com/link/c/YT00MzQ3MDg5NT=
+M2NzUzMzU1MDcmYz1pM2E5JmU9MzkyNTUzMTcmYj01NjM4MTUxOSZkPWsxYTZqN3Y=3D.EcMX=
+zPaImwvYB6jOI3RjSHz1lWWR6GPcA60l3bgEhpM" style=3D"color: #222222;" target=
+=3D"_blank">
+Leiratkoz=C3=A1s
+</a>
+              </td>
+            </tr>
+            <tr>
+              <td height=3D"20"></td>
+            </tr></table>
+          <table align=3D"center" border=3D"0" cellpadding=3D"0" cellspac=
+ing=3D"0" class=3D"devicewidth" style=3D"width: 680px; min-width: 680px;"=
+>
+            <tr>
+              <td height=3D"20"></td>
+            </tr>
+          </table>
+          <span style=3D"display:none; white-space:nowrap; font:15px cour=
+ier; line-height:0;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nb=
+sp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &n=
+bsp; &nbsp;</span>
+          <!-- Content ends here -->
+          <!--[if !mso]>
+            <!-- -->
+          </td>
+        </tr>
+      </table>
+    <!--<![endif]-->
+  </body>
+
+</html>=E2=80=8B
+
+
+
+--b1_516168030c773d179d7048cda0947f45--
+
+
