@@ -8,7 +8,7 @@
 
 int import_message(struct session_data *sdata, struct data *data, struct config *cfg);
 
-int import_from_maildir(struct session_data *sdata, struct data *data, struct config *cfg);
+int import_from_maildir(struct session_data *sdata, struct data *data, char *directory, struct config *cfg);
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *data, struct config *cfg);
 int import_mbox_from_dir(char *directory, struct session_data *sdata, struct data *data, struct config *cfg);
 void import_from_pop3_server(struct session_data *sdata, struct data *data, struct config *cfg);

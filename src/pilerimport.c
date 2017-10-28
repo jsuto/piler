@@ -63,7 +63,7 @@ void usage(){
 
 int main(int argc, char **argv){
    int i, c, n_mbox=0;
-   char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS];
+   char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS], *directory=NULL;
    char *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
    struct config cfg;
@@ -94,7 +94,6 @@ int main(int argc, char **argv){
    import.skiplist = SKIPLIST;
    import.folder_imap = NULL;
    memset(import.filename, 0, SMALLBUFSIZE);
-   import.directory = NULL;
    import.mboxdir = NULL;
    import.tot_msgs = 0;
    import.folder = NULL;
@@ -164,7 +163,7 @@ int main(int argc, char **argv){
                     break;
 
          case 'd' :
-                    data.import->directory = optarg;
+                    directory = optarg;
                     break;
 
          case 'm' :
@@ -277,7 +276,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(!mbox[0] && !data.import->mboxdir && !data.import->filename && !data.import->directory && !imapserver && !pop3server) usage();
+   if(!mbox[0] && !data.import->mboxdir && !data.import->filename && !directory && !imapserver && !pop3server) usage();
 
    if(data.import->failed_folder && !can_i_write_directory(data.import->failed_folder)){
       printf("cannot write failed directory '%s'\n", data.import->failed_folder);
@@ -344,7 +343,7 @@ int main(int argc, char **argv){
       }
    }
    if(data.import->mboxdir) import_mbox_from_dir(data.import->mboxdir, &sdata, &data, &cfg);
-   if(data.import->directory) import_from_maildir(&sdata, &data, &cfg);
+   if(directory) import_from_maildir(&sdata, &data, directory, &cfg);
    if(imapserver) import_from_imap_server(&sdata, &data, &cfg);
    if(pop3server) import_from_pop3_server(&sdata, &data, &cfg);
 

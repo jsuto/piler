@@ -313,7 +313,6 @@ struct import {
    char *skiplist;
    char *folder_imap;
    char *folder_name;
-   char *directory;
    char *mboxdir;
    char *folder;
    char filename[SMALLBUFSIZE];

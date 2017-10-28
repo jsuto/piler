@@ -22,17 +22,17 @@
 #include <piler.h>
 
 
-int import_from_maildir(struct session_data *sdata, struct data *data, struct config *cfg){
+int import_from_maildir(struct session_data *sdata, struct data *data, char *directory, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
    int folder;
-   char *p;
+   char *p, subdir[SMALLBUFSIZE];
    struct stat st;
 
-   dir = opendir(data->import->directory);
+   dir = opendir(directory);
    if(!dir){
-      printf("cannot open directory: %s\n", data->import->directory);
+      printf("cannot open directory: %s\n", directory);
       return ERR;
    }
 
@@ -40,13 +40,13 @@ int import_from_maildir(struct session_data *sdata, struct data *data, struct co
    while((de = readdir(dir))){
       if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
 
-      snprintf(data->import->filename, SMALLBUFSIZE-1, "%s/%s", data->import->directory, de->d_name);
+      snprintf(data->import->filename, SMALLBUFSIZE-1, "%s/%s", directory, de->d_name);
 
       if(stat(data->import->filename, &st) == 0){
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
-            data->import->directory = data->import->filename;
-            rc = import_from_maildir(sdata, data, cfg);
+            snprintf(subdir, sizeof(subdir)-1, "%s/%s", directory, data->import->filename);
+            rc = import_from_maildir(sdata, data, subdir, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
@@ -54,10 +54,10 @@ int import_from_maildir(struct session_data *sdata, struct data *data, struct co
 
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
-                  p = strrchr(data->import->directory, '/');
+                  p = strrchr(directory, '/');
                   if(p) p++;
                   else {
-                     printf("ERROR: invalid directory name: '%s'\n", data->import->directory);
+                     printf("ERROR: invalid directory name: '%s'\n", directory);
                      return ERR;
                   }
 
