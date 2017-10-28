@@ -27,7 +27,7 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
    int folder;
-   char *p, subdir[SMALLBUFSIZE];
+   char *p;
    struct stat st;
 
    dir = opendir(directory);
@@ -45,8 +45,7 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
       if(stat(data->import->filename, &st) == 0){
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
-            snprintf(subdir, sizeof(subdir)-1, "%s/%s", directory, data->import->filename);
-            rc = import_from_maildir(sdata, data, subdir, cfg);
+            rc = import_from_maildir(sdata, data, data->import->filename, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
