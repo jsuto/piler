@@ -318,7 +318,7 @@ define('NOW', time());
  * normally you don't have to change anything below
  */
 
-require_once 'config-site.php';
+require_once '@sysconfdir@/piler/config-site.php';
 
 ini_set('session.cookie_lifetime', $config['SESSION_EXPIRY']);
 

@@ -356,9 +356,6 @@ AC_SUBST(DATAROOTDIR)
 AC_DEFINE_UNQUOTED(DATAROOTDIR,"$dataroot_dir",[where to look for the share data files])
 
 
-AC_DEFINE_UNQUOTED(VIRUS_TEMPLATE, "$my_prefix/share/clapf/template.virus", [where the virus template is])
-AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "$my_prefix/share/clapf/zombienets.regex", [where the virus template is])
-
 
 if test "$have_mysql" = "no" && test "$have_psql" = "no"; then
    echo
@@ -385,11 +382,6 @@ if test "$os" = "SunOS"; then
    sunos_libs="-lnsl -lsocket"
 
    if test -x /usr/xpg4/bin/id; then id_bin="/usr/xpg4/bin/id"; fi
-fi
-
-if test `echo $os | grep -c CYGWIN` -eq 1; then
-   defs="$defs -DCYGWIN"
-   AC_DEFINE_UNQUOTED(ZOMBIE_NET_REGEX, "zombienets.regex", [where the virus template is])
 fi
 
 dnl whether we have antivirus support
@@ -546,12 +538,12 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile webui/config.php])
 AC_OUTPUT
 
 
 echo
 echo
-echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/en/upgrade.html"
+echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/wiki/current:upgrade"
 echo
 echo

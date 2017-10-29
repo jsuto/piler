@@ -4635,17 +4635,6 @@ _ACEOF
 
 
 
-cat >>confdefs.h <<_ACEOF
-#define VIRUS_TEMPLATE "$my_prefix/share/clapf/template.virus"
-_ACEOF
-
-
-cat >>confdefs.h <<_ACEOF
-#define ZOMBIE_NET_REGEX "$my_prefix/share/clapf/zombienets.regex"
-_ACEOF
-
-
-
 if test "$have_mysql" = "no" && test "$have_psql" = "no"; then
    echo
    echo "please specify the used database with --with-database=..."
@@ -4672,15 +4661,6 @@ $as_echo "#define HAVE_DAEMON 0" >>confdefs.h
    sunos_libs="-lnsl -lsocket"
 
    if test -x /usr/xpg4/bin/id; then id_bin="/usr/xpg4/bin/id"; fi
-fi
-
-if test `echo $os | grep -c CYGWIN` -eq 1; then
-   defs="$defs -DCYGWIN"
-
-cat >>confdefs.h <<_ACEOF
-#define ZOMBIE_NET_REGEX "zombienets.regex"
-_ACEOF
-
 fi
 
 
@@ -4880,7 +4860,7 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile webui/config.php"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5580,6 +5560,7 @@ do
     "init.d/Makefile") CONFIG_FILES="$CONFIG_FILES init.d/Makefile" ;;
     "unit_tests/Makefile") CONFIG_FILES="$CONFIG_FILES unit_tests/Makefile" ;;
     "contrib/imap/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/imap/Makefile" ;;
+    "webui/config.php") CONFIG_FILES="$CONFIG_FILES webui/config.php" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -6204,6 +6185,6 @@ fi
 
 echo
 echo
-echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/en/upgrade.html"
+echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/wiki/current:upgrade"
 echo
 echo
