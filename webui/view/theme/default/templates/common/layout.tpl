@@ -4,7 +4,7 @@
 <head>
     <title><?php print $title; ?></title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="Content-Language" content="en" />
+    <meta http-equiv="Content-Language" content="<?php print DEFAULT_LANG; ?>" />
     <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
     <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
     <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
