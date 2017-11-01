@@ -11,7 +11,7 @@
 
 #define VERSION "1.3.2"
 
-#define BUILD 981
+#define BUILD 982
 
 #define HOSTID "mailarchiver"
 
@@ -62,6 +62,7 @@
 
 #define _LOG_INFO 3
 #define _LOG_DEBUG 5
+#define _LOG_EXTREME 100
 
 #define MAX_RCPT_TO 128
 

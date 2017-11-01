@@ -206,8 +206,11 @@ int main(int argc, char **argv){
       n = epoll_wait(efd, events, cfg.max_connections, -1);
       for(i=0; i<n; i++){
 
+         // The remote side has disconnected without sending QUIT
+         // We log the event only in case of a very high verbosity level
+         // so it won't scare users
          if((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))){
-            syslog(LOG_PRIORITY, "ERROR: epoll error");
+            if(cfg.verbosity >= _LOG_EXTREME) syslog(LOG_PRIORITY, "ERROR: the remote end hung up without sending QUIT");
             close(events[i].data.fd);
             continue;
          }
@@ -275,7 +278,7 @@ int main(int argc, char **argv){
                else
                   readlen = read(events[i].data.fd, (char*)&readbuf[0], sizeof(readbuf)-1);
 
-               if(cfg.verbosity >= _LOG_DEBUG && readlen > 0) syslog(LOG_PRIORITY, "got %ld bytes to read", readlen);
+               if(cfg.verbosity >= _LOG_EXTREME && readlen > 0) syslog(LOG_PRIORITY, "got %ld bytes to read", readlen);
 
                if(readlen == -1){
                   /* If errno == EAGAIN, that means we have read all data. So go back to the main loop. */
