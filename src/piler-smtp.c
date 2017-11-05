@@ -182,8 +182,6 @@ int main(int argc, char **argv){
    set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
 
-   alarm(timeout);
-
    // calloc() initialitizes the allocated memory
 
    sessions = calloc(cfg.max_connections, sizeof(struct smtp_session));
@@ -201,6 +199,8 @@ int main(int argc, char **argv){
 #if HAVE_DAEMON == 1
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
+
+   alarm(timeout);
 
    for(;;){
       n = epoll_wait(efd, events, cfg.max_connections, -1);
