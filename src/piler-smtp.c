@@ -206,12 +206,17 @@ int main(int argc, char **argv){
       n = epoll_wait(efd, events, cfg.max_connections, -1);
       for(i=0; i<n; i++){
 
-         // The remote side has disconnected without sending QUIT
-         // We log the event only in case of a very high verbosity level
-         // so it won't scare users
+         // Office365 sometimes behaves oddly: when it receives the 250 OK
+         // message after sending the email, it doesn't send the QUIT command
+         // rather it aborts the connection
+
          if((events[i].events & EPOLLERR) || (events[i].events & EPOLLHUP) || (!(events[i].events & EPOLLIN))){
             if(cfg.verbosity >= _LOG_EXTREME) syslog(LOG_PRIORITY, "ERROR: the remote end hung up without sending QUIT");
-            close(events[i].data.fd);
+            session = get_session_by_socket(sessions, cfg.max_connections, events[i].data.fd);
+            if(session)
+               tear_down_session(sessions, session->slot, &num_connections);
+            else
+               close(events[i].data.fd);
             continue;
          }
 
