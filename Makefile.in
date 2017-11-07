@@ -75,7 +75,9 @@ installdirs: mkinstalldirs
 		$(DESTDIR)$(sysconfdir)/piler \
 		$(DESTDIR)/etc/init.d \
 		$(DESTDIR)$(localstatedir)/piler/store \
-		$(DESTDIR)$(localstatedir)/piler/stat $(DESTDIR)$(localstatedir)/piler/tmp \
+		$(DESTDIR)$(localstatedir)/piler/stat \
+		$(DESTDIR)$(localstatedir)/piler/tmp \
+		$(DESTDIR)$(localstatedir)/piler/error \
 		$(DESTDIR)$(localstatedir)/piler/sphinx
 
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/run/piler
@@ -83,6 +85,7 @@ installdirs: mkinstalldirs
 	$(INSTALL) -d -m 0700 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/imap
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/stat
 	$(INSTALL) -d -m 0711 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/tmp
+	$(INSTALL) -d -m 0711 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/error
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/sphinx
 
 

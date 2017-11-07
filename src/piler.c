@@ -93,6 +93,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    char *status=S_STATUS_UNDEF;
    char *arule;
    char *rcpt;
+   char *p;
    struct timezone tz;
    struct timeval tv1, tv2;
    struct parser_state parser_state;
@@ -169,6 +170,15 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    }
    else {
       status = S_STATUS_ERROR;
+      // move the file from piler/tmp/[0-xxx] dir to piler/error directory
+      p = strchr(filename, '/');
+      if(p)
+         p++;
+      else
+         p = filename;
+
+      snprintf(tmpbuf, sizeof(tmpbuf)-1, "%s/%s", ERROR_DIR, p);
+      rename(filename, tmpbuf);
    }
 
    if(rc != ERR) unlink(filename);

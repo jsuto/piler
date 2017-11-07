@@ -11,13 +11,14 @@
 
 #define VERSION "1.3.2"
 
-#define BUILD 982
+#define BUILD 983
 
 #define HOSTID "mailarchiver"
 
 #define CONFIG_FILE CONFDIR "/piler/piler.conf"
 #define WORK_DIR DATADIR "/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
+#define ERROR_DIR DATADIR "/piler/error"
 
 #define CLAMD_SOCKET "/tmp/clamd"
 
