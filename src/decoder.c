@@ -323,7 +323,16 @@ int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *en
 
    memset(outbuf, 0, outbuflen);
 
-   cd = iconv_open("utf-8", encoding);
+   // Iconv sometimes produces an invalid utf8 sequence for gb2312.
+   // The fix is to use cp936, instead of gb2312 encoding.
+   //
+   // If there will be more similar exceptions, then we have to use
+   // a more efficient lookup method
+
+   if(strcasecmp(encoding, "gb2312") == 0)
+      cd = iconv_open("utf-8", "cp936");
+   else
+      cd = iconv_open("utf-8", encoding);
 
    if(cd != (iconv_t)-1){
       inbytesleft = inbuflen;
@@ -339,4 +348,3 @@ int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *en
 
    return ret;
 }
-
