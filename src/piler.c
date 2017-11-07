@@ -170,6 +170,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    }
    else {
       status = S_STATUS_ERROR;
+
       // move the file from piler/tmp/[0-xxx] dir to piler/error directory
       p = strchr(filename, '/');
       if(p)
@@ -178,7 +179,10 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
          p = filename;
 
       snprintf(tmpbuf, sizeof(tmpbuf)-1, "%s/%s", ERROR_DIR, p);
-      rename(filename, tmpbuf);
+      if(rename(filename, tmpbuf) == 0)
+         syslog(LOG_PRIORITY, "%s: moved to %s", filename, tmpbuf);
+      else
+         syslog(LOG_PRIORITY, "%s: failed to moved to %s", filename, tmpbuf);
    }
 
    if(rc != ERR) unlink(filename);
