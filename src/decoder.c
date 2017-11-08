@@ -78,6 +78,8 @@ inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, in
        * U+0000..U+007F      00..7F
        * U+0080..U+07FF      C2..DF      80..BF
        * U+0800..U+0FFF      E0          A0..BF      80..BF
+       *
+       * FIXME: See http://www.unicode.org/versions/Unicode5.2.0/ch03.pdf#G7404 for valid sequences
        */
 
       if(c <= 0x7F){

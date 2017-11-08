@@ -2,12 +2,7 @@
  * check_parser_utils.c, SJ
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "../src/piler.h"
+#include "test.h"
 
 
 struct date_test {
@@ -29,9 +24,9 @@ struct str_pair {
 
 static void test_parse_date_header(){
    unsigned int i;
-   int dst_fix = 0;
-   time_t t = time(NULL);
-   struct tm lt = {0};
+   //time_t t = time(NULL);
+   //int dst_fix = 0;
+   //struct tm lt = {0};
    struct config cfg;
    struct date_test date_test[] = {
       {"Date: Mon, 02 Nov 2015 09:39:31 -0000", 1446457171},
@@ -53,22 +48,22 @@ static void test_parse_date_header(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
-   localtime_r(&t, &lt);
+   /*localtime_r(&t, &lt);
    if(lt.tm_isdst == 1){
       printf("DST is on\n");
       dst_fix = 3600;
    }
    else {
       printf("DST is off\n");
-   }
+   }*/
+
+   TEST_HEADER();
 
    for(i=0; i<sizeof(date_test)/sizeof(struct date_test); i++){
-      printf("%s parsed=%ld, control=%ld\n", date_test[i].date_str, parse_date_header(date_test[i].date_str), date_test[i].timestamp);
-
-      assert(parse_date_header(date_test[i].date_str)-dst_fix == date_test[i].timestamp && "test_parse_date_header()");
+      ASSERT(parse_date_header(date_test[i].date_str) == date_test[i].timestamp, date_test[i].date_str);
    }
 
-   printf("test_parse_date_header() OK\n");
+   TEST_FOOTER();
 }
 
 
@@ -108,13 +103,14 @@ static void test_extractNameFromHeaderLine(){
       {"foo: bar; title*=UTF-8''%c2%a3%20and%20%e2%82%ac%20rates", "title", "£ and € rates"}
    };
 
+   TEST_HEADER();
 
    for(i=0; i<sizeof(name_from_header_test)/sizeof(struct name_from_header_test); i++){
       extractNameFromHeaderLine(name_from_header_test[i].line, name_from_header_test[i].token, resultbuf);
-      assert(strcmp(resultbuf, name_from_header_test[i].expected_result) == 0 && "test_extractNameFromHeaderLine");
+      ASSERT(strcmp(resultbuf, name_from_header_test[i].expected_result) == 0, name_from_header_test[i].expected_result);
    }
 
-   printf("test_extractNameFromHeaderLine() OK\n");
+   TEST_FOOTER();
 }
 
 
@@ -123,7 +119,7 @@ static void test_fixupEncodedHeaderLine(){
    char buf[SMALLBUFSIZE];
    struct str_pair pair[] = {
 
-      {"=?utf-8?Q?Tanjoubi,_azaz_sz=C3=BClet=C3=A9snap!_10_=C3=A9ves_az_I_Love_Su?=  =?utf-8?Q?shi!?=", "Tanjoubi, azaz születésnap! 10 éves az I Love Su  shi!"},
+      {"=?utf-8?Q?Tanjoubi,_azaz_sz=C3=BClet=C3=A9snap!_10_=C3=A9ves_az_I_Love_Su?=  =?utf-8?Q?shi!?=", "Tanjoubi, azaz születésnap! 10 éves az I Love Sushi!"},
       {"=?UTF-8?Q?IAM:_N2YPF_-_#1_Request_new_privilege?=", "IAM: N2YPF - #1 Request new privilege"},
       {"=?UTF-8?B?SG9neWFuIMOtcmp1bmsgcGFuYXN6bGV2ZWxldD8=?=", "Hogyan írjunk panaszlevelet?"},
       {"Re: [Bitbucket] Issue #627: ldap user can't login (jsuto/piler)", "Re: [Bitbucket] Issue #627: ldap user can't login (jsuto/piler)"},
@@ -140,7 +136,7 @@ static void test_fixupEncodedHeaderLine(){
       {"Re: cccc@aaa.fu - e-mail =?UTF-8?B?a8OpcmTDqXM=?=", "Re: cccc@aaa.fu - e-mail kérdés"},
       {"=?WINDOWS-1250?Q?<AZ-17226/1-2015>=20www.xxxxx.com=20new=20virtual=20?=", "<AZ-17226/1-2015> www.xxxxx.com new virtual "},
       {"Re: FW: =?ISO-8859-2?Q?Sopron-Gy=F5r_optikai_sz=E1l_probl=E9?=", "Re: FW: Sopron-Győr optikai szál problé"},
-      {"=?UTF-8?Q?Megh=C3=ADv=C3=B3=20a=20Pulzus=20felm=C3=A9r=C3=A9sre=20/=20Inv?=  =?UTF-8?Q?itation=20to=20the=20Pulse=20Survey?=", "Meghívó a Pulzus felmérésre / Inv  itation to the Pulse Survey"},
+      {"=?UTF-8?Q?Megh=C3=ADv=C3=B3=20a=20Pulzus=20felm=C3=A9r=C3=A9sre=20/=20Inv?=  =?UTF-8?Q?itation=20to=20the=20Pulse=20Survey?=", "Meghívó a Pulzus felmérésre / Invitation to the Pulse Survey"},
       {"=?iso-8859-2?Q?vhost_l=E9trehoz=E1sa?=", "vhost létrehozása"},
       {"Re: MAIL =?UTF-8?B?U1pPTEfDgUxUQVTDgVMgSElCQSAgIEdUUzogOTE1NDUyMQ==?=", "Re: MAIL SZOLGÁLTATÁS HIBA   GTS: 9154521"},
       {"[spam???]  Better Sex. Better Body. Better Life.", "[spam???]  Better Sex. Better Body. Better Life."},
@@ -157,20 +153,20 @@ static void test_fixupEncodedHeaderLine(){
       {"Subject: =?UTF-8?Q?Experience=20a=20Crazy=20Reward=20Delivered=20to=20you?=", "Subject: Experience a Crazy Reward Delivered to you"},
       {"Subject: =?windows-1251?B?ze7i7uPu5O3o5SDv7uTg8OroIOTr/yDC4Pjo?=", "Subject: Новогодние подарки для Ваши"},
       {"Subject: =?utf-8?Q?Divatos,_=C3=BCde_sz=C3=ADneinek_k=C3=B6sz=C3=B6nhet=C5=91en_el?=", "Subject: Divatos, üde színeinek köszönhetően el"},
+      {"=?gb2312?B?yc/Gz76pIC0gw7/fTMir0bKy6YjzuOYgKDIwMTcxMDMwLTMxKSBHQlcgUG9k?==?gb2312?Q?ium_&_Basement.docx?=", "上葡京 - 每週全巡查報告 (20171030-31) GBW Podium & Basement.docx"},
    };
 
+   TEST_HEADER();
 
    for(i=0; i<sizeof(pair)/sizeof(struct str_pair); i++){
       snprintf(buf, sizeof(buf)-1, "%s", pair[i].line);
 
       fixupEncodedHeaderLine(buf, sizeof(buf)-1);
 
-      assert(strcmp(buf, pair[i].expected_result) == 0 && "test_fixupEncodedHeaderLine");
-
-      //printf("      {\"%s\", \"%s\"},\n", pair[i].line, buf);
+      ASSERT(strcmp(buf, pair[i].expected_result) == 0, pair[i].expected_result);
    }
 
-   printf("test_fixupEncodedHeaderLine() OK\n");
+   TEST_FOOTER();
 }
 
 
@@ -191,6 +187,7 @@ static void test_translateLine(){
        */
    };
 
+   TEST_HEADER();
 
    for(i=0; i<sizeof(pair)/sizeof(struct str_pair); i++){
 
@@ -202,12 +199,10 @@ static void test_translateLine(){
 
       translateLine((unsigned char*)buf, &state);
 
-      //printf("      {\"%s\", \"%s\"},\n", pair[i].line, buf);
-
-      assert(strcmp(buf, pair[i].expected_result) == 0 && "test_translateLine");
+      ASSERT(strcmp(buf, pair[i].expected_result) == 0, pair[i].expected_result);
    }
 
-   printf("test_translateLine() OK\n");
+   TEST_FOOTER();
 }
 
 
@@ -223,6 +218,7 @@ static void test_fixURL(){
       {"https://www.aaa.fu/", "__URL__wwwXaaaXfu "}
    };
 
+   TEST_HEADER();
 
    for(i=0; i<sizeof(pair)/sizeof(struct str_pair); i++){
 
@@ -230,14 +226,10 @@ static void test_fixURL(){
 
       fixURL(buf, sizeof(buf)-1);
 
-      //printf("      {\"%s\", \"%s\"},\n", pair[i].line, buf);
-
-      assert(strcmp(buf, pair[i].expected_result) == 0 && "test_fixURL");
-
+      ASSERT(strcmp(buf, pair[i].expected_result) == 0, pair[i].expected_result);
    }
 
-   printf("test_fixURL() OK\n");
-
+   TEST_FOOTER();
 }
 
 
@@ -257,6 +249,7 @@ static void test_degenerateToken(){
       {"Hello...", "Hello"}
    };
 
+   TEST_HEADER();
 
    for(i=0; i<sizeof(pair)/sizeof(struct str_pair); i++){
 
@@ -264,14 +257,10 @@ static void test_degenerateToken(){
 
       degenerateToken((unsigned char*)buf);
 
-      //printf("      {\"%s\", \"%s\"},\n", pair[i].line, buf);
-
-      assert(strcmp(buf, pair[i].expected_result) == 0 && "test_degenerateToken");
-
+      ASSERT(strcmp(buf, pair[i].expected_result) == 0, pair[i].expected_result);
    }
 
-   printf("test_degenerateToken() OK\n");
-
+   TEST_FOOTER();
 }
 
 

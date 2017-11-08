@@ -196,6 +196,7 @@ time_t parse_date_header(char *datestr){
          else if(strncasecmp(s, "Sat", 3) == 0) tm.tm_wday = 6;
          else if(strncasecmp(s, "Sun", 3) == 0) tm.tm_wday = 0;
 
+
          if(len <= 2 && tm.tm_mday == 0){ tm.tm_mday = atoi(s); continue; }
 
          if(len <= 2 && tm.tm_mon == -1){ tm.tm_mon = atoi(s) - 1; continue; }
@@ -313,17 +314,19 @@ int extract_boundary(char *p, struct parser_state *state){
 
 
 void fixupEncodedHeaderLine(char *buf, int buflen){
-   char *sb, *sq, *p, *q, *r, *s, *e, *start, *end;
+   char *p, *q, *r, *s, *e, *end;
    /*
     * I thought SMALLBUFSIZE would be enough for v, encoding and tmpbuf(2*),
     * but then I saw a 6-7000 byte long subject line, so I've switched to MAXBUFSIZE
     */
-   char v[MAXBUFSIZE], puf[MAXBUFSIZE], encoding[MAXBUFSIZE], tmpbuf[2*MAXBUFSIZE];
+   char v[MAXBUFSIZE], u[MAXBUFSIZE], puf[MAXBUFSIZE], encoding[MAXBUFSIZE], tmpbuf[2*MAXBUFSIZE];
    int need_encoding, ret;
 
    if(buflen < 5) return;
 
    memset(puf, 0, sizeof(puf));
+   memset(encoding, 0, sizeof(encoding));
+
 
    q = buf;
 
@@ -332,69 +335,89 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
       p = v;
 
-      memset(encoding, 0, sizeof(encoding));
-
       do {
-         start = strstr(p, "=?");
-         if(start){
-            *start = '\0';
-            if(strlen(p) > 0){
-               strncat(puf, p, sizeof(puf)-strlen(puf)-1);
+         memset(u, 0, sizeof(u));
+
+         /*
+          * We can't use split_str(p, "=?", ...) it will fail with the following pattern
+          *    =?UTF-8?B?SG9neWFuIMOtcmp1bmsgcGFuYXN6bGV2ZWxldD8=?=
+          *
+          * Also the below patter requires special care:
+          *    =?gb2312?B?<something>?==?gb2312?Q?<something else>?=
+          */
+
+         r = strstr(p, "=?");
+         if(r){
+            p = r + 2;
+            end = strstr(p, "?=");
+            if(end){
+               *end = '\0';
             }
 
-            start++;
+            snprintf(u, sizeof(u)-1, "%s", p);
 
-            e = strchr(start+2, '?');
-            if(e){
-               *e = '\0';
-               snprintf(encoding, sizeof(encoding)-1, "%s", start+1);
-               *e = '?';
-            }
-
-            s = NULL;
-            sb = strcasestr(start, "?B?"); if(sb) s = sb;
-            sq = strcasestr(start, "?Q?"); if(sq) s = sq;
-
-            if(s){
-               end = strstr(s+3, "?=");
-               if(end){
-                  *end = '\0';
-
-                  if(sb){ decodeBase64(s+3); }
-                  if(sq){ decodeQP(s+3); r = s + 3; for(; *r; r++){ if(*r == '_') *r = ' '; } }
-
-                  /* encode everything if it's not utf-8 encoded */
-
-                  need_encoding = 0;
-                  ret = ERR;
-
-                  if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8")){
-                     need_encoding = 1;
-                     ret = utf8_encode(s+3, strlen(s+3), &tmpbuf[0], sizeof(tmpbuf), encoding);
-                  }
-
-                  if(need_encoding == 1 && ret == OK)
-                     strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
-                  else 
-                     strncat(puf, s+3, sizeof(puf)-strlen(puf)-1);
-
-                  p = end + 2;
-               }
-            }
-            else {
-               strncat(puf, start, sizeof(puf)-strlen(puf)-1);
-
-               break;
+            if(end) {
+               p = end + 2;
             }
          }
          else {
-            strncat(puf, p, sizeof(puf)-strlen(puf)-1);
-            break;
+            snprintf(u, sizeof(u)-1, "%s", p);
+            p = NULL;
+         }
+
+         if(u[0] == 0) continue;
+
+         memset(encoding, 0, sizeof(encoding));
+
+         // Check if it's either ?B? or ?Q? encoding ...
+         s = strcasestr(u, "?B?");
+         if(s){
+            decodeBase64(s+3);
+         }
+         else {
+            s = strcasestr(u, "?Q?");
+            if(s){
+               decodeQP(s+3);
+               r = s + 3;
+               for(; *r; r++){
+                  if(*r == '_') *r = ' ';
+               }
+            }
+         }
+
+         // ... if it is, then get the encoding
+         if(s){
+            e = strchr(u, '?');
+            if(e){
+               *e = '\0';
+               snprintf(encoding, sizeof(encoding)-1, "%s", u);
+               *e = '?';
+
+               need_encoding = 0;
+               ret = ERR;
+
+               if(encoding[0] && strcasecmp(encoding, "utf-8")){
+                  need_encoding = 1;
+                  ret = utf8_encode(s+3, strlen(s+3), &tmpbuf[0], sizeof(tmpbuf), encoding);
+               }
+
+               if(need_encoding == 1 && ret == OK)
+                  strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
+               else
+                  strncat(puf, s+3, sizeof(puf)-strlen(puf)-1);
+            }
+            else {
+               memset(encoding, 0, sizeof(encoding));
+               strncat(puf, u, sizeof(puf)-strlen(puf)-1);
+            }
+         }
+         else {
+            strncat(puf, u, sizeof(puf)-strlen(puf)-1);
          }
 
       } while(p);
 
-      if(q) strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+      if(q && encoding[0] == 0) strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
 
    } while(q);
 
@@ -599,6 +622,7 @@ void translateLine(unsigned char *p, struct parser_state *state){
          prev = *p;
       }
 
+
       if(state->message_state == MSG_SUBJECT && (*p == '%' || *p == '_' || *p == '&') ){ continue; }
 
       if(state->message_state == MSG_CONTENT_TYPE && *p == '_' ){ continue; }
@@ -658,8 +682,7 @@ int does_it_seem_like_an_email_address(char *email){
  */
 
 void reassembleToken(char *p){
-   unsigned int i;
-   int k=0;
+   unsigned int i, k=0;
 
    for(i=0; i<strlen(p); i++){
 
@@ -959,3 +982,4 @@ void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len
       *at_sign = r;
    }
 }
+
