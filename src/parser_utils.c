@@ -791,6 +791,11 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
        *
        *      foo: bar; title*=UTF-8''%c2%a3%20and%20%e2%82%ac%20rates
        *
+       *   Odd one having two filename definitions, and having a semicolon (;) in the filename:
+       *
+       *      filename*=utf-8''P;LAN%20Holden%204.docx;filename="P;LAN Holden 4.docx"*
+       *
+       *
        */
 
       p += strlen(name);
@@ -801,6 +806,12 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
       p = strchr(p, '=');
       if(p){
          p++;
+
+         // If the line has the 'name' more than once, then truncate the subsequent parts, ie.
+         // utf-8''P;LAN%20Holden%204.docx;filename="P;LAN Holden 4.docx" ==> utf-8''P;LAN%20Holden%204.docx
+         q = strstr(p, name);
+         if(q) *q = '\0';
+
          q = strrchr(p, ';');
          if(q) *q = '\0';
          q = strrchr(p, '"');
