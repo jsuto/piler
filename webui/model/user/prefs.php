@@ -84,6 +84,10 @@ class ModelUserPrefs extends Model {
    public function toggle_ga($username = '', $ga_enabled = '') {
       if($username == "" || $ga_enabled < 0 || $ga_enabled > 1) { return 0; }
 
+      // In demo mode you can't enable Google AUthenticator since other users
+      // would NOT be able to login without the GA secret
+      if(DEMO_MODE && in_array($username, ['admin@local', 'auditor@local'])) { return 1; }
+
       $query = $this->db->query("UPDATE " . TABLE_USER_SETTINGS . " SET ga_enabled=? WHERE username=?", array($ga_enabled, $username));
 
       return 1;
