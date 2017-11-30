@@ -41,6 +41,17 @@ struct passwd *pwd;
 struct smtp_session *session, **sessions=NULL;
 
 
+void usage(){
+   printf("\nusage: piler\n\n");
+   printf("    -c <config file>                  Config file to use if not the default\n");
+   printf("    -d                                Fork to the background\n");
+   printf("    -v                                Return the version and build number\n");
+   printf("    -V                                Return the version and some build parameters\n");
+
+   exit(0);
+}
+
+
 void p_clean_exit(){
    int i;
 
@@ -143,7 +154,7 @@ int main(int argc, char **argv){
 
         case 'h' :
         default  : 
-                   __fatal("usage: ...");
+                   usage();
       }
    }
 
