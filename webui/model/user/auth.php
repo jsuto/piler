@@ -487,6 +487,10 @@ class ModelUserAuth extends Model {
 
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
             return 1;
          }
 

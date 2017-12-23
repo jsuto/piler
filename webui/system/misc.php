@@ -425,6 +425,11 @@ function fetch_url($url = '') {
 function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
    $date = "";
 
+   // Check if you want to apply a 'not before' value to a non-auditor user
+   if(Registry::get('auditor') == 0 && Registry::get('not_before_date')) {
+      $date1 = Registry::get('not_before_date');
+   }
+
    if($date1) {
       list($y,$m,$d) = preg_split("/(\.|\-|\/)/", $date1);
 
