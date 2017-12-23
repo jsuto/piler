@@ -437,16 +437,16 @@ class ModelUserAuth extends Model {
 
       $u = explode("\\", $_SERVER['REMOTE_USER']);
 
-      if(isset($u[1])) { $username = $u[1]; }
-      else { $username = $_SERVER['REMOTE_USER']; }
+      if(isset($u[1])) { $sso_user = $u[1]; }
+      else { $sso_user = $_SERVER['REMOTE_USER']; }
 
-      if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $username"); }
+      if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $sso_user"); }
 
       $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
 
-         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=user)(samaccountname=" . $username . "))", array());
+         $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=user)(samaccountname=" . $sso_user . "))", array());
 
          if(isset($query->row['dn'])) {
             $a = $query->row;
@@ -488,7 +488,7 @@ class ModelUserAuth extends Model {
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
 
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $sso_user);
             }
 
             return 1;
