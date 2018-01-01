@@ -427,18 +427,30 @@ class ModelUserAuth extends Model {
    }
 
 
+   public function get_sso_user() {
+      if(!isset($_SERVER['REMOTE_USER']) || $_SERVER['REMOTE_USER'] == '') { return ''; }
+
+      // check if REMOTE_USER format is DOMAIN\user
+      $u = explode("\\", $_SERVER['REMOTE_USER']);
+      if(isset($u[1])) { return $u[1]; }
+
+      // or REMOTE_USER might be in the form of user@domain
+      $u = explode("@", $_SERVER['REMOTE_USER']);
+      if(isset($u[0])) { return $u[0]; }
+
+      return $_SERVER['REMOTE_USER'];
+   }
+
+
    public function check_ntlm_auth() {
       $ldap_auditor_member_dn = LDAP_AUDITOR_MEMBER_DN;
       $ldap_admin_member_dn = LDAP_ADMIN_MEMBER_DN;
 
       $role = 0;
 
-      if(!isset($_SERVER['REMOTE_USER']) || $_SERVER['REMOTE_USER'] == '') { return 0; }
+      $sso_user = $this->get_sso_user();
+      if($sso_user == '') { return 0; }
 
-      $u = explode("\\", $_SERVER['REMOTE_USER']);
-
-      if(isset($u[1])) { $sso_user = $u[1]; }
-      else { $sso_user = $_SERVER['REMOTE_USER']; }
 
       if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $sso_user"); }
 
