@@ -51,7 +51,7 @@ class MySQL {
 
       $this->affected = $s->rowCount();
 
-      $R = $s->fetchAll();
+      $R = $s->fetchAll(PDO::FETCH_ASSOC);
 
       while(list ($k, $v) = each($R)){
          $data[$i] = $v;
