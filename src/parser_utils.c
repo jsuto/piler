@@ -320,13 +320,12 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
     * but then I saw a 6-7000 byte long subject line, so I've switched to MAXBUFSIZE
     */
    char v[MAXBUFSIZE], u[MAXBUFSIZE], puf[MAXBUFSIZE], encoding[MAXBUFSIZE], tmpbuf[2*MAXBUFSIZE];
-   int need_encoding, ret;
+   int need_encoding, ret, prev_encoded=0, n_tokens=0;
+   int b64=0, qp=0;
 
    if(buflen < 5) return;
 
    memset(puf, 0, sizeof(puf));
-   memset(encoding, 0, sizeof(encoding));
-
 
    q = buf;
 
@@ -342,17 +341,45 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
           * We can't use split_str(p, "=?", ...) it will fail with the following pattern
           *    =?UTF-8?B?SG9neWFuIMOtcmp1bmsgcGFuYXN6bGV2ZWxldD8=?=
           *
-          * Also the below patter requires special care:
+          * Also the below pattern requires special care:
           *    =?gb2312?B?<something>?==?gb2312?Q?<something else>?=
+          *
+          * And we have to check the following cases as well:
+          *    Happy New Year! =?utf-8?q?=F0=9F=8E=86?=
           */
+
+         b64 = qp = 0;
+         memset(encoding, 0, sizeof(encoding));
 
          r = strstr(p, "=?");
          if(r){
             p = r + 2;
+
+            e = strchr(p, '?');
+            if(e){
+               *e = '\0';
+               snprintf(encoding, sizeof(encoding)-1, "%s", p);
+               *e = '?';
+
+               s = strcasestr(e, "?B?");
+               if(s){
+                  b64 = 1;
+                  p = s + 3;
+               }
+               else {
+                  s = strcasestr(e, "?Q?");
+                  if(s){
+                     qp = 1;
+                     p = s + 3;
+                  }
+               }
+            }
+
             end = strstr(p, "?=");
             if(end){
                *end = '\0';
             }
+
 
             snprintf(u, sizeof(u)-1, "%s", p);
 
@@ -367,47 +394,38 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
          if(u[0] == 0) continue;
 
-         memset(encoding, 0, sizeof(encoding));
+         n_tokens++;
 
-         // Check if it's either ?B? or ?Q? encoding ...
-         s = strcasestr(u, "?B?");
-         if(s){
-            decodeBase64(s+3);
+         if(b64 == 1) decodeBase64(u);
+         else if(qp == 1) decodeQP(u);
+
+
+         /*
+          * https://www.ietf.org/rfc/rfc2047.txt says that
+          *
+          * "When displaying a particular header field that contains multiple
+          *  'encoded-word's, any 'linear-white-space' that separates a pair of
+          *  adjacent 'encoded-word's is ignored." (6.2)
+          */
+         if(prev_encoded == 1 && (b64 == 1 || qp == 1)) {}
+         else if(n_tokens > 1){
+            strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
          }
-         else {
-            s = strcasestr(u, "?Q?");
-            if(s){
-               decodeQP(s+3);
-               r = s + 3;
-               for(; *r; r++){
-                  if(*r == '_') *r = ' ';
-               }
+
+         if(b64 == 1 || qp == 1){
+            prev_encoded = 1;
+            need_encoding = 0;
+            ret = ERR;
+
+            if(encoding[0] && strcasecmp(encoding, "utf-8")){
+               need_encoding = 1;
+               ret = utf8_encode(u, strlen(u), &tmpbuf[0], sizeof(tmpbuf), encoding);
             }
-         }
 
-         // ... if it is, then get the encoding
-         if(s){
-            e = strchr(u, '?');
-            if(e){
-               *e = '\0';
-               snprintf(encoding, sizeof(encoding)-1, "%s", u);
-               *e = '?';
-
-               need_encoding = 0;
-               ret = ERR;
-
-               if(encoding[0] && strcasecmp(encoding, "utf-8")){
-                  need_encoding = 1;
-                  ret = utf8_encode(s+3, strlen(s+3), &tmpbuf[0], sizeof(tmpbuf), encoding);
-               }
-
-               if(need_encoding == 1 && ret == OK)
-                  strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
-               else
-                  strncat(puf, s+3, sizeof(puf)-strlen(puf)-1);
+            if(need_encoding == 1 && ret == OK){
+               strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
             }
             else {
-               memset(encoding, 0, sizeof(encoding));
                strncat(puf, u, sizeof(puf)-strlen(puf)-1);
             }
          }
@@ -416,8 +434,6 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          }
 
       } while(p);
-
-      if(q && encoding[0] == 0) strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
 
    } while(q);
 

@@ -206,9 +206,13 @@ void decodeQP(char *p){
 
          i += 2;
       }
+      else if(p[i] == '_'){
+         c = ' ';
+      }
 
       p[k] = c;
       k++;
+
    }
 
    p[k] = '\0';

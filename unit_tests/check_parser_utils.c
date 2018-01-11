@@ -125,7 +125,7 @@ static void test_fixupEncodedHeaderLine(){
       {"Re: [Bitbucket] Issue #627: ldap user can't login (jsuto/piler)", "Re: [Bitbucket] Issue #627: ldap user can't login (jsuto/piler)"},
       {"=?iso-8859-2?Q?RE:_test.aaa.fu_z=F3na?=", "RE: test.aaa.fu zóna"},
       {"=?iso-8859-2?Q?V=E1ltoz=E1s_az_IT_szervezetben_/_Personal_changes_in_the_?=", "Változás az IT szervezetben / Personal changes in the "},
-      {"Re: AAAmil  /29  UZ736363", "Re: AAAmil  /29  UZ736363"},
+      {"Re: AAAmil  /29  UZ736363", "Re: AAAmil /29 UZ736363"},
       {"=?UTF-8?Q?[JIRA]_Created:_(HUDSS-196)_T=C5=B1zfal_?=", "[JIRA] Created: (HUDSS-196) Tűzfal "},
       {"=?iso-8859-2?Q?RE:_Baptista_Szeretetszolg=E1lat?=", "RE: Baptista Szeretetszolgálat"},
       {"=?iso-8859-2?B?SXR0IGF6IE1OQiBuYWd5IGRvYuFzYTogaXNt6XQgYmVsZW55+mxuYWsgYSBoaXRlbGV66XNiZSAoMjAxNS4xMS4wMy4gLSBzakBhY3RzLmh1KQ==?=", "Itt az MNB nagy dobása: ismét belenyúlnak a hitelezésbe (2015.11.03. - sj@acts.hu)"},
@@ -139,7 +139,7 @@ static void test_fixupEncodedHeaderLine(){
       {"=?UTF-8?Q?Megh=C3=ADv=C3=B3=20a=20Pulzus=20felm=C3=A9r=C3=A9sre=20/=20Inv?=  =?UTF-8?Q?itation=20to=20the=20Pulse=20Survey?=", "Meghívó a Pulzus felmérésre / Invitation to the Pulse Survey"},
       {"=?iso-8859-2?Q?vhost_l=E9trehoz=E1sa?=", "vhost létrehozása"},
       {"Re: MAIL =?UTF-8?B?U1pPTEfDgUxUQVTDgVMgSElCQSAgIEdUUzogOTE1NDUyMQ==?=", "Re: MAIL SZOLGÁLTATÁS HIBA   GTS: 9154521"},
-      {"[spam???]  Better Sex. Better Body. Better Life.", "[spam???]  Better Sex. Better Body. Better Life."},
+      {"[spam???]  Better Sex. Better Body. Better Life.", "[spam???] Better Sex. Better Body. Better Life."},
       {"1gy2tt. V3l4d. M5sk6nt", "1gy2tt. V3l4d. M5sk6nt"},
       {"=?iso-8859-2?B?03Jp4XNpIG1lZ2xlcGV06XMsIG5pbmNzIHT2YmIgbWVudHPpZyBBbWVyaWthIHN64W3hcmEgKDIwMTUuMTEuMDYuIC0gc2pAYWN0cy5odSk=?=", "Óriási meglepetés, nincs több mentség Amerika számára (2015.11.06. - sj@acts.hu)"},
       {"=?utf-8?B?Rlc6IEVtYWlsIGZvZ2Fkw6FzaSBoaWJh?=", "FW: Email fogadási hiba"},
@@ -154,6 +154,8 @@ static void test_fixupEncodedHeaderLine(){
       {"Subject: =?windows-1251?B?ze7i7uPu5O3o5SDv7uTg8OroIOTr/yDC4Pjo?=", "Subject: Новогодние подарки для Ваши"},
       {"Subject: =?utf-8?Q?Divatos,_=C3=BCde_sz=C3=ADneinek_k=C3=B6sz=C3=B6nhet=C5=91en_el?=", "Subject: Divatos, üde színeinek köszönhetően el"},
       {"=?gb2312?B?yc/Gz76pIC0gw7/fTMir0bKy6YjzuOYgKDIwMTcxMDMwLTMxKSBHQlcgUG9k?==?gb2312?Q?ium_&_Basement.docx?=", "上葡京 - 每週全巡查報告 (20171030-31) GBW Podium & Basement.docx"},
+      {"Subject: =?UTF-8?Q?=E2=98=85_JubiDu!Versandkost?= =?UTF-8?Q?enfrei-Verl=C3=A4ngerung!=E2=98=85?=", "Subject: ★ JubiDu!Versandkostenfrei-Verlängerung!★"},
+      {"Happy New Year! =?utf-8?q?=F0=9F=8E=86?=", "Happy New Year! 🎆"},
    };
 
    TEST_HEADER();
