@@ -2,14 +2,7 @@
  * check_parser.c, SJ
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <assert.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include "../src/piler.h"
+#include "test.h"
 
 
 struct parser_test {
@@ -42,16 +35,18 @@ static void test_parser(struct config *cfg){
       {"15-image-only-spam.eml", "<av5f1fCf5XO0oBab757826337RSFKvu@pnmarketing.com>", "kriegel paff sketches@pnmarketing.com sketches pnmarketing com ", "pnmarketing.com", "holmon knobel aaaaa@acts.hu aaaaa acts hu ", "acts.hu ", "", "Lack of concentration, backed up by a vocabulary of tremendous scope, a", 1},
       {"16-rfc822-attachment-1.eml", "<list-423974736@mail.aaa.fu>", "martonagnes martonagnes@lajt.hu martonagnes lajt hu erős istván eistvan@marosheviz.info ", "lajt.hu", "martonagnes@lajt.hu martonagnes lajt hu ", "lajt.hu ", "", "Féláras akció! 31000Ft/2fő/3nap húsvétkor is a Park Inn****-ben!", 2 },
       {"17-attached-text-bogus-mime.eml", "<list-507327664@mail.aaa.fu>", "dr lucky amechi clubzenit@zenithoteles.com clubzenit zenithoteles com ", "zenithoteles.com", "usuarios-no-listados ", "", "", "Please read my attached letter", 1},
-      {"18-spam-html-encoding.eml", "<list-435458392@mail.aaa.fu>", "a1 hitelcentrum kft Üveges szilvia a1hitelcentrum@t-online.hu a1hitelcentrum t online hu ", "t-online.hu", "postmaster@aaa.fu postmaster aaa fu ", "aaa.fu ", "", "TÁJÉKOZTATÁS Vargay Péter", 0},
+      {"18-spam-html-encoding.eml", "<list-435458392@mail.aaa.fu>", "a1 hitelcentrum kft Üveges szilvia a1hitelcentrum@t-online.hu a1hitelcentrum t online hu ", "t-online.hu", "postmaster@aaa.fu postmaster aaa fu ", "aaa.fu ", "", "TÁJÉKOZTATÁSVargay Péter", 0},
       {"19-pdf-attachment-bad-mime.eml", "<20100213$2b62e942$9cc2b$sxm@61-186.reverse.ukhost4u.com>", "jennifer - billing department billing@limitedsoftwareworld.com billing limitedsoftwareworld com ", "limitedsoftwareworld.com", "100000 100000@aaa.fu 100000 aaa fu ", "aaa.fu ", "", "Billing Summary for 100000, Processed on 2010-02-13 17:01:03", 1},
       {"20-pdf-attachment-bad-mime.eml", "<20100213$2b62e942$9cc2b$sxm@61-187.reverse.ukhost4u.com>", "jennifer - billing department billing@limitedsoftwareworld.com billing limitedsoftwareworld com ", "limitedsoftwareworld.com", "100000 100000@aaa.fu 100000 aaa fu ", "aaa.fu ", "", "Billing Summary for 100000, Processed on 2010-02-13 17:01:03", 1},
-      {"21-register-tricky-urls.eml", "<E1IBifn-0001un-MD@admin4.theregister.co.uk>", "the register update-49363-08f0f768@list.theregister.co.uk update 49363 08f0f768 list theregister co uk ", "list.theregister.co.uk", "hello@mail.aaa.fu hello mail aaa fu ", "mail.aaa.fu ", "", "[sp@m]  Reg Headlines Friday July 20", 0},
-      {"30-subject.eml", "<3660278814815884@pongr-fabd8067e>", "aaapsi.hu info@aaapsi.hu info aaapsi hu ", "aaapsi.hu", "hello@acts.hu hello acts hu ", "acts.hu ", "", "RE: hxx-ajajajaja.com  Aaagágyi és kia ttt webstat hiba", 0},
+      {"21-register-tricky-urls.eml", "<E1IBifn-0001un-MD@admin4.theregister.co.uk>", "the register update-49363-08f0f768@list.theregister.co.uk update 49363 08f0f768 list theregister co uk ", "list.theregister.co.uk", "hello@mail.aaa.fu hello mail aaa fu ", "mail.aaa.fu ", "", "[sp@m] Reg Headlines Friday July 20", 0},
+      {"30-subject.eml", "<3660278814815884@pongr-fabd8067e>", "aaapsi.hu info@aaapsi.hu info aaapsi hu ", "aaapsi.hu", "hello@acts.hu hello acts hu ", "acts.hu ", "", "RE: hxx-ajajajaja.com_ Aaagágyi és kia ttt_webstat hiba", 0},
       {"31-subject.eml", "<3660278814815884@pongr-fabd8067e>", "aaapsi.hu info@aaapsi.hu info aaapsi hu ", "aaapsi.hu", "hello@acts.hu hello acts hu ", "acts.hu ", "", "Re: stanhu \"domain not found\"-dal eldobja a @fohu-ra küldött leveleket...", 0},
       {"32-subject.eml", "<3660278814815884@pongr-fabd8067e>", "aaapsi.hu info@aaapsi.hu info aaapsi hu ", "aaapsi.hu", "hello@acts.hu hello acts hu ", "acts.hu ", "", "<GD-XXXX/1-2015> www.ujsag.hu new virtual host reg. --> Aaaaaaaaa", 0},
       {"33-subject.eml", "<3660278814815884@pongr-fabd8067e>", "aaapsi.hu info@aaapsi.hu info aaapsi hu ", "aaapsi.hu", "hello@acts.hu hello acts hu ", "acts.hu ", "", "[JIRA] Commented: (AAAA-151) A aaa-nek kerek egy XXX-et, ZH74617282, ACC27363484944", 0},
    };
 
+
+   TEST_HEADER();
 
    if(open_database(&sdata, cfg) == ERR){
       printf("cannot open database\n");
@@ -78,8 +73,6 @@ static void test_parser(struct config *cfg){
       state = parse_message(&sdata, 1, &data, cfg);
       post_parse(&sdata, &state, cfg);
 
-      //printf("%s, %s/%s %d / %d\n", tests[i].s, tests[i].message_id, state.message_id, tests[i].n_attachments, state.n_attachments);
-
       for(j=1; j<=state.n_attachments; j++){
          unlink(state.attachments[j].internalname);
       }
@@ -97,7 +90,7 @@ static void test_parser(struct config *cfg){
 
    close_database(&sdata);
 
-   printf("test_parser() OK\n");
+   TEST_FOOTER();
 }
 
 

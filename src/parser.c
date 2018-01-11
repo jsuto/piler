@@ -109,6 +109,7 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    clearhash(state->rcpt_domain);
    clearhash(state->journal_recipient);
 
+   fixupEncodedHeaderLine(state->b_subject, MAXBUFSIZE);
    trimBuffer(state->b_subject);
 
    if(sdata->internal_sender == 0) sdata->direction = DIRECTION_INCOMING;
@@ -359,8 +360,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->spam_message = 1;
       }
 
-      if(strncasecmp(buf, "From:", strlen("From:")) == 0) state->message_state = MSG_FROM;
-
+      if(strncasecmp(buf, "From:", strlen("From:")) == 0){
+         state->message_state = MSG_FROM;
+         buf += strlen("From:");
+      }
       else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
          state->message_state = MSG_CONTENT_TYPE;
 
@@ -382,14 +385,28 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          }
 
       }
-      else if(strncasecmp(buf, "To:", 3) == 0) state->message_state = MSG_TO;
-      else if(strncasecmp(buf, "Cc:", 3) == 0) state->message_state = MSG_CC;
-      else if(strncasecmp(buf, "Bcc:", 4) == 0) state->message_state = MSG_CC;
+      else if(strncasecmp(buf, "To:", 3) == 0){
+         state->message_state = MSG_TO;
+         buf += strlen("To:");
+      }
+      else if(strncasecmp(buf, "Cc:", 3) == 0){
+         state->message_state = MSG_CC;
+         buf += strlen("Cc:");
+      }
+      else if(strncasecmp(buf, "Bcc:", 4) == 0){
+         state->message_state = MSG_CC;
+         buf += strlen("Bcc:");
+      }
       else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
-      else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0) state->message_state = MSG_SUBJECT;
-      else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0) state->message_state = MSG_RECIPIENT;
-
+      else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0){
+         state->message_state = MSG_SUBJECT;
+         buf += strlen("Subject:");
+      }
+      else if(strncasecmp(buf, "Recipient:", strlen("Recipient:")) == 0){
+         state->message_state = MSG_RECIPIENT;
+         buf += strlen("Recipient:");
+      }
       if(sdata->ms_journal == 1 && (state->message_state == MSG_TO || state->message_state == MSG_RECIPIENT) ){
          p = strstr(buf, "Expanded:");
          if(p) *p = '\0';
@@ -413,7 +430,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf);
       else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
-      else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0) state->message_state = MSG_TO;
+      else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0){
+         state->message_state = MSG_TO;
+         buf += strlen(cfg->extra_to_field);
+      }
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
          p = strchr(buf+11, ' ');
@@ -475,31 +495,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(state->is_1st_header == 1){
 
       if(state->message_state == MSG_SUBJECT && strlen(state->b_subject) + strlen(buf) < MAXBUFSIZE-1){
-
-         if(state->b_subject[0] == '\0'){
-            p = &buf[0];
-            if(strncmp(buf, "Subject:", strlen("Subject:")) == 0) p += strlen("Subject:");
-            if(*p == ' ') p++;
-
-            fixupEncodedHeaderLine(p, MAXBUFSIZE);
-            strncat(state->b_subject, p, MAXBUFSIZE-strlen(state->b_subject)-1);
-         }
-         else {
-
-            /*
-             * if the next subject line is encoded, then strip the whitespace characters at the beginning of the line
-             */
-
-            p = buf;
-
-            if(strcasestr(buf, "?Q?") || strcasestr(buf, "?B?")){
-               while(isspace(*p)) p++;
-            }
-
-            fixupEncodedHeaderLine(p, MAXBUFSIZE);
-
-            strncat(state->b_subject, p, MAXBUFSIZE-strlen(state->b_subject)-1);
-         }
+         // buffer the subject lines, and decode it later
+         strncat(state->b_subject, buf, MAXBUFSIZE-strlen(state->b_subject)-1);
       }
       else { fixupEncodedHeaderLine(buf, MAXBUFSIZE); }
    }
@@ -692,8 +689,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    reassembleToken(buf);
 
 
-   if(state->is_header == 1) p = strchr(buf, ' ');
-   else p = buf;
+   p = buf;
 
    //printf("a: %d/%d/%d/%d/j=%d %s\n", state->is_1st_header, state->is_header, state->message_rfc822, state->message_state, sdata->ms_journal, buf);
 
