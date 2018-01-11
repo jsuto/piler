@@ -18,6 +18,34 @@
 #include "../src/piler.h"
 
 
+struct test_data_s_i {
+   char s[SMALLBUFSIZE];
+   int result;
+};
+
+struct test_data_s_uinti {
+   char s[SMALLBUFSIZE];
+   unsigned int result;
+};
+
+struct test_data_s_s {
+   char s[SMALLBUFSIZE];
+   char result[SMALLBUFSIZE];
+};
+
+struct test_data_s_s_i {
+   char s1[SMALLBUFSIZE];
+   char s2[SMALLBUFSIZE];
+   int result;
+};
+
+struct digest_test {
+   char s[SMALLBUFSIZE];
+   char *digest1;
+   char *digest2;
+};
+
+
 #define ASSERT(expr, value) if (!(expr)) { printf("assert failed: '%s'\n", value); abort(); } else { printf("."); }
 #define TEST_HEADER() printf("%s() ", __func__);
 #define TEST_FOOTER() printf(" OK\n");

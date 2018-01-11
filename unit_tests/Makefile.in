@@ -24,7 +24,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all:	check_parser_utils check_rules check_digest check_mydomains check_parser smtp
+all:	check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc smtp
 
 check_parser_utils: check_parser_utils.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
@@ -41,6 +41,15 @@ check_mydomains: check_mydomains.c ../src/libpiler.a
 check_parser: check_parser.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+check_decoder: check_decoder.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
+check_hash: check_hash.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
+check_misc: check_misc.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
 smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
@@ -48,7 +57,7 @@ install:
 	@echo
 
 clean:
-	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser smtp
+	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc smtp
 
 distclean: clean
 	rm -f Makefile
