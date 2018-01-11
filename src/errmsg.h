@@ -20,6 +20,7 @@
 #define ERR_TIMED_OUT "ERR: timed out"
 #define ERR_FORK_FAILED "ERR: cannot fork()"
 #define ERR_OPEN_DEDUP_FILE "ERR: cannot open dedup file"
+#define ERR_PID_FILE_EXISTS "ERR: pidfile exists. If piler daemon is not running, and the pidfile exists (unclean shutdown?) then remove it, and start piler again"
 
 #define ERR_MYSQL_CONNECT "Cannot connect to mysql server"
 #define ERR_PSQL_CONNECT "Cannot connect to PSql server"

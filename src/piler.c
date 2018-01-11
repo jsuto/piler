@@ -461,6 +461,7 @@ void initialise_configuration(){
 
 int main(int argc, char **argv){
    int i, daemonise=0, dedupfd;
+   struct stat st;
 
 
    while((i = getopt(argc, argv, "c:dvVh")) > 0){
@@ -508,6 +509,8 @@ int main(int argc, char **argv){
 
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
+
+   if(stat(cfg.pidfile, &st) == 0) fatal(ERR_PID_FILE_EXISTS);
 
    if(cfg.mmap_dedup_test == 1){
       dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
