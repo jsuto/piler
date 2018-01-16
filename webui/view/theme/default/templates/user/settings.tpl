@@ -121,7 +121,7 @@
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
 <h4><?php print $text_change_password; ?></h4>
-<form name="pwdchange" action="index.php?route=common/home" method="post" autocomplete="off">
+<form name="pwdchange" action="settings.php" method="post" autocomplete="off">
    <table border="0" cellpadding="0" cellspacing="0">
       <tr><td><?php print $text_password; ?>: </td><td><input type="password" name="password" /></td></tr>
       <tr><td><?php print $text_password_again; ?>: </td><td><input type="password" name="password2" /></td></tr>
@@ -131,7 +131,7 @@
 <?php } ?>
 
 <?php } else { ?>
-<?php print $x; ?>. <a href="index.php?route=common/home"><?php print $text_back; ?></a>
+<?php print $x; ?>. <a href="settings.php"><?php print $text_back; ?></a>
 <?php } ?>
 
 
