@@ -69,8 +69,6 @@ void p_clean_exit(){
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
-   //unlink(cfg.pidfile);
-
    ERR_free_strings();
 
    exit(1);
