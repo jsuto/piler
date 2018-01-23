@@ -337,6 +337,8 @@ int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *en
 
    if(strcasecmp(encoding, "gb2312") == 0)
       cd = iconv_open("utf-8", "cp936");
+   else if(strcasecmp(encoding, "ks_c_5601-1987") == 0)
+      cd = iconv_open("utf-8", "EUC-KR");
    else
       cd = iconv_open("utf-8", encoding);
 
