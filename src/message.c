@@ -57,9 +57,9 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    sql.sql[sql.pos] = sdata->attachments; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
    if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
+   else syslog(LOG_PRIORITY, "ERROR: %s failed to store index data for id=%llu, sql_errno=%d", sdata->ttmpfile, id, sdata->sql_errno);
 
    close_prepared_statement(&sql);
-
 
    return rc;
 }
@@ -95,11 +95,11 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, ch
 
 
 int store_recipients(struct session_data *sdata, struct data *data, char *to, uint64 id, struct config *cfg){
-   int ret=OK, n=0;
+   int rc=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
    struct sql sql;
 
-   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ret;
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE) == ERR) return ERR;
 
    p = to;
    do {
@@ -117,7 +117,10 @@ int store_recipients(struct session_data *sdata, struct data *data, char *to, ui
          sql.sql[sql.pos] = q; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
          if(p_exec_stmt(sdata, &sql) == ERR){
-            if(sdata->sql_errno != ER_DUP_ENTRY) ret = ERR;
+            if(sdata->sql_errno != ER_DUP_ENTRY){
+               syslog(LOG_PRIORITY, "ERROR: %s: failed to add '%s' for id=%llu to rcpt table, sql_errno=%d", sdata->ttmpfile, puf, id, sdata->sql_errno);
+               rc = ERR;
+            }
          }
          else n++;
       }
@@ -126,9 +129,9 @@ int store_recipients(struct session_data *sdata, struct data *data, char *to, ui
 
    close_prepared_statement(&sql);
 
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: added %d recipients", sdata->ttmpfile, n);
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored %d recipients, rc=%d", sdata->ttmpfile, n, rc);
 
-   return ret;
+   return rc;
 }
 
 
@@ -141,8 +144,8 @@ void remove_recipients(struct session_data *sdata, uint64 id){
 }
 
 
-int store_folder_id(struct session_data *sdata, struct data *data, uint64 id){
-   int rc = ERR;
+int store_folder_id(struct session_data *sdata, struct data *data, uint64 id, struct config *cfg){
+   int rc=ERR;
    struct sql sql;
 
    if(data->folder == ERR_FOLDER) return rc;
@@ -157,16 +160,9 @@ int store_folder_id(struct session_data *sdata, struct data *data, uint64 id){
    if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
    close_prepared_statement(&sql);
 
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored folderdata, rc=%d", sdata->ttmpfile, rc);
+
    return rc;
-}
-
-
-void remove_folder_id(struct session_data *sdata, uint64 id){
-   char s[SMALLBUFSIZE];
-
-   snprintf(s, sizeof(s)-1, "DELETE FROM " SQL_FOLDER_MESSAGE_TABLE " WHERE id=%llu", id);
-
-   p_query(sdata, s);
 }
 
 
@@ -192,7 +188,7 @@ int update_metadata_reference(struct session_data *sdata, struct parser_state *s
 
 
 int store_meta_data(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
-   int rc, ret=ERR, result;
+   int rc=ERR, result;
    char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
    struct sql sql;
@@ -251,30 +247,62 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    sql.sql[sql.pos] = sdata->bodydigest; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = &vcode[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
-   if(p_exec_stmt(sdata, &sql) == ERR){
-      ret = ERR_EXISTS;
-   }
-   else {
+   if(p_exec_stmt(sdata, &sql) == OK){
       id = p_get_insert_id(&sql);
-      rc = store_recipients(sdata, data, state->b_to, id, cfg);
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored recipients, rc=%d", sdata->ttmpfile, rc);
+      if(store_recipients(sdata, data, state->b_to, id, cfg) == OK){
 
-      rc = store_index_data(sdata, state, data, id, cfg);
+         if(store_index_data(sdata, state, data, id, cfg) == OK) rc = OK;
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored indexdata, rc=%d", sdata->ttmpfile, rc);
-
-      if(cfg->enable_folders == 1){
-         rc = store_folder_id(sdata, data, id);
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored folderdata, rc=%d", sdata->ttmpfile, rc);
+         if(cfg->enable_folders == 1){
+            rc = store_folder_id(sdata, data, id, cfg);
+         }
       }
 
-      ret = OK;
+      // There were some sql errors, so we should rollback everything
+      if(rc == ERR){
+         rollback(sdata, state, id, cfg);
+      }
+
+   }
+   else {
+      syslog(LOG_PRIORITY, "ERROR: %s storing metadata, sql_errno=%d", sdata->ttmpfile, sdata->sql_errno);
    }
 
    close_prepared_statement(&sql);
 
-   return ret;
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
+
+   return rc;
+}
+
+
+void rollback(struct session_data *sdata, struct parser_state *state, uint64 id, struct config *cfg){
+   char buf[SMALLBUFSIZE];
+
+   snprintf(buf, sizeof(buf)-2, "DELETE FROM %s WHERE id=%llu", SQL_SPHINX_TABLE, id);
+   p_query(sdata, buf);
+   syslog(LOG_PRIORITY, "ERROR: %s: rollback sql stmt=%s", sdata->ttmpfile, buf);
+
+   snprintf(buf, sizeof(buf)-2, "DELETE FROM %s WHERE id=%llu", SQL_RECIPIENT_TABLE, id);
+   p_query(sdata, buf);
+   syslog(LOG_PRIORITY, "ERROR: %s: rollback sql stmt=%s", sdata->ttmpfile, buf);
+
+   snprintf(buf, sizeof(buf)-2, "DELETE FROM %s WHERE id=%llu", SQL_METADATA_TABLE, id);
+   p_query(sdata, buf);
+   syslog(LOG_PRIORITY, "ERROR: %s: rollback sql stmt=%s", sdata->ttmpfile, buf);
+
+   snprintf(buf, sizeof(buf)-2, "DELETE FROM %s WHERE piler_id='%s'", SQL_ATTACHMENT_TABLE, sdata->ttmpfile);
+   p_query(sdata, buf);
+   syslog(LOG_PRIORITY, "ERROR: %s: rollback sql stmt=%s", sdata->ttmpfile, buf);
+
+   if(cfg->enable_folders == 1){
+      snprintf(buf, sizeof(buf)-1, "DELETE FROM " SQL_FOLDER_MESSAGE_TABLE " WHERE id=%llu", id);
+      p_query(sdata, buf);
+      syslog(LOG_PRIORITY, "ERROR: %s: rollback sql stmt=%s", sdata->ttmpfile, buf);
+   }
+
+   remove_stored_message_files(sdata, state, cfg);
 }
 
 
@@ -286,7 +314,7 @@ void remove_stripped_attachments(struct parser_state *state){
 
 
 int process_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
-   int rc, fd;
+   int fd;
    char piler_id[SMALLBUFSIZE];
 
    /* discard if existing message_id */
@@ -330,36 +358,17 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
    }
 
 
+   sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
 
 
-   /* store base64 encoded file attachments */
-
-   if(state->n_attachments > 0){
-      rc = store_attachments(sdata, state, data, cfg);
-
-      remove_stripped_attachments(state);
-
-      if(rc) return ERR;
-   }
+   if(state->n_attachments > 0 && store_attachments(sdata, state, data, cfg) == ERR) return ERR;
 
 
-   rc = store_file(sdata, sdata->tmpframe, 0, cfg);
-   if(rc == 0){
-      syslog(LOG_PRIORITY, "%s: error storing message: %s", sdata->ttmpfile, sdata->tmpframe);
+   if(store_file(sdata, sdata->tmpframe, 0, cfg) == 0){
+      syslog(LOG_PRIORITY, "ERROR: %s: failed to store message: %s", sdata->ttmpfile, sdata->tmpframe);
       return ERR;
    }
 
 
-   sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
-
-   rc = store_meta_data(sdata, state, data, cfg);
-   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: stored metadata, rc=%d",  sdata->ttmpfile, rc);
-   if(rc == ERR_EXISTS){
-
-      remove_stored_message_files(sdata, state, cfg);
-
-      return ERR_EXISTS;
-   }
-
-   return OK;
+   return store_meta_data(sdata, state, data, cfg);
 }

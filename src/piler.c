@@ -163,6 +163,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
 
    unlink(sdata->tmpframe);
 
+   remove_stripped_attachments(&parser_state);
 
    if(rc == OK){
       status = S_STATUS_STORED;

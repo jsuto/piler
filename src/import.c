@@ -89,14 +89,17 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
       if(sdata->hdr_len < 10){
          printf("%s: invalid message, hdr_len: %d\n", data->import->filename, sdata->hdr_len);
-         return ERR;
+         rc = ERR;
       }
-
-      rc = process_message(sdata, &state, data, cfg);
-      unlink(state.message_id_hash);
+      else {
+         rc = process_message(sdata, &state, data, cfg);
+         unlink(state.message_id_hash);
+      }
    }
 
    unlink(sdata->tmpframe);
+
+   remove_stripped_attachments(&state);
 
    if(strcmp(data->import->filename, "-") == 0) unlink(sdata->ttmpfile);
 

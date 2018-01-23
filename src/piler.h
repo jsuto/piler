@@ -40,6 +40,7 @@ void digest_string(char *s, char *digest);
 
 void remove_stripped_attachments(struct parser_state *state);
 int process_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
+void rollback(struct session_data *sdata, struct parser_state *state, uint64 id, struct config *cfg);
 int reimport_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
 int store_file(struct session_data *sdata, char *filename, int len, struct config *cfg);
 int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct config *cfg);
