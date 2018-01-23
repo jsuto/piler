@@ -111,13 +111,13 @@ int p_exec_stmt(struct session_data *sdata, struct sql *sql){
 
    if(mysql_stmt_bind_param(sql->stmt, bind)){
       sdata->sql_errno = mysql_stmt_errno(sql->stmt);
-      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_bind_param() '%s' (errno: %d)", sdata->ttmpfile, mysql_stmt_error(sql->stmt), sdata->sql_errno);
+      syslog(LOG_PRIORITY, "ERROR: %s: mysql_stmt_bind_param() '%s' (errno: %d)", sdata->ttmpfile, mysql_stmt_error(sql->stmt), sdata->sql_errno);
       return ret;
    }
 
    if(mysql_stmt_execute(sql->stmt)){
       sdata->sql_errno = mysql_stmt_errno(sql->stmt);
-      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_execute() '%s' (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->sql_errno);
+      syslog(LOG_PRIORITY, "ERROR: %s: mysql_stmt_execute() '%s' (errno: %d)", sdata->ttmpfile, mysql_error(&(sdata->mysql)), sdata->sql_errno);
       return ret;
    }
 
