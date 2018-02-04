@@ -14,3 +14,4 @@ export LD_LIBRARY_PATH=../src
 ./check_misc
 ./check_hash
 ./check_decoder
+./check_attachments

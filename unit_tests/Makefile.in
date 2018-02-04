@@ -24,7 +24,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all:	check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc smtp
+all:	check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp
 
 check_parser_utils: check_parser_utils.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
@@ -50,6 +50,9 @@ check_hash: check_hash.c ../src/libpiler.a
 check_misc: check_misc.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+check_attachments: check_attachments.c ../src/libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
 smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
@@ -57,7 +60,7 @@ install:
 	@echo
 
 clean:
-	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc smtp
+	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp
 
 distclean: clean
 	rm -f Makefile
