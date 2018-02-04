@@ -106,7 +106,7 @@ static void test_extractNameFromHeaderLine(){
    TEST_HEADER();
 
    for(i=0; i<sizeof(name_from_header_test)/sizeof(struct name_from_header_test); i++){
-      extractNameFromHeaderLine(name_from_header_test[i].line, name_from_header_test[i].token, resultbuf);
+      extractNameFromHeaderLine(name_from_header_test[i].line, name_from_header_test[i].token, resultbuf, SMALLBUFSIZE);
       ASSERT(strcmp(resultbuf, name_from_header_test[i].expected_result) == 0, name_from_header_test[i].expected_result);
    }
 

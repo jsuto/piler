@@ -28,7 +28,7 @@ int does_it_seem_like_an_email_address(char *email);
 void reassembleToken(char *p);
 void degenerateToken(unsigned char *p);
 void fixURL(char *buf, int buflen);
-void extractNameFromHeaderLine(char *s, char *name, char *resultbuf);
+void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultbuflen);
 char *determine_attachment_type(char *filename, char *type);
 char *get_attachment_extractor_by_filename(char *filename);
 void parse_reference(struct parser_state *state, char *s);

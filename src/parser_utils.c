@@ -50,7 +50,6 @@ void init_state(struct parser_state *state){
    memset(state->miscbuf, 0, MAX_TOKEN_LEN);
    memset(state->qpbuf, 0, MAX_TOKEN_LEN);
 
-   memset(state->filename, 0, TINYBUFSIZE);
    memset(state->type, 0, TINYBUFSIZE);
 
    memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
@@ -81,7 +80,7 @@ void init_state(struct parser_state *state){
       memset(state->attachments[i].type, 0, TINYBUFSIZE);
       memset(state->attachments[i].shorttype, 0, TINYBUFSIZE);
       memset(state->attachments[i].aname, 0, TINYBUFSIZE);
-      memset(state->attachments[i].filename, 0, TINYBUFSIZE);
+      memset(state->attachments[i].filename, 0, SMALLBUFSIZE);
       memset(state->attachments[i].internalname, 0, TINYBUFSIZE);
       memset(state->attachments[i].digest, 0, 2*DIGEST_LENGTH+1);
    }
@@ -778,11 +777,13 @@ void fixURL(char *buf, int buflen){
 }
 
 
-void extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
+void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultbuflen){
    int extended=0;
    char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q, *encoding;
 
    snprintf(buf, sizeof(buf)-1, "%s", s);
+
+   memset(resultbuf, 0, resultbuflen);
 
    p = strstr(buf, name);
    if(p){
@@ -852,15 +853,15 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf){
             decodeURL(p);
 
             if(strlen(encoding) > 2 && strcasecmp(encoding, "utf-8"))
-               utf8_encode(p, strlen(p), resultbuf, TINYBUFSIZE-1, encoding);
+               utf8_encode(p, strlen(p), resultbuf, resultbuflen-2, encoding);
             else
-               snprintf(resultbuf, TINYBUFSIZE-1, "%s", p);
+               snprintf(resultbuf, resultbuflen-2, "%s", p);
          }
          else {
             snprintf(puf, sizeof(puf)-1, "%s", p);
             fixupEncodedHeaderLine(puf, sizeof(puf));
 
-            snprintf(resultbuf, TINYBUFSIZE-1, "%s", puf);
+            snprintf(resultbuf, resultbuflen-2, "%s", puf);
          }
 
       }

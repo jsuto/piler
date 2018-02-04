@@ -163,7 +163,7 @@ void storno_attachment(struct parser_state *state){
    memset(state->attachments[state->n_attachments].type, 0, TINYBUFSIZE);
    memset(state->attachments[state->n_attachments].shorttype, 0, TINYBUFSIZE);
    memset(state->attachments[state->n_attachments].aname, 0, TINYBUFSIZE);
-   memset(state->attachments[state->n_attachments].filename, 0, TINYBUFSIZE);
+   memset(state->attachments[state->n_attachments].filename, 0, SMALLBUFSIZE);
    memset(state->attachments[state->n_attachments].internalname, 0, TINYBUFSIZE);
    memset(state->attachments[state->n_attachments].digest, 0, 2*DIGEST_LENGTH+1);
 
@@ -220,11 +220,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(state->is_header == 1) state->is_header = 0;
       state->is_1st_header = 0;
-
-      if(state->anamepos > 0){
-         extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
-      }
-
    }
 
 
@@ -271,10 +266,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
       // this is a real attachment to dump, it doesn't have to be base64 encoded!
-      if(strlen(state->filename) > 4 && strlen(state->type) > 3 && state->n_attachments < MAX_ATTACHMENTS-1){
+      if(state->attachment_name_buf[0] != 0 && strcasestr(state->attachment_name_buf, "name") && strlen(state->type) > 3 && state->n_attachments < MAX_ATTACHMENTS-1){
          state->n_attachments++;
 
-         snprintf(state->attachments[state->n_attachments].filename, TINYBUFSIZE-1, "%s", state->filename);
+         extractNameFromHeaderLine(state->attachment_name_buf, "name", state->attachments[state->n_attachments].filename, SMALLBUFSIZE);
          snprintf(state->attachments[state->n_attachments].type, TINYBUFSIZE-1, "%s", state->type);
          snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
          snprintf(state->attachments[state->n_attachments].aname, TINYBUFSIZE-1, "%s.a%d.bin", sdata->ttmpfile, state->n_attachments);
@@ -284,7 +279,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
 
-            fixupEncodedHeaderLine(state->attachments[state->n_attachments].filename, TINYBUFSIZE);
+            fixupEncodedHeaderLine(state->attachments[state->n_attachments].filename, SMALLBUFSIZE);
 
             p = get_attachment_extractor_by_filename(state->attachments[state->n_attachments].filename);
 
@@ -366,24 +361,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       }
       else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
          state->message_state = MSG_CONTENT_TYPE;
-
-         if(state->anamepos > 0){
-            extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
-            memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
-            state->anamepos = 0;
-         }
-
       }
       else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
       else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0){
          state->message_state = MSG_CONTENT_DISPOSITION;
-
-         if(state->anamepos > 0){
-            extractNameFromHeaderLine(state->attachment_name_buf, "name", state->filename);
-            memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
-            state->anamepos = 0;
-         }
-
       }
       else if(strncasecmp(buf, "To:", 3) == 0){
          state->message_state = MSG_TO;
@@ -556,13 +537,12 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       }
 
 
-      if(strcasestr(buf, "charset")) extractNameFromHeaderLine(buf, "charset", state->charset);
+      if(strcasestr(buf, "charset")) extractNameFromHeaderLine(buf, "charset", state->charset, TINYBUFSIZE);
       if(strcasestr(state->charset, "UTF-8")) state->utf8 = 1;
    }
 
 
-   if((state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION) && strlen(state->filename) < 5){
-
+   if(state->message_state == MSG_CONTENT_TYPE){
       p = &buf[0];
       for(; *p; p++){
          if(*p != ' ' && *p != '\t') break;
@@ -631,7 +611,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       state->pushed_pointer = 0;
 
-      memset(state->filename, 0, TINYBUFSIZE);
       memset(state->type, 0, TINYBUFSIZE);
       snprintf(state->charset, TINYBUFSIZE-1, "unknown");
 

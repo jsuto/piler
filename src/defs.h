@@ -75,7 +75,7 @@ struct attachment {
    char type[TINYBUFSIZE];
    char shorttype[TINYBUFSIZE];
    char aname[TINYBUFSIZE];
-   char filename[TINYBUFSIZE];
+   char filename[SMALLBUFSIZE];
    char internalname[TINYBUFSIZE];
    char digest[2*DIGEST_LENGTH+1];
    char dumped;
@@ -185,7 +185,6 @@ struct parser_state {
    unsigned long n_body_token;
    unsigned long n_chain_token;
 
-   char filename[TINYBUFSIZE];
    char type[TINYBUFSIZE];
    char charset[TINYBUFSIZE];
 
