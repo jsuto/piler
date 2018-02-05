@@ -97,7 +97,6 @@ int query_attachment_pointers(struct session_data *sdata, struct data *data, uin
 
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_ATTACHMENT_POINTER) == ERR) return rc;
 
-
    p_bind_init(&sql);
 
    sql.sql[sql.pos] = (char *)&ptr; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
@@ -107,7 +106,7 @@ int query_attachment_pointers(struct session_data *sdata, struct data *data, uin
       p_bind_init(&sql);
 
       sql.sql[sql.pos] = piler_id; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
-      sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(int); sql.pos++;
+      sql.sql[sql.pos] = (char *)id; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(int); sql.pos++;
 
       p_store_results(&sql);
 
