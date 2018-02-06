@@ -363,7 +363,13 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->message_state = MSG_CONTENT_TYPE;
       }
       else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
-      else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0){
+
+      /*
+       * We only enter MSG_CONTENT_DISPOSITION state if we couldn't find
+       * the filename in MSG_CONTENT_TYPE state. We also assume that
+       * Content-Type: comes first, then Content-Disposition:
+       */
+      else if(strncasecmp(buf, "Content-Disposition:", strlen("Content-Disposition:")) == 0 && strcasestr(state->attachment_name_buf, "name") == NULL){
          state->message_state = MSG_CONTENT_DISPOSITION;
       }
       else if(strncasecmp(buf, "To:", 3) == 0){
@@ -542,7 +548,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    }
 
 
-   if(state->message_state == MSG_CONTENT_TYPE){
+   if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
       p = &buf[0];
       for(; *p; p++){
          if(*p != ' ' && *p != '\t') break;
