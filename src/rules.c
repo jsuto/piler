@@ -184,7 +184,10 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
 
 
 
-   if(h->rulestr) snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,body=%s,size%s%d,att.name=%s,att.type=%s,att.size%s%d,spam=%d", rule_cond->domain, rule_cond->from, rule_cond->to, rule_cond->subject, rule_cond->body, rule_cond->_size, rule_cond->size, rule_cond->attachment_name, rule_cond->attachment_type, rule_cond->_attachment_size, rule_cond->attachment_size, rule_cond->spam);
+   if(h->rulestr){
+      snprintf(h->rulestr, len-1, "domain=%s,from=%s,to=%s,subject=%s,body=%s,size%s%d,att.name=%s,att.type=%s,att.size%s%d,spam=%d", rule_cond->domain, rule_cond->from, rule_cond->to, rule_cond->subject, rule_cond->body, rule_cond->_size, rule_cond->size, rule_cond->attachment_name, rule_cond->attachment_type, rule_cond->_attachment_size, rule_cond->attachment_size, rule_cond->spam);
+      syslog(LOG_INFO, "adding rule: %s", h->rulestr);
+   }
    else h->compiled = 0;
 
    h->r = NULL;
