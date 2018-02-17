@@ -103,7 +103,7 @@ int main(int argc, char **argv){
    
    close_database(&sdata);
 
-   printf("{\n\trcvd=%llu,\n\tsize=%llu,\n\tssize=%llu,\n\tsphx=%llu\n}\n", rcvd, size, ssize, sphx);
+   printf("{\n\t\"rcvd\": %llu,\n\t\"size\": %llu,\n\t\"ssize\": %llu,\n\t\"sphx\": %llu\n}\n", rcvd, size, ssize, sphx);
 
    return 0;
 }
