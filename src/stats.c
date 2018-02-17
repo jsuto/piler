@@ -19,8 +19,18 @@
 extern char *optarg;
 extern int optind;
 
+struct stats {
+   uint64 rcvd;
+   uint64 size;
+   uint64 ssize;
 
-int query_counters(struct session_data *sdata, uint64 *rcvd, uint64 *size, uint64 *ssize){
+   uint64 sphx;
+   uint64 ram_bytes;
+   uint64 disk_bytes;
+};
+
+
+int query_counters(struct session_data *sdata, struct stats *stats){
    int rc=ERR;
    struct sql sql;
 
@@ -31,9 +41,9 @@ int query_counters(struct session_data *sdata, uint64 *rcvd, uint64 *size, uint6
    if(p_exec_stmt(sdata, &sql) == OK){
       p_bind_init(&sql);
 
-      sql.sql[sql.pos] = (char *)rcvd; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
-      sql.sql[sql.pos] = (char *)size; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
-      sql.sql[sql.pos] = (char *)ssize; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&(stats->rcvd); sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&(stats->size); sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = (char *)&(stats->ssize); sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
 
       p_store_results(&sql);
 
@@ -48,8 +58,7 @@ int query_counters(struct session_data *sdata, uint64 *rcvd, uint64 *size, uint6
 }
 
 
-uint64 query_sphinx(struct session_data *sdata){
-   uint64 sphx=0;
+void sphinx_queries(struct session_data *sdata, struct stats *stats){
    MYSQL_RES *result;
    MYSQL_ROW row;
 
@@ -61,22 +70,46 @@ uint64 query_sphinx(struct session_data *sdata){
 
       if(row){
          if(mysql_num_fields(result) == 2){
-            sphx = strtoull(row[1], NULL, 10);
+            stats->sphx = strtoull(row[1], NULL, 10);
          }
       }
 
       mysql_free_result(result);
    }
 
-   return sphx;
+   p_query(sdata, "SHOW INDEX main1 STATUS");
+
+   result = mysql_store_result(&(sdata->mysql));
+   if(result){
+      while((row = mysql_fetch_row(result))){
+         if(strcmp((char*)row[0], "ram_bytes") == 0) stats->ram_bytes = strtoull(row[1], NULL, 10);
+         if(strcmp((char*)row[0], "disk_bytes") == 0) stats->disk_bytes = strtoull(row[1], NULL, 10);
+      }
+
+      mysql_free_result(result);
+   }
+}
+
+
+void print_json_results(struct stats *stats){
+   printf("{\n");
+   printf("\t\"rcvd\": %llu,\n", stats->rcvd);
+   printf("\t\"size\": %llu,\n", stats->size);
+   printf("\t\"ssize\": %llu,\n", stats->ssize);
+   printf("\t\"sphx\": %llu,\n", stats->sphx);
+   printf("\t\"ram_bytes\": %llu,\n", stats->ram_bytes);
+   printf("\t\"disk_bytes\": %llu\n", stats->disk_bytes);
+   printf("}\n");
 }
 
 
 int main(int argc, char **argv){
-   uint64 rcvd=0, size=0, ssize=0, sphx=0;
    struct session_data sdata;
+   struct stats stats;
    struct config cfg;
    char *configfile=CONFIG_FILE;
+
+   memset(&stats, 0, sizeof(stats));
 
    srand(getpid());
 
@@ -86,9 +119,7 @@ int main(int argc, char **argv){
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
-   setlocale(LC_CTYPE, cfg.locale);
-
-   query_counters(&sdata, &rcvd, &size, &ssize);
+   query_counters(&sdata, &stats);
 
    close_database(&sdata);
 
@@ -99,11 +130,11 @@ int main(int argc, char **argv){
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
-   sphx = query_sphinx(&sdata);
+   sphinx_queries(&sdata, &stats);
    
    close_database(&sdata);
 
-   printf("{\n\t\"rcvd\": %llu,\n\t\"size\": %llu,\n\t\"ssize\": %llu,\n\t\"sphx\": %llu\n}\n", rcvd, size, ssize, sphx);
+   print_json_results(&stats);
 
    return 0;
 }
