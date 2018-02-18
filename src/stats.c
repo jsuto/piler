@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
@@ -27,6 +28,8 @@ struct stats {
    uint64 sphx;
    uint64 ram_bytes;
    uint64 disk_bytes;
+
+   uint64 error_emails;
 };
 
 
@@ -91,6 +94,29 @@ void sphinx_queries(struct session_data *sdata, struct stats *stats){
 }
 
 
+void count_error_emails(struct stats *stats){
+   DIR *dir;
+   struct dirent *de;
+   struct stat st;
+   char buf[SMALLBUFSIZE];
+
+   dir = opendir(ERROR_DIR);
+   if(dir){
+      while((de = readdir(dir))){
+         if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
+
+         snprintf(buf, sizeof(buf)-1, "%s/%s", ERROR_DIR, de->d_name);
+
+         if(stat(buf, &st) == 0 && S_ISREG(st.st_mode)){
+            stats->error_emails++;
+         }
+      }
+
+      closedir(dir);
+   }
+}
+
+
 void print_json_results(struct stats *stats){
    printf("{\n");
    printf("\t\"rcvd\": %llu,\n", stats->rcvd);
@@ -99,6 +125,7 @@ void print_json_results(struct stats *stats){
    printf("\t\"sphx\": %llu,\n", stats->sphx);
    printf("\t\"ram_bytes\": %llu,\n", stats->ram_bytes);
    printf("\t\"disk_bytes\": %llu\n", stats->disk_bytes);
+   printf("\t\"error_emails\": %llu\n", stats->error_emails);
    printf("}\n");
 }
 
@@ -133,6 +160,8 @@ int main(int argc, char **argv){
    sphinx_queries(&sdata, &stats);
    
    close_database(&sdata);
+
+   count_error_emails(&stats);
 
    print_json_results(&stats);
 
