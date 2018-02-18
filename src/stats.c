@@ -124,7 +124,7 @@ void print_json_results(struct stats *stats){
    printf("\t\"ssize\": %llu,\n", stats->ssize);
    printf("\t\"sphx\": %llu,\n", stats->sphx);
    printf("\t\"ram_bytes\": %llu,\n", stats->ram_bytes);
-   printf("\t\"disk_bytes\": %llu\n", stats->disk_bytes);
+   printf("\t\"disk_bytes\": %llu,\n", stats->disk_bytes);
    printf("\t\"error_emails\": %llu\n", stats->error_emails);
    printf("}\n");
 }
