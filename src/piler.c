@@ -147,7 +147,10 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    if(arule){
       syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", filename, arule);
       rc = ERR_DISCARDED;
-      remove_stripped_attachments(&parser_state);
+   }
+   else if(cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
+      syslog(LOG_PRIORITY, "%s: discarding: not on mydomains", filename);
+      rc = ERR_DISCARDED;
    }
    else {
       make_digests(sdata, cfg);
