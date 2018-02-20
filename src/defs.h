@@ -36,6 +36,8 @@
 #define MSG_MESSAGE_ID 9
 #define MSG_REFERENCES 10
 #define MSG_RECIPIENT 11
+#define MSG_ENVELOPE_FROM 12
+#define MSG_ENVELOPE_TO 13
 
 #define MAXHASH 277
 

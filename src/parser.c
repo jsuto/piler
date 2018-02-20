@@ -18,9 +18,7 @@
 
 struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct data *data, struct config *cfg){
    FILE *f;
-   int i;
-   unsigned int len;
-   char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
+   char buf[MAXBUFSIZE];
    char writebuffer[MAXBUFSIZE], abuffer[MAXBUFSIZE];
    struct parser_state state;
 
@@ -30,46 +28,6 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    if(!f){
       syslog(LOG_PRIORITY, "%s: cannot open", sdata->ttmpfile);
       return state;
-   }
-
-   /* TODO: since piler-smtp handles the smtp connection, piler has
-    * node idea about the envelope addresses */
-
-   if(sdata->num_of_rcpt_to > 0 && cfg->process_rcpt_to_addresses == 1){
-      for(i=0; i<sdata->num_of_rcpt_to; i++){
-
-         snprintf(puf, sizeof(puf)-1, "%s ", sdata->rcptto[i]);
-
-         if(does_it_seem_like_an_email_address(puf) == 1){
-            p = strstr(puf, cfg->hostid);
-            if(!p){
-
-               strtolower(puf);
-               len = strlen(puf);
-
-               if(state.tolen < MAXBUFSIZE-len-1){
-
-                  if(findnode(state.rcpt, puf) == NULL){
-                     addnode(state.journal_recipient, puf);
-                     addnode(state.rcpt, puf);
-
-                     memcpy(&(state.b_journal_to[state.journaltolen]), puf, len);
-                     state.journaltolen += len;
-
-                     memcpy(&(state.b_to[state.tolen]), puf, len);
-                     state.tolen += len;
-
-                     if(state.tolen < MAXBUFSIZE-len-1){
-                        split_email_address(puf);
-                        memcpy(&(state.b_to[state.tolen]), puf, len);
-                        state.tolen += len;
-                     }
-                  }
-               }
-            }
-         }
-
-      }
    }
 
    if(take_into_pieces == 1){
@@ -248,7 +206,9 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          state->attachments[state->n_attachments].size += len;
       }
-      else {
+      // There's a dummy separator header at the end of the envelope header lines,
+      // otherwise the first line of the real header would be lost
+      else if(state->message_state != MSG_ENVELOPE_FROM && state->message_state != MSG_ENVELOPE_TO){
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
@@ -357,7 +317,15 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->spam_message = 1;
       }
 
-      if(strncasecmp(buf, "From:", strlen("From:")) == 0){
+      if(strncasecmp(buf, "X-Piler-Envelope-From:", strlen("X-Piler-Envelope-From:")) == 0){
+         state->message_state = MSG_ENVELOPE_FROM;
+         buf += strlen("X-Piler-Envelope-From:");
+      }
+      else if(strncasecmp(buf, "X-Piler-Envelope-To:", strlen("X-Piler-Envelope-To:")) == 0){
+         state->message_state = MSG_ENVELOPE_TO;
+         buf += strlen("X-Piler-Envelope-To:");
+      }
+      else if(strncasecmp(buf, "From:", strlen("From:")) == 0){
          state->message_state = MSG_FROM;
          buf += strlen("From:");
       }
@@ -726,7 +694,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             }
          }
       }
-      else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
+      else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT || state->message_state == MSG_ENVELOPE_TO) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
          strtolower(puf);
 
          /* fix aaa+bbb@ccc.fu address to aaa@ccc.fu, 2017.02.04, SJ */
@@ -739,6 +707,9 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
          }
 
+         if(state->message_state == MSG_ENVELOPE_TO && cfg->verbosity >= _LOG_DEBUG){
+            syslog(LOG_PRIORITY, "%s: envelope rcpt: '%s'", sdata->ttmpfile, puf);
+         }
 
          if(findnode(state->rcpt, puf) == NULL){
 
