@@ -309,7 +309,7 @@ int main(int argc, char **argv){
                   break;
                }
 
-               handle_data(session, &readbuf[0], readlen);
+               handle_data(session, &readbuf[0], readlen, &cfg);
 
                if(session->protocol_state == SMTP_STATE_BDAT && session->bad == 1){
                   done = 1;

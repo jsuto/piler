@@ -381,6 +381,7 @@ struct counters {
 struct smtp_session {
    char ttmpfile[SMALLBUFSIZE];
    char mailfrom[SMALLBUFSIZE];
+   char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
    char buf[SMALLBUFSIZE];
    char remote_host[INET6_ADDRSTRLEN];
    time_t lasttime;
@@ -393,6 +394,7 @@ struct smtp_session {
    int bdat_rounds;
    int bdat_last_round;
    int bdat_bytes_to_read;
+   int num_of_rcpt_to;
    struct config *cfg;
    struct net net;
 };

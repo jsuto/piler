@@ -32,6 +32,8 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
       return state;
    }
 
+   /* TODO: since piler-smtp handles the smtp connection, piler has
+    * node idea about the envelope addresses */
 
    if(sdata->num_of_rcpt_to > 0 && cfg->process_rcpt_to_addresses == 1){
       for(i=0; i<sdata->num_of_rcpt_to; i++){

@@ -60,7 +60,7 @@ void get_bdat_size_to_read(struct smtp_session *session, char *buf){
 }
 
 
-void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
+void process_bdat(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
    int i;
    char buf[SMALLBUFSIZE];
 
@@ -71,6 +71,8 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
       if(session->fd == -1){
          syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, session->ttmpfile);
       }
+
+      if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session);
    }
 
    session->bdat_bytes_to_read -= readlen;
@@ -113,7 +115,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen){
 
                   snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
                   send_smtp_response(session, buf);
-                  syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d", session->ttmpfile, session->mailfrom, session->tot_len);
+                  syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host);
                }
                else send_smtp_response(session, SMTP_RESP_250_BDAT);
             }

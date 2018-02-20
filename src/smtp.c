@@ -15,7 +15,7 @@
 #include "smtp.h"
 
 
-void process_smtp_command(struct smtp_session *session, char *buf){
+void process_smtp_command(struct smtp_session *session, char *buf, struct config *cfg){
    char response[SMALLBUFSIZE];
 
    if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "processing command: *%s*", buf);
@@ -42,7 +42,7 @@ void process_smtp_command(struct smtp_session *session, char *buf){
    }
 
    if(strncasecmp(buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
-      process_command_data(session);
+      process_command_data(session, cfg);
       return;
    }
 
@@ -244,8 +244,6 @@ void process_command_starttls(struct smtp_session *session){
 
 
 void process_command_mail_from(struct smtp_session *session, char *buf){
-   memset(session->mailfrom, 0, SMALLBUFSIZE);
-
    if(session->protocol_state != SMTP_STATE_HELO && session->protocol_state != SMTP_STATE_PERIOD && session->protocol_state != SMTP_STATE_BDAT){
       send(session->net.socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
    }
@@ -271,6 +269,12 @@ void process_command_rcpt_to(struct smtp_session *session, char *buf){
       // For now, we are not interested in the envelope recipients
 
       session->protocol_state = SMTP_STATE_RCPT_TO;
+
+      if(session->num_of_rcpt_to < MAX_RCPT_TO){
+         extractEmail(buf, session->rcptto[session->num_of_rcpt_to]);
+         session->num_of_rcpt_to++;
+      }
+
       send_smtp_response(session, SMTP_RESP_250_OK);
    }
    else {
@@ -279,7 +283,7 @@ void process_command_rcpt_to(struct smtp_session *session, char *buf){
 }
 
 
-void process_command_data(struct smtp_session *session){
+void process_command_data(struct smtp_session *session, struct config *cfg){
    session->tot_len = 0;
 
    if(session->protocol_state != SMTP_STATE_RCPT_TO){
@@ -294,6 +298,8 @@ void process_command_data(struct smtp_session *session){
       else {
          session->protocol_state = SMTP_STATE_DATA;
          send_smtp_response(session, SMTP_RESP_354_DATA_OK);
+
+         if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session);
       }
    }
 

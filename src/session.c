@@ -104,6 +104,7 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    struct sockaddr_in addr;
    socklen_t addr_size = sizeof(struct sockaddr_in);
    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+   int i;
 
    session->slot = slot;
 
@@ -119,6 +120,11 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    session->net.ssl = NULL;
 
    session->fd = -1;
+
+   memset(session->mailfrom, 0, SMALLBUFSIZE);
+
+   session->num_of_rcpt_to = 0;
+   for(i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
 
    memset(session->buf, 0, SMALLBUFSIZE);
    memset(session->remote_host, 0, INET6_ADDRSTRLEN);
@@ -162,7 +168,7 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 }
 
 
-void handle_data(struct smtp_session *session, char *readbuf, int readlen){
+void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
    char *p, puf[MAXBUFSIZE];
    int result;
 
@@ -174,7 +180,7 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
          return;
       }
 
-      process_bdat(session, readbuf, readlen);
+      process_bdat(session, readbuf, readlen, cfg);
    }
 
    // process DATA
@@ -204,13 +210,13 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
          if(puf[0] == '\0') continue;
 
          if(result == 1){
-            process_smtp_command(session, puf);
+            process_smtp_command(session, puf, cfg);
 
             // if chunking is enabled and we have data after BDAT <len>
             // then process the rest
 
             if(session->cfg->enable_chunking == 1 && p && session->protocol_state == SMTP_STATE_BDAT){
-               process_bdat(session, p, strlen(p));
+               process_bdat(session, p, strlen(p), cfg);
                break;
             }
          }
@@ -222,4 +228,22 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen){
 
    }
 
+}
+
+
+void write_envelope_addresses(struct smtp_session *session){
+   int i;
+   char s[SMALLBUFSIZE];
+
+   if(session->fd == -1) return;
+
+   snprintf(s, sizeof(s)-1, "X-Piler-Envelope-From: %s\n", session->mailfrom);
+   if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope from address", session->ttmpfile);
+
+   for(i=0; i<session->num_of_rcpt_to; i++){
+      if(i == 0) snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[session->num_of_rcpt_to]);
+      else snprintf(s, sizeof(s)-1, " %s\n", session->rcptto[session->num_of_rcpt_to]);
+
+      if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope to address", session->ttmpfile);
+   }
 }
