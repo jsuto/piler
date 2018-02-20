@@ -241,8 +241,8 @@ void write_envelope_addresses(struct smtp_session *session){
    if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope from address", session->ttmpfile);
 
    for(i=0; i<session->num_of_rcpt_to; i++){
-      if(i == 0) snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[session->num_of_rcpt_to]);
-      else snprintf(s, sizeof(s)-1, " %s\n", session->rcptto[session->num_of_rcpt_to]);
+      if(i == 0) snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[i]);
+      else snprintf(s, sizeof(s)-1, " %s\n", session->rcptto[i]);
 
       if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope to address", session->ttmpfile);
    }
