@@ -185,7 +185,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    if(take_into_pieces == 1){
       if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
-         //n = write(state->fd, buf, len); // WRITE
          if(len + state->abufpos > abuffersize-1){
             if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
 
@@ -206,11 +205,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          state->attachments[state->n_attachments].size += len;
       }
-      // There's a dummy separator header at the end of the envelope header lines,
-      // otherwise the first line of the real header would be lost
-      else if(cfg->process_rcpt_to_addresses == 0 || (state->message_state != MSG_ENVELOPE_TO && strncasecmp(buf, "X-Piler-Envelope-", strlen("X-Piler-Envelope-")))){
+      else {
          state->saved_size += len;
-         //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
             if(write(state->mfd, writebuffer, state->writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
             state->writebufpos = 0;
@@ -222,8 +218,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    if(state->message_state == MSG_BODY && state->has_to_dump == 1 &&  state->pushed_pointer == 0){
-      //printf("####name: %s, type: %s, base64: %d\n", state->filename, state->type, state->base64);
-
       state->pushed_pointer = 1;
 
 
@@ -235,8 +229,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          snprintf(state->attachments[state->n_attachments].type, TINYBUFSIZE-1, "%s", state->type);
          snprintf(state->attachments[state->n_attachments].internalname, TINYBUFSIZE-1, "%s.a%d", sdata->ttmpfile, state->n_attachments);
          snprintf(state->attachments[state->n_attachments].aname, TINYBUFSIZE-1, "%s.a%d.bin", sdata->ttmpfile, state->n_attachments);
-
-         //printf("DUMP FILE: %s\n", state->attachments[state->n_attachments].internalname);
 
          if(take_into_pieces == 1){
             state->fd = open(state->attachments[state->n_attachments].internalname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
@@ -260,7 +252,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             }
             else {
                snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
-               //n = write(state->mfd, puf, strlen(puf)); // WRITE
                writelen = strlen(puf);
                if(writelen + state->writebufpos > writebuffersize-1){
                   if(write(state->mfd, writebuffer, state->writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
@@ -317,11 +308,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->spam_message = 1;
       }
 
-      if(strncasecmp(buf, "X-Piler-Envelope-From:", strlen("X-Piler-Envelope-From:")) == 0){
-         state->message_state = MSG_ENVELOPE_FROM;
-         buf += strlen("X-Piler-Envelope-From:");
-      }
-      else if(strncasecmp(buf, "X-Piler-Envelope-To:", strlen("X-Piler-Envelope-To:")) == 0){
+      if(strncasecmp(buf, "X-Piler-Envelope-To:", strlen("X-Piler-Envelope-To:")) == 0){
          state->message_state = MSG_ENVELOPE_TO;
          buf += strlen("X-Piler-Envelope-To:");
       }
@@ -605,7 +592,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    /* skip irrelevant headers */
-   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_FROM && state->message_state != MSG_ENVELOPE_TO) return 0;
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_TO) return 0;
 
 
    /* don't process body if it's not a text or html part */
