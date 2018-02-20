@@ -208,7 +208,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       }
       // There's a dummy separator header at the end of the envelope header lines,
       // otherwise the first line of the real header would be lost
-      else if(state->message_state != MSG_ENVELOPE_FROM && state->message_state != MSG_ENVELOPE_TO){
+      else if(cfg->process_rcpt_to_addresses == 0 || (state->message_state != MSG_ENVELOPE_TO && strncasecmp(buf, "X-Piler-Envelope-", strlen("X-Piler-Envelope-")))){
          state->saved_size += len;
          //n = write(state->mfd, buf, len); // WRITE
          if(len + state->writebufpos > writebuffersize-1){
@@ -605,7 +605,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    /* skip irrelevant headers */
-   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT) return 0;
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_FROM && state->message_state != MSG_ENVELOPE_TO) return 0;
 
 
    /* don't process body if it's not a text or html part */
@@ -705,10 +705,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             addnode(state->journal_recipient, puf);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
-         }
-
-         if(state->message_state == MSG_ENVELOPE_TO && cfg->verbosity >= _LOG_DEBUG){
-            syslog(LOG_PRIORITY, "%s: envelope rcpt: '%s'", sdata->ttmpfile, puf);
          }
 
          if(findnode(state->rcpt, puf) == NULL){
