@@ -231,14 +231,17 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
 }
 
 
-void write_envelope_addresses(struct smtp_session *session){
+void write_envelope_addresses(struct smtp_session *session, struct config *cfg){
    int i;
-   char s[SMALLBUFSIZE];
+   char *p, s[SMALLBUFSIZE];
 
    if(session->fd == -1) return;
 
    for(i=0; i<session->num_of_rcpt_to; i++){
-      snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[i]);
-      if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope to address", session->ttmpfile);
+      p = strchr(session->rcptto[i], '@');
+      if(p && strncmp(p+1, cfg->hostid, cfg->hostid_len)){
+         snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[i]);
+         if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope to address", session->ttmpfile);
+      }
    }
 }

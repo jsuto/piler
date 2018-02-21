@@ -299,7 +299,7 @@ void process_command_data(struct smtp_session *session, struct config *cfg){
          session->protocol_state = SMTP_STATE_DATA;
          send_smtp_response(session, SMTP_RESP_354_DATA_OK);
 
-         if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session);
+         if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session, cfg);
       }
    }
 

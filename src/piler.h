@@ -71,7 +71,7 @@ int is_email_address_on_my_domains(char *email, struct data *data);
 int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg);
 void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections);
 struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int max_connections, int socket);
-void write_envelope_addresses(struct smtp_session *session);
+void write_envelope_addresses(struct smtp_session *session, struct config *cfg);
 void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg);
 void free_smtp_session(struct smtp_session *session);
 

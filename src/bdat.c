@@ -72,7 +72,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
          syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, session->ttmpfile);
       }
 
-      if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session);
+      if(cfg->process_rcpt_to_addresses == 1) write_envelope_addresses(session, cfg);
    }
 
    session->bdat_bytes_to_read -= readlen;
