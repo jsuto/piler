@@ -69,6 +69,10 @@ class ModelSearchMessage extends Model {
          $s = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $s);
       }
 
+      if(Registry::get('auditor_user') == 0){
+         $s = preg_replace("/X-Piler-Envelope-To:.{1,}\n/", "", $s);
+      }
+
       return $s;
    }
 
