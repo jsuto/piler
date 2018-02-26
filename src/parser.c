@@ -165,6 +165,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          memset(state->b_to_domain, 0, SMALLBUFSIZE);
 
          clearhash(state->rcpt);
+         clearhash(state->rcpt_domain);
 
          //if(sdata->import == 0){
             sdata->ms_journal = 1;
