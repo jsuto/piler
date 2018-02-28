@@ -15,8 +15,19 @@
 #include <piler.h>
 
 
+void usage(){
+   printf("\nusage: pilertest\n\n");
+
+   printf("    [-c <config file>]                Config file to use if not the default\n");
+   printf("    -m <message eml file>             Message in EML format\n");
+   printf("    -a <extra recipient>              Extra recipient\n");
+
+   exit(0);
+}
+
+
 int main(int argc, char **argv){
-   int i;
+   int i, c;
    time_t retention_seconds=0;
    struct stat st;
    struct session_data sdata;
@@ -24,25 +35,75 @@ int main(int argc, char **argv){
    struct config cfg;
    struct data data;
    struct import import;
-   char *rule;
+   char *configfile=CONFIG_FILE, *rule, *emlfile=NULL;
+
+   import.extra_recipient = NULL;
 
    srand(getpid());
 
-   if(argc < 2){
-      fprintf(stderr, "usage: %s <message> [<extra recipient>]\n", argv[0]);
-      exit(1);
+   while(1){
+
+#ifdef _GNU_SOURCE
+      static struct option long_options[] =
+         {
+            {"config",          required_argument,  0,  'c' },
+            {"message",         required_argument,  0,  'm' },
+            {"extra-recipient", required_argument,  0,  'a' },
+            {0,0,0,0}
+         };
+
+      int option_index = 0;
+
+
+      c = getopt_long(argc, argv, "c:m:a:hv?", long_options, &option_index);
+#else
+      c = getopt(argc, argv, "c:m:a:hv?");
+#endif
+
+      if(c == -1) break;
+
+      switch(c){
+
+         case 'c' :
+                    configfile = optarg;
+                    break;
+
+         case 'm' :
+                    emlfile = optarg;
+                    break;
+
+         case 'a':
+                    import.extra_recipient = optarg;
+                    break;
+
+         default  :
+                    usage();
+                    break;
+      }
+
    }
+
+
+   if(emlfile == NULL) usage();
 
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
-   if(stat(argv[1], &st) != 0){
-      fprintf(stderr, "%s is not found\n", argv[1]);
+   if(stat(emlfile, &st) != 0){
+      fprintf(stderr, "%s is not found\n", emlfile);
+      return 0;
+   }
+
+
+   if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
+
+   if(stat(emlfile, &st) != 0){
+      fprintf(stderr, "%s is not found\n", emlfile);
       return 0;
    }
 
    (void) openlog("test", LOG_PID, LOG_MAIL);
 
-   cfg = read_config(CONFIG_FILE);
+   cfg = read_config(configfile);
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
@@ -50,10 +111,6 @@ int main(int argc, char **argv){
    setlocale(LC_CTYPE, cfg.locale);
 
    printf("build: %d\n", get_build());
-
-   import.extra_recipient = NULL;
-
-   if(argc > 2) import.extra_recipient = argv[2];
 
    data.import = &import;
 
@@ -79,9 +136,9 @@ int main(int argc, char **argv){
    sdata.tot_len = st.st_size;
    sdata.import = 1;
 
-   snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
-   snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", argv[1]);
-   snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", argv[1]);
+   snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", emlfile);
+   snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", emlfile);
+   snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", emlfile);
 
    printf("parsing...\n");
    state = parse_message(&sdata, 1, &data, &cfg);
