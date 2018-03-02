@@ -85,44 +85,6 @@ long tvdiff(struct timeval a, struct timeval b){
 
 
 /*
- * search something in a buffer
- */
-
-int searchStringInBuffer(char *s, int len1, char *what, int len2){
-   int i, k, r;
-
-   for(i=0; i<len1; i++){
-      r = 0;
-
-      for(k=0; k<len2; k++){
-         if(*(s+i+k) == *(what+k))
-            r++;
-      }
-
-      if(r == len2)
-         return i;
-   }
-
-   return -1;
-}
-
-
-int search_char_backward(char *buf, int buflen, char c){
-   int n, m;
-
-   m = buflen - 1 - 5;
-   if(m < 0) m = 0;
-
-   for(n=m; n<buflen; n++){
-      if(*(buf + n) == c){
-         return n;
-      }
-   }
-   return -1;
-}
-
-
-/*
  * count a character in buffer
  */
 
@@ -736,6 +698,34 @@ void move_email(struct smtp_session *session){
    if(rename(session->ttmpfile, buf)){
       syslog(LOG_PRIORITY, "ERROR: couldn't rename %s to %s", session->ttmpfile, buf);
    }
+}
+
+
+int read_one_line(char *s, int c, char *buf, int buflen, int *rc){
+   int i=0;
+
+   *rc = ERR;
+
+   memset(buf, 0, buflen);
+
+   if(s == NULL){
+      return i;
+   }
+
+   for(; *s; s++){
+      if(i<buflen-2){
+         buf[i] = *s;
+         i++;
+
+         if(*s == c){
+            *rc = OK;
+            break;
+         }
+      }
+      else break;
+   }
+
+   return i;
 }
 
 

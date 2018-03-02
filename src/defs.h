@@ -383,7 +383,7 @@ struct smtp_session {
    char ttmpfile[SMALLBUFSIZE];
    char mailfrom[SMALLBUFSIZE];
    char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
-   char buf[SMALLBUFSIZE];
+   char buf[MAXBUFSIZE];
    char remote_host[INET6_ADDRSTRLEN];
    time_t lasttime;
    int protocol_state;

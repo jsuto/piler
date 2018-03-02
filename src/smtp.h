@@ -8,7 +8,7 @@
 #include <piler.h>
 
 void process_smtp_command(struct smtp_session *session, char *buf, struct config *cfg);
-void process_data(struct smtp_session *session, char *readbuf, int readlen);
+void process_data(struct smtp_session *session, char *buf, int buflen);
 
 void send_smtp_response(struct smtp_session *session, char *buf);
 void process_command_helo(struct smtp_session *session, char *buf, int buflen);

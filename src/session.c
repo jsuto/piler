@@ -126,7 +126,7 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    session->num_of_rcpt_to = 0;
    for(i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
 
-   memset(session->buf, 0, SMALLBUFSIZE);
+   memset(session->buf, 0, MAXBUFSIZE);
    memset(session->remote_host, 0, INET6_ADDRSTRLEN);
 
    reset_bdat_counters(session);
@@ -169,64 +169,64 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
 
 void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   char *p, puf[MAXBUFSIZE];
-   int result;
+   int puflen, rc, lines=0;
+   char *p, copybuf[BIGBUFSIZE+MAXBUFSIZE], puf[MAXBUFSIZE];
 
-   // process BDAT stuff
+   // if there's something in the saved buffer, then let's merge them
 
-   if(session->protocol_state == SMTP_STATE_BDAT){
-      if(session->bad == 1){
-         // something bad happened in the BDAT processing
-         return;
-      }
+   if(session->buflen > 0){
+      memset(copybuf, 0, sizeof(copybuf));
 
-      process_bdat(session, readbuf, readlen, cfg);
+      memcpy(copybuf, session->buf, session->buflen);
+      memcpy(&copybuf[session->buflen], readbuf, readlen);
+
+      session->buflen = 0;
+      memset(session->buf, 0, MAXBUFSIZE);
+
+      p = &copybuf[0];
    }
-
-   // process DATA
-
-   else if(session->protocol_state == SMTP_STATE_DATA){
-      process_data(session, readbuf, readlen);
-   }
-
-   // process other SMTP commands
-
    else {
-
-      if(session->buflen > 0){
-         snprintf(puf, sizeof(puf)-1, "%s%s", session->buf, readbuf);
-         snprintf(readbuf, BIGBUFSIZE-1, "%s", puf);
-
-         session->buflen = 0;
-         memset(session->buf, 0, SMALLBUFSIZE);
-      }
-
       p = readbuf;
+   }
 
-      do {
-         memset(puf, 0, sizeof(puf));
-         p = split(p, '\n', puf, sizeof(puf)-1, &result);
 
-         if(puf[0] == '\0') continue;
+   do {
+      puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
+      p += puflen;
 
-         if(result == 1){
-            process_smtp_command(session, puf, cfg);
+      lines++;
 
-            // if chunking is enabled and we have data after BDAT <len>
-            // then process the rest
-
-            if(session->cfg->enable_chunking == 1 && p && session->protocol_state == SMTP_STATE_BDAT){
-               process_bdat(session, p, strlen(p), cfg);
-               break;
+      if(rc == OK){
+         if(session->protocol_state == SMTP_STATE_BDAT){
+            if(session->bad == 1){
+               // something bad happened in the BDAT processing
+               return;
             }
+
+            process_bdat(session, puf, puflen, cfg);
+         }
+
+         else if(session->protocol_state == SMTP_STATE_DATA){
+            process_data(session, puf, puflen);
+         }
+
+         else {
+            process_smtp_command(session, puf, cfg);
+         }
+      }
+      else if(puflen > 0){
+         // if it's BDAT state, then don't buffer, rather give it to
+         // the BDAT processing function
+         if(session->protocol_state == SMTP_STATE_BDAT){
+            process_bdat(session, puf, puflen, cfg);
          }
          else {
-            snprintf(session->buf, SMALLBUFSIZE-1, "%s", puf);
-            session->buflen = strlen(puf);
+            snprintf(session->buf, MAXBUFSIZE-1, "%s", puf);
+            session->buflen = puflen;
          }
-      } while(p);
+      }
 
-   }
+   } while(puflen > 0);
 
 }
 

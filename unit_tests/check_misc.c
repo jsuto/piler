@@ -89,50 +89,6 @@ static void test_trim_buffer(){
 }
 
 
-static void test_search_string_in_buffer(){
-   unsigned int i;
-   int pos;
-   struct test_data_s_s_i test_data_s_s_i[] = {
-      { "ajaja\r\n.\r\n", SMTP_CMD_PERIOD, 5 },
-      { "ajaja\r\n.\r\ndhdjdhj", SMTP_CMD_PERIOD, 5 },
-      { "ajajadjdhj", "a", 0 },
-      { "ajajadjdhj", "aja", 0 },
-      { "ajajadjdhj", "jaja", 1 },
-      { "ajajadjdhj", "qqq", -1 },
-   };
-
-   TEST_HEADER();
-
-   for(i=0; i<sizeof(test_data_s_s_i)/sizeof(struct test_data_s_s_i); i++){
-      pos = searchStringInBuffer(test_data_s_s_i[i].s1, strlen(test_data_s_s_i[i].s1), test_data_s_s_i[i].s2, strlen(test_data_s_s_i[i].s2));
-      //printf("%s %s %d, %d\n", test_data_s_s_i[i].s1, test_data_s_s_i[i].s2, pos, test_data_s_s_i[i].result);
-      ASSERT(pos == test_data_s_s_i[i].result, test_data_s_s_i[i].s1);
-   }
-
-   TEST_FOOTER();
-}
-
-
-static void test_search_char_backward(){
-   unsigned int i;
-   int pos;
-   struct test_data_s_s_i test_data_s_s_i[] = {
-      { "abcdefghij\r\n.\r\n", "\r", 10 },
-      { "abcdefghij\n\n.\r\n", "\r", 13 },
-      { "abcdefghij\n\n.\n\n", "\r", -1 },
-   };
-
-   TEST_HEADER();
-
-   for(i=0; i<sizeof(test_data_s_s_i)/sizeof(struct test_data_s_s_i); i++){
-      pos = search_char_backward(test_data_s_s_i[i].s1, strlen(test_data_s_s_i[i].s1), test_data_s_s_i[i].s2[0]);
-      ASSERT(pos == test_data_s_s_i[i].result, test_data_s_s_i[i].s1);
-   }
-
-   TEST_FOOTER();
-}
-
-
 static void test_make_random_string(){
    unsigned int i;
    char buf[SMALLBUFSIZE];
@@ -229,8 +185,6 @@ int main(){
    test_extract_verp_address();
    test_extract_email();
    test_trim_buffer();
-   test_search_string_in_buffer();
-   test_search_char_backward();
    test_make_random_string();
    test_create_id();
    test_split();

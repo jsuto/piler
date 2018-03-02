@@ -19,8 +19,6 @@ int get_build();
 void get_extractor_list();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
-int searchStringInBuffer(char *s, int len1, char *what, int len2);
-int search_char_backward(char *buf, int buflen, char c);
 int countCharacterInBuffer(char *p, char c);
 void replaceCharacterInBuffer(char *p, char from, char to);
 char *split(char *str, int ch, char *buf, int buflen, int *result);
@@ -51,6 +49,7 @@ int create_and_bind(char *listen_addr, int listen_port);
 int can_i_write_directory(char *dir);
 
 void move_email(struct smtp_session *session);
+int read_one_line(char *s, int c, char *buf, int buflen, int *rc);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);
