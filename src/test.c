@@ -12,6 +12,7 @@
 #include <time.h>
 #include <locale.h>
 #include <syslog.h>
+#include <getopt.h>
 #include <piler.h>
 
 
