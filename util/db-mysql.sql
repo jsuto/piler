@@ -28,7 +28,7 @@ create table if not exists `sph_index` (
 create table if not exists `metadata` (
   `id` bigint unsigned not null auto_increment,
   `from` varchar(255) not null,
-  `fromdomain` varchar(64) not null,
+  `fromdomain` varchar(255) not null,
   `subject` blob(512) default null,
   `spam` tinyint(1) default 0,
   `arrived` int unsigned not null,
