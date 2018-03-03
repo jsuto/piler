@@ -69,6 +69,13 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    clearhash(state->rcpt_domain);
    clearhash(state->journal_recipient);
 
+   // Fix From: line if it's too long
+   if(strlen(state->b_from) > 255) state->b_from[255] = '\0';
+   if(strlen(state->b_from_domain) > 255) state->b_from_domain[255] = '\0';
+
+   // Truncate the message_id if it's >255 characters
+   if(strlen(state->message_id) > 255) state->message_id[255] = '\0';
+
    fixupEncodedHeaderLine(state->b_subject, MAXBUFSIZE);
    trimBuffer(state->b_subject);
 
