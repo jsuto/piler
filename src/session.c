@@ -169,7 +169,7 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
 
 void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   int puflen, rc, lines=0;
+   int puflen, rc;
    char *p, copybuf[BIGBUFSIZE+MAXBUFSIZE], puf[MAXBUFSIZE];
 
    // if there's something in the saved buffer, then let's merge them
@@ -194,31 +194,15 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
       puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
       p += puflen;
 
-      lines++;
-
-      if(rc == OK){
-         if(session->protocol_state == SMTP_STATE_BDAT){
-            if(session->bad == 1){
-               // something bad happened in the BDAT processing
-               return;
-            }
-
-            process_bdat(session, puf, puflen, cfg);
-         }
-
-         else if(session->protocol_state == SMTP_STATE_DATA){
+      if(puflen > 0){
+         if(session->protocol_state == SMTP_STATE_DATA){
             process_data(session, puf, puflen);
          }
-
-         else {
-            process_smtp_command(session, puf, cfg);
-         }
-      }
-      else if(puflen > 0){
-         // if it's BDAT state, then don't buffer, rather give it to
-         // the BDAT processing function
-         if(session->protocol_state == SMTP_STATE_BDAT){
+         else if(session->protocol_state == SMTP_STATE_BDAT){
             process_bdat(session, puf, puflen, cfg);
+         }
+         else if(rc == OK){
+            process_smtp_command(session, puf, cfg);
          }
          else {
             snprintf(session->buf, MAXBUFSIZE-1, "%s", puf);
