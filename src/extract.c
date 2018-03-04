@@ -19,32 +19,22 @@
 #define die(e) do { syslog(LOG_INFO, "error: helper: %s", e); exit(EXIT_FAILURE); } while (0);
 
 
-void remove_xml(char *buf, int *html){
+int remove_xml(char *src, char *dest, int destlen, int *html){
    int i=0;
-   char *p;
 
-   p = buf;
+   memset(dest, 0, destlen);
 
-   for(; *p; p++){
-      if(*p == '<'){ *html = 1; }
+   for(; *src; src++){
+      if(*src == '<'){ *html = 1; continue; }
+      if(*src == '>'){ *html = 0; continue; }
 
       if(*html == 0){
-         *(buf+i) = *p;
+         if(i < destlen) *(dest+i) = *src;
          i++;
       }
-
-      if(*p == '>'){
-         *html = 0;
-
-         if(i > 2 && *(buf+i-1) != ' '){
-            *(buf+i) = ' '; i++;
-         }
-
-      }
-
    }
 
-   *(buf+i) = '\0';
+   return i;
 }
 
 
@@ -52,7 +42,7 @@ void remove_xml(char *buf, int *html){
 int extract_opendocument(struct session_data *sdata, struct parser_state *state, char *filename, char *prefix){
    int errorp, i=0, len=0, html=0;
    int len2;
-   char buf[MAXBUFSIZE];
+   char buf[4*MAXBUFSIZE], puf[4*MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
    struct zip_file *zf;
@@ -72,11 +62,10 @@ int extract_opendocument(struct session_data *sdata, struct parser_state *state,
          if(zf){
             while((len = zip_fread(zf, buf, sizeof(buf)-2)) > 0){
 
-               remove_xml(buf, &html);
-               len2 = strlen(buf);
+               len2 = remove_xml(buf, puf, sizeof(puf), &html);
 
                if(len2 > 0 && state->bodylen < BIGBUFSIZE-len2-1){
-                  memcpy(&(state->b_body[state->bodylen]), buf, len2);
+                  memcpy(&(state->b_body[state->bodylen]), puf, len2);
                   state->bodylen += len2;
                }
 
