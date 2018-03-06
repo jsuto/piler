@@ -308,8 +308,8 @@ void extract_attachment_content(struct session_data *sdata, struct parser_state 
             memcpy(&(state->b_body[state->bodylen]), outbuf, n);
             state->bodylen += n;
          }
-         //printf("Output: %.*s\n", n, outbuf);
       }
+      close(link[0]);
       wait(NULL);
       return;
    }
