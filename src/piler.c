@@ -283,13 +283,13 @@ void child_main(struct child *ptr){
 
       sig_unblock(SIGHUP);
 
-      // TODO: do we want to quit after processing a certain number of messages?
+      // Let the child quit after processing max_requests_per_child messages
 
-      //if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
-      //   if(cfg.verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
-      //   break;
-      //}
-
+      if(cfg.max_requests_per_child > 0 && ptr->messages >= cfg.max_requests_per_child){
+         if(cfg.verbosity >= _LOG_DEBUG)
+            syslog(LOG_PRIORITY, "child (pid: %d, serial: %d) served enough: %d", getpid(), ptr->messages, ptr->serial);
+         break;
+      }
    }
 
 #ifdef HAVE_MEMCACHED
