@@ -7,7 +7,9 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
+#include <netdb.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <time.h>
@@ -16,6 +18,7 @@
 #include <getopt.h>
 #include <piler.h>
 
+#define SMTP_TIMEOUT 5
 
 extern char *optarg;
 extern int optind;
@@ -30,6 +33,8 @@ struct stats {
    uint64 disk_bytes;
 
    uint64 error_emails;
+
+   float smtp_response_time;
 };
 
 
@@ -117,6 +122,57 @@ void count_error_emails(struct stats *stats){
 }
 
 
+void check_smtp_status(struct stats *stats, struct config *cfg){
+   int sd, rc;
+   char port_string[8];
+   char buf[SMALLBUFSIZE];
+   struct addrinfo hints, *res;
+   struct timezone tz;
+   struct timeval tv1, tv2;
+
+   // Set this to a very high number, 1 hour in ms
+   stats->smtp_response_time = 3600000;
+
+   memset(buf, 0, sizeof(buf));
+
+   snprintf(port_string, sizeof(port_string)-1, "%d", cfg->listen_port);
+
+   memset(&hints, 0, sizeof(hints));
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+
+   if((rc = getaddrinfo(cfg->listen_addr, port_string, &hints, &res)) != 0){
+      fprintf(stderr, "getaddrinfo for '%s': %s\n", cfg->listen_addr, gai_strerror(rc));
+      return;
+   }
+
+   if((sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) == -1){
+      fprintf(stderr, "cannot create socket\n");
+      goto ENDE_CHECK_SMTP_STATUS;
+   }
+
+   gettimeofday(&tv1, &tz);
+
+   if(connect(sd, res->ai_addr, res->ai_addrlen) == -1){
+      fprintf(stderr, "connect()\n");
+      goto ENDE_CHECK_SMTP_STATUS;
+   }
+
+   recvtimeout(sd, buf, sizeof(buf)-1, SMTP_TIMEOUT);
+
+   close(sd);
+
+   gettimeofday(&tv2, &tz);
+
+   if(strncmp(buf, "220 ", 4) == 0){
+      stats->smtp_response_time = tvdiff(tv2, tv1) / 1000.0; // response time in ms
+   }
+
+ENDE_CHECK_SMTP_STATUS:
+   freeaddrinfo(res);
+}
+
+
 void print_json_results(struct stats *stats){
    printf("{\n");
    printf("\t\"rcvd\": %llu,\n", stats->rcvd);
@@ -125,7 +181,9 @@ void print_json_results(struct stats *stats){
    printf("\t\"sphx\": %llu,\n", stats->sphx);
    printf("\t\"ram_bytes\": %llu,\n", stats->ram_bytes);
    printf("\t\"disk_bytes\": %llu,\n", stats->disk_bytes);
-   printf("\t\"error_emails\": %llu\n", stats->error_emails);
+   printf("\t\"error_emails\": %llu,\n", stats->error_emails);
+   printf("\t\"smtp_response\": %.2f\n", stats->smtp_response_time);
+
    printf("}\n");
 }
 
@@ -162,6 +220,8 @@ int main(int argc, char **argv){
    close_database(&sdata);
 
    count_error_emails(&stats);
+
+   check_smtp_status(&stats, &cfg);
 
    print_json_results(&stats);
 
