@@ -193,7 +193,6 @@ int main(int argc, char **argv){
 
    set_signal_handler(SIGKILL, p_clean_exit);
    set_signal_handler(SIGSEGV, p_clean_exit);
-   set_signal_handler(SIGSTOP, p_clean_exit);
 
    set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
