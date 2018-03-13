@@ -41,6 +41,9 @@ struct passwd *pwd;
 struct child children[MAXCHILDREN];
 
 
+void p_clean_exit();
+
+
 void usage(){
    printf("\nusage: piler\n\n");
    printf("    -c <config file>                  Config file to use if not the default\n");

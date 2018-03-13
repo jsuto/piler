@@ -80,7 +80,6 @@ void child_main(struct child *ptr);
 pid_t child_make(struct child *ptr);
 int search_slot_by_pid(pid_t pid);
 void kill_children(int sig);
-void p_clean_exit();
 void fatal(char *s);
 void initialise_configuration();
 

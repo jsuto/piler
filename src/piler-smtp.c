@@ -52,8 +52,10 @@ void usage(){
 }
 
 
-void p_clean_exit(){
+void p_clean_exit(int sig){
    int i;
+
+   syslog(LOG_PRIORITY, "got signal: %d, %s", sig, strsignal(sig));
 
    if(listenerfd != -1) close(listenerfd);
 
@@ -75,33 +77,9 @@ void p_clean_exit(){
 }
 
 
-void p_term_exit(){
-   syslog(LOG_PRIORITY, "got signal: SIGTERM");
-   p_clean_exit();
-}
-
-
-void p_kill_exit(){
-   syslog(LOG_PRIORITY, "got signal: SIGKILL");
-   p_clean_exit();
-}
-
-
-void p_stop_exit() {
-   syslog(LOG_PRIORITY, "got signal: SIGSTOP");
-   p_clean_exit();
-}
-
-
-void p_segv_exit(){
-   syslog(LOG_PRIORITY, "got signal: SIGSEGV");
-   p_clean_exit();
-}
-
-
 void fatal(char *s){
    syslog(LOG_PRIORITY, "%s", s);
-   p_clean_exit();
+   p_clean_exit(0);
 }
 
 
@@ -211,11 +189,11 @@ int main(int argc, char **argv){
    }
 
    set_signal_handler(SIGINT, p_clean_exit);
-   set_signal_handler(SIGTERM, p_term_exit);
+   set_signal_handler(SIGTERM, p_clean_exit);
 
-   set_signal_handler(SIGKILL, p_kill_exit);
-   set_signal_handler(SIGSEGV, p_segv_exit);
-   set_signal_handler(SIGSTOP, p_stop_exit);
+   set_signal_handler(SIGKILL, p_clean_exit);
+   set_signal_handler(SIGSEGV, p_clean_exit);
+   set_signal_handler(SIGSTOP, p_clean_exit);
 
    set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
