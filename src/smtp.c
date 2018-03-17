@@ -71,7 +71,7 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
 
 
 void process_data(struct smtp_session *session, char *buf, int buflen){
-   if(strcmp(buf, ".\r\n") == 0){
+   if(session->last_data_char == '\n' && strcmp(buf, ".\r\n") == 0){
       process_command_period(session);
    }
    else {
@@ -81,6 +81,8 @@ void process_data(struct smtp_session *session, char *buf, int buflen){
       }
       else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): failed to write %d bytes", __LINE__, buflen);
    }
+
+   session->last_data_char = buf[buflen-1];
 }
 
 
@@ -280,6 +282,7 @@ void process_command_period(struct smtp_session *session){
    snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
 
    session->buflen = 0;
+   session->last_data_char = 0;
    memset(session->buf, 0, SMALLBUFSIZE);
 
    send_smtp_response(session, buf);
@@ -301,6 +304,7 @@ void process_command_reset(struct smtp_session *session){
    session->tot_len = 0;
    session->fd = -1;
    session->protocol_state = SMTP_STATE_HELO;
+   session->last_data_char = 0;
 
    reset_bdat_counters(session);
 

@@ -55,7 +55,7 @@ void usage(){
 void p_clean_exit(int sig){
    int i;
 
-   syslog(LOG_PRIORITY, "got signal: %d, %s", sig, strsignal(sig));
+   if(sig > 0) syslog(LOG_PRIORITY, "got signal: %d, %s", sig, strsignal(sig));
 
    if(listenerfd != -1) close(listenerfd);
 
@@ -190,9 +190,10 @@ int main(int argc, char **argv){
 
    set_signal_handler(SIGINT, p_clean_exit);
    set_signal_handler(SIGTERM, p_clean_exit);
-
    set_signal_handler(SIGKILL, p_clean_exit);
    set_signal_handler(SIGSEGV, p_clean_exit);
+
+   set_signal_handler(SIGPIPE, SIG_IGN);
 
    set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);

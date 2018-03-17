@@ -391,6 +391,7 @@ struct smtp_session {
    int fd;
    int bad;
    int buflen;
+   int last_data_char;
    int tot_len;
    int bdat_rounds;
    int bdat_last_round;

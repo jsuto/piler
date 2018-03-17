@@ -119,6 +119,8 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    session->net.ctx = NULL;
    session->net.ssl = NULL;
 
+   session->last_data_char = 0;
+
    session->fd = -1;
 
    memset(session->mailfrom, 0, SMALLBUFSIZE);
