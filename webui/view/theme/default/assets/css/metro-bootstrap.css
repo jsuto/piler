@@ -115,8 +115,8 @@ cite{font-style:normal;}
 a.muted:hover{color:#808080;}
 .text-warning{color:#c09853;}
 a.text-warning:hover{color:#a47e3c;}
-.text-error{color:#b94a48;}
-a.text-error:hover{color:#953b39;}
+.text-error{color:#b94a48;font-weight:bold;}
+a.text-error:hover{color:#953b39;font-weight:bold;}
 .text-info{color:#3a87ad;}
 a.text-info:hover{color:#2d6987;}
 .text-success{color:#468847;}

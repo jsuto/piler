@@ -255,7 +255,15 @@ class ModelHealthHealth extends Model {
       return $data;
    }
 
+
+   public function get_current_sphinx_main_index_size() {
+      $size = 0;
+
+      if(file_exists(SPHINX_MAIN_INDEX_SIZE)) {
+         $size = (int) file_get_contents(SPHINX_MAIN_INDEX_SIZE);
+      }
+
+      return $size;
+   }
+
 }
-
-
-?>

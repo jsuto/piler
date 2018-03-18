@@ -61,6 +61,7 @@
                                                    </tr>
 
                                                 <?php } ?>
+
                                             </table>
                                         </td>
 				 </tr>
@@ -154,6 +155,10 @@
 				  <td><?php print $text_usage_trend; ?></td>
 				  <td><?php if ( $usagetrend > 0 ) { print $text_usage_increasing; } elseif( $usagetrend < 0 ) { print $text_usage_decreasing; } else { print $text_usage_neutral; } ?></td>
 			   </tr>
+                           <tr>
+                                  <td>Sphinx main index</td>
+                                  <td<?php if($sphinx_current_main_size > SPHINX_MAIN_INDEX_THRESHOLD) { ?> class="text-error"<?php } ?>><?php print nice_size($sphinx_current_main_size); ?></td>
+                           </tr>
 		 </table>
           
           

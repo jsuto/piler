@@ -1,11 +1,11 @@
 ### PILERSTART
 5,35 * * * * LIBEXECDIR/piler/indexer.delta.sh
 30   2 * * * LIBEXECDIR/piler/indexer.main.sh
-15,45 * * * * LIBEXECDIR/piler/indexer.attachment.sh
 */15 * * * * /usr/bin/indexer --config SYSCONFDIR/piler/sphinx.conf --quiet tag1 --rotate
 */15 * * * * /usr/bin/indexer --config SYSCONFDIR/piler/sphinx.conf --quiet note1 --rotate
 */5 * * * *  /usr/bin/find LOCALSTATEDIR/piler/www/tmp -type f -name i.\* -exec rm -f {} \;
 */5 * * * * /usr/bin/find LOCALSTATEDIR/piler/error -type f|wc -l > LOCALSTATEDIR/piler/stat/error
+3 * * * * LIBEXECDIR/piler/watch_sphinx_main_index.sh
 
 ### optional: the same report you can see on the health page
 ###30 7 * * * /usr/bin/php LIBEXECDIR/piler/daily-report.php --webui LOCALSTATEDIR/piler/www

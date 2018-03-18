@@ -156,11 +156,10 @@ class ControllerHealthWorker extends Controller {
       $this->data['indexer_stat'] = $this->model_health_health->indexer_stat();
       $this->data['purge_stat'] = $this->model_health_health->purge_stat();
 
+      $this->data['sphinx_current_main_size'] = $this->model_health_health->get_current_sphinx_main_index_size();
 
       $this->render();
    }
 
 
 }
-
-?>
