@@ -33,7 +33,7 @@ INSTALL = @INSTALL@
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 	piler-config.h stamp.h stamp-h1 params.h
 
-all: all-recursive
+all: all-recursive config-php
 install: installdirs install-recursive
 
 
@@ -62,6 +62,9 @@ $(RECURSIVE_TARGETS):
 	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
 	fi; test -z "$$fail"
 
+
+config-php:
+	sed "s%SYSCONFDIR%$(sysconfdir)%" config.php.in > webui/config.php
 
 
 installdirs: mkinstalldirs
