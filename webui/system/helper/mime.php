@@ -140,7 +140,9 @@ class Piler_Mime_Decode {
 
       // I saw a dumb email (it was a spam, though) having two Date: lines.
       // In this case we take the first date, and discard the rest
-      if(is_array($headers[self::HEADER_FIELDS[4]])) { $headers[self::HEADER_FIELDS[4]] = $headers[self::HEADER_FIELDS[4]][0]; }
+      if(isset($headers[self::HEADER_FIELDS[4]]) && is_array($headers[self::HEADER_FIELDS[4]])) {
+         $headers[self::HEADER_FIELDS[4]] = $headers[self::HEADER_FIELDS[4]][0];
+      }
 
       for($i=0; $i<count(self::HEADER_FIELDS); $i++) {
          if(!isset($headers[self::HEADER_FIELDS[$i]])) { $headers[self::HEADER_FIELDS[$i]] = ''; }
