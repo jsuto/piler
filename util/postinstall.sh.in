@@ -241,12 +241,6 @@ gather_mysql_account() {
 }
 
 
-gather_sphinx_data() {
-   askNonBlank "Please enter the path of sphinx.conf" "$SPHINXCFG"
-   SPHINXCFG="$response"
-}
-
-
 gather_smtp_relay_data() {
    ask "Please enter smtp relay" "$SMARTHOST"
    SMARTHOST="$response"
@@ -281,6 +275,7 @@ make_cron_entries() {
    echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
    echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
    echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null" >> "$CRON_TMP"
+   echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error" >> "$CRON_TMP"
    echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;" >> "$CRON_TMP"
    echo "### PILEREND" >> "$CRON_TMP"
 }
@@ -462,7 +457,6 @@ display_install_intro
 
 gather_webserver_data
 gather_mysql_account
-gather_sphinx_data
 gather_smtp_relay_data
 
 
