@@ -20,7 +20,9 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-desktop"></i>&nbsp;<?php print $text_monitor; ?>&nbsp;<b class="caret"></b></a>
                         <ul class="dropdown-menu">
+                        <?php if(EXTERNAL_DASHBOARD_URL == '') { ?>
                             <li><a href="index.php?route=stat/stat&timespan=daily"><i class="icon-bar-chart"></i>&nbsp;<?php print $text_statistics; ?></a></li>
+                        <?php } ?>
                             <li><a href="index.php?route=accounting/accounting&view=email"><i class="icon-tasks"></i>&nbsp;<?php print $text_accounting; ?></a></li>
                             <li><a href="index.php?route=health/health"><i class="icon-medkit"></i>&nbsp;<?php print $text_health; ?></a></li>
         <?php if(ENABLE_AUDIT == 1) { ?>
