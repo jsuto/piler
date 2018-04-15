@@ -37,6 +37,8 @@ $config['THEME'] = 'default';
 $config['SITE_NAME'] = 'piler.yourdomain.com';
 $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 
+$config['EXTERNAL_DASHBOARD_URL'] = '';
+
 $config['SESSION_EXPIRY'] = 3600;
 
 $config['ENABLE_SAAS'] = 0;

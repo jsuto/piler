@@ -7,7 +7,12 @@ class ControllerHealthHealth extends Controller {
 
       $this->id = "content";
       $this->template = "health/health.tpl";
-      $this->layout = "common/layout";
+      if(EXTERNAL_DASHBOARD_URL) {
+         $this->layout = "common/layout-empty";
+      }
+      else {
+         $this->layout = "common/layout";
+      }
 
       $this->load->model('health/health');
 
