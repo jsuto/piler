@@ -9,9 +9,9 @@
 #include "piler-config.h"
 #include "params.h"
 
-#define VERSION "1.3.4"
+#define VERSION "1.3.5-pre1"
 
-#define BUILD 994
+#define BUILD 995
 
 #define HOSTID "mailarchiver"
 

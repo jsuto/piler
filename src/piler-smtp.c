@@ -249,7 +249,7 @@ int main(int argc, char **argv){
                      break;
                   }
                   else {
-                     syslog(LOG_PRIORITY, "ERROR: accept()");
+                     syslog(LOG_PRIORITY, "ERROR: accept(): '%s'", strerror(errno));
                      break;
                   }
                }
