@@ -98,7 +98,7 @@ class ModelUserAuth extends Model {
 
    // fallback local auth
 
-   private function checkFallbackLogin(username = '', $password = '', $data = array()) {
+   private function checkFallbackLogin($username = '', $password = '', $data = array()) {
       $session = Registry::get('session');
 
       $query = $this->db->query("SELECT u.username, u.uid, u.realname, u.dn, u.password, u.isadmin, u.domain FROM " . TABLE_USER . " u, " . TABLE_EMAIL . " e WHERE e.email=? AND e.uid=u.uid", array($username));
