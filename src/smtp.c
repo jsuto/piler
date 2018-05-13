@@ -47,7 +47,7 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
    }
 
    /* Support only BDAT xxxx LAST command */
-   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strncasecmp(buf, "LAST", strlen(SMTP_CMD_BDAT)) == 0){
+   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strncasecmp(buf, "LAST", 4) == 0){
       get_bdat_size_to_read(session, buf);
       return;
    }
