@@ -87,7 +87,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
       close(session->fd);
       unlink(session->ttmpfile);
 
-      session->fd = 1;
+      session->fd = -1;
    }
 
 
