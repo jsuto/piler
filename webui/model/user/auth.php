@@ -20,7 +20,6 @@ class ModelUserAuth extends Model {
 
 
    public function checkLogin($username = '', $password = '') {
-      $session = Registry::get('session');
       $ok = 0;
 
       $imap_server = array();
@@ -37,12 +36,19 @@ class ModelUserAuth extends Model {
       $data['emails'] = array();
       $data['folders'] = array();
 
-      if($username == '' || $password == '') { return 0; }
+      if($username == '' || $password == '') { return $ok; }
 
 
       if(CUSTOM_PRE_AUTH_FUNCTION && function_exists(CUSTOM_PRE_AUTH_FUNCTION)) {
          call_user_func(CUSTOM_PRE_AUTH_FUNCTION, $username);
       }
+
+      // Check the fallback login first to prevent sending local account
+      // data (admin@local or auditor@local passwords) to remote imap, etc. servers.
+
+      $ok = $this->checkFallbackLogin($username, $password, $data);
+      if($ok == 1) { return $ok; }
+
 
       if(ENABLE_LDAP_AUTH == 1) {
          $ok = $this->checkLoginAgainstLDAP($username, $password, $data);
@@ -86,7 +92,14 @@ class ModelUserAuth extends Model {
          }
       }
 
-      // fallback local auth
+      return $ok;
+   }
+
+
+   // fallback local auth
+
+   private function checkFallbackLogin(username = '', $password = '', $data = array()) {
+      $session = Registry::get('session');
 
       $query = $this->db->query("SELECT u.username, u.uid, u.realname, u.dn, u.password, u.isadmin, u.domain FROM " . TABLE_USER . " u, " . TABLE_EMAIL . " e WHERE e.email=? AND e.uid=u.uid", array($username));
 
