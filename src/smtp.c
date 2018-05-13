@@ -276,7 +276,7 @@ void process_command_period(struct smtp_session *session){
 
    session->fd = -1;
 
-   syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host);
+   syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket);
 
    move_email(session);
 
