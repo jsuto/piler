@@ -21,8 +21,6 @@
 
 
 void reset_bdat_counters(struct smtp_session *session){
-   session->bdat_rounds = 0;
-   session->bdat_last_round = 0;
    session->bdat_bytes_to_read = 0;
    session->bad = 0;
 }
@@ -31,17 +29,12 @@ void reset_bdat_counters(struct smtp_session *session){
 void get_bdat_size_to_read(struct smtp_session *session, char *buf){
    char *p;
 
-   session->bdat_rounds++;
    session->bdat_bytes_to_read = 0;
 
    session->protocol_state = SMTP_STATE_BDAT;
 
-   // determine if this is the last BDAT command
-
    p = strcasestr(buf, " LAST");
    if(p){
-      session->bdat_last_round = 1;
-      syslog(LOG_INFO, "%s: BDAT LAST", session->ttmpfile);
       *p = '\0';
    }
 
@@ -61,12 +54,11 @@ void get_bdat_size_to_read(struct smtp_session *session, char *buf){
 
 
 void process_bdat(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   int i;
    char buf[SMALLBUFSIZE];
 
    if(readlen <= 0) return;
 
-   if(session->bdat_rounds == 1 && session->fd == -1){
+   if(session->fd == -1){
       session->fd = open(session->ttmpfile, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP);
       if(session->fd == -1){
          syslog(LOG_PRIORITY, "%s: %s", ERR_OPEN_TMP_FILE, session->ttmpfile);
@@ -81,7 +73,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
       if(write(session->fd, readbuf, readlen) != -1){
          session->tot_len += readlen;
 
-         if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: wrote %d bytes, %d bytes to go", session->ttmpfile, readlen, session->bdat_bytes_to_read);
+         if(session->cfg->verbosity >= _LOG_EXTREME) syslog(LOG_INFO, "%s: wrote %d bytes, %d bytes to go", session->ttmpfile, readlen, session->bdat_bytes_to_read);
       }
       else syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
    }
@@ -94,45 +86,36 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
 
       close(session->fd);
       unlink(session->ttmpfile);
+
+      session->fd = 1;
    }
 
-   if(session->bdat_bytes_to_read == 0){
 
-      if(session->bdat_last_round == 1){
-         if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: read all bdat data in %d rounds", session->ttmpfile, session->bdat_rounds);
+   // If there's nothing more to read, then send response to smtp client
 
-         // send back the smtp answers
-         for(i=0; i<session->bdat_rounds; i++){
-            if(session->fd == -1){
-               send_smtp_response(session, SMTP_RESP_421_ERR_WRITE_FAILED);
-            }
-            else {
-               if(i == 0){
-                  fsync(session->fd);
-                  close(session->fd);
+   if(session->bdat_bytes_to_read <= 0){
 
-                  move_email(session);
+      if(session->fd == -1){
+         close(session->fd);
+         session->fd = -1;
 
-                  snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
-                  send_smtp_response(session, buf);
-                  syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host);
-               }
-               else send_smtp_response(session, SMTP_RESP_250_BDAT);
-            }
-         }
-
-         // technically we are not in the PERIOD state, but it's good enough
-         // to quit the BDAT processing state
-         session->protocol_state = SMTP_STATE_PERIOD;
+         send_smtp_response(session, SMTP_RESP_421_ERR_WRITE_FAILED);
+      }
+      else {
+         fsync(session->fd);
+         close(session->fd);
 
          session->fd = -1;
+
+         move_email(session);
+
+         snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
+         send_smtp_response(session, buf);
+         syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host);
       }
 
-      else {
-         // this is not the last BDAT round, let's go back
-         // after the rcpt state, and wait for the next
-         // BDAT command
-         session->protocol_state = SMTP_STATE_RCPT_TO;
-      }
+      // technically we are not in the PERIOD state, but it's good enough
+      // to quit the BDAT processing state
+      session->protocol_state = SMTP_STATE_PERIOD;
    }
 }

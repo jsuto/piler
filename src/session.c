@@ -163,6 +163,13 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
    close(sessions[slot]->net.socket);
 
+   if(sessions[slot]->fd != -1){
+      syslog(LOG_PRIORITY, "Removing %s", sessions[slot]->ttmpfile);
+      close(sessions[slot]->fd);
+      unlink(sessions[slot]->ttmpfile);
+      sessions[slot]->fd = -1;
+   }
+
    free_smtp_session(sessions[slot]);
    sessions[slot] = NULL;
 

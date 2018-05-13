@@ -393,8 +393,6 @@ struct smtp_session {
    int buflen;
    int last_data_char;
    int tot_len;
-   int bdat_rounds;
-   int bdat_last_round;
    int bdat_bytes_to_read;
    int num_of_rcpt_to;
    struct config *cfg;
