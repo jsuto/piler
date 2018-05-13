@@ -111,7 +111,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
 
          snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
          send_smtp_response(session, buf);
-         syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host);
+         syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket);
       }
 
       // technically we are not in the PERIOD state, but it's good enough
