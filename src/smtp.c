@@ -18,7 +18,7 @@
 void process_smtp_command(struct smtp_session *session, char *buf, struct config *cfg){
    char response[SMALLBUFSIZE];
 
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "(fd: %d) processing command: *%s*", session->net.socket, buf);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "processing command (fd: %d): *%s*", session->net.socket, buf);
 
    if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
       process_command_helo(session, response, sizeof(response));
@@ -115,7 +115,7 @@ void wait_for_ssl_accept(struct smtp_session *session){
 
 void send_smtp_response(struct smtp_session *session, char *buf){
    write1(&(session->net), buf, strlen(buf));
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent: %s", buf);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent (fd: %d): %s", session->net.socket, buf);
 }
 
 
