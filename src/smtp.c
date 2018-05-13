@@ -18,7 +18,7 @@
 void process_smtp_command(struct smtp_session *session, char *buf, struct config *cfg){
    char response[SMALLBUFSIZE];
 
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "processing command (fd: %d): *%s*", session->net.socket, buf);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got on fd=%d: *%s*", session->net.socket, buf);
 
    if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
       process_command_helo(session, response, sizeof(response));
@@ -47,7 +47,7 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
    }
 
    /* Support only BDAT xxxx LAST command */
-   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strncasecmp(buf, "LAST", 4) == 0){
+   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strcasestr(buf, "LAST")){
       get_bdat_size_to_read(session, buf);
       return;
    }
@@ -115,7 +115,7 @@ void wait_for_ssl_accept(struct smtp_session *session){
 
 void send_smtp_response(struct smtp_session *session, char *buf){
    write1(&(session->net), buf, strlen(buf));
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent (fd: %d): %s", session->net.socket, buf);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "sent on fd=%d: %s", session->net.socket, buf);
 }
 
 

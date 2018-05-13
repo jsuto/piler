@@ -257,7 +257,7 @@ int main(int argc, char **argv){
                if(getnameinfo((struct sockaddr *)&client_address, client_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
                   // Strictly speaking it's not correct to log num_connections+1 connections
                   // but it still gives a good clue how many connections we have at the moment
-                  syslog(LOG_PRIORITY, "connected from %s:%s on descriptor %d (active connections: %d)", hbuf, sbuf, client_sockfd, num_connections + 1);
+                  syslog(LOG_PRIORITY, "connected from %s:%s on fd=%d (active connections: %d)", hbuf, sbuf, client_sockfd, num_connections + 1);
                }
 
                if(make_socket_non_blocking(client_sockfd) == -1){
