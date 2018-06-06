@@ -696,7 +696,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          q = strchr(puf, '@');
          if(q) fix_plus_sign_in_email_address(puf, &q, &len);
 
-         if(state->message_state == MSG_RECIPIENT && findnode(state->journal_recipient, puf) == NULL){
+         if((state->message_state == MSG_RECIPIENT || state->message_state == MSG_ENVELOPE_TO) && findnode(state->journal_recipient, puf) == NULL){
             addnode(state->journal_recipient, puf);
             memcpy(&(state->b_journal_to[state->journaltolen]), puf, len);
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
