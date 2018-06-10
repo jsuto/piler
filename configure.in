@@ -85,7 +85,7 @@ fi
 echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
 
 
-SUBDIRS="src etc util init.d unit_tests"
+SUBDIRS="src etc util init.d unit_tests webui"
 
 
 dnl static build
@@ -115,18 +115,14 @@ AC_ARG_ENABLE(memcached,
         [  --enable-memcached      build memcached support], want_memcached=$enableval, want_memcached="no")
 
 
-AC_ARG_ENABLE(tcpwrappers,
-	[  --enable-tcpwrappers    build tcpwrappers support], want_tcpwrappers=$enableval, want_tcpwrappers="no")
+dnl tcpwrappers library
 
+AC_CHECK_HEADERS(tcpd.h, have_tcpwrappers=yes, echo "tcpd.h is not found")
+AC_CHECK_LIB([wrap],[hosts_access],[AC_CHECK_LIB(wrap, hosts_access, have_tcpwrappers=yes, echo "libwrap is not found"; have_tcpwrappers=no)],[],[])ac_cv_lib_wrap=ac_cv_lib_wrap_main
 
-if test "$want_tcpwrappers" = "yes"; then
-   AC_CHECK_HEADERS(tcpd.h, have_tcpwrappers=yes, have_tcpwrappers=no)
-   AC_CHECK_LIB([wrap],[hosts_access],[AC_CHECK_LIB(wrap, hosts_access, have_tcpwrappers=yes, echo "libwrap is not found"; have_tcpwrappers=no)],[],[])ac_cv_lib_wrap=ac_cv_lib_wrap_main
-
-   if test "$have_tcpwrappers" = "no"; then
-      echo "can't find either tcpd.h or libwrap";
-      exit 1;
-   fi
+if test "$have_tcpwrappers" = "no"; then
+   echo "can't find either tcpd.h or libwrap";
+   exit 1
 fi
 
 
@@ -538,7 +534,7 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
 
-AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile])
 AC_OUTPUT
 
 echo

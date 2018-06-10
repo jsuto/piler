@@ -700,7 +700,6 @@ enable_static_build
 enable_compat_layout
 enable_clamd
 enable_memcached
-enable_tcpwrappers
 enable_tweak_sent_time
 with_database
 with_piler_user
@@ -1336,7 +1335,6 @@ Optional Features:
   --enable-compat-layout  support for older storage layout (default: no)
   --enable-clamd          build clamd antivirus support
   --enable-memcached      build memcached support
-  --enable-tcpwrappers    build tcpwrappers support
   --tweak-sent-time       tweak sent time
 
 Optional Packages:
@@ -3499,7 +3497,7 @@ fi
 echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
 
 
-SUBDIRS="src etc util init.d unit_tests"
+SUBDIRS="src etc util init.d unit_tests webui"
 
 
 
@@ -3546,17 +3544,8 @@ fi
 
 
 
-# Check whether --enable-tcpwrappers was given.
-if test "${enable_tcpwrappers+set}" = set; then :
-  enableval=$enable_tcpwrappers; want_tcpwrappers=$enableval
-else
-  want_tcpwrappers="no"
-fi
 
-
-
-if test "$want_tcpwrappers" = "yes"; then
-   for ac_header in tcpd.h
+for ac_header in tcpd.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "tcpd.h" "ac_cv_header_tcpd_h" "$ac_includes_default"
 if test "x$ac_cv_header_tcpd_h" = xyes; then :
@@ -3565,12 +3554,12 @@ if test "x$ac_cv_header_tcpd_h" = xyes; then :
 _ACEOF
  have_tcpwrappers=yes
 else
-  have_tcpwrappers=no
+  echo "tcpd.h is not found"
 fi
 
 done
 
-   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for hosts_access in -lwrap" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for hosts_access in -lwrap" >&5
 $as_echo_n "checking for hosts_access in -lwrap... " >&6; }
 if ${ac_cv_lib_wrap_hosts_access+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3652,10 +3641,9 @@ fi
 fi
 ac_cv_lib_wrap=ac_cv_lib_wrap_main
 
-   if test "$have_tcpwrappers" = "no"; then
-      echo "can't find either tcpd.h or libwrap";
-      exit 1;
-   fi
+if test "$have_tcpwrappers" = "no"; then
+   echo "can't find either tcpd.h or libwrap";
+   exit 1
 fi
 
 
@@ -4860,7 +4848,7 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile contrib/imap/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5559,6 +5547,7 @@ do
     "util/Makefile") CONFIG_FILES="$CONFIG_FILES util/Makefile" ;;
     "init.d/Makefile") CONFIG_FILES="$CONFIG_FILES init.d/Makefile" ;;
     "unit_tests/Makefile") CONFIG_FILES="$CONFIG_FILES unit_tests/Makefile" ;;
+    "webui/Makefile") CONFIG_FILES="$CONFIG_FILES webui/Makefile" ;;
     "contrib/imap/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/imap/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
