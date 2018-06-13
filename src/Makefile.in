@@ -43,7 +43,7 @@ piler: piler.c libpiler.a
 libpiler.a: $(OBJS) $(SQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(SQL_OBJS)
 	ranlib libpiler.a
-	$(CC) -shared -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(SQL_OBJS)
+	$(CC) -shared -Wl,-soname,libpiler.so.$(LIBPILER_VERSION) -o libpiler.so.$(LIBPILER_VERSION) $(OBJS) $(SQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
