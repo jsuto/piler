@@ -102,14 +102,14 @@
 
 <?php foreach($rules as $rule) { ?>
       <div class="domainrow">
-         <div class="domaincell"><?php print $rule['from']; ?></div>
-         <div class="domaincell"><?php print $rule['to']; ?></div>
-         <div class="domaincell"><?php print $rule['subject']; ?></div>
-         <div class="domaincell"><?php print $rule['body']; ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['from']); ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['to']); ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['subject']); ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['body']); ?></div>
          <div class="domaincell"><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></div>
          <div class="domaincell"><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></div>
-         <div class="domaincell"><?php print $rule['attachment_name']; ?></div>
-         <div class="domaincell"><?php print $rule['attachment_type']; ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['attachment_name']); ?></div>
+         <div class="domaincell"><?php print htmlentities($rule['attachment_type']); ?></div>
          <div class="domaincell"><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></div>
          <div class="domaincell"><a href="index.php?route=policy/removearchiving&amp;confirmed=1&amp;id=<?php print $rule['id']; ?>" onclick="if(confirm('<?php print $text_remove_rule; ?>: ' + '#<?php print $rule['id']; ?>')) return true; return false;"><?php print $text_remove; ?></a></div>
       </div>

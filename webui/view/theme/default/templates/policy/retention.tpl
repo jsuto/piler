@@ -128,14 +128,14 @@
 <?php if(ENABLE_SAAS == 1) { ?>
          <td><?php print $rule['domain']; ?></td>
 <?php } ?>
-         <td><?php print $rule['from']; ?></td>
-         <td><?php print $rule['to']; ?></td>
-         <td><?php print $rule['subject']; ?></td>
-         <td><?php print $rule['body']; ?></td>
+         <td><?php print htmlentities($rule['from']); ?></td>
+         <td><?php print htmlentities($rule['to']); ?></td>
+         <td><?php print htmlentities($rule['subject']); ?></td>
+         <td><?php print htmlentities($rule['body']); ?></td>
          <td><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></td>
          <td><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></td>
-         <td><?php print $rule['attachment_name']; ?></td>
-         <td><?php print $rule['attachment_type']; ?></td>
+         <td><?php print htmlentities($rule['attachment_name']); ?></td>
+         <td><?php print htmlentities($rule['attachment_type']); ?></td>
          <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
          <td><?php print $rule['days']; ?></td>
          <td><a href="index.php?route=policy/removeretention&amp;id=<?php print $rule['id']; ?>"><?php print $text_remove; ?></a></td>
