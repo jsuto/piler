@@ -43,7 +43,7 @@ void get_bdat_size_to_read(struct smtp_session *session, char *buf){
    p = strchr(buf, ' ');
    if(p){
       session->bdat_bytes_to_read = atoi(p);
-      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: BDAT len=%d", session->ttmpfile, session->bdat_bytes_to_read);
+      if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "fd=%d: BDAT len=%d", session->net.socket, session->bdat_bytes_to_read);
    }
 
    if(!p || session->bdat_bytes_to_read <= 0){
@@ -96,9 +96,6 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
    if(session->bdat_bytes_to_read <= 0){
 
       if(session->fd == -1){
-         close(session->fd);
-         session->fd = -1;
-
          send_smtp_response(session, SMTP_RESP_421_ERR_WRITE_FAILED);
       }
       else {
