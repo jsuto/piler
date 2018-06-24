@@ -34,7 +34,7 @@ static void test_attachments(struct config *cfg){
       if(stat(tests[i].s, &st) != 0){
          fprintf(stderr, "%s is not found, skipping\n", tests[i].s);
          continue;
-      }   
+      }
 
       init_session_data(&sdata, cfg);
 
