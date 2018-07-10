@@ -824,21 +824,22 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultb
       if(p){
          p++;
 
-         // If the line has the 'name' more than once, then truncate the subsequent parts, ie.
-         // utf-8''P;LAN%20Holden%204.docx;filename="P;LAN Holden 4.docx" ==> utf-8''P;LAN%20Holden%204.docx
-         q = strstr(p, name);
-         if(q) *q = '\0';
+         // skip any whitespace after name=, ie. name = "
+         while(*p==' ' || *p=='\t') p++;
 
-         q = strrchr(p, ';');
-         if(q) *q = '\0';
-         q = strrchr(p, '"');
-         if(q){
-            *q = '\0';
-            p = strchr(p, '"');
-            if(p){
-               p++;
-            }
+         // if there's a double quote after the equal symbol (=), ie. name*="utf-8....
+         if(*p == '"'){
+            p++;
+            q = strchr(p, '"');
+
+            if(q) *q = '\0';
          }
+         else {
+            // no " after =, so split on ;
+            q = strchr(p, ';');
+            if(q) *q = '\0';
+         }
+
 
          if(extended == 1){
             encoding = p;

@@ -97,10 +97,25 @@ static void test_extractNameFromHeaderLine(){
       {"Content-Type: image/png; name=\"Screenshot from 2015-11-10 10:07:13.png\"", "name", "Screenshot from 2015-11-10 10:07:13.png"},
       {"Content-Disposition: attachment; filename=\"zzzzz Email Examples.zip\";", "name", "zzzzz Email Examples.zip"},
 
+      {"Content-Type: application/msword; name*=\"iso-8859-1''Einverst%E4ndniserkl%E4rung_Kids-PKW_Familienname.doc\"", "name", "Einverständniserklärung_Kids-PKW_Familienname.doc"},
+      {"Content-Type: application/msword; name*= \"iso-8859-1''Einverst%E4ndniserkl%E4rung_Kids-PKW_Familienname.doc\"", "name", "Einverständniserklärung_Kids-PKW_Familienname.doc"},
+
+      // This one sucks, and I don't think it's a proper definition
+      {"Content-Type: application/msword; filename*=utf-8''P;LAN%20Holden%204.docx;filename=\"P;LAN Holden 4.docx\"", "name", "P"},
+      // Adding quotes makes it acceptable to the parser
+      {"Content-Type: application/msword; filename*=\"utf-8''P;LAN%20Holden%204.docx\";filename=\"P;LAN Holden 4.docx\"", "name", "P;LAN Holden 4.docx"},
+
+      {"Content-Type: null; name=\"toDev-Netengineering.png\"", "name", "toDev-Netengineering.png"},
+      {"Content-Type: null; name=\"toDev-name-Netengineering.png\"", "name", "toDev-name-Netengineering.png"},
+      {"Content-Type: null; name*=\"iso-8859-1''toDev-Netengineering.png\"", "name", "toDev-Netengineering.png"},
+      {"Content-Type: null; name*=\"iso-8859-1''toDev-name-Netengineering.png\"", "name", "toDev-name-Netengineering.png"},
+      {"Content-Type: null; name*=\"iso-8859-1''toDevnameNetengineering.png\"", "name", "toDevnameNetengineering.png"},
+      {"Content-Type: null; name*=\"iso-8859-1''toDev-namE-Netengineering.png\"", "name", "toDev-namE-Netengineering.png"},
+
       {"foo: bar; title=Economy", "title", "Economy"},
       {"foo: bar; title=\"US-$ rates\"", "title", "US-$ rates"},
       {"foo: bar; title*=iso-8859-1'en'%A3%20rates", "title", "£ rates"},
-      {"foo: bar; title*=UTF-8''%c2%a3%20and%20%e2%82%ac%20rates", "title", "£ and € rates"}
+      {"foo: bar; title*=UTF-8''%c2%a3%20and%20%e2%82%ac%20rates", "title", "£ and € rates"},
    };
 
    TEST_HEADER();
