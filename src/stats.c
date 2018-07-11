@@ -33,7 +33,7 @@ struct stats {
    uint64 disk_bytes;
 
    uint64 error_emails;
-
+   long last_email;
    float smtp_response_time;
 };
 
@@ -61,6 +61,39 @@ int query_counters(struct session_data *sdata, struct stats *stats){
    }
 
    close_prepared_statement(&sql);
+
+   return rc;
+}
+
+
+int get_last_email_archived_timestamp(struct session_data *sdata, struct stats *stats){
+   int rc=ERR;
+   unsigned long arrived=86400;
+   struct sql sql;
+
+   // By default we haven't archived a mail a day ago, and this value should represent an error
+   time(&(sdata->now));
+   arrived = sdata->now - 86400;
+
+   if(prepare_sql_statement(sdata, &sql, "select arrived from metadata order by id desc limit 1") == ERR) return rc;
+
+   p_bind_init(&sql);
+
+   if(p_exec_stmt(sdata, &sql) == OK){
+      p_bind_init(&sql);
+
+      sql.sql[sql.pos] = (char *)&arrived; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(arrived); sql.pos++;
+
+      p_store_results(&sql);
+
+      if(p_fetch_results(&sql) == OK) rc = OK;
+
+      p_free_results(&sql);
+   }
+
+   close_prepared_statement(&sql);
+
+   stats->last_email = sdata->now - arrived;
 
    return rc;
 }
@@ -182,6 +215,7 @@ void print_json_results(struct stats *stats){
    printf("\t\"ram_bytes\": %llu,\n", stats->ram_bytes);
    printf("\t\"disk_bytes\": %llu,\n", stats->disk_bytes);
    printf("\t\"error_emails\": %llu,\n", stats->error_emails);
+   printf("\t\"last_email\": %ld,\n", stats->last_email);
    printf("\t\"smtp_response\": %.2f\n", stats->smtp_response_time);
 
    printf("}\n");
@@ -205,6 +239,7 @@ int main(int argc, char **argv){
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
    query_counters(&sdata, &stats);
+   get_last_email_archived_timestamp(&sdata, &stats);
 
    close_database(&sdata);
 
@@ -216,7 +251,7 @@ int main(int argc, char **argv){
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
    sphinx_queries(&sdata, &stats);
-   
+
    close_database(&sdata);
 
    count_error_emails(&stats);
