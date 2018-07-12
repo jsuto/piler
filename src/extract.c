@@ -172,7 +172,7 @@ int extract_tnef(struct session_data *sdata, struct parser_state *state, char *f
 
    snprintf(buf, sizeof(buf)-1, "%s --unix-paths -C %s %s", HAVE_TNEF, tmpdir, filename);
 
-   system(buf);
+   if(system(buf) == -1) syslog(LOG_INFO, "error: running %s", buf);
 
    n = scandir(tmpdir, &namelist, NULL, alphasort);
    if(n < 0) syslog(LOG_INFO, "error: reading %s", tmpdir);
