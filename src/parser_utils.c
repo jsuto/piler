@@ -96,6 +96,7 @@ void init_state(struct parser_state *state){
    memset(state->b_journal_to, 0, MAXBUFSIZE);
 
    state->tolen = 0;
+   state->todomainlen = 0;
    state->bodylen = 0;
    state->journaltolen = 0;
 

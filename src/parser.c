@@ -144,7 +144,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
    int n64, writelen, boundary_line=0, result;
-   unsigned int len;
+   unsigned int len, domainlen;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -170,6 +170,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          memset(state->b_to, 0, MAXBUFSIZE);
          state->tolen = 0;
          memset(state->b_to_domain, 0, SMALLBUFSIZE);
+         state->todomainlen = 0;
 
          clearhash(state->rcpt);
          clearhash(state->rcpt_domain);
@@ -721,7 +722,12 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                if(q){
                   if(findnode(state->rcpt_domain, q+1) == NULL){
                      addnode(state->rcpt_domain, q+1);
-                     memcpy(&(state->b_to_domain[strlen(state->b_to_domain)]), q+1, strlen(q+1));
+                     domainlen = strlen(q+1);
+
+                     if(state->todomainlen < SMALLBUFSIZE-domainlen-1){
+                        memcpy(&(state->b_to_domain[state->todomainlen]), q+1, domainlen);
+                        state->todomainlen += domainlen;
+                     }
                   }
                }
 

@@ -207,6 +207,7 @@ struct parser_state {
 
    int bodylen;
    int tolen;
+   int todomainlen;
    int journaltolen;
 
    int retention;
