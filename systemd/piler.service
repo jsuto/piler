@@ -1,0 +1,16 @@
+[Unit]
+Description=Piler daemon
+After=network.target mariadb.service
+
+[Service]
+ExecStart=/usr/sbin/piler -d
+PIDFile=/var/run/piler/piler.pid
+KillMode=process
+Restart=on-failure
+RestartPreventExitStatus=255
+Type=forking
+User=root
+
+[Install]
+WantedBy=multi-user.target
+Alias=piler.service

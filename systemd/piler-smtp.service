@@ -1,0 +1,15 @@
+[Unit]
+Description=Piler SMTP server
+After=network.target auditd.service
+
+[Service]
+ExecStart=/usr/sbin/piler-smtp -d
+KillMode=process
+Restart=on-failure
+RestartPreventExitStatus=255
+Type=forking
+User=root
+
+[Install]
+WantedBy=multi-user.target
+Alias=piler-smtp.service

@@ -4848,7 +4848,7 @@ CFLAGS="$static -O2 -Wall -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
 
-ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile systemd/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5546,6 +5546,7 @@ do
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
     "util/Makefile") CONFIG_FILES="$CONFIG_FILES util/Makefile" ;;
     "init.d/Makefile") CONFIG_FILES="$CONFIG_FILES init.d/Makefile" ;;
+    "systemd/Makefile") CONFIG_FILES="$CONFIG_FILES systemd/Makefile" ;;
     "unit_tests/Makefile") CONFIG_FILES="$CONFIG_FILES unit_tests/Makefile" ;;
     "webui/Makefile") CONFIG_FILES="$CONFIG_FILES webui/Makefile" ;;
     "contrib/imap/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/imap/Makefile" ;;
