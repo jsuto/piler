@@ -696,7 +696,7 @@ void move_email(struct smtp_session *session){
    snprintf(buf, sizeof(buf)-1, "%d/%s", session->ttmpfile[0] % session->cfg->number_of_worker_processes, session->ttmpfile);
 
    if(rename(session->ttmpfile, buf)){
-      syslog(LOG_PRIORITY, "ERROR: couldn't rename %s to %s", session->ttmpfile, buf);
+      syslog(LOG_PRIORITY, "ERROR: couldn't rename %s to %s (reason: %s)", session->ttmpfile, buf, strerror(errno));
    }
 }
 
