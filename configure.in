@@ -85,7 +85,7 @@ fi
 echo "\"Configure command: ./configure $PARAMS\"" >> $CONFIGURE_PARAMS_FILE
 
 
-SUBDIRS="src etc util init.d unit_tests webui"
+SUBDIRS="src etc util init.d systemd unit_tests webui"
 
 
 dnl static build
