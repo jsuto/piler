@@ -221,7 +221,7 @@ class ModelUserAuth extends Model {
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
 
-            $ldap_auth = new LDAP($ldap_host, $a['dn'], $password);
+            $ldap_auth = new LDAP($ldap_host, $ldap_port, $a['dn'], $password);
 
             if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
