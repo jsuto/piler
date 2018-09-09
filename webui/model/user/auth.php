@@ -99,6 +99,7 @@ class ModelUserAuth extends Model {
    // fallback local auth
 
    private function checkFallbackLogin($username = '', $password = '', $data = array()) {
+      $ok = 0;
       $session = Registry::get('session');
 
       $query = $this->db->query("SELECT u.username, u.uid, u.realname, u.dn, u.password, u.isadmin, u.domain FROM " . TABLE_USER . " u, " . TABLE_EMAIL . " e WHERE e.email=? AND e.uid=u.uid", array($username));
@@ -179,6 +180,7 @@ class ModelUserAuth extends Model {
 
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
+      $ldap_port = LDAP_PORT;
       $ldap_base_dn = LDAP_BASE_DN;
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
@@ -210,7 +212,7 @@ class ModelUserAuth extends Model {
 
       if($ldap_host == '' || $ldap_helper_password == '') { return 0; }
 
-      $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
+      $ldap = new LDAP($ldap_host, $ldap_port, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
@@ -541,7 +543,7 @@ class ModelUserAuth extends Model {
    public function increment_failed_login_count($n = 0) {
       $session = Registry::get('session');
 
-      $n = $session->get('failed_logins') + 1;
+      $n = (int)$session->get('failed_logins') + 1;
       $session->set('failed_logins', $n);
    }
 

@@ -5,12 +5,12 @@ class LDAPDB {
    private $driver;
 
 
-   public function __construct($driver, $ldaphost, $binddn, $bindpw) {
+   public function __construct($driver, $ldaphost, $ldapport, $binddn, $bindpw) {
       if (!@require_once(DIR_DATABASE . $driver . '.php')) {
          exit('Error: Could not load database file ' . $driver . '!');
       }
 
-      $this->driver = new $driver($ldaphost, $binddn, $bindpw);
+      $this->driver = new $driver($ldaphost, $ldapport, $binddn, $bindpw);
    }
 
 
