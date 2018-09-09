@@ -350,7 +350,7 @@ class ModelUserUser extends Model {
          return $user['username'];
       }
 
-      $encrypted_password = crypt($user['password']);
+      $encrypted_password = crypt($user['password'], '$6$' . generate_random_string());
 
       $samaccountname = '';
       if(isset($user['samaccountname'])) { $samaccountname = $user['samaccountname']; }
