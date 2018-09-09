@@ -362,6 +362,7 @@ class ModelUserAuth extends Model {
 
 
    private function checkLoginAgainstIMAP($imap_server = array(), $username = '', $password = '', $data = array()) {
+      $rc = 0;
       $session = Registry::get('session');
       $emails = array($username);
 
@@ -378,30 +379,33 @@ class ModelUserAuth extends Model {
          $login = $a[0];
       }
 
-      $imap = new Zend_Mail_Protocol_Imap($imap_server['IMAP_HOST'], $imap_server['IMAP_PORT'], $imap_server['IMAP_SSL']);
-      if($imap->login($login, $password)) {
-         $imap->logout();
+      try {
+         $imap = new Zend_Mail_Protocol_Imap($imap_server['IMAP_HOST'], $imap_server['IMAP_PORT'], $imap_server['IMAP_SSL']);
+         if($imap->login($login, $password)) {
+            $imap->logout();
 
-         $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
-         $emails = array_merge($emails, $extra_emails);
+            $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
+            $emails = array_merge($emails, $extra_emails);
 
-         $data['username'] = $username;
-         $data['email'] = $username;
-         $data['emails'] = $emails;
-         $data['role'] = 0;
+            $data['username'] = $username;
+            $data['email'] = $username;
+            $data['emails'] = $emails;
+            $data['role'] = 0;
 
-         $data = $this->fix_user_data($username, $username, $emails, 0);
+            $data = $this->fix_user_data($username, $username, $emails, 0);
 
-         $this->is_ga_code_needed($username);
+            $this->is_ga_code_needed($username);
 
-         $session->set("auth_data", $data);
+            $session->set("auth_data", $data);
 
-         $session->set("password", $password);
+            $session->set("password", $password);
 
-         return 1;
+            $rc = 1;
+         }
       }
+      catch (Zend_Mail_Protocol_Exception $e) {}
 
-      return 0;
+      return $rc;
    }
 
 
