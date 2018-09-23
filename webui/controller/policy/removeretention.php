@@ -26,7 +26,7 @@ class ControllerPolicyRemoveretention extends Controller {
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
 
-      $this->data['rule'] = $this->model_policy_retention->get_rule($this->data['id']);
+      $this->data['rule'] = htmlentities_on_array($this->model_policy_retention->get_rule($this->data['id']));
 
       if($this->validate() == true) {
 
@@ -72,5 +72,3 @@ class ControllerPolicyRemoveretention extends Controller {
 
 
 }
-
-?>

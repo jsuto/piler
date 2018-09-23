@@ -41,7 +41,7 @@ class ControllerPolicyArchiving extends Controller {
          }
       }
 
-      $this->data['rules'] = $this->model_policy_archiving->get_rules($this->data['search']);
+      $this->data['rules'] = htmlentities_on_array($this->model_policy_archiving->get_rules($this->data['search']));
 
 
       $this->render();
@@ -61,5 +61,3 @@ class ControllerPolicyArchiving extends Controller {
    }
 
 }
-
-?>

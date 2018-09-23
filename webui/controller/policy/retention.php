@@ -42,7 +42,7 @@ class ControllerPolicyRetention extends Controller {
 
       }
 
-      $this->data['rules'] = $this->model_policy_retention->get_rules($this->data['search']);
+      $this->data['rules'] = htmlentities_on_array($this->model_policy_retention->get_rules($this->data['search']));
 
 
       $this->render();
@@ -66,5 +66,3 @@ class ControllerPolicyRetention extends Controller {
 
 
 }
-
-?>

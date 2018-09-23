@@ -556,4 +556,14 @@ function get_ldap_attribute_names($ldap_type = '') {
 }
 
 
-?>
+function htmlentities_on_array($arr = []) {
+   while(list($k, $v) = each($arr)) {
+      if(is_array($v)) {
+         $arr[$k] = htmlentities_on_array($v);
+      } else {
+         $arr[$k] = htmlentities($v);
+      }
+   }
+
+   return $arr;
+}
