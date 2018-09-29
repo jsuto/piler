@@ -104,7 +104,7 @@ static void test_archiving_rule(struct config *cfg){
 
    initrules(data.archiving_rules);
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
 
    for(i=0; i<sizeof(rule_test)/sizeof(struct rule_test); i++){
 
