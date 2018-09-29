@@ -42,7 +42,7 @@ void p_clean_exit(char *msg, int rc){
 }
 
 
-uint64 get_max_meta_id(struct session_data *sdata, struct data *data){
+uint64 get_max_meta_id(struct session_data *sdata){
    char s[SMALLBUFSIZE];
    uint64 id=0;
    struct sql sql;
@@ -116,7 +116,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
             f = fopen(filename, "w");
             if(f){
-               rc = retrieve_email_from_archive(sdata, data, f, cfg);
+               rc = retrieve_email_from_archive(sdata, f, cfg);
                fclose(f);
 
                if(rc){
@@ -241,10 +241,10 @@ int main(int argc, char **argv){
       p_clean_exit("cannot connect to mysql server", 1);
    }
 
-   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE);
+   load_rules(&sdata, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    if(folder){
-      data.folder = get_folder_id(&sdata, &data, folder, 0);
+      data.folder = get_folder_id(&sdata, folder, 0);
       if(data.folder == 0){
          printf("error: could not get folder id for '%s'\n", folder);
          return 0;
@@ -256,7 +256,7 @@ int main(int argc, char **argv){
 
    if(all == 1){
       from_id = 1;
-      to_id = get_max_meta_id(&sdata, &data);
+      to_id = get_max_meta_id(&sdata);
    }
 
    n = retrieve_email_by_metadata_id(&sdata, &data, from_id, to_id, &cfg);

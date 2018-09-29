@@ -111,9 +111,9 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct dat
 
             if(S_ISREG(st.st_mode)){
                if(i == 0 && data->recursive_folder_names == 1){
-                  folder = get_folder_id(sdata, data, fname, data->folder);
+                  folder = get_folder_id(sdata, fname, data->folder);
                   if(folder == ERR_FOLDER){
-                     folder = add_new_folder(sdata, data, fname, data->folder);
+                     folder = add_new_folder(sdata, fname, data->folder);
 
                      if(folder == ERR_FOLDER){
                         printf("error: cannot get/add folder '%s' to parent id: %d\n", fname, data->folder);

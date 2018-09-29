@@ -11,7 +11,7 @@
 #include <piler.h>
 
 
-struct counters load_counters(struct session_data *sdata, struct data *data){
+struct counters load_counters(struct session_data *sdata){
    char buf[SMALLBUFSIZE];
    struct counters counters;
    struct sql sql;
@@ -48,7 +48,7 @@ struct counters load_counters(struct session_data *sdata, struct data *data){
 }
 
 
-void update_counters(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
+void update_counters(struct session_data *sdata, struct counters *counters, struct config *cfg){
    char buf[MAXBUFSIZE];
 #ifdef HAVE_MEMCACHED
    unsigned long long mc, rcvd;
@@ -102,7 +102,7 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
       }
       else {
 
-         c = load_counters(sdata, data);
+         c = load_counters(sdata);
 
          snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
 
@@ -127,5 +127,3 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
 #endif
 
 }
-
-

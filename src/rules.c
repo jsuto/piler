@@ -10,7 +10,7 @@
 #include "rules.h"
 
 
-void load_rules(struct session_data *sdata, struct data *data, struct node *xhash[], char *table){
+void load_rules(struct session_data *sdata, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    struct rule_cond rule_cond;
    struct sql sql;

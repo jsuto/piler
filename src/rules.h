@@ -7,7 +7,7 @@
 
 #include "defs.h"
 
-void load_rules(struct session_data *sdata, struct data *data, struct node *xhash[], char *table);
+void load_rules(struct session_data *sdata, struct node *xhash[], char *table);
 int append_rule(struct node *xhash[], struct rule_cond *rule_cond);
 struct rule *create_rule_item(struct rule_cond *rule_cond);
 char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam);

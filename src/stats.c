@@ -222,7 +222,7 @@ void print_json_results(struct stats *stats){
 }
 
 
-int main(int argc, char **argv){
+int main(){
    struct session_data sdata;
    struct stats stats;
    struct config cfg;

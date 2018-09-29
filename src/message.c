@@ -65,7 +65,7 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
 }
 
 
-uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, char *message_id, char *piler_id){
+uint64 get_metaid_by_messageid(struct session_data *sdata, char *message_id, char *piler_id){
    uint64 id=0;
    struct sql sql;
 
@@ -94,7 +94,7 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, struct data *data, ch
 }
 
 
-int store_recipients(struct session_data *sdata, struct data *data, char *to, uint64 id, struct config *cfg){
+int store_recipients(struct session_data *sdata, char *to, uint64 id, struct config *cfg){
    int rc=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
    struct sql sql;
@@ -166,7 +166,7 @@ int store_folder_id(struct session_data *sdata, struct data *data, uint64 id, st
 }
 
 
-int update_metadata_reference(struct session_data *sdata, struct parser_state *state, struct data *data, char *ref, struct config *cfg){
+int update_metadata_reference(struct session_data *sdata, struct parser_state *state, char *ref, struct config *cfg){
    int ret = ERR;
    struct sql sql;
 
@@ -203,7 +203,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    memset(ref, 0, sizeof(ref));
    if(strlen(state->reference) > 10){
       digest_string(state->reference, &ref[0]);
-      update_metadata_reference(sdata, state, data, &ref[0], cfg);
+      update_metadata_reference(sdata, state, &ref[0], cfg);
    }
 
 
@@ -250,7 +250,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    if(p_exec_stmt(sdata, &sql) == OK){
       id = p_get_insert_id(&sql);
 
-      if(store_recipients(sdata, data, state->b_to, id, cfg) == OK){
+      if(store_recipients(sdata, state->b_to, id, cfg) == OK){
 
          if(store_index_data(sdata, state, data, id, cfg) == OK) rc = OK;
 
@@ -319,14 +319,14 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
 
    /* discard if existing message_id */
 
-   sdata->duplicate_id = get_metaid_by_messageid(sdata, data, state->message_id, piler_id);
+   sdata->duplicate_id = get_metaid_by_messageid(sdata, state->message_id, piler_id);
 
    if(sdata->duplicate_id > 0){
       remove_stripped_attachments(state);
 
       if(strlen(state->b_journal_to) > 0){
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, sdata->duplicate_id, state->message_id);
-         store_recipients(sdata, data, state->b_journal_to, sdata->duplicate_id, cfg);
+         store_recipients(sdata, state->b_journal_to, sdata->duplicate_id, cfg);
       }
 
       return ERR_EXISTS;
@@ -361,7 +361,7 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
    sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
 
 
-   if(state->n_attachments > 0 && store_attachments(sdata, state, data, cfg) == ERR) return ERR;
+   if(state->n_attachments > 0 && store_attachments(sdata, state, cfg) == ERR) return ERR;
 
 
    if(store_file(sdata, sdata->tmpframe, 0, cfg) == 0){

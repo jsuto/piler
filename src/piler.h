@@ -44,20 +44,20 @@ void rollback(struct session_data *sdata, struct parser_state *state, uint64 id,
 int reimport_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
 int store_file(struct session_data *sdata, char *filename, int len, struct config *cfg);
 int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct config *cfg);
-int store_attachments(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
-int query_attachments(struct session_data *sdata, struct data *data, struct ptr_array *ptr_arr);
+int store_attachments(struct session_data *sdata, struct parser_state *state, struct config *cfg);
+int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr);
 
 struct config read_config(char *configfile);
 
 void check_and_create_directories(struct config *cfg, uid_t uid, gid_t gid);
 
-void update_counters(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg);
+void update_counters(struct session_data *sdata, struct counters *counters, struct config *cfg);
 
-int retrieve_email_from_archive(struct session_data *sdata, struct data *data, FILE *dest, struct config *cfg);
+int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct config *cfg);
 int file_from_archive_to_network(char *filename, int sd, int tls_enable, struct data *data, struct config *cfg);
 
-int get_folder_id(struct session_data *sdata, struct data *data, char *foldername, int parent_id);
-int add_new_folder(struct session_data *sdata, struct data *data, char *foldername, int parent_id);
+int get_folder_id(struct session_data *sdata, char *foldername, int parent_id);
+int add_new_folder(struct session_data *sdata, char *foldername, int parent_id);
 
 int store_index_data(struct session_data *sdata, struct parser_state *state, struct data *data, uint64 id, struct config *cfg);
 

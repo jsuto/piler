@@ -110,7 +110,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
                         counters.c_rcvd = 1;
                         counters.c_size += sdata->tot_len;
                         counters.c_stored_size = sdata->stored_len;
-                        update_counters(sdata, data, &counters, cfg);
+                        update_counters(sdata, &counters, cfg);
 
                         break;
 
@@ -119,7 +119,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
                         bzero(&counters, sizeof(counters));
                         counters.c_duplicate = 1;
-                        update_counters(sdata, data, &counters, cfg);
+                        update_counters(sdata, &counters, cfg);
 
                         if(data->quiet == 0) printf("duplicate: %s (duplicate id: %llu)\n", data->import->filename, sdata->duplicate_id);
                         break;
@@ -146,7 +146,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 }
 
 
-int get_folder_id(struct session_data *sdata, struct data *data, char *foldername, int parent_id){
+int get_folder_id(struct session_data *sdata, char *foldername, int parent_id){
    int id=ERR_FOLDER;
    struct sql sql;
 
@@ -174,7 +174,7 @@ int get_folder_id(struct session_data *sdata, struct data *data, char *foldernam
 }
 
 
-int add_new_folder(struct session_data *sdata, struct data *data, char *foldername, int parent_id){
+int add_new_folder(struct session_data *sdata, char *foldername, int parent_id){
    int id=ERR_FOLDER;
    struct sql sql;
 

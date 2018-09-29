@@ -315,10 +315,10 @@ int main(int argc, char **argv){
 #endif
 
    if(data.import->folder){
-      data.folder = get_folder_id(&sdata, &data, data.import->folder, 0);
+      data.folder = get_folder_id(&sdata, data.import->folder, 0);
 
       if(data.folder == ERR_FOLDER){
-         data.folder = add_new_folder(&sdata, &data, data.import->folder, 0);
+         data.folder = add_new_folder(&sdata, data.import->folder, 0);
       }
 
       if(data.folder == ERR_FOLDER){
@@ -329,9 +329,9 @@ int main(int argc, char **argv){
 
    }
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
-   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE);
+   load_rules(&sdata, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 

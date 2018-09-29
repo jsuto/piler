@@ -356,8 +356,8 @@ int process_imap_folder(char *folder, struct session_data *sdata, struct data *d
    if(messages <= 0) return OK;
 
    if(data->recursive_folder_names == 1){
-      data->folder = get_folder_id(sdata, data, folder, 0);
-      if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, data, folder, 0);
+      data->folder = get_folder_id(sdata, folder, 0);
+      if(data->folder == ERR_FOLDER) data->folder = add_new_folder(sdata, folder, 0);
    }
 
    for(i=data->import->start_position; i<=messages; i++){

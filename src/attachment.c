@@ -16,7 +16,7 @@
 #include <piler.h>
 
 
-int store_attachments(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
+int store_attachments(struct session_data *sdata, struct parser_state *state, struct config *cfg){
    uint64 id=0;
    int i, rc=1, found, affected_rows;
    struct sql sql, sql2;
@@ -91,7 +91,7 @@ CLOSE:
 }
 
 
-int query_attachment_pointers(struct session_data *sdata, struct data *data, uint64 ptr, char *piler_id, int *id){
+int query_attachment_pointers(struct session_data *sdata, uint64 ptr, char *piler_id, int *id){
    int rc=0;
    struct sql sql;
 
@@ -120,7 +120,7 @@ int query_attachment_pointers(struct session_data *sdata, struct data *data, uin
 }
 
 
-int query_attachments(struct session_data *sdata, struct data *data, struct ptr_array *ptr_arr){
+int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr){
    int i, rc, id, attachments=0;
    uint64 ptr;
    struct sql sql;
@@ -147,7 +147,7 @@ int query_attachments(struct session_data *sdata, struct data *data, struct ptr_
       if(id > 0 && id < MAX_ATTACHMENTS){
          if(ptr > 0){
             ptr_arr[id].ptr = ptr;
-            rc = query_attachment_pointers(sdata, data, ptr, &(ptr_arr[id].piler_id[0]), &(ptr_arr[id].attachment_id));
+            rc = query_attachment_pointers(sdata, ptr, &(ptr_arr[id].piler_id[0]), &(ptr_arr[id].attachment_id));
             if(!rc){
                attachments = -1;
                goto CLOSE;

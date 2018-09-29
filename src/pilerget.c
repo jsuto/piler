@@ -19,7 +19,6 @@
 int main(int argc, char **argv){
    int readkey=1;
    struct session_data sdata;
-   struct data data;
    struct config cfg;
 
 
@@ -48,7 +47,7 @@ int main(int argc, char **argv){
 
    snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", argv[1]);
    snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", sdata.ttmpfile);
-   retrieve_email_from_archive(&sdata, &data, stdout, &cfg);
+   retrieve_email_from_archive(&sdata, stdout, &cfg);
 
 
    close_database(&sdata);

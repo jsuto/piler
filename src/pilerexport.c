@@ -30,7 +30,7 @@ char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
 
 
-int export_emails_matching_to_query(struct session_data *sdata, struct data *data, char *s, struct config *cfg);
+int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
 
 void usage(){
@@ -151,7 +151,7 @@ int append_string_to_buffer(char **buffer, char *str){
 }
 
 
-uint64 run_query(struct session_data *sdata, struct session_data *sdata2, struct data *data, char *where_condition, uint64 last_id, int *num, struct config *cfg){
+uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_RES *res;
    MYSQL_ROW row;
    int rc=0;
@@ -183,7 +183,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, struct
       }
    }
 
-   if(!rc) export_emails_matching_to_query(sdata, data, query, cfg);
+   if(!rc) export_emails_matching_to_query(sdata, query, cfg);
 
    free(query);
    query = NULL;
@@ -212,17 +212,17 @@ uint64 get_total_found(struct session_data *sdata){
 }
 
 
-void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, struct data *data, char *where_condition, struct config *cfg){
+void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, char *where_condition, struct config *cfg){
    int n;
    uint64 count=0, last_id=0, total_found=0;
 
-   last_id = run_query(sdata, sdata2, data, where_condition, last_id, &n, cfg);
+   last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
    count += n;
 
    total_found = get_total_found(sdata2);
 
    while(count < total_found){
-      last_id = run_query(sdata, sdata2, data, where_condition, last_id, &n, cfg);
+      last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
       count += n;
    }
 
@@ -335,7 +335,7 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 }
 
 
-int export_emails_matching_to_query(struct session_data *sdata, struct data *data, char *s, struct config *cfg){
+int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
    uint64 id, n=0;
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
@@ -371,7 +371,7 @@ int export_emails_matching_to_query(struct session_data *sdata, struct data *dat
 
             f = fopen(filename, "w");
             if(f){
-               rc = retrieve_email_from_archive(sdata, data, f, cfg);
+               rc = retrieve_email_from_archive(sdata, f, cfg);
                fclose(f);
 
                n++;
@@ -416,7 +416,6 @@ int main(int argc, char **argv){
    char *configfile=CONFIG_FILE;
    char *to=NULL, *from=NULL, *todomain=NULL, *fromdomain=NULL, *where_condition=NULL;
    struct session_data sdata, sdata2;
-   struct data data;
    struct config cfg;
 
 
@@ -591,13 +590,13 @@ int main(int argc, char **argv){
          p_clean_exit("cannot connect to 127.0.0.1:9306", 1);
       }
 
-      export_emails_matching_id_list(&sdata, &sdata2, &data, where_condition, &cfg);
+      export_emails_matching_id_list(&sdata, &sdata2, where_condition, &cfg);
 
       close_database(&sdata2);
    }
    else {
       if(build_query_from_args(from, to, fromdomain, todomain, minsize, maxsize, startdate, stopdate) > 0) p_clean_exit("malloc problem building query", 1);
-      export_emails_matching_to_query(&sdata, &data, query, &cfg);
+      export_emails_matching_to_query(&sdata, query, &cfg);
       free(query);
    }
 

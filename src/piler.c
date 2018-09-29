@@ -205,7 +205,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
 
    if(rc != ERR) unlink(filename);
 
-   update_counters(sdata, data, &counters, cfg);
+   update_counters(sdata, &counters, cfg);
 
    gettimeofday(&tv2, &tz);
 
@@ -447,9 +447,9 @@ void initialise_configuration(){
       return;
    }
 
-   load_rules(&sdata, &data, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
-   load_rules(&sdata, &data, data.retention_rules, SQL_RETENTION_RULE_TABLE);
-   load_rules(&sdata, &data, data.folder_rules, SQL_FOLDER_RULE_TABLE);
+   load_rules(&sdata, data.archiving_rules, SQL_ARCHIVING_RULE_TABLE);
+   load_rules(&sdata, data.retention_rules, SQL_RETENTION_RULE_TABLE);
+   load_rules(&sdata, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    load_mydomains(&sdata, &data, &cfg);
 
