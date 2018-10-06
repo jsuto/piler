@@ -27,7 +27,7 @@ class ModelMessageAttachment extends Model {
 
       if($piler_id == '' || $attachment_id == '' || !preg_match("/^([0-9a-f]+)$/", $piler_id) || !preg_match("/^([0-9m]+)$/", $attachment_id)) { return $data; }
 
-      $cmd = DECRYPT_ATTACHMENT_BINARY . " -i $piler_id -a $attachment_id";
+      $cmd = DECRYPT_ATTACHMENT_BINARY . " $piler_id $attachment_id";
 
       if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "attachment cmd: $cmd"); }
 

@@ -324,14 +324,6 @@ class ModelSearchMessage extends Model {
    }
 
 
-   public function NiceSize($size) {
-      if($size < 1000) return "1k";
-      if($size < 100000) return round($size/1000) . "k";
-
-      return sprintf("%.1f", $size/1000000) . "M";
-   }
-
-
    public function get_piler_id_by_id($id = 0) {
       $query = $this->db->query("SELECT `piler_id` FROM `" . TABLE_META . "` WHERE id=?", array($id));
       if(isset($query->row['piler_id'])) { return $query->row['piler_id']; }
