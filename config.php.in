@@ -64,6 +64,11 @@ $config['SITE_DESCRIPTION'] = 'piler email archiver';
 $config['INDEXER_BEACON'] = '/var/piler/stat/indexer';
 $config['PURGE_BEACON'] = '/var/piler/stat/purge';
 
+$config['ENABLE_PDF_DOWNLOAD'] = 0;
+// You may need to run "Xvfb :1 -screen 0 1024x768x16"
+// In this case specify WKHTMLTOPDF_COMMAND = "DISPLAY=:1.0 wkhtmltopdf";
+$config['WKHTMLTOPDF_COMMAND'] = "wkhtmltopdf";
+
 // authentication against an ldap directory (disabled by default)
 
 $config['ENABLE_LDAP_AUTH'] = 0;

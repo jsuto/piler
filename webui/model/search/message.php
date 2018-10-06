@@ -574,5 +574,3 @@ class ModelSearchMessage extends Model {
    }
 
 }
-
-?>
