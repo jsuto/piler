@@ -74,6 +74,10 @@ else if($session->get("four_eyes") == 1 && $request->get['route'] != 'login/logo
 }
 else if(Registry::get('username')) {
 
+   // Check the Referer header which must be present after we are authenticated
+   if(!isset($_SERVER['HTTP_REFERER'])) die("missing HTTP_REFERER");
+   if(strpos($_SERVER['HTTP_REFERER'], SITE_URL) === false) die("invalid HTTP_REFERER");
+
    if(isset($request->get['route'])){
       $action = new Router($request->get['route']);
    }
