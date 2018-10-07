@@ -7,6 +7,7 @@
     <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
     <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
     <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
+    <meta http-equiv="refresh" content="5; url=<?php print SITE_URL; ?>">
 
     <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
 
