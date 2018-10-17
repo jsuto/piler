@@ -138,7 +138,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
    EVP_CIPHER_CTX ctx;
 #else
-   EVP_CIPHER_CTX *ctx;
+   EVP_CIPHER_CTX *ctx=NULL;
 #endif
 
 
@@ -227,7 +227,7 @@ CLEANUP:
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_cleanup(&ctx);
    #else
-      EVP_CIPHER_CTX_free(ctx);
+      if(ctx) EVP_CIPHER_CTX_free(ctx);
    #endif
 
    return 0;
