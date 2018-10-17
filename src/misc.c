@@ -101,7 +101,8 @@ int countCharacterInBuffer(char *p, char c){
 
 
 void replaceCharacterInBuffer(char *p, char from, char to){
-   int i, k=0;
+   size_t i;
+   int k=0;
 
    for(i=0; i<strlen(p); i++){
       if(p[i] == from){

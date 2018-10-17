@@ -41,7 +41,7 @@ int remove_xml(char *src, char *dest, int destlen, int *html){
 #ifdef HAVE_ZIP
 int extract_opendocument(struct session_data *sdata, struct parser_state *state, char *filename, char *prefix){
    int errorp, i=0, len=0, html=0;
-   int len2;
+   unsigned int len2;
    char buf[4*MAXBUFSIZE], puf[4*MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -206,7 +206,8 @@ void kill_helper(){
 
 
 void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct config *cfg){
-   int link[2], n;
+   int link[2];
+   ssize_t n;
    pid_t pid;
    char outbuf[MAXBUFSIZE];
 

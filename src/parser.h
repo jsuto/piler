@@ -11,7 +11,7 @@
 
 struct parser_state parse_message(struct session_data *sdata, int take_into_pieces, struct data *data, struct config *cfg);
 void post_parse(struct session_data *sdata, struct parser_state *state, struct config *cfg);
-int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct data *data, struct config *cfg);
+int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, unsigned int writebuffersize, char *abuffer, unsigned int abuffersize, struct data *data, struct config *cfg);
 
 void init_state(struct parser_state *state);
 time_t parse_date_header(char *s);

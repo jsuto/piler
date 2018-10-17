@@ -174,8 +174,8 @@ struct parser_state {
    int content_type_is_set;
    int pushed_pointer;
    int saved_size;
-   int writebufpos;
-   int abufpos;
+   unsigned int writebufpos;
+   unsigned int abufpos;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char message_id_hash[2*DIGEST_LENGTH+1];
@@ -205,9 +205,9 @@ struct parser_state {
    char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
    char b_journal_to[MAXBUFSIZE];
 
-   int bodylen;
-   int tolen;
-   int todomainlen;
+   unsigned int bodylen;
+   unsigned int tolen;
+   unsigned int todomainlen;
    int journaltolen;
 
    int retention;

@@ -139,7 +139,7 @@ void storno_attachment(struct parser_state *state){
 }
 
 
-int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, int writebuffersize, char *abuffer, int abuffersize, struct data *data, struct config *cfg){
+int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, unsigned int writebuffersize, char *abuffer, unsigned int abuffersize, struct data *data, struct config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
    unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
@@ -741,7 +741,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          }
 
       }
-      else if(state->message_state == MSG_BODY && len >= cfg->min_word_len && state->bodylen < BIGBUFSIZE-len-1){
+      else if(state->message_state == MSG_BODY && len >= (unsigned int)(cfg->min_word_len) && state->bodylen < BIGBUFSIZE-len-1){
          // 99% of email addresses are longer than 8 characters
          if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf)){
             fix_email_address_for_sphinx(puf);
