@@ -317,7 +317,7 @@ time_t query_retain_period(struct data *data, struct parser_state *state, int si
 
    state->retention = cfg->default_retention_days;
 
-   return (time_t)cfg->default_retention_days * (time_t)86400;
+   return (time_t)(state->retention) * (time_t)86400;
 }
 
 
