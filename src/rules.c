@@ -271,7 +271,7 @@ time_t query_retain_period(struct data *data, struct parser_state *state, int si
          if(p->domainlen > 2){
             if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
                state->retention = p->days;
-               return (time_t)p->days * (time_t)86400;
+               return (time_t)(state->retention) * (time_t)86400;
             }
          }
          else {
@@ -305,7 +305,7 @@ time_t query_retain_period(struct data *data, struct parser_state *state, int si
 
             if(ismatch > 0){
                state->retention = p->days;
-               return (time_t)p->days * (time_t)86400;
+               return (time_t)(state->retention) * (time_t)86400;
             }
          }
 
