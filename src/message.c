@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <syslog.h>
@@ -335,7 +336,7 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
    fd = open(state->message_id_hash, O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
    if(fd == -1){
       remove_stripped_attachments(state);
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: touch %s FAILED (%s)", sdata->ttmpfile, state->message_id_hash, state->message_id);
+      syslog(LOG_PRIORITY, "%s: touch %s FAILED (%s), error: %s", sdata->ttmpfile, state->message_id_hash, state->message_id, strerror(errno));
       return ERR_EXISTS;
    }
    close(fd);
@@ -347,8 +348,10 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
    if(cfg->mmap_dedup_test == 1 && data->dedup != MAP_FAILED && data->child_serial >= 0 && data->child_serial < MAXCHILDREN){
 
       if(strstr(data->dedup, state->message_id_hash)){
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: dedup string: %s", sdata->ttmpfile, data->dedup);
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "%s: message-id-hash=%s, serial=%d", sdata->ttmpfile, state->message_id_hash, data->child_serial);
+         if(cfg->verbosity >= _LOG_DEBUG){
+            syslog(LOG_INFO, "%s: dedup string: %s", sdata->ttmpfile, data->dedup);
+            syslog(LOG_INFO, "%s: message-id-hash=%s, serial=%d", sdata->ttmpfile, state->message_id_hash, data->child_serial);
+         }
 
          remove_stripped_attachments(state);
          return ERR_EXISTS;
