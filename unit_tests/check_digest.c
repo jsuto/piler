@@ -2,21 +2,7 @@
  * check_rules.c, SJ
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "../src/piler.h"
-
-
-struct digest_test {
-   char s[SMALLBUFSIZE];
-   char *digest1;
-   char *digest2;
-};
+#include "test.h"
 
 
 struct digest_test tests[] = {
@@ -70,7 +56,6 @@ static void test_make_digests(struct config *cfg){
    struct session_data sdata;
    struct parser_state state;
    struct data data;
-   struct stat st;
 
 
    if(open_database(&sdata, cfg) == ERR){
@@ -80,23 +65,9 @@ static void test_make_digests(struct config *cfg){
 
 
    for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
-
-      if(stat(tests[i].s, &st) != 0){
-         fprintf(stderr, "%s is not found, skipping\n", tests[i].s);
+      if(setup_and_parse_message(&sdata, &state, &data, tests[i].s, cfg) == 1){
          continue;
       }
-
-      init_session_data(&sdata, cfg);
- 
-      sdata.delivered = 0;
-      sdata.tot_len = st.st_size;
-
-      snprintf(sdata.ttmpfile, SMALLBUFSIZE-1, "%s", tests[i].s);
-      snprintf(sdata.filename, SMALLBUFSIZE-1, "%s", tests[i].s);
-      snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", tests[i].s);
-
-      state = parse_message(&sdata, 1, &data, cfg);
-      post_parse(&sdata, &state, cfg);
 
       make_digests(&sdata, cfg);
 
@@ -137,4 +108,3 @@ int main(){
 
    return 0;
 }
-

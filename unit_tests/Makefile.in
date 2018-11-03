@@ -19,12 +19,13 @@ DEFS = @defs@
 INCDIR = -I. -I.. -I../.. -I../../src -I../src @INCDIR@ @sql_includes@
 LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../src
 LIBS = @LIBS@ @sql_libs@
+OBJS = common.o
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 
 INSTALL = @INSTALL@
 
-all:	check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp
+all:	$(OBJS) check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp
 
 check_parser_utils: check_parser_utils.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
@@ -33,13 +34,13 @@ check_rules: check_rules.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 check_digest: check_digest.c ../src/libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< $(OBJS) -lpiler $(LIBS) $(LIBDIR)
 
 check_mydomains: check_mydomains.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 check_parser: check_parser.c ../src/libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< $(OBJS) -lpiler $(LIBS) $(LIBDIR)
 
 check_decoder: check_decoder.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
@@ -56,11 +57,14 @@ check_attachments: check_attachments.c ../src/libpiler.a
 smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+%.o: $(srcdir)/%.c
+	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@
+
 install:
 	@echo
 
 clean:
-	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp
+	rm -f check_parser_utils check_rules check_digest check_mydomains check_parser check_decoder check_hash check_misc check_attachments smtp *.o
 
 distclean: clean
 	rm -f Makefile

@@ -2,14 +2,7 @@
  * check_rules.c, SJ
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "../src/piler.h"
+#include "test.h"
 
 
 struct rule_test {
@@ -178,4 +171,3 @@ int main(){
 
    return 0;
 }
-

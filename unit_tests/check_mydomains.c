@@ -2,13 +2,7 @@
  * check_mydomains.c, SJ
  */
 
-#include <stdio.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <assert.h>
-#include "../src/piler.h"
+#include "test.h"
 
 
 char *domains[] = {
@@ -133,4 +127,3 @@ int main(){
 
    return 0;
 }
-

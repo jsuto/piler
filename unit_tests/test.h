@@ -50,3 +50,4 @@ struct digest_test {
 #define TEST_HEADER() printf("%s() ", __func__);
 #define TEST_FOOTER() printf(" OK\n");
 
+int setup_and_parse_message(struct session_data *sdata, struct parser_state *state, struct data *data, char *filename, struct config *cfg);
