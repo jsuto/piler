@@ -1,5 +1,7 @@
 <?php
 
+define(EMAIL, 'email');
+
 $webuidir = "/var/piler/www";
 $date1 = $date2 = 0;
 $date_condition = '';
@@ -30,11 +32,11 @@ if(isset($options['webui']))
    $webuidir = $options['webui'];
 }
 
-if(isset($options['email']))
+if(isset($options[EMAIL]))
 {
-   $email = $options['email'];
+   $email = $options[EMAIL];
 } else {
-   echo("\nError: must provide the email address\n\n");
+   echo "\nError: must provide the email address\n\n";
    display_help();
    exit;
 }
@@ -80,7 +82,7 @@ $query = $db->query("select `from` AS email, count(`from`) AS num FROM " . VIEW_
 foreach($query->rows as $q) {
    $data[] = array(
                    'num'     => $q['num'],
-                   'email'   => $q['email'],
+                   EMAIL   => $q[EMAIL],
                    'type'    => 'rcvd'
                   );
 
@@ -92,7 +94,7 @@ $query = $db->query("select `to` AS email, count(`to`) AS num FROM " . VIEW_MESS
 foreach($query->rows as $q) {
    $data[] = array(
                    'num'   => $q['num'],
-                   'email' => $q['email'],
+                   EMAIL => $q[EMAIL],
                    'type'  => 'sent'
                   );
 }
@@ -101,22 +103,19 @@ foreach($query->rows as $q) {
 array_multisort($data, SORT_DESC); 
 
 foreach ($data as $q) {
-   print $q['num'] . "\t" . $q['type'] . "\t" . $q['email'] . "\n";
+   print $q['num'] . "\t" . $q['type'] . "\t" . $q[EMAIL] . "\n";
 }
 
 function display_help() {
    global $webuidir;
 
    $phpself = basename(__FILE__);
-   echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
-   echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory, default: $webuidir]\"\n");
-   echo("\t--email=email address to look for conversations\n");
+   echo "\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n";
+   echo "\t--webui=\"[REQUIRED: path to the Piler WebUI Directory, default: $webuidir]\"\n";
+   echo "\t--email=email address to look for conversations\n";
 
-   echo("\noptions:\n");
-   echo("\t-h Prints this help screen and exits\n");
-   echo("\t--start=\"Beginning of date range to process, ok values are today, yesterday or DDMMMYYYY...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n");
-   echo("\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n");
+   echo "\noptions:\n";
+   echo "\t-h Prints this help screen and exits\n";
+   echo "\t--start=\"Beginning of date range to process, ok values are today, yesterday or DDMMMYYYY...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n";
+   echo "\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n";
 }
-
-
-?>
