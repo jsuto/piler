@@ -241,7 +241,7 @@ static void test_smtp_commands_starttls(char *server, int port, struct data *dat
    send_smtp_command(data->net, "STARTTLS\r\n", recvbuf, sizeof(recvbuf)-1);
    assert(strncmp(recvbuf, "220 ", 4) == 0 && "STARTTLS");
 
-   init_ssl(data);
+   init_ssl_to_server(data);
    data->net->use_ssl = 1;
 
    send_helo_command(data->net);
