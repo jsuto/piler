@@ -96,7 +96,7 @@ int connect_to_imap_server(struct data *data){
    data->import->cap_uidplus = 0;
 
    if(data->net->use_ssl == 1){
-      init_ssl_to_server(data);
+      init_ssl(data);
    }
 
 

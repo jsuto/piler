@@ -37,7 +37,7 @@ int connect_to_pop3_server(struct data *data){
    char buf[MAXBUFSIZE];
 
    if(data->net->use_ssl == 1){
-      init_ssl_to_server(data);
+      init_ssl(data);
    }
 
    recvtimeoutssl(data->net, buf, sizeof(buf));

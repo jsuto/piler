@@ -730,7 +730,7 @@ int read_one_line(char *s, int c, char *buf, int buflen, int *rc){
 }
 
 
-int init_ssl_to_server(struct data *data){
+int init_ssl(struct data *data){
    int n;
    X509* server_cert;
    char *str;

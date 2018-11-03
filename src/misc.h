@@ -51,7 +51,7 @@ int can_i_write_directory(char *dir);
 void move_email(struct smtp_session *session);
 int read_one_line(char *s, int c, char *buf, int buflen, int *rc);
 
-int init_ssl_to_server(struct data *data);
+int init_ssl(struct data *data);
 
 #ifndef _GNU_SOURCE
    char *strcasestr(const char *s, const char *find);
