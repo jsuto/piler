@@ -39,7 +39,7 @@ if($options = getopt($opts, $lopts)) {
 
 
 if($webuidir == '') {
-   echo("\nError: must provide path to WebUI directory\n\n");
+   echo "\nError: must provide path to WebUI directory\n\n";
    display_help();
 }
 
@@ -79,24 +79,24 @@ $records = $messagestats->run_counters($start, $stop, 'sent');
 $timeend = microtime(true);
 $timegone = $timeend - $timestart;
 
-echo("\nFinished Executing Statistics Generation\n");
-echo("*************************************************\n");
-echo("Start Date: ".date(DATE_TEMPLATE,$records['starttimestamp'])."\n");
-echo("Stop Date: ".date(DATE_TEMPLATE,$records['stoptimestamp'])."\n");
-echo("Removed ".$records['deletedstats']." records\n");
-echo("Added ".$records['addedstats']." records\n");
-echo("Completed Run in ".$timegone." seconds\n\n");
+echo "\nFinished Executing Statistics Generation\n";
+echo "*************************************************\n";
+echo "Start Date: ".date(DATE_TEMPLATE,$records['starttimestamp'])."\n";
+echo "Stop Date: ".date(DATE_TEMPLATE,$records['stoptimestamp'])."\n";
+echo "Removed ".$records['deletedstats']." records\n";
+echo "Added ".$records['addedstats']." records\n";
+echo "Completed Run in ".$timegone." seconds\n\n";
 
 
 function display_help() {
    $phpself = basename(__FILE__);
-   echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
-   echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
-   echo("options:\n");
-   echo("\t-a Reruns statistics for all records in the message view\n");
-   echo("\t-h Prints this help screen and exits\n");
-   echo("\t--start=\"Beginning of date range to process, ok values are today, yesterday or MYYYY/MM/DD...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n");
-   echo("\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n");
+   echo "\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n";
+   echo "\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n";
+   echo "options:\n";
+   echo "\t-a Reruns statistics for all records in the message view\n";
+   echo "\t-h Prints this help screen and exits\n";
+   echo "\t--start=\"Beginning of date range to process, ok values are today, yesterday or MYYYY/MM/DD...anything php's strtotime can process.  Optional, will default to beginning of current day.\"\n";
+   echo "\t--stop=\"End of date range, same parameters as above.  Optional (will default to end of current day)\"\n\n";
 
    exit;
 }
