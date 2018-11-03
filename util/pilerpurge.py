@@ -113,7 +113,7 @@ def remove_attachment_files(rows=(), opts={}):
                 unlink(get_attachment_file_path(piler_id, attachment_id,
                                                 opts), opts)
             else:
-                print get_attachment_file_path(piler_id, attachment_id, opts)
+                print(get_attachment_file_path(piler_id, attachment_id, opts))
         else:
             referenced_ids.append(id)
 
@@ -125,7 +125,7 @@ def remove_attachment_files(rows=(), opts={}):
                            (format), remove_ids)
             opts['db'].commit()
         else:
-            print remove_ids
+            print(remove_ids)
 
     opts['referenced_attachments'] = referenced_ids
 
@@ -136,12 +136,12 @@ def remove_m_files(ids=[], opts={}):
             unlink(get_m_file_path(ids[i], opts), opts)
             opts['messages'] = opts['messages'] + 1
         else:
-            print get_m_file_path(ids[i], opts)
+            print(get_m_file_path(ids[i], opts))
 
 
 def unlink(filename="", opts={}):
     if opts['verbose']:
-        print "removing", filename
+        print("removing", filename)
 
     try:
         st = os.stat(filename)
@@ -179,7 +179,7 @@ def main():
     args = parser.parse_args()
 
     if getpass.getuser() not in ['root', 'piler']:
-        print "Please run me as user 'piler'"
+        print("Please run me as user 'piler'")
         sys.exit(1)
 
     opts['dry_run'] = args.dry_run
@@ -234,7 +234,7 @@ def main():
             opts['db'].commit()
 
     except dbapi.DatabaseError, e:
-        print "Error %s" % e
+        print("Error %s" % e)
 
     if opts['db']:
         opts['db'].close()
@@ -245,7 +245,7 @@ def main():
         str(opts['purged_stored_size']) + " bytes"
 
     if opts['verbose']:
-        print summary
+        print(summary)
 
     syslog.syslog(summary)
 
