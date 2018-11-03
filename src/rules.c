@@ -194,8 +194,8 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
 }
 
 
-unsigned int count_match(struct rule *p, struct parser_state *state, int size, int spam){
-   unsigned int ismatch=0;
+int count_match(struct rule *p, struct parser_state *state, int size, int spam){
+   int ismatch=0;
    size_t nmatch=0;
 
    ismatch += check_spam_rule(spam, p->spam);
