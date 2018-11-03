@@ -125,7 +125,7 @@ class Zend_Mail_Protocol_Imap
 
         if ($ssl === 'TLS') {
             $result = $this->requestAndResponse('STARTTLS');
-            $result = $result && stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            $result = $result && stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT);
             if (!$result) {
                 /**
                  * @see Zend_Mail_Protocol_Exception
