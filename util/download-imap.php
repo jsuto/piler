@@ -59,7 +59,7 @@ try {
       download_users_emails($storage);
 
    } else {
-      "login FAILED at $server for $username\n";
+      print "login FAILED at $server for $username\n";
    }
 }
 catch (Zend_Mail_Protocol_Exception $e) {

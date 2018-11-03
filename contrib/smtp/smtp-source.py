@@ -168,4 +168,4 @@ while i < args.count:
 
 
 if args.debug == 0:
-    print
+    print('')

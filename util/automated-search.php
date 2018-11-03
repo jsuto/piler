@@ -220,7 +220,7 @@ function do_search($data = array(), $automated_search_recipients = array())
 
    $boundary = "--=_NextPart_000_ABCDEFGHI";
 
-   list ($n, $total_found, $all_ids, $messages) = $search->search_messages($a, 0);
+   $search_result_array = $search->search_messages($a, 0);
 
    if($dry_run == 0)
    {
@@ -251,7 +251,7 @@ function do_search($data = array(), $automated_search_recipients = array())
    }
    else {
       print "search = " . $data[SEARCH_STR] . "\n";
-      print_r($all_ids);
+      print_r($search_result_array[2]); // $all_ids field
       print $EOL . $EOL;
    }
 
