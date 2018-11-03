@@ -20,7 +20,7 @@ if($options = getopt($opts, $lopts)) {
        $webuidir = $options['webui'];
    }
    else {
-      echo("\nError: must provide path to WebUI directory\n\n");
+      echo "\nError: must provide path to WebUI directory\n\n";
       exit;
    }
 
@@ -117,13 +117,10 @@ function poll_imap_accounts($email = '') {
 
 function display_help() {
     $phpself = basename(__FILE__);
-    echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
-    echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
-    echo("options:\n");
-    echo("\t--email: Email address to poll. Leave it empty to poll all email addresses\n");
-    echo("\t-d:      Daemonize the imap polling\n");
-    echo("\t-h:      Prints this help screen and exits\n");
+    echo "\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n";
+    echo "\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n";
+    echo "options:\n";
+    echo "\t--email: Email address to poll. Leave it empty to poll all email addresses\n";
+    echo "\t-d:      Daemonize the imap polling\n";
+    echo "\t-h:      Prints this help screen and exits\n";
 }
-
-
-?>
