@@ -10,22 +10,31 @@
 #include "rules.h"
 
 
+void reset_rule_condition(struct rule_cond *rule_cond){
+   memset(rule_cond->domain, 0, SMALLBUFSIZE);
+   memset(rule_cond->from, 0, SMALLBUFSIZE);
+   memset(rule_cond->to, 0, SMALLBUFSIZE);
+   memset(rule_cond->subject, 0, SMALLBUFSIZE);
+   memset(rule_cond->body, 0, SMALLBUFSIZE);
+   memset(rule_cond->_size, 0, SMALLBUFSIZE);
+   memset(rule_cond->attachment_name, 0, SMALLBUFSIZE);
+   memset(rule_cond->attachment_type, 0, SMALLBUFSIZE);
+   memset(rule_cond->_attachment_size, 0, SMALLBUFSIZE);
+
+   rule_cond->size = 0;
+   rule_cond->attachment_size = 0;
+   rule_cond->spam = 0;
+   rule_cond->days = 0;
+   rule_cond->folder_id = 0;
+}
+
+
 void load_rules(struct session_data *sdata, struct node *xhash[], char *table){
    char s[SMALLBUFSIZE];
    struct rule_cond rule_cond;
    struct sql sql;
 
-   memset(rule_cond.domain, 0, SMALLBUFSIZE);
-   memset(rule_cond.from, 0, SMALLBUFSIZE);
-   memset(rule_cond.to, 0, SMALLBUFSIZE);
-   memset(rule_cond.subject, 0, SMALLBUFSIZE);
-   memset(rule_cond.body, 0, SMALLBUFSIZE);
-   memset(rule_cond._size, 0, SMALLBUFSIZE);
-   memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
-   memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
-   memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
-
-   rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
+   reset_rule_condition(&rule_cond);
 
    snprintf(s, sizeof(s)-1, "SELECT `domain`, `from`, `to`, `subject`, `body`, `_size`, `size`, `attachment_name`, `attachment_type`, `_attachment_size`, `attachment_size`, `spam`, `days`, `folder_id` FROM `%s`", table);
 
@@ -58,18 +67,7 @@ void load_rules(struct session_data *sdata, struct node *xhash[], char *table){
 
       while(p_fetch_results(&sql) == OK){
          append_rule(xhash, &rule_cond);
-
-         memset(rule_cond.domain, 0, SMALLBUFSIZE);
-         memset(rule_cond.from, 0, SMALLBUFSIZE);
-         memset(rule_cond.to, 0, SMALLBUFSIZE);
-         memset(rule_cond.subject, 0, SMALLBUFSIZE);
-         memset(rule_cond.body, 0, SMALLBUFSIZE);
-         memset(rule_cond._size, 0, SMALLBUFSIZE);
-         memset(rule_cond.attachment_name, 0, SMALLBUFSIZE);
-         memset(rule_cond.attachment_type, 0, SMALLBUFSIZE);
-         memset(rule_cond._attachment_size, 0, SMALLBUFSIZE);
-
-         rule_cond.size = rule_cond.attachment_size = rule_cond.spam = rule_cond.days = rule_cond.folder_id = 0;
+         reset_rule_condition(&rule_cond);
       }
 
       p_free_results(&sql);
