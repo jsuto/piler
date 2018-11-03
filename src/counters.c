@@ -48,28 +48,30 @@ struct counters load_counters(struct session_data *sdata){
 }
 
 
-void update_counters(struct session_data *sdata, struct counters *counters, struct config *cfg){
+void update_counters(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    char buf[MAXBUFSIZE];
 #ifdef HAVE_MEMCACHED
    unsigned long long mc, rcvd;
    struct counters c;
    char key[MAX_MEMCACHED_KEY_LEN];
    unsigned int flags=0;
+#endif
 
    if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
 
+#ifdef HAVE_MEMCACHED
    if(cfg->update_counters_to_memcached == 1){
 
       /* increment counters to memcached */
 
-      if(memcached_increment(&(data->memc), MEMCACHED_MSGS_RCVD, strlen(MEMCACHED_MSGS_RCVD), counters->c_rcvd, &mc) == MEMCACHED_SUCCESS){
+      if(memcached_increment(&(data->memc), MEMCACHED_MSGS_RCVD, counters->c_rcvd, &mc) == MEMCACHED_SUCCESS){
          rcvd = mc;
 
-         if(counters->c_virus > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_VIRUS, strlen(MEMCACHED_MSGS_VIRUS), counters->c_virus, &mc);
-         if(counters->c_duplicate > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_DUPLICATE, strlen(MEMCACHED_MSGS_DUPLICATE), counters->c_duplicate, &mc);
-         if(counters->c_ignore > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_IGNORE, strlen(MEMCACHED_MSGS_IGNORE), counters->c_ignore, &mc);
-         if(counters->c_size > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_SIZE, strlen(MEMCACHED_MSGS_SIZE), counters->c_size, &mc);
-         if(counters->c_stored_size > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_STORED_SIZE, strlen(MEMCACHED_MSGS_STORED_SIZE), counters->c_stored_size, &mc);
+         if(counters->c_virus > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_VIRUS, counters->c_virus, &mc);
+         if(counters->c_duplicate > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_DUPLICATE, counters->c_duplicate, &mc);
+         if(counters->c_ignore > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_IGNORE, counters->c_ignore, &mc);
+         if(counters->c_size > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_SIZE, counters->c_size, &mc);
+         if(counters->c_stored_size > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_STORED_SIZE, counters->c_stored_size, &mc);
 
 
          bzero(&c, sizeof(c)); 
@@ -88,8 +90,8 @@ void update_counters(struct session_data *sdata, struct counters *counters, stru
             }
 
 
-            if(sdata->now - mc > cfg->memcached_to_db_interval && c.c_rcvd > 0 && c.c_rcvd >= rcvd){
-               snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_set(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
+            if(sdata->now - mc > (unsigned long long)cfg->memcached_to_db_interval && c.c_rcvd > 0 && c.c_rcvd >= rcvd){
+               snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), "set", MEMCACHED_COUNTERS_LAST_UPDATE, buf, strlen(buf), 0, 0);
 
                snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=%llu, `virus`=%llu, `duplicate`=%llu, `ignore`=%llu, `size`=%llu, `stored_size`=%llu", SQL_COUNTER_TABLE, c.c_rcvd, c.c_virus, c.c_duplicate, c.c_ignore, c.c_size, c.c_stored_size);
  
@@ -104,21 +106,19 @@ void update_counters(struct session_data *sdata, struct counters *counters, stru
 
          c = load_counters(sdata);
 
-         snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), MEMCACHED_COUNTERS_LAST_UPDATE, strlen(MEMCACHED_COUNTERS_LAST_UPDATE), buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), "add", MEMCACHED_COUNTERS_LAST_UPDATE, buf, strlen(buf), 0, 0);
 
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_virus + counters->c_virus); memcached_add(&(data->memc), MEMCACHED_MSGS_VIRUS, strlen(MEMCACHED_MSGS_VIRUS), buf, strlen(buf), 0, 0);
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_rcvd + counters->c_rcvd); memcached_add(&(data->memc), MEMCACHED_MSGS_RCVD, strlen(MEMCACHED_MSGS_RCVD), buf, strlen(buf), 0, 0);
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_duplicate + counters->c_duplicate); memcached_add(&(data->memc), MEMCACHED_MSGS_DUPLICATE, strlen(MEMCACHED_MSGS_DUPLICATE), buf, strlen(buf), 0, 0);
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_ignore + counters->c_ignore); memcached_add(&(data->memc), MEMCACHED_MSGS_IGNORE, strlen(MEMCACHED_MSGS_IGNORE), buf, strlen(buf), 0, 0);
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_size + counters->c_size); memcached_add(&(data->memc), MEMCACHED_MSGS_SIZE, strlen(MEMCACHED_MSGS_SIZE), buf, strlen(buf), 0, 0);
-         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_stored_size + counters->c_stored_size); memcached_add(&(data->memc), MEMCACHED_MSGS_STORED_SIZE, strlen(MEMCACHED_MSGS_STORED_SIZE), buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_virus + counters->c_virus); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_VIRUS, buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_rcvd + counters->c_rcvd); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_RCVD, buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_duplicate + counters->c_duplicate); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_DUPLICATE, buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_ignore + counters->c_ignore); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_IGNORE, buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_size + counters->c_size); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_SIZE, buf, strlen(buf), 0, 0);
+         snprintf(buf, SMALLBUFSIZE-1, "%llu", c.c_stored_size + counters->c_stored_size); memcached_add(&(data->memc), "add", MEMCACHED_MSGS_STORED_SIZE, buf, strlen(buf), 0, 0);
       }
 
    }
    else {
 #endif
-      if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
-
       snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=`rcvd`+%llu, `virus`=`virus`+%llu, `duplicate`=`duplicate`+%llu, `ignore`=`ignore`+%llu, `size`=`size`+%llu, `stored_size`=`stored_size`+%llu", SQL_COUNTER_TABLE, counters->c_rcvd, counters->c_virus, counters->c_duplicate, counters->c_ignore, counters->c_size, counters->c_stored_size);
       p_query(sdata, buf);
 

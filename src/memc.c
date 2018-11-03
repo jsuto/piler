@@ -217,12 +217,13 @@ int memcached_shutdown(struct memcached_server *ptr){
 }
 
 
-int memcached_add(struct memcached_server *ptr, char *key, unsigned int keylen, char *value, unsigned int valuelen, unsigned int flags, unsigned long expiry){
+int memcached_add(struct memcached_server *ptr, char *cmd, char *key, char *value, unsigned int valuelen, unsigned int flags, unsigned long expiry){
    int len=0;
 
    if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return MEMCACHED_FAILURE;
 
-   snprintf(ptr->buf, MAXBUFSIZE-1, "add %s %d %ld %d \r\n", key, flags, expiry, valuelen);
+   // cmd could be either 'add' or 'set'
+   snprintf(ptr->buf, MAXBUFSIZE-1, "%s %s %d %ld %d \r\n", cmd, key, flags, expiry, valuelen);
    len = strlen(ptr->buf);
 
    strncat(ptr->buf, value, MAXBUFSIZE-strlen(ptr->buf)-1);
@@ -240,30 +241,7 @@ int memcached_add(struct memcached_server *ptr, char *key, unsigned int keylen, 
 }
 
 
-int memcached_set(struct memcached_server *ptr, char *key, unsigned int keylen, char *value, unsigned int valuelen, unsigned int flags, unsigned long expiry){
-   int len=0;
-
-   if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return MEMCACHED_FAILURE;
-
-   snprintf(ptr->buf, MAXBUFSIZE-1, "set %s %d %ld %d \r\n", key, flags, expiry, valuelen);
-   len = strlen(ptr->buf);
-
-   strncat(ptr->buf, value, MAXBUFSIZE-strlen(ptr->buf)-1);
-   strncat(ptr->buf, "\r\n", MAXBUFSIZE-strlen(ptr->buf)-1);
-
-   len += valuelen + 2;
-
-   send(ptr->fd, ptr->buf, len, 0);
-
-   ptr->last_read_bytes = __recvtimeout(ptr->fd, ptr->buf, MAXBUFSIZE, ptr->rcv_timeout);
-
-   if(strcmp("STORED\r\n", ptr->buf)) return MEMCACHED_FAILURE;
-
-   return MEMCACHED_SUCCESS;
-}
-
-
-int memcached_increment(struct memcached_server *ptr, char *key, unsigned int keylen, unsigned long long value, unsigned long long *result){
+int memcached_increment(struct memcached_server *ptr, char *key, unsigned long long value, unsigned long long *result){
    char *p;
 
    if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return MEMCACHED_FAILURE;

@@ -205,7 +205,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
 
    if(rc != ERR) unlink(filename);
 
-   update_counters(sdata, &counters, cfg);
+   update_counters(sdata, data, &counters, cfg);
 
    gettimeofday(&tv2, &tz);
 
