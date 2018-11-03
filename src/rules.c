@@ -194,11 +194,43 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
 }
 
 
-char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam){
+unsigned int count_match(struct rule *p, struct parser_state *state, int size, int spam){
+   unsigned int ismatch=0;
    size_t nmatch=0;
+
+   ismatch += check_spam_rule(spam, p->spam);
+   ismatch += check_size_rule(size, p->size, p->_size);
+   ismatch += check_attachment_rule(state, p);
+
+   if(p->compiled == 1){
+      if(p->emptyfrom == 1){
+         ismatch += RULE_UNDEF;
+      }
+      else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+      if(p->emptyto == 1){
+         ismatch += RULE_UNDEF;
+      }
+      else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+      if(p->emptysubject == 1){
+         ismatch += RULE_UNDEF;
+      }
+      else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+
+      if(p->emptybody == 1){
+         ismatch += RULE_UNDEF;
+      }
+      else if(regexec(&(p->body), state->b_body, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
+   }
+
+   return ismatch;
+}
+
+
+char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam){
    struct rule *p;
    struct node *q;
-   int ismatch;
 
    q = xhash[0];
 
@@ -207,40 +239,8 @@ char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int
       if(q->str){
          p = q->str;
 
-         if(p){
-            ismatch = 0;
-
-            ismatch += check_spam_rule(spam, p->spam);
-            ismatch += check_size_rule(size, p->size, p->_size);
-            ismatch += check_attachment_rule(state, p);
-
-            if(p->compiled == 1){
-               if(p->emptyfrom == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptyto == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptysubject == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptybody == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->body), state->b_body, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-            }
-
-            if(ismatch > 0){
-               return p->rulestr;
-            }
-
+         if(p && count_match(p, state, size, spam) > 0){
+            return p->rulestr;
          }
       }
 
@@ -252,10 +252,8 @@ char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int
 
 
 time_t query_retain_period(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg){
-   size_t nmatch=0;
    struct rule *p;
    struct node *q;
-   int ismatch;
 
    q = data->retention_rules[0];
 
@@ -264,47 +262,15 @@ time_t query_retain_period(struct data *data, struct parser_state *state, int si
       if(q->str){
          p = q->str;
 
-         ismatch = 0;
-
          if(p->domainlen > 2){
             if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
                state->retention = p->days;
                return (time_t)(state->retention) * (time_t)86400;
             }
          }
-         else {
-
-            ismatch += check_spam_rule(spam, p->spam);
-            ismatch += check_size_rule(size, p->size, p->_size);
-            ismatch += check_attachment_rule(state, p);
-
-            if(p->compiled == 1){
-               if(p->emptyfrom == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptyto == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptysubject == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptybody == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->body), state->b_body, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-            }
-
-            if(ismatch > 0){
-               state->retention = p->days;
-               return (time_t)(state->retention) * (time_t)86400;
-            }
+         else if(count_match(p, state, size, spam) > 0){
+            state->retention = p->days;
+            return (time_t)(state->retention) * (time_t)86400;
          }
 
       }
@@ -320,10 +286,8 @@ time_t query_retain_period(struct data *data, struct parser_state *state, int si
 
 
 int get_folder_id_by_rule(struct data *data, struct parser_state *state, int size, int spam, struct config *cfg){
-   size_t nmatch=0;
    struct rule *p;
    struct node *q;
-   int ismatch;
 
    if(cfg->enable_folders == 0) return 0;
 
@@ -334,45 +298,13 @@ int get_folder_id_by_rule(struct data *data, struct parser_state *state, int siz
       if(q->str){
          p = q->str;
 
-         ismatch = 0;
-
          if(p->domainlen > 2){
             if(strcasestr(state->b_to_domain, p->domain) || strcasestr(state->b_from_domain, p->domain)){
                return p->folder_id;
             }
          }
-         else {
-
-            ismatch += check_spam_rule(spam, p->spam);
-            ismatch += check_size_rule(size, p->size, p->_size);
-            ismatch += check_attachment_rule(state, p);
-
-            if(p->compiled == 1){
-               if(p->emptyfrom == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->from), state->b_from, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptyto == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->to), state->b_to, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptysubject == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->subject), state->b_subject, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-               if(p->emptybody == 1){
-                  ismatch += RULE_UNDEF;
-               }
-               else if(regexec(&(p->body), state->b_body, nmatch, NULL, 0) == 0) ismatch += RULE_MATCH; else ismatch += RULE_NO_MATCH;
-
-            }
-
-            if(ismatch > 0){
-               return p->folder_id;
-            }
+         else if(count_match(p, state, size, spam) > 0){
+            return p->folder_id;
          }
 
       }
@@ -476,4 +408,3 @@ void clearrules(struct node *xhash[]){
 
    xhash[0] = NULL;
 }
-
