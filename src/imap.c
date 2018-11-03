@@ -91,47 +91,12 @@ END:
 
 
 int connect_to_imap_server(struct data *data){
-   int n;
    char buf[MAXBUFSIZE];
-   X509* server_cert;
-   char *str;
 
    data->import->cap_uidplus = 0;
 
    if(data->net->use_ssl == 1){
-      SSL_library_init();
-      SSL_load_error_strings();
-
-   #if OPENSSL_VERSION_NUMBER < 0x10100000L
-      data->net->ctx = SSL_CTX_new(TLSv1_client_method());
-   #else
-      data->net->ctx = SSL_CTX_new(TLS_client_method());
-   #endif
-      CHK_NULL(data->net->ctx, "internal SSL error");
-
-      data->net->ssl = SSL_new(data->net->ctx);
-      CHK_NULL(data->net->ssl, "internal ssl error");
-
-      SSL_set_fd(data->net->ssl, data->net->socket);
-      n = SSL_connect(data->net->ssl);
-      CHK_SSL(n, "internal ssl error");
-
-      printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
-
-      server_cert = SSL_get_peer_certificate(data->net->ssl);
-      CHK_NULL(server_cert, "server cert error");
-
-      str = X509_NAME_oneline(X509_get_subject_name(server_cert), 0, 0);
-      CHK_NULL(str, "error in server cert");
-      printf("server cert:\n\t subject: %s\n", str);
-      OPENSSL_free(str);
-
-      str = X509_NAME_oneline(X509_get_issuer_name(server_cert), 0, 0);
-      CHK_NULL(str, "error in server cert");
-      printf("\t issuer: %s\n\n", str);
-      OPENSSL_free(str);
-
-      X509_free(server_cert);
+      init_ssl_to_server(data);
    }
 
 
