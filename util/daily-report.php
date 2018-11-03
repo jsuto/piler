@@ -23,7 +23,7 @@ if ( $options = getopt( $opts, $lopts ) )
         $webuidir = $options['webui'];
     } else
     {
-        echo("\nError: must provide path to WebUI directory\n\n");
+        echo "\nError: must provide path to WebUI directory\n\n";
     
         display_help();
         exit;
@@ -190,12 +190,9 @@ if($fp) {
 
 function display_help() {
     $phpself = basename(__FILE__);
-    echo("\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n");
-    echo("\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n");
-    echo("options:\n");
-    echo("\t-v Provide a verbose output\n");
-    echo("\t-h Prints this help screen and exits\n");
+    echo "\nUsage: $phpself --webui [PATH] [OPTIONS...]\n\n";
+    echo "\t--webui=\"[REQUIRED: path to the Piler WebUI Directory]\"\n\n";
+    echo "options:\n";
+    echo "\t-v Provide a verbose output\n";
+    echo "\t-h Prints this help screen and exits\n";
 }
-
-
-?>

@@ -1,5 +1,7 @@
 <?php
 
+define('SEARCH_STR', 'search');
+
 $webuidir = "";
 $search_expression = "";
 
@@ -45,9 +47,9 @@ if(isset($options['auto']) || isset($options['a']) )
 
 if($auto_search == 0)
 {
-   if(isset($options['search']))
+   if(isset($options[SEARCH_STR]))
    {
-      $search_expression = $options['search'];
+      $search_expression = $options[SEARCH_STR];
    } else {
       print "\nError: must provide a search expression\n\n";
       display_help();
@@ -55,7 +57,7 @@ if($auto_search == 0)
    }
 }
 else {
-   if(isset($options['search']))
+   if(isset($options[SEARCH_STR]))
    {
       print "\nError: don't specify BOTH --search AND --auto\n\n";
       display_help();
@@ -160,8 +162,8 @@ $data = array(
                'id' => 0,
                'sort' => $sort,
                'order' => $order,
-               'type' => 'search',
-               'search' => $search_expression,
+               'type' => SEARCH_STR,
+               SEARCH_STR => $search_expression,
                'searchtype' => 'expert'
              );
 
@@ -178,7 +180,7 @@ if($auto_search == 1)
    $queries = $sa->get();
 
    foreach ($queries as $query) {
-      $data['search'] = $query['query'];
+      $data[SEARCH_STR] = $query['query'];
       $data['id'] = $query['id'];
 
       do_search($data, $automated_search_recipients);
@@ -248,7 +250,7 @@ function do_search($data = array(), $automated_search_recipients = array())
       $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $automated_search_recipients, $msg);
    }
    else {
-      print "search = " . $data['search'] . "\n";
+      print "search = " . $data[SEARCH_STR] . "\n";
       print_r($all_ids);
       print $EOL . $EOL;
    }
@@ -261,17 +263,14 @@ function do_search($data = array(), $automated_search_recipients = array())
 function display_help() {
     $phpself = basename(__FILE__);
 
-    echo("\nUsage: $phpself [OPTIONS...] --webui [PATH] --search '[SEARCH EXPRESSION]' | --auto\n\n");
-    echo("\nThe results go to the recipients defined in \$automated_search_recipients, see config-site.php\n\n");
+    echo "\nUsage: $phpself [OPTIONS...] --webui [PATH] --search '[SEARCH EXPRESSION]' | --auto\n\n";
+    echo "\nThe results go to the recipients defined in \$automated_search_recipients, see config-site.php\n\n";
 
-    echo("\t--webui=\"[REQUIRED: path to the piler webui directory]\"\n");
-    echo("\t--search=\"[REQUIRED (unless you specify --auto): the search expression]\"\n\n");
-    echo("options:\n");
-    echo("\t-a | --auto: Perform an automated search based on queries defined via the piler gui\n");
-    echo("\t-y | --yesterday: Search \"yesterday\"\n");
-    echo("\t-d | --dry-run: Only print the found IDs\n");
-    echo("\t-h | --help: Prints this help screen and exits\n");
+    echo "\t--webui=\"[REQUIRED: path to the piler webui directory]\"\n";
+    echo "\t--search=\"[REQUIRED (unless you specify --auto): the search expression]\"\n\n";
+    echo "options:\n";
+    echo "\t-a | --auto: Perform an automated search based on queries defined via the piler gui\n";
+    echo "\t-y | --yesterday: Search \"yesterday\"\n";
+    echo "\t-d | --dry-run: Only print the found IDs\n";
+    echo "\t-h | --help: Prints this help screen and exits\n";
 }
-
-
-?>

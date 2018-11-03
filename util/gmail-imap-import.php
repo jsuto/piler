@@ -1,5 +1,7 @@
 <?php
 
+define('EMAIL_STR', 'email');
+
 ini_set("session.save_path", "/tmp");
 
 $webuidir = "";
@@ -28,8 +30,8 @@ if($options = getopt($opts, $lopts)) {
       $daemonize = 1;
    }
 
-   if(isset($options['email'])) {
-      $email = $options['email'];
+   if(isset($options[EMAIL_STR])) {
+      $email = $options[EMAIL_STR];
    }
 
 }
@@ -107,8 +109,8 @@ function poll_imap_accounts($email = '') {
 
    if(isset($query->rows)) {
       foreach($query->rows as $q) {
-         $access_token = $ug->refresh_access_token($q['email']);
-         $g->download_users_emails($q['email'], $access_token);
+         $access_token = $ug->refresh_access_token($q[EMAIL_STR]);
+         $g->download_users_emails($q[EMAIL_STR], $access_token);
       }
    }
 }
