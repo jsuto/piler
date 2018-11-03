@@ -18,7 +18,6 @@ SQL_PURGE_SELECT_QUERY = "SELECT piler_id, size FROM " +\
     "legal_hold))"
 
 opts = {}
-default_conf = "/usr/local/etc/piler/piler.conf"
 
 
 def read_options(filename="", opts={}):
@@ -164,9 +163,6 @@ def get_attachment_file_path(piler_id='', attachment_id=0, opts={}):
 
 
 def main():
-    if "/usr/libexec" in __file__:
-        default_conf = "/etc/piler/piler.conf"
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, help="piler.conf path",
                         default="/etc/piler/piler.conf")

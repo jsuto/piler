@@ -202,7 +202,6 @@ function do_search($data = array(), $automated_search_recipients = array())
    $lang = Registry::get('language');
    extract($lang->data);
 
-   $page = 0;
    $title = $text_automated_search;
 
    if($data['id'] != '') { $title .= $data['id']; }
@@ -246,7 +245,7 @@ function do_search($data = array(), $automated_search_recipients = array())
 
       ob_end_clean();
 
-      $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $automated_search_recipients, $msg);
+      $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $automated_search_recipients, $msg);
    }
    else {
       print "search = " . $data['search'] . "\n";

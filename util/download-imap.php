@@ -75,7 +75,7 @@ function download_users_emails($storage) {
 
    $folders = new RecursiveIteratorIterator($storage->getFolders(), RecursiveIteratorIterator::SELF_FIRST);
 
-   foreach ($folders as $localName => $folder) {
+   foreach ($folders as $folder) {
 
       $__folder = preg_replace("/\W/", "_", $folder);
 
@@ -131,5 +131,3 @@ function usage() {
 
    exit;
 }
-
-
