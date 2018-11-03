@@ -139,11 +139,32 @@ void storno_attachment(struct parser_state *state){
 }
 
 
+void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned int abuffersize){
+   int n64;
+   unsigned char b64buffer[MAXBUFSIZE];
+
+   if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
+
+   if(state->b64fd != -1){
+      abuffer[state->abufpos] = '\0';
+      if(state->base64 == 1){
+         n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
+         if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
+      }
+      else if(write(state->b64fd, abuffer, state->abufpos) == -1){
+         syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
+      }
+   }
+
+   state->abufpos = 0;
+   memset(abuffer, 0, abuffersize);
+}
+
+
 int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, unsigned int writebuffersize, char *abuffer, unsigned int abuffersize, struct data *data, struct config *cfg){
    char *p, *q, puf[SMALLBUFSIZE];
-   unsigned char b64buffer[MAXBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
-   int n64, writelen, boundary_line=0, result;
+   int writelen, boundary_line=0, result;
    unsigned int len, domainlen;
 
    if(cfg->debug == 1) printf("line: %s", buf);
@@ -195,20 +216,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(take_into_pieces == 1){
       if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
          if(len + state->abufpos > abuffersize-1){
-            if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-
-            if(state->b64fd != -1){
-               abuffer[state->abufpos] = '\0';
-               if(state->base64 == 1){
-                  n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
-                  if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-               }
-               else {
-                  if(write(state->b64fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-               }
-            }
-
-            state->abufpos = 0; memset(abuffer, 0, abuffersize);
+            flush_attachment_buffer(state, abuffer, abuffersize);
          }
          memcpy(abuffer+state->abufpos, buf, len); state->abufpos += len;
 
@@ -549,20 +557,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(state->has_to_dump == 1){
          if(take_into_pieces == 1 && state->fd != -1){
             if(state->abufpos > 0){
-               if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-
-               if(state->b64fd != -1){
-                  abuffer[state->abufpos] = '\0';
-                  if(state->base64 == 1){
-                     n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
-                     if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-                  }
-                  else {
-                     if(write(state->b64fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
-                  }
-               }
-
-               state->abufpos = 0; memset(abuffer, 0, abuffersize); 
+               flush_attachment_buffer(state, abuffer, abuffersize);
             }
             close(state->fd);
             close(state->b64fd);
