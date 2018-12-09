@@ -2,7 +2,11 @@
 <phpunit colors="true">
     <testsuites>
         <testsuite name="Application Test Suite">
-            <directory>./tests</directory>
+            <directory>./unit_tests/php</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="DIR_BASE" value="webui/" />
+        <env name="TEST_FILES_DIR" value="test_files/" />
+    </php>
 </phpunit>

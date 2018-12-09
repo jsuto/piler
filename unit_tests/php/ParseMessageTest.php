@@ -2,7 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__FILE__)) . '/webui/system/helper/mime.php';
+define('DIR_BASE', $_ENV['DIR_BASE']);
+define('TEST_FILES_DIR', $_ENV['TEST_FILES_DIR']);
+
+require_once DIR_BASE . 'system/helper/mime.php';
 
 
 final class MailParserTest extends TestCase {
@@ -26,7 +29,7 @@ final class MailParserTest extends TestCase {
     * @dataProvider providerTestParseMessage
     */
    public function test_parse_message($input, $expected_part_count, $expected_body) {
-      $message = file_get_contents(dirname(dirname(__FILE__)) . "/test_files/" . $input);
+      $message = file_get_contents(TEST_FILES_DIR . $input);
       Piler_Mime_Decode::ParseMessage($message, $parts);
 
       $this->assertEquals(count($parts), $expected_part_count);

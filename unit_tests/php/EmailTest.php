@@ -2,8 +2,10 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("webui/system/model.php");
-include_once("webui/model/search/search.php");
+define('DIR_BASE', $_ENV['DIR_BASE']);
+
+include_once(DIR_BASE . "system/model.php");
+include_once(DIR_BASE . "model/search/search.php");
 
 
 final class SearchSearchTest extends TestCase {

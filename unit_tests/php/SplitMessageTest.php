@@ -7,7 +7,9 @@ define(THIS_IS_A_TEST, 'This is a test');
 
 use PHPUnit\Framework\TestCase;
 
-require_once dirname(dirname(__FILE__)) . '/webui/system/helper/mime.php';
+define('DIR_BASE', $_ENV['DIR_BASE']);
+
+require_once DIR_BASE . 'system/helper/mime.php';
 
 
 final class SplitMessageTest extends TestCase {
