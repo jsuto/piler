@@ -2,7 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-define('DIR_BASE', $_ENV['DIR_BASE']);
 define('TEST_FILES_DIR', $_ENV['TEST_FILES_DIR']);
 
 require_once DIR_BASE . 'system/helper/mime.php';

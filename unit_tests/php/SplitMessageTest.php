@@ -1,13 +1,11 @@
 <?php
 
-define(CONTENT_TYPE, 'content-type');
-define(TEXT_PLAIN, 'text/plain');
-define(SUBJECT, 'subject');
-define(THIS_IS_A_TEST, 'This is a test');
+define('CONTENT_TYPE', 'content-type');
+define('TEXT_PLAIN', 'text/plain');
+define('SUBJECT', 'subject');
+define('THIS_IS_A_TEST', 'This is a test');
 
 use PHPUnit\Framework\TestCase;
-
-define('DIR_BASE', $_ENV['DIR_BASE']);
 
 require_once DIR_BASE . 'system/helper/mime.php';
 
