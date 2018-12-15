@@ -14,7 +14,7 @@ class ControllerMessageJournal extends Controller {
 
       $this->load->model('search/search');
       $this->load->model('search/message');
-
+      $this->load->model('audit/audit');
       $this->load->model('user/user');
 
       $this->document->title = $this->data['text_message'];
@@ -47,5 +47,3 @@ class ControllerMessageJournal extends Controller {
 
 
 }
-
-?>

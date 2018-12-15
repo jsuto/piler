@@ -26,7 +26,8 @@ class ModelMessageRestore extends Model {
 
          $rawemail = $this->model_search_message->get_raw_message($piler_id);
 
-         $this->model_search_message->remove_journal($rawemail);
+         Piler_Mime_Decode::splitMessage($rawemail, $headers, $journal, $body);
+         $rawemail = $headers . $body;
 
          $zip->addFromString($filename . ".eml",  $rawemail);
 
