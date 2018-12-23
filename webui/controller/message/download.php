@@ -1,5 +1,6 @@
 <?php
 
+require DIR_SYSTEM . 'helper/mime.php';
 
 class ControllerMessageDownload extends Controller {
 
@@ -51,7 +52,8 @@ class ControllerMessageDownload extends Controller {
 
       $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
 
-      $this->model_search_message->remove_journal($msg);
+      Piler_Mime_Decode::removeJournal($msg);
+
       print $msg;
    }
 
