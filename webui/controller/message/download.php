@@ -51,9 +51,7 @@ class ControllerMessageDownload extends Controller {
 
       $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
 
-      Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
-      $msg = $headers . $body;
-
+      $this->model_search_message->remove_journal($msg);
       print $msg;
    }
 

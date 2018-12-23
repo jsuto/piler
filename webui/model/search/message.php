@@ -105,12 +105,12 @@ class ModelSearchMessage extends Model {
 
    public function get_message_headers($id = '') {
       $headers = '';
-      $has_journal = 0;
 
       $msg = $this->get_raw_message($id);
 
-      Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
-      if($journal) { $has_journal = 1; }
+      Piler_Mime_Decode::splitMessageRaw($msg, $headers, $body);
+
+      $has_journal = $this->remove_journal($headers);
 
       $headers = Piler_Mime_Decode::escape_lt_gt_symbols($headers);
 
@@ -123,8 +123,6 @@ class ModelSearchMessage extends Model {
       $boundary = '';
 
       $msg = $this->get_raw_message($id);
-      Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
-      return $journal;
 
       $hdr = substr($msg, 0, 8192);
 
@@ -165,21 +163,58 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function remove_journal(&$msg = '') {
+      $p = $q = '';
+      $boundary = '';
+      $has_journal = 0;
+
+      $hdr = substr($msg, 0, 4096);
+
+      $s = preg_split("/\n/", $hdr);
+      while(list($k, $v) = each($s)) {
+         if(preg_match("/boundary\s{0,}=\s{0,}\"{0,}([\w\_\-\@\.]+)\"{0,}/i", $v, $m)) {
+            if(isset($m[1])) { $boundary = $m[1]; break; }
+         }
+      }
+
+      $p = strstr($msg, "\nX-MS-Journal-Report:");
+
+      if($p) {
+         $has_journal = 1;
+
+         $msg = '';
+         $q = strstr($p, "Received: from");
+         if($q) {
+            $p = '';
+            $msg = $q;
+            $q = '';
+         }
+         else {
+            $msg = $p;
+            $p = '';
+         }
+
+         if($boundary) {
+            $msg = substr($msg, 0, strlen($msg) - strlen($boundary) - 6);
+         }
+      }
+
+      return $has_journal;
+   }
+
+
    public function extract_message($id = '', $terms = '') {
       $from = "From: ";
       $to = "To: ";
       $cc = "Cc: ";
       $subject = "Subject: ";
       $date = "Date: ";
-      $has_journal = 0;
 
       $msg = $this->get_raw_message($id);
 
-      Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
+      $has_journal = $this->remove_journal($msg);
 
-      if($journal) { $has_journal = 1; }
-
-      $headers = Piler_Mime_Decode::splitHeaders($headers);
+      Piler_Mime_Decode::splitMessage($msg, $headers, $body);
 
       for($i=0; $i<count(Piler_Mime_Decode::HEADER_FIELDS); $i++) {
          if(isset($headers[Piler_Mime_Decode::HEADER_FIELDS[$i]]) && is_array($headers[Piler_Mime_Decode::HEADER_FIELDS[$i]])) {
@@ -218,7 +253,7 @@ class ModelSearchMessage extends Model {
             $this->message['text/html'] = $purifier->purify($body);
          }
          else {
-            $this->message['text/plain'] = str_replace("\n", "<br />\n", $body);
+            $this->message['text/plain'] = $body;
          }
 
       }

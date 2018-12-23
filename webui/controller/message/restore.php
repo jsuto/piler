@@ -72,8 +72,7 @@ class ControllerMessageRestore extends Controller {
 
          $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
 
-         Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
-         $msg = $headers . $body;
+         $this->model_search_message->remove_journal($msg);
 
          if(RESTORE_OVER_IMAP == 1) {
             if($this->model_mail_mail->connect_imap()) {

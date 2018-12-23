@@ -84,8 +84,7 @@ class ControllerMessageBulkrestore extends Controller {
             $piler_id = $this->model_search_message->get_piler_id_by_id($id);
 
             $msg = $this->model_search_message->get_raw_message($piler_id);
-            Piler_Mime_Decode::splitMessage($msg, $headers, $journal, $body);
-            $msg = $headers . $body;
+            $this->model_search_message->remove_journal($msg);
 
             if(RESTORE_OVER_IMAP == 1 && Registry::get('auditor_user') == 0) {
                if($imap_ok) {

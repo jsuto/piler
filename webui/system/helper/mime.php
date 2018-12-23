@@ -7,7 +7,7 @@ class Piler_Mime_Decode {
 
    public static function parseMessage($message, &$result) {
 
-      self::splitMessage($message, $headers, $journal, $body);
+      self::splitMessage($message, $headers, $body);
 
       $boundary = self::getBoundary($headers);
 
@@ -31,7 +31,7 @@ class Piler_Mime_Decode {
 
       for($i=0; $i<count($parts); $i++) {
 
-         self::splitMessage($parts[$i], $headers, $journal, $body);
+         self::splitMessage($parts[$i], $headers, $body);
 
          $boundary = self::getBoundary($headers);
          if($boundary) {
@@ -86,29 +86,9 @@ class Piler_Mime_Decode {
    }   
 
 
-   public static function splitMessage($message, &$headers, &$journal, &$body, $EOL = "\n") {
-      $journal = '';
-
+   public static function splitMessage($message, &$headers, &$body, $EOL = "\n") {
       self::splitMessageRaw($message, $headers, $body);
       $headers = self::splitHeaders($headers);
-
-      if(isset($headers['x-ms-journal-report']) && isset($headers['content-type']['boundary'])) {
-         $boundary = $headers['content-type']['boundary'];
-         $headers = self::splitMime($body, $boundary);
-
-         self::splitMessageRaw($headers[0], $s, $journal);
-
-         $i = strpos($headers[1], "\n");
-         $msg = substr($headers[1], $i);
-
-         $i = 0;
-         while(ctype_space($msg[$i])) { $i++; }
-         if($i > 0) { $msg = substr($msg, $i); }
-
-         self::splitMessageRaw($msg, $headers, $body);
-      }
-
-      $headers .= $EOL . $EOL;
    }
 
 
