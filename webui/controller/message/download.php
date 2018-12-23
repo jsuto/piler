@@ -1,7 +1,5 @@
 <?php
 
-require DIR_SYSTEM . 'helper/mime.php';
-
 class ControllerMessageDownload extends Controller {
 
    public function index(){
