@@ -1,5 +1,6 @@
 <?php
 
+require DIR_SYSTEM . 'helper/mime.php';
 
 class ControllerMessageRestore extends Controller {
 
@@ -72,7 +73,7 @@ class ControllerMessageRestore extends Controller {
 
          $msg = $this->model_search_message->get_raw_message($this->data['piler_id']);
 
-         $this->model_search_message->remove_journal($msg);
+         Piler_Mime_Decode::removeJournal($msg);
 
          if(RESTORE_OVER_IMAP == 1) {
             if($this->model_mail_mail->connect_imap()) {

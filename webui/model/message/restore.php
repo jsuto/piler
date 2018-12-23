@@ -1,5 +1,7 @@
 <?php
 
+require DIR_SYSTEM . 'helper/mime.php';
+
 class ModelMessageRestore extends Model {
 
 
@@ -26,7 +28,7 @@ class ModelMessageRestore extends Model {
 
          $rawemail = $this->model_search_message->get_raw_message($piler_id);
 
-         $this->model_search_message->remove_journal($rawemail);
+         Piler_Mime_Decode::removeJournal($rawemail);
 
          $zip->addFromString($filename . ".eml",  $rawemail);
 

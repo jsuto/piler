@@ -87,12 +87,12 @@ class Piler_Mime_Decode {
 
 
    public static function splitMessage($message, &$headers, &$body, $EOL = "\n") {
-      self::splitMessageRaw($message, $headers, $body);
+      self::splitMessageRaw($message, $headers, $journal, $body);
       $headers = self::splitHeaders($headers);
    }
 
 
-   public static function splitMessageRaw($message, &$headers, &$body, $EOL = "\n") {
+   public static function splitMessageRaw($message, &$headers, &$journal, &$body, $EOL = "\n") {
       $headers = [];
       $body = '';
 
@@ -102,10 +102,57 @@ class Piler_Mime_Decode {
 
       if(strpos($message, $EOL . $EOL)) {
          list($headers, $body) = explode($EOL . $EOL, $message, 2);
+
+         // Check if the header is actually a journal header
+         $headers_array = self::splitHeaders($headers);
+
+         if(isset($headers_array['x-ms-journal-report']) && isset($headers_array['content-type']['boundary'])) {
+            $boundary = $headers_array['content-type']['boundary'];
+            $parts = self::splitMime($body, $boundary);
+
+            if(count($parts) >= 2) {
+               self::splitMessageRaw($parts[0], $s, $j, $journal);
+
+               $i = strpos($parts[1], "\n");
+               $msg = substr($parts[1], $i);
+
+               $i = 0;
+               while(ctype_space($msg[$i])) { $i++; }
+               if($i > 0) { $msg = substr($msg, $i); }
+
+               self::splitMessageRaw($msg, $headers, $j, $body);
+            }
+         }
       }
       else {
          $headers = $message;
       }
+   }
+
+
+   public static function removeJournal(&$message, $EOL = '\n') {
+      $has_journal = 0;
+
+      $s = self::remove_LF($message);
+      if(strpos($s, $EOL . $EOL)) {
+         list($headers, $body) = explode($EOL . $EOL, $s, 2);
+         if(strstr($headers, "\nX-MS-Journal-Report:")) {
+            return $has_journal;
+         }
+      }
+
+      $p = strstr($message, "\nX-MS-Journal-Report:");
+      if($p) {
+         $q = stristr($p, "message/rfc822");
+         if($q) {
+            $has_journal = 1;
+            $i = strlen("message/rfc822");
+            while(ctype_space($q[$i])) { $i++; }
+            if($i > 0) { $message = substr($q, $i); }
+         }
+      }
+
+      return $has_journal;
    }
 
 

@@ -1,5 +1,6 @@
 <?php
 
+require DIR_SYSTEM . 'helper/mime.php';
 
 class ControllerMessageBulkrestore extends Controller {
 
@@ -84,7 +85,7 @@ class ControllerMessageBulkrestore extends Controller {
             $piler_id = $this->model_search_message->get_piler_id_by_id($id);
 
             $msg = $this->model_search_message->get_raw_message($piler_id);
-            $this->model_search_message->remove_journal($msg);
+            Piler_Mime_Decode::removeJournal($msg);
 
             if(RESTORE_OVER_IMAP == 1 && Registry::get('auditor_user') == 0) {
                if($imap_ok) {
