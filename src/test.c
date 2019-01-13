@@ -162,7 +162,7 @@ int main(int argc, char **argv){
 
    printf("hdr len: %d\n", sdata.hdr_len);
 
-   rule = check_againt_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
+   rule = check_against_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
  
    printf("body digest: %s\n", sdata.bodydigest);
 

@@ -131,6 +131,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
    parser_state = parse_message(sdata, 1, data, cfg);
+
    post_parse(sdata, &parser_state, cfg);
 
    if(cfg->syslog_recipients == 1){
@@ -144,8 +145,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
       } while(rcpt);
    }
 
-
-   arule = check_againt_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
+   arule = check_against_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
 
    if(arule){
       syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", filename, arule);
@@ -506,6 +506,7 @@ int main(int argc, char **argv){
    initrules(data.retention_rules);
    initrules(data.folder_rules);
    data.dedup = MAP_FAILED;
+   data.import = NULL;
 
    initialise_configuration();
 

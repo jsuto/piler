@@ -19,7 +19,7 @@ int open_database(struct session_data *sdata, struct config *cfg){
    mysql_options(&(sdata->mysql), MYSQL_OPT_RECONNECT, (const char*)&rc);
 
    if(mysql_real_connect(&(sdata->mysql), cfg->mysqlhost, cfg->mysqluser, cfg->mysqlpwd, cfg->mysqldb, cfg->mysqlport, cfg->mysqlsocket, 0) == 0){
-      printf("cant connect to mysql server\n");
+      syslog(LOG_PRIORITY, "cant connect to mysql server");
       return ERR;
    }
 

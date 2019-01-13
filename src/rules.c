@@ -228,7 +228,7 @@ int count_match(struct rule *p, struct parser_state *state, int size, int spam){
 }
 
 
-char *check_againt_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam){
+char *check_against_ruleset(struct node *xhash[], struct parser_state *state, int size, int spam){
    struct rule *p;
    struct node *q;
 

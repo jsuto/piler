@@ -73,7 +73,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
 
-   rule = check_againt_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
+   rule = check_against_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 
    if(rule){
       if(data->quiet == 0) printf("discarding %s by archiving policy: %s\n", data->import->filename, rule);
