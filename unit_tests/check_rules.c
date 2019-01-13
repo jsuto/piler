@@ -118,7 +118,7 @@ static void test_archiving_rule(struct config *cfg){
       state = parse_message(&sdata, 1, &data, cfg);
       post_parse(&sdata, &state, cfg);
 
-      rule = check_againt_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
+      rule = check_against_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
 
 
       for(j=1; j<=state.n_attachments; j++){

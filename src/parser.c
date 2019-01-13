@@ -55,7 +55,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
    fclose(f);
 
-   if(data->import->extra_recipient){
+   if(data->import && data->import->extra_recipient){
       add_recipient(data->import->extra_recipient, strlen(data->import->extra_recipient), sdata, &state, data, cfg);
    }
 
