@@ -55,6 +55,10 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
    fclose(f);
 
+   if(data->import->extra_recipient){
+      add_recipient(data->import->extra_recipient, strlen(data->import->extra_recipient), sdata, &state, data, cfg);
+   }
+
    return state;
 }
 
@@ -165,7 +169,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    char *p, *q, puf[SMALLBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
    int writelen, boundary_line=0, result;
-   unsigned int len, domainlen;
+   unsigned int len;
 
    if(cfg->debug == 1) printf("line: %s", buf);
 
@@ -698,43 +702,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: journal rcpt: '%s'", sdata->ttmpfile, puf);
          }
 
-         if(findnode(state->rcpt, puf) == NULL){
-
-            /* skip any address matching ...@cfg->hostid, 2013.10.29, SJ */
-            if(q && strncmp(q+1, cfg->hostid, cfg->hostid_len) == 0){
-               continue;
-            }
-
-            addnode(state->rcpt, puf);
-            memcpy(&(state->b_to[state->tolen]), puf, len);
-            state->tolen += len;
-
-            if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf) == 1){
-
-               if(is_email_address_on_my_domains(puf, data) == 1) sdata->internal_recipient = 1;
-               else sdata->external_recipient = 1;
-
-               if(q){
-                  if(findnode(state->rcpt_domain, q+1) == NULL){
-                     addnode(state->rcpt_domain, q+1);
-                     domainlen = strlen(q+1);
-
-                     if(state->todomainlen < SMALLBUFSIZE-domainlen-1){
-                        memcpy(&(state->b_to_domain[state->todomainlen]), q+1, domainlen);
-                        state->todomainlen += domainlen;
-                     }
-                  }
-               }
-
-               if(state->tolen < MAXBUFSIZE-len-1){
-                  split_email_address(puf);
-                  memcpy(&(state->b_to[state->tolen]), puf, len);
-                  state->tolen += len;
-               }
-
-            }
-         }
-
+         add_recipient(puf, len, sdata, state, data, cfg);
       }
       else if(state->message_state == MSG_BODY && len >= (unsigned int)(cfg->min_word_len) && state->bodylen < BIGBUFSIZE-len-1){
          // 99% of email addresses are longer than 8 characters

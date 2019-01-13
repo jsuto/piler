@@ -64,7 +64,7 @@ void usage(){
 int main(int argc, char **argv){
    int i, c, n_mbox=0;
    char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS], *directory=NULL;
-   char *imapserver=NULL, *pop3server=NULL;
+   char puf[SMALLBUFSIZE], *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
    struct config cfg;
    struct data data;
@@ -253,7 +253,8 @@ int main(int argc, char **argv){
                     break;
 
          case 'a' :
-                    data.import->extra_recipient = optarg;
+                    snprintf(puf, sizeof(puf)-1, "%s ", optarg);
+                    data.import->extra_recipient = puf;
                     break;
 
          case 'D' :

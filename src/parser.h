@@ -25,6 +25,7 @@ void translateLine(unsigned char *p, struct parser_state *state);
 void fix_email_address_for_sphinx(char *s);
 void split_email_address(char *s);
 int does_it_seem_like_an_email_address(char *email);
+void add_recipient(char *email, unsigned int len, struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
 void reassembleToken(char *p);
 void degenerateToken(unsigned char *p);
 void fixURL(char *buf, int buflen);

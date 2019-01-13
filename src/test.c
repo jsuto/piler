@@ -37,6 +37,7 @@ int main(int argc, char **argv){
    struct data data;
    struct import import;
    char *configfile=CONFIG_FILE, *rule, *emlfile=NULL;
+   char puf[SMALLBUFSIZE];
 
    import.extra_recipient = NULL;
 
@@ -74,7 +75,8 @@ int main(int argc, char **argv){
                     break;
 
          case 'a':
-                    import.extra_recipient = optarg;
+                    snprintf(puf, sizeof(puf)-1, "%s ", optarg);
+                    import.extra_recipient = puf;
                     break;
 
          default  :

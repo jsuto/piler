@@ -693,6 +693,49 @@ int does_it_seem_like_an_email_address(char *email){
 }
 
 
+void add_recipient(char *email, unsigned int len, struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
+   char *q;
+
+   if(findnode(state->rcpt, email) == NULL){
+
+      q = strchr(email, '@');
+
+      /* skip any address matching ...@cfg->hostid, 2013.10.29, SJ */
+      if(q && strncmp(q+1, cfg->hostid, cfg->hostid_len) == 0){
+         return;
+      }
+
+      addnode(state->rcpt, email);
+      memcpy(&(state->b_to[state->tolen]), email, len);
+      state->tolen += len;
+
+      if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(email) == 1){
+
+         if(is_email_address_on_my_domains(email, data) == 1) sdata->internal_recipient = 1;
+         else sdata->external_recipient = 1;
+
+         if(q){
+            if(findnode(state->rcpt_domain, q+1) == NULL){
+               addnode(state->rcpt_domain, q+1);
+               unsigned int domainlen = strlen(q+1);
+
+               if(state->todomainlen < SMALLBUFSIZE-domainlen-1){
+                  memcpy(&(state->b_to_domain[state->todomainlen]), q+1, domainlen);
+                  state->todomainlen += domainlen;
+               }
+            }
+         }
+
+         if(state->tolen < MAXBUFSIZE-len-1){
+            split_email_address(email);
+            memcpy(&(state->b_to[state->tolen]), email, len);
+            state->tolen += len;
+         }
+      }
+   }
+}
+
+
 /*
  * reassemble 'V i a g r a' to 'Viagra'
  */
