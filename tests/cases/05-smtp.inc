@@ -6,15 +6,15 @@ case1() {
 
    setup
 
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Inbox" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Inbox2" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet2" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam0" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam1" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/journal" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/deduptest" --socket --no-counter
-   "${SMTP_SOURCE_DIR}/smtp-source.py" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Inbox" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Inbox2" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet2" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam0" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam1" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/journal" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/deduptest" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --socket --no-counter
 
 
    wait_until_emails_are_processed "piler1" 2997
