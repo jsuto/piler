@@ -1,6 +1,6 @@
 <?php
 
-require DIR_SYSTEM . 'helper/mime.php';
+require_once DIR_SYSTEM . 'helper/mime.php';
 
 class ModelMessageRestore extends Model {
 
