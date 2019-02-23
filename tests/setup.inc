@@ -1,4 +1,5 @@
 CONTAINERS=( "piler1" )
+CONFIG_DIR="/data/config"
 
 setup() {
    destroy_containers
@@ -6,18 +7,21 @@ setup() {
    create_rules "piler1"
 }
 
+start_telegraf() {
+   local config="$1"
+
+   if [[ "$RUN_TELEGRAF" == "true" ]]; then
+      docker cp "$config" "piler1:/etc/telegraf/telegraf.conf"
+      docker exec "piler1" sed -i 's/HOSTNAME/piler1/g' /etc/telegraf/telegraf
+      docker exec "piler1" service telegraf start
+   fi
+}
+
 launch_containers() {
    docker run -d --net=piler --name piler1 -e PILER_HOST="cust1.acts.hu" -p 80:80 -p 25:25 "$docker_image" 2>/dev/null
    wait_for_sleep_cycle_in_container "piler1"
 
-   if [[ -v JENKINS_URL ]]; then
-      docker cp "${HOME}/telegraf.conf" piler1:/etc/telegraf/telegraf.conf 2>/dev/null
-   else
-      docker cp "${topdir}/secrets/telegraf.conf" piler1:/etc/telegraf/telegraf.conf 2>/dev/null
-   fi
-
-   docker exec "piler1" sed -i 's/HOSTNAME/piler1/g' /etc/telegraf/telegraf.conf
-   docker exec "piler1" service telegraf start
+   start_telegraf "${CONFIG_DIR}/telegraf.conf"
 }
 
 create_rules() {
