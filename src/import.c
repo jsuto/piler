@@ -72,7 +72,6 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
    state = parse_message(sdata, 1, data, cfg);
    post_parse(sdata, &state, cfg);
-
    rule = check_against_ruleset(data->archiving_rules, &state, sdata->tot_len, sdata->spam_message);
 
    if(rule){
@@ -87,6 +86,9 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
          rc = ERR;
       }
       else {
+         // When importing emails, we should add the retention value (later) to the original sent value
+         sdata->retained = sdata->sent;
+
          rc = process_message(sdata, &state, data, cfg);
          unlink(state.message_id_hash);
       }
