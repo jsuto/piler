@@ -473,7 +473,7 @@ class ModelUserAuth extends Model {
 
       if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $sso_user"); }
 
-      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+      $ldap = new LDAP(LDAP_HOST, LDAP_PORT, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
 
