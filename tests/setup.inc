@@ -23,7 +23,8 @@ launch_containers() {
    log "starting syslog server"
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name syslog.host sutoj/syslog
 
-   docker run -d --net=piler --name piler1 -e PILER_HOST="cust1.acts.hu" -p 80:80 -p 25:25 "$docker_image" 2>/dev/null
+   docker run -d --net=piler --name piler1 -e PILER_HOST="cust1.acts.hu" -p 80:80 -p 25:25 -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" "$docker_image" 2>/dev/null
+
    wait_for_sleep_cycle_in_container "piler1"
 
    start_telegraf "${CONFIG_DIR}/telegraf.conf"
