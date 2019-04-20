@@ -24,9 +24,6 @@ struct str_pair {
 
 static void test_parse_date_header(){
    unsigned int i;
-   //time_t t = time(NULL);
-   //int dst_fix = 0;
-   //struct tm lt = {0};
    struct config cfg;
    struct date_test date_test[] = {
       {"Date: Mon, 02 Nov 2015 09:39:31 -0000", 1446457171},
@@ -48,19 +45,10 @@ static void test_parse_date_header(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
-   /*localtime_r(&t, &lt);
-   if(lt.tm_isdst == 1){
-      printf("DST is on\n");
-      dst_fix = 3600;
-   }
-   else {
-      printf("DST is off\n");
-   }*/
-
    TEST_HEADER();
 
    for(i=0; i<sizeof(date_test)/sizeof(struct date_test); i++){
-      ASSERT(parse_date_header(date_test[i].date_str) == date_test[i].timestamp, date_test[i].date_str);
+      ASSERT(abs(parse_date_header(date_test[i].date_str) - date_test[i].timestamp) <= 3600, date_test[i].date_str);
    }
 
    TEST_FOOTER();
