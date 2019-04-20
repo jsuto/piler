@@ -14,6 +14,15 @@ export LD_LIBRARY_PATH=../src
 
 pushd "$SCRIPT_DIR"
 
+setup_mysql() {
+   service mysql start
+   mysql -u piler -ppiler123 piler1 < ../util/db-mysql.sql
+}
+
+if [[ -v BUILD_NUMBER ]]; then
+   setup_mysql
+fi
+
 ./check_parser_utils
 ./check_parser
 ./check_rules
