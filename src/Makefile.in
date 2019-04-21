@@ -75,7 +75,7 @@ stats: stats.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilerstats $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
 %.o: $(srcdir)/%.c
-	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -c $< -o $@
 
 
 install-piler:

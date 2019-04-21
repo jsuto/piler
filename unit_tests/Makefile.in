@@ -58,7 +58,7 @@ smtp:	smtp.c ../src/libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
 %.o: $(srcdir)/%.c
-	$(CC) $(CFLAGS) -fPIC $(INCDIR) $(DEFS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -c $< -o $@
 
 install:
 	@echo
