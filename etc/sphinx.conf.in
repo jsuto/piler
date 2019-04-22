@@ -1,3 +1,12 @@
+#!/usr/bin/php
+<?php
+
+define('SPHINX_VERSION', 220); // If you have sphinx-3.1.1, then set SPHINX_VERSION to 311
+define('LOCALSTATEDIR', '@LOCALSTATEDIR@');
+define('NGRAM_CONFIG', "        #ngram_len               = 1\n        #ngram_chars             = U+3000..U+2FA1F\n");
+
+?>
+
 #
 # minimal sphinx configuration suited to piler
 #
@@ -76,126 +85,114 @@ source note : base
 
 }
 
-source att : base
-{
-
-   sql_query_pre = SET NAMES utf8mb4
-   sql_query  =  select a.id as aid, m.id as mid, a.name AS aname, a.size, REPLACE(REPLACE(m.`from`, '@', 'X'), '.', 'X') as `from`, REPLACE(REPLACE((select group_concat(rcpt.`to` ORDER BY `to` ASC SEPARATOR ' ') from rcpt where rcpt.id=mid group by rcpt.id), '@', 'X'), '.', 'X') as `to` from attachment a, metadata m where m.piler_id=a.piler_id
-
-   sql_attr_uint = size
-   sql_attr_uint = mid
-}
-
 
 index main1
 {
 	source			= main1
-	path			= LOCALSTATEDIR/piler/sphinx/main1
+	path			= <?php print LOCALSTATEDIR; ?>/piler/sphinx/main1
+<?php if(SPHINX_VERSION < 300) { ?>
 	docinfo			= extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 index main2
 {
         source                  = main2
-        path                    = LOCALSTATEDIR/piler/sphinx/main2
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main2
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 index main3
 {
         source                  = main3
-        path                    = LOCALSTATEDIR/piler/sphinx/main3
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main3
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 index main4
 {
         source                  = main4
-        path                    = LOCALSTATEDIR/piler/sphinx/main4
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main4
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 index dailydelta1
 {
         source                  = dailydelta
-        path                    = LOCALSTATEDIR/piler/sphinx/dailydelta1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/dailydelta1
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 index delta1
 {
         source                  = delta
-        path                    = LOCALSTATEDIR/piler/sphinx/delta1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/delta1
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
+<?php if(SPHINX_VERSION >= 310) { ?>
+        kbatch = main1, main2, main3, main4, dailydelta1
+<?php } ?>
 }
 
 
 index tag1
 {
         source                  = tag
-        path                    = LOCALSTATEDIR/piler/sphinx/tag1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/tag1
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 
 index note1
 {
         source                  = note
-        path                    = LOCALSTATEDIR/piler/sphinx/note1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/note1
+<?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
 	dict			= keywords
+<?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
-        #ngram_len               = 1
-        #ngram_chars             = U+3000..U+2FA1F
-}
-
-
-index att1
-{
-        source                  = att
-        path                    = /var/piler/sphinx/att1
-        docinfo                 = extern
-        dict                    = keywords
-        min_prefix_len          = 6
-        min_word_len            = 1
-        ngram_len               = 1
-        ngram_chars             = U+1100..U+2FA1F
+<?php print NGRAM_CONFIG; ?>
 }
 
 
