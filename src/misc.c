@@ -63,6 +63,10 @@ void get_extractor_list(){
       printf("%s ", HAVE_TNEF);
    #endif
 
+   #ifdef HAVE_ZIP
+      printf("libzip ");
+   #endif
+
    printf("\n\n");
 }
 

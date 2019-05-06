@@ -426,6 +426,8 @@ if test "$have_zip" = "yes"; then
    echo "zip library: yes"
    AC_DEFINE_UNQUOTED(HAVE_ZIP, 1, [libzip support])
    antispam_libs="$antispam_libs -lzip"
+else
+   echo "zip library: no"
 fi
 
 if test "$have_tcpwrappers" = "yes"; then
