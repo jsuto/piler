@@ -55,6 +55,8 @@ $config['SHOW_MENU_FOR_OUTLOOK'] = 0;
 
 $config['SEARCH_QUERY_QUOTING'] = 0;
 
+$config['LOCALIZE_MESSAGE_HEADERS_IN_PREVIEW'] = 1;
+
 $config['TIMEZONE'] = 'Europe/Budapest';
 
 $config['PROVIDED_BY'] = 'www.mailpiler.org';

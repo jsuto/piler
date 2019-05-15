@@ -129,11 +129,21 @@ class ModelSearchMessage extends Model {
 
 
    public function extract_message($id = '', $terms = '') {
-      $from = "From: ";
-      $to = "To: ";
-      $cc = "Cc: ";
-      $subject = "Subject: ";
-      $date = "Date: ";
+      if(LOCALIZE_MESSAGE_HEADERS_IN_PREVIEW) {
+         $lang = Registry::get('language');
+
+         $from = $lang->data['text_from'] . ": ";
+         $to = $lang->data['text_to'] . ": ";
+         $cc = "Cc: ";
+         $subject = $lang->data['text_subject'] . ": ";
+         $date = $lang->data['text_date'] . ": ";
+      } else {
+         $from = "From: ";
+         $to = "To: ";
+         $cc = "Cc: ";
+         $subject = "Subject: ";
+         $date = "Date: ";
+      }
 
       $msg = $this->get_raw_message($id);
 
