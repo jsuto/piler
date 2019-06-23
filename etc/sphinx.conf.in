@@ -5,6 +5,14 @@ define('SPHINX_VERSION', 220); // If you have sphinx-3.1.1, then set SPHINX_VERS
 define('LOCALSTATEDIR', '@LOCALSTATEDIR@');
 define('NGRAM_CONFIG', "        #ngram_len               = 1\n        #ngram_chars             = U+3000..U+2FA1F\n");
 
+# See http://sphinxsearch.com/wiki/doku.php?id=charset_tables for more on the charset_table settings
+# The following settings contains English and some Latin extras
+define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
+                                  U+C1->U+E1, U+C4->U+E4, U+C5->U+E5, U+C6->U+E6, U+C9->U+E9, U+CD->U+ED, U+D3->U+F3, U+D6->U+F6, U+D8->U+F8, \
+                                  U+DA->U+FA, U+DC->U+FC, U+0150->U+0151, U+0152->U+0153, U+0170->U+0171, U+01E2->U+E6, U+01E3->U+E6, U+01FC->U+E6, \
+                                  U+01FD->U+E6, U+1D01->U+E6, U+1D02->U+E6, U+1D2D->U+E6, U+1D46->U+E6, \
+                                  U+DF, U+E1, U+E4, U+E5, U+E6, U+E9, U+ED, U+00F3, U+F6, U+F8, U+FA, U+FC, U+0151, U+0153, U+0171\n");
+
 ?>
 
 #
@@ -96,6 +104,7 @@ index main1
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -109,6 +118,7 @@ index main2
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -122,6 +132,7 @@ index main3
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -135,6 +146,7 @@ index main4
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -148,6 +160,7 @@ index dailydelta1
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -161,6 +174,7 @@ index delta1
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 <?php if(SPHINX_VERSION >= 310) { ?>
         kbatch = main1, main2, main3, main4, dailydelta1
@@ -178,6 +192,7 @@ index tag1
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -192,6 +207,7 @@ index note1
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
+        charset_table           = <?php print SPHINX_CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
 
