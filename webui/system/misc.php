@@ -77,6 +77,14 @@ function isReadonlyAdmin() {
    return 0;
 }
 
+function isDataOfficer() {
+   $session = Registry::get('session');
+
+   if($session->get("admin_user") == 4){ return 1; }
+
+   return 0;
+}
+
 
 function logout() {
    $session = Registry::get('session');

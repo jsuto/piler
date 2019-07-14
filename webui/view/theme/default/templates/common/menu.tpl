@@ -28,6 +28,9 @@
         <?php if(ENABLE_AUDIT == 1) { ?>
                             <li><a href="index.php?route=audit/audit"><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
         <?php } ?>
+        <?php if(ENABLE_DELETE == 1) { ?>
+                            <li><a href="index.php?route=audit/removal"><i class="icon-eraser"></i>&nbsp;<?php print $text_remove; ?></a></li>
+        <?php } ?>
                         </ul>
                     </li>
                     <li class="dropdown"<?php if(strstr($_SERVER['QUERY_STRING'], "domain/") || ($_SERVER['QUERY_STRING'] != "route=user/settings" && strstr($_SERVER['QUERY_STRING'], "user/")) || strstr($_SERVER['QUERY_STRING'], "policy/") || strstr($_SERVER['QUERY_STRING'], "import/")) { ?> id="active"<?php } ?>>

@@ -31,6 +31,7 @@ Registry::set('username', getAuthenticatedUsername());
 Registry::set('admin_user', isAdminUser());
 Registry::set('auditor_user', isAuditorUser());
 Registry::set('readonly_admin', isReadonlyAdmin());
+Registry::set('data_officer', isDataOfficer());
 
 
 $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PREFIX);

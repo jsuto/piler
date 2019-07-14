@@ -488,4 +488,7 @@ $_['text_compliance_warning'] = 'Die Löschfunktion ist aktiviert, aus diesem Gr
 $_['text_folder_rules'] = "Verzeichnisregeln";
 $_['text_private'] = "Privat";
 
-$_['text_delete_reason'] = "Delete reason";
+$_['text_delete_reason'] = "Reason of removal";
+$_['text_need_to_approve_removal'] = "Need to approve removal";
+$_['text_deleted'] = "Deleted";
+$_['text_user_data_officer'] = "Data officer";

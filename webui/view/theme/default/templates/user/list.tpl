@@ -57,6 +57,7 @@
                if($user['isadmin'] == 0){ print $text_user_regular; }
                if($user['isadmin'] == 1){ print $text_user_masteradmin; }
                if($user['isadmin'] == 2){ print $text_user_auditor; }
+               if($user['isadmin'] == 4){ print $text_user_data_officer; }
             ?>
          </td>
          <td><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit_or_view; ?></a></td>

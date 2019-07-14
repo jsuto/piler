@@ -33,10 +33,16 @@ class ControllerMessageBulkremove extends Controller {
          die("go away");
       }
 
-      foreach($idlist as $id) {
-         $db->query("INSERT INTO " . TABLE_DELETED . " (id, email, reason, date1) VALUES(?,?,?,?)", [$id, $this->data['username'], $this->request->post['reason'], NOW]);
+      if(NEED_TO_APPROVE_DELETE) {
+         $deleted = 0;
+      } else {
+         $deleted = 1;
+      }
 
-         if(AUTHORIZE_DELETE) {
+      foreach($idlist as $id) {
+         $db->query("INSERT INTO " . TABLE_DELETED . " (id, email, reason, date1, deleted) VALUES(?,?,?,?,?)", [$id, $this->data['username'], $this->request->post['reason'], NOW, $deleted]);
+
+         if(NEED_TO_APPROVE_DELETE) {
             AUDIT(ACTION_MARK_MESSAGE_FOR_REMOVAL, '', '', $id, '');
             syslog(LOG_INFO, $this->data['username'] . " marked message for removal: $id");
          } else {

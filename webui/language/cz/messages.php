@@ -481,4 +481,7 @@ $_['text_with_selected'] = 'S označenými';
 
 $_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
 $_['text_private'] = "Private";
-$_['text_delete_reason'] = "Delete reason";
+$_['text_delete_reason'] = "Reason of removal";
+$_['text_need_to_approve_removal'] = "Need to approve removal";
+$_['text_deleted'] = "Deleted";
+$_['text_user_data_officer'] = "Data officer";
