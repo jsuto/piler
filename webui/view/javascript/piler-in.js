@@ -17,7 +17,6 @@ var Piler =
     extra_folders: '',
     bulkrestore_url: '/bulkrestore.php',
     bulkpdf_url: '/bulkpdf.php',
-    text_successfully_removed: '<?php print $text_successfully_removed; ?>'
 
     /*
      * variables used at search listing
@@ -365,7 +364,7 @@ var Piler =
         $('#deletebox-modal').modal('show');
     },
 
-    bulk_remove_messages:function(reason)
+    bulk_remove_messages:function(reason, text_successfully_removed)
     {
         Piler.log("[bulk_remove_messages]");
 

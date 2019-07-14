@@ -62,7 +62,7 @@
   </div>
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
-    <a href="#" onclick="var reason = $('#reason').val(); if(reason) { Piler.bulk_remove_messages(reason); }" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</a>
+    <a href="#" onclick="var reason = $('#reason').val(); if(reason) { Piler.bulk_remove_messages(reason, '<?php print $text_successfully_removed; ?>'); }" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</a>
   </div>
 </div>
 <?php } ?>

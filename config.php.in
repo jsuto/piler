@@ -469,7 +469,7 @@ define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 define('ACTION_VIEW_JOURNAL', 17);
 define('ACTION_NOT_SPAM', 18);
 define('ACTION_MARK_AS_PRIVATE', 19);
-define('ACTION_MARK_MESSAGE_FOR_REMOVAL, 20);
+define('ACTION_MARK_MESSAGE_FOR_REMOVAL', 20);
 
 $actions = array(
                   'unknown' => 1,
