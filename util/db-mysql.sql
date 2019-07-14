@@ -470,3 +470,13 @@ create table if not exists `timestamp` (
   primary key (`id`)
 ) Engine=InnoDB;
 
+
+create table if not exists `deleted` (
+  `id` bigint unsigned not null auto_increment,
+  `email` varchar(128) not null,
+  `reason` varchar(128) not null,
+  `date1` int unsigned not null,
+  `date2` int unsigned not null,
+  `deleted` tinyint(1) default 0,
+  primary key (`id`)
+) Engine=InnoDB;

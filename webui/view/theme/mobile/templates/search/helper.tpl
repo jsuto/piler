@@ -115,8 +115,6 @@
 
               <a href="#" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
               <a href="#" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a>
-              <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
-
 
               <input type="text" id="tag_value" name="tag_value" class="input-xlarge" placeholder="<?php print $text_tag_selected_messages; ?>" />
               <button class="btn" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>'); return false;" >OK</button>

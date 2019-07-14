@@ -17,6 +17,7 @@ var Piler =
     extra_folders: '',
     bulkrestore_url: '/bulkrestore.php',
     bulkpdf_url: '/bulkpdf.php',
+    text_successfully_removed: '<?php print $text_successfully_removed; ?>'
 
     /*
      * variables used at search listing
@@ -357,7 +358,14 @@ var Piler =
     },
 
 
-    bulk_remove_messages:function(msg)
+    show_bulk_remove_modal:function()
+    {
+        Piler.log("[show_bulk_remove_modal]");
+
+        $('#deletebox-modal').modal('show');
+    },
+
+    bulk_remove_messages:function(reason)
     {
         Piler.log("[bulk_remove_messages]");
 
@@ -368,13 +376,13 @@ var Piler =
         if(!idlist) return;
 
         jQuery.ajax('/bulkremove.php', {
-           data: { idlist: idlist },
+           data: { idlist: idlist, reason: reason },
            type: "POST"
         })
         .done( function( a ) {})
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.8);
+        Piler.show_message('messagebox1', text_successfully_removed, 0.8);
     },
 
 

@@ -51,6 +51,22 @@
   </div>
 </div>
 
+<?php if(Registry::get('auditor_user') == 1) { ?>
+<div id="deletebox-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_delete_reason; ?></h3>
+  </div>
+  <div class="modal-body">
+    <input type="text" id="reason" name="reason" />
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="#" onclick="var reason = $('#reason').val(); if(reason) { Piler.bulk_remove_messages(reason); }" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</a>
+  </div>
+</div>
+<?php } ?>
+
 <?php if(!(OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 0)) { ?>
     <div id="menu">
         <?php print $menu; ?>
@@ -72,7 +88,7 @@
             <div class="controls row-fluid">
                 <div id="input-span" class="span6">
                     <label for="_search"><?php print $text_search; ?></label>
-                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" <?php if(ENABLE_DELETE == 1) { ?>style="background: #faafbe;"<?php } ?> />
+                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
                 </div>
                 <div class="span6 input-append btn-group">
                     <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>

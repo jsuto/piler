@@ -131,5 +131,3 @@ class ControllerCustomerList extends Controller {
 
 
 }
-
-?>

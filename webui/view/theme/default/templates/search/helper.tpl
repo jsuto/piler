@@ -134,8 +134,6 @@
             <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large muted"></i></span><?php } ?>
             &nbsp;
 
-            <?php if(ENABLE_DELETE == 1) { ?><i class="icon-exclamation-sign" title="<?php print $text_compliance_warning; ?>"></i><?php } ?>
-
          <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
             <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php print $session->get("sphx_query"); ?>', 5);">sphinx</a></span>
          <?php } ?>
@@ -155,7 +153,7 @@
             <?php } ?>
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
                 <!--a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a-->
-                <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.bulk_remove_messages('<?php print $text_successfully_removed; ?>');"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
+                <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.show_bulk_remove_modal();"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
                 <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>
             </div>

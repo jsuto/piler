@@ -79,6 +79,7 @@ $_['text_deferred_queue'] = "deferred queue";
 $_['text_deferred_queue_sender'] = "deferred queue vs. sender";
 $_['text_delay'] = "Delay";
 $_['text_delete_confirm_message'] = "Do you wish to delete";
+$_['text_delete_reason'] = "Delete reason";
 $_['text_deleted_users'] = "deleted";
 $_['text_deliver'] = "Deliver";
 $_['text_delivered'] = "Delivered";
@@ -483,5 +484,3 @@ $_['text_customer_delete_confirm_message'] = 'Do you wish to delete the customer
 $_['text_with_selected'] = 'With Selected';
 
 $_['text_compliance_warning'] = 'The delete feature is enabled, therefore the archive is NOT compliant!';
-
-?>

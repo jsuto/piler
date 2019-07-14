@@ -57,10 +57,6 @@
                <p><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></p>
             <?php } ?>
 
-        <?php if(ENABLE_DELETE == 1) { ?>
-            <p><?php print $text_compliance_warning; ?></p>
-        <?php } ?>
-
             <p><?php print COMPATIBILITY; ?></p>
         </div>
 

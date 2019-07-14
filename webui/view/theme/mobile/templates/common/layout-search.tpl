@@ -50,6 +50,21 @@
   </div>
 </div>
 
+<?php if(Registry::get('auditor_user') == 1) { ?>
+<div id="deletebox-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_delete_reason; ?></h3>
+  </div>
+  <div class="modal-body">
+    <input type="text" id="reason" name="reason" />
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="#" onclick="var reason =  $('#reason').val(); if(reason) { alert(reason); }" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">OK</a>
+  </div>
+</div>
+<?php } ?>
 
 <div id="messagebox1"></div>
 
@@ -71,7 +86,7 @@
          <input type="hidden" name="ref" id="ref" value="" />
          <input type="hidden" name="prefix" id="prefix" value="" />
 
-         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" <?php if(ENABLE_DELETE == 1) { ?>style="background: #faafbe;"<?php } ?> />
+         <input type="text" id="_search" name="_search" class="input-medium span6" value="" placeholder="<?php print $text_enter_search_terms; ?>" />
 
       <?php if(OUTLOOK == 0) { ?>
          <a id="advsearch_caret" href="#" onclick="$('#searchpopup1').show();"><b class="caret"></b></a>

@@ -484,7 +484,8 @@ class ModelSearchSearch extends Model {
       $rcpt = $srcpt = array();
       $tag = array();
       $note = array();
-      $private = array();
+      $private = [];
+      $deleted = [];
       $q = '';
       global $SUPPRESS_RECIPIENTS;
 
@@ -516,10 +517,18 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
 
-         $privates = $this->db->query("SELECT `id` FROM `" . TABLE_PRIVATE . "` WHERE id IN ($q)", $ids);
+         $s = $this->db->query("SELECT `id` FROM `" . TABLE_PRIVATE . "` WHERE id IN ($q)", $ids);
 
-         foreach ($privates->rows as $p) {
+         foreach ($s->rows as $p) {
             $private[$p['id']] = 1;
+         }
+
+         if(ENABLE_DELETE) {
+            $s = $this->db->query("SELECT `id` FROM `" . TABLE_DELETED . "` WHERE id IN ($q)", $ids);
+
+            foreach ($s->rows as $p) {
+               $deleted[$p['id']] = 1;
+            }
          }
 
          array_unshift($ids, (int)$session->get("uid"));
@@ -540,7 +549,8 @@ class ModelSearchSearch extends Model {
 
 
          foreach($query->rows as $m) {
-            if(ENABLE_DELETE == 1 && $m['retained'] < NOW) $m['deleted'] = 1; else $m['deleted'] = 0;
+            // We mark it as deleted even if it's only marked for removal
+            if(ENABLE_DELETE == 1 && ($m['retained'] < NOW || isset($deleted[$m['id']])) ) $m['deleted'] = 1; else $m['deleted'] = 0;
 
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);

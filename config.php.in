@@ -160,6 +160,7 @@ $config['PASSWORD_CHANGE_ENABLED'] = 0;
 $config['ENABLE_STATISTICS'] = 1;
 $config['ENABLE_HISTORY'] = 1;
 $config['ENABLE_DELETE'] = 0;
+$config['AUTHORIZE_DELETE'] = 0;
 $config['ENABLE_REMOTE_IMAGES'] = '0';
 $config['ENABLE_ON_THE_FLY_VERIFICATION'] = 0;
 $config['ENABLE_LDAP_IMPORT_FEATURE'] = 0;
@@ -396,6 +397,7 @@ define('TABLE_AUTOSEARCH', 'autosearch');
 define('TABLE_LEGAL_HOLD', 'legal_hold');
 define('TABLE_TIMESTAMP', 'timestamp');
 define('TABLE_PRIVATE', 'private');
+define('TABLE_DELETED', 'deleted');
 define('VIEW_MESSAGES', 'v_messages');
 
 define('EOL', "\n");
@@ -467,6 +469,7 @@ define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
 define('ACTION_VIEW_JOURNAL', 17);
 define('ACTION_NOT_SPAM', 18);
 define('ACTION_MARK_AS_PRIVATE', 19);
+define('ACTION_MARK_MESSAGE_FOR_REMOVAL, 20);
 
 $actions = array(
                   'unknown' => 1,

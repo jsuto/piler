@@ -79,6 +79,7 @@ $_['text_deferred_queue'] = "későbbi kiküldésre váró üzenetsor";
 $_['text_deferred_queue_sender'] = "későbbi kiküldésre váró üzenetsor (feladó szerint)";
 $_['text_delay'] = "Késleltetés";
 $_['text_delete_confirm_message'] = "Törölni akarja";
+$_['text_delete_reason'] = "Törlés oka";
 $_['text_deleted_users'] = "törölt";
 $_['text_deliver'] = "Kézbesítés";
 $_['text_delivered'] = "Kézbesített";
@@ -485,5 +486,3 @@ $_['text_customer_delete_confirm_message'] = 'Törölni akarja az ügyfelet';
 $_['text_with_selected'] = 'Kiválasztott levelek';
 
 $_['text_compliance_warning'] = 'A törlés funkció engedélyezett, ezért az archívum NEM teljesíti a megfelelőséget!';
-
-?>
