@@ -48,5 +48,5 @@ create_rules() {
 
 add_data_officer() {
    local container="$1"
-   echo 'echo "insert into user (uid, username, realname, password, domain, dn, isadmin) values(2, \"dataofficer\", \"Data officer\", \"\$6\$rX285LfP$ZxhlacbzKuCcqkaizzBu8SAiYb6.f8K4Us08nUHwSpWMQkNhw4o2rmfKXoTfaM4rnBHUYVK1N4IfBsqN8CAtS/\", \"local\", \"*\", 4)"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
+   echo 'echo "insert into user (uid, username, realname, password, domain, dn, isadmin) values(2, \"dataofficer\", \"Data officer\", \"\$6\$rX285LfP\$ZxhlacbzKuCcqkaizzBu8SAiYb6.f8K4Us08nUHwSpWMQkNhw4o2rmfKXoTfaM4rnBHUYVK1N4IfBsqN8CAtS/\", \"local\", \"*\", 4)"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
 }
