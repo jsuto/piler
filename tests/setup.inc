@@ -6,6 +6,7 @@ setup() {
    destroy_containers
    launch_containers
    create_rules "piler1"
+   add_data_officer "piler1"
 }
 
 start_telegraf() {
@@ -43,4 +44,9 @@ create_rules() {
    echo 'echo "update user set password=\"\$6\$GKL00T\$8jqoFOe3PyAbOCLwKB7JwndwC.IinHrZRkdoQDZUc8vybZ88sA2qomlz5JceNif8fFpkGzZ03ilvQa7tqQx0v1\""| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh 2>/dev/null
 
    docker exec "$container" /etc/init.d/rc.piler reload 2>/dev/null
+}
+
+add_data_officer() {
+   local container="$1"
+   echo 'echo "insert into user (uid, username, realname, password, domain, dn, isadmin) values(2, \"dataofficer\", \"Data officer\", \"\$6\$rX285LfP$ZxhlacbzKuCcqkaizzBu8SAiYb6.f8K4Us08nUHwSpWMQkNhw4o2rmfKXoTfaM4rnBHUYVK1N4IfBsqN8CAtS/\", \"local\", \"*\", 4)"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
 }
