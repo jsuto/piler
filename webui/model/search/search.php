@@ -686,13 +686,13 @@ class ModelSearchSearch extends Model {
 
       if($id == '') { return 0; }
 
-      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) { return 1; }
+      if((Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) && RESTRICTED_AUDITOR == 0) { return 1; }
 
       $session = Registry::get('session');
 
       array_push($arr, $id);
 
-      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
+      if((Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) && RESTRICTED_AUDITOR == 1) {
          if(validdomain($session->get("domain")) == 1) {
             $q .= ",?";
             array_push($a, $session->get("domain"));

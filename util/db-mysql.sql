@@ -473,10 +473,13 @@ create table if not exists `timestamp` (
 
 create table if not exists `deleted` (
   `id` bigint unsigned not null unique,
-  `email` varchar(128) not null,
-  `reason` varchar(128) not null,
+  `requestor` varchar(128) not null,
+  `reason1` varchar(128) not null,
   `date1` int unsigned default 0,
+  `approver` varchar(128) default null,
+  `reason2` varchar(128) not null,
   `date2` int unsigned default 0,
+  `approved` tinyint(1) default 0,
   `deleted` tinyint(1) default 0,
   key (`id`),
   key (deleted)

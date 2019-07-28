@@ -40,7 +40,7 @@ class ControllerMessageBulkremove extends Controller {
       }
 
       foreach($idlist as $id) {
-         $db->query("INSERT INTO " . TABLE_DELETED . " (id, email, reason, date1, deleted) VALUES(?,?,?,?,?)", [$id, $this->data['username'], $this->request->post['reason'], NOW, $deleted]);
+         $db->query("INSERT INTO " . TABLE_DELETED . " (id, requestor, reason1, date1, deleted) VALUES(?,?,?,?,?)", [$id, $this->data['username'], $this->request->post['reason'], NOW, $deleted]);
 
          if(NEED_TO_APPROVE_DELETE) {
             AUDIT(ACTION_MARK_MESSAGE_FOR_REMOVAL, '', '', $id, '');

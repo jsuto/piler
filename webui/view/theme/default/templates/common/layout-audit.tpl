@@ -77,7 +77,7 @@
                </div>
             </div>
 
-<?php if(Registry::get('auditor_user') == 1) { ?>
+<?php if(Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) { ?>
 
             <script type="text/javascript">
                var mailviewsplit = new rcube_splitter({id:'splitter2', p1: 'mailcontframe', p2: 'mailpreviewframe', orientation: 'h', relative: true, start: 341});
@@ -94,7 +94,7 @@
 
    </div>
 
-<?php if(Registry::get('auditor_user') == 1) { ?>
+<?php if(Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) { ?>
 
 <script type="text/javascript">
    $(document).ready(function(){
