@@ -17,7 +17,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     SPHINX_BIN_TARGZ="sphinx-3.1.1-bin.tar.gz"
 
 ADD "https://bitbucket.org/jsuto/piler/downloads/${PACKAGE}" "/${PACKAGE}"
-ADD files/start.sh /start.sh 
+ADD start.sh /start.sh
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
