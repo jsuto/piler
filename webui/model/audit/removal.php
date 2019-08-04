@@ -8,7 +8,7 @@ class ModelAuditRemoval extends Model {
 
       if($page_len > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$page_len; }
 
-      $query = $this->db->query("SELECT * FROM " . TABLE_DELETED . " WHERE deleted=0 ORDER BY date1 DESC $limit");
+      $query = $this->db->query("SELECT * FROM " . TABLE_DELETED . " WHERE deleted=-1 ORDER BY date1 DESC $limit");
       
       return $query->rows;
    }

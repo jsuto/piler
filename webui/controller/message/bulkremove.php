@@ -36,7 +36,7 @@ class ControllerMessageBulkremove extends Controller {
       if(NEED_TO_APPROVE_DELETE) {
          $deleted = 0;
       } else {
-         $deleted = 1;
+         $deleted = -1;
       }
 
       foreach($idlist as $id) {

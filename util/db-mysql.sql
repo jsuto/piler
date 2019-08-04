@@ -479,8 +479,7 @@ create table if not exists `deleted` (
   `approver` varchar(128) default null,
   `reason2` varchar(128) default null,
   `date2` int unsigned default 0,
-  `approved` tinyint(1) default 0,
-  `deleted` tinyint(1) default 0,
+  `deleted` tinyint(1) default -1,
   key (`id`),
   key (deleted)
 ) Engine=InnoDB;

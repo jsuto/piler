@@ -6,8 +6,8 @@ class ControllerMessageRemove extends Controller {
    public function index(){
 
       $this->id = "content";
-      $this->template = "message/bulkremove.tpl";
-      $this->layout = "common/layout-empty";
+      $this->template = "audit/remove.tpl";
+      $this->layout = "common/layout";
 
       $session = Registry::get('session');
       $request = Registry::get('request');

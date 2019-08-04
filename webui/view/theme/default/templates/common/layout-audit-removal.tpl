@@ -41,26 +41,20 @@
 
     <div id="messagebox1" class="audit audit-info"></div>
 
-    <div id="piler1" class="container">
-
-      <div id="searchcontainer">
-
-         <input type="hidden" name="searchtype" id="searchtype" value="expert" />
-         <input type="hidden" name="sort" id="sort" value="date" />
-         <input type="hidden" name="order" id="order" value="0" />
-
-         <div class="control-group">
-            <div class="controls row-fluid">
-                <div id="input-span" class="span8">
-                    <label for="_search">Search</label>
-                    <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
-                </div>
-                <div class="span4 input-append">
-                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
-                </div>
-            </div>
-        </div>
+    <div id="deleteconfirm-modal" class="modal hide fade">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+        <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+      </div>
+      <div class="modal-body">
+        <p>Remove message <span id="name">ERROR</span>?</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+        <a href="index.php?route=message/remove&amp;id=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+      </div>
     </div>
+
     <div id="mainscreen">
 
       <div id="mailleftcontainer">

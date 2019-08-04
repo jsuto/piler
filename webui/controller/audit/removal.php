@@ -7,7 +7,7 @@ class ControllerAuditRemoval extends Controller {
 
       $this->id = "content";
       $this->template = "audit/removal.tpl";
-      $this->layout = "common/layout-audit";
+      $this->layout = "common/layout-audit-removal";
 
       $request = Registry::get('request');
       $db = Registry::get('db');
