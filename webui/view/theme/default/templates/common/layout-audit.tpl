@@ -41,6 +41,25 @@
 
     <div id="messagebox1" class="audit audit-info"></div>
 
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="exampleModalLabel"><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+      </div>
+      <div class="modal-body">
+        <p>Remove message <span id="id1">AAA</span>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="#" class="btn btn-primary" id="delete-id"><?php print $text_delete; ?></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     <div id="piler1" class="container">
 
       <div id="searchcontainer">
@@ -100,6 +119,14 @@
    $(document).ready(function(){
       split.init();
    });
+
+   $('#exampleModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget) // Button that triggered the modal
+      var id = button.data('id')
+      $('#delete-id').attr('href', 'index.php?route=message/remove&amp;id=' + id + '&amp;confirmed=1')
+      $('#id1').text(id)
+      var modal = $(this)
+   })
 </script>
 
 <?php } ?>

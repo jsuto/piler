@@ -41,8 +41,9 @@
             <td class="auditcell date"><?php print $d['deleted']; ?></td>
             <td class="auditcell ip"><?php print $d['reason']; ?></td>
             <td class="auditcell ref"><?php if($d['deleted'] == 0) { ?><a href="#" onclick="Piler.view_message(<?php print $d['id']; ?>);"><?php } print $d['id']; if($d['deleted'] == 0) { ?></a><?php } ?></td>
-            <td class="auditcell aaa"><a href="#" class="confirm-delete" data-id="<?php print $d['id']; ?>" data-name="<?php print $d['id']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
-            <td class="auditcell bbb"><a href="#" class="confirm-delete" data-id="<?php print $d['id']; ?>" data-name="<?php print $d['id']; ?>"><i class="icon-ban-circle"></i>&nbsp;<?php print $text_cancel; ?></a></td>
+            <td class="auditcell aaa"><a href="#" data-toggle="modal" data-target="#exampleModal" data-id="<?php print $d['id']; ?>" data-whatever="zzzz"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
+            <td class="auditcell aaa"><a href="#" data-toggle="modal" data-target="#exampleModal" data-id="<?php print $d['id']; ?>" data-whatever="zzzz"><i class="icon-ban-circle"></i>&nbsp;<?php print $text_cancel; ?></a></td>
+
          </tr>
 <?php } ?>
 
