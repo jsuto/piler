@@ -115,7 +115,7 @@
    var reject_label_color
    var reason2_border
 
-   $('#delete-rejected-modal').on('shown.bs.modal', function (event) {
+   $('#delete-rejected-modal').on('show.bs.modal', function (event) {
       $('#reason2').focus()
 
       var button = $(event.relatedTarget)
