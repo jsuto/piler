@@ -20,19 +20,15 @@
       <script src="/view/theme/default/assets/js/html5.js"></script>
       <style>body{padding-top:70px;}</style>
     <![endif]-->
-	
+
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
-    
-    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
-    <script type="text/javascript" src="/view/theme/default/assets/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/view/javascript/piler.js"></script>
+
+    <?php print JS_CODE; ?>
 </head>
 
 <body onload="Piler.add_shortcuts();">

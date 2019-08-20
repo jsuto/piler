@@ -18,7 +18,7 @@
     <!--[if lt IE 9]>
       <script src="/view/theme/default/assets/js/html5.js"></script>
     <![endif]-->
-	
+
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">

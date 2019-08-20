@@ -281,10 +281,12 @@ $_['text_queue_status'] = "Queue státusz";
 $_['text_quick_search'] = "Gyorskeresés";
 
 $_['text_realname'] = "Név";
+$_['text_reason_of_rejection'] = "Elutasítás oka";
 $_['text_recipient'] = "Címzett";
 $_['text_ref'] = "Hivatkozás";
 $_['text_refresh_period'] = "Frissítési periódus";
 $_['text_refresh_qr_code'] = "QR kód frissítése";
+$_['text_reject'] = "Elutasítás";
 $_['text_relay_details'] = "Relay részletek";
 $_['text_relay_status'] = "Relay státusz";
 $_['text_remove'] = "Törlés";

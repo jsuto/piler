@@ -491,4 +491,6 @@ $_['text_private'] = "Privat";
 $_['text_delete_reason'] = "Reason of removal";
 $_['text_need_to_approve_removal'] = "Need to approve removal";
 $_['text_deleted'] = "Deleted";
+$_['text_reason_of_rejection'] = "Reason of rejection";
+$_['text_reject'] = "Reject";
 $_['text_user_data_officer'] = "Data officer";

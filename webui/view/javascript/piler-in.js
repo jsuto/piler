@@ -385,6 +385,23 @@ var Piler =
     },
 
 
+    reject_removing_message:function(id, reason2)
+    {
+        Piler.log("[reject_removing_message]", id, reason2);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        jQuery.ajax('/index.php?route=message/rejectremove', {
+           data: { id: id, confirmed: 1, reason2: reason2 },
+           type: "POST"
+        })
+        .done( function( a ) {})
+        .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
+
+        $('#delete-rejected-modal').modal('hide')
+    },
+
+
     bulk_restore_messages:function(msg, email)
     {
         Piler.log("[bulk_restore_messages]", email);
