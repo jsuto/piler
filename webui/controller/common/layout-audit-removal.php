@@ -1,13 +1,13 @@
 <?php
 
-class ControllerCommonLayoutAudit extends Controller {
+class ControllerCommonLayoutAuditRemoval extends Controller {
 
       protected function index() {
 
 
          $this->data['title'] = $this->document->title;
 
-         $this->template = "common/layout-audit.tpl";
+         $this->template = "common/layout-audit-removal.tpl";
 
          $this->data['search_args'] = '';
 

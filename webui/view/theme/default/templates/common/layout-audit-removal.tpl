@@ -12,14 +12,14 @@
     <meta name="robots" content="all" />
 
     <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet" />
-    
+
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
     <!--[if lt IE 9]>
       <script src="/view/theme/default/assets/js/html5.js"></script>
       <style>body{padding-top:70px;}</style>
     <![endif]-->
-    
+
     <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
     <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
     <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
@@ -66,7 +66,7 @@
 
             <div id="mailcontframe">
                <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-               <div id="resultscontainer" class="boxlistcontent"> 
+               <div id="resultscontainer" class="boxlistcontent">
                   <?php print $content; ?>
                </div>
             </div>
