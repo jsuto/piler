@@ -391,11 +391,11 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('/index.php?route=message/rejectremove', {
+        jQuery.ajax('/rejectremove.php', {
            data: { id: id, confirmed: 1, reason2: reason2 },
            type: "POST"
         })
-        .done( function( a ) {})
+        .done( function( a ) { location.reload(); })
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
         $('#delete-rejected-modal').modal('hide')

@@ -37,7 +37,7 @@ class ControllerMessageRejectRemove extends Controller {
 
       // Shouldn't we ask for a token or something as well?
 
-      $db->query("UPDATE " . TABLE_DELETED . " SET deleted=0, date2=?, reason2=? WHERE id=?", [NOW, $this->request->post['reason2'], $id]);
+      $db->query("UPDATE " . TABLE_DELETED . " SET deleted=0, approver=?, date2=?, reason2=? WHERE id=?", [$this->data['username'], NOW, $this->request->post['reason2'], $id]);
       syslog(LOG_INFO, $this->data['username'] . " rejected removing message: $id");
 
       $this->render();

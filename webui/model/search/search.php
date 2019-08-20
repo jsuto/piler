@@ -524,7 +524,7 @@ class ModelSearchSearch extends Model {
          }
 
          if(ENABLE_DELETE) {
-            $s = $this->db->query("SELECT `id` FROM `" . TABLE_DELETED . "` WHERE id IN ($q)", $ids);
+            $s = $this->db->query("SELECT `id` FROM `" . TABLE_DELETED . "` WHERE deleted=1 AND id IN ($q)", $ids);
 
             foreach ($s->rows as $p) {
                $deleted[$p['id']] = 1;
