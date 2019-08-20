@@ -75,6 +75,9 @@ class ControllerLoginLogin extends Controller {
                   if(isAdminUser() == 1) {
                      header("Location: " . SITE_URL . "index.php?route=health/health");
                      exit;
+                  } else ifisAdminUser() == 4) {
+                     header("Location: " . SITE_URL . "index.php?route=audit/removal");
+                     exit;
                   }
 
                   header("Location: " . SITE_URL . "search.php");

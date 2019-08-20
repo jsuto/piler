@@ -13,18 +13,8 @@
 
     <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet" />
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-      <style>body{padding-top:70px;}</style>
-    <![endif]-->
+    <?php print JS_CODE; ?>
 
-    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
-    <script type="text/javascript" src="/view/theme/default/assets/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/view/javascript/piler.js"></script>
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
@@ -41,7 +31,21 @@
 
     <div id="messagebox1" class="audit audit-info"></div>
 
-    <div id="deleteconfirm-modal" class="modal hide fade">
+    <div id="delete-approved-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteApprovedLabel">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+        <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
+      </div>
+      <div class="modal-body">
+        <p>Remove message <span id="id1"/>?</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+        <a href="#" class="btn btn-primary" id="id2"><?php print $text_delete; ?></a>
+      </div>
+   </div>
+
+   <div id="delete-rejected-modal" class="modal hide fade">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
         <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
@@ -94,6 +98,13 @@
    $(document).ready(function(){
       split.init();
    });
+
+   $('#delete-approved-modal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget)
+      var id = button.data('id')
+      $('#id1').text(id)
+      $('#id2').attr('href', 'index.php?route=message/remove&id=' + id + '&confirmed=1')
+   })
 </script>
 
 <?php } ?>
