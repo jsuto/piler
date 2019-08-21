@@ -20,7 +20,7 @@
    <link rel="stylesheet" type="text/css" href="/view/theme/<?php print THEME; ?>/stylesheet/style-<?php print THEME; ?>.css" />
 
    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-   <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+   <script type="text/javascript" src="/view/javascript/jquery-ui.min.js"></script>
    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
    <script type="text/javascript" src="/view/javascript/piler.js"></script>
@@ -29,7 +29,7 @@
 </head>
 
 <body class="loginpage">
-   
+
 <?php if(!Registry::get('username')) { ?>
 
     <div id="logincontainer" class="container">

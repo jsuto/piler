@@ -26,9 +26,9 @@
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
 
     <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/jquery-ui-custom.min.js"></script>
+    <script type="text/javascript" src="/view/javascript/jquery-ui.min.js"></script>
     <!--script type="text/javascript" src="/view/javascript/rc-splitter.js"></script-->
-    <script type="text/javascript" src="/view/theme/default/assets/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
     <script type="text/javascript" src="/view/javascript/piler.js"></script>
 
   </head>
@@ -55,7 +55,7 @@
     <?php } ?>
        | <a href="#" onclick="Piler.print_div('messageblock');"><i class="icon-print"></i>&nbsp;<?php print $text_print_message; ?></a>
 
-    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {    
+    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
        if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="verified icon-ok-sign icon-large" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified icon-remove-sign icon-large" title="<?php print $text_unverified_flag; ?>"></i><?php }
     } ?>
 
