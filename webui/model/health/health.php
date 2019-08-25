@@ -231,7 +231,7 @@ class ModelHealthHealth extends Model {
 
          $st = stat(INDEXER_BEACON);
          $t1 = date(DATE_TEMPLATE . " H:i", $st['mtime']);
-         $t2 = date(DATE_TEMPLATE . " H:i", $st['mtime']+30*60);
+         $t2 = date(DATE_TEMPLATE . " H:i", $st['mtime']+DELTA_INDEXER_PERIOD);
 
          $data = array($t1, $t2);
       }

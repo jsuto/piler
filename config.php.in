@@ -40,6 +40,7 @@ $config['SITE_URL'] = 'http://piler.yourdomain.com/';
 $config['EXTERNAL_DASHBOARD_URL'] = '';
 
 $config['SESSION_EXPIRY'] = 3600;
+$config['DELTA_INDEXER_PERIOD'] = 1800;
 
 $config['ENABLE_SAAS'] = 0;
 $config['CAPTCHA_FAILED_LOGIN_COUNT'] = 0;
