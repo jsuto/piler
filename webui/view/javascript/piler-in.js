@@ -1,7 +1,7 @@
 
-var Piler = 
+var Piler =
 {
-    /* 
+    /*
      * which search type is active, it's set by clicking on the 'Search' button
      */
     search:'',
@@ -45,24 +45,24 @@ var Piler =
     {
         if ( window.console  )
         {
-            var 
+            var
             a = arguments,
             b = +new Date,
             c = window.console;
-            
+
             if ( !a.length )
                 c.clear();
             else if ( a.length > 1 )
                 c.log(b, a[0], [].slice.call(arguments, 1));
             // c.log(b, a[0], JSON.stringify([].slice.call(a, 1)));
             else
-                c.log(b, a[0]);                
+                c.log(b, a[0]);
         }
     },
 
     /**
      * Returns the javascript event source.
-     * 
+     *
      * @param {Object}   a  Javascript event
      * @param {Logical} [b] If exist the event propagation NOT! stoped
      *
@@ -70,7 +70,7 @@ var Piler =
      **/
     getSource:function( a, b )
     {
-        Piler.log("[getSource]", a, b ); 
+        Piler.log("[getSource]", a, b );
 
         if ( !b )
         {
@@ -80,9 +80,9 @@ var Piler =
                 else
                     a.cancelBubble = !0;
             }
-            catch ( e ) 
+            catch ( e )
             {
-                Piler.log("[getSource]", e ); 
+                Piler.log("[getSource]", e );
             }
         }
 
@@ -92,7 +92,7 @@ var Piler =
 
     /*
      * Change the list order.
-     * 
+     *
      *    HTML: <a class="VALAMI" onclick="Piler.changeOrder(this)" xid="date" xorder="0"></a>
      *     CSS: .VALAMI {
      *              background: url("/view/theme/default/images/arrowup.gif") no-repeat scroll center center transparent;
@@ -123,7 +123,7 @@ var Piler =
      *
      */
 
-    load_search_results:function( ) 
+    load_search_results:function( )
     {
         var url;
 
@@ -131,7 +131,7 @@ var Piler =
 
         Piler.Shared.type == 'search' ? url = '/search-helper.php' : url = '/audit-helper.php';
 
-        Piler.log("[load_search_results]", url); 
+        Piler.log("[load_search_results]", url);
 
         Piler.spinner('start');
 
@@ -255,7 +255,7 @@ var Piler =
     {
         Piler.log("[view_message_by_pos]", pos, Piler.Messages[pos]);
 
-	if(pos == -1) return false;
+        if(pos == -1) return false;
 
         id = Piler.Messages[pos];
 
@@ -491,7 +491,7 @@ var Piler =
 
         var idlist = Piler.get_selected_messages_list();
 
-	Piler.log("[tag_search_results, idlist]", idlist);
+        Piler.log("[tag_search_results, idlist]", idlist);
 
         if(!idlist) return false;
 
@@ -562,15 +562,15 @@ var Piler =
     /*
      * fill Messages array with search results
      */
- 
-    fill_current_messages_array:function() 
+
+    fill_current_messages_array:function()
     {
-        Piler.log("[fill_current_messages_array]" ); 
-        
+        Piler.log("[fill_current_messages_array]");
+
         var z = $('#results tbody').children(), y = z.length, x;
         var u = [];
 
-        Piler.log("[fill_current_messages_array] y", y ); 
+        Piler.log("[fill_current_messages_array] y", y );
 
         for (i=0; i<y; i++)
         {
@@ -588,7 +588,7 @@ var Piler =
         Piler.pos = -1;
         Piler.prev_message_id = 0;
         Piler.current_message_id = 0;
-    },   
+    },
 
 
     show_next_message:function()
@@ -640,15 +640,15 @@ var Piler =
 
     /*
      * expert search
-     * 
+     *
      *    HTML: <button onclick="Piler.simple(this)">Search</button>
-     *    <button onclick="script:var a=document.getElementById('ref'); if(a) a.value=''; a = document.getElementById('prefix'); if(a) a.value=''; 
-     *    load_search_results('http://demo.mailpiler.org/search-helper.php', assemble_search_term(count), 0);" 
-     *    style="margin-left: 10px; margin-right: 0px; height: 20px; width: 70px;" class="active" id="button_search">Search</button>    
+     *    <button onclick="script:var a=document.getElementById('ref'); if(a) a.value=''; a = document.getElementById('prefix'); if(a) a.value='';
+     *    load_search_results('http://demo.mailpiler.org/search-helper.php', assemble_search_term(count), 0);"
+     *    style="margin-left: 10px; margin-right: 0px; height: 20px; width: 70px;" class="active" id="button_search">Search</button>
      **/
     expert:function( )// a )
     {
-        Piler.log("[expert]")//, a ); 
+        Piler.log("[expert]")//, a );
 
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
@@ -656,7 +656,7 @@ var Piler =
         $('#prefix').val('');
 
         Piler.search = 'Expert';
-        
+
         Piler.Shared.page = 0;
         Piler.Shared.type = 'search';
 
@@ -671,21 +671,21 @@ var Piler =
         }
 
         $('#ref').val('');
- 
+
         Piler.load_search_results();
-    },   
+    },
 
 
     /**
      * complex search
-     * 
+     *
      *    HTML: <button id="simple" class="active" onclick="Piler.complex(this)">Search</button>
      *     CSS: #expert { margin-left: 10px; margin-right: 0px; height: 20px; width: 70px; }
-     *     
+     *
      **/
     complex:function( )// a )
     {
-        Piler.log("[complex]")//, a ); 
+        Piler.log("[complex]")//, a );
 
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
@@ -732,37 +732,37 @@ var Piler =
 
     /*
      * paging function
-     * 
+     *
      *    HTML: <a onclick="Piler.navigation(${PHP_PAGE})" class="navlink">${next page}</a>
-     *    
+     *
      */
     navigation:function( a )
     {
-        Piler.log("[navigation]")//, a ); 
+        Piler.log("[navigation]")//, a );
 
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
-        
+
         Piler.Shared.page = a;
-        
+
         Piler.load_search_results();
     },
 
 
     /*
      * reset search fields
-     * 
+     *
      *    HTML: <input type="button" onclick="Piler.cancel()" value="Cancel">
      *     CSS: input.advsecondary[type="button"]{ height: 20px; width: 70px; }
      */
     cancel:function( )//a )
     {
-        Piler.log("[cancel]")//, a ); 
+        Piler.log("[cancel]")//, a );
 
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
 
-        $('#_search').val(''); 
+        $('#_search').val('');
         $('#ref').val( '' );
 
         Piler.Searches.Expert = {};
@@ -804,7 +804,7 @@ var Piler =
 
     clear_attachment_any: function()
     {
-        $('input#xhas_attachment_any')[0].checked = 0;       
+        $('input#xhas_attachment_any')[0].checked = 0;
     },
 
 
@@ -814,7 +814,7 @@ var Piler =
 
     show_message:function(id, msg, timeout)
     {
-        msg = '<p>' + msg.replace("\n", "<br />") + '</p>'; 
+        msg = '<p>' + msg.replace("\n", "<br />") + '</p>';
 
         Piler.log("[show_message]", id, msg);
 
@@ -1086,7 +1086,7 @@ var Piler =
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
         Piler.show_message('messagebox1', msg, 0.85);
- 
+
         Piler.current_message_id = 0;
     },
 
@@ -1121,7 +1121,7 @@ var Piler =
     test_ldap_connection:function()
     {
        Piler.log("[test_ldap_connection]");
- 
+
        jQuery.ajax('index.php?route=ldap/test', {
            data: {
               description: $('#description').val(),
@@ -1361,15 +1361,15 @@ $.datepicker.setDefaults($.datepicker.regional[Piler.piler_ui_lang]);
 
 
     $("ul.dropdown li").hover(function(){
-    
+
         $(this).addClass("hover");
         $('ul:first',this).css('visibility', 'visible');
-    
+
     }, function(){
-    
+
         $(this).removeClass("hover");
         $('ul:first',this).css('visibility', 'hidden');
-    
+
     });
 
 
@@ -1380,7 +1380,7 @@ $.datepicker.setDefaults($.datepicker.regional[Piler.piler_ui_lang]);
   });
 
 // modal additions
-    
+
 $(document).on("click", ".confirm-delete", function (e) {
      e.preventDefault();
 
@@ -1388,7 +1388,7 @@ $(document).on("click", ".confirm-delete", function (e) {
      var id = $(this).data('id'),
          name = $(this).data('name'),
          url = $(".modal-footer #id").attr("href");
-     
+
      //set id
      url = UpdateQueryString('id',id,url);
      //set name
@@ -1426,5 +1426,3 @@ function UpdateQueryString(key, value, url) { // from http://stackoverflow.com/q
             return url;
     }
 }
-
-
