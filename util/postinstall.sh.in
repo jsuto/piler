@@ -90,9 +90,9 @@ isFQDN() {
   fi
 
   NF=`echo $1 | awk -F. '{print NF}'`
-  if [ $NF -ge 2 ]; then 
+  if [ $NF -ge 2 ]; then
     echo 1
-  else 
+  else
     echo 0
   fi
 }
@@ -162,7 +162,7 @@ askYN() {
   else
     DEFAULT="N"
   fi
-  
+
   while [ 1 ]; do
     ask "$PROMPT" "$DEFAULT"
     response=$(perl -e "print lc(\"$response\");")
@@ -172,7 +172,7 @@ askYN() {
       if [ $response = "yes" -o $response = "y" ]; then
         response="yes"
         break
-      else 
+      else
         if [ $response = "no" -o $response = "n" ]; then
           response="no"
           break
@@ -271,7 +271,7 @@ make_cron_entries() {
    echo "### PILERSTART" >> "$CRON_TMP"
    echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh" >> "$CRON_TMP"
    echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh" >> "$CRON_TMP"
-   echo "3 * * * * ${LIBEXECDIR}/watch_sphinx_main_index.sh" >> "$CRON_TMP"
+   echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh" >> "$CRON_TMP"
    echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
    echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
    echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null" >> "$CRON_TMP"
