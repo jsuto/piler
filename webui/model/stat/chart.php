@@ -43,9 +43,9 @@ class ModelStatChart extends Model {
             if($q) { $q .= ",?"; } else { $q = "?"; }
          }
          reset($auditdomains);
-         $query = $this->db->query("select ANY_VALUE(arrived-(arrived%$delta)) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $auditdomains);
+         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $auditdomains);
       } else {
-         $query = $this->db->query("select ANY_VALUE(arrived-(arrived%$delta)) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $limit");
+         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $limit");
       }
 
 
