@@ -1,0 +1,19 @@
+<?php
+
+$config['SITE_NAME'] = '$HOSTNAME';
+$config['SITE_URL'] = 'http://' . $config['SITE_NAME'] . '/';
+$config['DIR_BASE'] = '$DOCROOT/';
+
+$config['SMTP_DOMAIN'] = '$HOSTNAME';
+$config['SMTP_FROMADDR'] = 'no-reply@' . $config['SMTP_DOMAIN'];
+$config['ADMIN_EMAIL'] = 'admin@' . $config['SMTP_DOMAIN'];
+
+$config['DB_DRIVER'] = 'mysql';
+$config['DB_PREFIX'] = '';
+$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';
+$config['DB_USERNAME'] = '$MYSQL_USERNAME';
+$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';
+$config['DB_DATABASE'] = '$MYSQL_DATABASE';
+
+$config['SMARTHOST'] = '$SMARTHOST';
+$config['SMARTHOST_PORT'] = '$SMARTHOST_PORT';

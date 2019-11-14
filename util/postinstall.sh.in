@@ -1,26 +1,32 @@
 #!/bin/bash
 
+set -o nounset
+set -o errexit
+set -o pipefail
 
-INDEXER=$(which indexer 2>/dev/null)
-SEARCHD=$(which searchd 2>/dev/null)
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="${SCRIPT_PATH%/*}"
+
+INDEXER="$(command -v indexer)"
+SEARCHD="$(command -v searchd)"
 CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
 PILERCONF_TMP="/tmp/config.piler.88"
 SOCKET_HELPER_SCRIPT="aaa.pl"
-CONFIG_SITE_PHP="${SYSCONFDIR}/piler/config-site.php"
+PILER_CONFIG_DIR="${SYSCONFDIR}/piler"
+CONFIG_SITE_PHP="${PILER_CONFIG_DIR}/config-site.php"
 
 load_default_values() {
    PILERUSER="piler"
-   PILERGROUP="piler"
    SYSCONFDIR=__SYSCONFDIR
    LOCALSTATEDIR=__LOCALSTATEDIR
    LIBEXECDIR=__LIBEXECDIR
    DATAROOTDIR=__DATAROOTDIR
 
    KEYTMPFILE="piler.key"
-   KEYFILE="${SYSCONFDIR}/piler/piler.key"
+   KEYFILE="${PILER_CONFIG_DIR}/piler.key"
 
-   HOSTNAME=$(hostname --fqdn)
+   HOSTNAME="$(hostname --fqdn)"
 
    MYSQL_HOSTNAME="localhost"
    MYSQL_DATABASE="piler"
@@ -29,7 +35,7 @@ load_default_values() {
    MYSQL_ROOT_PASSWORD=""
    MYSQL_SOCKET=""
 
-   SPHINXCFG="${SYSCONFDIR}/piler/sphinx.conf"
+   SPHINXCFG="${PILER_CONFIG_DIR}/sphinx.conf"
 
    WWWGROUP="apache"
    DOCROOT="/var/piler/www"
@@ -42,13 +48,15 @@ load_default_values() {
 
 
 make_certificate() {
-   if [[ ! -f "${SYSCONFDIR}/piler/piler.pem" ]]; then
+   local piler_pem="${PILER_CONFIG_DIR}/piler.pem"
+
+   if [[ ! -f "$piler_pem" ]]; then
       echo -n "Making an ssl certificate ... "
-      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout "${SYSCONFDIR}/piler/piler.pem" -out 1.cert -sha1
-      cat 1.cert >> "${SYSCONFDIR}/piler/piler.pem"
-      chmod 640 "${SYSCONFDIR}/piler/piler.pem"
-      chgrp "$PILERUSER" "${SYSCONFDIR}/piler/piler.pem"
-      rm 1.cert
+      openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout "$piler_pem" -out 1.cert -sha1
+      cat 1.cert >> "$piler_pem"
+      chmod 640 "$piler_pem"
+      chgrp "$PILERUSER" "$piler_pem"
+      rm -f 1.cert
    fi
 }
 
@@ -63,7 +71,7 @@ display_install_intro() {
   askYN "Continue? [Y/N]" "N"
   if [[ "$response" != "yes" ]]; then
      echo "Aborted."
-     exit
+     exit 1
   fi
 
   echo ""
@@ -79,18 +87,18 @@ check_user() {
 
 isFQDN() {
   # we need min. 2 dots
-  if [ x"$1" = "xdogfood" ]; then
+  if [[ x"$1" = "xdogfood" ]]; then
     echo 1
     return
   fi
 
-  if [ x"$1" = "x" ]; then
+  if [[ x"$1" = "x" ]]; then
     echo 0
     return
   fi
 
-  NF=`echo $1 | awk -F. '{print NF}'`
-  if [ $NF -ge 2 ]; then
+  NF="$(echo "$1" | awk -F. '{print NF}')"
+  if [[ $NF -ge 2 ]]; then
     echo 1
   else
     echo 0
@@ -104,9 +112,9 @@ ask() {
 
   echo ""
   echo -n "$PROMPT [$DEFAULT] "
-  read response
+  read -r response
 
-  if [ -z $response ]; then
+  if [[ -z "$response" ]]; then
     response=$DEFAULT
   fi
 }
@@ -126,12 +134,12 @@ askNonBlankNoEcho() {
   PROMPT=$1
   DEFAULT=$2
 
-  while [ 1 ]; do
+  while true; do
     stty -echo
     ask "$PROMPT" "$DEFAULT"
     stty echo
     echo ""
-    if [ ! -z $response ]; then
+    if [[ -n "$response" ]]; then
       break
     fi
     echo "A non-blank answer is required"
@@ -140,12 +148,12 @@ askNonBlankNoEcho() {
 
 
 askNonBlank() {
-  PROMPT=$1
-  DEFAULT=$2
+  PROMPT="$1"
+  DEFAULT="$2"
 
-  while [ 1 ]; do
+  while true; do
     ask "$PROMPT" "$DEFAULT"
-    if [ ! -z $response ]; then
+    if [[ -n "$response" ]]; then
       break
     fi
     echo "A non-blank answer is required"
@@ -157,23 +165,23 @@ askYN() {
   PROMPT=$1
   DEFAULT=$2
 
-  if [ "x$DEFAULT" = "xyes" -o "x$DEFAULT" = "xYes" -o "x$DEFAULT" = "xy" -o "x$DEFAULT" = "xY" ]; then
+  if [[ "x$DEFAULT" == "xyes" || "x$DEFAULT" == "xYes" || "x$DEFAULT" == "xy" || "x$DEFAULT" == "xY" ]]; then
     DEFAULT="Y"
   else
     DEFAULT="N"
   fi
 
-  while [ 1 ]; do
+  while true; do
     ask "$PROMPT" "$DEFAULT"
     response=$(perl -e "print lc(\"$response\");")
-    if [ -z $response ]; then
+    if [[ -z "$response" ]]; then
       :
     else
-      if [ $response = "yes" -o $response = "y" ]; then
+      if [[ "$response" == "yes" || "$response" == "y" ]]; then
         response="yes"
         break
       else
-        if [ $response = "no" -o $response = "n" ]; then
+        if [[ "$response" == "no" || "$response" == "n" ]]; then
           response="no"
           break
         fi
@@ -232,7 +240,7 @@ gather_mysql_account() {
    if [ $? -eq 0 ];
    then
       echo "mysql connection successful"; echo;
-      if [ $(echo $s | grep -c metadata) -eq 1 ]; then echo "ERROR: Detected metadata table in ${MYSQL_DATABASE}. Aborting"; exit 0; fi
+      if [[ $(echo "$s" | grep -c metadata) -eq 1 ]]; then echo "ERROR: Detected metadata table in ${MYSQL_DATABASE}. Aborting"; exit 0; fi
    else
       echo "ERROR: failed to connect to mysql";
       gather_mysql_account
@@ -254,37 +262,37 @@ make_cron_entries() {
 
    crontab -u "$PILERUSER" -l > "$CRON_ORIG"
 
-   grep PILERSTART "$CRON_ORIG" > /dev/null 2>&1
-   if [ $? != 0 ]; then
+   if grep PILERSTART "$CRON_ORIG" > /dev/null 2>&1 != 0; then
       cat /dev/null > "$CRON_ORIG"
    fi
 
-   grep PILEREND "$CRON_ORIG" > /dev/null 2>&1
-   if [ $? != 0 ]; then
+   if grep PILEREND "$CRON_ORIG" > /dev/null 2>&1 != 0; then
       cat /dev/null > "$CRON_ORIG"
    fi
 
 
    rm -f "$CRON_TMP"
 
-   echo ""
-   echo "### PILERSTART" >> "$CRON_TMP"
-   echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh" >> "$CRON_TMP"
-   echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh" >> "$CRON_TMP"
-   echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh" >> "$CRON_TMP"
-   echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
-   echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${SYSCONFDIR}/piler/sphinx.conf" >> "$CRON_TMP"
-   echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null" >> "$CRON_TMP"
-   echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error" >> "$CRON_TMP"
-   echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;" >> "$CRON_TMP"
-   echo "### PILEREND" >> "$CRON_TMP"
+   {
+      echo "";
+      echo "### PILERSTART";
+      echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh";
+      echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh";
+      echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh";
+      echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
+      echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
+      echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null";
+      echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error";
+      echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;";
+      echo "### PILEREND";
+   } >> "$CRON_TMP"
 }
 
 
 make_new_key() {
    dd if=/dev/urandom bs=56 count=1 of="$KEYTMPFILE" 2>/dev/null
 
-   if [ $(stat -c '%s' "$KEYTMPFILE") -ne 56 ]; then echo "could not read 56 bytes from /dev/urandom to ${KEYTMPFILE}"; exit 1; fi
+   if [ "$(stat -c '%s' "$KEYTMPFILE")" -ne 56 ]; then echo "could not read 56 bytes from /dev/urandom to ${KEYTMPFILE}"; exit 1; fi
 }
 
 
@@ -399,39 +407,10 @@ SOCKHELPER
 
 
 webui_install() {
-
    chmod 770 "${DOCROOT}/tmp" "${DOCROOT}/images"
-   chown "$PILERUSER" "${DOCROOT}/tmp"
-   chgrp "$WWWGROUP" "${DOCROOT}/tmp"
+   chown "${PILERUSER}:${DOCROOT}" "${DOCROOT}/tmp"
 
-   echo "<?php" > "$CONFIG_SITE_PHP"
-   echo >> "$CONFIG_SITE_PHP"
-
-   echo "\$config['SITE_NAME'] = '$HOSTNAME';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['SITE_URL'] = 'http://' . \$config['SITE_NAME'] . '/';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DIR_BASE'] = '$DOCROOT/';" >> "$CONFIG_SITE_PHP"
-
-   echo >> "$CONFIG_SITE_PHP"
-
-   echo "\$config['SMTP_DOMAIN'] = '$HOSTNAME';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['SMTP_FROMADDR'] = 'no-reply@$HOSTNAME';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['ADMIN_EMAIL'] = 'admin@$HOSTNAME';" >> "$CONFIG_SITE_PHP"
-
-   echo >> "$CONFIG_SITE_PHP"
-
-   echo "\$config['DB_DRIVER'] = 'mysql';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DB_PREFIX'] = '';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DB_USERNAME'] = '$MYSQL_USERNAME';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['DB_DATABASE'] = '$MYSQL_DATABASE';" >> "$CONFIG_SITE_PHP"
-
-   echo >> "$CONFIG_SITE_PHP"
-
-   echo "\$config['SMARTHOST'] = '$SMARTHOST';" >> "$CONFIG_SITE_PHP"
-   echo "\$config['SMARTHOST_PORT'] = $SMARTHOST_PORT;" >> "$CONFIG_SITE_PHP"
-
-   echo >> "$CONFIG_SITE_PHP"
+   envsubst "${SCRIPT_DIR}/config-site.php.in" > "$CONFIG_SITE_PHP"
 
    echo "Done."
 }
@@ -446,10 +425,6 @@ clean_up_temp_stuff() {
 
 load_default_values
 
-
-#LOGFILE="/tmp/piler-install.log.$$"
-#touch $LOGFILE
-#chmod 600 $LOGFILE
 
 preinstall_check
 
