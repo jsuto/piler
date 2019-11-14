@@ -7,7 +7,7 @@ CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
 PILERCONF_TMP="/tmp/config.piler.88"
 SOCKET_HELPER_SCRIPT="aaa.pl"
-
+CONFIG_SITE_PHP="${SYSCONFDIR}/piler/config-site.php"
 
 load_default_values() {
    PILERUSER="piler"
@@ -404,34 +404,34 @@ webui_install() {
    chown "$PILERUSER" "${DOCROOT}/tmp"
    chgrp "$WWWGROUP" "${DOCROOT}/tmp"
 
-   echo "<?php" > "${DOCROOT}/config-site.php"
-   echo >> "${DOCROOT}/config-site.php"
+   echo "<?php" > "$CONFIG_SITE_PHP"
+   echo >> "$CONFIG_SITE_PHP"
 
-   echo "\$config['SITE_NAME'] = '$HOSTNAME';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['SITE_URL'] = 'http://' . \$config['SITE_NAME'] . '/';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DIR_BASE'] = '$DOCROOT/';" >> "${DOCROOT}/config-site.php"
+   echo "\$config['SITE_NAME'] = '$HOSTNAME';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['SITE_URL'] = 'http://' . \$config['SITE_NAME'] . '/';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DIR_BASE'] = '$DOCROOT/';" >> "$CONFIG_SITE_PHP"
 
-   echo >> "${DOCROOT}/config-site.php"
+   echo >> "$CONFIG_SITE_PHP"
 
-   echo "\$config['SMTP_DOMAIN'] = '$HOSTNAME';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['SMTP_FROMADDR'] = 'no-reply@$HOSTNAME';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['ADMIN_EMAIL'] = 'admin@$HOSTNAME';" >> "${DOCROOT}/config-site.php"
+   echo "\$config['SMTP_DOMAIN'] = '$HOSTNAME';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['SMTP_FROMADDR'] = 'no-reply@$HOSTNAME';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['ADMIN_EMAIL'] = 'admin@$HOSTNAME';" >> "$CONFIG_SITE_PHP"
 
-   echo >> "${DOCROOT}/config-site.php"
+   echo >> "$CONFIG_SITE_PHP"
 
-   echo "\$config['DB_DRIVER'] = 'mysql';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DB_PREFIX'] = '';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DB_USERNAME'] = '$MYSQL_USERNAME';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['DB_DATABASE'] = '$MYSQL_DATABASE';" >> "${DOCROOT}/config-site.php"
+   echo "\$config['DB_DRIVER'] = 'mysql';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DB_PREFIX'] = '';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DB_USERNAME'] = '$MYSQL_USERNAME';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['DB_DATABASE'] = '$MYSQL_DATABASE';" >> "$CONFIG_SITE_PHP"
 
-   echo >> "${DOCROOT}/config-site.php"
+   echo >> "$CONFIG_SITE_PHP"
 
-   echo "\$config['SMARTHOST'] = '$SMARTHOST';" >> "${DOCROOT}/config-site.php"
-   echo "\$config['SMARTHOST_PORT'] = $SMARTHOST_PORT;" >> "${DOCROOT}/config-site.php"
+   echo "\$config['SMARTHOST'] = '$SMARTHOST';" >> "$CONFIG_SITE_PHP"
+   echo "\$config['SMARTHOST_PORT'] = $SMARTHOST_PORT;" >> "$CONFIG_SITE_PHP"
 
-   echo >> "${DOCROOT}/config-site.php"
+   echo >> "$CONFIG_SITE_PHP"
 
    echo "Done."
 }
