@@ -401,16 +401,16 @@ SOCKHELPER
    fi
 
 
-   if [ -d "$DOCROOT" ]; then webui_install; fi
+   if [[ -d "$DOCROOT" ]]; then webui_install; fi
 
 }
 
 
 webui_install() {
    chmod 770 "${DOCROOT}/tmp" "${DOCROOT}/images"
-   chown "${PILERUSER}:${DOCROOT}" "${DOCROOT}/tmp"
+   chown "$PILERUSER" "${DOCROOT}/tmp"
 
-   envsubst "${SCRIPT_DIR}/config-site.php.in" > "$CONFIG_SITE_PHP"
+   envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
 
    echo "Done."
 }
