@@ -13,8 +13,6 @@ CRON_ORIG="/tmp/crontab.piler.orig"
 CRON_TMP="/tmp/crontab.piler"
 PILERCONF_TMP="/tmp/config.piler.88"
 SOCKET_HELPER_SCRIPT="aaa.pl"
-PILER_CONFIG_DIR="${SYSCONFDIR}/piler"
-CONFIG_SITE_PHP="${PILER_CONFIG_DIR}/config-site.php"
 
 load_default_values() {
    PILERUSER="piler"
@@ -22,6 +20,9 @@ load_default_values() {
    LOCALSTATEDIR=__LOCALSTATEDIR
    LIBEXECDIR=__LIBEXECDIR
    DATAROOTDIR=__DATAROOTDIR
+
+   PILER_CONFIG_DIR="${SYSCONFDIR}/piler"
+   CONFIG_SITE_PHP="${PILER_CONFIG_DIR}/config-site.php"
 
    KEYTMPFILE="piler.key"
    KEYFILE="${PILER_CONFIG_DIR}/piler.key"
