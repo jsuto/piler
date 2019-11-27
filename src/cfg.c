@@ -62,7 +62,7 @@ struct _parse_rule config_parse_rules[] =
    { "archive_emails_not_having_message_id", "integer", (void*) int_parser, offsetof(struct config, archive_emails_not_having_message_id), "0", sizeof(int)},
    { "archive_only_mydomains", "integer", (void*) int_parser, offsetof(struct config, archive_only_mydomains), "0", sizeof(int)},
    { "backlog", "integer", (void*) int_parser, offsetof(struct config, backlog), "20", sizeof(int)},
-   { "check_for_client_timeout_interval", "integer", (void*) int_parser, offsetof(struct config, check_for_client_timeout_interval), "30", sizeof(int)},
+   { "check_for_client_timeout_interval", "integer", (void*) int_parser, offsetof(struct config, check_for_client_timeout_interval), "20", sizeof(int)},
    { "cipher_list", "string", (void*) string_parser, offsetof(struct config, cipher_list), "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS", MAXVAL-1},
    { "clamd_addr", "string", (void*) string_parser, offsetof(struct config, clamd_addr), "", MAXVAL-1},
    { "clamd_port", "integer", (void*) int_parser, offsetof(struct config, clamd_port), "0", sizeof(int)},

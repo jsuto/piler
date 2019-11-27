@@ -77,7 +77,7 @@ void __fatal(char *s){
 }
 
 /*
- * calculate the difference betwwen two timevals in [usec]
+ * calculate the difference between two timevals in [usec]
  */
 
 long tvdiff(struct timeval a, struct timeval b){

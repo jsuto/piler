@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <syslog.h>
+#include <signal.h>
 #include <unistd.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -266,13 +267,21 @@ void process_command_data(struct smtp_session *session, struct config *cfg){
 
 void process_command_period(struct smtp_session *session){
    char buf[SMALLBUFSIZE];
+   struct timezone tz;
+   struct timeval tv1, tv2;
 
    session->protocol_state = SMTP_STATE_PERIOD;
 
    // TODO: add some error handling
 
+   sig_block(SIGALRM);
+   gettimeofday(&tv1, &tz);
    fsync(session->fd);
    close(session->fd);
+   gettimeofday(&tv2, &tz);
+   sig_unblock(SIGALRM);
+
+   syslog(LOG_PRIORITY, "fsync()+close() took %ld [us]", tvdiff(tv2, tv1));
 
    session->fd = -1;
 
