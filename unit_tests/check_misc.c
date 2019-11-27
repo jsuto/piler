@@ -11,20 +11,20 @@ struct data data;
 
 static void test_strtolower(){
    unsigned int i;
-   struct test_data_s_s test_data_s_s[] = { 
-      { "aaaa", "aaaa"}, 
-      { "aBhu+18", "abhu+18"}, 
-      { "u Uj i", "u uj i"}, 
-      { "eee?", "eee?"}, 
-      { "EEE?E", "eee?e"}, 
-   };  
+   struct test_data_s_s test_data_s_s[] = {
+      { "aaaa", "aaaa"},
+      { "aBhu+18", "abhu+18"},
+      { "u Uj i", "u uj i"},
+      { "eee?", "eee?"},
+      { "EEE?E", "eee?e"},
+   };
 
    TEST_HEADER();
 
    for(i=0; i<sizeof(test_data_s_s)/sizeof(struct test_data_s_s); i++){
       strtolower(test_data_s_s[i].s);
       ASSERT(strcmp(test_data_s_s[i].s, test_data_s_s[i].result) == 0, test_data_s_s[i].result);
-   }   
+   }
 
    TEST_FOOTER();
 }
@@ -32,16 +32,16 @@ static void test_strtolower(){
 
 static void test_extract_verp_address(){
    unsigned int i;
-   struct test_data_s_s test_data_s_s[] = { 
+   struct test_data_s_s test_data_s_s[] = {
       { "archive+user=domain.com@myarchive.local", "user@domain.com"},
-   };  
+   };
 
    TEST_HEADER();
 
    for(i=0; i<sizeof(test_data_s_s)/sizeof(struct test_data_s_s); i++){
       extract_verp_address(test_data_s_s[i].s);
       ASSERT(strcmp(test_data_s_s[i].s, test_data_s_s[i].result) == 0, test_data_s_s[i].result);
-   }   
+   }
 
    TEST_FOOTER();
 }
@@ -96,7 +96,7 @@ static void test_make_random_string(){
    TEST_HEADER();
 
    for(i=0; i<10; i++){
-      make_random_string(buf, sizeof(buf)-1);
+      make_random_string((unsigned char*)&buf[0], QUEUE_ID_LEN);
       printf("%s ", buf);
    }
 
