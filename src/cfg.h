@@ -49,6 +49,7 @@ struct config {
    int verbosity;
    char locale[MAXVAL];
 
+   int check_for_client_timeout_interval;
    int smtp_timeout;
    int helper_timeout;
    int extract_attachments;

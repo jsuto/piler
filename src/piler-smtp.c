@@ -31,7 +31,6 @@ extern char *optarg;
 extern int optind;
 
 struct epoll_event event, *events=NULL;
-int timeout = 20; // checking for timeout this often [sec]
 int num_connections = 0;
 int listenerfd = -1;
 
@@ -98,7 +97,7 @@ void check_for_client_timeout(){
       }
    }
 
-   alarm(timeout);
+   alarm(cfg.check_for_client_timeout_interval);
 }
 
 
@@ -216,7 +215,7 @@ int main(int argc, char **argv){
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
 
-   alarm(timeout);
+   alarm(cfg.check_for_client_timeout_interval);
 
    for(;;){
       n = epoll_wait(efd, events, cfg.max_connections, -1);
