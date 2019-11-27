@@ -310,5 +310,5 @@ void process_command_reset(struct smtp_session *session){
    reset_bdat_counters(session);
 
    memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
-   make_random_string(&(session->ttmpfile[0]), QUEUE_ID_LEN);
+   make_random_string((unsigned char *)&(session->ttmpfile[0]), QUEUE_ID_LEN);
 }
