@@ -73,15 +73,24 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
 
 
 void process_data(struct smtp_session *session, char *buf, int buflen){
+   int len=0, written=0, n_writes=0;
+
    if(session->last_data_char == '\n' && strcmp(buf, ".\r\n") == 0){
       process_command_period(session);
    }
    else {
       // write line to file
-      if(write(session->fd, buf, buflen) != -1){
-         session->tot_len += buflen;
+      while(written < buflen) {
+         len = write(session->fd, buf+written, buflen-written);
+         n_writes++;
+
+         if(len > 0){
+            if(len != buflen) syslog(LOG_PRIORITY, "WARN: partial write: %d/%d bytes (round: %d)", len, buflen, n_writes);
+            written += len;
+            session->tot_len += len;
+         }
+         else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): written %d bytes", __LINE__, len);
       }
-      else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): failed to write %d bytes", __LINE__, buflen);
    }
 
    session->last_data_char = buf[buflen-1];
