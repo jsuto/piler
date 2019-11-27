@@ -208,7 +208,7 @@ void process_command_mail_from(struct smtp_session *session, char *buf){
    }
    else {
       memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
-      make_random_string(&(session->ttmpfile[0]), QUEUE_ID_LEN);
+      make_random_string((unsigned char*)&(session->ttmpfile[0]), QUEUE_ID_LEN);
       session->protocol_state = SMTP_STATE_MAIL_FROM;
 
       extractEmail(buf, session->mailfrom);

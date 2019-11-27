@@ -164,7 +164,7 @@ int extract_tnef(struct session_data *sdata, struct parser_state *state, char *f
    struct dirent **namelist;
 
    memset(tmpdir, 0, sizeof(tmpdir));
-   make_random_string(&tmpdir[0], sizeof(tmpdir)-3);
+   make_random_string((unsigned char *)&tmpdir[0], sizeof(tmpdir)-3);
 
    memcpy(&tmpdir[sizeof(tmpdir)-3], ".d", 2);
 

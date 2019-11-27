@@ -269,19 +269,18 @@ int extractEmail(char *rawmail, char *email){
  * using the rand() function if not possible
  */
 
-void make_random_string(char *buf, int buflen){
+void make_random_string(unsigned char *buf, int buflen){
    int i, len, fd;
    int urandom=0;
    static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-   unsigned char s[QUEUE_ID_LEN];
 
    len = strlen(alphanum);
 
    fd = open(RANDOM_POOL, O_RDONLY);
    if(fd != -1){
-      if(readFromEntropyPool(fd, s, sizeof(s)) == sizeof(s)){
-         for(i=0; i<QUEUE_ID_LEN; i++){
-            *(buf+i) = alphanum[s[i] % len];
+      if(readFromEntropyPool(fd, buf, buflen) == buflen){
+         for(i=0; i<buflen; i++){
+            *(buf+i) = alphanum[*(buf+i) % len];
          }
 
          urandom = 1;
@@ -338,7 +337,7 @@ int get_random_bytes(unsigned char *buf, int len, unsigned char server_id){
    if(readFromEntropyPool(fd, buf+12+1, len-12-1) != len-12-1){
       syslog(LOG_PRIORITY, "%s: %s", ERR_CANNOT_READ_FROM_POOL, RANDOM_POOL);
    }
-   
+
    close(fd);
    return ret;
 }
