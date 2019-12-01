@@ -5,6 +5,8 @@
    <title><?php print $title; ?></title>
    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
    <meta http-equiv="Content-Language" content="<?php print DEFAULT_LANG; ?>" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
    <?php if(SITE_KEYWORDS) { ?><meta name="keywords" content="<?php print SITE_KEYWORDS; ?>" /><?php } ?>
    <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
    <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
@@ -63,7 +65,7 @@
 </div>
 <?php } ?>
 
-<?php if(!(OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 0)) { ?>
+<?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || MOBILE_DEVICE == 0) { ?>
     <div id="menu">
         <?php print $menu; ?>
     </div>
@@ -86,6 +88,8 @@
                     <label for="_search"><?php print $text_search; ?></label>
                 <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
                 </div>
+
+             <?php if(MOBILE_DEVICE == 0) { ?>
                 <div class="span6 input-append btn-group">
                     <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
                     <button id="button_expert" class="btn btn-large btn-inverse" onclick="$('#searchpopup1').show();"><?php print $text_advanced_search; ?> &nbsp;<span class="caret"></span></button>
@@ -95,6 +99,7 @@
                         <li><a href="#" onclick="Piler.load_saved_search_terms();"><?php print $text_load; ?></a></li>
                     </ul>
                 </div>
+             <?php } ?>
               </div>
             </div>
          </div>

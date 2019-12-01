@@ -94,16 +94,14 @@ class Controller {
          $file = DIR_THEME . THEME . '/templates/' . $this->template;
       }
 
-      if(MOBILE_DEVICE == 1) { $file = DIR_THEME . 'mobile' . '/templates/' . $this->template; }
-
       if(file_exists($file)){
 
          extract($this->data);
 
          ob_start();
-      
+
          include($file);
-      
+
          $content = ob_get_contents();
 
          ob_end_clean();
@@ -117,5 +115,3 @@ class Controller {
 
 
 }
-
-?>

@@ -355,8 +355,6 @@ if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get(
 
 include("system/helper/detectmobilebrowser.php");
 
-if(MOBILE_DEVICE == 1) { $config['THEME'] = 'mobile'; }
-
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
 if($session->get("username") == 'auditor@local' || isset($_SERVER['argv'][2]) ) { $config['RESTRICTED_AUDITOR'] = 0; }
