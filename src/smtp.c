@@ -8,7 +8,6 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <syslog.h>
-#include <signal.h>
 #include <unistd.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -283,18 +282,14 @@ void process_command_period(struct smtp_session *session){
 
    // TODO: add some error handling
 
-   sig_block(SIGALRM);
    gettimeofday(&tv1, &tz);
    fsync(session->fd);
    close(session->fd);
    gettimeofday(&tv2, &tz);
-   sig_unblock(SIGALRM);
-
-   syslog(LOG_PRIORITY, "fsync()+close() took %ld [us]", tvdiff(tv2, tv1));
 
    session->fd = -1;
 
-   syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket);
+   syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d, fsync=%ld", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket, tvdiff(tv2, tv1));
 
    move_email(session);
 

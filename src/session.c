@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
+#include <signal.h>
 #include <piler.h>
 
 
@@ -207,7 +208,9 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
          // pass the puffer to process_data() only if there was an '\n'
          // on the line or the puffer does not start with a period
          if(session->protocol_state == SMTP_STATE_DATA && (rc == OK || puf[0] != '.')){
+            sig_block(SIGALRM);
             process_data(session, puf, puflen);
+            sig_unblock(SIGALRM);
          }
          else if(session->protocol_state == SMTP_STATE_BDAT){
             process_bdat(session, puf, puflen, cfg);
