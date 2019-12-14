@@ -58,7 +58,12 @@
 
     <?php } else { ?>
 
+                <?php if(Registry::get('data_officer') == 1) { ?>
+                    <li><a href="index.php?route=audit/removal" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search"></i>&nbsp;<?php print $text_home; ?></a></li>
+                <?php } else { ?>
                     <li><a href="search.php" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-search"></i>&nbsp;<?php print $text_search; ?></a></li>
+                <?php } ?>
+
 
         <?php if(ENABLE_AUDIT == 1 && $auditor_user == 1) { ?>
                     <li><a href="index.php?route=audit/audit" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?>><i class="icon-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
