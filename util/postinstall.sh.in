@@ -360,6 +360,8 @@ execute_post_install_tasks() {
    chmod +x "$SPHINXCFG"
    echo "Done."
 
+   if indexer --version | grep ^Sphinx\ 3; then sed -i 's/220/311/' "$SPHINXCFG"; fi
+
    echo -n "Initializing sphinx indices... ";
    su "$PILERUSER" -c "indexer --all --config ${SPHINXCFG}"
    echo "Done."
