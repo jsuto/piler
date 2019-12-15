@@ -330,6 +330,8 @@ show_summary() {
    cat "$CRON_TMP"
    echo; echo;
 
+   export HOSTNAME SITE_NAME DOCROOT SMTP_DOMAIN MYSQL_HOSTNAME MYSQL_USERNAME MYSQL_PASSWORD MYSQL_DATABASE SMARTHOST SMARTHOST_PORT
+
    askYN "Correct? [Y/N]" "N"
    if [[ $response != "yes" ]]; then
       echo "Aborted."
@@ -355,6 +357,7 @@ execute_post_install_tasks() {
 
    echo -n "Writing sphinx configuration... ";
    sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" "${SYSCONFDIR}/piler/sphinx.conf.dist" > "$SPHINXCFG"
+   chmod +x "$SPHINXCFG"
    echo "Done."
 
    echo -n "Initializing sphinx indices... ";
