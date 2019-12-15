@@ -261,7 +261,7 @@ gather_smtp_relay_data() {
 
 make_cron_entries() {
 
-   crontab -u "$PILERUSER" -l > "$CRON_ORIG"
+   crontab -u "$PILERUSER" -l || true > "$CRON_ORIG"
 
    if grep PILERSTART "$CRON_ORIG" > /dev/null 2>&1 != 0; then
       cat /dev/null > "$CRON_ORIG"
