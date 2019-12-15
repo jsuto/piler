@@ -279,6 +279,7 @@ make_cron_entries() {
       echo "### PILERSTART";
       echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh";
       echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh";
+      echo "40 3 * * * ${LIBEXECDIR}/piler/purge.sh";
       echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh";
       echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
       echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
