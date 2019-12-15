@@ -86,12 +86,14 @@ void check_for_client_timeout(){
    time_t now;
    int i;
 
-   if(num_connections > 0){
-      time(&now);
+   time(&now);
 
+   if(cfg.verbosity >= LOG_DEBUG) syslog(LOG_PRIORITY, "%s @%ld", __func__, now);
+
+   if(num_connections > 0){
       for(i=0; i<cfg.max_connections; i++){
          if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
-            syslog(LOG_PRIORITY, "client %s timeout", sessions[i]->remote_host);
+            syslog(LOG_PRIORITY, "client %s timeout, lasttime: %ld", sessions[i]->remote_host, sessions[i]->lasttime);
             tear_down_session(sessions, sessions[i]->slot, &num_connections);
          }
       }
@@ -152,7 +154,7 @@ int main(int argc, char **argv){
                    return 0;
 
         case 'h' :
-        default  : 
+        default  :
                    usage();
       }
    }

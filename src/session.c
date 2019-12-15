@@ -205,6 +205,9 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
       p += puflen;
 
       if(puflen > 0){
+         // Update lasttime if we have a line to process
+         time(&(session->lasttime));
+
          // pass the puffer to process_data() only if there was an '\n'
          // on the line or the puffer does not start with a period
          if(session->protocol_state == SMTP_STATE_DATA && (rc == OK || puf[0] != '.')){
