@@ -381,7 +381,7 @@ execute_post_install_tasks() {
    echo "Done."
 
    echo "Fix piler.conf path in pilerpurge.py"
-   sed "s%\/etc\/piler\/piler\.conf%${SYSCONFDIR}\/piler\/piler\.conf%" "${LIBEXECDIR}/piler/pilerpurge.py"
+   sed -i "s%\/etc\/piler\/piler\.conf%${SYSCONFDIR}\/piler\/piler\.conf%" "${LIBEXECDIR}/piler/pilerpurge.py"
 
    make_certificate
 
