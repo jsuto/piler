@@ -372,7 +372,10 @@ var Piler =
 
         var idlist = Piler.get_selected_messages_list();
 
-        if(!idlist) return;
+        if(!idlist) {
+           Piler.show_message('messagebox1', text_no_selected_message, 2.5);
+           return;
+        }
 
         jQuery.ajax('/bulkremove.php', {
            data: { idlist: idlist, reason: reason },

@@ -238,6 +238,7 @@ $_['text_no_domain_found'] = 'Nem találtam domaineket';
 $_['text_no_email_found'] = 'Nem találtam emaileket';
 $_['text_no_message_in_the_quarantine'] = "Nincs a keresési feltételnek megfelelő üzenet a karanténban";
 $_['text_no_records'] = "nincs találat";
+$_['text_no_selected_message'] = "nincs kijelölt üzenet";
 $_['text_no_sender'] = "nincs feladó";
 $_['text_no_spam_message_in_the_quarantine_yet'] = "Nincs spam a karanténban";
 $_['text_no_subject'] = "nincs tárgy";

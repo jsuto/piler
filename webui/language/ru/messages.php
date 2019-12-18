@@ -474,8 +474,8 @@ $_['text_user_delete_confirm_message'] = 'Вы хотите удалить по�
 $_['text_domain_delete_confirm_message'] = 'Вы хотите удалить домен';                                                                                                         
 $_['text_group_delete_confirm_message'] = 'Вы хотите удалить группу';                                                                                                         
 $_['text_ldap_delete_confirm_message'] = 'Вы хотите удалить настройки LDAP';                                                                                                  
-$_['text_customer_delete_confirm_message'] = 'Вы хотите уделить потребителя';                                                                                                 
-$_['text_with_selected'] = 'С выделенным';                                                                                   
+$_['text_customer_delete_confirm_message'] = 'Вы хотите уделить потребителя';
+$_['text_with_selected'] = 'С выделенным';
 
 $_['text_assigned_email_addresses'] = "Assigned email addresses";
 $_['text_storage'] = "Storage";
@@ -490,3 +490,5 @@ $_['text_deleted'] = "Deleted";
 $_['text_reason_of_rejection'] = "Reason of rejection";
 $_['text_reject'] = "Reject";
 $_['text_user_data_officer'] = "Data officer";
+
+$_['text_no_selected_message'] = "no selected message";

@@ -494,3 +494,5 @@ $_['text_deleted'] = "Deleted";
 $_['text_reason_of_rejection'] = "Reason of rejection";
 $_['text_reject'] = "Reject";
 $_['text_user_data_officer'] = "Data officer";
+
+$_['text_no_selected_message'] = "no selected message";

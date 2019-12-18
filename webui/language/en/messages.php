@@ -237,6 +237,7 @@ $_['text_no_domain_found'] = 'No domain found';
 $_['text_no_email_found'] = 'No email found';
 $_['text_no_message_in_the_quarantine'] = "No message in the quarantine matching the search criteria";
 $_['text_no_records'] = "No records";
+$_['text_no_selected_message'] = "no selected message";
 $_['text_no_sender'] = "no sender";
 $_['text_no_spam_message_in_the_quarantine_yet'] = "No spam message in the quarantine yet";
 $_['text_no_subject'] = "no subject";
