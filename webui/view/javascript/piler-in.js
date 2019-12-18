@@ -364,7 +364,7 @@ var Piler =
         $('#deletebox-modal').modal('show');
     },
 
-    bulk_remove_messages:function(reason, text_successfully_removed)
+    bulk_remove_messages:function(reason, text_successfully_removed, text_no_selected_message)
     {
         Piler.log("[bulk_remove_messages]");
 
