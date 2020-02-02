@@ -94,12 +94,9 @@ class Sphinx {
 
    public function getLastId() {
       return mysql_insert_id($this->link);
-   }	
+   }
 
 
    public function __destruct() { }
 
 }
-
-
-?>
