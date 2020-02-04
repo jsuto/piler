@@ -3642,8 +3642,7 @@ fi
 ac_cv_lib_wrap=ac_cv_lib_wrap_main
 
 if test "$have_tcpwrappers" = "no"; then
-   echo "can't find either tcpd.h or libwrap";
-   exit 1
+   echo "can't find either tcpd.h or libwrap. Tcpwrappers support is disabled";
 fi
 
 
