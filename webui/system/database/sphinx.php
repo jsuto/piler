@@ -63,7 +63,11 @@ class Sphinx {
 
       $query->exec_time = $time_end - $time_start;
 
+      // Use the commented out line if you still have sphinx 2.0.x
+      // and use select * from in model/search/search.php in line 232
       $meta = $this->link->prepare("SHOW META LIKE 'total_found'");
+      //$meta = $this->link->prepare("SHOW META");
+
       $meta->execute();
       $R = $meta->fetchAll();
       while(list ($k, $v) = each($R)){
