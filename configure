@@ -4847,7 +4847,7 @@ echo; echo
 
 CFLAGS="$static -std=c99 -O2 -fPIC -Wall -Wextra -Wuninitialized -Wno-format-truncation -g"
 LIBS="$antispam_libs $sunos_libs "
-OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o $objs"
+OBJS="dirs.o base64.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o tokenizer.o $objs"
 
 ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile systemd/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile"
 
