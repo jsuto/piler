@@ -103,7 +103,7 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
       if(state->attachments[i].dumped == 1){
          rec = 0;
          if(cfg->extract_attachments == 1 && state->bodylen < BIGBUFSIZE-1024) extract_attachment_content(sdata, state, state->attachments[i].aname, get_attachment_extractor_by_filename(state->attachments[i].filename), &rec, cfg);
-      
+
          unlink(state->attachments[i].aname);
       }
 
@@ -166,7 +166,7 @@ void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned
 
 
 int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, unsigned int writebuffersize, char *abuffer, unsigned int abuffersize, struct data *data, struct config *cfg){
-   char *p, *q, puf[SMALLBUFSIZE];
+   char *p, puf[SMALLBUFSIZE];
    char tmpbuf[MAXBUFSIZE];
    int writelen, boundary_line=0, result;
    unsigned int len;
