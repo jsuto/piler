@@ -134,7 +134,7 @@ class ModelSearchSearch extends Model {
 
             $data['match'][$i] = $this->fix_email_address_for_sphinx($v);
          }
-         $i++; 
+         $i++;
       }
 
       if(SEARCH_QUERY_QUOTING == 1) {
@@ -925,6 +925,3 @@ class ModelSearchSearch extends Model {
 
 
 }
-
-
-?>
