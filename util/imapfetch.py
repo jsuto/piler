@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import argparse
 import imaplib
 import pprint
+import re
 
 opts = {}
 INBOX = 'INBOX'
@@ -13,14 +14,29 @@ def read_folder_list(conn):
     result = []
 
     rc, folders = conn.list()
+    if opts['verbose']:
+        print("Folders:", folders)
+
     for folder in folders:
-        f = folder.decode('utf-8').split(' "." ')
-        result.append(f[1])
+        if opts['verbose']:
+            print("Got folder", folder)
+
+        if isinstance(folder, type(b'')):
+            folder = folder.decode('utf-8')
+        elif isinstance(folder, type(())):
+            folder = re.sub(r'\{\d+\}$', '', folder[0]) + folder[1]
+
+        # The regex should match ' "/" ' and ' "." '
+        if folder:
+            f = re.split(r' \"[\/\.]\" ', folder)
+            result.append(f[1])
 
     return [x for x in result if x not in opts['skip_folders']]
 
 
 def process_folder(conn, folder):
+    print("Processing {}".format(folder))
+
     rc, data = conn.select(folder)
     n = int(data[0])
     print("Folder {} has {} messages".format(folder, n))
@@ -29,8 +45,10 @@ def process_folder(conn, folder):
         rc, data = conn.search(None, 'ALL')
         for num in data[0].split():
             rc, data = conn.fetch(num, '(RFC822)')
+            if opts['verbose']:
+                print(rc, num)
             opts['counter'] = opts['counter'] + 1
-            with open("{}.eml".format(opts['counter']), "w") as f:
+            with open("{}.eml".format(opts['counter']), "wb") as f:
                 f.write(data[0][1])
 
 
@@ -42,8 +60,9 @@ def main():
     parser.add_argument("-p", "--password", type=str, help="imap password",
                         required=True)
     parser.add_argument("-x", "--skip-list", type=str, help="IMAP folders to skip",
-                        default="junk,trash,spam,draft,")
-    parser.add_argument("-f", "--folder", type=str, help="IMAP folder to download")
+                        default="junk,trash,spam,draft")
+    parser.add_argument("-f", "--folders", type=str,
+                        help="Comma separated list of IMAP folders to download")
     parser.add_argument("-v", "--verbose", help="verbose mode", action='store_true')
 
     args = parser.parse_args()
@@ -63,10 +82,13 @@ def main():
     conn.login(args.user, args.password)
     conn.select()
 
-    if args.folder:
-        folders = [args.folder]
+    if args.folders:
+        folders = args.folders.split(',')
     else:
         folders = read_folder_list(conn)
+
+    if opts['verbose']:
+        print("Folders will be processed: {}".format(folders))
 
     for folder in folders:
         process_folder(conn, folder)
