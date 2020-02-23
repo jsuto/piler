@@ -258,6 +258,10 @@ if test z`which timeout 2>/dev/null` != "z"; then
 fi
 
 
+read -r version < VERSION
+AC_DEFINE_UNQUOTED(VERSION, "$version")
+
+
 dnl user running piler
 
 AC_ARG_WITH(piler-user,

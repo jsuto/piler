@@ -2,6 +2,8 @@
  * piler-config.h.in, SJ
  */
 
+#define VERSION "x.x.x"
+
 #define CONFDIR "/usr/local/etc"
 #define DATADIR "/usr/local/var"
 #define DATAROOTDIR "/usr/local/share"
@@ -29,4 +31,3 @@
 #undef HAVE_TWEAK_SENT_TIME
 
 #undef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
-

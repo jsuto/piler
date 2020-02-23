@@ -4513,6 +4513,13 @@ _ACEOF
 fi
 
 
+read -r version < VERSION
+cat >>confdefs.h <<_ACEOF
+#define VERSION "$version"
+_ACEOF
+
+
+
 
 
 # Check whether --with-piler-user was given.
