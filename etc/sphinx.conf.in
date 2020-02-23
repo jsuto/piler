@@ -40,7 +40,11 @@ source delta : base
    sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
         WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
 
+<?php if(SPHINX_VERSION < 300) { ?>
    sql_query_killlist = SELECT `id` FROM `metadata` WHERE `deleted`=1
+<?php } else { ?>
+   sql_query_kbatch = SELECT `id` FROM `metadata` WHERE `deleted`=1
+<?php } ?>
 }
 
 source main1 : base
