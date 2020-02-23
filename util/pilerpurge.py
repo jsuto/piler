@@ -1,8 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-import ConfigParser
+import configparser
 import MySQLdb as dbapi
-import StringIO
 import argparse
 import getpass
 import os
@@ -22,9 +21,8 @@ opts = {}
 
 def read_options(filename="", opts={}):
     s = "[piler]\n" + open(filename, 'r').read()
-    fp = StringIO.StringIO(s)
-    config = ConfigParser.RawConfigParser()
-    config.readfp(fp)
+    config = configparser.ConfigParser()
+    config.read_string(s)
 
     opts['username'] = config.get('piler', 'mysqluser')
     opts['password'] = config.get('piler', 'mysqlpwd')
@@ -229,7 +227,7 @@ def main():
                             str(opts['purged_stored_size'])))
             opts['db'].commit()
 
-    except dbapi.DatabaseError, e:
+    except dbapi.DatabaseError as e:
         print("Error %s" % e)
 
     if opts['db']:
