@@ -83,7 +83,7 @@ class Piler_Mime_Decode {
       $res[] = substr($body, $start, $p - $start);
 
       return $res;
-   }   
+   }
 
 
    public static function splitMessage($message, &$headers, &$body, $EOL = "\n") {
@@ -113,7 +113,7 @@ class Piler_Mime_Decode {
             if(count($parts) >= 2) {
                self::splitMessageRaw($parts[0], $s, $j, $journal);
 
-               $i = strpos($parts[1], "\n");
+               $i = strpos($parts[1], $EOL . $EOL);
                $msg = substr($parts[1], $i);
 
                $i = 0;
@@ -130,7 +130,7 @@ class Piler_Mime_Decode {
    }
 
 
-   public static function removeJournal(&$message, $EOL = '\n') {
+   public static function removeJournal(&$message, $EOL = "\n") {
       $has_journal = 0;
 
       $s = self::remove_LF($message);
@@ -249,7 +249,7 @@ class Piler_Mime_Decode {
 
                $result[$last_token] .= ' ' . $line_str;
             }
-         } 
+         }
 
       }
 
