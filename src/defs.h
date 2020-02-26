@@ -356,6 +356,11 @@ struct data {
 };
 
 
+#if !defined(MARIADB_BASE_VERSION) && !defined(MARIADB_VERSION_ID) && \
+  MYSQL_VERSION_ID >= 80001 && MYSQL_VERSION_ID != 80002
+typedef bool my_bool;
+#endif
+
 struct sql {
 #ifdef NEED_MYSQL
    MYSQL_STMT *stmt;
