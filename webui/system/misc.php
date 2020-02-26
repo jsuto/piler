@@ -575,3 +575,8 @@ function htmlentities_on_array($arr = []) {
 
    return $arr;
 }
+
+
+function encrypt_password($password = '') {
+   return crypt($password, '$6$rounds=5000$' . generate_random_string() . '$');
+}

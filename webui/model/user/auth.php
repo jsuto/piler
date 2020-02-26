@@ -577,7 +577,7 @@ class ModelUserAuth extends Model {
       if($username == "" || $password == ""){ return 0; }
 
       $query = $this->db->query("UPDATE " . TABLE_USER . " SET password=? WHERE uid=(SELECT uid FROM " . TABLE_EMAIL . " WHERE email=?)",
-                                array(crypt($password, '$6$' . generate_random_string()), $username));
+                                [encrypt_password($password), $username]);
 
       $rc = $this->db->countAffected();
 

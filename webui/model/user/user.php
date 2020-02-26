@@ -65,7 +65,7 @@ class ModelUserUser extends Model {
          foreach ($query->rows as $q) {
             array_push($data, $q['email']);
          }
-      
+
       }
 
       $emails = $this->get_email_addresses_from_groups($data);
@@ -350,12 +350,10 @@ class ModelUserUser extends Model {
          return $user['username'];
       }
 
-      $encrypted_password = crypt($user['password'], '$6$' . generate_random_string());
-
       $samaccountname = '';
       if(isset($user['samaccountname'])) { $samaccountname = $user['samaccountname']; }
 
-      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin, samaccountname) VALUES(?,?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], $encrypted_password, $user['domain'], @$user['dn'], (int)$user['isadmin'], $samaccountname));
+      $query = $this->db->query("INSERT INTO " . TABLE_USER . " (uid, username, realname, password, domain, dn, isadmin, samaccountname) VALUES(?,?,?,?,?,?,?,?)", array((int)$user['uid'], $user['username'], $user['realname'], encrypt_password($user['password']), $user['domain'], @$user['dn'], (int)$user['isadmin'], $samaccountname));
 
       if($query->error == 1 || $this->db->countAffected() == 0){ return $user['username']; }
 
@@ -420,9 +418,9 @@ class ModelUserUser extends Model {
 
 
       /* update password field if we have to */
- 
+
       if(strlen($user['password']) >= MIN_PASSWORD_LENGTH) {
-         $query = $this->db->query("UPDATE " . TABLE_USER . " SET password=? WHERE uid=?", array(crypt($user['password']), (int)$user['uid']));
+         $query = $this->db->query("UPDATE " . TABLE_USER . " SET password=? WHERE uid=?", array(encrypt_password($user['password']), (int)$user['uid']));
          if($this->db->countAffected() != 1) { return 0; }
       }
 
@@ -468,7 +466,7 @@ class ModelUserUser extends Model {
 
       $all_domains = $this->get_email_domains();
       $submitted_domains = explode("\n", $domains);
-          
+
       foreach($submitted_domains as $d) {
          $d = trim($d);
 
@@ -571,5 +569,3 @@ class ModelUserUser extends Model {
 
 
 }
-
-?>
