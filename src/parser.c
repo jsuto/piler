@@ -259,7 +259,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             p = get_attachment_extractor_by_filename(state->attachments[state->n_attachments].filename);
 
             snprintf(state->attachments[state->n_attachments].shorttype, TINYBUFSIZE-1, "%s", p);
- 
+
             if(strcmp("other", p)){
                state->b64fd = open(state->attachments[state->n_attachments].aname, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
                state->attachments[state->n_attachments].dumped = 1;
@@ -590,7 +590,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       state->message_state = MSG_UNDEF;
 
-      return 0;      
+      return 0;
    }
 
    if(boundary_line == 1){ return 0; }

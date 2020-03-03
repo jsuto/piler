@@ -14,4 +14,3 @@ int is_item_on_string(struct list *list, char *s);
 void free_list(struct list *list);
 
 #endif /* _LIST_H */
-

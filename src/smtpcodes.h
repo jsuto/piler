@@ -64,4 +64,3 @@
 // LMTP responses
 
 #define LMTP_RESP_220_BANNER "220 %s LMTP\r\n"
-

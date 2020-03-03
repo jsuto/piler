@@ -71,9 +71,8 @@ void base64_encode(unsigned char *in, int inlen, char *out, int outlen){
       }
 
       buf[i] = *(in+j);
-      i++;       
+      i++;
    }
 
    base64_encode_block(buf, i, &out[pos]);
 }
-

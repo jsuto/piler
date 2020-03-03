@@ -285,4 +285,3 @@ struct mi htmlentities[] = {
 
 
 #endif /* _HTMLENTITIES_H */
-

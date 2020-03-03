@@ -21,4 +21,3 @@ void initrules(struct node *xhash[]);
 void clearrules(struct node *xhash[]);
 
 #endif /* _RULES_H */
-

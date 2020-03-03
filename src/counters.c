@@ -74,7 +74,7 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
          if(counters->c_stored_size > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_STORED_SIZE, counters->c_stored_size, &mc);
 
 
-         bzero(&c, sizeof(c)); 
+         bzero(&c, sizeof(c));
 
          snprintf(buf, MAXBUFSIZE-1, "%s %s %s %s %s %s %s", MEMCACHED_MSGS_RCVD, MEMCACHED_MSGS_VIRUS, MEMCACHED_MSGS_DUPLICATE, MEMCACHED_MSGS_IGNORE, MEMCACHED_MSGS_SIZE, MEMCACHED_MSGS_STORED_SIZE, MEMCACHED_COUNTERS_LAST_UPDATE);
 
@@ -94,7 +94,7 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
                snprintf(buf, SMALLBUFSIZE-1, "%ld", sdata->now); memcached_add(&(data->memc), "set", MEMCACHED_COUNTERS_LAST_UPDATE, buf, strlen(buf), 0, 0);
 
                snprintf(buf, SMALLBUFSIZE-1, "UPDATE `%s` SET `rcvd`=%llu, `virus`=%llu, `duplicate`=%llu, `ignore`=%llu, `size`=%llu, `stored_size`=%llu", SQL_COUNTER_TABLE, c.c_rcvd, c.c_virus, c.c_duplicate, c.c_ignore, c.c_size, c.c_stored_size);
- 
+
                //if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: update counters: %s", sdata->ttmpfile, buf);
 
                p_query(sdata, buf);

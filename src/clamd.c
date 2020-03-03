@@ -41,7 +41,7 @@ int clamd_scan(char *tmpfile, struct config *cfg){
 
    /* issue the SCAN command with full path to the temporary directory */
 
-   
+
    memset(scan_cmd, 0, SMALLBUFSIZE);
    snprintf(scan_cmd, SMALLBUFSIZE-1, "SCAN %s/%s\r\n", cfg->workdir, tmpfile);
 

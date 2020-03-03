@@ -410,28 +410,28 @@ int ssl_want_retry(SSL *ssl, int ret, int timeout){
    i = SSL_get_error(ssl, ret);
    if(i == SSL_ERROR_NONE)
       return 1;
- 
+
    tv.tv_sec = timeout/1000;
    tv.tv_usec = 0;
    FD_ZERO(&fds);
- 
+
    switch(i){
       case SSL_ERROR_WANT_READ: // pause until the socket is readable
           sock = SSL_get_rfd(ssl);
           FD_SET(sock, &fds);
           i = select(sock+1, &fds, 0, 0, &tv);
           break;
- 
+
       case SSL_ERROR_WANT_WRITE: // pause until the socket is writeable
          sock = SSL_get_wfd(ssl);
          FD_SET(sock, &fds);
          i = select(sock+1, 0, &fds, 0, &tv);
          break;
- 
+
       case SSL_ERROR_ZERO_RETURN: // the sock closed, just return quietly
          i = 0;
          break;
- 
+
       default: // ERROR - unexpected error code
          i = -1;
          break;

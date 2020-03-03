@@ -92,6 +92,3 @@ void free_list(struct list *list){
       p = q;
    }
 }
-
-
-

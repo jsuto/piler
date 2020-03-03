@@ -26,4 +26,3 @@ void taia_now(struct taia *t);
 void taia_pack(char *s, struct taia *t);
 
 #endif /* _TAI_H */
-

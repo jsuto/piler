@@ -65,7 +65,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
    data->import->total_size += sdata->tot_len;
 
-   
+
    sdata->delivered = 0;
 
    sdata->import = 1;
@@ -124,7 +124,7 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
       default:
                         printf("failed to import: %s (id: %s)\n", data->import->filename, sdata->ttmpfile);
                         break;
-   } 
+   }
 
    if(rc != OK && data->import->failed_folder){
       p = strrchr(data->import->filename, '/');

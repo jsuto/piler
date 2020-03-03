@@ -169,5 +169,3 @@ CLOSE:
 
    return attachments;
 }
-
-

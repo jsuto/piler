@@ -508,7 +508,7 @@ int main(int argc, char **argv){
 
                     rc = append_email_to_buffer(&fromdomain, optarg);
 
-                    break;           
+                    break;
 
          case 'R' :
 
@@ -519,8 +519,8 @@ int main(int argc, char **argv){
 
                     rc = append_email_to_buffer(&todomain, optarg);
 
-                    break;                     
-                    
+                    break;
+
          case 'a' :
                     startdate = convert_time(optarg, 0, 0, 0);
                     break;
@@ -604,5 +604,3 @@ int main(int argc, char **argv){
 
    return 0;
 }
-
-

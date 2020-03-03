@@ -235,5 +235,3 @@ int remove_stored_message_files(struct session_data *sdata, struct parser_state 
 
    return 0;
 }
-
-

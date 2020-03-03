@@ -104,7 +104,6 @@ int p_exec_stmt(struct session_data *sdata, struct sql *sql){
          bind[i].buffer = sql->sql[i];
          bind[i].is_null = 0;
 
-         
       }
       else { break; }
    }
@@ -222,7 +221,7 @@ int prepare_sql_statement(struct session_data *sdata, struct sql *sql, char *s){
       return ERR;
    }
 
-   return OK; 
+   return OK;
 }
 
 

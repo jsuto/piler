@@ -133,4 +133,3 @@ void digest_string(char *s, char *digest){
       snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
 
 }
-

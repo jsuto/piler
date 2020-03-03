@@ -246,7 +246,7 @@ time_t parse_date_header(char *datestr){
             } else {
                tm.tm_min = atoi(r);
             }
-            continue; 
+            continue;
          }
       }
 
@@ -518,13 +518,13 @@ void markHTML(char *buf, struct parser_state *state){
       }
 
       if(state->htmltag == 1){
-    
+
          if(j == 0 && *s == '!'){
             state->skip_html = 1;
             //printf("skiphtml=1\n");
          }
 
-         if(state->skip_html == 0){ 
+         if(state->skip_html == 0){
             if(*s != '>' && *s != '<' && *s != '"'){
                //printf("j=%d/%c", j, *s);
                html[j] = tolower(*s);
@@ -973,7 +973,7 @@ char *determine_attachment_type(char *filename, char *type){
          if(strncasecmp(p, "jpg", 3) == 0) return "image,";
          if(strncasecmp(p, "jpeg", 4) == 0) return "image,";
          if(strncasecmp(p, "tiff", 4) == 0) return "image,";
-      } 
+      }
    }
 
    return "other,";
@@ -1055,4 +1055,3 @@ void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len
       *at_sign = r;
    }
 }
-

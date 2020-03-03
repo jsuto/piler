@@ -78,7 +78,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
       else syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
    }
 
-   
+
    if(session->bdat_bytes_to_read < 0){
       // malformed data from client: we got more data then had been told in BDAT argument
       syslog(LOG_PRIORITY, "ERROR: invalid BDAT data. Expected %d, got %d bytes", session->bdat_bytes_to_read + readlen, readlen);

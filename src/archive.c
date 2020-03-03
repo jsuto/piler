@@ -305,5 +305,3 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct c
 
    return 0;
 }
-
-

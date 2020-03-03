@@ -148,7 +148,7 @@ int parse_config_file(char *configfile, struct config *target_cfg, struct _parse
                   printf("failed to parse %s: \"%s\"\n", line, chpos+1);
                }
                break;
-            }				
+            }
 
             i++;
          }
@@ -230,7 +230,7 @@ void print_config_item(struct config *cfg, struct _parse_rule *rules, int i){
       trimBuffer(p);
       printf("%s=%s\n", rules[i].name, p);
    }
- 
+
 }
 
 
@@ -297,12 +297,10 @@ void print_config(char *configfile, struct config *cfg){
 
             i++;
          }
- 
+
          if(!rules[i].name) printf("unknown key: \"%s\" \n", line);
       }
    }
 
    fclose(f);
 }
-
-

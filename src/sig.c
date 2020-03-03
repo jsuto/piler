@@ -56,4 +56,3 @@ signal_func *set_signal_handler(int signo, signal_func * func){
 
    return oact.sa_handler;
 }
-

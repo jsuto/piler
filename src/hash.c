@@ -163,4 +163,3 @@ unsigned int DJBHash(char* str, unsigned int len){
 
    return hash;
 }
-

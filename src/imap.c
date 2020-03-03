@@ -363,7 +363,7 @@ int process_imap_folder(char *folder, struct session_data *sdata, struct data *d
 
 
 void send_imap_close(struct data *data){
-   char puf[SMALLBUFSIZE];  
+   char puf[SMALLBUFSIZE];
    snprintf(puf, sizeof(puf)-1, "A%d CLOSE\r\n", data->import->seq);
 
    write1(data->net, puf, strlen(puf));
@@ -447,7 +447,7 @@ int list_folders(struct data *data){
                q++;
                fldrlen = strtol(q, NULL, 10);
             } else {
-               
+
                if(fldrlen) {
                   ruf = malloc(strlen(q) * 2 + 1);
                   memset(ruf, 0, strlen(q) * 2 + 1);

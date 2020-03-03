@@ -197,7 +197,7 @@ int memcached_connect(struct memcached_server *ptr){
         {
           (void)close(ptr->fd);
           ptr->fd= -1;
-          
+
         }
 
       return MEMCACHED_FAILURE;
@@ -299,7 +299,7 @@ char *memcached_get(struct memcached_server *ptr, char *key, unsigned int *len, 
    *flags = atoi(p+1);
    *p = '\0';
 
- 
+
    p = strchr(ptr->result, '\r');
    if(!p) return NULL;
 
@@ -372,5 +372,3 @@ char *memcached_fetch_result(struct memcached_server *ptr, char *key, char *valu
 
    return p;
 }
-
-

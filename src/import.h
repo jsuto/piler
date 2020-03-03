@@ -23,4 +23,3 @@ int process_imap_folder(char *folder, struct session_data *sdata, struct data *d
 void send_imap_close(struct data *data);
 
 #endif /* _IMPORT_H */
-

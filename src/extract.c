@@ -317,5 +317,3 @@ void extract_attachment_content(struct session_data *sdata, struct parser_state 
 
 
 }
-
-
