@@ -340,9 +340,12 @@ int check_attachment_rule(struct parser_state *state, struct rule *rule){
    size_t nmatch=0;
    int ismatch = 0;
 
-   if(state->n_attachments == 0) return RULE_UNDEF;
+   // If no attachment rule, then return RULE_UNDEF
+   if(rule->emptyaname == 1 && rule->emptyatype == 1 && rule->attachment_size == 0) return RULE_UNDEF;
 
-   if(rule->emptyaname == 1 && rule->emptyatype == 1) return RULE_UNDEF;
+   // If we have attachments, but no attachment rules, then return RULE_NO_MATCH
+   if(state->n_attachments == 0 && (rule->emptyaname == 0 || rule->emptyatype == 0 || rule->attachment_size)) return RULE_NO_MATCH;
+
 
    for(i=1; i<=state->n_attachments; i++){
       ismatch = 0;
