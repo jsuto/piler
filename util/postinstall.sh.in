@@ -419,7 +419,7 @@ SOCKHELPER
 
 webui_install() {
    chmod 770 "${DOCROOT}/tmp" "${DOCROOT}/images"
-   chown "$PILERUSER" "${DOCROOT}/tmp"
+   chown "${PILERUSER}:${WWWGROUP}" "${DOCROOT}/tmp"
 
    envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
 
