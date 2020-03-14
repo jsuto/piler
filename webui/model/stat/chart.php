@@ -53,6 +53,20 @@ class ModelStatChart extends Model {
          array_push($dates, date($date_format, $q['ts']));
       }
 
+      // If there's a single data point, then we can't draw a line
+      // so we add an artificial value of 0
+      if(count($ydata) <= 1) {
+         if($timespan == "daily") {
+            $ts = NOW - (NOW % 3600) - 3600;
+         } else {
+            $ts = NOW - (NOW % 86400) - 86400;
+         }
+
+         array_push($ydata, 0);
+         array_push($dates, date($date_format, $ts));
+      }
+
+
       if($query->num_rows >= 15) {
          $i = 0;
          while(list($k, $v) = each($dates)) {
