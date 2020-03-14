@@ -1,6 +1,125 @@
 <?php
 
 class ModelHealthHealth extends Model {
+   $data = [];
+
+   public function collect_data() {
+      ini_set("default_socket_timeout", 5);
+
+      list ($this->data['uptime'], $this->data['cpuload']) = $this->uptime();
+
+      exec(PILER_BINARY . " -v", $a);
+      $this->data['piler_version'] = $a[0];
+
+      $x = exec(CPU_USAGE_COMMAND);
+      $this->data['cpuinfo'] = 100 - (int)$x;
+
+      list($this->data['totalmem'], $this->data['meminfo'], $this->data['totalswap'], $this->data['swapinfo']) = $this->meminfo();
+      $this->data['shortdiskinfo'] = $this->diskinfo();
+
+      list($archivesizeraw, $archivestoredsizeraw, $this->data['counters']) = $this->get_counters();
+
+      $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
+      $this->data['archive_stored_size'] = nice_size($archivestoredsizeraw, ' ');
+
+      $this->data['prefix'] = '';
+      if(isset($this->data['counters'][MEMCACHED_PREFIX . 'rcvd'])) { $this->data['prefix'] = MEMCACHED_PREFIX; }
+
+      $this->data['sysinfo'] = $this->model_health_health->sysinfo();
+      $this->data['options'] = $this->model_health_health->get_options();
+
+      $this->data['indexer_stat'] = $this->indexer_stat();
+      $this->data['purge_stat'] = $this->purge_stat();
+
+      $this->data['sphinx_current_main_size'] = $this->get_current_sphinx_main_index_size();
+
+      $this->get_average_count_values();
+      $this->get_average_size_values($archivesizeraw);
+
+      if(ENABLE_SAAS == 1) {
+         $this->data['num_of_online_users'] = $this->model_saas_customer->count_online();
+      }
+
+      $this->data['health'] = [];
+
+      foreach (Registry::get('health_smtp_servers') as $smtp) {
+         if($smtp[0]) {
+            $this->data['health'][] = $this->checksmtp($smtp, $lang->data['text_error']);
+         }
+      }
+
+   }
+
+
+   public function get_average_count_values() {
+      $this->data['processed_emails'] = $this->count_processed_emails();
+
+      // average messages per day, computed over the past week
+      $averagemessagesweekraw = ($this->data['processed_emails']['last_7_days_count']) / 7;
+
+      // average messages per day, computed over the past month
+      $averagemessagesmonthraw = ($this->data['processed_emails']['last_30_days_count']) / 30;
+
+      //average messages per day, computed over the time period since the first email was archived
+      $total_number_days = round( (time() - $this->get_first_email_arrival_ts()) / 86400 );
+      if($total_number_days == 0) {
+         $total_number_days = 1;
+      }
+
+      $averagemessagestotalraw = $this->data['counters']['rcvd'] / $total_number_days;
+   }
+
+
+   public function get_average_size_values($archivesizeraw = 0) {
+      $averagemessagesizeraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
+
+      if($this->data['counters']['rcvd'] > 0) {
+         // average message size, computed for total messages in database
+         $averagemessagesizeraw = $archivesizeraw / $this->data['counters']['rcvd'];
+
+         //average message metadata size, computed for total messages in database
+         $averagesqlsizeraw = $this->get_database_size() / $this->data['counters']['rcvd'];
+
+         //average message sphinx index size, computed for total messages in database
+         $averagesphinxsizeraw = $this->get_sphinx_size() / $this->data['counters']['rcvd'];
+      }
+
+      // average total message size per day, computed over the time period since the first email was archived
+      $averagesizedayraw = ($averagemessagesizeraw + $averagesqlsizeraw + $averagesphinxsizeraw) * $averagemessagestotalraw;
+
+      $datapart = 0;
+      foreach($this->data['shortdiskinfo'] as $part) {
+         if($part['partition'] == DATA_PARTITION) {
+            $datapart = $part['freespace']*1024;
+         }
+      }
+
+      $this->data['oldestmessagets'] = $this->get_oldest_record_ts();                // date of the oldest record in the db
+      $this->data['averagemessages'] = round($averagemessagesweekraw);               // rounded average of messages over the past week
+      $this->data['averagemessagesize'] = nice_size($averagemessagesizeraw, ' ');    // formatted average message size on disk
+      $this->data['averagesqlsize'] = nice_size($averagesqlsizeraw, ' ');            // formatted average metadata size in sql
+      $this->data['averagesphinxsize'] = nice_size($averagesphinxsizeraw, ' ');      // formatted average sphinx index
+      $this->data['averagesizeday'] = nice_size($averagesizedayraw, ' ');            // formatted average size per day
+
+      // estimated number of days of free space left
+      $averagesizedayraw > 0 ? $this->data['daysleftatcurrentrate'] = convert_days_ymd($datapart / $averagesizedayraw) : $this->data['daysleftatcurrentrate'] = 0;
+
+
+      /*
+       * determine if the trend of the last week compared to the last month is
+       * increasing, decreasing, or neutral (only applies to message count, not size)
+       */
+
+      if ($averagemessagesweekraw > $averagemessagesmonthraw) {
+         $this->data['usagetrend'] = 1;
+      } elseif($averagemessagesweekraw < $averagemessagesmonthraw) {
+         $this->data['usagetrend'] = -1;
+      } else {
+         $this->data['usagetrend'] = 0;
+      }
+
+   }
+
 
    public function format_time($time = 0) {
       if($time >= 1) {
