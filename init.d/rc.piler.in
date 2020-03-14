@@ -28,14 +28,17 @@ start() {
 }
 
 stop() {
-	echo "stopping $NAME"
-	kill ${PID_NUMBER}
+        if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill $PID_NUMBER; fi
 
-	if [ $PILER_SMTP_PID != '' ]; then echo "stopping piler-smtp"; kill $PILER_SMTP_PID; fi
+        if [ "$PILER_SMTP_PID" != "" ]; then echo "stopping piler-smtp"; kill $PILER_SMTP_PID; fi
 }
 
 check_status(){
-        test -f /proc/${PID_NUMBER}/status
+        if [ -f /proc/${PID_NUMBER}/status ]; then
+           echo "piler is running, pid: ${PID_NUMBER}";
+        else
+           echo "piler is NOT running";
+        fi
 
         if [ "${PILER_SMTP_PID}" != '' ]; then
            echo "piler-smtp is running, pid: ${PILER_SMTP_PID}";
@@ -56,10 +59,8 @@ case "$1" in
         status)
                 if check_status;
                  then
-                    echo "${NAME} is running."
                     exit 0
                  else
-                    echo "${NAME} is not running."
                     exit 1
                 fi
         ;;
@@ -78,4 +79,3 @@ case "$1" in
 	*)
 		echo "Usage: $0 start|stop|restart|reload|status"
 esac
-
