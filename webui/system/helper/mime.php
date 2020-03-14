@@ -123,6 +123,17 @@ class Piler_Mime_Decode {
                self::splitMessageRaw($msg, $headers, $j, $body);
             }
          }
+
+         // If the message has a single binary attachment, then drop the body part
+         if(isset($headers_array['content-type']['type'])) {
+            foreach(['application/', 'image/'] as $type) {
+               if(strstr($headers_array['content-type']['type'], $type)) {
+                  $body = '';
+                  break;
+               }
+            }
+         }
+
       }
       else {
          $headers = $message;
