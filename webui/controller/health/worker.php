@@ -2,14 +2,14 @@
 
 
 class ControllerHealthWorker extends Controller {
-   private $error = array();
+   private $error = [];
 
    public function index(){
 
       $archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
       $averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
       $averagemessagestotalraw = 0;
- 
+
       $this->id = "content";
       $this->template = "health/worker.tpl";
       $this->layout = "common/layout-empty";
@@ -68,9 +68,13 @@ class ControllerHealthWorker extends Controller {
       $db->select_db($db->database);
 
       list($archivesizeraw, $archivestoredsizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
- 
+
       $oldest_record_timestamp = $this->model_health_health->get_oldest_record_ts();
       $total_number_days = round( (time() - $this->model_health_health->get_first_email_arrival_ts()) / 86400 );
+
+      if($total_number_days == 0) {
+         $total_number_days = 1;
+      }
 
       $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
       $this->data['archive_stored_size'] = nice_size($archivestoredsizeraw, ' ');
@@ -81,9 +85,9 @@ class ControllerHealthWorker extends Controller {
       $this->data['sysinfo'] = $this->model_health_health->sysinfo();
 
       $this->data['options'] = $this->model_health_health->get_options();
-  
+
       $sqlsizeraw = $this->model_health_health->get_database_size();
-  
+
       $sphinxsizeraw = $this->model_health_health->get_sphinx_size();
 
 
@@ -126,7 +130,7 @@ class ControllerHealthWorker extends Controller {
       foreach($this->data['shortdiskinfo'] as $part) {
          if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }    // if the partition is the selected storage partition, record freespace on that partition
       }
-  
+
       $this->data['oldestmessagets'] = $oldest_record_timestamp;							    // date of the oldest record in the db
       $this->data['averagemessages'] = round($averagemessagesweekraw);							// rounded average of messages over the past week
       $this->data['averagemessagesize'] = nice_size($averagemessagesizeraw,' ');    			// formatted average message size on disk
