@@ -15,26 +15,26 @@
 
 NAME=piler
 OPTIONS=""
-PID_FILE=`SBINDIR/pilerconf $OPTIONS -q pidfile | cut -f2 -d=`
-PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
-PILER_SMTP_PID=$(ps uaxw | grep -w piler-smtp | grep -v grep | awk '{print $2}')
+PID_FILE="$(SBINDIR/pilerconf $OPTIONS -q pidfile | cut -f2 -d=)"
+PID_NUMBER="$(test -f "$PID_FILE" && cat "$PID_FILE")"
+PILER_SMTP_PID="$(pgrep piler-smtp)"
 
 start() {
-	echo "starting piler-smtp . . . "
-	SBINDIR/piler-smtp -d
+   echo "starting piler-smtp . . . "
+   SBINDIR/piler-smtp -d
 
-	echo "starting $NAME . . ."
-	SBINDIR/piler -d $OPTIONS
+   echo "starting $NAME . . ."
+   SBINDIR/piler -d $OPTIONS
 }
 
 stop() {
-        if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill $PID_NUMBER; fi
+   if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill "$PID_NUMBER"; fi
 
-        if [ "$PILER_SMTP_PID" != "" ]; then echo "stopping piler-smtp"; kill $PILER_SMTP_PID; fi
+   if [ "$PILER_SMTP_PID" != "" ]; then echo "stopping piler-smtp"; kill "$PILER_SMTP_PID"; fi
 }
 
 check_status(){
-        if [ -f /proc/${PID_NUMBER}/status ]; then
+        if [ -f "/proc/${PID_NUMBER}/status" ]; then
            echo "piler is running, pid: ${PID_NUMBER}";
         else
            echo "piler is NOT running";
@@ -48,13 +48,13 @@ check_status(){
 }
 
 case "$1" in
-	start)
-		start;
-   	;;
+        start)
+                start;
+        ;;
 
-	stop)
-		stop;
-   	;;
+        stop)
+                stop;
+        ;;
 
         status)
                 if check_status;
@@ -65,17 +65,18 @@ case "$1" in
                 fi
         ;;
 
-	restart)
-		stop;
-		sleep 1;
-		start;
-   	;;
+        restart)
+                stop;
+                sleep 1;
+                start;
+        ;;
 
-	reload)
-		kill -HUP $PID_NUMBER
-		echo "reloaded"
-	;;
+        reload)
+                kill -HUP "$PID_NUMBER"
+                echo "reloaded"
+        ;;
 
-	*)
-		echo "Usage: $0 start|stop|restart|reload|status"
+        *)
+                echo "Usage: $0 start|stop|restart|reload|status"
+        ;;
 esac
