@@ -30,6 +30,7 @@ class ControllerHealthWorker extends Controller {
       }
 
       $this->model_health_health->collect_data();
+      $this->data['health'] = $this->model_health_health->data;
 
       $this->render();
    }

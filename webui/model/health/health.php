@@ -1,7 +1,7 @@
 <?php
 
 class ModelHealthHealth extends Model {
-   $data = [];
+   public $data = [];
 
    public function collect_data() {
       ini_set("default_socket_timeout", 5);
@@ -17,7 +17,7 @@ class ModelHealthHealth extends Model {
       list($this->data['totalmem'], $this->data['meminfo'], $this->data['totalswap'], $this->data['swapinfo']) = $this->meminfo();
       $this->data['shortdiskinfo'] = $this->diskinfo();
 
-      list($archivesizeraw, $archivestoredsizeraw, $this->data['counters']) = $this->get_counters();
+      list($archivesizeraw, $archivestoredsizeraw, $this->data['counters']) = $this->model_stat_counter->get_counters();
 
       $this->data['archive_size'] = nice_size($archivesizeraw, ' ');
       $this->data['archive_stored_size'] = nice_size($archivestoredsizeraw, ' ');
@@ -42,6 +42,8 @@ class ModelHealthHealth extends Model {
 
       $this->data['health'] = [];
 
+      $lang = Registry::get('language');
+
       foreach (Registry::get('health_smtp_servers') as $smtp) {
          if($smtp[0]) {
             $this->data['health'][] = $this->checksmtp($smtp, $lang->data['text_error']);
@@ -55,10 +57,10 @@ class ModelHealthHealth extends Model {
       $this->data['processed_emails'] = $this->count_processed_emails();
 
       // average messages per day, computed over the past week
-      $averagemessagesweekraw = ($this->data['processed_emails']['last_7_days_count']) / 7;
+      $this->data['averagemessagesweekraw'] = ($this->data['processed_emails']['last_7_days_count']) / 7;
 
       // average messages per day, computed over the past month
-      $averagemessagesmonthraw = ($this->data['processed_emails']['last_30_days_count']) / 30;
+      $this->data['averagemessagesmonthraw'] = ($this->data['processed_emails']['last_30_days_count']) / 30;
 
       //average messages per day, computed over the time period since the first email was archived
       $total_number_days = round( (time() - $this->get_first_email_arrival_ts()) / 86400 );
@@ -66,7 +68,7 @@ class ModelHealthHealth extends Model {
          $total_number_days = 1;
       }
 
-      $averagemessagestotalraw = $this->data['counters']['rcvd'] / $total_number_days;
+      $this->data['averagemessagestotalraw'] = $this->data['counters']['rcvd'] / $total_number_days;
    }
 
 
@@ -85,7 +87,7 @@ class ModelHealthHealth extends Model {
       }
 
       // average total message size per day, computed over the time period since the first email was archived
-      $averagesizedayraw = ($averagemessagesizeraw + $averagesqlsizeraw + $averagesphinxsizeraw) * $averagemessagestotalraw;
+      $averagesizedayraw = ($averagemessagesizeraw + $averagesqlsizeraw + $averagesphinxsizeraw) * $this->data['averagemessagestotalraw'];
 
       $datapart = 0;
       foreach($this->data['shortdiskinfo'] as $part) {
@@ -95,7 +97,7 @@ class ModelHealthHealth extends Model {
       }
 
       $this->data['oldestmessagets'] = $this->get_oldest_record_ts();                // date of the oldest record in the db
-      $this->data['averagemessages'] = round($averagemessagesweekraw);               // rounded average of messages over the past week
+      $this->data['averagemessages'] = round($this->data['averagemessagesweekraw']);               // rounded average of messages over the past week
       $this->data['averagemessagesize'] = nice_size($averagemessagesizeraw, ' ');    // formatted average message size on disk
       $this->data['averagesqlsize'] = nice_size($averagesqlsizeraw, ' ');            // formatted average metadata size in sql
       $this->data['averagesphinxsize'] = nice_size($averagesphinxsizeraw, ' ');      // formatted average sphinx index
@@ -110,9 +112,9 @@ class ModelHealthHealth extends Model {
        * increasing, decreasing, or neutral (only applies to message count, not size)
        */
 
-      if ($averagemessagesweekraw > $averagemessagesmonthraw) {
+      if ($this->data['averagemessagesweekraw'] > $this->data['averagemessagesmonthraw']) {
          $this->data['usagetrend'] = 1;
-      } elseif($averagemessagesweekraw < $averagemessagesmonthraw) {
+      } elseif($this->data['averagemessagesweekraw'] < $this->data['averagemessagesmonthraw']) {
          $this->data['usagetrend'] = -1;
       } else {
          $this->data['usagetrend'] = 0;
