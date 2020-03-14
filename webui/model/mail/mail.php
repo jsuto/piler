@@ -5,6 +5,7 @@ class ModelMailMail extends Model {
 
    public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = array(), $msg){
       $ok = 0;
+      $queue_id = '';
 
       if($to == "" || strlen($msg) < 30){ return $ok; }
 
@@ -40,14 +41,14 @@ class ModelMailMail extends Model {
 
       $l = fgets($r, 4096);
 
-      if(preg_match("/^250/", $l)){ $ok = 1; }
+      if(preg_match("/^250/", $l)){ $queue_id = $l; $ok = 1; }
 
       fputs($r, "QUIT\r\n");
       $l = fgets($r, 4096);
 
       fclose($r);
 
-      syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok");
+      syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok, queue_id=$queue_id");
 
       return $ok;
    }
