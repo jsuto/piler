@@ -2,7 +2,7 @@
 
 class ModelAuditRemoval extends Model {
 
-   public function get_pending_removals($page_len = 0) {
+   public function get_pending_removals($page = 0, $page_len = 0) {
       $limit = '';
       $from = (int)$page * (int)$page_len;
 

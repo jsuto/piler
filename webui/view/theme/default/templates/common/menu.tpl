@@ -3,15 +3,15 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid"<?php if($settings['background_colour']) { ?> style="background: <?php print $settings['background_colour']; ?>;"<?php } ?>>
-        
+
           <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-        
+
           <a class="brand"<?php if($settings['branding_url']) { ?> target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"<?php } ?>><?php if($settings['branding_logo']) { ?><img src="<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>" /><?php } ?></a>
-          
+
             <div class="nav-collapse collapse">
                 <ul class="nav">
 
@@ -79,9 +79,9 @@
 
     <?php } ?>
                 </ul>
-            
+
                 <ul class="nav pull-right">
-	<?php if($settings['branding_url']) { ?>
+    <?php if($settings['branding_url']) { ?>
                     <li><a href="<?php print $settings['branding_url']; ?>" <?php if($settings['text_colour']) { ?> style="color: <?php print $settings['text_colour']; ?>;"<?php } ?> target="_blank"><i class="icon-phone"></i>&nbsp;<?php print $settings['branding_text']; ?></a></li>
     <?php } ?>
 
@@ -97,7 +97,7 @@
                             <li><a href="logout.php"><i class="icon-off"></i>&nbsp;<?php print $text_logout; ?></a></li>
                         </ul>
                     </li>
-                </ul>  
+                </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
