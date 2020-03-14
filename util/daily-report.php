@@ -3,11 +3,8 @@
 $webuidir = "";
 $verbose = 0;
 
-$archivesizeraw = $sqlsizeraw = $sphinxsizeraw = 0;
-$averagemessagesweekraw = $averagemessagesmonthraw = $averagemessagesizeraw = $averagesizedayraw = $averagesqlsizeraw = $averagesphinxsizeraw = 0;
-
 ini_set("session.save_path", "/tmp");
-   
+
 $_SERVER['HTTP_USER_AGENT'] = "daily/cron";
 
 $opts = 'h::v';
@@ -15,21 +12,21 @@ $lopts = array(
     'webui:',
     'verbose'
     );
-    
+
 if ( $options = getopt( $opts, $lopts ) )
 {
-    if ( isset($options['webui']) ) 
+    if ( isset($options['webui']) )
     {
         $webuidir = $options['webui'];
     } else
     {
         echo "\nError: must provide path to WebUI directory\n\n";
-    
+
         display_help();
         exit;
     }
-    
-    if ( isset($options['h']) ) 
+
+    if ( isset($options['h']) )
     {
         display_help();
         exit;
@@ -40,7 +37,7 @@ if ( $options = getopt( $opts, $lopts ) )
     }
 } else {
     display_help();
-    exit;   
+    exit;
 }
 
 
@@ -99,87 +96,30 @@ $counter = new ModelStatCounter();
 $mail = new ModelMailMail();
 
 
-      foreach (Registry::get('health_smtp_servers') as $smtp) {
-         $_health[] = $health->checksmtp($smtp, $text_error);
-      }
+$health->collect_data();
+$health = $health->data;
 
-      $processed_emails = $health->count_processed_emails();
 
-      list ($uptime, $cpuload) = $health->uptime();
+$msg = "From: " . SMTP_FROMADDR . EOL;
+$msg .= "To: " . ADMIN_EMAIL . EOL;
+$msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($text_daily_piler_report)) . "?=" . EOL;
+$msg .= "MIME-Version: 1.0" . EOL;
+$msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
+$msg .= EOL . EOL;
 
-      $x = exec(CPU_USAGE_COMMAND);
-      $cpuinfo = 100 - (int)$x;
+ob_start();
 
-      list($totalmem, $meminfo, $totalswap, $swapinfo) = $health->meminfo();
-      $shortdiskinfo = $health->diskinfo();
+include($webuidir . "/view/theme/default/templates/health/daily-report.tpl");
 
-      list($archivesizeraw, $archivesizestored, $counters) = $counter->get_counters();
+$msg .= ob_get_contents();
 
-      $archive_size = nice_size($archivesizeraw, ' ');
+ob_end_clean();
 
-      $sysinfo = $health->sysinfo();
+$rcpt = array(ADMIN_EMAIL);
 
-      $options = $health->get_options();
-
-      $averagemessagesizeraw = $averagesqlsizeraw = $averagesphinxsizeraw = $daysleftatcurrentrate = 0;
-
-	  /* these next counters are for projecting space */
-	  $averagemessagesweekraw = 0;
-	  $averagemessagesmonthraw = 0;
-
-          if($counters['rcvd'] > 0) {
-             $averagemessagesizeraw = $archivesizeraw / $counters['rcvd'];
-             $averagesqlsizeraw = $sqlsizeraw / $counters['rcvd'];
-             $averagesphinxsizeraw = $sphinxsizeraw / $counters['rcvd'];
-          }
-
-	  $averagesizedayraw = ($averagemessagesizeraw+$averagesqlsizeraw+$averagesphinxsizeraw) * $averagemessagesweekraw;
-          $datapart = 0;
-	  foreach($shortdiskinfo as $part) {
-		if( $part['partition'] == DATA_PARTITION ) { $datapart = $part['freespace']*1024; }
-	  }
-	  
-	  $averagemessages = round($averagemessagesweekraw);							// average of messages over the past week
-	  $averagemessagesize = nice_size($averagemessagesizeraw,' ');				// average message size on disk
-	  $averagesqlsize = nice_size($averagesqlsizeraw,' ');						// average metadata size in sql
-	  $averagesphinxsize = nice_size($averagesphinxsizeraw,' ');					// average sphinx index
-	  $averagesizeday = nice_size($averagesizedayraw,' ');						// average size per day
-
-	  if($averagesizedayraw > 0) {
-             $daysleftatcurrentrate = convert_days_ymd($datapart / $averagesizedayraw);	// number of days of free space left
-          }
-
-	  if ( $averagemessagesweekraw > $averagemessagesmonthraw ) {
-		$usagetrend = 1;
-	  } elseif( $averagemessagesweekraw < $averagemessagesmonthraw ) {
-	    $usagetrend = -1;
-	  } else {
-		$usagetrend = 0;
-	  }
-	  
-	  
-	  /* start email message */
-	  
-      $msg = "From: " . SMTP_FROMADDR . EOL;
-      $msg .= "To: " . ADMIN_EMAIL . EOL;
-      $msg .= "Subject: =?UTF-8?Q?" . preg_replace("/\n/", "", my_qp_encode($text_daily_piler_report)) . "?=" . EOL;
-      $msg .= "MIME-Version: 1.0" . EOL;
-      $msg .= "Content-Type: text/html; charset=\"utf-8\"" . EOL;
-      $msg .= EOL . EOL;
-
-      ob_start();
-	  
-      include($webuidir . "/view/theme/default/templates/health/daily-report.tpl");
-
-      $msg .= ob_get_contents();
-
-      ob_end_clean();
-
-      $rcpt = array(ADMIN_EMAIL);
-
-      if(SMARTHOST) {
-         $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
-      }
+if(SMARTHOST) {
+   $x = $mail->send_smtp_email(SMARTHOST, SMARTHOST_PORT, SMTP_DOMAIN, SMTP_FROMADDR, $rcpt, $msg);
+}
 
 
 if($fp) {
