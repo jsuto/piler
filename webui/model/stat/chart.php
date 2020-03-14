@@ -12,7 +12,6 @@ class ModelStatChart extends Model {
       $chart = new LineChart($size_x, $size_y);
 
       $chart->getPlot()->getPalette()->setLineColor(array(
-         //new Color(26, 192, 144),
          new Color(208, 48, 128),
       ));
 
@@ -74,10 +73,7 @@ class ModelStatChart extends Model {
       }
 
 
-      $dataSet = new XYSeriesDataSet();
-      $dataSet->addSerie("RCVD", $line1);
-
-      $chart->setDataSet($dataSet);
+      $chart->setDataSet($line1);
 
       $chart->setTitle($title);
       $chart->getPlot()->setGraphCaptionRatio(0.80);
