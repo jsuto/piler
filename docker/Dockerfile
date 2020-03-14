@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 ARG PACKAGE
 
 LABEL description="piler container" \
-      maintainer="Janos SUTO, sj@acts.hu"
+      maintainer="Janos SUTO, sj@acts.hu" \
       package="${PACKAGE}"
 
 ENV DEBIAN_FRONTEND="noninteractive" \
