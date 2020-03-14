@@ -51,6 +51,15 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
    if(take_into_pieces == 1){
       close(state.mfd); state.mfd = 0;
+
+      if(state.has_to_dump_whole_body == 1){
+         if(state.abufpos > 0){
+            flush_attachment_buffer(&state, &abuffer[0], sizeof(abuffer));
+         }
+         if(state.fd != -1) close(state.fd);
+         if(state.b64fd != -1) close(state.b64fd);
+      }
+
    }
 
    fclose(f);
@@ -218,13 +227,16 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    if(take_into_pieces == 1){
-      if(state->message_state == MSG_BODY && state->fd != -1 && is_substr_in_hash(state->boundaries, buf) == 0){
+      if(state->message_state == MSG_BODY && state->fd != -1 && (state->has_to_dump_whole_body == 1 || is_substr_in_hash(state->boundaries, buf) == 0) ){
          if(len + state->abufpos > abuffersize-1){
             flush_attachment_buffer(state, abuffer, abuffersize);
          }
          memcpy(abuffer+state->abufpos, buf, len); state->abufpos += len;
 
          state->attachments[state->n_attachments].size += len;
+
+         // When processing the body and writing to an attachment file, then we finish here
+         return 0;
       }
       else {
          state->saved_size += len;
@@ -238,7 +250,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    }
 
 
-   if(state->message_state == MSG_BODY && state->has_to_dump == 1 &&  state->pushed_pointer == 0){
+   if(state->message_state == MSG_BODY && state->has_to_dump == 1 && state->pushed_pointer == 0){
       state->pushed_pointer = 1;
 
 
@@ -340,7 +352,13 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
          state->message_state = MSG_CONTENT_TYPE;
       }
-      else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0) state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
+      else if(strncasecmp(buf, "Content-Transfer-Encoding:", strlen("Content-Transfer-Encoding:")) == 0){
+         state->message_state = MSG_CONTENT_TRANSFER_ENCODING;
+         if(state->is_1st_header == 1 && strcasestr(buf, "base64")){
+            state->has_to_dump = 1;
+            state->has_to_dump_whole_body = 1;
+         }
+      }
 
       /*
        * We only enter MSG_CONTENT_DISPOSITION state if we couldn't find
@@ -408,6 +426,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          snprintf(state->message_id, SMALLBUFSIZE-1, "%s", p);
       }
 
+      if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
+         fill_attachment_name_buf(state, buf);
+      }
+
       /* we are interested in only From:, To:, Subject:, Received:, Content-*: header lines */
       if(state->message_state <= 0) return 0;
    }
@@ -420,7 +442,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    }
 
 
-   /* 
+   /*
     * A normal journal looks like this:
     *
     *   Sender: sender@domain
@@ -523,21 +545,6 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(strcasestr(buf, "charset")) extractNameFromHeaderLine(buf, "charset", state->charset, TINYBUFSIZE);
       if(strcasestr(state->charset, "UTF-8")) state->utf8 = 1;
-   }
-
-
-   if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
-      p = &buf[0];
-      for(; *p; p++){
-         if(*p != ' ' && *p != '\t') break;
-      }
-
-      len = strlen(p);
-
-      if(len + state->anamepos < SMALLBUFSIZE-2){
-         memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
-         state->anamepos += len;
-      }
    }
 
 

@@ -166,6 +166,7 @@ struct parser_state {
    int style;
    int skip_html;
    int has_to_dump;
+   int has_to_dump_whole_body;
    int fd;
    int b64fd;
    int mfd;

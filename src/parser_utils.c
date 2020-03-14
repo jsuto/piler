@@ -56,6 +56,7 @@ void init_state(struct parser_state *state){
    state->anamepos = 0;
 
    state->has_to_dump = 0;
+   state->has_to_dump_whole_body = 0;
    state->fd = -1;
    state->b64fd = -1;
    state->mfd = -1;
@@ -1053,5 +1054,21 @@ void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len
       *(r+n) = '\0';
       *len = strlen(puf);
       *at_sign = r;
+   }
+}
+
+
+void fill_attachment_name_buf(struct parser_state *state, char *buf){
+   char *p = &buf[0];
+
+   for(; *p; p++){
+      if(*p != ' ' && *p != '\t') break;
+   }
+
+   int len = strlen(p);
+
+   if(len + state->anamepos < SMALLBUFSIZE-2){
+      memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
+      state->anamepos += len;
    }
 }
