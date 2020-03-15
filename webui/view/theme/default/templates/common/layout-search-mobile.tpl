@@ -40,6 +40,8 @@
   </div>
 </div>
 
+   <div id="messagebox1" class="alert alert-info lead"></div>
+
    <div id="piler1" class="container-fluid">
          <input type="hidden" name="searchtype" id="searchtype" value="expert" />
          <input type="hidden" name="sort" id="sort" value="date" />
@@ -48,8 +50,8 @@
          <input type="hidden" name="prefix" id="prefix" value="" />
 
       <div class="row">
-         <div class="col-xs-8"><input type="text" id="_search" name="_search" class="form-control" placeholder="Search" /></div>
-         <div class="col-xs-4"><button id="button_search" class="btn btn-default btn-danger" onclick="Piler.expert(this); return false;"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></div>
+         <div class="col-xs-10"><input type="text" id="_search" name="_search" class="form-control" placeholder="Search" /></div>
+         <div class="col-xs-2"><button id="button_search" class="btn btn-default btn-danger" onclick="Piler.expert(this); return false;"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></div>
       </div>
    </div>
 

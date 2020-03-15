@@ -61,6 +61,7 @@ $_['text_counters'] = "Számlálók";
 $_['text_cpu_load'] = "CPU terhelés";
 $_['text_cpu_usage'] = "CPU használat";
 $_['text_create_new_secret'] = "Új kód";
+$_['text_create_note'] = "Megjegyzés";
 $_['text_cumulative_counts'] = "Összesített számlálók";
 $_['text_customers'] = "Ügyfelek";
 

@@ -61,6 +61,7 @@ $_['text_counters'] = "Counters";
 $_['text_cpu_load'] = "CPU load";
 $_['text_cpu_usage'] = "CPU usage";
 $_['text_create_new_secret'] = "Create new secret";
+$_['text_create_note'] = "Create note";
 $_['text_cumulative_counts'] = "Cumulative counts";
 $_['text_customers'] = "Customers";
 

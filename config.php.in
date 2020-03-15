@@ -178,7 +178,7 @@ $config['BULK_DOWNLOAD_FOR_USERS'] = 1;
 $config['MAX_DOWNLOAD_PER_HOUR'] = 0;
 $config['MAX_RESTORE_PER_HOUR'] = 0;
 
-$config['MAX_CGI_FROM_SUBJ_LEN'] = 34;
+$config['MAX_CGI_FROM_SUBJ_LEN'] = 48;
 $config['PAGE_LEN'] = 20;
 $config['MAX_NUMBER_OF_FROM_ITEMS'] = 5;
 $config['MAX_SEARCH_HITS'] = 1000;

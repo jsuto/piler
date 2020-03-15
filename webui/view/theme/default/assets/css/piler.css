@@ -1,3 +1,4 @@
+#messagebox1{position:absolute;top:150px;z-index:2;width:300px;margin-left:-150px;left:50%;display:none;text-align:center;}
 #mainscreen{position:absolute;top:40px;right:15px;bottom:20px;left:15px;min-width:320px;z-index:0;}
 #mailleftcontainer{position:absolute;top:0;left:0;bottom:0;width:195px;}
 #mailrightcontent{position:absolute;top:0px;left:0;right:0;bottom:0;}
@@ -9,3 +10,7 @@
 #pagingrow{height:33px;overflow:hidden;}
 #pagingbox{background-color:#eeeeee;border-right:1px solid #ccc;padding:4px;height:25px;overflow:hidden;min-width:180px;}
 #notesbox{display:none;}
+.success{color:green;}
+.danger{color:red;}
+.message_highlight{background:lightblue;}
+#restorebox{display:none;}

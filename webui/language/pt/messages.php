@@ -484,3 +484,4 @@ $_['text_reason_of_rejection'] = "Reason of rejection";
 $_['text_user_data_officer'] = "Data officer";
 
 $_['text_no_selected_message'] = "no selected message";
+$_['text_create_note'] = "Create note";
