@@ -1,0 +1,11 @@
+#mainscreen{position:absolute;top:40px;right:15px;bottom:20px;left:15px;min-width:320px;z-index:0;}
+#mailleftcontainer{position:absolute;top:0;left:0;bottom:0;width:195px;}
+#mailrightcontent{position:absolute;top:0px;left:0;right:0;bottom:0;}
+#mailcontframe{border:1px solid #999999;position:absolute;width:100%;top:1px;bottom:0;background-color:#F9F9F9;overflow:hidden;}
+#mailpreviewframe{border:1px solid #999999;position:absolute;width:100%;bottom:0px;background-color:#F9F9F9;text-align:left;overflow:auto;}
+.boxlistcontent{position:absolute;top:0px;bottom:34px;left:0;right:0;width:100%;overflow-y:auto;overflow-x:hidden;height:auto;}
+.top0{top:0;}
+.boxfooter{position:absolute;bottom:0px;left:0px;right:0px;overflow:hidden;height:33px;border-top:1px solid #ccc;background-color:#f6f6f6;min-width:320px;}
+#pagingrow{height:33px;overflow:hidden;}
+#pagingbox{background-color:#eeeeee;border-right:1px solid #ccc;padding:4px;height:25px;overflow:hidden;min-width:180px;}
+#notesbox{display:none;}
