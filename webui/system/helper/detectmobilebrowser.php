@@ -12,6 +12,3 @@ function browser_detect() {
 }
 
 define('MOBILE_DEVICE', browser_detect());
-
-
-?>

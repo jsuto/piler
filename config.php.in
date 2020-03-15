@@ -8,13 +8,15 @@ ini_set('session.use_only_cookies', 1);
 define('NORMAL', 1);
 define('DEBUG', 5);
 
-$config = array();
+$config = [];
 
 
 /*
  * you can override any of these values by putting the
  * variable to be overridden in config-site.php
  */
+
+$config['ENABLE_MOBILE_PREVIEW'] = 0;
 
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
@@ -356,8 +358,6 @@ Registry::set("session", $session);
 if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme"))) { $config['THEME'] = $session->get("theme"); }
 
 include("system/helper/detectmobilebrowser.php");
-
-$config['ENABLE_MOBILE_PREVIEW'] = 0;
 
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
