@@ -159,7 +159,7 @@ $config['COMPATIBILITY'] = 'Which browsers are supported, etc';
 
 $config['ENABLE_AUDIT'] = 1;
 $config['MEMCACHED_ENABLED'] = 0;
-$config['PASSWORD_CHANGE_ENABLED'] = 0;
+$config['PASSWORD_CHANGE_ENABLED'] = 1;
 $config['ENABLE_STATISTICS'] = 1;
 $config['ENABLE_HISTORY'] = 1;
 $config['ENABLE_DELETE'] = 0;
