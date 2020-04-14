@@ -24,6 +24,11 @@ def read_options(filename="", opts={}):
     config = configparser.ConfigParser()
     config.read_string(s)
 
+    if config.has_option('piler', 'mysqlhost'):
+        opts['dbhost'] = config.get('piler', 'mysqlhost')
+    else:
+        opts['dbhost'] = 'localhost'
+
     opts['username'] = config.get('piler', 'mysqluser')
     opts['password'] = config.get('piler', 'mysqlpwd')
     opts['database'] = config.get('piler', 'mysqldb')
@@ -190,7 +195,7 @@ def main():
 
     read_options(args.config, opts)
     try:
-        opts['db'] = dbapi.connect("localhost", opts['username'],
+        opts['db'] = dbapi.connect(opts['dbhost'], opts['username'],
                                    opts['password'], opts['database'])
 
         if is_purge_enabled(opts) is False:
