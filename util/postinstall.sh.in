@@ -234,7 +234,7 @@ gather_mysql_account() {
    askNoEcho "Please enter mysql password for ${MYSQL_USERNAME}" ""
    MYSQL_PASSWORD="$response"
 
-   askNonBlankNoEcho "Please enter mysql root password" ""
+   askNonBlankNoEcho "Please enter mysql root password. If its a recent version of mysql and uses socket authentication, then any string would do here" ""
    MYSQL_ROOT_PASSWORD="$response"
 
    s=$(echo "use information_schema; select TABLE_NAME from TABLES where TABLE_SCHEMA='${MYSQL_DATABASE}'" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD")
