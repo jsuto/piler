@@ -106,7 +106,7 @@ class ControllerDomainDomain extends Controller {
          $domains = explode("\n", $this->request->post['domain']);
          foreach ($domains as $domain) {
             $domain = rtrim($domain);
-            if(!preg_match('/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,10})$/', $domain) ) {
+            if(!validdomain($domain) ) {
                $this->error['domain'] = $this->data['text_field_domain'];
             }
          }
@@ -115,7 +115,7 @@ class ControllerDomainDomain extends Controller {
       if(!isset($this->request->post['mapped']) || strlen($this->request->post['mapped']) < 3) {
          $this->data['text_field_length'] = str_replace("?",3,$this->data['text_field_length']);
          $this->error['mapped'] = $this->data['text_field_length'];
-      } elseif( !preg_match('/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,10})$/', $this->request->post['mapped']) ) {
+      } elseif( !validdomain($this->request->post['mapped']) ) {
          $this->error['mapped'] = $this->data['text_field_domain'];
       }
 
@@ -130,5 +130,3 @@ class ControllerDomainDomain extends Controller {
 
 
 }
-
-?>
