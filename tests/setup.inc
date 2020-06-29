@@ -1,5 +1,8 @@
-CONTAINERS=( "piler1" )
+NODE_WORKERS=( "worker0" "worker1" )
+SMTP_GW="smtpgw"
 DOCKER_LIMIT=( --pids-limit 256 --memory 512M )
+
+export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" "piler1" "syslog.host" )
 
 setup() {
    destroy_containers
@@ -11,9 +14,10 @@ setup() {
 launch_containers() {
 
    log "starting syslog server"
+   docker rm -f syslog.host || true
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name syslog.host sutoj/syslog
 
-   docker run -d --net=piler --name piler1 -e PILER_HOST="cust1.acts.hu" -p 80:80 -p 25:25 -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" "$docker_image"
+   docker run -d -v "${PACKAGE_DIR}:/data:ro" --net=piler --name piler1 -e PILER_HOST="cust1.acts.hu" -p 80:80 -p 25:25 -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" "$docker_image"
 
    wait_for_sleep_cycle_in_container "piler1"
 }
