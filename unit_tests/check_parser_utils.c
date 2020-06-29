@@ -25,6 +25,7 @@ struct str_pair {
 static void test_parse_date_header(){
    unsigned int i;
    struct config cfg;
+   time_t delta;
    struct date_test date_test[] = {
       {"Date: Mon, 02 Nov 2015 09:39:31 -0000", 1446457171},
       {"Date: Mon, 2 Nov 2015 10:39:45 +0100", 1446457185},
@@ -48,7 +49,8 @@ static void test_parse_date_header(){
    TEST_HEADER();
 
    for(i=0; i<sizeof(date_test)/sizeof(struct date_test); i++){
-      ASSERT(abs(parse_date_header(date_test[i].date_str) - date_test[i].timestamp) <= 3600, date_test[i].date_str);
+      delta = parse_date_header(date_test[i].date_str) - date_test[i].timestamp;
+      ASSERT(delta <= 3600 && delta >= -3600, date_test[i].date_str);
    }
 
    TEST_FOOTER();

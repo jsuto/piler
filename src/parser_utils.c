@@ -424,6 +424,8 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
             }
 
             if(need_encoding == 1 && ret == OK){
+               #pragma GCC diagnostic push
+               #pragma GCC diagnostic ignored "-Wstringop-truncation"
                strncat(puf, tmpbuf, sizeof(puf)-strlen(puf)-1);
             }
             else {
