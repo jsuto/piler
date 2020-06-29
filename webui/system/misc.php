@@ -168,11 +168,7 @@ function checkdomain($domain, $domains) {
 
 
 function validdomain($domain = '') {
-   if($domain == '') { return 0; }
-
-   if(preg_match("/@local$/", $domain)) { return 1; }
-
-   if(preg_match('/@?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $domain)) {
+   if(preg_match("/@?local$/", $domain) || preg_match('/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,10}$/', $domain)) {
       return 1;
    }
 
