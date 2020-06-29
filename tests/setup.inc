@@ -14,9 +14,9 @@ setup() {
 launch_containers() {
 
    log "starting syslog server"
-   docker rm -f syslog.host || true
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name syslog.host sutoj/syslog
 
+   log "starting piler"
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name piler1 \
       -e PACKAGE="$PACKAGE" \
       -e PILER_HOST="cust1.acts.hu" \
