@@ -4,21 +4,25 @@ class ModelMessageAttachment extends Model {
 
 
    public function get_attachment_by_id($id = 0) {
-      if($id <= 0) { return array(); }
+      if($id <= 0) { return []; }
 
-      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type FROM " . TABLE_ATTACHMENT . " WHERE id=?", array($id));
+      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type FROM " . TABLE_ATTACHMENT . " WHERE id=?", [$id]);
 
       if(isset($query->row)) {
+         if($query->row['ptr'] > 0) {
+            return $this->get_attachment_by_id($query->row['ptr']);
+         }
+
          $metaid = $this->model_search_message->get_id_by_piler_id($query->row['piler_id']);
 
          if($metaid > 0 && $this->model_search_search->check_your_permission_by_id($metaid) == 1) {
             $attachment = $this->get_attachment_content($query->row['piler_id'], $query->row['attachment_id']);
 
-            return array('filename' => fix_evolution_mime_name_crap($query->row['name']), 'piler_id' => $query->row['piler_id'], 'attachment' => $attachment);
+            return ['filename' => fix_evolution_mime_name_crap($query->row['name']), 'piler_id' => $query->row['piler_id'], 'attachment' => $attachment];
          }
       }
 
-      return array();
+      return [];
    }
 
 
@@ -65,7 +69,7 @@ class ModelMessageAttachment extends Model {
                fwrite($fp, $attachment['attachment']);
                fclose($fp);
 
-               $images[] = array('name' => "i." . $a['id']);
+               $images[] = ['name' => "i." . $a['id']];
             }
          }
       }
