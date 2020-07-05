@@ -87,7 +87,7 @@ class ModelHealthHealth extends Model {
       }
 
       // average total message size per day, computed over the time period since the first email was archived
-      $averagesizedayraw = ($averagemessagesizeraw + $averagesqlsizeraw + $averagesphinxsizeraw) * $this->data['averagemessagestotalraw'];
+      $averagesizedayraw = ($averagemessagesizeraw + $averagesqlsizeraw + $averagesphinxsizeraw) * $this->data['averagemessagesmonthraw'];
 
       $datapart = 0;
       foreach($this->data['shortdiskinfo'] as $part) {
