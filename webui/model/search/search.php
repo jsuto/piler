@@ -73,7 +73,7 @@ class ModelSearchSearch extends Model {
 
             $sd = preg_replace("/^\|/", "", $sd);
 
-            return " (@todomain $sd | @fromdomain $sd ) ";
+            return " (@todomain $sd | @senderdomain $sd ) ";
          }
 
          else { return ""; }
@@ -82,7 +82,7 @@ class ModelSearchSearch extends Model {
       if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
 
       $all_your_addresses = $this->get_all_your_address();
-      return " (@from $all_your_addresses | @to $all_your_addresses) ";
+      return " (@sender $all_your_addresses | @to $all_your_addresses) ";
    }
 
 
@@ -96,7 +96,7 @@ class ModelSearchSearch extends Model {
       $id = "";
       $offset = 0;
       $total_sphx_hits = $num_rows = 0;
-      $fields = array("@(subject,body)", "@from", "@to", "@subject", "@body", "@attachment_types");
+      $fields = array("@(subject,body)", "@sender", "@to", "@subject", "@body", "@attachment_types");
 
 
       $pagelen = get_page_length();
@@ -128,7 +128,7 @@ class ModelSearchSearch extends Model {
 
             if(substr($v, 0, 1) == "@") {
                $v = substr($v, 1, strlen($v)-1);
-               if($data['match'][$i-1] == "@from") { $data['match'][$i-1] = "@fromdomain"; }
+               if($data['match'][$i-1] == "@sender") { $data['match'][$i-1] = "@senderdomain"; }
                if($data['match'][$i-1] == "@to") { $data['match'][$i-1] = "@todomain"; }
             }
 
@@ -351,7 +351,7 @@ class ModelSearchSearch extends Model {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if($v == 'from:') { $token = 'match'; $a['match'][] = '@from'; continue; }
+         if($v == 'from:') { $token = 'match'; $a['match'][] = '@sender'; continue; }
          else if($v == 'to:') { $token = 'match'; $a['match'][] = '@to'; continue; }
          else if($v == 'subject:') { $token = 'match'; $a['match'][] = '@subject'; continue; }
          else if($v == 'body:') { $token = 'match'; $a['match'][] = '@body'; continue; }
