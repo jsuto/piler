@@ -6,7 +6,9 @@ export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER"
 
 setup() {
    destroy_containers
+   set -x
    launch_containers
+   set +x
    create_rules "piler1"
    add_data_officer "piler1"
 }
