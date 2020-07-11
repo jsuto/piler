@@ -62,7 +62,7 @@ run_05_sphinx_tests() {
 
 append_queries() {
    append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@subject budaörsi dc felmérés')" 9
-   append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@sender gruppi.hu')" 4
+   append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@from gruppi.hu')" 4
    append_query "select * from main1,dailydelta1,delta1 WHERE attachments > 0 AND MATCH('@subject spam  ')" 85
    append_query "select * from main1,dailydelta1,delta1 WHERE attachments > 0 AND MATCH('@subject spam @attachment_types image')" 15
    append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@(subject,body)  New Task TSK002*')" 29
