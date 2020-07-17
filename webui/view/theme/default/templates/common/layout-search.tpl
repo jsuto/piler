@@ -33,7 +33,7 @@
     <?php print JS_CODE; ?>
 </head>
 
-<body onload="Piler.add_shortcuts();">
+<body onload="Piler.add_shortcuts();<?php if(ENABLE_INSTANT_SEARCH){ ?>Piler.expert();<?php } ?>">
 
 <div id="deleteconfirm-modal" class="modal hide fade">
   <div class="modal-header">

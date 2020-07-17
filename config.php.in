@@ -168,6 +168,10 @@ $config['ENABLE_REMOTE_IMAGES'] = '0';
 $config['ENABLE_ON_THE_FLY_VERIFICATION'] = 0;
 $config['ENABLE_LDAP_IMPORT_FEATURE'] = 0;
 $config['ENABLE_FOLDER_RESTRICTIONS'] = 0;
+
+// When enabled the search page auto loads the search results
+// ie. as if the user had clicked on the Search button
+$config['ENABLE_INSTANT_SEARCH'] = 0;
 $config['SEARCH_RESULT_CHECKBOX_CHECKED'] = 0;
 $config['HELPER_URL'] = '';
 $config['LOG_LEVEL'] = NORMAL;
