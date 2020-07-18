@@ -73,7 +73,7 @@ class ModelSearchSearch extends Model {
 
             $sd = preg_replace("/^\|/", "", $sd);
 
-            return " (@todomain $sd | @fromdomain $sd ) ";
+            return sprintf(" (%s %s | %s %s ) ", TODOMAIN_TOKEN, $sd, FROMDOMAIN_TOKEN, $sd);
          }
 
          else { return ""; }
@@ -82,7 +82,7 @@ class ModelSearchSearch extends Model {
       if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
 
       $all_your_addresses = $this->get_all_your_address();
-      return " (@from $all_your_addresses | @to $all_your_addresses) ";
+      return sprintf(" (%s %s | %s %s) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses);
    }
 
 
@@ -96,7 +96,7 @@ class ModelSearchSearch extends Model {
       $id = "";
       $offset = 0;
       $total_sphx_hits = $num_rows = 0;
-      $fields = array("@(subject,body)", "@from", "@to", "@subject", "@body", "@attachment_types");
+      $fields = ["@(subject,body)", FROM_TOKEN, TO_TOKEN, "@subject", "@body", "@attachment_types"];
 
 
       $pagelen = get_page_length();
@@ -128,8 +128,8 @@ class ModelSearchSearch extends Model {
 
             if(substr($v, 0, 1) == "@") {
                $v = substr($v, 1, strlen($v)-1);
-               if($data['match'][$i-1] == "@from") { $data['match'][$i-1] = "@fromdomain"; }
-               if($data['match'][$i-1] == "@to") { $data['match'][$i-1] = "@todomain"; }
+               if($data['match'][$i-1] == FROM_TOKEN) { $data['match'][$i-1] = FROMDOMAIN_TOKEN; }
+               if($data['match'][$i-1] == TO_TOKEN) { $data['match'][$i-1] = TODOMAIN_TOKEN; }
             }
 
             $data['match'][$i] = $this->fix_email_address_for_sphinx($v);
@@ -351,8 +351,8 @@ class ModelSearchSearch extends Model {
       while(list($k, $v) = each($b)) {
          if($v == '') { continue; }
 
-         if($v == 'from:') { $token = 'match'; $a['match'][] = '@from'; continue; }
-         else if($v == 'to:') { $token = 'match'; $a['match'][] = '@to'; continue; }
+         if($v == 'from:') { $token = 'match'; $a['match'][] = FROM_TOKEN; continue; }
+         else if($v == 'to:') { $token = 'match'; $a['match'][] = TO_TOKEN; continue; }
          else if($v == 'subject:') { $token = 'match'; $a['match'][] = '@subject'; continue; }
          else if($v == 'body:') { $token = 'match'; $a['match'][] = '@body'; continue; }
          else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }

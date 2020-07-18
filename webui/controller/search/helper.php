@@ -98,8 +98,8 @@ class ControllerSearchHelper extends Controller {
    private function fixup_post_simple_request() {
       $match = '';
 
-      if(isset($this->request->post['from']) && $this->request->post['from']) { $match .= "@from " . $this->request->post['from'] . ' '; }
-      if(isset($this->request->post['to']) && $this->request->post['to']) { $match .= "@to " . $this->request->post['to'] . ' '; }
+      if(isset($this->request->post['from']) && $this->request->post['from']) { $match .= sprintf('%s %s ', FROM_TOKEN, $this->request->post['from']); }
+      if(isset($this->request->post['to']) && $this->request->post['to']) { $match .= sprintf('%s %s ', TO_TOKEN, $this->request->post['to']); }
       if(isset($this->request->post['subject']) && $this->request->post['subject']) { $match .= "@subject " . $this->request->post['subject'] . ' '; }
       if(isset($this->request->post['body']) && $this->request->post['body']) { $match .= "@body " . $this->request->post['body'] . ' '; }
 
@@ -149,7 +149,7 @@ class ControllerSearchHelper extends Controller {
          }
          else if(strchr($v, '@')) {
             $prev_token_is_email = 1;
-            if($from == '') { $from = "@from"; }
+            if($from == '') { $from = FROM_TOKEN; }
             $from .= " $v";
          }
          else {

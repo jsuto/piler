@@ -238,6 +238,7 @@ $config['SPHINX_MAIN_INDEX'] = 'main1,dailydelta1,delta1';
 $config['SPHINX_ATTACHMENT_INDEX'] = 'att1';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
+$config['SPHINX_STRICT_SCHEMA'] = 0;
 
 $config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
@@ -517,5 +518,14 @@ if(!isset($health_smtp_servers)) {
    $health_smtp_servers = array( array(PILER_HOST, PILER_PORT, "piler"), array(SMARTHOST, SMARTHOST_PORT, "smarthost") );
 }
 
-
-?>
+if(SPHINX_STRICT_SCHEMA) {
+   define('FROM_TOKEN', '@sender');
+   define('FROMDOMAIN_TOKEN', '@senderdomain');
+   define('TO_TOKEN', '@rcpt');
+   define('TODOMAIN_TOKEN', '@rcptdomain');
+} else {
+   define('FROM_TOKEN', '@from');
+   define('FROMDOMAIN_TOKEN', '@fromdomain');
+   define('TO_TOKEN', '@to');
+   define('TODOMAIN_TOKEN', '@todomain');
+}

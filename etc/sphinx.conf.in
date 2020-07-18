@@ -13,7 +13,19 @@ define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
                                   U+01FD->U+E6, U+1D01->U+E6, U+1D02->U+E6, U+1D2D->U+E6, U+1D46->U+E6, \
                                   U+DF, U+E1, U+E4, U+E5, U+E6, U+E9, U+ED, U+00F3, U+F6, U+F8, U+FA, U+FC, U+0151, U+0153, U+0171\n");
 
-define('SELECT_FIELDS', 'id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
+// Sphinx 3.3.1 introduced some strict rules for fulltext search column names
+// In order to comply with it you must enable SPHINX_STRICT_SCHEMA variable
+// Be sure to check out http://www.mailpiler.org/wiki/current:sphinx3 for more
+// NB: The SPHINX_STRICT_SCHEMA in sphinx.conf MUST BE THE SAME as in config.php (or in config-site.php)
+//
+define('SPHINX_STRICT_SCHEMA', 0);
+
+
+if(SPHINX_STRICT_SCHEMA) {
+   define('SELECT_FIELDS', 'id, `from` as sender, `to` as rcpt, `fromdomain` as senderdomain, `todomain` as rcptdomain, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
+} else {
+   define('SELECT_FIELDS', 'id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
+}
 
 ?>
 
