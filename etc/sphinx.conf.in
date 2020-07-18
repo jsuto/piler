@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-define('SPHINX_VERSION', 220); // If you have sphinx-3.1.1, then set SPHINX_VERSION to 311
+define('SPHINX_VERSION', 321); // If you have sphinx-3.2.1, then set SPHINX_VERSION to 321
 define('LOCALSTATEDIR', '@LOCALSTATEDIR@');
 define('NGRAM_CONFIG', "        #ngram_len               = 1\n        #ngram_chars             = U+3000..U+2FA1F\n");
 
@@ -12,6 +12,8 @@ define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
                                   U+DA->U+FA, U+DC->U+FC, U+0150->U+0151, U+0152->U+0153, U+0170->U+0171, U+01E2->U+E6, U+01E3->U+E6, U+01FC->U+E6, \
                                   U+01FD->U+E6, U+1D01->U+E6, U+1D02->U+E6, U+1D2D->U+E6, U+1D46->U+E6, \
                                   U+DF, U+E1, U+E4, U+E5, U+E6, U+E9, U+ED, U+00F3, U+F6, U+F8, U+FA, U+FC, U+0151, U+0153, U+0171\n");
+
+define('SELECT_FIELDS', 'id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
 
 ?>
 
@@ -37,8 +39,7 @@ source delta : base
    sql_query_pre = SET NAMES utf8mb4
    sql_query_pre  = REPLACE INTO sph_counter SELECT 1, IFNULL(MAX(id), 0) FROM sph_index
    sql_query_post_index  = DELETE FROM sph_index WHERE id<=(SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index \
-        WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
 
 <?php if(SPHINX_VERSION < 300) { ?>
    sql_query_killlist = SELECT `id` FROM `metadata` WHERE `deleted`=1
@@ -50,31 +51,31 @@ source delta : base
 source main1 : base
 {
    sql_query_pre = SET NAMES utf8mb4
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
 source main2 : base
 {
    sql_query_pre = SET NAMES utf8mb4
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
 source main3 : base
 {
    sql_query_pre = SET NAMES utf8mb4
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
 source main4 : base
 {
    sql_query_pre = SET NAMES utf8mb4
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
 source dailydelta : base
 {
    sql_query_pre = SET NAMES utf8mb4
-   sql_query = SELECT id, `from`, `to`, `fromdomain`, `todomain`, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types` FROM sph_index WHERE id=-1
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
 source tag : base
