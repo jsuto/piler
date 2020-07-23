@@ -742,7 +742,7 @@ int init_ssl_to_server(struct data *data){
    SSL_load_error_strings();
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-   data->net->ctx = SSL_CTX_new(TLSv1_client_method());
+   data->net->ctx = SSL_CTX_new(TLSv1_2_client_method());
 #else
    data->net->ctx = SSL_CTX_new(TLS_client_method());
 #endif
