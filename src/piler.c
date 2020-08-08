@@ -106,7 +106,6 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    char tmpbuf[SMALLBUFSIZE];
    char *status=S_STATUS_UNDEF;
    char *arule;
-   char *rcpt;
    char *p;
    struct timezone tz;
    struct timeval tv1, tv2;
@@ -135,7 +134,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
    post_parse(sdata, &parser_state, cfg);
 
    if(cfg->syslog_recipients == 1){
-      rcpt = parser_state.b_to;
+      char *rcpt = parser_state.b_to;
       do {
          rcpt = split_str(rcpt, " ", tmpbuf, sizeof(tmpbuf)-1);
 
@@ -162,9 +161,10 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
          syslog(LOG_PRIORITY, "%s: invalid message, hdr_len: %d", filename, sdata->hdr_len);
          rc = ERR;
       }
-
-      rc = process_message(sdata, &parser_state, data, cfg);
-      unlink(parser_state.message_id_hash);
+      else {
+         rc = process_message(sdata, &parser_state, data, cfg);
+         unlink(parser_state.message_id_hash);
+      }
    }
 
    unlink(sdata->tmpframe);
@@ -467,7 +467,7 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int i, daemonise=0, dedupfd;
+   int i, daemonise=0;
    struct stat st;
 
 
@@ -521,7 +521,7 @@ int main(int argc, char **argv){
    if(stat(cfg.pidfile, &st) == 0) fatal(ERR_PID_FILE_EXISTS);
 
    if(cfg.mmap_dedup_test == 1){
-      dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
+      int dedupfd = open(MESSAGE_ID_DEDUP_FILE, O_RDWR);
       if(dedupfd == -1) fatal(ERR_OPEN_DEDUP_FILE);
 
       data.dedup = mmap(NULL, MAXCHILDREN*DIGEST_LENGTH*2, PROT_READ|PROT_WRITE, MAP_SHARED, dedupfd, 0);
