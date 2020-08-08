@@ -62,7 +62,7 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, c, n_mbox=0;
+   int i, n_mbox=0;
    char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS], *directory=NULL;
    char puf[SMALLBUFSIZE], *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
@@ -145,9 +145,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?");
 #endif
 
       if(c == -1) break;
