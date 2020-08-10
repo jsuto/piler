@@ -73,9 +73,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
 
 void post_parse(struct session_data *sdata, struct parser_state *state, struct config *cfg){
-   int i, rec=0;
-   unsigned int len;
-   char *p;
+   int i;
 
    clearhash(state->boundaries);
    clearhash(state->rcpt);
@@ -105,12 +103,12 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
 
-      p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
-      len = strlen(p);
+      char *p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
+      unsigned int len = strlen(p);
       if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1 && !strstr(sdata->attachments, p)) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
 
       if(state->attachments[i].dumped == 1){
-         rec = 0;
+         int rec = 0;
          if(cfg->extract_attachments == 1 && state->bodylen < BIGBUFSIZE-1024) extract_attachment_content(sdata, state, state->attachments[i].aname, get_attachment_extractor_by_filename(state->attachments[i].filename), &rec, cfg);
 
          unlink(state->attachments[i].aname);
@@ -153,15 +151,13 @@ void storno_attachment(struct parser_state *state){
 
 
 void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned int abuffersize){
-   int n64;
-   unsigned char b64buffer[MAXBUFSIZE];
-
    if(write(state->fd, abuffer, state->abufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
 
    if(state->b64fd != -1){
       abuffer[state->abufpos] = '\0';
       if(state->base64 == 1){
-         n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
+         unsigned char b64buffer[MAXBUFSIZE];
+         int n64 = base64_decode_attachment_buffer(abuffer, &b64buffer[0], sizeof(b64buffer));
          if(write(state->b64fd, b64buffer, n64) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
       }
       else if(write(state->b64fd, abuffer, state->abufpos) == -1){
@@ -175,9 +171,8 @@ void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned
 
 
 int parse_line(char *buf, struct parser_state *state, struct session_data *sdata, int take_into_pieces, char *writebuffer, unsigned int writebuffersize, char *abuffer, unsigned int abuffersize, struct data *data, struct config *cfg){
-   char *p, puf[SMALLBUFSIZE];
-   char tmpbuf[MAXBUFSIZE];
-   int writelen, boundary_line=0, result;
+   char *p;
+   int boundary_line=0;
    unsigned int len;
 
    if(cfg->debug == 1) printf("line: %s", buf);
@@ -284,8 +279,9 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
                syslog(LOG_PRIORITY, "%s: error opening %s", sdata->ttmpfile, state->attachments[state->n_attachments].internalname);
             }
             else {
+               char puf[SMALLBUFSIZE];
                snprintf(puf, sizeof(puf)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, state->n_attachments);
-               writelen = strlen(puf);
+               int writelen = strlen(puf);
                if(writelen + state->writebufpos > writebuffersize-1){
                   if(write(state->mfd, writebuffer, state->writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: write(), %s, %d, %s", __func__, __LINE__, __FILE__);
                   state->writebufpos = 0;
@@ -637,7 +633,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    /* encode the body if it's not utf-8 encoded */
    if(state->message_state == MSG_BODY && state->utf8 != 1){
-      result = utf8_encode(buf, strlen(buf), &tmpbuf[0], sizeof(tmpbuf), state->charset);
+      char tmpbuf[MAXBUFSIZE];
+      int result = utf8_encode(buf, strlen(buf), &tmpbuf[0], sizeof(tmpbuf), state->charset);
       if(result == OK) snprintf(buf, MAXBUFSIZE-1, "%s", tmpbuf);
    }
 

@@ -28,7 +28,7 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, c;
+   int i;
    time_t retention_seconds=0;
    struct stat st;
    struct session_data sdata;
@@ -57,9 +57,9 @@ int main(int argc, char **argv){
       int option_index = 0;
 
 
-      c = getopt_long(argc, argv, "c:m:a:hv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:a:hv?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:a:hv?");
+      int c = getopt(argc, argv, "c:m:a:hv?");
 #endif
 
       if(c == -1) break;

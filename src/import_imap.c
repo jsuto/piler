@@ -73,7 +73,7 @@ int import_from_imap_server(struct session_data *sdata, struct data *data, struc
       q = data->imapfolders[i];
       while(q != NULL){
 
-         if(q && q->str && strlen(q->str) > 1){
+         if(q->str && strlen(q->str) > 1){
 
             skipmatch = 0;
 

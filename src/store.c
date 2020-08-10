@@ -213,12 +213,11 @@ ENDE:
 
 
 int remove_stored_message_files(struct session_data *sdata, struct parser_state *state, struct config *cfg){
-   int i;
    char s[SMALLBUFSIZE];
 
    if(state->n_attachments > 0){
 
-      for(i=1; i<=state->n_attachments; i++){
+      for(int i=1; i<=state->n_attachments; i++){
          snprintf(s, sizeof(s)-1, "%s/%02x/%c%c%c/%c%c/%c%c/%s.a%d", cfg->queuedir, cfg->server_id, sdata->ttmpfile[8], sdata->ttmpfile[9], sdata->ttmpfile[10], sdata->ttmpfile[RND_STR_LEN-4], sdata->ttmpfile[RND_STR_LEN-3], sdata->ttmpfile[RND_STR_LEN-2], sdata->ttmpfile[RND_STR_LEN-1], sdata->ttmpfile, i);
 
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: unlinking %s", sdata->ttmpfile, s);

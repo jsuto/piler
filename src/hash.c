@@ -33,12 +33,10 @@ void clearhash(struct node *xhash[]){
          p = q;
 
          q = q->r;
-         if(p){
-            if(p->str){
-               free(p->str);
-            }
-            free(p);
+         if(p->str){
+            free(p->str);
          }
+         free(p);
       }
       xhash[i] = NULL;
    }
@@ -154,12 +152,12 @@ int is_substr_in_hash(struct node *xhash[], char *s){
 
 
 unsigned int DJBHash(char* str, unsigned int len){
-   unsigned int hash = 5381;
+   unsigned int hashval = 5381;
    unsigned int i    = 0;
 
    for(i=0; i < len; str++, i++){
-      hash = ((hash << 5) + hash) + (*str);
+      hashval = ((hashval << 5) + hashval) + (*str);
    }
 
-   return hash;
+   return hashval;
 }

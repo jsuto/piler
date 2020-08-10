@@ -20,7 +20,7 @@
 
 int import_message(struct session_data *sdata, struct data *data, struct config *cfg){
    int rc=ERR;
-   char *p, *rule, newpath[SMALLBUFSIZE];
+   char *rule;
    struct stat st;
    struct parser_state state;
    struct counters counters;
@@ -127,12 +127,13 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    }
 
    if(rc != OK && data->import->failed_folder){
-      p = strrchr(data->import->filename, '/');
+      char *p = strrchr(data->import->filename, '/');
       if(p)
          p++;
       else
          p = data->import->filename;
 
+      char newpath[SMALLBUFSIZE];
       snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, p);
 
       if(rename(data->import->filename, newpath))

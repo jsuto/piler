@@ -59,7 +59,7 @@ void memcached_init(struct memcached_server *ptr, char *server_ip, int server_po
 
 
 int set_socket_options(struct memcached_server *ptr){
-   int error, flag=1, flags, rval;
+   int error, flag=1, flags;
    struct timeval waittime;
    struct linger linger;
 
@@ -128,8 +128,7 @@ int set_socket_options(struct memcached_server *ptr){
 
 
    if((flags & O_NONBLOCK) == 0){
-      rval = fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK);
-      if(rval == -1) return MEMCACHED_FAILURE;
+      if(fcntl(ptr->fd, F_SETFL, flags | O_NONBLOCK) == -1) return MEMCACHED_FAILURE;
    }
 
    return MEMCACHED_SUCCESS;
@@ -223,7 +222,7 @@ int memcached_add(struct memcached_server *ptr, char *cmd, char *key, char *valu
    if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return MEMCACHED_FAILURE;
 
    // cmd could be either 'add' or 'set'
-   snprintf(ptr->buf, MAXBUFSIZE-1, "%s %s %d %ld %d \r\n", cmd, key, flags, expiry, valuelen);
+   snprintf(ptr->buf, MAXBUFSIZE-1, "%s %s %u %lu %u \r\n", cmd, key, flags, expiry, valuelen);
    len = strlen(ptr->buf);
 
    strncat(ptr->buf, value, MAXBUFSIZE-strlen(ptr->buf)-1);
@@ -260,52 +259,6 @@ int memcached_increment(struct memcached_server *ptr, char *key, unsigned long l
    }
 
    return MEMCACHED_SUCCESS;
-}
-
-
-char *memcached_get(struct memcached_server *ptr, char *key, unsigned int *len, unsigned int *flags){
-   char *p;
-
-   if(memcached_connect(ptr) != MEMCACHED_SUCCESS) return NULL;
-
-   snprintf(ptr->buf, MAXBUFSIZE, "get %s \r\n", key);
-   send(ptr->fd, ptr->buf, strlen(ptr->buf), 0);
-
-   ptr->last_read_bytes = __recvtimeout(ptr->fd, ptr->buf, MAXBUFSIZE, ptr->rcv_timeout);
-
-   if(ptr->last_read_bytes <= 0){
-      memcached_shutdown(ptr);
-      return NULL;
-   }
-
-
-   if(ptr->last_read_bytes < 10) return NULL;
-
-   if(strncmp("VALUE ", ptr->buf, 6)) return NULL;
-
-   p = strchr(ptr->buf, '\r');
-   if(!p) return NULL;
-   *p = '\0';
-   ptr->result = p + 2;
-
-   p = strrchr(ptr->buf + 6, ' ');
-   if(!p) return NULL;
-   *len = atoi(p+1);
-   *p = '\0';
-
-
-   p = strrchr(ptr->buf + 6, ' ');
-   if(!p) return NULL;
-   *flags = atoi(p+1);
-   *p = '\0';
-
-
-   p = strchr(ptr->result, '\r');
-   if(!p) return NULL;
-
-   *p = '\0';
-
-   return ptr->result;
 }
 
 

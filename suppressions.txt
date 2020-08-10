@@ -1,0 +1,13 @@
+identicalConditionAfterEarlyExit:src/tokenizer.c:40
+invalidPrintfArgType_s:src/extract.c:175
+invalidPrintfArgType_s:src/misc.c:39
+invalidPrintfArgType_s:src/misc.c:43
+invalidPrintfArgType_s:src/misc.c:47
+invalidPrintfArgType_s:src/misc.c:51
+invalidPrintfArgType_s:src/misc.c:55
+invalidPrintfArgType_s:src/misc.c:59
+invalidPrintfArgType_s:src/misc.c:63
+redundantAssignment:src/imap.c:47
+unusedFunction:src/sig.c:33
+unusedFunction:src/sig.c:38
+unusedFunction:src/sig.c:44

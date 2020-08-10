@@ -54,8 +54,6 @@ void get_bdat_size_to_read(struct smtp_session *session, char *buf){
 
 
 void process_bdat(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   char buf[SMALLBUFSIZE];
-
    if(readlen <= 0) return;
 
    if(session->fd == -1){
@@ -106,6 +104,7 @@ void process_bdat(struct smtp_session *session, char *readbuf, int readlen, stru
 
          move_email(session);
 
+         char buf[SMALLBUFSIZE];
          snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
          send_smtp_response(session, buf);
          syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket);

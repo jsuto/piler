@@ -30,7 +30,6 @@ int is_blocked_by_tcp_wrappers(int sd){
 
 
 int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg){
-   char smtp_banner[SMALLBUFSIZE];
    int slot;
 
    /*
@@ -57,6 +56,8 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
       sessions[slot] = malloc(sizeof(struct smtp_session));
       if(sessions[slot]){
          init_smtp_session(sessions[slot], slot, socket, cfg);
+
+         char smtp_banner[SMALLBUFSIZE];
          snprintf(smtp_banner, sizeof(smtp_banner)-1, SMTP_RESP_220_BANNER, cfg->hostid);
          send(socket, smtp_banner, strlen(smtp_banner), 0);
 
@@ -233,14 +234,12 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
 
 
 void write_envelope_addresses(struct smtp_session *session, struct config *cfg){
-   int i;
-   char *p, s[SMALLBUFSIZE];
-
    if(session->fd == -1) return;
 
-   for(i=0; i<session->num_of_rcpt_to; i++){
-      p = strchr(session->rcptto[i], '@');
+   for(int i=0; i<session->num_of_rcpt_to; i++){
+      char *p = strchr(session->rcptto[i], '@');
       if(p && strncmp(p+1, cfg->hostid, cfg->hostid_len)){
+         char s[SMALLBUFSIZE];
          snprintf(s, sizeof(s)-1, "X-Piler-Envelope-To: %s\n", session->rcptto[i]);
          if(write(session->fd, s, strlen(s)) == -1) syslog(LOG_PRIORITY, "ERROR: %s: cannot write envelope to address", session->ttmpfile);
       }

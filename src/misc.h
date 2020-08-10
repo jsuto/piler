@@ -19,8 +19,6 @@ int get_build();
 void get_extractor_list();
 void __fatal(char *s);
 long tvdiff(struct timeval a, struct timeval b);
-int countCharacterInBuffer(char *p, char c);
-void replaceCharacterInBuffer(char *p, char from, char to);
 char *split(char *str, int ch, char *buf, int buflen, int *result);
 char *split_str(char *row, char *what, char *s, int size);
 int trimBuffer(char *s);
@@ -42,7 +40,6 @@ void init_session_data(struct session_data *sdata, struct config *cfg);
 int read_from_stdin(struct session_data *sdata);
 void strtolower(char *s);
 
-void *get_in_addr(struct sockaddr *sa);
 int make_socket_non_blocking(int fd);
 int create_and_bind(char *listen_addr, int listen_port);
 

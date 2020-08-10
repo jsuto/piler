@@ -74,10 +74,7 @@ uint64 get_max_meta_id(struct session_data *sdata){
 
 
 uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *data, uint64 from_id, uint64 to_id, struct config *cfg){
-   FILE *f;
-   char filename[SMALLBUFSIZE];
    char s[SMALLBUFSIZE];
-   int rc=0;
    uint64 stored_id=0, reindexed=0, delta;
    struct parser_state state;
    struct sql sql;
@@ -111,12 +108,12 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
       while(p_fetch_results(&sql) == OK){
 
          if(stored_id > 0){
-
+            char filename[SMALLBUFSIZE];
             snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
 
-            f = fopen(filename, "w");
+            FILE *f = fopen(filename, "w");
             if(f){
-               rc = retrieve_email_from_archive(sdata, f, cfg);
+               int rc = retrieve_email_from_archive(sdata, f, cfg);
                fclose(f);
 
                if(rc){
@@ -162,7 +159,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
 
 int main(int argc, char **argv){
-   int c, all=0;
+   int all=0;
    uint64 from_id=0, to_id=0, n=0;
    char *configfile=CONFIG_FILE, *folder=NULL;
    struct session_data sdata;
@@ -171,7 +168,7 @@ int main(int argc, char **argv){
 
 
    while(1){
-      c = getopt(argc, argv, "c:f:t:F:pahv?");
+      int c = getopt(argc, argv, "c:f:t:F:pahv?");
 
       if(c == -1) break;
 
@@ -211,7 +208,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(all == 0 && (from_id <= 0 || to_id <= 0) ) usage();
+   if(all == 0 && (from_id == 0 || to_id == 0) ) usage();
 
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 

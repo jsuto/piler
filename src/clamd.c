@@ -20,7 +20,7 @@
 
 int clamd_scan(char *tmpfile, struct config *cfg){
    int s, n;
-   char *p, *q, buf[MAXBUFSIZE], scan_cmd[SMALLBUFSIZE];
+   char buf[MAXBUFSIZE], scan_cmd[SMALLBUFSIZE];
    struct sockaddr_un server;
 
    chmod(tmpfile, 0644);
@@ -58,9 +58,9 @@ int clamd_scan(char *tmpfile, struct config *cfg){
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: CLAMD DEBUG: %d %s", tmpfile, n, buf);
 
    if(strcasestr(buf, CLAMD_RESP_INFECTED)){
-      p = strchr(buf, ' ');
+      char *p = strchr(buf, ' ');
       if(p){
-         q = strrchr(p, ' ');
+         char *q = strrchr(p, ' ');
          if(q){
             *q = '\0';
             p++;

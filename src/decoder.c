@@ -98,20 +98,6 @@ inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, in
 }
 
 
-void sanitiseBase64(char *s){
-   char *p1;
-
-   if(s == NULL) return;
-
-   for(; *s; s++){
-      if(b64[(unsigned int)(*s & 0xFF)] == 255){
-         for(p1 = s; p1[0] != '\0'; p1++)
-            p1[0] = p1[1];
-      }
-   }
-}
-
-
 inline static void pack_4_into_3(char *s, char *s2){
    int j, n[4], k1, k2;
 
@@ -157,7 +143,7 @@ int decodeBase64(char *p){
 
 
 int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
-   int i, len=0, decodedlen;
+   int i, len=0;
    char s[5], s2[3];
 
    if(plen < 4 || plen > blen)
@@ -166,7 +152,7 @@ int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
    for(i=0; i<plen; i+=4){
       memcpy(s, p+i, 4);
       s[4] = '\0';
-      decodedlen = 3;
+      int decodedlen = 3;
 
       /* safety check against abnormally long lines */
 
@@ -191,12 +177,11 @@ int decode_base64_to_buffer(char *p, int plen, unsigned char *b, int blen){
 void decodeQP(char *p){
    unsigned int i;
    int k=0, a, b;
-   char c;
 
    if(p == NULL) return;
 
    for(i=0; i<strlen((char*)p); i++){
-      c = p[i];
+      char c = p[i];
 
       if(p[i] == '=' && isxdigit(p[i+1]) && isxdigit(p[i+2])){
          a = p[i+1];

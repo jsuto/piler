@@ -4,7 +4,6 @@
 #include <sys/time.h>
 #include "tai.h"
 
-static char hex[16] = "0123456789abcdef";
 
 
 void tai_pack(char *s, struct tai *t){
@@ -49,22 +48,4 @@ void taia_now(struct taia *t){
    t->sec.x = 4611686018427387914ULL + (uint64)now.tv_sec;
    t->nano = 1000 * now.tv_usec + 500;
    t->atto = 0;
-}
-
-
-void tai_timestamp(char *s){
-   struct tai now;
-   char nowpack[TAI_PACK];
-   int i;
-
-   now.x = 4611686018427387914ULL + (uint64)time((long *) 0);
-
-   tai_pack(nowpack, &now);
-
-   for (i = 0;i < 8;++i) {
-      *(s+i*2) = hex[(nowpack[i] >> 4) & 15];
-      *(s+i*2+1) = hex[nowpack[i] & 15];
-   }
-
-   *(s+2*TAI_PACK) = '\0';
 }

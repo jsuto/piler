@@ -123,7 +123,7 @@ static void test_create_id(){
 static void test_split(){
    unsigned int i;
    int result;
-   char *p, buf[SMALLBUFSIZE];
+   char buf[SMALLBUFSIZE];
 
    struct test_data_s_s_i test_data_s_s_i[] = {
       { "hello\nworld\n", "world\n", 1 },
@@ -135,7 +135,7 @@ static void test_split(){
    TEST_HEADER();
 
    for(i=0; i<sizeof(test_data_s_s_i)/sizeof(struct test_data_s_s_i); i++){
-      p = split(test_data_s_s_i[i].s1, '\n', buf, sizeof(buf)-1, &result);
+      char *p = split(test_data_s_s_i[i].s1, '\n', buf, sizeof(buf)-1, &result);
 
       if(p){ ASSERT(strcmp(buf, "hello") == 0 && strcmp(p, test_data_s_s_i[i].s2) == 0 && result == test_data_s_s_i[i].result, test_data_s_s_i[i].s1); }
       else { ASSERT(p == NULL && result == test_data_s_s_i[i].result, test_data_s_s_i[i].s1); }
@@ -147,7 +147,7 @@ static void test_split(){
 
 static void test_split_str(){
    unsigned int i;
-   char *p, buf[SMALLBUFSIZE];
+   char buf[SMALLBUFSIZE];
 
    struct test_data_s_s test_data_s_s[] = {
       { "aaaXXbbbXX", "bbbXX" },
@@ -159,7 +159,7 @@ static void test_split_str(){
    TEST_HEADER();
 
    for(i=0; i<sizeof(test_data_s_s)/sizeof(struct test_data_s_s); i++){
-      p = split_str(test_data_s_s[i].s, "XX", buf, sizeof(buf)-1);
+      char *p = split_str(test_data_s_s[i].s, "XX", buf, sizeof(buf)-1);
 
       if(p){ ASSERT(strcmp(buf, "aaa") == 0 && strcmp(test_data_s_s[i].result, p) == 0, test_data_s_s[i].s); }
       else { ASSERT(strcmp(buf, "aaa") == 0 && p == NULL, test_data_s_s[i].s); }

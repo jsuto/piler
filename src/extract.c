@@ -40,7 +40,7 @@ int remove_xml(char *src, char *dest, int destlen, int *html){
 
 #ifdef HAVE_ZIP
 int extract_opendocument(struct session_data *sdata, struct parser_state *state, char *filename, char *prefix){
-   int errorp, i=0, len=0, html=0;
+   int errorp, i=0, html=0;
    unsigned int len2;
    char buf[4*MAXBUFSIZE], puf[4*MAXBUFSIZE];
    struct zip *z;
@@ -60,6 +60,7 @@ int extract_opendocument(struct session_data *sdata, struct parser_state *state,
 
          zf = zip_fopen_index(z, i, 0);
          if(zf){
+            int len;
             while((len = zip_fread(zf, buf, sizeof(buf)-2)) > 0){
 
                len2 = remove_xml(buf, puf, sizeof(puf), &html);
@@ -89,7 +90,7 @@ int extract_opendocument(struct session_data *sdata, struct parser_state *state,
 
 
 int unzip_file(struct session_data *sdata, struct parser_state *state, char *filename, int *rec, struct config *cfg){
-   int errorp, i=0, len=0, fd;
+   int errorp, i=0, fd;
    char *p, extracted_filename[SMALLBUFSIZE], buf[MAXBUFSIZE];
    struct zip *z;
    struct zip_stat sb;
@@ -120,6 +121,7 @@ int unzip_file(struct session_data *sdata, struct parser_state *state, char *fil
             if(fd != -1){
                zf = zip_fopen_index(z, i, 0);
                if(zf){
+                  int len;
                   while((len = zip_fread(zf, buf, sizeof(buf))) > 0){
                      if(write(fd, buf, len) == -1) syslog(LOG_PRIORITY, "ERROR: error writing to fd in %s", __func__);
                   }
@@ -207,9 +209,7 @@ void kill_helper(){
 
 void extract_attachment_content(struct session_data *sdata, struct parser_state *state, char *filename, char *type, int *rec, struct config *cfg){
    int link[2];
-   ssize_t n;
    pid_t pid;
-   char outbuf[MAXBUFSIZE];
 
    if(strcmp(type, "other") == 0 || strcmp(type, "text") == 0) return;
 
@@ -304,6 +304,9 @@ void extract_attachment_content(struct session_data *sdata, struct parser_state 
    }
    else {
       close(link[1]);
+      ssize_t n;
+      char outbuf[MAXBUFSIZE];
+
       while((n = read(link[0], outbuf, sizeof(outbuf))) > 0){
          if(state->bodylen < BIGBUFSIZE-n-1){
             memcpy(&(state->b_body[state->bodylen]), outbuf, n);
