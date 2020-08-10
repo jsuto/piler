@@ -1,11 +1,14 @@
 #!/bin/bash
 
+set -o nounset
+set -o errexit
+set -o pipefail
+
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/libexec/piler:/usr/local/libexec/piler
-PRIORITY=mail.error
 TMPFILE=/var/run/piler/purge.tmp
 PURGE_BEACON=/var/piler/stat/purge
 
-if [ -f $TMPFILE ]; then exit 1; fi
+if [[ -f $TMPFILE ]]; then exit 1; fi
 
 date > $TMPFILE
 

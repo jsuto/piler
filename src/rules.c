@@ -240,7 +240,7 @@ char *check_against_ruleset(struct node *xhash[], struct parser_state *state, in
       if(q->str){
          p = q->str;
 
-         if(p && count_match(p, state, size, spam) > 0){
+         if(count_match(p, state, size, spam) > 0){
             return p->rulestr;
          }
       }

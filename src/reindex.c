@@ -107,44 +107,42 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
       while(p_fetch_results(&sql) == OK){
 
-         if(stored_id > 0){
-            char filename[SMALLBUFSIZE];
-            snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
+         char filename[SMALLBUFSIZE];
+         snprintf(filename, sizeof(filename)-1, "%llu.eml", stored_id);
 
-            FILE *f = fopen(filename, "w");
-            if(f){
-               int rc = retrieve_email_from_archive(sdata, f, cfg);
-               fclose(f);
+         FILE *f = fopen(filename, "w");
+         if(f){
+            int rc = retrieve_email_from_archive(sdata, f, cfg);
+            fclose(f);
 
-               if(rc){
-                  printf("cannot retrieve: %s\n", filename);
-                  unlink(filename);
-                  continue;
-               }
-
-               snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
-
-               state = parse_message(sdata, 0, data, cfg);
-               post_parse(sdata, &state, cfg);
-
-               rc = store_index_data(sdata, &state, data, stored_id, cfg);
-
-               if(rc == OK) reindexed++;
-               else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
-
+            if(rc){
+               printf("cannot retrieve: %s\n", filename);
                unlink(filename);
-
-               if(progressbar){
-                  printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
-                  fflush(stdout);
-               }
-
+               continue;
             }
-            else printf("cannot open: %s\n", filename);
+
+            snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
+
+            state = parse_message(sdata, 0, data, cfg);
+            post_parse(sdata, &state, cfg);
+
+            rc = store_index_data(sdata, &state, data, stored_id, cfg);
+
+            if(rc == OK) reindexed++;
+            else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
+
+            unlink(filename);
+
+            if(progressbar){
+               printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
+               fflush(stdout);
+            }
 
          }
+         else printf("cannot open: %s\n", filename);
 
       }
+
 
       p_free_results(&sql);
    }

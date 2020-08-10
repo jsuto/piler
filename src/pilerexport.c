@@ -22,6 +22,7 @@ extern int optind;
 
 int dryrun = 0;
 int exportall = 0;
+int verification_status = 0;
 int rc = 0;
 char *query=NULL;
 int verbosity = 0;
@@ -224,7 +225,6 @@ void export_emails_matching_id_list(struct session_data *sdata, struct session_d
 
 
 int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain, int minsize, int maxsize, unsigned long startdate, unsigned long stopdate){
-   int where_condition=1;
    char s[SMALLBUFSIZE];
 
    if(exportall == 1){
@@ -239,83 +239,69 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    rc = append_string_to_buffer(&query, s);
 
    if(from){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`from` IN (");
       rc += append_string_to_buffer(&query, from);
       rc += append_string_to_buffer(&query, ")");
 
       free(from);
-
-      where_condition++;
    }
 
    if(to){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`to` IN (");
       rc += append_string_to_buffer(&query, to);
       rc += append_string_to_buffer(&query, ")");
 
       free(to);
-
-      where_condition++;
    }
 
    if(fromdomain){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`fromdomain` IN (");
       rc += append_string_to_buffer(&query, fromdomain);
       rc += append_string_to_buffer(&query, ")");
 
       free(fromdomain);
-
-      where_condition++;
    }
 
 
    if(todomain){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`todomain` IN (");
       rc += append_string_to_buffer(&query, todomain);
       rc += append_string_to_buffer(&query, ")");
 
       free(todomain);
-
-      where_condition++;
    }
 
    if(minsize > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` >= %d", minsize);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(maxsize > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` <= %d", maxsize);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(startdate > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `sent` >= %lu", startdate);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(stopdate > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `sent` <= %lu", stopdate);
       rc += append_string_to_buffer(&query, s);
    }
@@ -374,9 +360,10 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
                   printf("exported: %10llu\r", n); fflush(stdout);
                }
-               else
+               else {
                   printf("verification FAILED. %s\n", filename);
-
+                  verification_status = 1;
+               }
             }
             else printf("cannot open: %s\n", filename);
          }
@@ -593,5 +580,5 @@ int main(int argc, char **argv){
 
    close_database(&sdata);
 
-   return 0;
+   return verification_status;
 }

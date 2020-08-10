@@ -3,7 +3,6 @@
 
 import argparse
 import imaplib
-import pprint
 import re
 
 opts = {}
