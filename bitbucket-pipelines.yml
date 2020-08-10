@@ -23,7 +23,7 @@ definitions:
           - curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           - unzip -o $HOME/.sonar/sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
           - export PATH=$HOME/.sonar/sonar/build-wrapper-linux-x86:$PATH
-          - build-wrapper-linux-x86-64 --out-dir $BW_OUTPUT make clean all
+          - build-wrapper-linux-x86-64 --out-dir $BW_OUTPUT <your clean build command>
           - sonar-scanner -Dsonar.cfamily.build-wrapper-output=$BW_OUTPUT
 
 pipelines:                 # More info here: https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
