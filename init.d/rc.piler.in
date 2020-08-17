@@ -57,11 +57,10 @@ case "$1" in
         ;;
 
         status)
-                if check_status;
-                 then
-                    exit 0
-                 else
-                    exit 1
+                if check_status; then
+                   exit 0
+                else
+                   exit 1
                 fi
         ;;
 
