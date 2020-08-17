@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-define('SPHINX_VERSION', 321); // If you have sphinx-3.2.1, then set SPHINX_VERSION to 321
+define('SPHINX_VERSION', 331); // If you have sphinx-3.3.1, then set SPHINX_VERSION to 331
 define('LOCALSTATEDIR', '@LOCALSTATEDIR@');
 define('NGRAM_CONFIG', "        #ngram_len               = 1\n        #ngram_chars             = U+3000..U+2FA1F\n");
 
@@ -18,7 +18,7 @@ define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
 // Be sure to check out http://www.mailpiler.org/wiki/current:sphinx3 for more
 // NB: The SPHINX_STRICT_SCHEMA in sphinx.conf MUST BE THE SAME as in config.php (or in config-site.php)
 //
-define('SPHINX_STRICT_SCHEMA', 0);
+define('SPHINX_STRICT_SCHEMA', 1);
 
 
 if(SPHINX_STRICT_SCHEMA) {
