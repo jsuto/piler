@@ -394,6 +394,8 @@ class ModelUserAuth extends Model {
 
             $data = $this->fix_user_data($username, $username, $emails, 0);
 
+            $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
+
             $this->is_ga_code_needed($username);
 
             $session->set("auth_data", $data);
@@ -428,6 +430,8 @@ class ModelUserAuth extends Model {
                   $emails = array_merge($emails, $extra_emails);
 
                   $data = $this->fix_user_data($username, $username, $emails, 0);
+
+                  $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
                   $this->is_ga_code_needed($username);
 
