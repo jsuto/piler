@@ -115,7 +115,11 @@ $config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
 //$config['LDAP_MAIL_ATTR'] = 'mail';
 
-
+// Uninvention specific settings
+//$config['LDAP_MAIL_ATTR'] = 'mailPrimaryAddress';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mailAlternativeAddress';
 
 
 // enable single sign-on (disabled by default)
@@ -310,6 +314,8 @@ $config['DATA_PARTITION'] = '/var';
 $config['DELIMITER'] = "\t";
 
 $config['TRACKING_CODE'] = '';
+
+$mailattrs = ["mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox", "mailprimaryaddress", "mailalternativeaddress"];
 
 $langs = array(
                 'cz',

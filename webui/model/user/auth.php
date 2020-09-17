@@ -293,12 +293,13 @@ class ModelUserAuth extends Model {
 
 
    public function get_email_array_from_ldap_attr($e = array()) {
-      $data = array();
+      global $mailattrs;
+      $data = [];
 
       foreach($e as $a) {
          if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
-         foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox") as $mailattr) {
+         foreach ($mailattrs as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(is_array($a[$mailattr])) {
