@@ -84,7 +84,7 @@ class ModelUserUser extends Model {
 
       if(isset($query->rows)) {
          foreach ($query->rows as $q) {
-            if(!in_array($q['email'], $data)) { array_push($data, $q['email']); }
+            if(validemail($q['email']) && !in_array($q['email'], $data)) { array_push($data, $q['email']); }
          }
       }
 
