@@ -25,6 +25,8 @@ case1() {
    test_retrieved_messages_are_the_same "piler1" "piler"
 
    run_05_sphinx_tests
+
+   docker exec "piler1" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 }
 
 
