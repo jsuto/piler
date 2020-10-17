@@ -32,7 +32,7 @@ class TrustedTimestamps
     {
         if (strlen($hash) !== 40)
             throw new Exception("Invalid Hash.");
-           
+
         $outfilepath = self::createTempFile();
         $cmd = OPENSSL_BINARY . " ts -query -digest ".escapeshellarg($hash)." -cert -out ".escapeshellarg($outfilepath);
 
@@ -41,7 +41,7 @@ class TrustedTimestamps
 
         if ($retcode !== 0)
             throw new Exception("OpenSSL does not seem to be installed: ".implode(", ", $retarray));
-       
+
         if (count($retarray) > 0 && stripos($retarray[0], "openssl:Error") !== false)
             throw new Exception("There was an error with OpenSSL. Is version >= 0.99 installed?: ".implode(", ", $retarray));
 
@@ -72,14 +72,14 @@ class TrustedTimestamps
         $binary_response_string = curl_exec($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-       
+
         if ($status != 200 || !strlen($binary_response_string))
             throw new Exception("The request failed");
-       
+
         $base64_response_string = base64_encode($binary_response_string);
-       
+
         $response_time = self::getTimestampFromAnswer ($base64_response_string);
-       
+
         return array("response_string" => $base64_response_string,
                      "response_time" => $response_time);
     }
@@ -97,13 +97,13 @@ class TrustedTimestamps
         $responsefile = self::createTempFile($binary_response_string);
 
         $cmd = OPENSSL_BINARY . " ts -reply -in ".escapeshellarg($responsefile)." -text";
-       
+
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
-       
+
         if ($retcode !== 0)
             throw new Exception("The reply failed: ".implode(", ", $retarray));
-       
+
         $matches = array();
         $response_time = 0;
 
@@ -119,13 +119,13 @@ class TrustedTimestamps
             if (preg_match("~^Time\sstamp\:\s(.*)~", $retline, $matches))
             {
                 $response_time = strtotime($matches[1]);
-                break;     
+                break;
             }
         }
 
         if (!$response_time)
             throw new Exception("The Timestamp was not found");
-           
+
         return $response_time;
     }
 
@@ -141,25 +141,25 @@ class TrustedTimestamps
     {
         if (strlen($hash) !== 40)
             throw new Exception("Invalid Hash");
-       
+
         $binary_response_string = base64_decode($base64_response_string);
-       
+
         if (!strlen($binary_response_string))
-            throw new Exception("There was no response-string");   
-           
+            throw new Exception("There was no response-string");
+
         if (!intval($response_time))
             throw new Exception("There is no valid response-time given");
-       
+
         if (!file_exists($tsa_cert_file))
             throw new Exception("The TSA-Certificate could not be found");
-       
+
         $responsefile = self::createTempFile($binary_response_string);
 
         $cmd = OPENSSL_BINARY . " ts -verify -digest ".escapeshellarg($hash)." -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file);
-       
+
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
-       
+
         /*
          * just 2 "normal" cases:
          *  1) Everything okay -> retcode 0 + retarray[0] == "Verification: OK"
@@ -167,14 +167,23 @@ class TrustedTimestamps
          *
          * every other case (Certificate not found / invalid / openssl is not installed / ts command not known)
          * are being handled the same way -> retcode 1 + any retarray NOT containing "message imprint mismatch"
+         *
+         * For openssl 1.1.x it's 2 lines actually:
+         *
+         * Using configuration from /usr/lib/ssl/openssl.cnf
+         * Verification: OK
+         *
          */
-       
-        if ($retcode === 0 && strtolower(trim($retarray[0])) == "verification: ok")
-        {
-            if (self::getTimestampFromAnswer ($base64_response_string) != $response_time)
-                throw new Exception("The responsetime of the request was changed");
-           
-            return true;
+
+        if ($retcode === 0) {
+           foreach ($retarray as $line) {
+              if(strtolower(trim($line)) == "verification: ok") {
+                 if (self::getTimestampFromAnswer ($base64_response_string) != $response_time)
+                    throw new Exception("The responsetime of the request was changed");
+
+                 return true;
+              }
+           }
         }
 
         foreach ($retarray as $retline)
@@ -198,12 +207,10 @@ class TrustedTimestamps
 
         if (!file_exists($tempfilename))
             throw new Exception("Tempfile could not be created");
-           
+
         if (!empty($str) && !file_put_contents($tempfilename, $str))
             throw new Exception("Could not write to tempfile");
 
         return $tempfilename;
     }
 }
-
-?>
