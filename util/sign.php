@@ -82,9 +82,12 @@ if(MODE == 'time' && $data[COUNT] < 1) {
    exit;
 }
 
-$requestfile_path = TrustedTimestamps::createRequestfile($data[HASH_VALUE]);
-
-$response = TrustedTimestamps::signRequestfile($requestfile_path, TSA_URL);
+try {
+   $requestfile_path = TrustedTimestamps::createRequestfile($data[HASH_VALUE]);
+   $response = TrustedTimestamps::signRequestfile($requestfile_path, TSA_URL);
+} catch(Exception $e) {
+   die("Error: " . $e->getMessage() . "\n");
+}
 
 $data[RESPONSE_STRING] = $response[RESPONSE_STRING];
 $data[RESPONSE_TIME] = $response[RESPONSE_TIME];

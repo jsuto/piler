@@ -226,6 +226,7 @@ $config['TSA_URL'] = '';
 $config['TSA_PUBLIC_KEY_FILE'] = '';
 $config['TSA_START_ID'] = 1;
 $config['TSA_STAMP_REQUEST_UNIT_SIZE'] = 10000;
+$config['TSA_VERIFY_CERTIFICATE'] = true;
 
 $config['DB_DRIVER'] = 'mysql';
 $config['DB_PREFIX'] = '';

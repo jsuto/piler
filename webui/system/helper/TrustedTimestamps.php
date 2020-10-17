@@ -69,12 +69,17 @@ class TrustedTimestamps
         curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($requestfile_path));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/timestamp-query'));
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TSA_VERIFY_CERTIFICATE);
+
         $binary_response_string = curl_exec($ch);
+
+        $error = curl_error($ch);
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
         curl_close($ch);
 
         if ($status != 200 || !strlen($binary_response_string))
-            throw new Exception("The request failed");
+            throw new Exception("The request failed. Status: $status, error: $error");
 
         $base64_response_string = base64_encode($binary_response_string);
 
