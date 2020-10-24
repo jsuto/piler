@@ -99,12 +99,21 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
 
 
    for(i=1; i<=state->n_attachments; i++){
+      char puf[SMALLBUFSIZE];
+      snprintf(puf, sizeof(puf)-1, "%s ", state->attachments[i].filename);
+
+      unsigned int len = strlen(puf);
+      if(state->bodylen < BIGBUFSIZE-len-1){
+         memcpy(&(state->b_body[state->bodylen]), puf, len);
+         state->bodylen += len;
+      }
+
       digest_file(state->attachments[i].internalname, &(state->attachments[i].digest[0]));
 
       if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
 
       char *p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
-      unsigned int len = strlen(p);
+      len = strlen(p);
       if(strlen(sdata->attachments) < SMALLBUFSIZE-len-1 && !strstr(sdata->attachments, p)) memcpy(&(sdata->attachments[strlen(sdata->attachments)]), p, len);
 
       if(state->attachments[i].dumped == 1){
