@@ -26,6 +26,8 @@ case1() {
 
    run_05_sphinx_tests
 
+   docker exec "piler1" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2020/12/31'
+
    docker exec "piler1" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 }
 
