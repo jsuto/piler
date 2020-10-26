@@ -114,6 +114,9 @@ def main():
             row = cursor.fetchone()
             if row:
                 (server, user, password) = row
+            else:
+                print("Nothing to read from import table")
+                sys.exit(0)
 
         except dbapi.DatabaseError as e:
             print("Error %s" % e)
