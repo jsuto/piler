@@ -42,8 +42,8 @@
         <?php if(ENABLE_SAAS == 1) { ?>
                             <li><a href="index.php?route=ldap/list"><i class="icon-key"></i>&nbsp;<?php print $text_ldap; ?></a></li>
                             <li><a href="index.php?route=customer/list"><i class="icon-wrench"></i>&nbsp;<?php print $text_customers; ?></a></li>
-                            <li><a href="index.php?route=import/list"><i class="icon-lightbulb"></i>&nbsp;<?php print $text_import; ?></a></li>
         <?php } ?>
+                            <li><a href="index.php?route=import/list"><i class="icon-lightbulb"></i>&nbsp;<?php print $text_import; ?></a></li>
                             <li><a href="index.php?route=policy/archiving"><i class="icon-stop"></i>&nbsp;<?php print $text_archiving_rules; ?></a></li>
                             <li><a href="index.php?route=policy/retention"><i class="icon-time"></i>&nbsp;<?php print $text_retention_rules; ?></a></li>
                             <li><a href="index.php?route=policy/folder"><i class="icon-folder-open"></i>&nbsp;<?php print $text_folder_rules; ?></a></li>
