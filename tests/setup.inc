@@ -33,7 +33,7 @@ launch_containers() {
 create_rules() {
    local container="$1"
 
-   echo 'echo "insert into domain (domain, mapped) values(\"fictive.com\",\"fictive.com\"),(\"acts.hu\",\"acts.hu\"),(\"gtsce.com\",\"fictive.com\"),(\"datanet.hu\",\"fictive.com\"),(\"gtsdatanet.hu\",\"fictive.com\"),(\"gts.hu\",\"fictive.com\")"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
+   echo 'echo "insert into domain (domain, mapped) values(\"fictive.com\",\"fictive.com\"),(\"acts.hu\",\"acts.hu\"),(\"gtsce.com\",\"gtsce.com\"),(\"datanet.hu\",\"datanet.hu\"),(\"gtsdatanet.hu\",\"gtsdatanet.hu\"),(\"gts.hu\",\"gts.hu\")"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
 
    echo 'echo "insert into archiving_rule (subject) values (\"Android táblagép\")"| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
    echo 'echo "insert into archiving_rule (\`from\`) values (\"@gmail.com\")"| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
