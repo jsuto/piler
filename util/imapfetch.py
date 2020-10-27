@@ -66,7 +66,7 @@ def process_folder(conn, folder):
         if opts['id']:
             cursor = opts['db'].cursor()
             data = (ST_RUNNING, n, opts['id'])
-            cursor.execute("UPDATE import SET status=%s, total = total + %s WHERE id=%s", data)
+            cursor.execute("UPDATE import SET status=%s, total=total+%s WHERE id=%s", data)
             opts['db'].commit()
 
         rc, data = conn.search(None, 'ALL')
@@ -91,10 +91,15 @@ def main():
                         default="junk,trash,spam,draft")
     parser.add_argument("-f", "--folders", type=str,
                         help="Comma separated list of IMAP folders to download")
-    parser.add_argument("-i", "--import-from-table", help="Read imap conn data from import table", action='store_true')
+    parser.add_argument("-d", "--dir", help="directory to chdir",
+                        default="/var/piler/imap")
+    parser.add_argument("-i", "--import-from-table", action='store_true',
+                        help="Read imap conn data from import table")
     parser.add_argument("-v", "--verbose", help="verbose mode", action='store_true')
 
     args = parser.parse_args()
+
+    os.chdir(args.dir)
 
     if not bool(args.import_from_table or args.server):
         print("Please specify either --import-from-table or --server <imap host>")
@@ -158,10 +163,15 @@ def main():
     conn.close()
 
     if opts['db']:
-        subprocess.call(["pilerimport", "-d", "/var/piler/imap", "-r"])
+        if opts['id']:
+            subprocess.call(["pilerimport",
+                             "-d", args.dir,
+                             "-r",
+                             "-T", str(opts['id'])])
         opts['db'].close()
 
     print("Processed {} messages".format(opts['counter']))
+
 
 if __name__ == "__main__":
     main()
