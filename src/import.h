@@ -7,6 +7,7 @@
 
 
 int import_message(struct session_data *sdata, struct data *data, struct config *cfg);
+int update_import_table(struct session_data *sdata, struct data *data);
 
 int import_from_maildir(struct session_data *sdata, struct data *data, char *directory, struct config *cfg);
 int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *data, struct config *cfg);

@@ -304,6 +304,7 @@ struct import {
    int tot_msgs;
    int port;
    int seq;
+   int table_id;
    char *server;
    char *username;
    char *password;

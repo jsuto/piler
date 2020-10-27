@@ -6,10 +6,12 @@ import argparse
 import configparser
 import imaplib
 import re
+import subprocess
 import sys
 
 opts = {}
 INBOX = 'INBOX'
+ST_RUNNING = 1
 
 
 def read_options(filename="", opts={}):
@@ -61,6 +63,12 @@ def process_folder(conn, folder):
         print("Folder {} has {} messages".format(folder, n))
 
     if n > 0:
+        if opts['id']:
+            cursor = opts['db'].cursor()
+            data = (ST_RUNNING, n, opts['id'])
+            cursor.execute("UPDATE import SET status=%s, total = total + %s WHERE id=%s", data)
+            opts['db'].commit()
+
         rc, data = conn.search(None, 'ALL')
         for num in data[0].split():
             rc, data = conn.fetch(num, '(RFC822)')
@@ -88,7 +96,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args)
     if not bool(args.import_from_table or args.server):
         print("Please specify either --import-from-table or --server <imap host>")
         sys.exit(1)
@@ -97,23 +104,24 @@ def main():
     opts['verbose'] = args.verbose
     opts['counter'] = 0
     opts['db'] = None
+    opts['id'] = 0
 
     server = ''
     user = ''
     password = ''
 
-    if args.import_table:
+    if args.import_from_table:
         read_options(args.config, opts)
         try:
             opts['db'] = dbapi.connect(opts['dbhost'], opts['username'],
                                        opts['password'], opts['database'])
 
             cursor = opts['db'].cursor()
-            cursor.execute("SELECT server, username, password FROM import WHERE started=0")
+            cursor.execute("SELECT id, server, username, password FROM import WHERE started=0")
 
             row = cursor.fetchone()
             if row:
-                (server, user, password) = row
+                (opts['id'], server, user, password) = row
             else:
                 print("Nothing to read from import table")
                 sys.exit(0)
@@ -150,6 +158,7 @@ def main():
     conn.close()
 
     if opts['db']:
+        subprocess.call(["pilerimport", "-d", "/var/piler/imap", "-r"])
         opts['db'].close()
 
     print("Processed {} messages".format(opts['counter']))
