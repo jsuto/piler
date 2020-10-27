@@ -5,6 +5,7 @@ import MySQLdb as dbapi
 import argparse
 import configparser
 import imaplib
+import os
 import re
 import subprocess
 import sys
