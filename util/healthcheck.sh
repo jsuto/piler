@@ -37,4 +37,4 @@ echo -e "\nError emails: $errors"
 echo -e "Sphinx data: $(du -hs "$SPHINX_DIR")\n"
 
 mysql -t -u "$mysqluser" -p"$mysqlpwd" "$mysqldb" <<< "select * from counter"
-
+mysql -t -u "$mysqluser" -p"$mysqlpwd" information_schema <<< "select table_schema as db, sum(data_length+index_length) as size from TABLES WHERE table_schema='$mysqldb' GROUP BY table_schema"
