@@ -7,8 +7,15 @@ set -o nounset
 SPHINX_DIR=/var/piler/sphinx
 ERROR_FILE=/var/piler/stat/error
 
-echo "host: $(hostname | sha256sum | awk '{ print $1 }')"
-echo "cpus: $(grep -c ^processor /proc/cpuinfo)"
+if command -v mpstat; then
+   mpstat
+   echo
+else
+   echo "host: $(hostname)"
+   echo "cpus: $(grep -c ^processor /proc/cpuinfo)"
+fi
+
+echo "load: $(cat /proc/loadavg)"
 echo "mem: $(grep MemTotal /proc/meminfo | sed 's/MemTotal\s*:\s*//' )"
 echo disks:
 while read -r p; do df -h "${p##* }" | tail -1; done < <(lsblk | grep part)
