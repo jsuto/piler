@@ -236,8 +236,8 @@ class ModelFolderFolder extends Model {
          $last_id = $this->db->getLastId();
          $query = $this->db->query("INSERT INTO " . TABLE_FOLDER_USER . " (id, uid) VALUES(?,?)", array($last_id, $session->get("uid")));
 
-         $folders = $session->get("folders");
-         if(!isset($folders[$last_id])) { array_push($folders, $last_id); $session->set("folders", $folders); }
+         $folders = $this->get_folder_id_array_for_user($session->get("uid"), $session->get("admin_user"));
+         $session->set("folders", $folders);
       }
 
       return $this->db->countAffected();
@@ -253,8 +253,8 @@ class ModelFolderFolder extends Model {
          $query = $this->db->query("DELETE FROM " . TABLE_FOLDER . " WHERE id=?", array($id));
          $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_USER . " WHERE id=? AND uid=?", array($id, $session->get("uid")));
 
-         $folders = $session->get("folders");
-         if(isset($folders[$id])) { unset($folders[$id]); $session->set("folders", $folders); }
+         $folders = $this->get_folder_id_array_for_user($session->get("uid"), $session->get("admin_user"));
+         $session->set("folders", $folders);
 
          // shall we delete the existing message - folder id assignments from folder_message?
       }
@@ -264,5 +264,3 @@ class ModelFolderFolder extends Model {
 
 
 }
-
-?>
