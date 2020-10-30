@@ -775,7 +775,7 @@ class ModelSearchSearch extends Model {
       $q = preg_replace("/^\,/", "", $q);
 
 
-      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) {
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0 && ENABLE_FOLDER_RESTRICTIONS == 0) {
          $query = $this->db->query("SELECT id FROM `" . TABLE_META . "` WHERE `id` IN ($q2)", $arr);
       }
       else {
