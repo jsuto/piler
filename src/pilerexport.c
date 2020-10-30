@@ -8,11 +8,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
 #include <syslog.h>
+#include <zip.h>
 #include <getopt.h>
 #include <piler.h>
 
@@ -29,7 +31,7 @@ int verbosity = 0;
 int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
-
+char *zipfile = NULL;
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
@@ -49,6 +51,7 @@ void usage(){
    printf("    -w <where condition>              Where condition to pass to sphinx, eg. \"match('@subject: piler')\"\n");
    printf("    -m <max. matches>                 Max. matches to apply to sphinx query (default: %d)\n", max_matches);
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
+   printf("    -z <zip file>                     Write exported EML files to a zip file\n");
    printf("    -A                                Export all emails from archive\n");
    printf("    -d                                Dry run\n");
 
@@ -313,6 +316,48 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 }
 
 
+int write_to_zip_file(char *filename){
+   struct zip *z=NULL;
+   int errorp, ret=ERR;
+
+   z = zip_open(zipfile, ZIP_CREATE, &errorp);
+   if(!z){
+      printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
+      return ret;
+   }
+
+   int fd = open(filename, O_RDONLY);
+   if(fd == -1){
+      printf("cannot open: %s\n", filename);
+      return ret;
+   }
+
+   struct stat st;
+   if(fstat(fd, &st)){
+      close(fd);
+      return ret;
+   }
+
+   char *addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+   close(fd);
+
+   if(addr == MAP_FAILED) return ret;
+
+   zip_source_t *zs = zip_source_buffer(z, addr, st.st_size, 0);
+
+   if(zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) == -1){
+      printf("error adding file %s: %s\n", filename, zip_strerror(z));
+      zip_source_free(zs);
+   } else {
+      ret = OK;
+   }
+
+   zip_close(z);
+   munmap(addr, st.st_size);
+
+   return ret;
+}
+
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
    uint64 id, n=0;
@@ -364,6 +409,11 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                   printf("verification FAILED. %s\n", filename);
                   verification_status = 1;
                }
+
+               if(zipfile && write_to_zip_file(filename) == OK){
+                  unlink(filename);
+               }
+
             }
             else printf("cannot open: %s\n", filename);
          }
@@ -379,7 +429,6 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
 ENDE:
    close_prepared_statement(&sql);
-
 
    printf("\n");
 
@@ -421,6 +470,7 @@ int main(int argc, char **argv){
             {"to-domain",    required_argument,  0,  'R' },
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
+            {"zip",          required_argument,  0,  'z' },
             {"where-condition", required_argument,  0,  'w' },
             {"max-matches",  required_argument,  0,  'm' },
             {"index-list",   required_argument,  0,  'i' },
@@ -429,9 +479,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:Adhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:Adhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?");
 #endif
 
       if(c == -1) break;
@@ -519,6 +569,10 @@ int main(int argc, char **argv){
          case 'i' :
                     index_list = optarg;
                     break;
+
+         case 'z':  zipfile = optarg;
+                    break;
+
 
          case 'd' :
                     dryrun = 1;
