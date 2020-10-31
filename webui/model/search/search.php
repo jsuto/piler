@@ -81,8 +81,14 @@ class ModelSearchSearch extends Model {
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
 
-      $all_your_addresses = $this->get_all_your_address();
-      return sprintf(" (%s %s | %s %s) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses);
+      $all_your_addresses = $this->get_all_your_address("emails");
+      $all_your_wildcard_domains = $this->get_all_your_address("wildcard_domains");
+
+      if($all_your_wildcard_domains) {
+         return sprintf(" ( (%s %s) | (%s %s) | (%s %s) | (%s %s) ) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses, FROMDOMAIN_TOKEN, $all_your_wildcard_domains, TODOMAIN_TOKEN, $all_your_wildcard_domains);
+      } else {
+         return sprintf(" ( (%s %s) | (%s %s) ) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses);
+      }
    }
 
 
@@ -645,12 +651,12 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function get_all_your_address() {
+   private function get_all_your_address($session_var) {
       $s = '';
 
       $session = Registry::get('session');
 
-      $emails = $session->get("emails");
+      $emails = $session->get($session_var);
 
       while(list($k, $v) = each($emails)) {
          if($s) { $s .= '| ' .  $this->fix_email_address_for_sphinx($v); }
@@ -658,6 +664,25 @@ class ModelSearchSearch extends Model {
       }
 
       return $s;
+   }
+
+
+   private function get_wildcard_domains($arr=[]) {
+      $query_suffix = '';
+      $results = $arr;
+
+      $session = Registry::get('session');
+
+      $wildcard_domains = $session->get('wildcard_domains');
+
+      if($wildcard_domains) {
+         $q = str_repeat('?,', count($wildcard_domains));
+         $q = trim($q, ',');
+         $results = array_merge($results, $wildcard_domains, $wildcard_domains);
+         $query_suffix = "OR fromdomain IN ($q) OR todomain IN ($q)";
+      }
+
+      return [$results, $query_suffix];
    }
 
 
@@ -717,7 +742,8 @@ class ModelSearchSearch extends Model {
          if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
             $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `fromdomain` IN ($q) OR `todomain` IN ($q) )", $arr);
          } else {
-            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+            [$arr, $query_suffix] = $this->get_wildcard_domains($arr);
+            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) $query_suffix )", $arr);
          }
 
          if(isset($query->row['id'])) { return 1; }
@@ -796,7 +822,9 @@ class ModelSearchSearch extends Model {
                   }
                }
 
-               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+               [$arr, $query_suffix] = $this->get_wildcard_domains($arr);
+
+               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) $query_suffix)", $arr);
             }
 
          }

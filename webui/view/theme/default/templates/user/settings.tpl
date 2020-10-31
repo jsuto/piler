@@ -1,55 +1,56 @@
 
 <?php if(!isset($x)){ ?>
 
-	<h4><?php print $text_access_settings; ?></h4>
+    <h4><?php print $text_access_settings; ?></h4>
     <p><em><?php print $text_access_setting_explanation; ?></em></p>
-    
+
     <table class="table table-striped">
-	 <tr>
-		<td class="span2"><?php print $text_email_addresses; ?>:</td>
-		<td class="span8">
-			<?php print $emails; ?>
-		</td>
-	 </tr>   
-   
+        <tr>
+            <td class="span2"><?php print $text_email_addresses; ?>:</td>
+            <td class="span8"><?php print $emails; ?>
+            </td>
+        </tr>
+
 <?php if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) { ?>
-   
-	 <tr>
-		<td><?php print $text_domains; ?>:</td>
-		<td>
-			<?php print $domains; ?>
-		</td>
-	 </tr>
+
+    <tr>
+        <td><?php print $text_domains; ?>:</td>
+        <td><?php print $domains; ?></td>
+    </tr>
 
 <?php } ?>
-	 
+
 <?php if(Registry::get('auditor_user') == 0 || RESTRICTED_AUDITOR == 0) { ?>
-	 
-	 <tr>
-		<td><?php print $text_groups; ?>:</td>
-		<td>
-			<?php print $groups; ?>
-		</td>
-	 </tr>
+
+    <tr>
+        <td><?php print $text_groups; ?>:</td>
+        <td><?php print $groups; ?></td>
+    </tr>
+
+    <?php if($wildcard_domains) { ?>
+    <tr>
+        <td>Wildcard domains:</td>
+        <td><?php print $wildcard_domains; ?></td>
+    </tr>
+    <?php } ?>
+
 
 <?php } ?>
-	 
+
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
-	 
-	 <tr>
-		<td><?php print $text_folders; ?>:</td>
-		<td>
-			<?php print $folders; ?>
-		</td>
-	 </tr>
+
+    <tr>
+        <td><?php print $text_folders; ?>:</td>
+        <td><?php print $folders; ?></td>
+    </tr>
 
 <?php } ?>
-	 
+
    </table>
-   
+
 <form action="/settings.php" method="post" name="setpagelen" class="form-horizontal">
-   
-	<h4><?php print $text_display_settings; ?></h4>
+
+    <h4><?php print $text_display_settings; ?></h4>
 
     <div class="control-group">
         <label class="control-label" for="pagelen"><?php print $text_page_length; ?></label>
@@ -89,7 +90,7 @@
             <input type="submit" value="<?php print $text_set; ?>" class="btn btn-primary" /> <input type="reset" value="<?php print $text_cancel; ?>" class="btn btn" onclick="Piler.go_to_default_page();" />
         </div>
     </div>
-    
+
 </form>
 
 <?php if(ENABLE_GOOGLE_AUTHENTICATOR == 1) { ?>

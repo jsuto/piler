@@ -26,14 +26,14 @@ class ControllerUserSettings extends Controller {
       $this->data['ga'] = $this->model_user_prefs->get_ga_settings($session->get('username'));
 
       $this->document->title = $this->data['text_settings'];
-  
+
       $d = $r = '';
       $auditemails = $auditdomains = $auditgroups = $auditfolders = '';
 
       $auditemails = implode(", ", $session->get("emails"));
- 
+
       $_auditdomains = $session->get("auditdomains");
- 
+
       foreach($_auditdomains as $d) {
          $auditdomains .= ', ' . $d;
       }
@@ -42,16 +42,21 @@ class ControllerUserSettings extends Controller {
       $auditgroups = preg_replace("/\n/", ", ", $this->model_group_group->get_groups_by_email($session->get("emails")));
 
       $folders = $session->get("folders");
-  
+
       foreach ($folders as $r) {
          $auditfolders .= ', ' . $r;
       }
-      $auditfolders = preg_replace("/^,\s/", "", $auditfolders);	  
-  
+      $auditfolders = preg_replace("/^,\s/", "", $auditfolders);
+
       if($auditemails) { $this->data['emails'] = $auditemails; } else { $this->data['emails'] = $this->data['text_none_found']; }
       if($auditdomains) { $this->data['domains'] = $auditdomains; } else { $this->data['domains'] = $this->data['text_none_found']; }
       if($auditgroups) { $this->data['groups'] = $auditgroups; } else { $this->data['groups'] = $this->data['text_none_found']; }
       if($auditfolders) { $this->data['folders'] = $auditfolders; } else { $this->data['folders'] = $this->data['text_none_found']; }
+
+      $this->data['wildcard_domains'] = $session->get("wildcard_domains");
+      if($this->data['wildcard_domains']) {
+         $this->data['wildcard_domains'] = implode(", ", $this->data['wildcard_domains']);
+      }
 
       if(isset($this->request->post['pagelen']) && isset($this->request->post['theme'])) {
          $this->model_user_prefs->set_user_preferences(Registry::get('username'), $this->request->post);
