@@ -326,34 +326,14 @@ int write_to_zip_file(char *filename){
       return ret;
    }
 
-   int fd = open(filename, O_RDONLY);
-   if(fd == -1){
-      printf("cannot open: %s\n", filename);
-      return ret;
-   }
-
-   struct stat st;
-   if(fstat(fd, &st)){
-      close(fd);
-      return ret;
-   }
-
-   char *addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-   close(fd);
-
-   if(addr == MAP_FAILED) return ret;
-
-   zip_source_t *zs = zip_source_buffer(z, addr, st.st_size, 0);
-
-   if(zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) == -1){
-      printf("error adding file %s: %s\n", filename, zip_strerror(z));
-      zip_source_free(zs);
-   } else {
+   zip_source_t *zs = zip_source_file(z, filename, 0, 0);
+   if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
       ret = OK;
+   } else {
+      printf("error adding file %s: %s\n", filename, zip_strerror(z));
    }
 
    zip_close(z);
-   munmap(addr, st.st_size);
 
    return ret;
 }
