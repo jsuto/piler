@@ -22,18 +22,17 @@
 
 <?php if(Registry::get('auditor_user') == 0 || RESTRICTED_AUDITOR == 0) { ?>
 
-    <tr>
-        <td><?php print $text_groups; ?>:</td>
-        <td><?php print $groups; ?></td>
-    </tr>
-
     <?php if($wildcard_domains) { ?>
     <tr>
-        <td>Wildcard domains:</td>
+        <td><?php print $text_wildcard_domains; ?>:</td>
         <td><?php print $wildcard_domains; ?></td>
     </tr>
     <?php } ?>
 
+    <tr>
+        <td><?php print $text_groups; ?>:</td>
+        <td><?php print $groups; ?></td>
+    </tr>
 
 <?php } ?>
 

@@ -414,6 +414,7 @@ $_['text_view_raw_email'] = "Formázatlan levél megtekintése";
 $_['text_view_user_quarantine'] = "Felhasználó karantén megtekintése";
 
 $_['text_warning_about_default_policy'] = "Az alapértelmezett házirend a clapf.conf fájlban van";
+$_['text_wildcard_domains'] = "Wildcard domének";
 $_['text_whitelist'] = "Fehérlista";
 $_['text_whitelist_settings'] = "Fehérlista beállítások";
 $_['text_with_attachment'] = "mellékletekkel";
