@@ -70,7 +70,7 @@ def process_folder(conn, folder):
             cursor.execute("UPDATE import SET status=%s, total=total+%s WHERE id=%s", data)
             opts['db'].commit()
 
-        rc, data = conn.search(None, 'ALL')
+        rc, data = conn.search(None, opts['search'])
         for num in data[0].split():
             rc, data = conn.fetch(num, '(RFC822)')
             if opts['verbose']:
@@ -92,6 +92,8 @@ def main():
                         default="junk,trash,spam,draft")
     parser.add_argument("-f", "--folders", type=str,
                         help="Comma separated list of IMAP folders to download")
+    parser.add_argument("--date", type=str, help="Search before/since a given date," +
+                        "eg. (BEFORE \"01-Jan-2020\") or (SINCE \"01-Jan-2020\")")
     parser.add_argument("-d", "--dir", help="directory to chdir",
                         default="/var/piler/imap")
     parser.add_argument("-i", "--import-from-table", action='store_true',
@@ -108,9 +110,13 @@ def main():
 
     opts['skip_folders'] = args.skip_list.split(',')
     opts['verbose'] = args.verbose
+    opts['search'] = 'ALL'
     opts['counter'] = 0
     opts['db'] = None
     opts['id'] = 0
+
+    if args.date:
+        opts['search'] = args.date
 
     server = ''
     user = ''
