@@ -136,7 +136,7 @@ int main(int argc, char **argv){
             {"start-position",required_argument,  0,  's' },
             {"table-id",     required_argument,  0,  'T' },
             {"quiet",        no_argument,        0,  'q' },
-            {"recursive",    required_argument,  0,  'R' },
+            {"recursive",    no_argument,        0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
             {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
