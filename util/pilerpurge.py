@@ -93,7 +93,12 @@ def purge_attachments_by_attachment_id(opts={}):
         if rows == ():
             break
         else:
-            remove_attachment_files(rows, opts)
+            for (id, piler_id, attachment_id, refcount) in rows:
+                if opts['dry_run'] is False:
+                    unlink(get_attachment_file_path(piler_id, attachment_id,
+                                                    opts), opts)
+                else:
+                    print(get_attachment_file_path(piler_id, attachment_id, opts))
 
 
 def remove_attachment_files(rows=(), opts={}):
