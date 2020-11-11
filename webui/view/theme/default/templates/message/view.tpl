@@ -38,7 +38,7 @@
     <?php } ?>
        | <a href="#" onclick="Piler.print_div('messageblock');"><i class="icon-print"></i>&nbsp;<?php print $text_print_message; ?></a>
 
-    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {    
+    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
        if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="verified icon-ok-sign icon-large" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified icon-remove-sign icon-large" title="<?php print $text_unverified_flag; ?>"></i><?php }
     } ?>
 
@@ -81,7 +81,7 @@
 </div>
 
 <?php foreach($images as $img) { ?>
-   <p><img src="<?php print SITE_URL; ?>/tmp/<?php print $img['name']; ?>" alt="" /></p>
+   <p><img src="/tmp/<?php print $img['name']; ?>" alt="" /></p>
 <?php } ?>
 
 

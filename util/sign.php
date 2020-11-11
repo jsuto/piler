@@ -1,11 +1,11 @@
 <?php
 
-define(COUNT, 'count');
-define(HASH_VALUE, 'hash_value');
-define(RESPONSE_STRING, 'response_string');
-define(RESPONSE_TIME, 'response_time');
-define(START_ID, 'start_id');
-define(STOP_ID, 'stop_id');
+define('COUNT', 'count');
+define('HASH_VALUE', 'hash_value');
+define('RESPONSE_STRING', 'response_string');
+define('RESPONSE_TIME', 'response_time');
+define('START_ID', 'start_id');
+define('STOP_ID', 'stop_id');
 
 ini_set("session.save_path", "/tmp");
 
@@ -19,25 +19,25 @@ $lopts = array(
     'mode:',
     'verbose'
     );
-    
+
 if ( $options = getopt( $opts, $lopts ) )
 {
-    if ( isset($options['webui']) ) 
+    if ( isset($options['webui']) )
     {
         $webuidir = $options['webui'];
     } else
     {
         echo "\nError: must provide path to WebUI directory\n\n";
-    
+
         display_help();
         exit;
     }
-   
+
     if ( isset($options['mode']) && $options['mode'] == 'time') {
        $mode = $options['mode'];
     }
- 
-    if ( isset($options['h']) ) 
+
+    if ( isset($options['h']) )
     {
         display_help();
         exit;
@@ -49,7 +49,7 @@ if ( $options = getopt( $opts, $lopts ) )
     }
 } else {
     display_help();
-    exit;   
+    exit;
 }
 
 require_once($webuidir . "/config.php");
@@ -82,9 +82,12 @@ if(MODE == 'time' && $data[COUNT] < 1) {
    exit;
 }
 
-$requestfile_path = TrustedTimestamps::createRequestfile($data[HASH_VALUE]);
-
-$response = TrustedTimestamps::signRequestfile($requestfile_path, TSA_URL);
+try {
+   $requestfile_path = TrustedTimestamps::createRequestfile($data[HASH_VALUE]);
+   $response = TrustedTimestamps::signRequestfile($requestfile_path, TSA_URL);
+} catch(Exception $e) {
+   die("Error: " . $e->getMessage() . "\n");
+}
 
 $data[RESPONSE_STRING] = $response[RESPONSE_STRING];
 $data[RESPONSE_TIME] = $response[RESPONSE_TIME];
@@ -136,12 +139,12 @@ function get_hash_values() {
 
    if(MODE == 'time') { $stop_id = $start_id + $count - 1; }
 
-   return array(
-                START_ID => $start_id,
-                STOP_ID => $stop_id,
-                COUNT => $count,
-                HASH_VALUE => sha1($s)
-          );
+   return [
+      START_ID => $start_id,
+      STOP_ID => $stop_id,
+      COUNT => $count,
+      HASH_VALUE => sha1($s)
+   ];
 
 }
 

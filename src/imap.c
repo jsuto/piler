@@ -314,7 +314,7 @@ void imap_expunge_message(struct data *data){
 
 
 int process_imap_folder(char *folder, struct session_data *sdata, struct data *data, struct config *cfg){
-   int rc=ERR, i, messages=0;
+   int i, messages=0;
 
    messages = imap_select_cmd_on_folder(folder, data);
 
@@ -330,7 +330,7 @@ int process_imap_folder(char *folder, struct session_data *sdata, struct data *d
          if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/messages); fflush(stdout); }
 
          if(data->import->dryrun == 0){
-            rc = import_message(sdata, data, cfg);
+            int rc = import_message(sdata, data, cfg);
 
             if(data->import->remove_after_import == 1 && rc == OK){
                imap_delete_message(data, i);

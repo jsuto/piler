@@ -241,10 +241,6 @@ struct session_data {
 #ifdef NEED_MYSQL
    MYSQL mysql;
 #endif
-#ifdef NEED_PSQL
-   PGconn *psql;
-   char conninfo[SMALLBUFSIZE];
-#endif
 };
 
 
@@ -308,6 +304,7 @@ struct import {
    int tot_msgs;
    int port;
    int seq;
+   int table_id;
    char *server;
    char *username;
    char *password;

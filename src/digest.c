@@ -34,7 +34,7 @@ int search_header_end(char *p, int n){
 
 
 int make_digests(struct session_data *sdata, struct config *cfg){
-   int i=0, n, fd, offset=3, hdr_len=0, len=0;
+   int i=0, n, fd, offset=3, hdr_len=0;
    char *body=NULL;
    unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];
    SHA256_CTX context, context2;
@@ -50,8 +50,6 @@ int make_digests(struct session_data *sdata, struct config *cfg){
 
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
-      len += n;
-
       SHA256_Update(&context2, buf, n);
 
       body = (char *)&buf[0];

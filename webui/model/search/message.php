@@ -185,10 +185,10 @@ class ModelSearchMessage extends Model {
          $body = Piler_Mime_Decode::fixMimeBodyPart($parts[$i]['headers'], $parts[$i]['body']);
 
          if($parts[$i]['headers']['content-type']['type'] == 'text/html') {
-            $this->message['text/html'] = $purifier->purify($body);
+            $this->message['text/html'] .= $purifier->purify($body);
          }
          else {
-            $this->message['text/plain'] = $body;
+            $this->message['text/plain'] .= $body;
          }
 
       }

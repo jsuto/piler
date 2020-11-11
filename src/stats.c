@@ -134,15 +134,15 @@ void sphinx_queries(struct session_data *sdata, struct stats *stats){
 
 void count_error_emails(struct stats *stats){
    DIR *dir;
-   struct dirent *de;
    struct stat st;
-   char buf[SMALLBUFSIZE];
 
    dir = opendir(ERROR_DIR);
    if(dir){
+      struct dirent *de;
       while((de = readdir(dir))){
          if(strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) continue;
 
+         char buf[SMALLBUFSIZE];
          snprintf(buf, sizeof(buf)-1, "%s/%s", ERROR_DIR, de->d_name);
 
          if(stat(buf, &st) == 0 && S_ISREG(st.st_mode)){

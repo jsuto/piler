@@ -72,15 +72,15 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
 
 
 void process_data(struct smtp_session *session, char *buf, int buflen){
-   int len=0, written=0, n_writes=0;
-
    if(session->last_data_char == '\n' && strcmp(buf, ".\r\n") == 0){
       process_command_period(session);
    }
    else {
       // write line to file
+      int written=0, n_writes=0;
+
       while(written < buflen) {
-         len = write(session->fd, buf+written, buflen-written);
+         int len = write(session->fd, buf+written, buflen-written);
          n_writes++;
 
          if(len > 0){
@@ -98,7 +98,6 @@ void process_data(struct smtp_session *session, char *buf, int buflen){
 
 void wait_for_ssl_accept(struct smtp_session *session){
    int rc;
-   char ssl_error[SMALLBUFSIZE];
 
    if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "waiting for ssl handshake");
 
@@ -115,6 +114,8 @@ void wait_for_ssl_accept(struct smtp_session *session){
    }
 
    if(session->cfg->verbosity >= _LOG_DEBUG || session->net.use_ssl == 0){
+      char ssl_error[SMALLBUFSIZE];
+
       ERR_error_string_n(ERR_get_error(), ssl_error, SMALLBUFSIZE);
       syslog(LOG_PRIORITY, "SSL_accept() result, rc=%d, errorcode: %d, error text: %s",
              rc, SSL_get_error(session->net.ssl, rc), ssl_error);

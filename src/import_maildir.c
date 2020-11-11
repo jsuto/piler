@@ -103,5 +103,9 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
    }
    closedir(dir);
 
+   if(data->import->table_id > 0){
+      update_import_table(sdata, data);
+   }
+
    return ret;
 }

@@ -22,7 +22,7 @@ launch_containers() {
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name piler1 \
       -e PACKAGE="$PACKAGE" \
       -e PILER_HOST="cust1.acts.hu" \
-      -p 80:80 -p 25:25 \
+      -p 127.0.0.1:80:80 -p 25:25 \
       -v "${PACKAGE_DIR}:/data:ro" \
       -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" \
       "$docker_image"
@@ -33,12 +33,13 @@ launch_containers() {
 create_rules() {
    local container="$1"
 
-   echo 'echo "insert into domain (domain, mapped) values(\"fictive.com\",\"fictive.com\"),(\"acts.hu\",\"acts.hu\")"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
+   echo 'echo "insert into domain (domain, mapped) values(\"fictive.com\",\"fictive.com\"),(\"acts.hu\",\"acts.hu\"),(\"gtsce.com\",\"gtsce.com\"),(\"datanet.hu\",\"datanet.hu\"),(\"gtsdatanet.hu\",\"gtsdatanet.hu\"),(\"gts.hu\",\"gts.hu\")"| mysql --defaults-file=/etc/piler/.my.cnf piler' | docker exec -i "$container" sh
 
    echo 'echo "insert into archiving_rule (subject) values (\"Android táblagép\")"| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
    echo 'echo "insert into archiving_rule (\`from\`) values (\"@gmail.com\")"| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
    echo 'echo "insert into archiving_rule (\`from\`,attachment_type, _attachment_size, attachment_size) values (\"finderis.co.ua\", \"image\", \">\", 100000)"|mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
    echo 'echo "insert into archiving_rule (\`to\`) values (\"undisclosed-recipients\")"|mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
+   echo 'echo "insert into import (\`type\`, username, password, server) values (\"imap\", \"sanyi@aaa.fu\", \"abcde123\", \"imap\")"|mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
 
    echo 'echo "update user set password=\"\$6\$GKL00T\$8jqoFOe3PyAbOCLwKB7JwndwC.IinHrZRkdoQDZUc8vybZ88sA2qomlz5JceNif8fFpkGzZ03ilvQa7tqQx0v1\""| mysql --defaults-file=/etc/piler/.my.cnf piler'|docker exec -i "$container" sh
 

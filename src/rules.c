@@ -196,13 +196,14 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
 
 int count_match(struct rule *p, struct parser_state *state, int size, int spam){
    int ismatch=0;
-   size_t nmatch=0;
 
    ismatch += check_spam_rule(spam, p->spam);
    ismatch += check_size_rule(size, p->size, p->_size);
    ismatch += check_attachment_rule(state, p);
 
    if(p->compiled == 1){
+      size_t nmatch=0;
+
       if(p->emptyfrom == 1){
          ismatch += RULE_UNDEF;
       }
@@ -239,7 +240,7 @@ char *check_against_ruleset(struct node *xhash[], struct parser_state *state, in
       if(q->str){
          p = q->str;
 
-         if(p && count_match(p, state, size, spam) > 0){
+         if(count_match(p, state, size, spam) > 0){
             return p->rulestr;
          }
       }
@@ -338,7 +339,6 @@ int check_spam_rule(int is_spam, int spam){
 int check_attachment_rule(struct parser_state *state, struct rule *rule){
    int i;
    size_t nmatch=0;
-   int ismatch = 0;
 
    // If no attachment rule, then return RULE_UNDEF
    if(rule->emptyaname == 1 && rule->emptyatype == 1 && rule->attachment_size == 0) return RULE_UNDEF;
@@ -348,7 +348,7 @@ int check_attachment_rule(struct parser_state *state, struct rule *rule){
 
 
    for(i=1; i<=state->n_attachments; i++){
-      ismatch = 0;
+      int ismatch = 0;
 
       if(rule->emptyaname == 0){
          if(regexec(&(rule->attachment_name), state->attachments[i].filename, nmatch, NULL, 0) == 0)
@@ -379,34 +379,32 @@ void initrules(struct node *xhash[]){
 
 
 void clearrules(struct node *xhash[]){
-   struct node *p, *q;
+   struct node *q;
    struct rule *rule;
 
    q = xhash[0];
 
    while(q != NULL){
-      p = q;
+      struct node *p = q;
       q = q->r;
 
-      if(p){
-         if(p->str){
-            rule = (struct rule*)p->str;
+      if(p->str){
+         rule = (struct rule*)p->str;
 
-            regfree(&(rule->from));
-            regfree(&(rule->to));
-            regfree(&(rule->subject));
-            regfree(&(rule->body));
-            regfree(&(rule->attachment_name));
-            regfree(&(rule->attachment_type));
+         regfree(&(rule->from));
+         regfree(&(rule->to));
+         regfree(&(rule->subject));
+         regfree(&(rule->body));
+         regfree(&(rule->attachment_name));
+         regfree(&(rule->attachment_type));
 
-            free(rule->rulestr);
+         free(rule->rulestr);
 
-            if(rule->domain) free(rule->domain);
+         if(rule->domain) free(rule->domain);
 
-            free(rule);
-         }
-         free(p);
+         free(rule);
       }
+      free(p);
    }
 
    xhash[0] = NULL;

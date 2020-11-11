@@ -52,6 +52,7 @@ void usage(){
    printf("    -s <start position>               Start importing POP3 emails from this position\n");
    printf("    -j <failed folder>                Move failed to import emails to this folder\n");
    printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
+   printf("    -T <id>                           Update import table at id=<id>\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
    printf("    -r                                Remove imported emails\n");
@@ -62,7 +63,7 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, c, n_mbox=0;
+   int i, n_mbox=0;
    char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS], *directory=NULL;
    char puf[SMALLBUFSIZE], *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
@@ -96,6 +97,7 @@ int main(int argc, char **argv){
    memset(import.filename, 0, SMALLBUFSIZE);
    import.mboxdir = NULL;
    import.tot_msgs = 0;
+   import.table_id = 0;
    import.folder = NULL;
 
    data.import = &import;
@@ -132,8 +134,9 @@ int main(int argc, char **argv){
             {"batch-limit",  required_argument,  0,  'b' },
             {"timeout",      required_argument,  0,  't' },
             {"start-position",required_argument,  0,  's' },
+            {"table-id",     required_argument,  0,  'T' },
             {"quiet",        no_argument,        0,  'q' },
-            {"recursive",    required_argument,  0,  'R' },
+            {"recursive",    no_argument,        0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
             {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
@@ -145,9 +148,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:DRroqh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:DRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:DRroqh?");
 #endif
 
       if(c == -1) break;
@@ -255,6 +258,15 @@ int main(int argc, char **argv){
          case 'a' :
                     snprintf(puf, sizeof(puf)-1, "%s ", optarg);
                     data.import->extra_recipient = puf;
+                    break;
+
+         case 'T' :
+                    if(atoi(optarg) < 1){
+                       printf("invalid import table id: %s\n", optarg);
+                       return -1;
+                    }
+
+                    data.import->table_id = atoi(optarg);
                     break;
 
          case 'D' :

@@ -18,9 +18,13 @@ $config = [];
 
 $config['ENABLE_MOBILE_PREVIEW'] = 0;
 
+$config['SITE_LOGO_LG'] = '/view/theme/default/assets/images/archive-logo-lg.png';
+$config['SITE_LOGO_SM'] = '/view/theme/default/assets/images/archive-logo-sm.png';
+$config['COMPATIBILITY'] = 'Which browsers are supported, etc';
+
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
-$config['BRANDING_LOGO'] = '';
+$config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
 $config['BRANDING_BACKGROUND_COLOUR'] = '';
 $config['BRANDING_TEXT_COLOUR'] = '';
 $config['BRANDING_FAVICON'] = '/view/theme/default/assets/ico/favicon.png';
@@ -115,7 +119,11 @@ $config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
 //$config['LDAP_MAIL_ATTR'] = 'mail';
 
-
+// Uninvention specific settings
+//$config['LDAP_MAIL_ATTR'] = 'mailPrimaryAddress';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mailAlternativeAddress';
 
 
 // enable single sign-on (disabled by default)
@@ -151,10 +159,6 @@ $config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
 $config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
 $config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
 $config['GOOGLE_ALL_MAIL'] = '[Gmail]/All Mail';
-
-$config['SITE_LOGO_LG'] = '/view/theme/default/assets/images/archive-logo-lg.png';
-$config['SITE_LOGO_SM'] = '/view/theme/default/assets/images/archive-logo-sm.png';
-$config['COMPATIBILITY'] = 'Which browsers are supported, etc';
 
 
 $config['ENABLE_AUDIT'] = 1;
@@ -222,6 +226,7 @@ $config['TSA_URL'] = '';
 $config['TSA_PUBLIC_KEY_FILE'] = '';
 $config['TSA_START_ID'] = 1;
 $config['TSA_STAMP_REQUEST_UNIT_SIZE'] = 10000;
+$config['TSA_VERIFY_CERTIFICATE'] = true;
 
 $config['DB_DRIVER'] = 'mysql';
 $config['DB_PREFIX'] = '';
@@ -238,7 +243,8 @@ $config['SPHINX_MAIN_INDEX'] = 'main1,dailydelta1,delta1';
 $config['SPHINX_ATTACHMENT_INDEX'] = 'att1';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
-$config['SPHINX_STRICT_SCHEMA'] = 0;
+$config['SPHINX_STRICT_SCHEMA'] = 1;
+$config['MAX_EMAIL_LEN'] = 41;
 
 $config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
@@ -309,6 +315,8 @@ $config['DATA_PARTITION'] = '/var';
 $config['DELIMITER'] = "\t";
 
 $config['TRACKING_CODE'] = '';
+
+$mailattrs = ["mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox", "mailprimaryaddress", "mailalternativeaddress"];
 
 $langs = array(
                 'cz',

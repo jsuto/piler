@@ -52,14 +52,12 @@ void usage(){
 
 
 void p_clean_exit(int sig){
-   int i;
-
    if(sig > 0) syslog(LOG_PRIORITY, "got signal: %d, %s", sig, strsignal(sig));
 
    if(listenerfd != -1) close(listenerfd);
 
    if(sessions){
-      for(i=0; i<cfg.max_connections; i++){
+      for(int i=0; i<cfg.max_connections; i++){
          if(sessions[i]) free_smtp_session(sessions[i]);
       }
 
@@ -84,14 +82,13 @@ void fatal(char *s){
 
 void check_for_client_timeout(){
    time_t now;
-   int i;
 
    time(&now);
 
    if(cfg.verbosity >= LOG_DEBUG) syslog(LOG_PRIORITY, "%s @%ld", __func__, now);
 
    if(num_connections > 0){
-      for(i=0; i<cfg.max_connections; i++){
+      for(int i=0; i<cfg.max_connections; i++){
          if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
             syslog(LOG_PRIORITY, "client %s timeout, lasttime: %ld", sessions[i]->remote_host, sessions[i]->lasttime);
             tear_down_session(sessions, sessions[i]->slot, &num_connections);
@@ -128,8 +125,8 @@ void initialise_configuration(){
 
 
 int main(int argc, char **argv){
-   int listenerfd, client_sockfd;
-   int i, n, daemonise=0;
+   int client_sockfd;
+   int i, daemonise=0;
    int client_len = sizeof(struct sockaddr_storage);
    ssize_t readlen;
    struct sockaddr_storage client_address;
@@ -220,7 +217,7 @@ int main(int argc, char **argv){
    alarm(cfg.check_for_client_timeout_interval);
 
    for(;;){
-      n = epoll_wait(efd, events, cfg.max_connections, -1);
+      int n = epoll_wait(efd, events, cfg.max_connections, -1);
       for(i=0; i<n; i++){
 
          // Office365 sometimes behaves oddly: when it receives the 250 OK

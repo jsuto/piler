@@ -1,21 +1,12 @@
 #!/bin/bash
 
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-PRIORITY=mail.error
-TMPFILE=/var/run/piler/import.tmp
+set -o errexit
+set -o pipefail
 
-if [ -f $TMPFILE ]; then exit 1; fi
+export PATH=$PATH:/usr/libexec/piler:/usr/local/libexec/piler
 
-date > $TMPFILE
+pushd /var/piler/imap
 
-function finish {
-   rm -f $TMPFILE
-}
+[[ "${FLOCKER}" != "$0" ]] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@"
 
-trap finish EXIT
-
-cd /var/piler/imap
-
-pilerimport -G >/dev/null
-
-
+imapfetch.py -i

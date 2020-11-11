@@ -63,7 +63,7 @@ int connect_to_pop3_server(struct data *data){
 
 
 void get_number_of_total_messages(struct data *data){
-   char *p, buf[MAXBUFSIZE];
+   char buf[MAXBUFSIZE];
 
    data->import->total_messages = 0;
 
@@ -73,7 +73,7 @@ void get_number_of_total_messages(struct data *data){
    recvtimeoutssl(data->net, buf, sizeof(buf));
 
    if(strncmp(buf, "+OK ", 4) == 0){
-      p = strchr(&buf[4], ' ');
+      char *p = strchr(&buf[4], ' ');
       if(p){
          *p = '\0';
          data->import->total_messages = atoi(&buf[4]);
@@ -86,7 +86,7 @@ void get_number_of_total_messages(struct data *data){
 
 
 int pop3_download_email(struct data *data, int i){
-   int n, fd, pos=0, readlen=0, lastpos=0, nreads=0;
+   int n, fd, pos=0, lastpos=0, nreads=0;
    char *p, buf[MAXBUFSIZE];
    char aggrbuf[3*MAXBUFSIZE];
 
@@ -108,7 +108,6 @@ int pop3_download_email(struct data *data, int i){
 
    while((n = recvtimeoutssl(data->net, buf, sizeof(buf))) > 0){
       nreads++;
-      readlen += n;
 
       if(nreads == 1){
 
@@ -167,7 +166,6 @@ void pop3_delete_message(struct data *data, int i){
 
 
 void process_pop3_emails(struct session_data *sdata, struct data *data, struct config *cfg){
-   int i=0, rc=ERR;
    char buf[MAXBUFSIZE];
 
    data->import->processed_messages = 0;
@@ -178,12 +176,12 @@ void process_pop3_emails(struct session_data *sdata, struct data *data, struct c
 
    if(data->import->total_messages <= 0) return;
 
-   for(i=data->import->start_position; i<=data->import->total_messages; i++){
+   for(int i=data->import->start_position; i<=data->import->total_messages; i++){
       if(pop3_download_email(data, i) == OK){
          if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/data->import->total_messages); fflush(stdout); }
 
          if(data->import->dryrun == 0){
-            rc = import_message(sdata, data, cfg);
+            int rc = import_message(sdata, data, cfg);
 
             if(data->import->remove_after_import == 1 && rc == OK){
                pop3_delete_message(data, i);

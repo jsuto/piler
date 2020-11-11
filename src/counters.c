@@ -51,13 +51,12 @@ struct counters load_counters(struct session_data *sdata){
 void update_counters(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    char buf[MAXBUFSIZE];
 #ifdef HAVE_MEMCACHED
-   unsigned long long mc, rcvd;
+   unsigned long long mc;
    struct counters c;
-   char key[MAX_MEMCACHED_KEY_LEN];
    unsigned int flags=0;
 #endif
 
-   if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size <= 0) return;
+   if(counters->c_virus + counters->c_duplicate + counters->c_ignore + counters->c_size + counters->c_stored_size == 0) return;
 
 #ifdef HAVE_MEMCACHED
    if(cfg->update_counters_to_memcached == 1){
@@ -65,7 +64,7 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
       /* increment counters to memcached */
 
       if(memcached_increment(&(data->memc), MEMCACHED_MSGS_RCVD, counters->c_rcvd, &mc) == MEMCACHED_SUCCESS){
-         rcvd = mc;
+         unsigned long long rcvd = mc;
 
          if(counters->c_virus > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_VIRUS, counters->c_virus, &mc);
          if(counters->c_duplicate > 0) memcached_increment(&(data->memc), MEMCACHED_MSGS_DUPLICATE, counters->c_duplicate, &mc);
@@ -79,6 +78,8 @@ void update_counters(struct session_data *sdata, struct data *data, struct count
          snprintf(buf, MAXBUFSIZE-1, "%s %s %s %s %s %s %s", MEMCACHED_MSGS_RCVD, MEMCACHED_MSGS_VIRUS, MEMCACHED_MSGS_DUPLICATE, MEMCACHED_MSGS_IGNORE, MEMCACHED_MSGS_SIZE, MEMCACHED_MSGS_STORED_SIZE, MEMCACHED_COUNTERS_LAST_UPDATE);
 
          if(memcached_mget(&(data->memc), buf) == MEMCACHED_SUCCESS){
+            char key[MAX_MEMCACHED_KEY_LEN];
+
             while((memcached_fetch_result(&(data->memc), &key[0], &buf[0], &flags))){
                if(!strcmp(key, MEMCACHED_MSGS_RCVD)) c.c_rcvd = strtoull(buf, NULL, 10);
                else if(!strcmp(key, MEMCACHED_MSGS_VIRUS)) c.c_virus = strtoull(buf, NULL, 10);

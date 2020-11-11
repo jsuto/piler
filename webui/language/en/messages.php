@@ -412,6 +412,7 @@ $_['text_view_raw_email'] = "View raw email";
 $_['text_view_user_quarantine'] = "View user's quarantine";
 
 $_['text_warning_about_default_policy'] = "The default policy can be set in clapf.conf";
+$_['text_wildcard_domains'] = "Wildcard domains";
 $_['text_whitelist'] = "Whitelist";
 $_['text_whitelist_settings'] = "Whitelist settings";
 $_['text_with_attachment'] = "with attachment(s)";

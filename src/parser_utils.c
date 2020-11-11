@@ -114,7 +114,7 @@ long get_local_timezone_offset(){
 
 
 time_t parse_date_header(char *datestr){
-   int n=0, len;
+   int n=0;
    long offset=0;
    time_t ts=0;
    char *p, *q, *r, *tz, s[SMALLBUFSIZE], tzh[4], tzm[3];
@@ -150,7 +150,7 @@ time_t parse_date_header(char *datestr){
    do {
       p = split_str(p, " ", s, sizeof(s)-1);
 
-      len = strlen(s);
+      int len = strlen(s);
 
       if(len > 0){
          n++;
@@ -264,7 +264,7 @@ time_t parse_date_header(char *datestr){
 
 
 int extract_boundary(char *p, struct parser_state *state){
-   char *q, *q2;
+   char *q;
 
    p += strlen("boundary");
 
@@ -291,7 +291,7 @@ int extract_boundary(char *p, struct parser_state *state){
             break;
       }
 
-      q2 = strchr(p, ';');
+      char *q2 = strchr(p, ';');
       if(q2) *q2 = '\0';
 
       q = strrchr(p, '"');
@@ -315,14 +315,13 @@ int extract_boundary(char *p, struct parser_state *state){
 
 
 void fixupEncodedHeaderLine(char *buf, int buflen){
-   char *p, *q, *r, *s, *e, *end;
+   char *q, *r, *s, *e, *end;
    /*
     * I thought SMALLBUFSIZE would be enough for v, encoding and tmpbuf(2*),
     * but then I saw a 6-7000 byte long subject line, so I've switched to MAXBUFSIZE
     */
    char v[MAXBUFSIZE], u[MAXBUFSIZE], puf[MAXBUFSIZE], encoding[MAXBUFSIZE], tmpbuf[2*MAXBUFSIZE];
    int need_encoding, ret, prev_encoded=0, n_tokens=0;
-   int b64=0, qp=0;
 
    if(buflen < 5) return;
 
@@ -333,7 +332,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
    do {
       q = split_str(q, " ", v, sizeof(v)-1);
 
-      p = v;
+      char *p = v;
 
       do {
          memset(u, 0, sizeof(u));
@@ -349,7 +348,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
           *    Happy New Year! =?utf-8?q?=F0=9F=8E=86?=
           */
 
-         b64 = qp = 0;
+         int b64=0, qp=0;
          memset(encoding, 0, sizeof(encoding));
 
          r = strstr(p, "=?");
@@ -446,9 +445,9 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
 void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state){
    int i=0;
-   char *p, puf[MAXBUFSIZE];
 
    if(strlen(state->qpbuf) > 0){
+      char puf[MAXBUFSIZE];
       memset(puf, 0, sizeof(puf));
       snprintf(puf, sizeof(puf)-1, "%s%s", state->qpbuf, buf);
       snprintf(buf, MAXBUFSIZE-1, "%s", puf);
@@ -461,7 +460,7 @@ void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state){
    }
 
    if(i == 1){
-      p = strrchr(buf, ' ');
+      char *p = strrchr(buf, ' ');
       if(p){
          memset(state->qpbuf, 0, MAX_TOKEN_LEN);
          if(strlen(p) < MAX_TOKEN_LEN-1){
@@ -475,9 +474,8 @@ void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state){
 
 
 void fixupBase64EncodedLine(char *buf, struct parser_state *state){
-   char *p, puf[MAXBUFSIZE];
-
    if(strlen(state->miscbuf) > 0){
+      char puf[MAXBUFSIZE];
       memset(puf, 0, sizeof(puf));
       strncpy(puf, state->miscbuf, sizeof(puf)-strlen(puf)-1);
       strncat(puf, buf, sizeof(puf)-strlen(puf)-1);
@@ -489,7 +487,7 @@ void fixupBase64EncodedLine(char *buf, struct parser_state *state){
    }
 
    if(buf[strlen(buf)-1] != '\n'){
-      p = strrchr(buf, ' ');
+      char *p = strrchr(buf, ' ');
       if(p){
          memcpy(&(state->miscbuf[0]), p+1, MAX_TOKEN_LEN-1);
          *p = '\0';
@@ -576,7 +574,7 @@ void markHTML(char *buf, struct parser_state *state){
 
 
 int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state){
-   char *p, html[SMALLBUFSIZE];
+   char html[SMALLBUFSIZE];
    int len;
 
    if(pos == 0 && strncmp(htmlbuf, "style ", 6) == 0) state->style = 1;
@@ -594,7 +592,7 @@ int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state)
    len = strlen(html);
 
    if(len > 8 && strchr(html, '=')){
-      p = strstr(html, "cid:");
+      char *p = strstr(html, "cid:");
       if(p){
          *(p+3) = '\0';
          strncat(html, " ", SMALLBUFSIZE-1);
@@ -697,11 +695,9 @@ int does_it_seem_like_an_email_address(char *email){
 
 
 void add_recipient(char *email, unsigned int len, struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
-   char *q;
-
    if(findnode(state->rcpt, email) == NULL){
 
-      q = strchr(email, '@');
+      char *q = strchr(email, '@');
 
       /* skip any address matching ...@cfg->hostid, 2013.10.29, SJ */
       if(q && strncmp(q+1, cfg->hostid, cfg->hostid_len) == 0){
@@ -769,7 +765,7 @@ void degenerateToken(unsigned char *p){
    int i=1, d=0, dp=0;
    unsigned char *s;
 
-   /* quit if this the string does not end with a punctuation character */
+   /* quit if the string does not end with a punctuation character */
 
    if(!ispunct(*(p+strlen((char *)p)-1)))
       return;
@@ -825,8 +821,7 @@ void fixURL(char *buf, int buflen){
 
 
 void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultbuflen){
-   int extended=0;
-   char buf[SMALLBUFSIZE], puf[SMALLBUFSIZE], *p, *q, *encoding;
+   char buf[SMALLBUFSIZE], *p, *q;
 
    snprintf(buf, sizeof(buf)-1, "%s", s);
 
@@ -862,6 +857,8 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultb
        *
        */
 
+      int extended=0;
+
       p += strlen(name);
       if(*p == '*'){
          extended = 1;
@@ -889,7 +886,7 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultb
 
 
          if(extended == 1){
-            encoding = p;
+            char *encoding = p;
             q = strchr(p, '\'');
             if(q){
                *q = '\0';
@@ -906,6 +903,7 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultb
                snprintf(resultbuf, resultbuflen-2, "%s", p);
          }
          else {
+            char puf[SMALLBUFSIZE];
             snprintf(puf, sizeof(puf)-1, "%s", p);
             fixupEncodedHeaderLine(puf, sizeof(puf));
 
@@ -919,8 +917,6 @@ void extractNameFromHeaderLine(char *s, char *name, char *resultbuf, int resultb
 
 
 char *determine_attachment_type(char *filename, char *type){
-   char *p;
-
    if(strncasecmp(type, "text/", strlen("text/")) == 0) return "text,";
    if(strncasecmp(type, "image/", strlen("image/")) == 0) return "image,";
    if(strncasecmp(type, "audio/", strlen("audio/")) == 0) return "audio,";
@@ -951,7 +947,7 @@ char *determine_attachment_type(char *filename, char *type){
 
    if(strncasecmp(type, "application/", 12) == 0){
 
-      p = strrchr(filename, '.');
+      char *p = strrchr(filename, '.');
       if(p){
          p++;
 
@@ -1013,14 +1009,13 @@ char *get_attachment_extractor_by_filename(char *filename){
 
 
 void parse_reference(struct parser_state *state, char *s){
-   int len;
    char puf[SMALLBUFSIZE];
 
    if(strlen(state->reference) > 10) return;
 
    do {
       s = split_str(s, " ", puf, sizeof(puf)-1);
-      len = strlen(puf);
+      int len = strlen(puf);
 
       if(len > 10 && len < SMALLBUFSIZE-1){
          memcpy(&(state->reference[strlen(state->reference)]), puf, len);
@@ -1046,12 +1041,11 @@ int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen){
 
 
 void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len){
-   int n;
    char *r;
 
    r = strchr(puf, '+');
    if(r){
-      n = strlen(*at_sign);
+      int n = strlen(*at_sign);
       memmove(r, *at_sign, n);
       *(r+n) = '\0';
       *len = strlen(puf);
@@ -1069,8 +1063,13 @@ void fill_attachment_name_buf(struct parser_state *state, char *buf){
 
    int len = strlen(p);
 
-   if(len + state->anamepos < SMALLBUFSIZE-2){
+   if(len + state->anamepos < SMALLBUFSIZE-3){
       memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
       state->anamepos += len;
+
+      // add a trailing separator semicolon to make sure there's separation
+      // with the next item
+      state->attachment_name_buf[state->anamepos] = ';';
+      state->anamepos++;
    }
 }

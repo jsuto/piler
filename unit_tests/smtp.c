@@ -27,9 +27,9 @@ void connect_to_smtp_server(char *server, int port, struct data *data){
    char port_string[8], buf[MAXBUFSIZE];
    struct addrinfo hints, *res;
 
-   data->net->socket = -1;
-
    if(data == NULL) return;
+
+   data->net->socket = -1;
 
    snprintf(port_string, sizeof(port_string)-1, "%d", port);
 
@@ -301,7 +301,7 @@ static void test_smtp_commands_period_command_in_its_own_packet(char *server, in
 
 
 int main(int argc, char **argv){
-   int c, port=25;
+   int port=25;
    char *server=NULL;
    struct data data;
    struct net net;
@@ -325,9 +325,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:s:p:t:lh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:p:t:lh?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:s:p:t:lh?");
+      int c = getopt(argc, argv, "c:s:p:t:lh?");
 #endif
 
 

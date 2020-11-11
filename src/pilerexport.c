@@ -8,11 +8,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
 #include <syslog.h>
+#include <zip.h>
 #include <getopt.h>
 #include <piler.h>
 
@@ -22,13 +24,14 @@ extern int optind;
 
 int dryrun = 0;
 int exportall = 0;
+int verification_status = 0;
 int rc = 0;
 char *query=NULL;
 int verbosity = 0;
 int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
-
+char *zipfile = NULL;
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
@@ -48,6 +51,7 @@ void usage(){
    printf("    -w <where condition>              Where condition to pass to sphinx, eg. \"match('@subject: piler')\"\n");
    printf("    -m <max. matches>                 Max. matches to apply to sphinx query (default: %d)\n", max_matches);
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
+   printf("    -z <zip file>                     Write exported EML files to a zip file\n");
    printf("    -A                                Export all emails from archive\n");
    printf("    -d                                Dry run\n");
 
@@ -87,15 +91,12 @@ unsigned long convert_time(char *yyyymmdd, int h, int m, int s){
 
    tm.tm_mday = atoi(yyyymmdd);
 
-
-   tm.tm_isdst = -1;
-
    return mktime(&tm);
 }
 
 
 int append_email_to_buffer(char **buffer, char *email){
-   int len, arglen;
+   int arglen;
    char *s=NULL, emailaddress[SMALLBUFSIZE];
 
    snprintf(emailaddress, sizeof(emailaddress)-1, "'%s'", email);
@@ -107,7 +108,7 @@ int append_email_to_buffer(char **buffer, char *email){
       memcpy(*buffer, emailaddress, arglen);
    }
    else {
-      len = strlen(*buffer);
+      int len = strlen(*buffer);
       s = realloc(*buffer, len + arglen+2);
       if(!s){
          printf("malloc problem!\n");
@@ -126,7 +127,7 @@ int append_email_to_buffer(char **buffer, char *email){
 
 
 int append_string_to_buffer(char **buffer, char *str){
-   int len, arglen;
+   int arglen;
    char *s=NULL;
 
    arglen = strlen(str);
@@ -137,7 +138,7 @@ int append_string_to_buffer(char **buffer, char *str){
       memcpy(*buffer, str, arglen);
    }
    else {
-      len = strlen(*buffer);
+      int len = strlen(*buffer);
       s = realloc(*buffer, len + arglen+1);
       if(!s) return 1;
 
@@ -152,9 +153,7 @@ int append_string_to_buffer(char **buffer, char *str){
 
 
 uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
-   MYSQL_RES *res;
    MYSQL_ROW row;
-   int rc=0;
    uint64 id=0;
    char s[SMALLBUFSIZE];
 
@@ -168,7 +167,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
    snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE %s AND id > %llu ORDER BY id ASC LIMIT 0,%d", index_list, where_condition, last_id, max_matches);
 
    if(mysql_real_query(&(sdata2->mysql), s, strlen(s)) == 0){
-      res = mysql_store_result(&(sdata2->mysql));
+      MYSQL_RES *res = mysql_store_result(&(sdata2->mysql));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             id = strtoull(row[0], NULL, 10);
@@ -194,12 +193,11 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
 
 uint64 get_total_found(struct session_data *sdata){
-   MYSQL_RES *res;
    MYSQL_ROW row;
    uint64 total_found=0;
 
    if(mysql_real_query(&(sdata->mysql), "SHOW META LIKE 'total_found'", 28) == 0){
-      res = mysql_store_result(&(sdata->mysql));
+      MYSQL_RES *res = mysql_store_result(&(sdata->mysql));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             total_found = strtoull(row[1], NULL, 10);
@@ -230,7 +228,6 @@ void export_emails_matching_id_list(struct session_data *sdata, struct session_d
 
 
 int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain, int minsize, int maxsize, unsigned long startdate, unsigned long stopdate){
-   int where_condition=1;
    char s[SMALLBUFSIZE];
 
    if(exportall == 1){
@@ -245,87 +242,71 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    rc = append_string_to_buffer(&query, s);
 
    if(from){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`from` IN (");
       rc += append_string_to_buffer(&query, from);
       rc += append_string_to_buffer(&query, ")");
 
       free(from);
-
-      where_condition++;
    }
 
    if(to){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`to` IN (");
       rc += append_string_to_buffer(&query, to);
       rc += append_string_to_buffer(&query, ")");
 
       free(to);
-
-      where_condition++;
    }
 
    if(fromdomain){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`fromdomain` IN (");
       rc += append_string_to_buffer(&query, fromdomain);
       rc += append_string_to_buffer(&query, ")");
 
       free(fromdomain);
-
-      where_condition++;
    }
 
 
    if(todomain){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
 
       rc += append_string_to_buffer(&query, "`todomain` IN (");
       rc += append_string_to_buffer(&query, todomain);
       rc += append_string_to_buffer(&query, ")");
 
       free(todomain);
-
-      where_condition++;
    }
 
    if(minsize > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` >= %d", minsize);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(maxsize > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
+      rc = append_string_to_buffer(&query, " AND ");
       snprintf(s, sizeof(s)-1, " `size` <= %d", maxsize);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(startdate > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
-      snprintf(s, sizeof(s)-1, " `sent` >= %ld", startdate);
+      rc = append_string_to_buffer(&query, " AND ");
+      snprintf(s, sizeof(s)-1, " `sent` >= %lu", startdate);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
    if(stopdate > 0){
-      if(where_condition) rc = append_string_to_buffer(&query, " AND ");
-      snprintf(s, sizeof(s)-1, " `sent` <= %ld", stopdate);
+      rc = append_string_to_buffer(&query, " AND ");
+      snprintf(s, sizeof(s)-1, " `sent` <= %lu", stopdate);
       rc += append_string_to_buffer(&query, s);
-
-      where_condition++;
    }
 
 
@@ -335,12 +316,33 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 }
 
 
+int write_to_zip_file(char *filename){
+   struct zip *z=NULL;
+   int errorp, ret=ERR;
+
+   z = zip_open(zipfile, ZIP_CREATE, &errorp);
+   if(!z){
+      printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
+      return ret;
+   }
+
+   zip_source_t *zs = zip_source_file(z, filename, 0, 0);
+   if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
+      ret = OK;
+   } else {
+      printf("error adding file %s: %s\n", filename, zip_strerror(z));
+   }
+
+   zip_close(z);
+
+   return ret;
+}
+
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
    uint64 id, n=0;
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
-   int rc=0;
    struct sql sql;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
@@ -383,8 +385,14 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
                   printf("exported: %10llu\r", n); fflush(stdout);
                }
-               else
+               else {
                   printf("verification FAILED. %s\n", filename);
+                  verification_status = 1;
+               }
+
+               if(zipfile && write_to_zip_file(filename) == OK){
+                  unlink(filename);
+               }
 
             }
             else printf("cannot open: %s\n", filename);
@@ -402,7 +410,6 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 ENDE:
    close_prepared_statement(&sql);
 
-
    printf("\n");
 
    return rc;
@@ -410,7 +417,7 @@ ENDE:
 
 
 int main(int argc, char **argv){
-   int c, minsize=0, maxsize=0;
+   int minsize=0, maxsize=0;
    size_t nmatch=0;
    unsigned long startdate=0, stopdate=0;
    char *configfile=CONFIG_FILE;
@@ -443,6 +450,7 @@ int main(int argc, char **argv){
             {"to-domain",    required_argument,  0,  'R' },
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
+            {"zip",          required_argument,  0,  'z' },
             {"where-condition", required_argument,  0,  'w' },
             {"max-matches",  required_argument,  0,  'm' },
             {"index-list",   required_argument,  0,  'i' },
@@ -451,9 +459,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:Adhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?", long_options, &option_index);
 #else
-      c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:Adhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?");
 #endif
 
       if(c == -1) break;
@@ -542,6 +550,10 @@ int main(int argc, char **argv){
                     index_list = optarg;
                     break;
 
+         case 'z':  zipfile = optarg;
+                    break;
+
+
          case 'd' :
                     dryrun = 1;
                     break;
@@ -602,5 +614,5 @@ int main(int argc, char **argv){
 
    close_database(&sdata);
 
-   return 0;
+   return verification_status;
 }

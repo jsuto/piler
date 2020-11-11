@@ -293,12 +293,13 @@ class ModelUserAuth extends Model {
 
 
    public function get_email_array_from_ldap_attr($e = array()) {
-      $data = array();
+      global $mailattrs;
+      $data = [];
 
       foreach($e as $a) {
          if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
-         foreach (array("mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox") as $mailattr) {
+         foreach ($mailattrs as $mailattr) {
             if(isset($a[$mailattr])) {
 
                if(is_array($a[$mailattr])) {
@@ -394,6 +395,8 @@ class ModelUserAuth extends Model {
 
             $data = $this->fix_user_data($username, $username, $emails, 0);
 
+            $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
+
             $this->is_ga_code_needed($username);
 
             $session->set("auth_data", $data);
@@ -428,6 +431,8 @@ class ModelUserAuth extends Model {
                   $emails = array_merge($emails, $extra_emails);
 
                   $data = $this->fix_user_data($username, $username, $emails, 0);
+
+                  $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
                   $this->is_ga_code_needed($username);
 

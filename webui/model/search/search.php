@@ -81,8 +81,14 @@ class ModelSearchSearch extends Model {
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
 
-      $all_your_addresses = $this->get_all_your_address();
-      return sprintf(" (%s %s | %s %s) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses);
+      $all_your_addresses = $this->get_all_your_address("emails");
+      $all_your_wildcard_domains = $this->get_all_your_address("wildcard_domains");
+
+      if($all_your_wildcard_domains) {
+         return sprintf(" ( (%s %s) | (%s %s) | (%s %s) | (%s %s) ) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses, FROMDOMAIN_TOKEN, $all_your_wildcard_domains, TODOMAIN_TOKEN, $all_your_wildcard_domains);
+      } else {
+         return sprintf(" ( (%s %s) | (%s %s) ) ", FROM_TOKEN, $all_your_addresses, TO_TOKEN, $all_your_addresses);
+      }
    }
 
 
@@ -205,17 +211,7 @@ class ModelSearchSearch extends Model {
       }
 
 
-      if(isset($data['aname']) && $data['aname']) {
-
-         $match = $data['aname'];
-         if($emailfilter) { $match = "( $match ) & $emailfilter"; }
-
-         $query = $this->sphx->query("SELECT id, mid FROM " . SPHINX_ATTACHMENT_INDEX . " WHERE MATCH('" . $match . "') ORDER BY `id` $order LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
-
-         $total_found = $query->total_found;
-         $num_rows = $query->num_rows;
-      }
-      else if(isset($data['tag']) && $data['tag']) {
+      if(isset($data['tag']) && $data['tag']) {
          list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag', $page);
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
       }
@@ -324,7 +320,6 @@ class ModelSearchSearch extends Model {
                     'date2'           => '',
                     'direction'       => '',
                     'size'            => '',
-                    'aname'           => '',
                     'attachment_type' => '',
                     'tag'             => '',
                     'note'            => '',
@@ -360,7 +355,6 @@ class ModelSearchSearch extends Model {
          else if($v == 'date1:') { $token = 'date1'; continue; }
          else if($v == 'date2:') { $token = 'date2'; continue; }
          else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
-         else if($v == 'aname:') { $token = 'aname'; continue; }
          else if($v == 'size') { $token = 'size'; continue; }
          else if($v == 'tag:') { $token = 'tag'; continue; }
          else if($v == 'note:') { $token = 'note'; continue; }
@@ -374,13 +368,6 @@ class ModelSearchSearch extends Model {
          }
 
          if($token == 'match') { $a['match'][] = $v; }
-         else if($token == 'aname') {
-            if($v != '|') {
-               $a['aname'] .= '"' . $v . '"';
-            } else {
-               $a['aname'] .= ' | ';
-            }
-         }
          else if($token == 'date1') { $a['date1'] = ' ' . $v; }
          else if($token == 'date2') { $a['date2'] = ' ' . $v; }
          else if($token == 'tag') { $a['tag'] .= ' ' . $v; }
@@ -664,12 +651,12 @@ class ModelSearchSearch extends Model {
    }
 
 
-   private function get_all_your_address() {
+   private function get_all_your_address($session_var) {
       $s = '';
 
       $session = Registry::get('session');
 
-      $emails = $session->get("emails");
+      $emails = $session->get($session_var);
 
       while(list($k, $v) = each($emails)) {
          if($s) { $s .= '| ' .  $this->fix_email_address_for_sphinx($v); }
@@ -677,6 +664,25 @@ class ModelSearchSearch extends Model {
       }
 
       return $s;
+   }
+
+
+   private function get_wildcard_domains($arr=[]) {
+      $query_suffix = '';
+      $results = $arr;
+
+      $session = Registry::get('session');
+
+      $wildcard_domains = $session->get('wildcard_domains');
+
+      if($wildcard_domains) {
+         $q = str_repeat('?,', count($wildcard_domains));
+         $q = trim($q, ',');
+         $results = array_merge($results, $wildcard_domains, $wildcard_domains);
+         $query_suffix = "OR fromdomain IN ($q) OR todomain IN ($q)";
+      }
+
+      return [$results, $query_suffix];
    }
 
 
@@ -736,7 +742,8 @@ class ModelSearchSearch extends Model {
          if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 1) {
             $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `fromdomain` IN ($q) OR `todomain` IN ($q) )", $arr);
          } else {
-            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+            [$arr, $query_suffix] = $this->get_wildcard_domains($arr);
+            $query = $this->db->query("SELECT id FROM " . VIEW_MESSAGES . " WHERE id=? AND ( `from` IN ($q) OR `to` IN ($q) $query_suffix )", $arr);
          }
 
          if(isset($query->row['id'])) { return 1; }
@@ -794,7 +801,7 @@ class ModelSearchSearch extends Model {
       $q = preg_replace("/^\,/", "", $q);
 
 
-      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0) {
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0 && ENABLE_FOLDER_RESTRICTIONS == 0) {
          $query = $this->db->query("SELECT id FROM `" . TABLE_META . "` WHERE `id` IN ($q2)", $arr);
       }
       else {
@@ -815,7 +822,9 @@ class ModelSearchSearch extends Model {
                   }
                }
 
-               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) )", $arr);
+               [$arr, $query_suffix] = $this->get_wildcard_domains($arr);
+
+               $query = $this->db->query("SELECT id FROM `" . VIEW_MESSAGES . "` WHERE `id` IN ($q2) AND ( `from` IN ($q) OR `to` IN ($q) $query_suffix)", $arr);
             }
 
          }

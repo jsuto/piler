@@ -1,3 +1,22 @@
+1.3.9:
+------
+
+- Added a separator to searching for attachment names
+- [BUGFIX] Render multiple mail parts in mail view instead of only the last part
+- Use TLS v1.2 with openssl 1.0.x for connecting remote pop3/imap servers
+- Instant search results to the gui when the search page loads
+- Support sphinx-3.3.1, introduced sphinx strict mode variable
+- GUI domain fixes
+- gcc 9 fixes
+- Fix permission on sphinx data dir to 700
+- pilerpurge.py should honor the mysqlhost value
+- Password change enabled by default
+- Health page fixes
+- GUI mime parser fixes
+- Start/stop script fix
+- Optimized search page for mobile devices, set $config['ENABLE_MOBILE_PREVIEW'] = 1; in config-site.php to enable it
+
+
 1.3.0:
 -----
 

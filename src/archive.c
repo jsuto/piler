@@ -54,7 +54,6 @@ void zerr(int ret){
 
 int inf(unsigned char *in, int len, int mode, char **buffer, FILE *dest){
    int ret, pos=0;
-   unsigned have;
    z_stream strm;
    char *new_ptr;
    unsigned char out[REALLYBIGBUFSIZE];
@@ -96,7 +95,7 @@ int inf(unsigned char *in, int len, int mode, char **buffer, FILE *dest){
                 return ret;
       }
 
-      have = REALLYBIGBUFSIZE - strm.avail_out;
+      unsigned have = REALLYBIGBUFSIZE - strm.avail_out;
 
       /*
        * write the uncompressed result either to stdout
@@ -235,8 +234,8 @@ CLEANUP:
 
 
 int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct config *cfg){
-   int i, attachments;
-   char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE], pointer[SMALLBUFSIZE];
+   int attachments;
+   char *buffer=NULL, *saved_buffer, *p, filename[SMALLBUFSIZE];
    struct ptr_array ptr_arr[MAX_ATTACHMENTS];
 #ifdef HAVE_SUPPORT_FOR_COMPAT_STORAGE_LAYOUT
    struct stat st;
@@ -270,7 +269,8 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct c
       if(buffer){
          saved_buffer = buffer;
 
-         for(i=1; i<=attachments; i++){
+         for(int i=1; i<=attachments; i++){
+            char pointer[SMALLBUFSIZE];
             snprintf(pointer, sizeof(pointer)-1, "ATTACHMENT_POINTER_%s.a%d_XXX_PILER", sdata->ttmpfile, i);
 
             p = strstr(buffer, pointer);

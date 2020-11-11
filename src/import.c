@@ -20,7 +20,7 @@
 
 int import_message(struct session_data *sdata, struct data *data, struct config *cfg){
    int rc=ERR;
-   char *p, *rule, newpath[SMALLBUFSIZE];
+   char *rule;
    struct stat st;
    struct parser_state state;
    struct counters counters;
@@ -127,12 +127,13 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    }
 
    if(rc != OK && data->import->failed_folder){
-      p = strrchr(data->import->filename, '/');
+      char *p = strrchr(data->import->filename, '/');
       if(p)
          p++;
       else
          p = data->import->filename;
 
+      char newpath[SMALLBUFSIZE];
       snprintf(newpath, sizeof(newpath)-2, "%s/%s", data->import->failed_folder, p);
 
       if(rename(data->import->filename, newpath))
@@ -140,6 +141,26 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    }
 
    return rc;
+}
+
+
+int update_import_table(struct session_data *sdata, struct data *data) {
+   int ret=ERR, status=2;
+   struct sql sql;
+
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_UPDATE_IMPORT_TABLE) == ERR) return ret;
+
+   p_bind_init(&sql);
+
+   sql.sql[sql.pos] = (char *)&(status); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&(data->import->tot_msgs); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+   sql.sql[sql.pos] = (char *)&(data->import->table_id); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+
+   if(p_exec_stmt(sdata, &sql) == OK) ret = OK;
+
+   close_prepared_statement(&sql);
+
+   return ret;
 }
 
 

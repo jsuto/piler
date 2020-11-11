@@ -5,7 +5,7 @@
 #include "test.h"
 
 
-struct digest_test tests[] = {
+struct digest_test emls[] = {
    {"1.eml", "7fa4f06f7085986007454b374f6685e4cf838d9e9f8878f3cba89cfe98e29f56", "bbbafb22e2d4c035584a5024e9d4feaf32172559b4d7cacc8b7af4bd548da53e"},
    {"2.eml", "668cb3b91b944af786667323442576b9813d65f3cd3bc33e9d5da303c79de038", "de90475409dd6ab24e80c1b7a987715c40fe8d28d91337b7f063b477159c7b3c"},
    {"3.eml", "0d546d4cb4a8ce74ea5fd4cc51dbb4ebeaa7542f1c691817579da7eeab8d4771", "f585d011340d292ee52ddedb07cda662a8f1e46329d14a2ce92dca0604387bab"},
@@ -41,9 +41,9 @@ static void test_digest_file(){
    unsigned int i;
    char digest[2*DIGEST_LENGTH+1];
 
-   for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
-      digest_file(tests[i].s, &digest[0]);
-      assert(strcmp(digest, tests[i].digest2) == 0 && "test_digest_file()");
+   for(i=0; i<sizeof(emls)/sizeof(struct digest_test); i++){
+      digest_file(emls[i].s, &digest[0]);
+      assert(strcmp(digest, emls[i].digest2) == 0 && "test_digest_file()");
    }
 
    printf("test_digest_file() OK\n");
@@ -64,8 +64,8 @@ static void test_make_digests(struct config *cfg){
    }
 
 
-   for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
-      if(setup_and_parse_message(&sdata, &state, &data, tests[i].s, cfg) == 1){
+   for(i=0; i<sizeof(emls)/sizeof(struct digest_test); i++){
+      if(setup_and_parse_message(&sdata, &state, &data, emls[i].s, cfg) == 1){
          continue;
       }
 
@@ -79,8 +79,8 @@ static void test_make_digests(struct config *cfg){
 
       unlink(sdata.tmpframe);
 
-      assert(strcmp(sdata.bodydigest, tests[i].digest1) == 0 && "test_make_digests()");
-      assert(strcmp(sdata.digest, tests[i].digest2) == 0 && "test_make_digests()");
+      assert(strcmp(sdata.bodydigest, emls[i].digest1) == 0 && "test_make_digests()");
+      assert(strcmp(sdata.digest, emls[i].digest2) == 0 && "test_make_digests()");
 
    }
 

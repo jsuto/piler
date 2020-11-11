@@ -136,15 +136,6 @@ int store_recipients(struct session_data *sdata, char *to, uint64 id, struct con
 }
 
 
-void remove_recipients(struct session_data *sdata, uint64 id){
-   char s[SMALLBUFSIZE];
-
-   snprintf(s, sizeof(s)-1, "DELETE FROM " SQL_RECIPIENT_TABLE " WHERE id=%llu", id);
-
-   p_query(sdata, s);
-}
-
-
 int store_folder_id(struct session_data *sdata, struct data *data, uint64 id, struct config *cfg){
    int rc=ERR;
    struct sql sql;

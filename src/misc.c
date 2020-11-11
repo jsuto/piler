@@ -89,44 +89,6 @@ long tvdiff(struct timeval a, struct timeval b){
 
 
 /*
- * count a character in buffer
- */
-
-int countCharacterInBuffer(char *p, char c){
-   int i=0;
-
-   for(; *p; p++){
-      if(*p == c)
-         i++;
-   }
-
-   return i;
-}
-
-
-void replaceCharacterInBuffer(char *p, char from, char to){
-   size_t i;
-   int k=0;
-
-   for(i=0; i<strlen(p); i++){
-      if(p[i] == from){
-         if(to > 0){
-            p[k] = to;
-            k++;
-         }
-      }
-      else {
-         p[k] = p[i];
-         k++;
-      }
-
-   }
-
-   p[k] = '\0';
-}
-
-
-/*
  * split a string by a character as delimiter
  */
 
@@ -181,10 +143,8 @@ char *split_str(char *row, char *what, char *s, int size){
       r += strlen(what);
    }
 
-   if(s != NULL){
-      strncpy(s, row, len);
-      s[len] = '\0';
-   }
+   strncpy(s, row, len);
+   s[len] = '\0';
 
    return r;
 }
@@ -215,8 +175,7 @@ int trimBuffer(char *s){
 
 
 int extract_verp_address(char *email){
-   char *p, *p1, *p2;
-   char puf[SMALLBUFSIZE];
+   char *p1;
 
    // a VERP address is like archive+user=domain.com@myarchive.local
 
@@ -226,13 +185,14 @@ int extract_verp_address(char *email){
 
    p1 = strchr(email, '+');
    if(p1){
-      p2 = strchr(p1, '@');
+      char *p2 = strchr(p1, '@');
       if(p2 && p2 > p1 + 2){
          if(strchr(p1+1, '=')){
+            char puf[SMALLBUFSIZE];
             memset(puf, 0, sizeof(puf));
 
             memcpy(&puf[0], p1+1, p2-p1-1);
-            p = strchr(puf, '=');
+            char *p = strchr(puf, '=');
             if(p) *p = '@';
             strcpy(email, puf);
          }
@@ -349,10 +309,10 @@ int get_random_bytes(unsigned char *buf, int len, unsigned char server_id){
 
 int readFromEntropyPool(int fd, void *_s, ssize_t n){
    char *s = _s;
-   ssize_t res, pos = 0;
+   ssize_t pos = 0;
 
    while(n > pos){
-      res = read(fd, s + pos, n - pos);
+      ssize_t res = read(fd, s + pos, n - pos);
       switch(res){
          case  -1: continue;
          case   0: return res;
@@ -602,12 +562,6 @@ void strtolower(char *s){
    for(; *s; s++){
       if(*s >= 65 && *s <= 90) *s = tolower(*s);
    }
-}
-
-
-void *get_in_addr(struct sockaddr *sa){
-   if(sa->sa_family == AF_INET) return &(((struct sockaddr_in*)sa)->sin_addr);
-   return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
 

@@ -17,7 +17,6 @@
 
 
 int store_attachments(struct session_data *sdata, struct parser_state *state, struct config *cfg){
-   uint64 id=0;
    int i, rc=1, found, affected_rows;
    struct sql sql, sql2;
 
@@ -27,7 +26,7 @@ int store_attachments(struct session_data *sdata, struct parser_state *state, st
 
    for(i=1; i<=state->n_attachments; i++){
       found = 0;
-      id = 0;
+      uint64 id = 0;
 
       if(state->attachments[i].size > 0){
 
