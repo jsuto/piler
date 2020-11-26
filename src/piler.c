@@ -101,11 +101,43 @@ void child_sighup_handler(int sig){
 }
 
 
+int perform_checks(char *filename, struct session_data *sdata, struct data *data, struct parser_state *parser_state, struct config *cfg){
+
+   if(cfg->security_header && parser_state->found_security_header == 0){
+      syslog(LOG_PRIORITY, "%s: discarding: missing security header", filename);
+      return ERR_DISCARDED;
+   }
+
+   char *arule = check_against_ruleset(data->archiving_rules, parser_state, sdata->tot_len, sdata->spam_message);
+
+   if(arule){
+      syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", filename, arule);
+      return ERR_DISCARDED;
+   }
+
+
+   if(cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
+      syslog(LOG_PRIORITY, "%s: discarding: not on mydomains", filename);
+      return ERR_DISCARDED;
+   }
+
+   make_digests(sdata, cfg);
+
+   if(sdata->hdr_len < 10){
+      syslog(LOG_PRIORITY, "%s: invalid message, hdr_len: %d", filename, sdata->hdr_len);
+      return ERR;
+   }
+
+   int rc = process_message(sdata, parser_state, data, cfg);
+   unlink(parser_state->message_id_hash);
+
+   return rc;
+}
+
+
 int process_email(char *filename, struct session_data *sdata, struct data *data, int size, struct config *cfg){
-   int rc;
    char tmpbuf[SMALLBUFSIZE];
    char *status=S_STATUS_UNDEF;
-   char *arule;
    char *p;
    struct timezone tz;
    struct timeval tv1, tv2;
@@ -144,29 +176,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
       } while(rcpt);
    }
 
-   arule = check_against_ruleset(data->archiving_rules, &parser_state, sdata->tot_len, sdata->spam_message);
-
-   if(arule){
-      syslog(LOG_PRIORITY, "%s: discarding: archiving policy: *%s*", filename, arule);
-      rc = ERR_DISCARDED;
-   }
-   else if(cfg->archive_only_mydomains == 1 && sdata->internal_sender == 0 && sdata->internal_recipient == 0){
-      syslog(LOG_PRIORITY, "%s: discarding: not on mydomains", filename);
-      rc = ERR_DISCARDED;
-   }
-   else {
-      make_digests(sdata, cfg);
-
-      if(sdata->hdr_len < 10){
-         syslog(LOG_PRIORITY, "%s: invalid message, hdr_len: %d", filename, sdata->hdr_len);
-         rc = ERR;
-      }
-      else {
-         rc = process_message(sdata, &parser_state, data, cfg);
-         unlink(parser_state.message_id_hash);
-      }
-   }
-
+   int rc = perform_checks(filename, sdata, data, &parser_state, cfg);
    unlink(sdata->tmpframe);
 
    remove_stripped_attachments(&parser_state);

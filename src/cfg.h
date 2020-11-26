@@ -64,6 +64,8 @@ struct config {
 
    int default_retention_days;
 
+   char security_header[MAXVAL];
+
    // mysql stuff
 
    char mysqlcharset[MAXVAL];

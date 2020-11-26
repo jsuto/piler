@@ -102,6 +102,8 @@ void init_state(struct parser_state *state){
    state->journaltolen = 0;
 
    state->retention = 0;
+
+   state->found_security_header = 0;
 }
 
 

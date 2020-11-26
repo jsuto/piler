@@ -209,6 +209,8 @@ struct parser_state {
    unsigned int bodylen;
    unsigned int tolen;
    unsigned int todomainlen;
+   unsigned int found_security_header;
+
    int journaltolen;
 
    int retention;

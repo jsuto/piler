@@ -199,6 +199,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->restored_copy = 1;
       }
 
+      if(cfg->security_header && state->found_security_header == 0 && strstr(buf, cfg->security_header)){
+         state->found_security_header = 1;
+      }
+
       if(*(cfg->piler_header_field) != 0 && strncmp(buf, cfg->piler_header_field, strlen(cfg->piler_header_field)) == 0){
          sdata->restored_copy = 1;
       }
