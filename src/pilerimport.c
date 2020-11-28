@@ -300,6 +300,8 @@ int main(int argc, char **argv){
 
    cfg = read_config(configfile);
 
+   memset(cfg.security_header, 0, MAXVAL);
+
    if((data.recursive_folder_names == 1 || data.import->folder) && cfg.enable_folders == 0){
       printf("please set enable_folders=1 in piler.conf to use the folder options\n");
       return ERR;
