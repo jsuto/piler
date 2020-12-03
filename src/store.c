@@ -51,6 +51,8 @@ int store_file(struct session_data *sdata, char *filename, int len, struct confi
 #else
    EVP_CIPHER_CTX *ctx;
 #endif
+   int blocklen;
+   unsigned char rnd[EVP_MAX_BLOCK_LENGTH];
    unsigned char *outbuf=NULL;
    int outlen=0, writelen, tmplen;
 
@@ -108,25 +110,45 @@ int store_file(struct session_data *sdata, char *filename, int len, struct confi
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
       EVP_EncryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      blocklen = EVP_CIPHER_CTX_block_size(&ctx);
    #else
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto ENDE;
 
       EVP_CIPHER_CTX_init(ctx);
       EVP_EncryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      blocklen = EVP_CIPHER_CTX_block_size(ctx);
    #endif
 
-      outbuf = malloc(dstlen + EVP_MAX_BLOCK_LENGTH);
+      // prepend a block with random data as replacement for dynamic iv
+      // see e.g. https://crypto.stackexchange.com/questions/5421/using-cbc-with-a-fixed-iv-and-a-random-first-plaintext-block
+      fd = open(RANDOM_POOL, O_RDONLY);
+      if(fd == -1) goto ENDE;
+      tmplen = readFromEntropyPool(fd, rnd, blocklen);
+      close(fd);
+      if(tmplen != blocklen) goto ENDE;
+      // make sure, random data does not start with zlib magic 0x78
+      if(rnd[0] == 0x78) rnd[0] =~ rnd[0];
+
+      outbuf = malloc(dstlen + blocklen * 2);
       if(outbuf == NULL) goto ENDE;
 
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
-      if(!EVP_EncryptUpdate(&ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
+      if(!EVP_EncryptUpdate(&ctx, outbuf, &outlen, rnd, blocklen)) goto ENDE;
+      if(!EVP_EncryptUpdate(&ctx, outbuf + outlen, &tmplen, z, dstlen)) goto ENDE;
+   #else
+      if(!EVP_EncryptUpdate(ctx, outbuf, &outlen, rnd, blocklen)) goto ENDE;
+      if(!EVP_EncryptUpdate(ctx, outbuf + outlen, &tmplen, z, dstlen)) goto ENDE;
+   #endif
+      outlen += tmplen;
+
+   #if OPENSSL_VERSION_NUMBER < 0x10100000L
       if(!EVP_EncryptFinal_ex(&ctx, outbuf + outlen, &tmplen)) goto ENDE;
    #else
-      if(!EVP_EncryptUpdate(ctx, outbuf, &outlen, z, dstlen)) goto ENDE;
       if(!EVP_EncryptFinal_ex(ctx, outbuf + outlen, &tmplen)) goto ENDE;
    #endif
       outlen += tmplen;
+
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_cleanup(&ctx);
    #else
