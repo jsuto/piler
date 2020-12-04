@@ -112,7 +112,7 @@ static void test_create_id(){
 
    for(i=0; i<10; i++){
       create_id(buf, 0xf);
-      ASSERT(strncmp(buf, "40000000", strlen("40000000")) == 0, buf);
+      ASSERT(strncmp(buf, "50000000", strlen("50000000")) == 0, buf);
       ASSERT(buf[24] == '0' && buf[25] == 'f', buf);
    }
 
