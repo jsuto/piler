@@ -959,7 +959,7 @@ char *determine_attachment_type(char *filename, char *type){
          if(strncasecmp(p, "rar", 3) == 0) return "compressed,";
 
          // tar.gz has the same type
-         if(strncasecmp(p, "x-gzip", 3) == 0) return "compressed,";
+         if(strncasecmp(p, "gz", 2) == 0) return "compressed,";
 
          if(strncasecmp(p, "rtf", 3) == 0) return "word,";
          if(strncasecmp(p, "doc", 3) == 0) return "word,";
