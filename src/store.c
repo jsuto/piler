@@ -109,7 +109,7 @@ int store_file(struct session_data *sdata, char *filename, int len, struct confi
 
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
-      EVP_EncryptInit_ex(&ctx, EVP_aes_256_cbc()(), NULL, cfg->key, cfg->iv);
+      EVP_EncryptInit_ex(&ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
       blocklen = EVP_CIPHER_CTX_block_size(&ctx);
    #else
       ctx = EVP_CIPHER_CTX_new();
