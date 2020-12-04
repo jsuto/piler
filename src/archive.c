@@ -162,18 +162,29 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       return 1;
    }
 
+   // The new encryption scheme uses piler id starting with 5000....
 
    if(cfg->encrypt_messages == 1){
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
-      EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      if(strstr(filename, "/5000")){
+         EVP_DecryptInit_ex(&ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+      } else {
+         EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
       blocklen = EVP_CIPHER_CTX_block_size(&ctx);
    #else
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
       EVP_CIPHER_CTX_init(ctx);
-      EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      if(strstr(filename, "/5000")){
+         EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+      } else {
+         EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
       blocklen = EVP_CIPHER_CTX_block_size(ctx);
    #endif
 

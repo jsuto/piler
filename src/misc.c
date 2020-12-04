@@ -265,11 +265,13 @@ void create_id(char *id, unsigned char server_id){
 
    get_random_bytes(buf, RND_STR_LEN/2, server_id);
 
+   // New encryption scheme using AES-256
+   buf[0] = 0x50;
+
    for(i=0; i < RND_STR_LEN/2; i++){
       sprintf(id, "%02x", buf[i]);
       id += 2;
    }
-
 }
 
 
