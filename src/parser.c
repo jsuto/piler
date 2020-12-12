@@ -72,7 +72,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 }
 
 
-void post_parse(struct session_data *sdata, struct parser_state *state, struct config *cfg){
+void post_parse(struct session_data *sdata, struct data *data, struct parser_state *state, struct config *cfg){
    int i;
 
    clearhash(state->boundaries);
@@ -83,6 +83,19 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    // Fix From: line if it's too long
    if(strlen(state->b_from) > 255) state->b_from[255] = '\0';
    if(strlen(state->b_from_domain) > 255) state->b_from_domain[255] = '\0';
+
+   if(strlen(state->b_sender) > 255) state->b_sender[255] = '\0';
+   if(strlen(state->b_sender_domain) > 255) state->b_sender_domain[255] = '\0';
+
+   // If Sender: header doesn't exist, then copy the From: header value to it
+   // Otherwise append the From: address to the recipients list
+
+   if(state->b_sender[0] == '\0'){
+      strcpy(state->b_sender, state->b_from);
+      strcpy(state->b_sender_domain, state->b_from_domain);
+   } else {
+      add_recipient(state->b_from, strlen(state->b_from), sdata, state, data, cfg);
+   }
 
    // Truncate the message_id if it's >255 characters
    if(strlen(state->message_id) > 255) state->message_id[255] = '\0';
@@ -358,6 +371,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->message_state = MSG_FROM;
          buf += strlen("From:");
       }
+      else if(strncasecmp(buf, "Sender:", strlen("Sender:")) == 0){
+         state->message_state = MSG_SENDER;
+         buf += strlen("Sender:");
+      }
       else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
          state->message_state = MSG_CONTENT_TYPE;
       }
@@ -545,6 +562,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             memset(state->b_body, 0, BIGBUFSIZE);
             memset(state->b_from, 0, SMALLBUFSIZE);
             memset(state->b_from_domain, 0, SMALLBUFSIZE);
+            memset(state->b_sender, 0, SMALLBUFSIZE);
+            memset(state->b_sender_domain, 0, SMALLBUFSIZE);
             memset(state->message_id, 0, SMALLBUFSIZE);
 
             sdata->ms_journal = 0;
@@ -616,7 +635,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    /* skip irrelevant headers */
-   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_TO) return 0;
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_SENDER && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_TO) return 0;
 
 
    /* don't process body if it's not a text or html part */

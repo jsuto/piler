@@ -134,7 +134,7 @@ int main(int argc, char **argv){
 
 
    init_session_data(&sdata, &cfg);
- 
+
    sdata.delivered = 0;
    sdata.tot_len = st.st_size;
    sdata.import = 1;
@@ -147,10 +147,11 @@ int main(int argc, char **argv){
    state = parse_message(&sdata, 1, &data, &cfg);
 
    printf("post parsing...\n");
-   post_parse(&sdata, &state, &cfg);
+   post_parse(&sdata, &data, &state, &cfg);
 
    printf("message-id: %s / %s\n", state.message_id, state.message_id_hash);
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
+   printf("sender: *%s (%s)*\n", state.b_sender, state.b_sender_domain);
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
    printf("reference: *%s*\n", state.reference);
    printf("subject: *%s*\n", state.b_subject);

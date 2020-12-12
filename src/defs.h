@@ -27,16 +27,17 @@
 #define MSG_BODY 0
 #define MSG_RECEIVED 1
 #define MSG_FROM 2
-#define MSG_TO 3
-#define MSG_CC 4
-#define MSG_SUBJECT 5
-#define MSG_CONTENT_TYPE 6
-#define MSG_CONTENT_TRANSFER_ENCODING 7
-#define MSG_CONTENT_DISPOSITION 8
-#define MSG_MESSAGE_ID 9
-#define MSG_REFERENCES 10
-#define MSG_RECIPIENT 11
-#define MSG_ENVELOPE_TO 12
+#define MSG_SENDER 3
+#define MSG_TO 4
+#define MSG_CC 5
+#define MSG_SUBJECT 6
+#define MSG_CONTENT_TYPE 7
+#define MSG_CONTENT_TRANSFER_ENCODING 8
+#define MSG_CONTENT_DISPOSITION 9
+#define MSG_MESSAGE_ID 10
+#define MSG_REFERENCES 11
+#define MSG_RECIPIENT 12
+#define MSG_ENVELOPE_TO 13
 
 #define MAXHASH 277
 
@@ -203,7 +204,7 @@ struct parser_state {
 
    char reference[SMALLBUFSIZE];
 
-   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
+   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_sender[SMALLBUFSIZE], b_sender_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
    char b_journal_to[MAXBUFSIZE];
 
    unsigned int bodylen;

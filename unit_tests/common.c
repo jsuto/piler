@@ -21,7 +21,7 @@ int setup_and_parse_message(struct session_data *sdata, struct parser_state *sta
    }
 
    init_session_data(sdata, cfg);
- 
+
    sdata->delivered = 0;
    sdata->tot_len = st.st_size;
 
@@ -30,7 +30,7 @@ int setup_and_parse_message(struct session_data *sdata, struct parser_state *sta
    snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", filename);
 
    *state = parse_message(sdata, 1, data, cfg);
-   post_parse(sdata, state, cfg);
+   post_parse(sdata, data, state, cfg);
 
    return 0;
 }

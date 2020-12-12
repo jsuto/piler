@@ -163,7 +163,7 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
 
    parser_state = parse_message(sdata, 1, data, cfg);
 
-   post_parse(sdata, &parser_state, cfg);
+   post_parse(sdata, data, &parser_state, cfg);
 
    if(cfg->syslog_recipients == 1){
       char *rcpt = parser_state.b_to;
