@@ -20,7 +20,7 @@
 
 int store_index_data(struct session_data *sdata, struct parser_state *state, struct data *data, uint64 id, struct config *cfg){
    int rc=ERR;
-   char *subj;
+   char *subj, *sender=state->b_from, *sender_domain=state->b_from_domain;
    struct sql sql;
 
    if(data->folder == 0){
@@ -34,18 +34,24 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
 
 
+   fix_email_address_for_sphinx(state->b_from);
    fix_email_address_for_sphinx(state->b_sender);
    fix_email_address_for_sphinx(state->b_to);
+   fix_email_address_for_sphinx(state->b_from_domain);
    fix_email_address_for_sphinx(state->b_sender_domain);
    fix_email_address_for_sphinx(state->b_to_domain);
 
+   if(state->b_sender_domain){
+      sender = state->b_sender;
+      sender_domain = state->b_sender_domain;
+   }
 
    p_bind_init(&sql);
 
    sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
-   sql.sql[sql.pos] = state->b_sender; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sender; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = state->b_to; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = state->b_sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = state->b_to_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = state->b_body; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
@@ -180,15 +186,25 @@ int update_metadata_reference(struct session_data *sdata, struct parser_state *s
 
 
 int store_meta_data(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
-   int rc=ERR, result;
-   char *subj, *p, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
+   int rc=ERR;
+   char *subj, *sender, *sender_domain, s[MAXBUFSIZE], s2[SMALLBUFSIZE], vcode[2*DIGEST_LENGTH+1], ref[2*DIGEST_LENGTH+1];
    uint64 id=0;
    struct sql sql;
 
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%ld%d%d%d%d%s%s%s", id, subj, state->b_sender, state->message_id, sdata->now, sdata->sent, sdata->retained, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
+   if(state->b_sender_domain){
+      sender = state->b_sender;
+      sender_domain = state->b_sender_domain;
+      get_first_email_address_from_string(state->b_sender, s2, sizeof(s2));
+   } else {
+      sender = state->b_from;
+      sender_domain = state->b_from_domain;
+      get_first_email_address_from_string(state->b_from, s2, sizeof(s2));
+   }
+
+   snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%ld%d%d%d%d%s%s%s", id, subj, sender, state->message_id, sdata->now, sdata->sent, sdata->retained, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
    digest_string(s, &vcode[0]);
 
@@ -201,19 +217,6 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
 
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
 
-   memset(s2, 0, sizeof(s2));
-
-   p = state->b_sender;
-   do {
-      memset(s2, 0, sizeof(s2));
-      p = split(p, ' ', s2, sizeof(s2)-1, &result);
-
-      if(s2[0] == '\0') continue;
-
-      if(does_it_seem_like_an_email_address(s2) == 1){ break; }
-   } while(p);
-
-
    if(strlen(state->b_to) < 5){
       snprintf(state->b_to, SMALLBUFSIZE-1, "undisclosed-recipients@no.domain");
    }
@@ -222,7 +225,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    p_bind_init(&sql);
 
    sql.sql[sql.pos] = &s2[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = state->b_sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
    sql.sql[sql.pos] = (char *)&sdata->spam_message; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&sdata->now; sql.type[sql.pos] = TYPE_LONG; sql.pos++;

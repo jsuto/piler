@@ -624,9 +624,9 @@ void translateLine(unsigned char *p, struct parser_state *state){
 
    for(; *p; p++){
 
-      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
+      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_SENDER || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
 
-      if(state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT){
+      if(state->message_state == MSG_FROM || state->message_state == MSG_SENDER || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT){
 
          /* To fix some unusual addresses, eg.
           *    "'user@domain'"    -> user@domain
@@ -1076,4 +1076,21 @@ void fill_attachment_name_buf(struct parser_state *state, char *buf){
       state->attachment_name_buf[state->anamepos] = ';';
       state->anamepos++;
    }
+}
+
+
+int get_first_email_address_from_string(char *str, char *buf, int buflen){
+   int result;
+
+   char *p = str;
+   do {
+      memset(buf, 0, buflen);
+      p = split(p, ' ', buf, buflen-1, &result);
+
+      if(*buf == '\0') continue;
+
+      if(does_it_seem_like_an_email_address(buf) == 1){ return 1; }
+   } while(p);
+
+   return 0;
 }

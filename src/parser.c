@@ -80,22 +80,18 @@ void post_parse(struct session_data *sdata, struct data *data, struct parser_sta
    clearhash(state->rcpt_domain);
    clearhash(state->journal_recipient);
 
-   // Fix From: line if it's too long
+   // Fix From: and Sender: lines if they are too long
    if(strlen(state->b_from) > 255) state->b_from[255] = '\0';
    if(strlen(state->b_from_domain) > 255) state->b_from_domain[255] = '\0';
 
    if(strlen(state->b_sender) > 255) state->b_sender[255] = '\0';
    if(strlen(state->b_sender_domain) > 255) state->b_sender_domain[255] = '\0';
 
-   // If Sender: header doesn't exist, then copy the From: header value to it
-   // Otherwise append the From: address to the recipients list
+   // TODO: If both Sender: and From: headers exist, and they are different, then
+   // append the From: address to recipients list to give him access to this email
+   // as well
 
-   if(state->b_sender[0] == '\0'){
-      strcpy(state->b_sender, state->b_from);
-      strcpy(state->b_sender_domain, state->b_from_domain);
-   } else {
-      add_recipient(state->b_from, strlen(state->b_from), sdata, state, data, cfg);
-   }
+
 
    // Truncate the message_id if it's >255 characters
    if(strlen(state->message_id) > 255) state->message_id[255] = '\0';
