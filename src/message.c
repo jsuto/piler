@@ -41,7 +41,7 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    fix_email_address_for_sphinx(state->b_sender_domain);
    fix_email_address_for_sphinx(state->b_to_domain);
 
-   if(state->b_sender_domain){
+   if(state->b_sender_domain[0]){
       sender = state->b_sender;
       sender_domain = state->b_sender_domain;
    }
@@ -194,7 +194,7 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-   if(state->b_sender_domain){
+   if(state->b_sender_domain[0]){
       sender = state->b_sender;
       sender_domain = state->b_sender_domain;
       get_first_email_address_from_string(state->b_sender, s2, sizeof(s2));
