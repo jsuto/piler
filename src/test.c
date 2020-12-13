@@ -170,7 +170,7 @@ int main(int argc, char **argv){
    printf("rules check: %s\n", rule);
 
    retention_seconds = query_retain_period(&data, &state, st.st_size, sdata.spam_message, &cfg);
-   sdata.retained = sdata.now + retention_seconds;
+   sdata.retained = sdata.sent + retention_seconds;
 
    printf("folder: %d\n", get_folder_id_by_rule(&data, &state, st.st_size, sdata.spam_message, &cfg));
 
