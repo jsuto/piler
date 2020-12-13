@@ -124,7 +124,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
             snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
             state = parse_message(sdata, 1, data, cfg);
-            post_parse(sdata, data, &state, cfg);
+            post_parse(sdata, &state, cfg);
 
             rc = store_index_data(sdata, &state, data, stored_id, cfg);
 

@@ -43,7 +43,7 @@ static void test_attachments(struct config *cfg){
       snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", tests[i].s);
 
       state = parse_message(&sdata, 1, &data, cfg);
-      post_parse(&sdata, &data, &state, cfg);
+      post_parse(&sdata, &state, cfg);
 
       for(j=1; j<=state.n_attachments; j++){
          unlink(state.attachments[j].internalname);

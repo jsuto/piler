@@ -116,7 +116,7 @@ static void test_archiving_rule(struct config *cfg){
       snprintf(sdata.tmpframe, SMALLBUFSIZE-1, "%s.m", rule_test[i].filename);
 
       state = parse_message(&sdata, 1, &data, cfg);
-      post_parse(&sdata, &data, &state, cfg);
+      post_parse(&sdata, &state, cfg);
 
       rule = check_against_ruleset(data.archiving_rules, &state, st.st_size, sdata.spam_message);
 

@@ -147,7 +147,7 @@ int main(int argc, char **argv){
    state = parse_message(&sdata, 1, &data, &cfg);
 
    printf("post parsing...\n");
-   post_parse(&sdata, &data, &state, &cfg);
+   post_parse(&sdata, &state, &cfg);
 
    printf("message-id: %s / %s\n", state.message_id, state.message_id_hash);
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);

@@ -30,7 +30,7 @@ int setup_and_parse_message(struct session_data *sdata, struct parser_state *sta
    snprintf(sdata->tmpframe, SMALLBUFSIZE-1, "%s.m", filename);
 
    *state = parse_message(sdata, 1, data, cfg);
-   post_parse(sdata, data, state, cfg);
+   post_parse(sdata, state, cfg);
 
    return 0;
 }
