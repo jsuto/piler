@@ -26,6 +26,7 @@ int dryrun = 0;
 int exportall = 0;
 int verification_status = 0;
 int rc = 0;
+int export_to_stdout = 0;
 char *query=NULL;
 int verbosity = 0;
 int max_matches = 1000;
@@ -53,6 +54,7 @@ void usage(){
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
    printf("    -z <zip file>                     Write exported EML files to a zip file\n");
    printf("    -A                                Export all emails from archive\n");
+   printf("    -o                                Export emails to stdout\n");
    printf("    -d                                Dry run\n");
 
    regfree(&regexp);
@@ -369,6 +371,11 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
          if(dryrun == 0){
 
+            if(export_to_stdout){
+               rc = retrieve_email_from_archive(sdata, stdout, cfg);
+               continue;
+            }
+
             snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
 
             f = fopen(filename, "w");
@@ -442,6 +449,7 @@ int main(int argc, char **argv){
             {"all",          no_argument,        0,  'A' },
             {"dry-run",      no_argument,        0,  'd' },
             {"dryrun",       no_argument,        0,  'd' },
+            {"stdout",       no_argument,        0,  'o' },
             {"help",         no_argument,        0,  'h' },
             {"version",      no_argument,        0,  'v' },
             {"from",         required_argument,  0,  'f' },
@@ -459,9 +467,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:oAdhv?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:oAdhv?");
 #endif
 
       if(c == -1) break;
@@ -553,6 +561,10 @@ int main(int argc, char **argv){
          case 'z':  zipfile = optarg;
                     break;
 
+
+         case 'o':
+                    export_to_stdout = 1;
+                    break;
 
          case 'd' :
                     dryrun = 1;
