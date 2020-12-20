@@ -83,7 +83,7 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
                   printf("ERROR: error importing: '%s'\n", data->import->filename);
                   ret = ERR;
                }
- 
+
                if(data->import->remove_after_import == 1 && rc != ERR) unlink(data->import->filename);
 
                i++;

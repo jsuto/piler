@@ -372,6 +372,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
          if(dryrun == 0){
 
             if(export_to_stdout){
+               printf("%s", PILEREXPORT_BEGIN_MARK);
                rc = retrieve_email_from_archive(sdata, stdout, cfg);
                continue;
             }

@@ -302,6 +302,7 @@ struct import {
    int keep_eml;
    int timeout;
    int cap_uidplus;
+   int fd;
    long total_size;
    int dryrun;
    int tot_msgs;

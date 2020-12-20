@@ -57,6 +57,8 @@
 #define MEMCACHED_MSGS_STORED_SIZE MEMCACHED_CLAPF_PREFIX "stored_size"
 
 
+#define PILEREXPORT_BEGIN_MARK "x-exported-by-pilerexport: start\n"
+
 #define LOG_PRIORITY LOG_INFO
 
 #define _LOG_INFO 3
