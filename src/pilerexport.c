@@ -52,7 +52,9 @@ void usage(){
    printf("    -w <where condition>              Where condition to pass to sphinx, eg. \"match('@subject: piler')\"\n");
    printf("    -m <max. matches>                 Max. matches to apply to sphinx query (default: %d)\n", max_matches);
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
+#if LIBZIP_VERSION_MAJOR >= 1
    printf("    -z <zip file>                     Write exported EML files to a zip file\n");
+#endif
    printf("    -A                                Export all emails from archive\n");
    printf("    -o                                Export emails to stdout\n");
    printf("    -d                                Dry run\n");
@@ -317,7 +319,7 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    return rc;
 }
 
-
+#if LIBZIP_VERSION_MAJOR >= 1
 int write_to_zip_file(char *filename){
    struct zip *z=NULL;
    int errorp, ret=ERR;
@@ -339,6 +341,7 @@ int write_to_zip_file(char *filename){
 
    return ret;
 }
+#endif
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
@@ -398,9 +401,11 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                   verification_status = 1;
                }
 
+            #if LIBZIP_VERSION_MAJOR >= 1
                if(zipfile && write_to_zip_file(filename) == OK){
                   unlink(filename);
                }
+            #endif
 
             }
             else printf("cannot open: %s\n", filename);
