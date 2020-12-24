@@ -4852,7 +4852,13 @@ if test $? -eq 1; then echo "the user \"$RUNNING_USER\" does not exists, please 
 
 echo; echo
 
-CFLAGS="$static -std=c99 -O2 -fPIC -Wall -Wextra -Wimplicit-fallthrough=2 -Wuninitialized -Wno-format-truncation -g"
+gcc_version="$(gcc -dumpversion)"
+extra_cflags=""
+if [ "${gcc_version:0:1}" -gt 5 ]; then
+   extra_cflags="-Wimplicit-fallthrough=2"
+fi
+
+CFLAGS="$static -std=c99 -O2 -fPIC -Wall -Wextra $extra_cflags -Wuninitialized -Wno-format-truncation -g"
 LIBS="$antispam_libs $sunos_libs "
 OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_pilerexport.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o tokenizer.o $objs"
 
