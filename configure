@@ -4714,23 +4714,6 @@ else
    echo "zip library: no"
 fi
 
-if test "$have_tcpwrappers" = "yes"; then
-   echo "tcpwrappers support: yes"
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBWRAP 1
-_ACEOF
-
-
-   if test "$os" = "FreeBSD"; then
-      antispam_libs="$antispam_libs -lwrap"
-   else
-      antispam_libs="$antispam_libs -lwrap -lnsl"
-   fi
-else
-   echo "tcpwrappers support: no"
-fi
-
 
 echo
 
@@ -4860,7 +4843,7 @@ fi
 
 CFLAGS="$static -std=c99 -O2 -fPIC -Wall -Wextra $extra_cflags -Wuninitialized -Wno-format-truncation -g"
 LIBS="$antispam_libs $sunos_libs "
-OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_pilerexport.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o tokenizer.o $objs"
+OBJS="dirs.o misc.o counters.o cfg.o sig.o decoder.o hash.o parser.o parser_utils.o rules.o smtp.o session.o bdat.o message.o attachment.o digest.o store.o archive.o tai.o import.o import_pilerexport.o import_maildir.o import_mailbox.o import_pop3.o import_imap.o imap.o pop3.o extract.o mydomains.o tokenizer.o screen.o $objs"
 
 ac_config_files="$ac_config_files Makefile src/Makefile etc/Makefile util/Makefile init.d/Makefile systemd/Makefile unit_tests/Makefile webui/Makefile contrib/imap/Makefile"
 

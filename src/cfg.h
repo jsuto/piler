@@ -99,6 +99,8 @@ struct config {
    int enable_folders;
 
    int debug;
+
+   int smtp_access_list;
 };
 
 

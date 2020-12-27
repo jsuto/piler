@@ -17,6 +17,7 @@
 #include <sig.h>
 #include <av.h>
 #include <rules.h>
+#include <screen.h>
 #include <sql.h>
 #include <import.h>
 #include <smtp.h>
@@ -68,7 +69,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 void load_mydomains(struct session_data *sdata, struct data *data, struct config *cfg);
 int is_email_address_on_my_domains(char *email, struct data *data);
 
-int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg);
+int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct smtp_acl *smtp_acl[], char *client_addr, struct config *cfg);
 void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections);
 struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int max_connections, int socket);
 void write_envelope_addresses(struct smtp_session *session, struct config *cfg);

@@ -38,6 +38,7 @@ char *configfile = CONFIG_FILE;
 struct config cfg;
 struct passwd *pwd;
 struct smtp_session *session, **sessions=NULL;
+struct smtp_acl *smtp_acl[MAXHASH];
 
 
 void usage(){
@@ -65,6 +66,8 @@ void p_clean_exit(int sig){
    }
 
    if(events) free(events);
+
+   clear_smtp_acl(smtp_acl);
 
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
@@ -119,6 +122,8 @@ void initialise_configuration(){
 
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
+
+   load_smtp_acl(smtp_acl);
 
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);
 }
@@ -270,7 +275,7 @@ int main(int argc, char **argv){
                   break;
                }
 
-               start_new_session(sessions, client_sockfd, &num_connections, &cfg);
+               start_new_session(sessions, client_sockfd, &num_connections, smtp_acl, hbuf, &cfg);
             }
 
             continue;

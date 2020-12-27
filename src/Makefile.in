@@ -48,7 +48,7 @@ libpiler.a: $(OBJS) $(SQL_OBJS)
 	ln -sf libpiler.so.$(LIBPILER_VERSION) libpiler.so.$(PILER_VERSION)
 
 piler-smtp: piler-smtp.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< cfg.o misc.o tai.o smtp.o session.o dirs.o sig.o bdat.o $(LIBS) $(LIBDIR)
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< cfg.o misc.o tai.o smtp.o session.o dirs.o sig.o bdat.o screen.o $(LIBS) $(LIBDIR)
 
 pilerget: pilerget.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)

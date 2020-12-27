@@ -10,26 +10,7 @@ int get_session_slot(struct smtp_session **sessions, int max_connections);
 void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg);
 
 
-#ifdef HAVE_LIBWRAP
-int is_blocked_by_tcp_wrappers(int sd){
-   struct request_info req;
-
-   request_init(&req, RQ_DAEMON, "piler", RQ_FILE, sd, 0);
-
-   fromhost(&req);
-
-   if(!hosts_access(&req)){
-      send(sd, SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY, strlen(SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY), 0);
-      syslog(LOG_PRIORITY, "denied connection from %s by tcp_wrappers", eval_client(&req));
-      return 1;
-   }
-
-   return 0;
-}
-#endif
-
-
-int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg){
+int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct smtp_acl *smtp_acl[], char *client_addr, struct config *cfg){
    int slot;
 
    /*
@@ -43,12 +24,13 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
       return -1;
    }
 
-#ifdef HAVE_LIBWRAP
-   if(is_blocked_by_tcp_wrappers(socket) == 1){
+   // Check remote client against the allowed network ranges
+   if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr, cfg)){
+      send(socket, SMTP_RESP_550_ERR, strlen(SMTP_RESP_550_ERR), 0);
       close(socket);
+      syslog(LOG_PRIORITY, "denied connection from %s by %s", client_addr, SMTP_ACL_FILE);
       return -1;
    }
-#endif
 
    slot = get_session_slot(sessions, cfg->max_connections);
 

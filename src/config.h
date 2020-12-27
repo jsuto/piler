@@ -14,6 +14,7 @@
 #define HOSTID "mailarchiver"
 
 #define CONFIG_FILE CONFDIR "/piler/piler.conf"
+#define SMTP_ACL_FILE CONFDIR "/piler/smtp.acl"
 #define WORK_DIR DATADIR "/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
 #define ERROR_DIR DATADIR "/piler/error"

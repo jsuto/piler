@@ -13,9 +13,6 @@
    #include <tre/tre.h>
    #include <tre/regex.h>
 #endif
-#ifdef HAVE_LIBWRAP
-   #include <tcpd.h>
-#endif
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
@@ -95,6 +92,15 @@ struct node {
    void *str;
    unsigned int key;
    struct node *r;
+};
+
+
+struct smtp_acl {
+   char network_str[BUFLEN];
+   in_addr_t low, high;
+   int prefix;
+   int rejected;
+   struct smtp_acl *r;
 };
 
 

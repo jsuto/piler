@@ -86,6 +86,7 @@ struct _parse_rule config_parse_rules[] =
    { "queuedir", "string", (void*) string_parser, offsetof(struct config, queuedir), QUEUE_DIR, MAXVAL-1},
    { "security_header", "string", (void*) string_parser, offsetof(struct config, security_header), "", MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct config, server_id), "0", sizeof(int)},
+   { "smtp_access_list", "integer", (void*) int_parser, offsetof(struct config, smtp_access_list), "0", sizeof(int)},
    { "smtp_timeout", "integer", (void*) int_parser, offsetof(struct config, smtp_timeout), "60", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct config, spam_header_line), "", MAXVAL-1},
    { "syslog_recipients", "integer", (void*) int_parser, offsetof(struct config, syslog_recipients), "0", sizeof(int)},
