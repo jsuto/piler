@@ -64,29 +64,25 @@ int add_smtp_acl(struct smtp_acl *smtp_acl[], char *network_str, struct smtp_acl
 
 
 int is_valid_line(char *line){
-   // Skip comments
-   if(line[0] == ';' || line[0] == '#') return 0;
-
-   trimBuffer(line);
-
-   // Skip empty line
-   if(line[0] == 0) return 0;
-
    // Currently we support ipv4 stuff only, ie. valid characters are: 0-9./
    // and a line should look like "1.2.3.4/24 permit" or similar (without quotes)
 
    if(!strchr(line, '.') || !strchr(line, '/') || (!strchr(line, ' ') && !strchr(line, '\t')) ){
-      return -1;
+      return 0;
+   }
+
+   if(!strstr(line, "permit") && !strstr(line, "reject")){
+      return 0;
    }
 
    // ascii values:
    //   46: .
    //   47: /
    //   48-57: 0-9
-   //   65-90: A-Z
    //   97-122: a-z
+   //
    for(; *line; line++){
-      if(isalnum(*line) == 0 && isblank(*line) == 0 && *line != 46 && *line != 47) return -1;
+      if(isalnum(*line) == 0 && isblank(*line) == 0 && *line != 46 && *line != 47) return 0;
    }
 
    return 1;
@@ -100,6 +96,8 @@ int a_to_hl(char *ipstr, in_addr_t *addr){
      *addr = ntohl(in.s_addr);
      return 1;
   }
+
+  syslog(LOG_PRIORITY, "invalid ipv4 address string: *%s*", ipstr);
 
   return 0;
 }
@@ -151,14 +149,25 @@ int str_to_net_range(char *network_addr_prefix, struct smtp_acl *smtp_acl){
    snprintf(buf, sizeof(buf)-1, "%s", network_addr_prefix);
 
    *p = '\0';
-   prefix = atoi(++p);
+   p++;
+
+   // Even though the remaining part of the acl line continues with some number
+   // then whitespace characters and the permit/reject action atoi() can still
+   // figure out the numeric part properly, that's why I'm lazy here.
+   prefix = atoi(p);
+
+   // The prefix string (p) must start with a digit and the prefix integer must be in 0..32 range
+   if(*p < 48 || *p > 57 || prefix < 0 || prefix > 32){
+      syslog(LOG_PRIORITY, "error: invalid prefix: %s", p);
+      return 0;
+   }
 
    if(a_to_hl(network_addr_prefix, &net)){
       smtp_acl->low = network(net, prefix);
       smtp_acl->high = broadcast(net, prefix);
       smtp_acl->prefix = prefix;
 
-      syslog(LOG_PRIORITY, "info: parsed acl *%s* to low: %u, high: %u, prefix: %d, reject: %d", buf, smtp_acl->low, smtp_acl->high, smtp_acl->prefix, smtp_acl->rejected);
+      syslog(LOG_PRIORITY, "info: parsed acl *%s*", buf);
 
       return 1;
    }
@@ -183,20 +192,31 @@ void load_smtp_acl(struct smtp_acl *smtp_acl[]){
    struct smtp_acl acl;
 
    while(fgets(line, sizeof(line)-1, f)){
-      int rc = is_valid_line(line);
-      if(rc < 0){
-         syslog(LOG_PRIORITY, "warn: invalid network range: *%s*", line);
-      }
+      // Skip comments
+      if(line[0] == ';' || line[0] == '#') continue;
 
-      if(rc == 1 && str_to_net_range(line, &acl) == 1){
+      trimBuffer(line);
+
+      // Skip empty line
+      if(line[0] == 0) continue;
+
+      char line2[SMALLBUFSIZE];
+      int rc = 0;
+      snprintf(line2, sizeof(line2)-1, "%s", line);
+
+      if(is_valid_line(line) == 1 && str_to_net_range(line, &acl) == 1){
          add_smtp_acl(smtp_acl, line, &acl);
          count++;
+         rc = 1;
       }
+
+      if(!rc) syslog(LOG_PRIORITY, "error: failed to parse line: *%s*", line2);
    }
 
    fclose(f);
 
    // If we have entries on the smtp acl list, then add 127.0.0.1/8
+   // to let the GUI health page connect to the piler-smtp daemon
    if(count){
       snprintf(line, sizeof(line)-1, "127.0.0.1/8 permit");
 
@@ -208,30 +228,27 @@ void load_smtp_acl(struct smtp_acl *smtp_acl[]){
 
 
 int is_blocked_by_pilerscreen(struct smtp_acl *smtp_acl[], char *ipaddr, struct config *cfg){
-   struct smtp_acl *q;
+   struct smtp_acl *q=smtp_acl[0];
    in_addr_t addr = 0;
+
+   // Empty acl, let it pass
+   if(!q) return 0;
 
    if(a_to_hl(ipaddr, &addr) == 0){
       syslog(LOG_PRIORITY, "error: invalid smtp client address: *%s*", ipaddr);
       return 1;
    }
 
-   q = smtp_acl[0];
-
-   // Empty network ranges list
-   if(!q){
-      syslog(LOG_PRIORITY, "info: empty network ranges list, pass");
-      return 0;
-   }
-
    while(q){
       if(addr >= q->low && addr <= q->high){
-         if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "info: smtp client %s is on %s/%d rejected: %d", ipaddr, q->network_str, q->prefix, q->rejected);
+         if(q->rejected) syslog(LOG_PRIORITY, "denied connection from %s, acl: %s/%d reject", ipaddr, q->network_str, q->prefix);
          return q->rejected;
       }
 
       q = q->r;
    }
+
+   syslog(LOG_PRIORITY, "denied connection from %s by implicit default deny", ipaddr);
 
    return 1;
 }

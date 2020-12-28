@@ -28,7 +28,6 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
    if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr, cfg)){
       send(socket, SMTP_RESP_550_ERR, strlen(SMTP_RESP_550_ERR), 0);
       close(socket);
-      syslog(LOG_PRIORITY, "denied connection from %s by %s", client_addr, SMTP_ACL_FILE);
       return -1;
    }
 
