@@ -135,7 +135,6 @@ int main(int argc, char **argv){
    int client_len = sizeof(struct sockaddr_storage);
    ssize_t readlen;
    struct sockaddr_storage client_address;
-   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
    char readbuf[BIGBUFSIZE];
    int efd;
 
@@ -256,6 +255,10 @@ int main(int argc, char **argv){
                      break;
                   }
                }
+
+               char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+               memset(hbuf, 0, sizeof(hbuf));
+               memset(sbuf, 0, sizeof(sbuf));
 
                if(getnameinfo((struct sockaddr *)&client_address, client_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
                   // Strictly speaking it's not correct to log num_connections+1 connections
