@@ -7,7 +7,7 @@
 
 
 int get_session_slot(struct smtp_session **sessions, int max_connections);
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg);
+void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg);
 
 
 int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct smtp_acl *smtp_acl[], char *client_addr, struct config *cfg){
@@ -25,7 +25,7 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
    }
 
    // Check remote client against the allowed network ranges
-   if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr, cfg)){
+   if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr)){
       send(socket, SMTP_RESP_550_ERR, strlen(SMTP_RESP_550_ERR), 0);
       close(socket);
       return -1;
@@ -36,7 +36,7 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
    if(slot >= 0 && sessions[slot] == NULL){
       sessions[slot] = malloc(sizeof(struct smtp_session));
       if(sessions[slot]){
-         init_smtp_session(sessions[slot], slot, socket, cfg);
+         init_smtp_session(sessions[slot], slot, socket, client_addr, cfg);
 
          char smtp_banner[SMALLBUFSIZE];
          snprintf(smtp_banner, sizeof(smtp_banner)-1, SMTP_RESP_220_BANNER, cfg->hostid);
@@ -83,10 +83,7 @@ struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int m
 }
 
 
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg){
-   struct sockaddr_in addr;
-   socklen_t addr_size = sizeof(struct sockaddr_in);
-   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg){
    int i;
 
    session->slot = slot;
@@ -112,16 +109,11 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    for(i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
 
    memset(session->buf, 0, MAXBUFSIZE);
-   memset(session->remote_host, 0, INET6_ADDRSTRLEN);
+   snprintf(session->remote_host, sizeof(session->remote_host)-1, "%s", client_addr);
 
    reset_bdat_counters(session);
 
    time(&(session->lasttime));
-
-   if(getpeername(session->net.socket, (struct sockaddr *)&addr, &addr_size) == 0 &&
-      getnameinfo((struct sockaddr *)&addr, addr_size, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
-         snprintf(session->remote_host, INET6_ADDRSTRLEN-1, "%s", hbuf);
-   }
 }
 
 

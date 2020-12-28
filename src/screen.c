@@ -227,7 +227,7 @@ void load_smtp_acl(struct smtp_acl *smtp_acl[]){
 }
 
 
-int is_blocked_by_pilerscreen(struct smtp_acl *smtp_acl[], char *ipaddr, struct config *cfg){
+int is_blocked_by_pilerscreen(struct smtp_acl *smtp_acl[], char *ipaddr){
    struct smtp_acl *q=smtp_acl[0];
    in_addr_t addr = 0;
 
