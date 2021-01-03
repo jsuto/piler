@@ -3,7 +3,7 @@
 
 - Added security header feature
 - Introduced the smtp acl list, and obsoleted the tcp_wrappers check
-
+- Switched from Blowfish encryption to AES-256
 
 1.3.9:
 ------
