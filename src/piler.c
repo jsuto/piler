@@ -123,9 +123,13 @@ int perform_checks(char *filename, struct session_data *sdata, struct data *data
 
    make_digests(sdata, cfg);
 
+   // A normal header is much bigger than 10 bytes. We get here for header-only
+   // messages without a Message-ID: line. I believe that no such message is valid, and
+   // it's a reasonable to discard it, and not allowing it to fill up the error directory.
+
    if(sdata->hdr_len < 10){
-      syslog(LOG_PRIORITY, "%s: invalid message, hdr_len: %d", filename, sdata->hdr_len);
-      return ERR;
+      syslog(LOG_PRIORITY, "%s: discarding: a header-only message without a Message-ID line", filename);
+      return ERR_DISCARDED;
    }
 
    int rc = process_message(sdata, parser_state, data, cfg);
