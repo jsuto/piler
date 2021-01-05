@@ -64,7 +64,8 @@ $(RECURSIVE_TARGETS):
 
 
 config-php:
-	sed "s%SYSCONFDIR%$(sysconfdir)%" config.php.in > webui/config.php
+	sed -e "s%SYSCONFDIR%$(sysconfdir)%" -e "s%SBINDIR%$(sbindir)%g" config.php.in > webui/config.php
+	sed -e "s%BINDIR%$(bindir)%g" -i webui/config.php
 
 
 installdirs: mkinstalldirs

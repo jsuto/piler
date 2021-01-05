@@ -217,8 +217,8 @@ $config['DIR_STAT'] = '/var/piler/stat';
 $config['DIR_IMAP'] = '/var/piler/imap';
 $config['DIR_TMP'] = '/var/piler/tmp';
 
-$config['DECRYPT_BINARY'] = '/usr/local/bin/pilerget';
-$config['DECRYPT_ATTACHMENT_BINARY'] = '/usr/local/bin/pileraget';
+$config['DECRYPT_BINARY'] = 'BINDIR/pilerget';
+$config['DECRYPT_ATTACHMENT_BINARY'] = 'BINDIR/pileraget';
 $config['DECRYPT_BUFFER_LENGTH'] = 65536;
 
 $config['OPENSSL_BINARY'] = '/usr/bin/openssl';
@@ -249,7 +249,7 @@ $config['MAX_EMAIL_LEN'] = 41;
 $config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
 $config['CPU_USAGE_COMMAND'] = "LC_ALL=C mpstat | tail -1 | rev | awk '{ print $1 }' | rev";
-$config['PILER_BINARY'] = "/usr/local/sbin/piler";
+$config['PILER_BINARY'] = "SBINDIR/piler";
 
 $config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
 
