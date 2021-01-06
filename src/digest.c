@@ -48,6 +48,7 @@ int make_digests(struct session_data *sdata, struct config *cfg){
    fd = open(sdata->filename, O_RDONLY);
    if(fd == -1) return -1;
 
+   memset(buf, 0, sizeof(buf));
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
       SHA256_Update(&context2, buf, n);
