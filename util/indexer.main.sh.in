@@ -6,7 +6,7 @@ set -o pipefail
 
 MAINTMPFILE="/var/run/piler/main.indexer.tmp"
 SPHINX_CONFIG="SYSCONFDIR/piler/sphinx.conf"
-PRIORITY="mail.error"
+PRIORITY="mail.info"
 TOUCHFILE="/var/piler/stat/indexer"
 MAIN_INDEX="main1"
 
