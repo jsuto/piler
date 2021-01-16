@@ -349,7 +349,7 @@ class ModelUserAuth extends Model {
 
       $uid = $this->model_user_user->get_uid_by_email($email);
       if($uid < 1) {
-         $uid = $this->model_user_user->get_next_uid(TABLE_EMAIL);
+         $uid = $this->model_user_user->get_next_uid();
          $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array($uid, $email));
       }
 
