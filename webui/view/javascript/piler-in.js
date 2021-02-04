@@ -1001,6 +1001,8 @@ var Piler =
     {
         Piler.log("[add_shortcuts]");
 
+        $("#button_search").click();
+
         $(document).keypress(function(e){
            if(e.which == 13){
               $("#button_search").click();
