@@ -11,7 +11,10 @@ services:
       - setuid
       - setgid
     environment:
-      - MYSQL_ROOT_PASSWORD=abcde123
+      - MYSQL_DATABASE=piler
+      - MYSQL_USER=piler
+      - MYSQL_PASSWORD=piler123
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - db_data:/var/lib/mysql
 
@@ -26,8 +29,9 @@ services:
     image: sutoj/piler:1.3.10
     init: true
     environment:
-      - MYSQL_PILER_PASSWORD=piler123
-      - MYSQL_ROOT_PASSWORD=abcde123
+      - MYSQL_DATABASE=piler
+      - MYSQL_USER=piler
+      - MYSQL_PASSWORD=piler123
       - MYSQL_HOSTNAME=mysql
       - PILER_HOSTNAME=archive.yourdomain.com
       - MEMCACHED_HOST=memcached

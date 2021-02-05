@@ -13,7 +13,6 @@ PILER_NGINX_CONF="${CONFIG_DIR}/piler-nginx.conf"
 SPHINX_CONF="${CONFIG_DIR}/sphinx.conf"
 CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
-ROOT_MY_CNF="/root/.my.cnf"
 
 
 error() {
@@ -30,8 +29,10 @@ log() {
 pre_flight_check() {
    [[ -v PILER_HOSTNAME ]] || error "Missing PILER_HOSTNAME env variable"
    [[ -v MYSQL_HOSTNAME ]] || error "Missing MYSQL_HOSTNAME env variable"
-   [[ -v MYSQL_PILER_PASSWORD ]] || error "Missing MYSQL_PILER_PASSWORD env variable"
-   [[ -v MYSQL_ROOT_PASSWORD ]] || error "Missing MYSQL_ROOT_PASSWORD env variable"
+   [[ -v MYSQL_DATABASE ]] || error "Missing MYSQL_DATABASE env variable"
+   [[ -v MYSQL_USER ]] || error "Missing MYSQL_USER env variable"
+   [[ -v MYSQL_PASSWORD ]] || error "Missing MYSQL_PASSWORD env variable"
+   [[ -v MYSQL_DATABASE ]] || error "Missing MYSQL_DATABASE env variable"
 }
 
 
@@ -87,7 +88,9 @@ fix_configs() {
       log "Writing ${PILER_CONF}"
 
       sed \
-         -e "s/verystrongpassword/$MYSQL_PILER_PASSWORD/g" \
+         -e "s/mysqluser=.*/${MYSQL_USER}/g" \
+         -e "s/mysqldb=.*/${MYSQL_DATABASE}/g" \
+         -e "s/verystrongpassword/${MYSQL_PASSWORD}/g" \
          -e "s/hostid=.*/hostid=${PILER_HOSTNAME}/g" \
          -e "s/tls_enable=.*/tls_enable=1/g" \
          -e "s/mysqlsocket=.*/mysqlsocket=/g" "${PILER_CONF}.dist" > "$PILER_CONF"
@@ -111,7 +114,9 @@ fix_configs() {
          echo "\$config['DECRYPT_ATTACHMENT_BINARY'] = '/usr/bin/pileraget';"
          echo "\$config['PILER_BINARY'] = '/usr/sbin/piler';"
          echo "\$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';"
-         echo "\$config['DB_PASSWORD'] = '$MYSQL_PILER_PASSWORD';"
+         echo "\$config['DB_DATABASE'] = '$MYSQL_DATABASE';"
+         echo "\$config['DB_USERNAME'] = '$MYSQL_USER';"
+         echo "\$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';"
          echo "\$config['ENABLE_MEMCACHED'] = 1;"
          echo "\$memcached_server = ['memcached', 11211];"
       } >> "$CONFIG_SITE_PHP"
@@ -119,14 +124,14 @@ fix_configs() {
 
    sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" \
        -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" \
-       -e "s%MYSQL_USERNAME%${PILER_USER}%" \
-       -e "s%MYSQL_PASSWORD%${MYSQL_PILER_PASSWORD}%" \
+       -e "s%MYSQL_USERNAME%${MYSQL_USER}%" \
+       -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" \
        -i "$SPHINX_CONF"
 }
 
 
 wait_until_mysql_server_is_ready() {
-   while true; do if mysql "--defaults-file=${ROOT_MY_CNF}" <<< "show databases"; then break; fi; log "${MYSQL_HOSTNAME} is not ready"; sleep 5; done
+   while true; do if mysql "--defaults-file=${PILER_MY_CNF}" <<< "show databases"; then break; fi; log "${MYSQL_HOSTNAME} is not ready"; sleep 5; done
 
    log "${MYSQL_HOSTNAME} is ready"
 }
@@ -140,15 +145,9 @@ init_database() {
 
    while read -r db; do
       if [[ "$db" == "$MYSQL_DATABASE" ]]; then has_piler_db=1; fi
-   done < <(mysql "--defaults-file=${ROOT_MY_CNF}" <<< 'show databases')
+   done < <(mysql "--defaults-file=${PILER_MY_CNF}" <<< 'show databases')
 
    if [[ $has_piler_db -eq 0 ]]; then
-      log "no ${MYSQL_DATABASE} database, creating"
-
-      mysql "--defaults-file=${ROOT_MY_CNF}" <<< "create database ${MYSQL_DATABASE} character set utf8mb4"
-      mysql "--defaults-file=${ROOT_MY_CNF}" <<< "grant all privileges on ${MYSQL_DATABASE}.* to ${PILER_USER} identified by '${MYSQL_PILER_PASSWORD}'"
-      mysql "--defaults-file=${ROOT_MY_CNF}" <<< "flush privileges"
-
       mysql "--defaults-file=${PILER_MY_CNF}" "$MYSQL_DATABASE" < /usr/share/piler/db-mysql.sql
    else
       log "${MYSQL_DATABASE} db exists"
@@ -162,9 +161,8 @@ init_database() {
 
 create_my_cnf_files() {
    printf "[client]\nhost = %s\nuser = %s\npassword = %s\n[mysqldump]\nhost = %s\nuser = %s\npassword = %s\n" \
-      "$MYSQL_HOSTNAME" "$PILER_USER" "$MYSQL_PILER_PASSWORD" "$MYSQL_HOSTNAME" "$PILER_USER" "$MYSQL_PILER_PASSWORD" \
+      "$MYSQL_HOSTNAME" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_HOSTNAME" "$MYSQL_USER" "$MYSQL_PASSWORD" \
       > "$PILER_MY_CNF"
-   printf "[client]\nhost = %s\nuser = root\npassword = %s\n" "$MYSQL_HOSTNAME" "$MYSQL_ROOT_PASSWORD" > "$ROOT_MY_CNF"
 
    give_it_to_piler "$PILER_MY_CNF"
 }
