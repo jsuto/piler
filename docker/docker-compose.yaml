@@ -14,6 +14,7 @@ services:
       - MYSQL_DATABASE=piler
       - MYSQL_USER=piler
       - MYSQL_PASSWORD=piler123
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - db_data:/var/lib/mysql
