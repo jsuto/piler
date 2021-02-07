@@ -1660,7 +1660,7 @@ html,body{height:auto !important;height:100%;min-height:100%;}
 #notesbox{position:absolute;top:8px;right:8px;}
 #folderbox{position:absolute;top:8px;right:380px;}
 #sspinner{display:none;}
-.message_highlight{background:lightblue;}
+.mssghglght{background:lightblue;}
 #searchcontainer{text-align:center;min-width:320px;}
 #searchcontainer label{display:none;height:0;}
 #searchcontainer input{height:26px;width:100%;}

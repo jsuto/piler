@@ -224,7 +224,7 @@ class ModelSearchMessage extends Model {
 
       if($html == 0) {
          while(list($k, $v) = each($terms)) {
-            $s = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $s);
+            $s = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $s);
          }
 
          return $s;
@@ -246,7 +246,7 @@ class ModelSearchMessage extends Model {
 
                reset($terms);
                while(list($k, $v) = each($terms)) {
-                  $str = preg_replace("/$v/i", "<span class=\"message_highlight\">$v</span>", $str);
+                  $str = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $str);
                }
 
                $s .= $str;
