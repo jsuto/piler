@@ -88,8 +88,8 @@ fix_configs() {
       log "Writing ${PILER_CONF}"
 
       sed \
-         -e "s/mysqluser=.*/${MYSQL_USER}/g" \
-         -e "s/mysqldb=.*/${MYSQL_DATABASE}/g" \
+         -e "s/mysqluser=.*/mysqluser=${MYSQL_USER}/g" \
+         -e "s/mysqldb=.*/mysqldb=${MYSQL_DATABASE}/g" \
          -e "s/verystrongpassword/${MYSQL_PASSWORD}/g" \
          -e "s/hostid=.*/hostid=${PILER_HOSTNAME}/g" \
          -e "s/tls_enable=.*/tls_enable=1/g" \
@@ -138,19 +138,21 @@ wait_until_mysql_server_is_ready() {
 
 
 init_database() {
-   local db
-   local has_piler_db=0
+   local table
+   local has_metadata_table=0
 
    wait_until_mysql_server_is_ready
 
-   while read -r db; do
-      if [[ "$db" == "$MYSQL_DATABASE" ]]; then has_piler_db=1; fi
-   done < <(mysql "--defaults-file=${PILER_MY_CNF}" <<< 'show databases')
+   while read -r table; do
+      if [[ "$table" == metadata ]]; then has_metadata_table=1; fi
+   done < <(mysql "--defaults-file=${PILER_MY_CNF}" "$MYSQL_DATABASE" <<< 'show tables')
 
-   if [[ $has_piler_db -eq 0 ]]; then
+   if [[ $has_metadata_table -eq 0 ]]; then
+      log "no metadata table, creating tables"
+
       mysql "--defaults-file=${PILER_MY_CNF}" "$MYSQL_DATABASE" < /usr/share/piler/db-mysql.sql
    else
-      log "${MYSQL_DATABASE} db exists"
+      log "metadata table exists"
    fi
 
    if [[ -v ADMIN_USER_PASSWORD_HASH ]]; then
