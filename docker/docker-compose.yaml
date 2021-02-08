@@ -2,7 +2,7 @@ version: "3"
 services:
 
   mysql:
-    image: mariadb:10.4
+    image: mariadb:10.5
     restart: unless-stopped
     cap_drop:
       - ALL
