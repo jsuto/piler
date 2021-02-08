@@ -31,6 +31,11 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
       return;
    }
 
+   if(strncasecmp(buf, SMTP_CMD_HELP, strlen(SMTP_CMD_HELP)) == 0){
+      send_smtp_response(session, SMTP_RESP_221_PILER_SMTP_OK);
+      return;
+   }
+
    if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
       process_command_mail_from(session, buf);
       return;

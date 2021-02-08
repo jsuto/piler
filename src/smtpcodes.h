@@ -18,6 +18,7 @@
 
 #define SMTP_CMD_HELO "HELO"
 #define SMTP_CMD_EHLO "EHLO"
+#define SMTP_CMD_HELP "HELP"
 #define SMTP_CMD_MAIL_FROM "MAIL FROM:"
 #define SMTP_CMD_RCPT_TO "RCPT TO:"
 #define SMTP_CMD_DATA "DATA"
@@ -32,6 +33,7 @@
 
 // SMTP responses
 
+#define SMTP_RESP_221_PILER_SMTP_OK "221 piler-smtp is OK\r\n"
 #define SMTP_RESP_220_BANNER "220 %s ESMTP\r\n"
 #define SMTP_RESP_220_READY_TO_START_TLS "220 Ready to start TLS\r\n"
 #define SMTP_RESP_221_GOODBYE "221 %s Goodbye\r\n"
