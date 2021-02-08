@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install \
        wget rsyslog openssl sysstat php7.4-cli php7.4-cgi php7.4-mysql php7.4-fpm php7.4-zip php7.4-ldap \
        php7.4-gd php7.4-curl php7.4-xml php7.4-memcached catdoc unrtf poppler-utils nginx tnef sudo libzip5 \
-       libtre5 cron libmariadb-dev mariadb-client-core-10.3 python3 python3-mysqldb ca-certificates && \
+       libtre5 cron libmariadb-dev mariadb-client-core-10.3 python3 python3-mysqldb ca-certificates curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     wget --no-check-certificate -q -O ${SPHINX_BIN_TARGZ} ${DOWNLOAD_URL}/generic-local/${SPHINX_BIN_TARGZ} && \
