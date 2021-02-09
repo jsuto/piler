@@ -16,6 +16,12 @@ services:
       - MYSQL_PASSWORD=piler123
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: mysql --user=piler --password=piler123 piler --execute "show tables"
+      interval: "60s"
+      timeout: "5s"
+      start_period: "15s"
+      retries: 3
     volumes:
       - db_data:/var/lib/mysql
 
