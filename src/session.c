@@ -134,7 +134,12 @@ void free_smtp_session(struct smtp_session *session){
 
 
 void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections){
-   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d (%d active connections)", sessions[slot]->remote_host, sessions[slot]->net.socket, (*num_connections)-1);
+   if(sessions[slot] == NULL){
+      syslog(LOG_PRIORITY, "session already torn down, slot=%d (%d active connections)", slot, *num_connections);
+      return;
+   }
+
+   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d, slot=%d (%d active connections)", sessions[slot]->remote_host, sessions[slot]->net.socket, slot, (*num_connections)-1);
 
    close(sessions[slot]->net.socket);
 
@@ -148,7 +153,7 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
    free_smtp_session(sessions[slot]);
    sessions[slot] = NULL;
 
-   (*num_connections)--;
+   if(*num_connections > 0) (*num_connections)--;
 }
 
 
