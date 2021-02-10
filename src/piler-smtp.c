@@ -94,7 +94,7 @@ void check_for_client_timeout(){
       for(int i=0; i<cfg.max_connections; i++){
          if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
             syslog(LOG_PRIORITY, "client %s timeout, lasttime: %ld", sessions[i]->remote_host, sessions[i]->lasttime);
-            tear_down_session(sessions, sessions[i]->slot, &num_connections);
+            tear_down_session(sessions, sessions[i]->slot, &num_connections, "timeout");
          }
       }
    }
@@ -232,7 +232,7 @@ int main(int argc, char **argv){
             if(cfg.verbosity >= _LOG_EXTREME) syslog(LOG_PRIORITY, "ERROR: the remote end hung up without sending QUIT");
             session = get_session_by_socket(sessions, cfg.max_connections, events[i].data.fd);
             if(session)
-               tear_down_session(sessions, session->slot, &num_connections);
+               tear_down_session(sessions, session->slot, &num_connections, "hungup");
             else
                close(events[i].data.fd);
             continue;
@@ -333,7 +333,7 @@ int main(int argc, char **argv){
             /* Don't wait until the remote client closes the connection after he sent the QUIT command */
 
             if(done || session->protocol_state == SMTP_STATE_FINISHED){
-               tear_down_session(sessions, session->slot, &num_connections);
+               tear_down_session(sessions, session->slot, &num_connections, "done");
             }
          }
 

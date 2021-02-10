@@ -118,28 +118,38 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, char *cli
 
 
 void free_smtp_session(struct smtp_session *session){
-
    if(session){
+      syslog(LOG_PRIORITY, "free_smtp_session()");
 
       if(session->net.use_ssl == 1){
+         syslog(LOG_PRIORITY, "SSL_shutdown()");
          SSL_shutdown(session->net.ssl);
          SSL_free(session->net.ssl);
+         syslog(LOG_PRIORITY, "SSL_free()");
       }
 
-      if(session->net.ctx) SSL_CTX_free(session->net.ctx);
+      if(session->net.ctx){
+         syslog(LOG_PRIORITY, "SSL_CTX_free");
+         SSL_CTX_free(session->net.ctx);
+      }
 
+      syslog(LOG_PRIORITY, "freeing session");
       free(session);
+      syslog(LOG_PRIORITY, "free(session) done");
    }
 }
 
 
-void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections){
+void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections, char *reason){
    if(sessions[slot] == NULL){
-      syslog(LOG_PRIORITY, "session already torn down, slot=%d (%d active connections)", slot, *num_connections);
+      syslog(LOG_PRIORITY, "session already torn down, slot=%d, reason=%s (%d active connections)", slot, reason, *num_connections);
       return;
    }
 
-   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d, slot=%d (%d active connections)", sessions[slot]->remote_host, sessions[slot]->net.socket, slot, (*num_connections)-1);
+   if(*num_connections > 0) (*num_connections)--;
+
+   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d, slot=%d, reason=%s (%d active connections)",
+          sessions[slot]->remote_host, sessions[slot]->net.socket, slot, reason, *num_connections);
 
    close(sessions[slot]->net.socket);
 
@@ -152,8 +162,6 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
    free_smtp_session(sessions[slot]);
    sessions[slot] = NULL;
-
-   if(*num_connections > 0) (*num_connections)--;
 }
 
 
