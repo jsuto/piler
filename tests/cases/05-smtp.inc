@@ -12,6 +12,7 @@ case1() {
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet2" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam0" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam1" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam2" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/journal" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/deduptest" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --socket --no-counter
