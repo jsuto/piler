@@ -212,7 +212,7 @@ class ModelUserAuth extends Model {
 
       if($ldap_host == '' || $ldap_helper_password == '') { return 0; }
 
-      $ldap = new LDAP($ldap_host, $ldap_port, $ldap_helper_dn, $ldap_helper_password);
+      $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
@@ -221,7 +221,7 @@ class ModelUserAuth extends Model {
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
 
-            $ldap_auth = new LDAP($ldap_host, $ldap_port, $a['dn'], $password);
+            $ldap_auth = new LDAP($ldap_host, $a['dn'], $password);
 
             if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
@@ -478,7 +478,7 @@ class ModelUserAuth extends Model {
 
       if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $sso_user"); }
 
-      $ldap = new LDAP(LDAP_HOST, LDAP_PORT, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
 
