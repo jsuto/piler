@@ -586,35 +586,6 @@ class ModelSearchSearch extends Model {
    }
 
 
-   public function get_message_recipients($id = '') {
-      $rcpt = array();
-      $domains = array();
-
-      if(Registry::get('auditor_user') == 0) { return $rcpt; }
-
-      $query = $this->db->query("SELECT `domain` FROM " . TABLE_DOMAIN);
-      foreach($query->rows as $q) {
-         array_push($domains, $q['domain']);
-      }
-
-      $query = $this->db->query("SELECT `to` FROM " . VIEW_MESSAGES . " WHERE id=?", array($id));
-
-      foreach($query->rows as $q) {
-         $mydomain = 0;
-
-         foreach ($domains as $domain) {
-            if(preg_match("/\@$domain$/", $q['to'])) { $mydomain = 1; break; }
-         }
-
-         if($mydomain == 1) {
-            array_push($rcpt, $q['to']);
-         }
-      }
-
-      return $rcpt;
-   }
-
-
    public function get_message_addresses_in_my_domain($id = '') {
       $addr = array();
       $domains = array();
