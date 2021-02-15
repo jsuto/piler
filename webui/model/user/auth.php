@@ -234,7 +234,7 @@ class ModelUserAuth extends Model {
                if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
                if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
-               $emails = $this->get_email_array_from_ldap_attr($query->rows);
+               $emails = $this->get_email_array_from_ldap_attr($query->rows, $ldap_distributionlist_objectclass);
 
                $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                $emails = array_merge($emails, $extra_emails);
@@ -292,11 +292,19 @@ class ModelUserAuth extends Model {
    }
 
 
-   public function get_email_array_from_ldap_attr($e = array()) {
+   public function get_email_array_from_ldap_attr($e = array(), $group_object_class) {
       global $mailattrs;
       $data = [];
+      $group_emails = [];
+      $user_emails = [];
 
       foreach($e as $a) {
+         $group_object = 0;
+
+         if($group_object_class && in_array($group_object_class, $a['objectclass'])) {
+            $group_object = 1;
+         }
+
          if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
          foreach ($mailattrs as $mailattr) {
@@ -316,7 +324,15 @@ class ModelUserAuth extends Model {
                         }
 
                         $email = preg_replace("/^([\w]+)\:/i", "", $a[$mailattr][$i]);
-                        if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
+                        if(validemail($email)) {
+                           if(!in_array($email, $data)) { array_push($data, $email); }
+
+                           if($group_object) {
+                              if(!in_array($email, $group_emails)) { array_push($group_emails, $email); }
+                           } else {
+                              if(!in_array($email, $user_emails)) { array_push($user_emails, $email); }
+                           }
+                        }
                      }
                   }
                }
@@ -324,11 +340,24 @@ class ModelUserAuth extends Model {
                   if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]); }
 
                   $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
-                  if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
+                  if(validemail($email)) {
+                     if(!in_array($email, $data)) { array_push($data, $email); }
+
+                     if($group_object) {
+                        if(!in_array($email, $group_emails)) { array_push($group_emails, $email); }
+                     } else {
+                        if(!in_array($email, $user_emails)) { array_push($user_emails, $email); }
+                     }
+                  }
                }
             }
          }
       }
+
+      $session = Registry::get('session');
+
+      $session->set("user_emails", $user_emails);
+      $session->set("group_emails", $group_emails);
 
       return $data;
    }

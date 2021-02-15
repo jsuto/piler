@@ -489,12 +489,10 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
          foreach($query->rows as $r) {
-            if(!isset($rcpt[$r['id']]) && !in_array($r['to'], $SUPPRESS_RECIPIENTS)) {
-               $srcpt[$r['id']] = $r['to'];
-               $rcpt[$r['id']] = $r['to'];
-            }
-            else {
-               if(Registry::get('auditor_user') == 1) { $rcpt[$r['id']] .= ",\n" . $r['to']; }
+            if(!isset($rcpt[$r['id']])) { $rcpt[$r['id']] = []; }
+
+            if(Registry::get('auditor_user') == 1 || !in_array($r['to'], $SUPPRESS_RECIPIENTS)) {
+               array_push($rcpt[$r['id']], $r['to']);
             }
          }
       }
@@ -542,8 +540,8 @@ class ModelSearchSearch extends Model {
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
 
-            isset($srcpt[$m['id']]) ? $m['shortto'] = $srcpt[$m['id']] : $m['shortto'] = '';
             isset($rcpt[$m['id']]) ? $m['to'] = $rcpt[$m['id']] : $m['to'] = '';
+            $m['shortto'] = make_short_string($this->get_preferred_recipient($rcpt[$m['id']]), MAX_CGI_FROM_SUBJ_LEN);
             $m['to'] = escape_gt_lt_quote_symbols($m['to']);
 
 
@@ -583,6 +581,26 @@ class ModelSearchSearch extends Model {
       // TODO: add caching if necessary
 
       return $messages;
+   }
+
+
+   private function get_preferred_recipient($arr = []) {
+      $result = '';
+
+      $session = Registry::get('session');
+      $group_emails = $session->get('group_emails');
+      $user_emails = $session->get('user_emails');
+
+      if(count($arr) < 2 || (!$group_emails && !$user_emails) ) { return $arr[0]; }
+
+      foreach ($arr as $a) {
+         if($result == '' && in_array($a, $group_emails)) { $result = $a; }
+         if(in_array($a, $user_emails)) { $result = $a; }
+      }
+
+      if($result == '') { $result = $arr[0]; }
+
+      return $result;
    }
 
 
