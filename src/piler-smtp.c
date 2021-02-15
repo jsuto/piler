@@ -98,8 +98,6 @@ void check_for_client_timeout(){
          }
       }
    }
-
-   alarm(cfg.check_for_client_timeout_interval);
 }
 
 
@@ -197,7 +195,6 @@ int main(int argc, char **argv){
 
    set_signal_handler(SIGPIPE, SIG_IGN);
 
-   set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
 
    // calloc() initialitizes the allocated memory
@@ -218,10 +215,8 @@ int main(int argc, char **argv){
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
 
-   alarm(cfg.check_for_client_timeout_interval);
-
    for(;;){
-      int n = epoll_wait(efd, events, cfg.max_connections, -1);
+      int n = epoll_wait(efd, events, cfg.max_connections, 10000);
       for(i=0; i<n; i++){
 
          // Office365 sometimes behaves oddly: when it receives the 250 OK
@@ -339,6 +334,8 @@ int main(int argc, char **argv){
 
 
       }
+
+      check_for_client_timeout();
    }
 
    return 0;
