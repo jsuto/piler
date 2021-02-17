@@ -40,6 +40,7 @@ struct passwd *pwd;
 struct smtp_session *session, **sessions=NULL;
 struct smtp_acl *smtp_acl[MAXHASH];
 
+time_t prev_timeout_check = 0;
 
 void usage(){
    printf("\nusage: piler\n\n");
@@ -90,6 +91,8 @@ void check_for_client_timeout(){
 
    if(cfg.verbosity >= LOG_DEBUG) syslog(LOG_PRIORITY, "%s @%ld", __func__, now);
 
+   if(now - prev_timeout_check < cfg.smtp_timeout) return;
+
    if(num_connections > 0){
       for(int i=0; i<cfg.max_connections; i++){
          if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
@@ -98,6 +101,8 @@ void check_for_client_timeout(){
          }
       }
    }
+
+   time(&prev_timeout_check);
 }
 
 
@@ -194,6 +199,7 @@ int main(int argc, char **argv){
    set_signal_handler(SIGSEGV, p_clean_exit);
 
    set_signal_handler(SIGPIPE, SIG_IGN);
+   set_signal_handler(SIGALRM, SIG_IGN);
 
    set_signal_handler(SIGHUP, initialise_configuration);
 
@@ -216,7 +222,7 @@ int main(int argc, char **argv){
 #endif
 
    for(;;){
-      int n = epoll_wait(efd, events, cfg.max_connections, 10000);
+      int n = epoll_wait(efd, events, cfg.max_connections, 1000);
       for(i=0; i<n; i++){
 
          // Office365 sometimes behaves oddly: when it receives the 250 OK
@@ -295,8 +301,6 @@ int main(int argc, char **argv){
             time(&(session->lasttime));
 
             while(1){
-               memset(readbuf, 0, sizeof(readbuf));
-
                if(session->net.use_ssl == 1)
                   readlen = SSL_read(session->net.ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
                else

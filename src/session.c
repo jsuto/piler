@@ -119,23 +119,17 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, char *cli
 
 void free_smtp_session(struct smtp_session *session){
    if(session){
-      syslog(LOG_PRIORITY, "free_smtp_session()");
 
       if(session->net.use_ssl == 1){
-         syslog(LOG_PRIORITY, "SSL_shutdown()");
          SSL_shutdown(session->net.ssl);
          SSL_free(session->net.ssl);
-         syslog(LOG_PRIORITY, "SSL_free()");
       }
 
       if(session->net.ctx){
-         syslog(LOG_PRIORITY, "SSL_CTX_free");
          SSL_CTX_free(session->net.ctx);
       }
 
-      syslog(LOG_PRIORITY, "freeing session");
       free(session);
-      syslog(LOG_PRIORITY, "free(session) done");
    }
 }
 
@@ -183,6 +177,7 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
       p = &copybuf[0];
    }
    else {
+      readbuf[readlen] = 0;
       p = readbuf;
    }
 
