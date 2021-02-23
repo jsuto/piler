@@ -9,7 +9,7 @@
 #include "piler-config.h"
 #include "params.h"
 
-#define BUILD 998
+#define BUILD 1001
 
 #define HOSTID "mailarchiver"
 
