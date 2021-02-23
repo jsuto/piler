@@ -11,7 +11,7 @@ Security update policy
 
 If a security vulnerability has found, the details, possible mitigations,
 workarounds, etc. will be shared on the piler mailing list (piler-user@list.acts.hu)
-and on the wiki: http://www.mailpiler.org/
+and on the wiki: https://www.mailpiler.org/
 
 Security configurations
 
