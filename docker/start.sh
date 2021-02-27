@@ -30,9 +30,8 @@ pre_flight_check() {
    [[ -v PILER_HOSTNAME ]] || error "Missing PILER_HOSTNAME env variable"
    [[ -v MYSQL_HOSTNAME ]] || error "Missing MYSQL_HOSTNAME env variable"
    [[ -v MYSQL_DATABASE ]] || error "Missing MYSQL_DATABASE env variable"
-   [[ -v MYSQL_USER ]] || error "Missing MYSQL_USER env variable"
+   [[ -v MYSQL_USER ]]     || error "Missing MYSQL_USER env variable"
    [[ -v MYSQL_PASSWORD ]] || error "Missing MYSQL_PASSWORD env variable"
-   [[ -v MYSQL_DATABASE ]] || error "Missing MYSQL_DATABASE env variable"
 }
 
 
