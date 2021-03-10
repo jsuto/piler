@@ -357,6 +357,13 @@ var Piler =
     },
 
 
+    show_advanced_search_modal:function()
+    {
+        Piler.log("[show_advanced_search_modal]");
+        $('#advancedsearch-modal').modal('show');
+    },
+
+
     show_bulk_remove_modal:function()
     {
         Piler.log("[show_bulk_remove_modal]");
@@ -693,7 +700,7 @@ var Piler =
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
 
-        var z = $('div#searchpopup1');
+        var z = $('div#advancedsearch-modal');
 
         Piler.search = 'Complex';
 
@@ -730,8 +737,6 @@ var Piler =
         $('input#_search').val('');
 
         Piler.load_search_results();
-
-        $('#searchpopup1').hide();
     },
 
 

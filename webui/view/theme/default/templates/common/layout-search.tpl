@@ -49,6 +49,88 @@
   </div>
 </div>
 
+<div id="advancedsearch-modal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
+    <h3><?php print $text_advanced_search; ?></h3>
+  </div>
+  <div class="modal-body">
+
+     <input type="hidden" name="xsearchtype" id="xsearchtype" value="simple" />
+     <input type="hidden" name="xsort" id="xsort" value="date" />
+     <input type="hidden" name="xorder" id="xorder" value="0" />
+     <input type="hidden" name="xref" id="xref" value="" />
+
+    <table class="table">
+      <tr>
+        <td><?php print $text_from; ?></td>
+        <td><input type="text" name="xfrom" id="xfrom" value="" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_to; ?></td>
+        <td><input type="text" name="xto" id="xto" value="<?php if(isset($to)) { print $to; } ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_subject; ?></td>
+        <td><input type="text" name="xsubject" id="xsubject" value="<?php if(isset($subject)) { print $subject; } ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_body; ?></td>
+        <td><input type="text" name="xbody" id="xbody" value="<?php if(isset($body)) { print $body; } ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_tags; ?></td>
+        <td><input type="text" name="xtag" id="xtag" value="<?php if(isset($tag)) { print $tag; } ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_notes; ?></td>
+        <td><input type="text" name="xnote" id="xnote" value="<?php if(isset($note)) { print $note; } ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_attachment; ?></td>
+        <td>
+          <img src="view/theme/default/assets/images/fileicons/doc.png" alt="Word" title="Word" />
+          <input type="checkbox" class="checkbox popup" name="xhas_attachment_doc" id="xhas_attachment_doc" <?php if(isset($has_attachment_doc) && $has_attachment_doc == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+
+          <img src="view/theme/default/assets/images/fileicons/xls.png" alt="Excel" title="Excel" />
+          <input type="checkbox" class="checkbox popup" name="xhas_attachment_xls" id="xhas_attachment_xls" <?php if(isset($has_attachment_xls) && $has_attachment_xls == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+
+          <img src="view/theme/default/assets/images/fileicons/pdf.png" alt="PDF" title="PDF" />
+          <input type="checkbox" class="checkbox popup" name="xhas_attachment_pdf" id="xhas_attachment_pdf" <?php if(isset($has_attachment_pdf) && $has_attachment_pdf == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+
+          <img src="view/theme/default/assets/images/fileicons/image.png" alt="image" title="image" />
+          <input type="checkbox" class="checkbox popup" name="xhas_attachment_image" id="xhas_attachment_image" <?php if(isset($has_attachment_image) && $has_attachment_image == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_any();" />
+
+          <img src="view/theme/default/assets/images/fileicons/file.png" alt="any" title="any" />
+          <input type="checkbox" class="checkbox popup" name="xhas_attachment_any" id="xhas_attachment_any" <?php if(isset($has_attachment_any) && $has_attachment_any == 1) { ?>checked="checked"<?php } ?> onclick="Piler.clear_attachment_others();" />
+        </td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_date_from; ?></td>
+        <td><input type="text" name="date1" id="date1" size="11" value="<?php if(isset($date1)) { print $date1; } ?>" placeholder="<?php print DATE_FORMAT; ?>" /></td>
+      </tr>
+
+      <tr>
+        <td><?php print $text_date_to; ?></td>
+        <td><input type="text" name="date2" id="date2" size="11" value="<?php if(isset($date2)) { print $date2; } ?>" placeholder="<?php print DATE_FORMAT; ?>" /></td>
+      </tr>
+    </table>
+
+  </div>
+
+  <div class="modal-footer">
+    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
+    <a href="#" class="btn btn-primary" onclick="Piler.complex();" data-dismiss="modal" aria-hidden="true">OK</a>
+  </div>
+</div>
+
 <?php if(Registry::get('auditor_user') == 1) { ?>
 <div id="deletebox-modal" class="modal hide fade">
   <div class="modal-header">
@@ -92,7 +174,7 @@
              <?php if(MOBILE_DEVICE == 0) { ?>
                 <div class="span6 input-append btn-group">
                     <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
-                    <button id="button_expert" class="btn btn-large btn-inverse" onclick="$('#searchpopup1').show();"><?php print $text_advanced_search; ?> &nbsp;<span class="caret"></span></button>
+                    <button id="button_expert" class="btn btn-large btn-inverse" onclick="Piler.show_advanced_search_modal();"><?php print $text_advanced_search; ?> &nbsp;<span class="caret"></span></button>
                     <button id="button_options" class="btn btn-large btn-inverse dropdown-toggle" data-toggle="dropdown"><?php print $text_options; ?> &nbsp;<span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li><a href="#" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');"><?php print $text_save; ?></a></li>
@@ -104,7 +186,7 @@
             </div>
          </div>
     </div>
-    <?php print $popup; ?>
+
     <div id="mainscreen">
         <div id="mailleftcontainer">
         <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
@@ -122,8 +204,8 @@
             <div id="mailrightcontent">
               <div id="mailcontframe">
                 <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-                <div id="messagelistcontainer" class="boxlistcontent" style="top:0"> 
-                
+                <div id="messagelistcontainer" class="boxlistcontent" style="top:0">
+
                 <?php print $content; ?>
 
                 </div>
@@ -135,7 +217,7 @@
         </script>
 
               <div id="mailpreviewframe"></div>
-              
+
           </div>
 
         </div>
