@@ -727,6 +727,8 @@ var Piler =
             extra_folders: Piler.extra_folders
         }
 
+        $('input#_search').val('');
+
         Piler.load_search_results();
 
         $('#searchpopup1').hide();
