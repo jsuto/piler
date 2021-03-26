@@ -91,6 +91,7 @@ struct _parse_rule config_parse_rules[] =
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct config, spam_header_line), "", MAXVAL-1},
    { "syslog_recipients", "integer", (void*) int_parser, offsetof(struct config, syslog_recipients), "0", sizeof(int)},
    { "tls_enable", "integer", (void*) int_parser, offsetof(struct config, tls_enable), "0", sizeof(int)},
+   { "tls_min_version", "string", (void*) string_parser, offsetof(struct config, tls_min_version), "TLSv1.2", MAXVAL-1},
    { "tweak_sent_time_offset", "integer", (void*) int_parser, offsetof(struct config, tweak_sent_time_offset), "0", sizeof(int)},
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct config, update_counters_to_memcached), "0", sizeof(int)},
    { "username", "string", (void*) string_parser, offsetof(struct config, username), "piler", MAXVAL-1},
@@ -146,6 +147,24 @@ int parse_config_file(char *configfile, struct config *target_cfg, struct _parse
 }
 
 
+int get_tls_protocol_number(char *protocol){
+   struct tls_protocol tls_protocols[] = {
+      { "TLSv1", TLS1_VERSION },
+      { "TLSv1.1", TLS1_1_VERSION },
+      { "TLSv1.2", TLS1_2_VERSION },
+      { "TLSv1.3", TLS1_3_VERSION },
+   };
+
+   for(unsigned int i=0; i<sizeof(tls_protocols)/sizeof(struct tls_protocol); i++){
+      if(!strcmp(protocol, tls_protocols[i].proto)) {
+         return tls_protocols[i].version;
+      }
+   }
+
+   return 0;
+}
+
+
 int load_default_config(struct config *cfg, struct _parse_rule *rules){
    int i=0;
 
@@ -177,6 +196,9 @@ struct config read_config(char *configfile){
    if(parse_config_file(configfile, &cfg, config_parse_rules) == -1) printf("error parsing the configfile: %s\n", configfile);
 
    cfg.hostid_len = strlen(cfg.hostid);
+
+   // Get the TLS protocol constant from string, ie. TLSv1.3 -> 772
+   cfg.tls_min_version_number = get_tls_protocol_number(cfg.tls_min_version);
 
    return cfg;
 }

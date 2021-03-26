@@ -413,4 +413,9 @@ struct smtp_session {
    struct net net;
 };
 
+struct tls_protocol {
+   char *proto;
+   int version;
+};
+
 #endif /* _DEFS_H */

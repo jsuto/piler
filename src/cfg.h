@@ -29,6 +29,8 @@ struct config {
    int tls_enable;
    char pemfile[MAXVAL];
    char cipher_list[MAXVAL];
+   char tls_min_version[MAXVAL];
+   int tls_min_version_number;
 
    int use_antivirus;
 
