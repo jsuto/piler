@@ -535,7 +535,7 @@ class ModelUserAuth extends Model {
 
             $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
 
-            $emails = $this->get_email_array_from_ldap_attr($query->rows);
+            $emails = $this->get_email_array_from_ldap_attr($query->rows, $ldap_distributionlist_objectclass);
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);
