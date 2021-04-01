@@ -36,6 +36,15 @@ RewriteRule ^view/javascript/piler.js /js.php [QSA,L]
 </IfModule>
 
 <IfModule auth_gssapi_module>
+   # ktpass -princ HTTP/<webserver-fqdn>@<WINDOWS AD DOMAIN IN CAPITALS> \
+   #        -mapuser <ldap helper user>@<WINDOWS AD DOMAIN IN CAPITALS> \
+   #        -pass * \
+   #        -crypto AES256-SHA1 \
+   #        -ptype KRB5_NT_PRINCIPAL \
+   #        -out /etc/krb5/http.keytab \
+   #
+   # setspn -s HTTP/<webserver-fqdn> <ldap helper user>
+
    <FilesMatch "sso\.php$">
       RewriteEngine on
       RewriteCond %{HTTP:Authorization}  !^$
