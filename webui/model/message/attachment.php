@@ -6,7 +6,7 @@ class ModelMessageAttachment extends Model {
    public function get_attachment_by_id($id = 0) {
       if($id <= 0) { return []; }
 
-      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type FROM " . TABLE_ATTACHMENT . " WHERE id=?", [$id]);
+      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type, ptr FROM " . TABLE_ATTACHMENT . " WHERE id=?", [$id]);
 
       if(isset($query->row)) {
          if($query->row['ptr'] > 0) {
@@ -75,6 +75,30 @@ class ModelMessageAttachment extends Model {
       }
 
       return $images;
+   }
+
+
+   public function dump_attachment($basedir='', $in_or_out="in", $email='', $id=0, $attachment=[]) {
+      if($basedir == '' || $email == '') {
+         return;
+      }
+
+      $dir = sprintf("%s/%s/%s", $basedir, $email, $in_or_out);
+
+      if(!is_dir($dir)) {
+         if(!mkdir($dir, 0700, true)) {
+            die("Failed to create folder $dir");
+         }
+      }
+
+      $fname = sprintf("%s/%d-%s", $dir, $id, $attachment['filename']);
+      $fp = fopen($fname, "w+");
+      if($fp) {
+         fwrite($fp, $attachment['attachment']);
+         fclose($fp);
+      } else {
+         syslog(LOG_INFO, "ERROR: could not write $fname");
+      }
    }
 
 }
