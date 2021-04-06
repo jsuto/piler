@@ -2,7 +2,6 @@
 
 class ModelMessageAttachment extends Model {
 
-
    public function get_attachment_by_id($id = 0) {
       if($id <= 0) { return []; }
 
@@ -101,4 +100,30 @@ class ModelMessageAttachment extends Model {
       }
    }
 
+
+   public function get_last_attachment_id() {
+      $query = $this->db->query("SELECT id FROM " . TABLE_ATTACHMENT . " ORDER BY id DESC LIMIT 1");
+
+      if(isset($query->row['id'])) {
+         return $query->row['id'];
+      }
+
+      return 0;
+   }
+
+
+   public function get_checkpoint() {
+      $query = $this->db->query("SELECT value FROM `" . TABLE_OPTION . "` WHERE `key`=?", [ATTACHMENT_DUMP_CHECKPOINT]);
+      if(isset($query->row['value'])) {
+         return $query->row['value'];
+      } else {
+         $this->db->query("INSERT INTO `" . TABLE_OPTION . "` (`key`, value) VALUES(?,0)", [ATTACHMENT_DUMP_CHECKPOINT]);
+         return 1;
+      }
+   }
+
+
+   public function update_checkpoint($value=0) {
+      $this->db->query("UPDATE `" . TABLE_OPTION . "` SET value=? WHERE `key`=?", [$value, ATTACHMENT_DUMP_CHECKPOINT]);
+   }
 }

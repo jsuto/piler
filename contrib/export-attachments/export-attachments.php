@@ -25,7 +25,9 @@ Registry::set('db', $db);
 Registry::set('auditor_user', 1);
 
 $outdir = "/path/to/attachments";
-$limit = 1000;
+
+openlog("export-attachments", LOG_PID, LOG_MAIL);
+
 
 $domain = new ModelDomainDomain();
 $attachment = new ModelMessageAttachment();
@@ -33,8 +35,13 @@ $message = new ModelSearchMessage();
 
 $domains = $domain->get_mapped_domains();
 
+$last_id = $attachment->get_last_attachment_id();
+$start_id = $attachment->get_checkpoint();
 
-for($i=1; $i<$limit; $i++) {
+syslog(LOG_INFO, "start: $start, limit: $limit");
+
+
+for($i=$start_id; $i<$last_id; $i++) {
    $a = $attachment->get_attachment_by_id($i);
    $m = $message->get_message_addresses_by_piler_id($a['piler_id'], $domains);
 
@@ -43,4 +50,8 @@ for($i=1; $i<$limit; $i++) {
    foreach($m['rcpt'] as $rcpt) {
       $attachment->dump_attachment($outdir, "in", $rcpt, $i, $a);
    }
+
+   if($i % 100 == 0) { $attachment->update_checkpoint($i); }
 }
+
+$attachment->update_checkpoint($i);
