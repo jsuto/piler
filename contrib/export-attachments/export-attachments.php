@@ -1,5 +1,8 @@
 <?php
 
+define('LOCK_FILE', '/var/piler/tmp/export-attachments.lock');
+
+
 require_once("config.php");
 
 require(DIR_SYSTEM . "/startup.php");
@@ -28,6 +31,12 @@ $outdir = "/path/to/attachments";
 
 openlog("export-attachments", LOG_PID, LOG_MAIL);
 
+$fp = fopen(LOCK_FILE, "w");
+if(!flock($fp, LOCK_EX)) {
+   syslog(LOG_INFO, "WARN: couldn't get a lock on " . LOCK_FILE);
+   exit;
+}
+
 
 $domain = new ModelDomainDomain();
 $attachment = new ModelMessageAttachment();
@@ -55,3 +64,7 @@ for($i=$start_id; $i<$last_id; $i++) {
 }
 
 $attachment->update_checkpoint($i);
+
+// Release lock
+flock($fp, LOCK_UN);
+fclose($fp);
