@@ -2,8 +2,31 @@
 
 define('LOCK_FILE', '/var/piler/tmp/export-attachments.lock');
 
+$webuidir = "";
 
-require_once("config.php");
+$outdir = '';
+
+
+$opts = 'hw:d:';
+$lopts = [
+   'webui:',
+   'dir:',
+   'help'
+];
+
+
+if($options = getopt($opts, $lopts)) {
+   if(isset($options['webui'])) { $webuidir = $options['webui']; }
+   if(isset($options['dir'])) { $outdir = $options['dir']; }
+   if(isset($options['help'])) { usage(); }
+}
+
+
+if($webuidir == '' || $outdir == '') { usage(); }
+
+
+
+require_once("$webuidir/config.php");
 
 require(DIR_SYSTEM . "/startup.php");
 
@@ -26,8 +49,6 @@ $db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_P
 Registry::set('db', $db);
 
 Registry::set('auditor_user', 1);
-
-$outdir = "/path/to/attachments";
 
 openlog("export-attachments", LOG_PID, LOG_MAIL);
 
@@ -68,3 +89,14 @@ $attachment->update_checkpoint($i);
 // Release lock
 flock($fp, LOCK_UN);
 fclose($fp);
+
+
+
+function usage() {
+   print "\nUsage: " . __FILE__ . "\n\n";
+   print "\t--webui <path to webui directory>\n";
+   print "\t--dir <basedir to write attachments>\n";
+   print "\t--help\n\n";
+
+   exit;
+}
