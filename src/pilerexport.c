@@ -170,6 +170,8 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
    snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE %s AND id > %llu ORDER BY id ASC LIMIT 0,%d", index_list, where_condition, last_id, max_matches);
 
+   syslog(LOG_PRIORITY, "sphinx query: %s", s);
+
    if(mysql_real_query(&(sdata2->mysql), s, strlen(s)) == 0){
       MYSQL_RES *res = mysql_store_result(&(sdata2->mysql));
       if(res != NULL){
