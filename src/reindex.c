@@ -128,6 +128,9 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
             rc = store_index_data(sdata, &state, data, stored_id, cfg);
 
+            unlink(sdata->tmpframe);
+            remove_stripped_attachments(&state);
+
             if(rc == OK) reindexed++;
             else printf("failed to add to %s table: %s\n", SQL_SPHINX_TABLE, filename);
 
