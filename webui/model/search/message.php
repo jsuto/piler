@@ -296,6 +296,30 @@ class ModelSearchMessage extends Model {
    }
 
 
+   public function get_message_addresses_by_piler_id($piler_id='', $domains=[]) {
+      $id = 0;
+      $sender = '';
+      $rcpt = [];
+
+      $query = $this->db->query("SELECT id, `from`, `fromdomain` FROM " . TABLE_META . " WHERE piler_id=?", [$piler_id]);
+      if(isset($query->row)) {
+         $id = $query->row['id'];
+         if(in_array($query->row['fromdomain'], $domains)) {
+            $sender = $query->row['from'];
+         }
+      }
+
+      $query = $this->db->query("SELECT `to`, `todomain` FROM " . TABLE_RCPT . " WHERE id=?", [$id]);
+      foreach($query->rows as $row) {
+         if(in_array($row['todomain'], $domains)) {
+            $rcpt[] = $row['to'];
+         }
+      }
+
+      return ['sender' => $sender, 'rcpt' => $rcpt];
+   }
+
+
    public function get_attachment_by_id($id = 0) {
       if($id <= 0) { return array(); }
 
@@ -459,7 +483,7 @@ class ModelSearchMessage extends Model {
          foreach ($ids as $id) {
             $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
          }
-      } 
+      }
    }
 
 

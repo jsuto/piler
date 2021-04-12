@@ -472,6 +472,8 @@ define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
 
 define('LDAP_TYPE_GENERIC', 'generic_ldap');
 
+define('ATTACHMENT_DUMP_CHECKPOINT', 'attachment_dump_checkpoint');
+
 define('ACTION_ALL', 0);
 define('ACTION_UNKNOWN', 1);
 define('ACTION_LOGIN', 2);
