@@ -33,6 +33,10 @@ int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
 char *zipfile = NULL;
+struct zip *z = NULL;
+uint64 *zip_ids = NULL;
+int zip_counter = 0;
+int zip_batch = 2000;
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
@@ -54,6 +58,7 @@ void usage(){
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
 #if LIBZIP_VERSION_MAJOR >= 1
    printf("    -z <zip file>                     Write exported EML files to a zip file\n");
+   printf("    -Z <batch size>                   Zip batch size. Valid range: 10-10000, default: 2000\n");
 #endif
    printf("    -A                                Export all emails from archive\n");
    printf("    -o                                Export emails to stdout\n");
@@ -322,26 +327,24 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 }
 
 #if LIBZIP_VERSION_MAJOR >= 1
-int write_to_zip_file(char *filename){
-   struct zip *z=NULL;
-   int errorp, ret=ERR;
-
-   z = zip_open(zipfile, ZIP_CREATE, &errorp);
-   if(!z){
-      printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
-      return ret;
-   }
-
-   zip_source_t *zs = zip_source_file(z, filename, 0, 0);
-   if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
-      ret = OK;
-   } else {
-      printf("error adding file %s: %s\n", filename, zip_strerror(z));
-   }
-
+void zip_flush(){
    zip_close(z);
 
-   return ret;
+   z = NULL;
+   zip_counter = 0;
+
+   if(!zip_ids) return;
+
+   for(int i=0; i<zip_batch; i++){
+      if(*(zip_ids+i)){
+         char filename[SMALLBUFSIZE];
+         snprintf(filename, sizeof(filename)-1, "%llu.eml", *(zip_ids+i));
+         unlink(filename);
+      }
+   }
+
+   free(zip_ids);
+   zip_ids = NULL;
 }
 #endif
 
@@ -351,6 +354,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    struct sql sql;
+   int errorp;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
@@ -403,12 +407,38 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                   verification_status = 1;
                }
 
-            #if LIBZIP_VERSION_MAJOR >= 1
-               if(zipfile && write_to_zip_file(filename) == OK){
-                  unlink(filename);
-               }
-            #endif
+               if(zipfile){
+               #if LIBZIP_VERSION_MAJOR >= 1
+                  // Open zip file if handler is NULL
+                  if(!z){
+                     z = zip_open(zipfile, ZIP_CREATE, &errorp);
+                     if(!z){
+                        printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
+                        return ERR;
+                     }
+                  }
 
+                  if(!zip_ids) zip_ids = (uint64*) calloc(sizeof(uint64), zip_batch);
+
+                  if(!zip_ids){
+                     printf("calloc error for zip_ids\n");
+                     return ERR;
+                  }
+
+                  zip_source_t *zs = zip_source_file(z, filename, 0, 0);
+                  if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
+                     *(zip_ids+zip_counter) = id;
+                     zip_counter++;
+                  } else {
+                     printf("error adding file %s: %s\n", filename, zip_strerror(z));
+                     return ERR;
+                  }
+
+                  if(zip_counter == zip_batch){
+                     zip_flush();
+                  }
+               #endif
+               }
             }
             else printf("cannot open: %s\n", filename);
          }
@@ -467,6 +497,7 @@ int main(int argc, char **argv){
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
             {"zip",          required_argument,  0,  'z' },
+            {"zip-batch",    required_argument,  0,  'Z' },
             {"where-condition", required_argument,  0,  'w' },
             {"max-matches",  required_argument,  0,  'm' },
             {"index-list",   required_argument,  0,  'i' },
@@ -475,9 +506,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:oAdhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:oAdhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?");
 #endif
 
       if(c == -1) break;
@@ -569,6 +600,10 @@ int main(int argc, char **argv){
          case 'z':  zipfile = optarg;
                     break;
 
+         case 'Z':  zip_batch = atoi(optarg);
+                    if(zip_batch < 10 || zip_batch > 10000)
+                       zip_batch = 2000;
+                    break;
 
          case 'o':
                     export_to_stdout = 1;
@@ -633,6 +668,12 @@ int main(int argc, char **argv){
    }
 
    close_database(&sdata);
+
+   if(zipfile){
+   #if LIBZIP_VERSION_MAJOR >= 1
+      zip_flush();
+   #endif
+   }
 
    return verification_status;
 }
