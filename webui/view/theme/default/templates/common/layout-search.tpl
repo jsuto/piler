@@ -147,7 +147,7 @@
 </div>
 <?php } ?>
 
-<?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || MOBILE_DEVICE == 0) { ?>
+<?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
     <div id="menu">
         <?php print $menu; ?>
     </div>
