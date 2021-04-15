@@ -194,7 +194,7 @@ class ModelGroupGroup extends Model {
             $query = $ldap->query(LDAP_BASE_DN, "(&(objectClass=" . LDAP_ACCOUNT_OBJECTCLASS . ")(" . LDAP_MAIL_ATTR . "=" . $username_prefix . $s . "*))", array());
 
             if(isset($query->rows)) {
-               $emails = $this->model_user_auth->get_email_array_from_ldap_attr($query->rows);
+               $emails = $this->model_user_auth->get_email_array_from_ldap_attr($query->rows, LDAP_DISTRIBUTIONLIST_OBJECTCLASS);
             }
          }
       }
