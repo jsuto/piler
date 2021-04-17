@@ -56,6 +56,7 @@
 
 #define SMTP_RESP_502_ERR "502 Command not implemented\r\n"
 #define SMTP_RESP_503_ERR "503 Bad command sequence\r\n"
+#define SMTP_RESP_550_ERR_INVALID_RECIPIENT "550 Invalid recipient\r\n"
 #define SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY "550 You are banned by local policy\r\n"
 #define SMTP_RESP_550_ERR "550 Service currently unavailable\r\n"
 

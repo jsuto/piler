@@ -39,7 +39,7 @@ struct _parse_rule {
 
 struct _parse_rule config_parse_rules[] =
 {
-
+   { "archive_address", "string", (void*) string_parser, offsetof(struct config, archive_address), "", MAXVAL-1},
    { "archive_emails_not_having_message_id", "integer", (void*) int_parser, offsetof(struct config, archive_emails_not_having_message_id), "0", sizeof(int)},
    { "archive_only_mydomains", "integer", (void*) int_parser, offsetof(struct config, archive_only_mydomains), "0", sizeof(int)},
    { "backlog", "integer", (void*) int_parser, offsetof(struct config, backlog), "20", sizeof(int)},
