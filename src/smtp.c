@@ -314,7 +314,7 @@ void process_command_period(struct smtp_session *session){
 
    session->buflen = 0;
    session->last_data_char = 0;
-   memset(session->buf, 0, SMALLBUFSIZE);
+   memset(session->buf, 0, sizeof(session->buf));
 
    send_smtp_response(session, buf);
 }
