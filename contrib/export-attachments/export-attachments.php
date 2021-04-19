@@ -1,6 +1,7 @@
+#!/usr/bin/php
 <?php
 
-define('LOCK_FILE', '/var/piler/tmp/export-attachments.lock');
+define('EXPORT_LOCK_FILE', '/var/piler/tmp/export-attachments.lock');
 
 $webuidir = "";
 
@@ -52,9 +53,9 @@ Registry::set('auditor_user', 1);
 
 openlog("export-attachments", LOG_PID, LOG_MAIL);
 
-$fp = fopen(LOCK_FILE, "w");
+$fp = fopen(EXPORT_LOCK_FILE, "w");
 if(!flock($fp, LOCK_EX)) {
-   syslog(LOG_INFO, "WARN: couldn't get a lock on " . LOCK_FILE);
+   syslog(LOG_INFO, "WARN: couldn't get a lock on " . EXPORT_LOCK_FILE);
    exit;
 }
 
@@ -68,7 +69,7 @@ $domains = $domain->get_mapped_domains();
 $last_id = $attachment->get_last_attachment_id();
 $start_id = $attachment->get_checkpoint();
 
-syslog(LOG_INFO, "start: $start, limit: $limit");
+syslog(LOG_INFO, "start: $start_id, limit: $last_id");
 
 
 for($i=$start_id; $i<$last_id; $i++) {
