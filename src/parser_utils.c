@@ -263,6 +263,18 @@ time_t parse_date_header(char *datestr){
 
    ts += get_local_timezone_offset() - offset;
 
+   if(ts < 700000000){
+      // If the Date: field contains some garbage, eg.
+      // "Date: [mail_datw]" or similar, and the date
+      // is before Sat Mar  7 20:26:40 UTC 1992, then
+      // return the current timestamp
+
+      time_t now;
+      time(&now);
+
+      return now;
+   }
+
    return ts;
 }
 
