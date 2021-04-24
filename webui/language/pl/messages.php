@@ -212,6 +212,7 @@ $_['text_logout2'] = "wylogowany";
 $_['text_maillog_status'] = "program od zbierania wiadomości e-mail";
 $_['text_main_title'] = "clapf interfejsu użytkownika strony";
 $_['text_mapped_domain'] = "Zmapowana domena";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Wiadomość oznaczona do usunięcia";
 $_['text_memory_usage'] = "Użycie pamięci";
 $_['text_message'] = "wiadomość";

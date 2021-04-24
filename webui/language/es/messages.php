@@ -197,6 +197,7 @@ $_['text_logout2'] = "cerrar sesión";
 $_['text_maillog_status'] = "estado del colector de logs de mails";
 $_['text_main_title'] = "IU web clapf";
 $_['text_mapped_domain'] = "Dominio mapeado";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Mensaje marcado para remover";
 $_['text_memory_usage'] = "Uso de memoria";
 $_['text_message'] = "mensaje";

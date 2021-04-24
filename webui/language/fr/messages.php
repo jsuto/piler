@@ -210,6 +210,7 @@ $_['text_logout2'] = "déconnexion";
 $_['text_maillog_status'] = "statut du collecteur de logs mails";
 $_['text_main_title'] = "clapf web UI";
 $_['text_mapped_domain'] = "Domaine mappé";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Message marqué pour suppression";
 $_['text_memory_usage'] = "Utilisation mémoire";
 $_['text_message'] = "message";

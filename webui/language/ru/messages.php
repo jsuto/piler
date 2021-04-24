@@ -210,6 +210,7 @@ $_['text_logout2'] = "выход";
 $_['text_maillog_status'] = "статус сборщика maillog";
 $_['text_main_title'] = "Основной заголовок";
 $_['text_mapped_domain'] = "Отображаемый домен";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Помеченные для удаления сообщения";
 $_['text_memory_usage'] = "Использование памяти";
 $_['text_message'] = "сообщение";

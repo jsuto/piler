@@ -64,10 +64,11 @@ class ControllerAuditHelper extends Controller {
       $this->data['actions'][ACTION_DOWNLOAD_ATTACHMENT] = $this->data['text_download_attachment2'];
       $this->data['actions'][ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT] = $this->data['text_unauthorized_download_attachment'];
       $this->data['actions'][ACTION_VIEW_JOURNAL] = $this->data['text_view_journal'];
+      $this->data['actions'][ACTION_MARK_AS_PRIVATE] = $this->data['text_mark_private'];
 
 
 
-      
+
       /* paging info */
 
       $this->data['prev_page'] = $this->data['page'] - 1;
