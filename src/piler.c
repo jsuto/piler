@@ -103,7 +103,7 @@ void child_sighup_handler(int sig){
 
 int perform_checks(char *filename, struct session_data *sdata, struct data *data, struct parser_state *parser_state, struct config *cfg){
 
-   if(cfg->security_header && parser_state->found_security_header == 0){
+   if(cfg->security_header[0] && parser_state->found_security_header == 0){
       syslog(LOG_PRIORITY, "%s: discarding: missing security header", filename);
       return ERR_DISCARDED;
    }

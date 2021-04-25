@@ -217,6 +217,7 @@ $_['text_logout2'] = "kijelentkezés";
 $_['text_maillog_status'] = "maillog gyűjtő státusz";
 $_['text_main_title'] = "clapf web UI";
 $_['text_mapped_domain'] = "Hozzárendelt domain";
+$_['text_mark_private'] = "privát";
 $_['text_marked_for_removal'] = "Levél törlésre jelölve";
 $_['text_memory_usage'] = "Memória használat";
 $_['text_message'] = "üzenet";

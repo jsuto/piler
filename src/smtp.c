@@ -42,7 +42,7 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
    }
 
    if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-      process_command_rcpt_to(session, buf);
+      process_command_rcpt_to(session, buf, cfg);
       return;
    }
 
@@ -239,7 +239,7 @@ void process_command_mail_from(struct smtp_session *session, char *buf){
 }
 
 
-void process_command_rcpt_to(struct smtp_session *session, char *buf){
+void process_command_rcpt_to(struct smtp_session *session, char *buf, struct config *cfg){
 
    if(session->protocol_state == SMTP_STATE_MAIL_FROM || session->protocol_state == SMTP_STATE_RCPT_TO){
 
@@ -249,6 +249,14 @@ void process_command_rcpt_to(struct smtp_session *session, char *buf){
 
       if(session->num_of_rcpt_to < MAX_RCPT_TO){
          extractEmail(buf, session->rcptto[session->num_of_rcpt_to]);
+
+         // Check if we should accept archive_address only
+         if(cfg->archive_address[0] && !strstr(cfg->archive_address, session->rcptto[session->num_of_rcpt_to])){
+            syslog(LOG_PRIORITY, "ERROR: Invalid recipient: *%s*", session->rcptto[session->num_of_rcpt_to]);
+            send_smtp_response(session, SMTP_RESP_550_ERR_INVALID_RECIPIENT);
+            return;
+         }
+
          session->num_of_rcpt_to++;
       }
 
@@ -306,7 +314,7 @@ void process_command_period(struct smtp_session *session){
 
    session->buflen = 0;
    session->last_data_char = 0;
-   memset(session->buf, 0, SMALLBUFSIZE);
+   memset(session->buf, 0, sizeof(session->buf));
 
    send_smtp_response(session, buf);
 }

@@ -263,6 +263,18 @@ time_t parse_date_header(char *datestr){
 
    ts += get_local_timezone_offset() - offset;
 
+   if(ts < 700000000){
+      // If the Date: field contains some garbage, eg.
+      // "Date: [mail_datw]" or similar, and the date
+      // is before Sat Mar  7 20:26:40 UTC 1992, then
+      // return the current timestamp
+
+      time_t now;
+      time(&now);
+
+      return now;
+   }
+
    return ts;
 }
 
@@ -538,7 +550,7 @@ void markHTML(char *buf, struct parser_state *state){
 
             if(isspace(*s)){
                if(j > 0){
-                  k += appendHTMLTag(puf, html, pos, state);
+                  setStateHTMLStyle(html, pos, state);
                   memset(html, 0, SMALLBUFSIZE); j=0;
                }
                pos++;
@@ -563,7 +575,7 @@ void markHTML(char *buf, struct parser_state *state){
 
          if(j > 0){
             strncat(html, " ", SMALLBUFSIZE-1);
-            k += appendHTMLTag(puf, html, pos, state);
+            setStateHTMLStyle(html, pos, state);
             memset(html, 0, SMALLBUFSIZE); j=0;
          }
       }
@@ -571,47 +583,15 @@ void markHTML(char *buf, struct parser_state *state){
    }
 
    //printf("append last in line:*%s*, html=+%s+, j=%d\n", puf, html, j);
-   if(j > 0){ appendHTMLTag(puf, html, pos, state); }
+   if(j > 0){ setStateHTMLStyle(html, pos, state); }
 
    strcpy(buf, puf);
 }
 
 
-int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state){
-   char html[SMALLBUFSIZE];
-   int len;
-
+void setStateHTMLStyle(char *htmlbuf, int pos, struct parser_state *state){
    if(pos == 0 && strncmp(htmlbuf, "style ", 6) == 0) state->style = 1;
    if(pos == 0 && strncmp(htmlbuf, "/style ", 7) == 0) state->style = 0;
-
-   return 0;
-
-   //printf("appendHTML: pos:%d, +%s+\n", pos, htmlbuf);
-
-   if(state->style == 1) return 0;
-
-   if(strlen(htmlbuf) == 0) return 0;
-
-   snprintf(html, SMALLBUFSIZE-1, "HTML*%s", htmlbuf);
-   len = strlen(html);
-
-   if(len > 8 && strchr(html, '=')){
-      char *p = strstr(html, "cid:");
-      if(p){
-         *(p+3) = '\0';
-         strncat(html, " ", SMALLBUFSIZE-1);
-      }
-
-      strncat(buf, html, MAXBUFSIZE-1);
-      return len;
-   }
-
-   if(strstr(html, "http") ){
-      strncat(buf, html+5, MAXBUFSIZE-1);
-      return len-5;
-   }
-
-   return 0;
 }
 
 

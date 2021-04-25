@@ -244,7 +244,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 
 CLEANUP:
-   if(fd != -1) close(fd);
+   if(fd != -1) close(fd); //-V547
    if(s) free(s);
    if(cfg->encrypt_messages == 1)
    #if OPENSSL_VERSION_NUMBER < 0x10100000L

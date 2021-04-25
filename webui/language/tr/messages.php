@@ -209,6 +209,7 @@ $_['text_logout2'] = "çıkış";
 $_['text_maillog_status'] = "e-posta logu toplama durumu";
 $_['text_main_title'] = "clapf web arabirimi";
 $_['text_mapped_domain'] = "Eşleşmiş alan adı";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Mesaj kaldırılmak üzere işaretlenmiş";
 $_['text_memory_usage'] = "Hafıza kullanımı";
 $_['text_message'] = "mesaj";

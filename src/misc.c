@@ -230,11 +230,8 @@ int extractEmail(char *rawmail, char *email){
  */
 
 void make_random_string(unsigned char *buf, int buflen){
-   int i, len, fd;
-   int urandom=0;
-   static char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-   len = strlen(alphanum);
+   const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+   int i, fd, urandom=0, len = sizeof(alphanum)-1;
 
    fd = open(RANDOM_POOL, O_RDONLY);
    if(fd != -1){
@@ -289,7 +286,7 @@ int get_random_bytes(unsigned char *buf, int len, unsigned char server_id){
    taia_now(&now);
    taia_pack(nowpack, &now);
 
-   memcpy(buf, nowpack, 12);
+   memcpy(buf, nowpack, 12); //-V512
 
    fd = open(RANDOM_POOL, O_RDONLY);
    if(fd == -1) return ret;

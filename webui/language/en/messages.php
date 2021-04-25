@@ -216,6 +216,7 @@ $_['text_logout2'] = "logout";
 $_['text_maillog_status'] = "maillog collector status";
 $_['text_main_title'] = "clapf web UI";
 $_['text_mapped_domain'] = "Mapped domain";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Message marked for removal";
 $_['text_memory_usage'] = "Memory usage";
 $_['text_message'] = "message";

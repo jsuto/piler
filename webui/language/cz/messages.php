@@ -211,6 +211,7 @@ $_['text_logout2'] = "odhlášení";
 $_['text_maillog_status'] = "status maillog collectoru";
 $_['text_main_title'] = "clapf web UI";
 $_['text_mapped_domain'] = "Mapovaná doména";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Zpráva označena k odstranění";
 $_['text_memory_usage'] = "Využití paměti";
 $_['text_message'] = "zpráva";

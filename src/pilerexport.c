@@ -25,7 +25,6 @@ extern int optind;
 int dryrun = 0;
 int exportall = 0;
 int verification_status = 0;
-int rc = 0;
 int export_to_stdout = 0;
 char *query=NULL;
 int verbosity = 0;
@@ -33,7 +32,7 @@ int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
 char *zipfile = NULL;
-struct zip *z = NULL;
+struct zip *zip = NULL;
 uint64 *zip_ids = NULL;
 int zip_counter = 0;
 int zip_batch = 2000;
@@ -165,6 +164,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
    MYSQL_ROW row;
    uint64 id=0;
    char s[SMALLBUFSIZE];
+   int rc=0;
 
    *num = 0;
 
@@ -194,6 +194,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
    }
 
    if(!rc) export_emails_matching_to_query(sdata, query, cfg);
+   else printf("error: append_string_to_buffer() in run_query()\n");
 
    free(query);
    query = NULL;
@@ -240,6 +241,7 @@ void export_emails_matching_id_list(struct session_data *sdata, struct session_d
 
 int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain, int minsize, int maxsize, unsigned long startdate, unsigned long stopdate){
    char s[SMALLBUFSIZE];
+   int rc=0;
 
    if(exportall == 1){
       rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
@@ -328,9 +330,9 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
 
 #if LIBZIP_VERSION_MAJOR >= 1
 void zip_flush(){
-   zip_close(z);
+   zip_close(zip);
 
-   z = NULL;
+   zip = NULL;
    zip_counter = 0;
 
    if(!zip_ids) return;
@@ -354,7 +356,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    struct sql sql;
-   int errorp;
+   int errorp, rc=0;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
@@ -410,9 +412,9 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                if(zipfile){
                #if LIBZIP_VERSION_MAJOR >= 1
                   // Open zip file if handler is NULL
-                  if(!z){
-                     z = zip_open(zipfile, ZIP_CREATE, &errorp);
-                     if(!z){
+                  if(!zip){
+                     zip = zip_open(zipfile, ZIP_CREATE, &errorp);
+                     if(!zip){
                         printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
                         return ERR;
                      }
@@ -425,12 +427,12 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                      return ERR;
                   }
 
-                  zip_source_t *zs = zip_source_file(z, filename, 0, 0);
-                  if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
+                  zip_source_t *zs = zip_source_file(zip, filename, 0, 0);
+                  if(zs && zip_file_add(zip, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
                      *(zip_ids+zip_counter) = id;
                      zip_counter++;
                   } else {
-                     printf("error adding file %s: %s\n", filename, zip_strerror(z));
+                     printf("error adding file %s: %s\n", filename, zip_strerror(zip));
                      return ERR;
                   }
 
@@ -539,7 +541,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&from, optarg);
+                    if(append_email_to_buffer(&from, optarg)){
+                       printf("error: append_email_to_buffer() for from\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -550,7 +555,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&to, optarg);
+                    if(append_email_to_buffer(&to, optarg)){
+                       printf("error: append_email_to_buffer() for to\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -561,7 +569,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&fromdomain, optarg);
+                    if(append_email_to_buffer(&fromdomain, optarg)){
+                       printf("error: append_email_to_buffer() for fromdomain\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -572,7 +583,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&todomain, optarg);
+                    if(append_email_to_buffer(&todomain, optarg)){
+                       printf("error: append_email_to_buffer() for todomain\n");
+                       return 1;
+                    }
 
                     break;
 

@@ -228,7 +228,7 @@ int store_file(struct session_data *sdata, char *filename, int len, struct confi
 
 ENDE:
    if(outbuf) free(outbuf);
-   if(z) free(z);
+   if(z) free(z); //-V547
 
    return ret;
 }

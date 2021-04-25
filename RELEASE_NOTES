@@ -1,3 +1,5 @@
+- Introduced the archive_address feature, see etc/example.conf for the details
+
 1.3.12:
 -------
 

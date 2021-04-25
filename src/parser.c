@@ -45,7 +45,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
       if(write(state.mfd, writebuffer, state.writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: %s: write(), %s, %d, %s", sdata->ttmpfile, __func__, __LINE__, __FILE__);
-      memset(writebuffer, 0, sizeof(writebuffer));
+      memset(writebuffer, 0, sizeof(writebuffer)); //-V597
       state.writebufpos = 0;
    }
 
@@ -212,7 +212,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          sdata->restored_copy = 1;
       }
 
-      if(cfg->security_header && state->found_security_header == 0 && strstr(buf, cfg->security_header)){
+      if(cfg->security_header[0] && state->found_security_header == 0 && strstr(buf, cfg->security_header)){
          state->found_security_header = 1;
       }
 

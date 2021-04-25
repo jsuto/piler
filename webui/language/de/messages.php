@@ -197,6 +197,7 @@ $_['text_logout2'] = "Abmeldung";
 $_['text_maillog_status'] = "Sammelstatus Maillogbuch";
 $_['text_main_title'] = "Clapf Benutzeroberfläche";
 $_['text_mapped_domain'] = "Domänenalias";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Nachricht zum Löschen markiert";
 $_['text_memory_usage'] = "Arbeitsspeicher";
 $_['text_message'] = "Nachricht";
