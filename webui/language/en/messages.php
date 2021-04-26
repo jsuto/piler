@@ -295,6 +295,7 @@ $_['text_remove'] = "Remove";
 $_['text_remove_domain'] = "Remove domain";
 $_['text_remove_message'] = "Remove message";
 $_['text_remove_message2'] = "remove message";
+$_['text_remove_request'] = "remove request";
 $_['text_remove_selected_uids'] = "Remove selected uids";
 $_['text_remove_policy'] = "Remove policy";
 $_['text_remove_rule'] = "Remove rule";

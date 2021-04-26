@@ -486,3 +486,5 @@ $_['text_user_data_officer'] = "Data officer";
 $_['text_no_selected_message'] = "no selected message";
 $_['text_create_note'] = "Create note";
 $_['text_wildcard_domains'] = "Wildcard domains";
+$_['text_remove_request'] = "remove request";
+

@@ -296,6 +296,7 @@ $_['text_remove'] = "Törlés";
 $_['text_remove_domain'] = "Domain törlése";
 $_['text_remove_message'] = "Levél törlése";
 $_['text_remove_message2'] = "levél törlése";
+$_['text_remove_request'] = "törlésre jelölve";
 $_['text_remove_selected_uids'] = "Kijelölt azonosítók törlése";
 $_['text_remove_policy'] = "Házirend törlése";
 $_['text_remove_rule'] = "Szabály törlése";
