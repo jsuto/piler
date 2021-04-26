@@ -514,9 +514,8 @@ class ModelSearchSearch extends Model {
             foreach ($s->rows as $p) {
                if($p['id'] == 1) {
                   $deleted[$p['id']] = 1;
-               } else {
-                  $marked_for_removal[$p['id']] = 1;
                }
+               $marked_for_removal[$p['id']] = 1;
             }
          }
 
