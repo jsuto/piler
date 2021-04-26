@@ -290,6 +290,7 @@ $_['text_ref'] = "Hivatkozás";
 $_['text_refresh_period'] = "Frissítési periódus";
 $_['text_refresh_qr_code'] = "QR kód frissítése";
 $_['text_reject'] = "Elutasítás";
+$_['text_rejected_removal'] = "törlés elutasítva";
 $_['text_relay_details'] = "Relay részletek";
 $_['text_relay_status'] = "Relay státusz";
 $_['text_remove'] = "Törlés";

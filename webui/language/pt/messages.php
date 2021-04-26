@@ -488,3 +488,4 @@ $_['text_create_note'] = "Create note";
 $_['text_wildcard_domains'] = "Wildcard domains";
 $_['text_remove_request'] = "remove request";
 
+$_['text_rejected_removal'] = "rejected removal";

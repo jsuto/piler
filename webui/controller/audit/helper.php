@@ -66,6 +66,7 @@ class ControllerAuditHelper extends Controller {
       $this->data['actions'][ACTION_VIEW_JOURNAL] = $this->data['text_view_journal'];
       $this->data['actions'][ACTION_MARK_MESSAGE_FOR_REMOVAL] = $this->data['text_remove_request'];
       $this->data['actions'][ACTION_MARK_AS_PRIVATE] = $this->data['text_mark_private'];
+      $this->data['actions'][ACTION_REJECT_REMOVAL] = $this->data['text_reject_removal'];
 
 
 

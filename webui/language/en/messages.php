@@ -288,6 +288,7 @@ $_['text_ref'] = "Reference";
 $_['text_refresh_period'] = "Refresh period";
 $_['text_refresh_qr_code'] = "Refresh QR code";
 $_['text_reject'] = "Reject";
+$_['text_rejected_removal'] = "rejected removal";
 $_['text_reason_of_rejection'] = "Reason of rejection";
 $_['text_relay_details'] = "Relay details";
 $_['text_relay_status'] = "Relay status";

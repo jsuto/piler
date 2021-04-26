@@ -495,6 +495,7 @@ define('ACTION_VIEW_JOURNAL', 17);
 define('ACTION_NOT_SPAM', 18);
 define('ACTION_MARK_AS_PRIVATE', 19);
 define('ACTION_MARK_MESSAGE_FOR_REMOVAL', 20);
+define('ACTION_REJECT_REMOVAL', 21);
 
 $actions = array(
                   'unknown' => 1,
@@ -509,7 +510,9 @@ $actions = array(
                   'save_search' => 11,
                   'download_attachment' => 15,
                   'journal' => 17,
-                  'private' => 19
+                  'private' => 19,
+                  'marked_for_removal', 20,
+                  'reject_removal', 21
                 );
 
 
