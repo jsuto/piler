@@ -436,6 +436,26 @@ function fetch_url($url = '') {
 }
 
 
+function convert_date_string_to_ymd_by_template($date_string, $date_template) {
+   $Y = $m = $d = 0;
+
+   $s = $template_array = preg_split("/(\.|\-|\/)/", $date_template);
+   sort($s);
+
+   $date_array = preg_split("/(\.|\-|\/)/", $date_string);
+
+   if($s != ['Y','d','m'] || count($template_array) != 3 || count($date_array) != 3) {
+      return [$Y, $m, $d];
+   }
+
+   while(list($k, $v) = each($template_array)) {
+      $$v = $date_array[$k];
+   }
+
+   return [$Y, $m, $d];
+}
+
+
 function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
    global $session;
 
@@ -449,12 +469,7 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
 
 
    if($date1) {
-      list($y,$m,$d) = preg_split("/(\.|\-|\/)/", $date1);
-
-      if(DATE_TEMPLATE == 'd/m/Y') { $a = $y; $y = $d; $d = $a; }
-
-      if($m == '*') { $m = 0; }
-      if($d == '*') { $d = 0; }
+      list($y,$m,$d) = convert_date_string_to_ymd_by_template($date1, DATE_TEMPLATE);
 
       $date1 = mktime(0, 0, 0, $m, $d, $y);
 
@@ -462,9 +477,7 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
    }
 
    if($date2) {
-      list($y,$m,$d) = preg_split("/(\.|\-|\/)/", $date2);
-
-      if(DATE_TEMPLATE == 'd/m/Y') { $a = $y; $y = $d; $d = $a; }
+      list($y,$m,$d) = convert_date_string_to_ymd_by_template($date2, DATE_TEMPLATE);
 
       $date2 = mktime(23, 59, 59, $m, $d, $y);
 

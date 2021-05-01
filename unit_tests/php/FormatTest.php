@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 include_once("webui/system/model.php");
+include_once("webui/system/misc.php");
 include_once("webui/model/health/health.php");
 
 final class FormatTest extends TestCase
@@ -24,5 +25,29 @@ final class FormatTest extends TestCase
       $result = ModelHealthHealth::format_time($timeval);
       $this->assertEquals($result, $expected_result);
    }
+
+
+   public function providerTestConvertDateStringToYmdByTemplateValues() {
+      return [
+         ['2021.05.01', 'y.m.d', ['0','0','0']],
+         ['2021.05.01', 'Y.m', ['0','0','0']],
+         ['2021.05.01', 'Y.m.d.e', ['0','0','0']],
+         ['2021.05.01', 'Y.m.d', ['2021','05','01']],
+         ['2021.05.01', 'Y.m.d.', ['0','0','0']],
+         ['2021.05.01', 'Y-m-d', ['2021','05','01']],
+         ['12/01/2008', 'm/d/Y', ['2008','12','01']],
+         ['12-01-2008', 'm-d-Y', ['2008','12','01']],
+      ];
+   }
+
+   /**
+    * @dataProvider providerTestConvertDateStringToYmdByTemplateValues
+    */
+
+   public function test_convert_date_string_to_ymd_by_template($date, $date_template, $expected_result) {
+      $result = convert_date_string_to_ymd_by_template($date, $date_template);
+      $this->assertEquals($result, $expected_result);
+   }
+
 
 }
