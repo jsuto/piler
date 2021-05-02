@@ -112,7 +112,6 @@ class ModelSearchSearch extends Model {
 
       $session = Registry::get('session');
 
-
       $i = 0;
       while(list($k, $v) = each($data['match'])) {
          if($v == "@attachment_types") {
@@ -162,6 +161,10 @@ class ModelSearchSearch extends Model {
       }
 
       $match = implode(" ", $data['match']);
+
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0 && $data['raw']) {
+         $match .= $data['raw'];
+      }
 
       if($emailfilter) {
          if(strlen($match) > 2) { $match = "( $match ) & $emailfilter"; }
@@ -327,6 +330,7 @@ class ModelSearchSearch extends Model {
                     'folders'         => '',
                     'extra_folders'   => '',
                     'id'              => '',
+                    'raw'             => '',
                     'match'           => array()
       );
 
@@ -351,15 +355,12 @@ class ModelSearchSearch extends Model {
          else if($v == 'subject:') { $token = 'match'; $a['match'][] = '@subject'; continue; }
          else if($v == 'body:') { $token = 'match'; $a['match'][] = '@body'; continue; }
          else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }
-         else if($v == 'size:') { $token = 'size'; continue; }
-         else if($v == 'date1:') { $token = 'date1'; continue; }
-         else if($v == 'date2:') { $token = 'date2'; continue; }
          else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
-         else if($v == 'size') { $token = 'size'; continue; }
-         else if($v == 'tag:') { $token = 'tag'; continue; }
-         else if($v == 'note:') { $token = 'note'; continue; }
-         else if($v == 'ref:') { $token = 'ref'; continue; }
-         else if($v == 'id:') { $token = 'id'; continue; }
+
+         else if(in_array($v, ['size:', 'date1:', 'date2:', 'tag:', 'note:', 'ref:', 'id:', 'raw:'])) {
+            $token = substr($v, 0, strlen($v)-1); continue;
+         }
+
          else if($token != 'date1' && $token != 'date2') {
             if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
                $ndate++;
@@ -368,12 +369,7 @@ class ModelSearchSearch extends Model {
          }
 
          if($token == 'match') { $a['match'][] = $v; }
-         else if($token == 'date1') { $a['date1'] = ' ' . $v; }
-         else if($token == 'date2') { $a['date2'] = ' ' . $v; }
-         else if($token == 'tag') { $a['tag'] .= ' ' . $v; }
-         else if($token == 'note') { $a['note'] .= ' ' . $v; }
-         else if($token == 'ref') { $a['ref'] = ' ' . $v; }
-         else if($token == 'id') { $a['id'] .= ' ' . $v; }
+         else if(in_array($token, ['date1', 'date2', 'ref', 'tag', 'note', 'id', 'raw'])) { $a[$token] .= ' ' . $v; }
 
          else if($token == 'direction') {
             if($v == 'inbound') { $a['direction'] = "0"; }
