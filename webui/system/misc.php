@@ -1,6 +1,6 @@
 <?php
 
-unction H($s = '') {
+function H($s = '') {
    print htmlentities($s);
 }
 
