@@ -43,7 +43,7 @@
       </thead>
       <tbody>
     <?php $i=0; foreach ($messages as $message) { ?>
-            
+
          <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new <?php if($message['deleted'] == 1) { ?>xxx<?php } ?>" onclick="Piler.view_message_by_pos(<?php print $i; ?>);">
             <td id="c1_r<?php print $i; ?>" class="resultcell restore" onclick="Piler.stop_propagation(event);"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></td>
             <td id="c2_r<?php print $i; ?>" class="resultcell id"><?php print ($page*$page_len) + $i + 1; ?></td>
@@ -67,7 +67,7 @@
 
     <?php $i++; } ?>
       </tbody>
-      
+
       <tfoot>
         <tr>
           <th id="restore-header"><input type="checkbox" id="bulkcheck2" name="bulkcheck2" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('2');" /></th>
@@ -106,7 +106,7 @@
      <?php } ?>
        </tr>
       </tfoot>
-      
+
     </table>
 
     <?php } else if($n == 0) { ?>
@@ -135,7 +135,7 @@
             &nbsp;
 
          <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
-            <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php print $session->get("sphx_query"); ?>', 5);">sphinx</a></span>
+            <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
          <?php } ?>
 
     <?php } else { print $text_none_found; } ?>

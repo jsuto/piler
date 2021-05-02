@@ -1,5 +1,10 @@
 <?php
 
+unction H($s = '') {
+   print htmlentities($s);
+}
+
+
 function LOGGER($event = '', $username = '') {
    $ipaddr = '';
 
@@ -493,7 +498,31 @@ function fixup_date_condition($field = '', $date1 = 0, $date2 = 0) {
 
 
 function make_short_string($what, $length) {
-   return strlen($what) > $length ? substr($what, 0, $length) . "..." : $what;
+   if($length < 1) { return ''; }
+
+   if(strlen($what) <= $length) { return $what; }
+
+   $arr = preg_split("/\s/", $what);
+   $s = '';
+
+   $i = 0;
+   foreach($arr as $a) {
+      if($i == 0) {
+         if($length > 0 && strlen($a) > $length) {
+            return substr($a, 0, $length) . '...';
+         }
+      }
+
+      if(strlen($s) + strlen($a) <= $length) {
+         $s .= $a . ' ';
+      } else {
+         break;
+      }
+
+      $i++;
+   }
+
+   return $s . '...';
 }
 
 
