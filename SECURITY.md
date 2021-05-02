@@ -17,3 +17,4 @@ Security configurations
 
  - Use https for the GUI
  - Reset the default passwords for admin and auditor
+ - Use the smtp acl feature to restrict SMTP access to the archive, see https://mailpiler.com/smtp-acl-list/
