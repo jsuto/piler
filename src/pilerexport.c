@@ -170,7 +170,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
    if(!where_condition) return id;
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE id IN (", SQL_METADATA_TABLE);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM %s WHERE id IN (", SQL_METADATA_TABLE);
    rc += append_string_to_buffer(&query, s);
 
    snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE %s AND id > %llu ORDER BY id ASC LIMIT 0,%d", index_list, where_condition, last_id, max_matches);
@@ -244,13 +244,13 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    int rc=0;
 
    if(exportall == 1){
-      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
+      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM ");
       rc += append_string_to_buffer(&query, SQL_METADATA_TABLE);
       rc += append_string_to_buffer(&query, " WHERE deleted=0 ");
       return rc;
    }
 
-   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE deleted=0 ", SQL_MESSAGES_VIEW);
+   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM %s WHERE deleted=0 ", SQL_MESSAGES_VIEW);
 
    rc = append_string_to_buffer(&query, s);
 
@@ -356,7 +356,8 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    struct sql sql;
-   int errorp, rc=0;
+   int errorp, rc=0, attachments;
+   unsigned long total_attachments=0;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
@@ -373,6 +374,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    sql.sql[sql.pos] = sdata->ttmpfile; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
    sql.sql[sql.pos] = &digest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(digest)-2; sql.pos++;
    sql.sql[sql.pos] = &bodydigest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(bodydigest)-2; sql.pos++;
+   sql.sql[sql.pos] = (char *)&attachments; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(int); sql.pos++;
 
    p_store_results(&sql);
 
@@ -445,6 +447,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
             else printf("cannot open: %s\n", filename);
          }
          else {
+            total_attachments += attachments;
             printf("id:%llu\n", id);
          }
 
@@ -456,6 +459,10 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
 ENDE:
    close_prepared_statement(&sql);
+
+   if(dryrun){
+      printf("attachments: %lu\n", total_attachments);
+   }
 
    printf("\n");
 
