@@ -163,7 +163,7 @@ int append_string_to_buffer(char **buffer, char *str){
 uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_ROW row;
    uint64 id=0;
-   char s[SMALLBUFSIZE];
+   char s[MAXBUFSIZE];
    int rc=0;
 
    *num = 0;
@@ -174,6 +174,10 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
    rc += append_string_to_buffer(&query, s);
 
    snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE %s AND id > %llu ORDER BY id ASC LIMIT 0,%d", index_list, where_condition, last_id, max_matches);
+
+   if(dryrun){
+      printf("sphinx query: %s\n", s);
+   }
 
    syslog(LOG_PRIORITY, "sphinx query: %s", s);
 
