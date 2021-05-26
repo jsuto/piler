@@ -180,7 +180,6 @@ class ModelUserAuth extends Model {
 
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
-      $ldap_port = LDAP_PORT;
       $ldap_base_dn = LDAP_BASE_DN;
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
