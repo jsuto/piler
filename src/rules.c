@@ -118,7 +118,6 @@ int append_rule(struct node *xhash[], struct rule_cond *rule_cond){
 
 struct rule *create_rule_item(struct rule_cond *rule_cond){
    struct rule *h=NULL;
-   char empty = '\0';
    int len;
 
    if(rule_cond == NULL) return NULL;
@@ -144,16 +143,16 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
    h->emptyfrom = h->emptyto = h->emptysubject = h->emptyaname = h->emptyatype = 0;
 
 
-   if(rule_cond->from == NULL || strlen(rule_cond->from) < 1){ rule_cond->from[0] = empty; h->emptyfrom = 1; }
+   if(rule_cond->from[0] == 0){ h->emptyfrom = 1; }
    if(regcomp(&(h->from), rule_cond->from, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(rule_cond->to == NULL || strlen(rule_cond->to) < 1){ rule_cond->to[0] = empty; h->emptyto = 1; }
+   if(rule_cond->to[0] == 0){ h->emptyto = 1; }
    if(regcomp(&(h->to), rule_cond->to, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(rule_cond->subject == NULL || strlen(rule_cond->subject) < 1){ rule_cond->subject[0] = empty; h->emptysubject = 1; }
+   if(rule_cond->subject[0] == 0){ h->emptysubject = 1; }
    if(regcomp(&(h->subject), rule_cond->subject, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(rule_cond->body == NULL || strlen(rule_cond->body) < 1){ rule_cond->body[0] = empty; h->emptybody = 1; }
+   if(rule_cond->body[0] == 0){ h->emptybody = 1; }
    if(regcomp(&(h->body), rule_cond->body, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
    h->spam = rule_cond->spam;
@@ -161,20 +160,16 @@ struct rule *create_rule_item(struct rule_cond *rule_cond){
    h->folder_id = rule_cond->folder_id;
 
    h->size = rule_cond->size;
-
-   if(rule_cond->_size == NULL) rule_cond->_size[0] = empty;
    snprintf(h->_size, 3, "%s", rule_cond->_size);
 
-   if(rule_cond->attachment_name == NULL || strlen(rule_cond->attachment_name) < 1){ rule_cond->attachment_name[0] = empty; h->emptyaname = 1; }
+   if(rule_cond->attachment_name[0] == 0){ h->emptyaname = 1; }
    if(regcomp(&(h->attachment_name), rule_cond->attachment_name, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
-   if(rule_cond->attachment_type == NULL || strlen(rule_cond->attachment_type) < 1){ rule_cond->attachment_type[0] = empty; h->emptyatype = 1; }
+   if(rule_cond->attachment_type[0] == 0){ h->emptyatype = 1; }
    if(regcomp(&(h->attachment_type), rule_cond->attachment_type, REG_ICASE | REG_EXTENDED)) h->compiled = 0;
 
 
    h->attachment_size = rule_cond->attachment_size;
-
-   if(rule_cond->_attachment_size == NULL) rule_cond->_attachment_size[0] = empty;
    snprintf(h->_attachment_size, 3, "%s", rule_cond->_attachment_size);
 
    len = strlen(rule_cond->domain)+8 + strlen(rule_cond->from)+6 + strlen(rule_cond->to)+4 + strlen(rule_cond->subject)+9 + strlen(rule_cond->body)+6 + strlen(rule_cond->_size)+6 + strlen(rule_cond->attachment_name)+10 + strlen(rule_cond->attachment_type)+10 + strlen(rule_cond->_attachment_size)+10 + 9 + 15 + 15;

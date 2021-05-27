@@ -1,0 +1,9 @@
+You nedd proxmox with lxc
+
+Fill out conf file first and provide public key
+
+It automatically
+- downloads the latest debian template
+- provides a container
+- installs piler until the post installation step
+- gives a self signed certificate

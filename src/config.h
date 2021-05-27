@@ -9,11 +9,12 @@
 #include "piler-config.h"
 #include "params.h"
 
-#define BUILD 998
+#define BUILD 1001
 
 #define HOSTID "mailarchiver"
 
 #define CONFIG_FILE CONFDIR "/piler/piler.conf"
+#define SMTP_ACL_FILE CONFDIR "/piler/smtp.acl"
 #define WORK_DIR DATADIR "/piler/tmp"
 #define QUEUE_DIR DATADIR "/piler/store"
 #define ERROR_DIR DATADIR "/piler/error"
@@ -56,6 +57,8 @@
 #define MEMCACHED_MSGS_SIZE MEMCACHED_CLAPF_PREFIX "size"
 #define MEMCACHED_MSGS_STORED_SIZE MEMCACHED_CLAPF_PREFIX "stored_size"
 
+
+#define PILEREXPORT_BEGIN_MARK "x-exported-by-pilerexport: start\n"
 
 #define LOG_PRIORITY LOG_INFO
 

@@ -210,6 +210,7 @@ $_['text_logout2'] = "выход";
 $_['text_maillog_status'] = "статус сборщика maillog";
 $_['text_main_title'] = "Основной заголовок";
 $_['text_mapped_domain'] = "Отображаемый домен";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Помеченные для удаления сообщения";
 $_['text_memory_usage'] = "Использование памяти";
 $_['text_message'] = "сообщение";
@@ -494,3 +495,6 @@ $_['text_user_data_officer'] = "Data officer";
 $_['text_no_selected_message'] = "no selected message";
 $_['text_create_note'] = "Create note";
 $_['text_wildcard_domains'] = "Wildcard domains";
+$_['text_remove_request'] = "remove request";
+
+$_['text_rejected_removal'] = "rejected removal";

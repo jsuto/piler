@@ -7,29 +7,10 @@
 
 
 int get_session_slot(struct smtp_session **sessions, int max_connections);
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg);
+void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg);
 
 
-#ifdef HAVE_LIBWRAP
-int is_blocked_by_tcp_wrappers(int sd){
-   struct request_info req;
-
-   request_init(&req, RQ_DAEMON, "piler", RQ_FILE, sd, 0);
-
-   fromhost(&req);
-
-   if(!hosts_access(&req)){
-      send(sd, SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY, strlen(SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY), 0);
-      syslog(LOG_PRIORITY, "denied connection from %s by tcp_wrappers", eval_client(&req));
-      return 1;
-   }
-
-   return 0;
-}
-#endif
-
-
-int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct config *cfg){
+int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct smtp_acl *smtp_acl[], char *client_addr, struct config *cfg){
    int slot;
 
    /*
@@ -43,19 +24,19 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
       return -1;
    }
 
-#ifdef HAVE_LIBWRAP
-   if(is_blocked_by_tcp_wrappers(socket) == 1){
+   // Check remote client against the allowed network ranges
+   if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr)){
+      send(socket, SMTP_RESP_550_ERR, strlen(SMTP_RESP_550_ERR), 0);
       close(socket);
       return -1;
    }
-#endif
 
    slot = get_session_slot(sessions, cfg->max_connections);
 
    if(slot >= 0 && sessions[slot] == NULL){
       sessions[slot] = malloc(sizeof(struct smtp_session));
       if(sessions[slot]){
-         init_smtp_session(sessions[slot], slot, socket, cfg);
+         init_smtp_session(sessions[slot], slot, socket, client_addr, cfg);
 
          char smtp_banner[SMALLBUFSIZE];
          snprintf(smtp_banner, sizeof(smtp_banner)-1, SMTP_RESP_220_BANNER, cfg->hostid);
@@ -102,10 +83,7 @@ struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int m
 }
 
 
-void init_smtp_session(struct smtp_session *session, int slot, int sd, struct config *cfg){
-   struct sockaddr_in addr;
-   socklen_t addr_size = sizeof(struct sockaddr_in);
-   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg){
    int i;
 
    session->slot = slot;
@@ -131,21 +109,15 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, struct co
    for(i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
 
    memset(session->buf, 0, MAXBUFSIZE);
-   memset(session->remote_host, 0, INET6_ADDRSTRLEN);
+   snprintf(session->remote_host, sizeof(session->remote_host)-1, "%s", client_addr);
 
    reset_bdat_counters(session);
 
    time(&(session->lasttime));
-
-   if(getpeername(session->net.socket, (struct sockaddr *)&addr, &addr_size) == 0 &&
-      getnameinfo((struct sockaddr *)&addr, addr_size, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
-         snprintf(session->remote_host, INET6_ADDRSTRLEN-1, "%s", hbuf);
-   }
 }
 
 
 void free_smtp_session(struct smtp_session *session){
-
    if(session){
 
       if(session->net.use_ssl == 1){
@@ -153,15 +125,25 @@ void free_smtp_session(struct smtp_session *session){
          SSL_free(session->net.ssl);
       }
 
-      if(session->net.ctx) SSL_CTX_free(session->net.ctx);
+      if(session->net.ctx){
+         SSL_CTX_free(session->net.ctx);
+      }
 
       free(session);
    }
 }
 
 
-void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections){
-   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d (%d active connections)", sessions[slot]->remote_host, sessions[slot]->net.socket, (*num_connections)-1);
+void tear_down_session(struct smtp_session **sessions, int slot, int *num_connections, char *reason){
+   if(sessions[slot] == NULL){
+      syslog(LOG_PRIORITY, "session already torn down, slot=%d, reason=%s (%d active connections)", slot, reason, *num_connections);
+      return;
+   }
+
+   if(*num_connections > 0) (*num_connections)--;
+
+   syslog(LOG_PRIORITY, "disconnected from %s on fd=%d, slot=%d, reason=%s (%d active connections)",
+          sessions[slot]->remote_host, sessions[slot]->net.socket, slot, reason, *num_connections);
 
    close(sessions[slot]->net.socket);
 
@@ -174,8 +156,6 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
    free_smtp_session(sessions[slot]);
    sessions[slot] = NULL;
-
-   (*num_connections)--;
 }
 
 
@@ -197,6 +177,7 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
       p = &copybuf[0];
    }
    else {
+      readbuf[readlen] = 0;
       p = readbuf;
    }
 

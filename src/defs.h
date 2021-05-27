@@ -13,9 +13,6 @@
    #include <tre/tre.h>
    #include <tre/regex.h>
 #endif
-#ifdef HAVE_LIBWRAP
-   #include <tcpd.h>
-#endif
 
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
@@ -27,16 +24,17 @@
 #define MSG_BODY 0
 #define MSG_RECEIVED 1
 #define MSG_FROM 2
-#define MSG_TO 3
-#define MSG_CC 4
-#define MSG_SUBJECT 5
-#define MSG_CONTENT_TYPE 6
-#define MSG_CONTENT_TRANSFER_ENCODING 7
-#define MSG_CONTENT_DISPOSITION 8
-#define MSG_MESSAGE_ID 9
-#define MSG_REFERENCES 10
-#define MSG_RECIPIENT 11
-#define MSG_ENVELOPE_TO 12
+#define MSG_SENDER 3
+#define MSG_TO 4
+#define MSG_CC 5
+#define MSG_SUBJECT 6
+#define MSG_CONTENT_TYPE 7
+#define MSG_CONTENT_TRANSFER_ENCODING 8
+#define MSG_CONTENT_DISPOSITION 9
+#define MSG_MESSAGE_ID 10
+#define MSG_REFERENCES 11
+#define MSG_RECIPIENT 12
+#define MSG_ENVELOPE_TO 13
 
 #define MAXHASH 277
 
@@ -94,6 +92,15 @@ struct node {
    void *str;
    unsigned int key;
    struct node *r;
+};
+
+
+struct smtp_acl {
+   char network_str[BUFLEN];
+   in_addr_t low, high;
+   int prefix;
+   int rejected;
+   struct smtp_acl *r;
 };
 
 
@@ -203,12 +210,14 @@ struct parser_state {
 
    char reference[SMALLBUFSIZE];
 
-   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
+   char b_from[SMALLBUFSIZE], b_from_domain[SMALLBUFSIZE], b_sender[SMALLBUFSIZE], b_sender_domain[SMALLBUFSIZE], b_to[MAXBUFSIZE], b_to_domain[SMALLBUFSIZE], b_subject[MAXBUFSIZE], b_body[BIGBUFSIZE];
    char b_journal_to[MAXBUFSIZE];
 
    unsigned int bodylen;
    unsigned int tolen;
    unsigned int todomainlen;
+   unsigned int found_security_header;
+
    int journaltolen;
 
    int retention;
@@ -299,6 +308,7 @@ struct import {
    int keep_eml;
    int timeout;
    int cap_uidplus;
+   int fd;
    long total_size;
    int dryrun;
    int tot_msgs;
@@ -388,7 +398,7 @@ struct smtp_session {
    char mailfrom[SMALLBUFSIZE];
    char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
    char buf[MAXBUFSIZE];
-   char remote_host[INET6_ADDRSTRLEN];
+   char remote_host[INET6_ADDRSTRLEN+1];
    time_t lasttime;
    int protocol_state;
    int slot;
@@ -401,6 +411,11 @@ struct smtp_session {
    int num_of_rcpt_to;
    struct config *cfg;
    struct net net;
+};
+
+struct tls_protocol {
+   char *proto;
+   int version;
 };
 
 #endif /* _DEFS_H */

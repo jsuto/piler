@@ -11,9 +11,10 @@ Security update policy
 
 If a security vulnerability has found, the details, possible mitigations,
 workarounds, etc. will be shared on the piler mailing list (piler-user@list.acts.hu)
-and on the wiki: http://www.mailpiler.org/
+and on the wiki: https://www.mailpiler.org/
 
 Security configurations
 
  - Use https for the GUI
  - Reset the default passwords for admin and auditor
+ - Use the smtp acl feature to restrict SMTP access to the archive, see https://mailpiler.com/smtp-acl-list/

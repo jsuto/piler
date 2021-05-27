@@ -29,6 +29,8 @@ struct config {
    int tls_enable;
    char pemfile[MAXVAL];
    char cipher_list[MAXVAL];
+   char tls_min_version[MAXVAL];
+   int tls_min_version_number;
 
    int use_antivirus;
 
@@ -64,6 +66,9 @@ struct config {
 
    int default_retention_days;
 
+   char security_header[MAXVAL];
+   char archive_address[MAXVAL];
+
    // mysql stuff
 
    char mysqlcharset[MAXVAL];
@@ -97,6 +102,8 @@ struct config {
    int enable_folders;
 
    int debug;
+
+   int smtp_access_list;
 };
 
 

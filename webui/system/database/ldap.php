@@ -6,9 +6,9 @@ class LDAP {
    private $link;
    private $bind;
 
-   public function __construct($ldaphost, $ldapport, $binddn, $bindpw) {
+   public function __construct($ldaphost, $binddn, $bindpw) {
 
-      $this->link = ldap_connect($ldaphost, $ldapport) or exit('Error: ldap_connect()');
+      $this->link = ldap_connect($ldaphost) or exit('Error: ldap_connect()');
       ldap_set_option($this->link, LDAP_OPT_PROTOCOL_VERSION, 3);
       ldap_set_option($this->link, LDAP_OPT_REFERRALS, 0);
 

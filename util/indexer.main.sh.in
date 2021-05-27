@@ -1,34 +1,49 @@
 #!/bin/bash
 
-export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-MAINTMPFILE=/var/run/piler/main.indexer.tmp
-INDEXER="indexer --config SYSCONFDIR/piler/sphinx.conf"
-PRIORITY=mail.error
-TOUCHFILE=/var/piler/stat/indexer
+set -o nounset
+set -o errexit
+set -o pipefail
 
-if [ -f $MAINTMPFILE ]; then echo "INDEXER ERROR: indexer merging to main index is already running. It started at "`cat $MAINTMPFILE` | logger -p $PRIORITY ; exit 1; fi
+MAINTMPFILE="/var/run/piler/main.indexer.tmp"
+SPHINX_CONFIG="SYSCONFDIR/piler/sphinx.conf"
+PRIORITY="mail.info"
+TOUCHFILE="/var/piler/stat/indexer"
+MAIN_INDEX="main1"
 
-date > $MAINTMPFILE
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 
-touch $TOUCHFILE
-
-function finish {
-   rm -f $MAINTMPFILE
+finish() {
+   rm -f "$MAINTMPFILE"
 }
+
+
+if [[ -f "$MAINTMPFILE" ]]; then
+   echo "INDEXER ERROR: indexer merging to main index is already running. It started at $(cat "$MAINTMPFILE")" | logger -p "$PRIORITY"
+   exit 1
+fi
+
+date > "$MAINTMPFILE"
+
+touch "$TOUCHFILE"
 
 trap finish EXIT
 
-echo "INDEXER INFO: merging to main started" | logger -p $PRIORITY
+echo "INDEXER INFO: merging to main started" | logger -p "$PRIORITY"
 
-$INDEXER --quiet --merge main1 dailydelta1 --merge-dst-range deleted 0 0 --rotate
+indexer --config "$SPHINX_CONFIG" --quiet --merge "$MAIN_INDEX" dailydelta1 --merge-dst-range deleted 0 0 --rotate
 
-echo "INDEXER INFO: merging to main finished" | logger -p $PRIORITY
+echo "INDEXER INFO: merging to main finished" | logger -p "$PRIORITY"
 
 sleep 5
 
-echo "INDEXER INFO: resetting daily delta started" | logger -p $PRIORITY
+echo "INDEXER INFO: resetting daily delta started" | logger -p "$PRIORITY"
 
-$INDEXER --quiet dailydelta1 --rotate
+indexer --config "$SPHINX_CONFIG" --quiet dailydelta1 --rotate
 
-echo "INDEXER INFO: resetting daily delta finished" | logger -p $PRIORITY
+echo "INDEXER INFO: resetting daily delta finished" | logger -p "$PRIORITY"
 
+sum=0
+while read -r a b; do
+   sum=$(( sum + b ))
+done < <( find /var/piler/sphinx/ -type f -name main\*.spd -printf "%TY%Tm%Td %s\\n" )
+printf "%d" $sum > /var/piler/stat/main_index_size

@@ -60,7 +60,7 @@
       </div>
       <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
-        <a href="#" class="btn btn-primary" id="reject_id2"><?php print $text_delete; ?></a>
+        <a href="#" class="btn btn-primary" id="reject_id2"><?php print $text_reject; ?></a>
       </div>
     </div>
 

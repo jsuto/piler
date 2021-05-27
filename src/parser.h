@@ -20,7 +20,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen);
 void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state);
 void fixupBase64EncodedLine(char *buf, struct parser_state *state);
 void markHTML(char *buf, struct parser_state *state);
-int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state);
+void setStateHTMLStyle(char *htmlbuf, int pos, struct parser_state *state);
 void translateLine(unsigned char *p, struct parser_state *state);
 void fix_email_address_for_sphinx(char *s);
 void split_email_address(char *s);
@@ -38,5 +38,6 @@ void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len
 void tokenize(char *buf, struct parser_state *state, struct session_data *sdata, struct data *data, struct config *cfg);
 void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned int abuffersize);
 void fill_attachment_name_buf(struct parser_state *state, char *buf);
+int get_first_email_address_from_string(char *str, char *buf, int buflen);
 
 #endif /* _PARSER_H */

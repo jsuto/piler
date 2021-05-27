@@ -90,6 +90,8 @@ void init_state(struct parser_state *state){
 
    memset(state->b_from, 0, SMALLBUFSIZE);
    memset(state->b_from_domain, 0, SMALLBUFSIZE);
+   memset(state->b_sender, 0, SMALLBUFSIZE);
+   memset(state->b_sender_domain, 0, SMALLBUFSIZE);
    memset(state->b_to, 0, MAXBUFSIZE);
    memset(state->b_to_domain, 0, SMALLBUFSIZE);
    memset(state->b_subject, 0, MAXBUFSIZE);
@@ -102,6 +104,8 @@ void init_state(struct parser_state *state){
    state->journaltolen = 0;
 
    state->retention = 0;
+
+   state->found_security_header = 0;
 }
 
 
@@ -258,6 +262,18 @@ time_t parse_date_header(char *datestr){
    ts = mktime(&tm);
 
    ts += get_local_timezone_offset() - offset;
+
+   if(ts < 700000000){
+      // If the Date: field contains some garbage, eg.
+      // "Date: [mail_datw]" or similar, and the date
+      // is before Sat Mar  7 20:26:40 UTC 1992, then
+      // return the current timestamp
+
+      time_t now;
+      time(&now);
+
+      return now;
+   }
 
    return ts;
 }
@@ -534,7 +550,7 @@ void markHTML(char *buf, struct parser_state *state){
 
             if(isspace(*s)){
                if(j > 0){
-                  k += appendHTMLTag(puf, html, pos, state);
+                  setStateHTMLStyle(html, pos, state);
                   memset(html, 0, SMALLBUFSIZE); j=0;
                }
                pos++;
@@ -559,7 +575,7 @@ void markHTML(char *buf, struct parser_state *state){
 
          if(j > 0){
             strncat(html, " ", SMALLBUFSIZE-1);
-            k += appendHTMLTag(puf, html, pos, state);
+            setStateHTMLStyle(html, pos, state);
             memset(html, 0, SMALLBUFSIZE); j=0;
          }
       }
@@ -567,47 +583,15 @@ void markHTML(char *buf, struct parser_state *state){
    }
 
    //printf("append last in line:*%s*, html=+%s+, j=%d\n", puf, html, j);
-   if(j > 0){ appendHTMLTag(puf, html, pos, state); }
+   if(j > 0){ setStateHTMLStyle(html, pos, state); }
 
    strcpy(buf, puf);
 }
 
 
-int appendHTMLTag(char *buf, char *htmlbuf, int pos, struct parser_state *state){
-   char html[SMALLBUFSIZE];
-   int len;
-
+void setStateHTMLStyle(char *htmlbuf, int pos, struct parser_state *state){
    if(pos == 0 && strncmp(htmlbuf, "style ", 6) == 0) state->style = 1;
    if(pos == 0 && strncmp(htmlbuf, "/style ", 7) == 0) state->style = 0;
-
-   return 0;
-
-   //printf("appendHTML: pos:%d, +%s+\n", pos, htmlbuf);
-
-   if(state->style == 1) return 0;
-
-   if(strlen(htmlbuf) == 0) return 0;
-
-   snprintf(html, SMALLBUFSIZE-1, "HTML*%s", htmlbuf);
-   len = strlen(html);
-
-   if(len > 8 && strchr(html, '=')){
-      char *p = strstr(html, "cid:");
-      if(p){
-         *(p+3) = '\0';
-         strncat(html, " ", SMALLBUFSIZE-1);
-      }
-
-      strncat(buf, html, MAXBUFSIZE-1);
-      return len;
-   }
-
-   if(strstr(html, "http") ){
-      strncat(buf, html+5, MAXBUFSIZE-1);
-      return len-5;
-   }
-
-   return 0;
 }
 
 
@@ -620,9 +604,9 @@ void translateLine(unsigned char *p, struct parser_state *state){
 
    for(; *p; p++){
 
-      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
+      if( (state->message_state == MSG_RECEIVED || state->message_state == MSG_FROM || state->message_state == MSG_SENDER || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT) && *p == '@'){ continue; }
 
-      if(state->message_state == MSG_FROM || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT){
+      if(state->message_state == MSG_FROM || state->message_state == MSG_SENDER || state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT){
 
          /* To fix some unusual addresses, eg.
           *    "'user@domain'"    -> user@domain
@@ -957,7 +941,7 @@ char *determine_attachment_type(char *filename, char *type){
          if(strncasecmp(p, "rar", 3) == 0) return "compressed,";
 
          // tar.gz has the same type
-         if(strncasecmp(p, "x-gzip", 3) == 0) return "compressed,";
+         if(strncasecmp(p, "gz", 2) == 0) return "compressed,";
 
          if(strncasecmp(p, "rtf", 3) == 0) return "word,";
          if(strncasecmp(p, "doc", 3) == 0) return "word,";
@@ -1072,4 +1056,21 @@ void fill_attachment_name_buf(struct parser_state *state, char *buf){
       state->attachment_name_buf[state->anamepos] = ';';
       state->anamepos++;
    }
+}
+
+
+int get_first_email_address_from_string(char *str, char *buf, int buflen){
+   int result;
+
+   char *p = str;
+   do {
+      memset(buf, 0, buflen);
+      p = split(p, ' ', buf, buflen-1, &result);
+
+      if(*buf == '\0') continue;
+
+      if(does_it_seem_like_an_email_address(buf) == 1){ return 1; }
+   } while(p);
+
+   return 0;
 }

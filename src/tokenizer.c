@@ -75,6 +75,25 @@ void tokenize(char *buf, struct parser_state *state, struct session_data *sdata,
             }
          }
       }
+      else if(state->message_state == MSG_SENDER && state->is_1st_header == 1 && strlen(state->b_sender) < SMALLBUFSIZE-len-1){
+         strtolower(puf);
+
+         q = strchr(puf, '@');
+         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+
+         memcpy(&(state->b_sender[strlen(state->b_sender)]), puf, len);
+
+         if(len >= MIN_EMAIL_ADDRESS_LEN && does_it_seem_like_an_email_address(puf) == 1 && state->b_sender_domain[0] == '\0'){
+            if(q && strlen(q) > 5){
+               memcpy(&(state->b_sender_domain), q+1, strlen(q+1)-1);
+            }
+
+            if(strlen(state->b_sender) < SMALLBUFSIZE-len-1){
+               split_email_address(puf);
+               memcpy(&(state->b_sender[strlen(state->b_sender)]), puf, len);
+            }
+         }
+      }
       else if((state->message_state == MSG_TO || state->message_state == MSG_CC || state->message_state == MSG_RECIPIENT || state->message_state == MSG_ENVELOPE_TO) && state->is_1st_header == 1 && state->tolen < MAXBUFSIZE-len-1){
          strtolower(puf);
 

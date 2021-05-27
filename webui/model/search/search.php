@@ -112,7 +112,6 @@ class ModelSearchSearch extends Model {
 
       $session = Registry::get('session');
 
-
       $i = 0;
       while(list($k, $v) = each($data['match'])) {
          if($v == "@attachment_types") {
@@ -162,6 +161,10 @@ class ModelSearchSearch extends Model {
       }
 
       $match = implode(" ", $data['match']);
+
+      if(Registry::get('auditor_user') == 1 && RESTRICTED_AUDITOR == 0 && $data['raw']) {
+         $match .= $data['raw'];
+      }
 
       if($emailfilter) {
          if(strlen($match) > 2) { $match = "( $match ) & $emailfilter"; }
@@ -327,6 +330,7 @@ class ModelSearchSearch extends Model {
                     'folders'         => '',
                     'extra_folders'   => '',
                     'id'              => '',
+                    'raw'             => '',
                     'match'           => array()
       );
 
@@ -351,15 +355,12 @@ class ModelSearchSearch extends Model {
          else if($v == 'subject:') { $token = 'match'; $a['match'][] = '@subject'; continue; }
          else if($v == 'body:') { $token = 'match'; $a['match'][] = '@body'; continue; }
          else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }
-         else if($v == 'size:') { $token = 'size'; continue; }
-         else if($v == 'date1:') { $token = 'date1'; continue; }
-         else if($v == 'date2:') { $token = 'date2'; continue; }
          else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
-         else if($v == 'size') { $token = 'size'; continue; }
-         else if($v == 'tag:') { $token = 'tag'; continue; }
-         else if($v == 'note:') { $token = 'note'; continue; }
-         else if($v == 'ref:') { $token = 'ref'; continue; }
-         else if($v == 'id:') { $token = 'id'; continue; }
+
+         else if(in_array($v, ['size:', 'date1:', 'date2:', 'tag:', 'note:', 'ref:', 'id:', 'raw:'])) {
+            $token = substr($v, 0, strlen($v)-1); continue;
+         }
+
          else if($token != 'date1' && $token != 'date2') {
             if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
                $ndate++;
@@ -368,12 +369,7 @@ class ModelSearchSearch extends Model {
          }
 
          if($token == 'match') { $a['match'][] = $v; }
-         else if($token == 'date1') { $a['date1'] = ' ' . $v; }
-         else if($token == 'date2') { $a['date2'] = ' ' . $v; }
-         else if($token == 'tag') { $a['tag'] .= ' ' . $v; }
-         else if($token == 'note') { $a['note'] .= ' ' . $v; }
-         else if($token == 'ref') { $a['ref'] = ' ' . $v; }
-         else if($token == 'id') { $a['id'] .= ' ' . $v; }
+         else if(in_array($token, ['date1', 'date2', 'ref', 'tag', 'note', 'id', 'raw'])) { $a[$token] .= ' ' . $v; }
 
          else if($token == 'direction') {
             if($v == 'inbound') { $a['direction'] = "0"; }
@@ -473,6 +469,7 @@ class ModelSearchSearch extends Model {
       $note = array();
       $private = [];
       $deleted = [];
+      $marked_for_removal = [];
       $q = '';
       global $SUPPRESS_RECIPIENTS;
 
@@ -489,12 +486,10 @@ class ModelSearchSearch extends Model {
 
       if(isset($query->rows)) {
          foreach($query->rows as $r) {
-            if(!isset($rcpt[$r['id']]) && !in_array($r['to'], $SUPPRESS_RECIPIENTS)) {
-               $srcpt[$r['id']] = $r['to'];
-               $rcpt[$r['id']] = $r['to'];
-            }
-            else {
-               if(Registry::get('auditor_user') == 1) { $rcpt[$r['id']] .= ",\n" . $r['to']; }
+            if(!isset($rcpt[$r['id']])) { $rcpt[$r['id']] = []; }
+
+            if(Registry::get('auditor_user') == 1 || !in_array($r['to'], $SUPPRESS_RECIPIENTS)) {
+               array_push($rcpt[$r['id']], $r['to']);
             }
          }
       }
@@ -511,10 +506,12 @@ class ModelSearchSearch extends Model {
          }
 
          if(ENABLE_DELETE) {
-            $s = $this->db->query("SELECT `id` FROM `" . TABLE_DELETED . "` WHERE deleted=1 AND id IN ($q)", $ids);
-
+            $s = $this->db->query("SELECT `id`, `deleted` FROM `" . TABLE_DELETED . "` WHERE id IN ($q)", $ids);
             foreach ($s->rows as $p) {
-               $deleted[$p['id']] = 1;
+               if($p['id'] == 1) {
+                  $deleted[$p['id']] = 1;
+               }
+               $marked_for_removal[$p['id']] = 1;
             }
          }
 
@@ -538,12 +535,13 @@ class ModelSearchSearch extends Model {
          foreach($query->rows as $m) {
             // We mark it as deleted even if it's only marked for removal
             if(ENABLE_DELETE == 1 && ($m['retained'] < NOW || isset($deleted[$m['id']])) ) $m['deleted'] = 1; else $m['deleted'] = 0;
+            if(ENABLE_DELETE == 1 && isset($marked_for_removal[$m['id']])) $m['marked_for_removal'] = 1; else $m['marked_for_removal'] = 0;
 
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
 
-            isset($srcpt[$m['id']]) ? $m['shortto'] = $srcpt[$m['id']] : $m['shortto'] = '';
             isset($rcpt[$m['id']]) ? $m['to'] = $rcpt[$m['id']] : $m['to'] = '';
+            $m['shortto'] = make_short_string($this->get_preferred_recipient($rcpt[$m['id']]), MAX_CGI_FROM_SUBJ_LEN);
             $m['to'] = escape_gt_lt_quote_symbols($m['to']);
 
 
@@ -586,32 +584,23 @@ class ModelSearchSearch extends Model {
    }
 
 
-   public function get_message_recipients($id = '') {
-      $rcpt = array();
-      $domains = array();
+   private function get_preferred_recipient($arr = []) {
+      $result = '';
 
-      if(Registry::get('auditor_user') == 0) { return $rcpt; }
+      $session = Registry::get('session');
+      $group_emails = $session->get('group_emails');
+      $user_emails = $session->get('user_emails');
 
-      $query = $this->db->query("SELECT `domain` FROM " . TABLE_DOMAIN);
-      foreach($query->rows as $q) {
-         array_push($domains, $q['domain']);
+      if(count($arr) < 2 || (!$group_emails && !$user_emails) ) { return $arr[0]; }
+
+      foreach ($arr as $a) {
+         if($result == '' && in_array($a, $group_emails)) { $result = $a; }
+         if(in_array($a, $user_emails)) { $result = $a; }
       }
 
-      $query = $this->db->query("SELECT `to` FROM " . VIEW_MESSAGES . " WHERE id=?", array($id));
+      if($result == '') { $result = $arr[0]; }
 
-      foreach($query->rows as $q) {
-         $mydomain = 0;
-
-         foreach ($domains as $domain) {
-            if(preg_match("/\@$domain$/", $q['to'])) { $mydomain = 1; break; }
-         }
-
-         if($mydomain == 1) {
-            array_push($rcpt, $q['to']);
-         }
-      }
-
-      return $rcpt;
+      return $result;
    }
 
 

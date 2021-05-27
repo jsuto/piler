@@ -82,7 +82,6 @@ $config['WKHTMLTOPDF_COMMAND'] = "wkhtmltopdf";
 
 $config['ENABLE_LDAP_AUTH'] = 0;
 $config['LDAP_HOST'] = 'ldap.yourdomain.com';
-$config['LDAP_PORT'] = 389;
 $config['LDAP_HELPER_DN'] = 'cn=....';
 $config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
 $config['LDAP_MAIL_ATTR'] = 'mail';
@@ -217,8 +216,8 @@ $config['DIR_STAT'] = '/var/piler/stat';
 $config['DIR_IMAP'] = '/var/piler/imap';
 $config['DIR_TMP'] = '/var/piler/tmp';
 
-$config['DECRYPT_BINARY'] = '/usr/local/bin/pilerget';
-$config['DECRYPT_ATTACHMENT_BINARY'] = '/usr/local/bin/pileraget';
+$config['DECRYPT_BINARY'] = 'BINDIR/pilerget';
+$config['DECRYPT_ATTACHMENT_BINARY'] = 'BINDIR/pileraget';
 $config['DECRYPT_BUFFER_LENGTH'] = 65536;
 
 $config['OPENSSL_BINARY'] = '/usr/bin/openssl';
@@ -249,7 +248,7 @@ $config['MAX_EMAIL_LEN'] = 41;
 $config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
 $config['CPU_USAGE_COMMAND'] = "LC_ALL=C mpstat | tail -1 | rev | awk '{ print $1 }' | rev";
-$config['PILER_BINARY'] = "/usr/local/sbin/piler";
+$config['PILER_BINARY'] = "SBINDIR/piler";
 
 $config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
 
@@ -473,6 +472,8 @@ define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
 
 define('LDAP_TYPE_GENERIC', 'generic_ldap');
 
+define('ATTACHMENT_DUMP_CHECKPOINT', 'attachment_dump_checkpoint');
+
 define('ACTION_ALL', 0);
 define('ACTION_UNKNOWN', 1);
 define('ACTION_LOGIN', 2);
@@ -494,6 +495,7 @@ define('ACTION_VIEW_JOURNAL', 17);
 define('ACTION_NOT_SPAM', 18);
 define('ACTION_MARK_AS_PRIVATE', 19);
 define('ACTION_MARK_MESSAGE_FOR_REMOVAL', 20);
+define('ACTION_REJECT_REMOVAL', 21);
 
 $actions = array(
                   'unknown' => 1,
@@ -508,7 +510,9 @@ $actions = array(
                   'save_search' => 11,
                   'download_attachment' => 15,
                   'journal' => 17,
-                  'private' => 19
+                  'private' => 19,
+                  'marked_for_removal', 20,
+                  'reject_removal', 21
                 );
 
 

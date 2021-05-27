@@ -2,11 +2,10 @@
 
 class ModelMessageAttachment extends Model {
 
-
    public function get_attachment_by_id($id = 0) {
       if($id <= 0) { return []; }
 
-      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type FROM " . TABLE_ATTACHMENT . " WHERE id=?", [$id]);
+      $query = $this->db->query("SELECT id, piler_id, attachment_id, name, type, ptr FROM " . TABLE_ATTACHMENT . " WHERE id=?", [$id]);
 
       if(isset($query->row)) {
          if($query->row['ptr'] > 0) {
@@ -77,4 +76,54 @@ class ModelMessageAttachment extends Model {
       return $images;
    }
 
+
+   public function dump_attachment($basedir='', $in_or_out="in", $email='', $id=0, $attachment=[]) {
+      if($basedir == '' || $email == '') {
+         return;
+      }
+
+      $dir = sprintf("%s/%s/%s", $basedir, $email, $in_or_out);
+
+      if(!is_dir($dir)) {
+         if(!mkdir($dir, 0700, true)) {
+            die("Failed to create folder $dir");
+         }
+      }
+
+      $fname = sprintf("%s/%d-%s", $dir, $id, $attachment['filename']);
+      $fp = fopen($fname, "w+");
+      if($fp) {
+         fwrite($fp, $attachment['attachment']);
+         fclose($fp);
+      } else {
+         syslog(LOG_INFO, "ERROR: could not write $fname");
+      }
+   }
+
+
+   public function get_last_attachment_id() {
+      $query = $this->db->query("SELECT id FROM " . TABLE_ATTACHMENT . " ORDER BY id DESC LIMIT 1");
+
+      if(isset($query->row['id'])) {
+         return $query->row['id'];
+      }
+
+      return 0;
+   }
+
+
+   public function get_checkpoint() {
+      $query = $this->db->query("SELECT value FROM `" . TABLE_OPTION . "` WHERE `key`=?", [ATTACHMENT_DUMP_CHECKPOINT]);
+      if(isset($query->row['value'])) {
+         return $query->row['value'];
+      } else {
+         $this->db->query("INSERT INTO `" . TABLE_OPTION . "` (`key`, value) VALUES(?,0)", [ATTACHMENT_DUMP_CHECKPOINT]);
+         return 1;
+      }
+   }
+
+
+   public function update_checkpoint($value=0) {
+      $this->db->query("UPDATE `" . TABLE_OPTION . "` SET value=? WHERE `key`=?", [$value, ATTACHMENT_DUMP_CHECKPOINT]);
+   }
 }

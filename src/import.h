@@ -23,4 +23,6 @@ int list_folders(struct data *data);
 int process_imap_folder(char *folder, struct session_data *sdata, struct data *data, struct config *cfg);
 void send_imap_close(struct data *data);
 
+void import_from_pilerexport(struct session_data *sdata, struct data *data, struct config *cfg);
+
 #endif /* _IMPORT_H */

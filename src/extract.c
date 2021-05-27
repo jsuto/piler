@@ -25,12 +25,20 @@ int remove_xml(char *src, char *dest, int destlen, int *html){
    memset(dest, 0, destlen);
 
    for(; *src; src++){
-      if(*src == '<'){ *html = 1; continue; }
-      if(*src == '>'){ *html = 0; continue; }
-
-      if(*html == 0){
-         if(i < destlen) *(dest+i) = *src;
-         i++;
+      if(*src == '<'){
+         *html = 1;
+      }
+      else if(*src == '>'){
+         *html = 0;
+         // make sure there's a whitespace between tag contents
+         if(i < destlen && i > 0 && !isspace(dest[i-1]))
+            dest[i++] = ' ';
+      }
+      else{
+         if(*html == 0){
+            if(i < destlen) *(dest+i) = *src;
+            i++;
+         }
       }
    }
 

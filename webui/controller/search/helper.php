@@ -15,6 +15,7 @@ class ControllerSearchHelper extends Controller {
                     'folders'         => '',
                     'extra_folders'   => '',
                     'id'              => '',
+                    'raw'              => '',
                     'match'           => array()
                      );
 
@@ -49,7 +50,7 @@ class ControllerSearchHelper extends Controller {
 
       if($this->request->post['searchtype'] == 'expert'){
 
-         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|d|size|date1|date2|attachment|a|tag|note|id)\:/", $this->request->post['search'])) {
+         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|d|size|date1|date2|attachment|a|tag|note|id|raw)\:/", $this->request->post['search'])) {
             $this->a = $this->model_search_search->preprocess_post_expert_request($this->request->post);
          }
          else {

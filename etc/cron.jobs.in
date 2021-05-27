@@ -6,7 +6,6 @@
 */15 * * * * /usr/bin/indexer --config SYSCONFDIR/piler/sphinx.conf --quiet note1 --rotate
 */5 * * * *  /usr/bin/find LOCALSTATEDIR/piler/www/tmp -type f -name i.\* -exec rm -f {} \;
 */5 * * * * /usr/bin/find LOCALSTATEDIR/piler/error -type f|wc -l > LOCALSTATEDIR/piler/stat/error
-3 * * * * LIBEXECDIR/piler/watch_sphinx_main_index.sh
 2 0 * * * LIBEXECDIR/piler/pilerpurge.py
 
 ### optional: populate accouting data

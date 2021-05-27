@@ -31,13 +31,18 @@ void process_smtp_command(struct smtp_session *session, char *buf, struct config
       return;
    }
 
+   if(strncasecmp(buf, SMTP_CMD_HELP, strlen(SMTP_CMD_HELP)) == 0){
+      send_smtp_response(session, SMTP_RESP_221_PILER_SMTP_OK);
+      return;
+   }
+
    if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
       process_command_mail_from(session, buf);
       return;
    }
 
    if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-      process_command_rcpt_to(session, buf);
+      process_command_rcpt_to(session, buf, cfg);
       return;
    }
 
@@ -166,6 +171,11 @@ int init_ssl(struct smtp_session *session){
       return 0;
    }
 
+   if(SSL_CTX_set_min_proto_version(session->net.ctx, session->cfg->tls_min_version_number) == 0){
+      syslog(LOG_PRIORITY, "failed SSL_CTX_set_min_proto_version() to %s/%d", session->cfg->tls_min_version, session->cfg->tls_min_version_number);
+      return 0;
+   }
+
    if(SSL_CTX_set_cipher_list(session->net.ctx, session->cfg->cipher_list) == 0){
       syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", session->cfg->cipher_list);
       return 0;
@@ -193,8 +203,6 @@ void process_command_starttls(struct smtp_session *session){
       session->net.ssl = SSL_new(session->net.ctx);
       if(session->net.ssl){
 
-         SSL_set_options(session->net.ssl, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3);
-
          if(SSL_set_fd(session->net.ssl, session->net.socket) == 1){
             session->net.starttls = 1;
             send_smtp_response(session, SMTP_RESP_220_READY_TO_START_TLS);
@@ -204,9 +212,9 @@ void process_command_starttls(struct smtp_session *session){
                wait_for_ssl_accept(session);
 
             return;
-         } syslog(LOG_PRIORITY, "%s: SSL_set_fd() failed", session->ttmpfile);
-      } syslog(LOG_PRIORITY, "%s: SSL_new() failed", session->ttmpfile);
-   } syslog(LOG_PRIORITY, "SSL ctx is null!");
+         } syslog(LOG_PRIORITY, "ERROR: %s: SSL_set_fd() failed", session->ttmpfile);
+      } syslog(LOG_PRIORITY, "ERROR: %s: SSL_new() failed", session->ttmpfile);
+   } syslog(LOG_PRIORITY, "ERROR: init_ssl()");
 
    send_smtp_response(session, SMTP_RESP_454_ERR_TLS_TEMP_ERROR);
 }
@@ -231,7 +239,7 @@ void process_command_mail_from(struct smtp_session *session, char *buf){
 }
 
 
-void process_command_rcpt_to(struct smtp_session *session, char *buf){
+void process_command_rcpt_to(struct smtp_session *session, char *buf, struct config *cfg){
 
    if(session->protocol_state == SMTP_STATE_MAIL_FROM || session->protocol_state == SMTP_STATE_RCPT_TO){
 
@@ -241,6 +249,14 @@ void process_command_rcpt_to(struct smtp_session *session, char *buf){
 
       if(session->num_of_rcpt_to < MAX_RCPT_TO){
          extractEmail(buf, session->rcptto[session->num_of_rcpt_to]);
+
+         // Check if we should accept archive_address only
+         if(cfg->archive_address[0] && !strstr(cfg->archive_address, session->rcptto[session->num_of_rcpt_to])){
+            syslog(LOG_PRIORITY, "ERROR: Invalid recipient: *%s*", session->rcptto[session->num_of_rcpt_to]);
+            send_smtp_response(session, SMTP_RESP_550_ERR_INVALID_RECIPIENT);
+            return;
+         }
+
          session->num_of_rcpt_to++;
       }
 
@@ -298,7 +314,7 @@ void process_command_period(struct smtp_session *session){
 
    session->buflen = 0;
    session->last_data_char = 0;
-   memset(session->buf, 0, SMALLBUFSIZE);
+   memset(session->buf, 0, sizeof(session->buf));
 
    send_smtp_response(session, buf);
 }

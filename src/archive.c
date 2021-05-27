@@ -58,6 +58,10 @@ int inf(unsigned char *in, int len, int mode, char **buffer, FILE *dest){
    char *new_ptr;
    unsigned char out[REALLYBIGBUFSIZE];
 
+   /* expecting deflate with 32k window size (0x78) */
+   if(len > 0 && in[0] != 0x78)
+      return Z_DATA_ERROR;
+
    /* allocate inflate state */
 
    strm.zalloc = Z_NULL;
@@ -139,6 +143,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 #else
    EVP_CIPHER_CTX *ctx=NULL;
 #endif
+   int blocklen;
 
 
    if(filename == NULL) return 1;
@@ -157,20 +162,33 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       return 1;
    }
 
+   // The new encryption scheme uses piler id starting with 5000....
 
    if(cfg->encrypt_messages == 1){
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
-      EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      if(strstr(filename, "/5000")){
+         EVP_DecryptInit_ex(&ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+      } else {
+         EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
+      blocklen = EVP_CIPHER_CTX_block_size(&ctx);
    #else
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
       EVP_CIPHER_CTX_init(ctx);
-      EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      if(strstr(filename, "/5000")){
+         EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+      } else {
+         EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
+      blocklen = EVP_CIPHER_CTX_block_size(ctx);
    #endif
 
-      len = st.st_size+EVP_MAX_BLOCK_LENGTH;
+      len = st.st_size+blocklen;
 
       s = malloc(len);
 
@@ -207,7 +225,13 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 
       tlen += olen;
+
+      // old fileformat with static IV
       rc = inf(s, tlen, mode, buffer, dest);
+      // new fileformat, starting with blocklen bytes of garbage
+      if(rc != Z_OK && tlen >= blocklen){
+         rc = inf(s+blocklen, tlen-blocklen, mode, buffer, dest);
+      }
    }
    else {
       addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
@@ -220,7 +244,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
 
 
 CLEANUP:
-   if(fd != -1) close(fd);
+   if(fd != -1) close(fd); //-V547
    if(s) free(s);
    if(cfg->encrypt_messages == 1)
    #if OPENSSL_VERSION_NUMBER < 0x10100000L

@@ -54,6 +54,7 @@ void usage(){
    printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
    printf("    -T <id>                           Update import table at id=<id>\n");
    printf("    -D                                Dry-run, do not import anything\n");
+   printf("    -y                                Read pilerexport data from stdin\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
    printf("    -r                                Remove imported emails\n");
    printf("    -q                                Quiet mode\n");
@@ -63,7 +64,7 @@ void usage(){
 
 
 int main(int argc, char **argv){
-   int i, n_mbox=0;
+   int i, n_mbox=0, read_from_pilerexport=0;
    char *configfile=CONFIG_FILE, *mbox[MBOX_ARGS], *directory=NULL;
    char puf[SMALLBUFSIZE], *imapserver=NULL, *pop3server=NULL;
    struct session_data sdata;
@@ -141,6 +142,7 @@ int main(int argc, char **argv){
             {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
             {"only-download",no_argument,        0,  'o' },
+            {"read-from-export",no_argument,     0,  'y' },
             {"dry-run",      no_argument,        0,  'D' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
@@ -148,9 +150,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:DRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:yDRroqh?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:DRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:yDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -269,6 +271,10 @@ int main(int argc, char **argv){
                     data.import->table_id = atoi(optarg);
                     break;
 
+         case 'y' :
+                    read_from_pilerexport = 1;
+                    break;
+
          case 'D' :
                     data.import->dryrun = 1;
                     break;
@@ -289,7 +295,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(!mbox[0] && !data.import->mboxdir && !data.import->filename && !directory && !imapserver && !pop3server) usage();
+   if(!mbox[0] && !data.import->mboxdir && !data.import->filename[0] && !directory && !imapserver && !pop3server) usage();
 
    if(data.import->failed_folder && !can_i_write_directory(data.import->failed_folder)){
       printf("cannot write failed directory '%s'\n", data.import->failed_folder);
@@ -299,6 +305,8 @@ int main(int argc, char **argv){
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    cfg = read_config(configfile);
+
+   memset(cfg.security_header, 0, MAXVAL);
 
    if((data.recursive_folder_names == 1 || data.import->folder) && cfg.enable_folders == 0){
       printf("please set enable_folders=1 in piler.conf to use the folder options\n");
@@ -359,6 +367,7 @@ int main(int argc, char **argv){
    if(directory) import_from_maildir(&sdata, &data, directory, &cfg);
    if(imapserver) import_from_imap_server(&sdata, &data, &cfg);
    if(pop3server) import_from_pop3_server(&sdata, &data, &cfg);
+   if(read_from_pilerexport) import_from_pilerexport(&sdata, &data, &cfg);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);

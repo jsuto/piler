@@ -38,7 +38,9 @@ char *configfile = CONFIG_FILE;
 struct config cfg;
 struct passwd *pwd;
 struct smtp_session *session, **sessions=NULL;
+struct smtp_acl *smtp_acl[MAXHASH];
 
+time_t prev_timeout_check = 0;
 
 void usage(){
    printf("\nusage: piler\n\n");
@@ -66,6 +68,8 @@ void p_clean_exit(int sig){
 
    if(events) free(events);
 
+   clear_smtp_acl(smtp_acl);
+
    syslog(LOG_PRIORITY, "%s has been terminated", PROGNAME);
 
    ERR_free_strings();
@@ -87,16 +91,18 @@ void check_for_client_timeout(){
 
    if(cfg.verbosity >= LOG_DEBUG) syslog(LOG_PRIORITY, "%s @%ld", __func__, now);
 
+   if(now - prev_timeout_check < cfg.smtp_timeout) return;
+
    if(num_connections > 0){
       for(int i=0; i<cfg.max_connections; i++){
          if(sessions[i] && now - sessions[i]->lasttime >= cfg.smtp_timeout){
             syslog(LOG_PRIORITY, "client %s timeout, lasttime: %ld", sessions[i]->remote_host, sessions[i]->lasttime);
-            tear_down_session(sessions, sessions[i]->slot, &num_connections);
+            tear_down_session(sessions, sessions[i]->slot, &num_connections, "timeout");
          }
       }
    }
 
-   alarm(cfg.check_for_client_timeout_interval);
+   time(&prev_timeout_check);
 }
 
 
@@ -120,6 +126,8 @@ void initialise_configuration(){
    setlocale(LC_MESSAGES, cfg.locale);
    setlocale(LC_CTYPE, cfg.locale);
 
+   load_smtp_acl(smtp_acl);
+
    syslog(LOG_PRIORITY, "reloaded config: %s", configfile);
 }
 
@@ -130,7 +138,6 @@ int main(int argc, char **argv){
    int client_len = sizeof(struct sockaddr_storage);
    ssize_t readlen;
    struct sockaddr_storage client_address;
-   char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
    char readbuf[BIGBUFSIZE];
    int efd;
 
@@ -192,8 +199,8 @@ int main(int argc, char **argv){
    set_signal_handler(SIGSEGV, p_clean_exit);
 
    set_signal_handler(SIGPIPE, SIG_IGN);
+   set_signal_handler(SIGALRM, SIG_IGN);
 
-   set_signal_handler(SIGALRM, check_for_client_timeout);
    set_signal_handler(SIGHUP, initialise_configuration);
 
    // calloc() initialitizes the allocated memory
@@ -214,10 +221,8 @@ int main(int argc, char **argv){
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);
 #endif
 
-   alarm(cfg.check_for_client_timeout_interval);
-
    for(;;){
-      int n = epoll_wait(efd, events, cfg.max_connections, -1);
+      int n = epoll_wait(efd, events, cfg.max_connections, 1000);
       for(i=0; i<n; i++){
 
          // Office365 sometimes behaves oddly: when it receives the 250 OK
@@ -228,7 +233,7 @@ int main(int argc, char **argv){
             if(cfg.verbosity >= _LOG_EXTREME) syslog(LOG_PRIORITY, "ERROR: the remote end hung up without sending QUIT");
             session = get_session_by_socket(sessions, cfg.max_connections, events[i].data.fd);
             if(session)
-               tear_down_session(sessions, session->slot, &num_connections);
+               tear_down_session(sessions, session->slot, &num_connections, "hungup");
             else
                close(events[i].data.fd);
             continue;
@@ -252,6 +257,10 @@ int main(int argc, char **argv){
                   }
                }
 
+               char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+               memset(hbuf, 0, sizeof(hbuf));
+               memset(sbuf, 0, sizeof(sbuf));
+
                if(getnameinfo((struct sockaddr *)&client_address, client_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0){
                   // Strictly speaking it's not correct to log num_connections+1 connections
                   // but it still gives a good clue how many connections we have at the moment
@@ -270,7 +279,7 @@ int main(int argc, char **argv){
                   break;
                }
 
-               start_new_session(sessions, client_sockfd, &num_connections, &cfg);
+               start_new_session(sessions, client_sockfd, &num_connections, smtp_acl, hbuf, &cfg);
             }
 
             continue;
@@ -292,8 +301,6 @@ int main(int argc, char **argv){
             time(&(session->lasttime));
 
             while(1){
-               memset(readbuf, 0, sizeof(readbuf));
-
                if(session->net.use_ssl == 1)
                   readlen = SSL_read(session->net.ssl, (char*)&readbuf[0], sizeof(readbuf)-1);
                else
@@ -325,12 +332,14 @@ int main(int argc, char **argv){
             /* Don't wait until the remote client closes the connection after he sent the QUIT command */
 
             if(done || session->protocol_state == SMTP_STATE_FINISHED){
-               tear_down_session(sessions, session->slot, &num_connections);
+               tear_down_session(sessions, session->slot, &num_connections, "done");
             }
          }
 
 
       }
+
+      check_for_client_timeout();
    }
 
    return 0;

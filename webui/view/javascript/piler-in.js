@@ -357,6 +357,13 @@ var Piler =
     },
 
 
+    show_advanced_search_modal:function()
+    {
+        Piler.log("[show_advanced_search_modal]");
+        $('#advancedsearch-modal').modal('show');
+    },
+
+
     show_bulk_remove_modal:function()
     {
         Piler.log("[show_bulk_remove_modal]");
@@ -693,7 +700,7 @@ var Piler =
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
 
-        var z = $('div#searchpopup1');
+        var z = $('div#advancedsearch-modal');
 
         Piler.search = 'Complex';
 
@@ -727,9 +734,9 @@ var Piler =
             extra_folders: Piler.extra_folders
         }
 
-        Piler.load_search_results();
+        $('input#_search').val('');
 
-        $('#searchpopup1').hide();
+        Piler.load_search_results();
     },
 
 
@@ -1000,6 +1007,8 @@ var Piler =
     add_shortcuts:function()
     {
         Piler.log("[add_shortcuts]");
+
+        $("#button_search").click();
 
         $(document).keypress(function(e){
            if(e.which == 13){

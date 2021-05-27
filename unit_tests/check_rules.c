@@ -41,7 +41,7 @@ static void fill_rule_table(struct config *cfg){
 
    for(i=0; i<sizeof(rules)/sizeof(struct rule_query); i++){
       p_query(&sdata, rules[i].query);
-      rules[i].id = mysql_insert_id(&(sdata.mysql)); 
+      rules[i].id = mysql_insert_id(&(sdata.mysql));
    }
 
    close_database(&sdata);
@@ -107,7 +107,7 @@ static void test_archiving_rule(struct config *cfg){
       }
 
       init_session_data(&sdata, cfg);
- 
+
       sdata.delivered = 0;
       sdata.tot_len = st.st_size;
 

@@ -41,7 +41,7 @@ class ModelMailMail extends Model {
 
       $l = fgets($r, 4096);
 
-      if(preg_match("/^250/", $l)){ $queue_id = $l; $ok = 1; }
+      if(preg_match("/^250/", $l)){ $queue_id = trim($l); $ok = 1; }
 
       fputs($r, "QUIT\r\n");
       $l = fgets($r, 4096);

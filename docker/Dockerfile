@@ -2,48 +2,40 @@ FROM ubuntu:20.04
 
 ARG PACKAGE
 
-LABEL description="piler container" \
+LABEL description="piler ubuntu focal image" \
       maintainer="Janos SUTO, sj@acts.hu" \
       package="${PACKAGE}"
 
 ENV DEBIAN_FRONTEND="noninteractive" \
-    DISTRO="bionic" \
+    DISTRO="focal" \
     DOWNLOAD_URL="https://download.mailpiler.com" \
     PILER_USER="piler" \
-    MYSQL_HOSTNAME="localhost" \
     MYSQL_DATABASE="piler" \
-    MYSQL_PILER_PASSWORD="piler123" \
-    MYSQL_ROOT_PASSWORD="abcde123" \
-    SPHINX_BIN_TARGZ="sphinx-3.1.1-bin.tar.gz"
+    SPHINX_BIN_TARGZ="sphinx-3.3.1-bin.tar.gz"
 
-ADD "https://bitbucket.org/jsuto/piler/downloads/${PACKAGE}" "/${PACKAGE}"
-COPY start.sh /start.sh
+COPY ${PACKAGE} /
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
-       wget rsyslog openssl sysstat php7.2-cli php7.2-cgi php7.2-mysql php7.2-fpm php7.2-zip php7.2-ldap \
-       php7.2-gd php7.2-curl php7.2-xml catdoc unrtf poppler-utils nginx tnef sudo libodbc1 libpq5 libzip4 \
-       libtre5 libwrap0 cron libmariadb3 libmysqlclient-dev python python-mysqldb mariadb-server && \
+       wget rsyslog openssl sysstat php7.4-cli php7.4-cgi php7.4-mysql php7.4-fpm php7.4-zip php7.4-ldap \
+       php7.4-gd php7.4-curl php7.4-xml php7.4-memcached catdoc unrtf poppler-utils nginx tnef sudo libzip5 \
+       libtre5 cron libmariadb-dev mariadb-client-core-10.3 python3 python3-mysqldb ca-certificates curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    service mysql start && mysqladmin -u root password ${MYSQL_ROOT_PASSWORD} && \
     wget --no-check-certificate -q -O ${SPHINX_BIN_TARGZ} ${DOWNLOAD_URL}/generic-local/${SPHINX_BIN_TARGZ} && \
     tar zxvf ${SPHINX_BIN_TARGZ} && \
-    rm -f ${SPHINX_BIN_TARGZ} && \
     sed -i 's/mail.[iwe].*//' /etc/rsyslog.conf && \
     sed -i '/session    required     pam_loginuid.so/c\#session    required     pam_loginuid.so' /etc/pam.d/cron && \
-    mkdir /etc/piler && \
-    printf "[mysql]\nuser = piler\npassword = %s\n" ${MYSQL_PILER_PASSWORD} > /etc/piler/.my.cnf && \
-    printf "[mysql]\nuser = root\npassword = %s\n" ${MYSQL_ROOT_PASSWORD} > /root/.my.cnf && \
-    echo "alias mysql='mysql --defaults-file=/etc/piler/.my.cnf'" > /root/.bashrc && \
-    echo "alias t='tail -f /var/log/syslog'" >> /root/.bashrc && \
-    dpkg -i $PACKAGE && \
-    crontab -u $PILER_USER /usr/share/piler/piler.cron && \
-    touch /var/log/mail.log && \
-    rm -f $PACKAGE /etc/nginx/sites-enabled/default && \
-    sed -i 's/#ngram/ngram/g' /etc/piler/sphinx.conf.dist && \
-    sed -i 's/220/311/g' /etc/piler/sphinx.conf.dist
+    dpkg -i ${PACKAGE} && \
+    ln -sf /etc/piler/piler-nginx.conf /etc/nginx/sites-enabled && \
+    rm -f ${PACKAGE} ${SPHINX_BIN_TARGZ} /etc/nginx/sites-enabled/default /etc/piler/piler.key /etc/piler/piler.pem /etc/piler/config-site.php && \
+    crontab -u $PILER_USER /usr/share/piler/piler.cron
+
+VOLUME ["/etc/piler"]
+VOLUME ["/var/piler"]
 
 EXPOSE 25 80 443
-VOLUME ["/var/piler"]
+
+COPY start.sh /start.sh
+
 CMD ["/start.sh"]

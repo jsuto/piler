@@ -44,17 +44,20 @@ def read_folder_list(conn):
         if isinstance(folder, type(b'')):
             folder = folder.decode('utf-8')
         elif isinstance(folder, type(())):
-            folder = re.sub(r'\{\d+\}$', '', folder[0]) + folder[1]
+            folder = re.sub(r'\{\d+\}$', '', folder[0].decode('utf-8')) + folder[1].decode('utf-8')
 
         # The regex should match ' "/" ' and ' "." '
         if folder:
-            f = re.split(r' \"[\/\.]\" ', folder)
+            f = re.split(r' \"[\/\.\\]+\" ', folder)
             result.append(f[1])
 
     return [x for x in result if x not in opts['skip_folders']]
 
 
 def process_folder(conn, folder):
+    # Space in the folder name must be escaped
+    folder = re.sub(r' ', '\\ ', folder)
+
     if opts['verbose']:
         print("Processing {}".format(folder))
 
@@ -75,9 +78,10 @@ def process_folder(conn, folder):
             rc, data = conn.fetch(num, '(RFC822)')
             if opts['verbose']:
                 print(rc, num)
-            opts['counter'] += 1
-            with open("{}.eml".format(opts['counter']), "wb") as f:
-                f.write(data[0][1])
+            if isinstance(data[0], tuple):
+                opts['counter'] += 1
+                with open("{}.eml".format(opts['counter']), "wb") as f:
+                    f.write(data[0][1])
 
 
 def main():

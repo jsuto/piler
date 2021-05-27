@@ -45,7 +45,7 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
    if(take_into_pieces == 1 && state.writebufpos > 0){
       if(write(state.mfd, writebuffer, state.writebufpos) == -1) syslog(LOG_PRIORITY, "ERROR: %s: write(), %s, %d, %s", sdata->ttmpfile, __func__, __LINE__, __FILE__);
-      memset(writebuffer, 0, sizeof(writebuffer));
+      memset(writebuffer, 0, sizeof(writebuffer)); //-V597
       state.writebufpos = 0;
    }
 
@@ -68,6 +68,16 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
       add_recipient(data->import->extra_recipient, strlen(data->import->extra_recipient), sdata, &state, data, cfg);
    }
 
+   // If both Sender: and From: headers exist, and they are different, then append
+   // the From: address to recipients list to give him access to this email as well
+
+   if(state.b_sender_domain[0] && strcmp(state.b_from, state.b_sender)){
+      char tmpbuf[SMALLBUFSIZE];
+      get_first_email_address_from_string(state.b_from, tmpbuf, sizeof(tmpbuf));
+      tmpbuf[strlen(tmpbuf)] = ' ';
+      add_recipient(tmpbuf, strlen(tmpbuf), sdata, &state, data, cfg);
+   }
+
    return state;
 }
 
@@ -80,9 +90,12 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    clearhash(state->rcpt_domain);
    clearhash(state->journal_recipient);
 
-   // Fix From: line if it's too long
+   // Fix From: and Sender: lines if they are too long
    if(strlen(state->b_from) > 255) state->b_from[255] = '\0';
    if(strlen(state->b_from_domain) > 255) state->b_from_domain[255] = '\0';
+
+   if(strlen(state->b_sender) > 255) state->b_sender[255] = '\0';
+   if(strlen(state->b_sender_domain) > 255) state->b_sender_domain[255] = '\0';
 
    // Truncate the message_id if it's >255 characters
    if(strlen(state->message_id) > 255) state->message_id[255] = '\0';
@@ -197,6 +210,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(strncmp(buf, "Received: by piler", strlen("Received: by piler")) == 0){
          sdata->restored_copy = 1;
+      }
+
+      if(cfg->security_header[0] && state->found_security_header == 0 && strstr(buf, cfg->security_header)){
+         state->found_security_header = 1;
       }
 
       if(*(cfg->piler_header_field) != 0 && strncmp(buf, cfg->piler_header_field, strlen(cfg->piler_header_field)) == 0){
@@ -353,6 +370,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       else if(strncasecmp(buf, "From:", strlen("From:")) == 0){
          state->message_state = MSG_FROM;
          buf += strlen("From:");
+      }
+      else if(strncasecmp(buf, "Sender:", strlen("Sender:")) == 0){
+         state->message_state = MSG_SENDER;
+         buf += strlen("Sender:");
       }
       else if(strncasecmp(buf, "Content-Type:", strlen("Content-Type:")) == 0){
          state->message_state = MSG_CONTENT_TYPE;
@@ -541,6 +562,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
             memset(state->b_body, 0, BIGBUFSIZE);
             memset(state->b_from, 0, SMALLBUFSIZE);
             memset(state->b_from_domain, 0, SMALLBUFSIZE);
+            memset(state->b_sender, 0, SMALLBUFSIZE);
+            memset(state->b_sender_domain, 0, SMALLBUFSIZE);
             memset(state->message_id, 0, SMALLBUFSIZE);
 
             sdata->ms_journal = 0;
@@ -612,7 +635,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    /* skip irrelevant headers */
-   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_TO) return 0;
+   if(state->is_header == 1 && state->message_state != MSG_FROM && state->message_state != MSG_SENDER && state->message_state != MSG_TO && state->message_state != MSG_CC && state->message_state != MSG_RECIPIENT && state->message_state != MSG_ENVELOPE_TO) return 0;
 
 
    /* don't process body if it's not a text or html part */

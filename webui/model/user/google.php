@@ -37,8 +37,8 @@ class ModelUserGoogle extends Model {
       $session->set("uid", $user['uid']);
       $session->set("admin_user", 0);
       $session->set("email", $user['username']);
-      $session->set("domain", $query->row['domain']);
-      $session->set("realname", $query->row['realname']);
+      $session->set("domain", $user['domain']);
+      $session->set("realname", $user['realname']);
 
       $session->set("emails", $this->model_user_user->get_users_all_email_addresses($user['uid']));
       $session->set("folders", $this->model_folder_folder->get_folder_id_array_for_user($user['uid']));

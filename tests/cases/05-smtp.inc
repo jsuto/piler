@@ -12,21 +12,22 @@ case1() {
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/Levelszemet2" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam0" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam1" --socket --no-counter
+   "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/spam2" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/journal" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/deduptest" --socket --no-counter
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --socket --no-counter
 
 
-   wait_until_emails_are_processed "piler1" 3000
+   wait_until_emails_are_processed "piler1" 3007
    docker exec "piler1" su piler -c /usr/libexec/piler/indexer.delta.sh 2>/dev/null
 
-   count_status_values 3000 2892 108 0
+   count_status_values 3007 2896 111 0
 
    test_retrieved_messages_are_the_same "piler1" "piler"
 
    run_05_sphinx_tests
 
-   docker exec "piler1" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2020/12/31'
+   docker exec "piler1" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31'
 
    docker exec "piler1" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 }

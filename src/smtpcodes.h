@@ -18,6 +18,7 @@
 
 #define SMTP_CMD_HELO "HELO"
 #define SMTP_CMD_EHLO "EHLO"
+#define SMTP_CMD_HELP "HELP"
 #define SMTP_CMD_MAIL_FROM "MAIL FROM:"
 #define SMTP_CMD_RCPT_TO "RCPT TO:"
 #define SMTP_CMD_DATA "DATA"
@@ -32,6 +33,7 @@
 
 // SMTP responses
 
+#define SMTP_RESP_221_PILER_SMTP_OK "221 piler-smtp is OK\r\n"
 #define SMTP_RESP_220_BANNER "220 %s ESMTP\r\n"
 #define SMTP_RESP_220_READY_TO_START_TLS "220 Ready to start TLS\r\n"
 #define SMTP_RESP_221_GOODBYE "221 %s Goodbye\r\n"
@@ -54,7 +56,9 @@
 
 #define SMTP_RESP_502_ERR "502 Command not implemented\r\n"
 #define SMTP_RESP_503_ERR "503 Bad command sequence\r\n"
+#define SMTP_RESP_550_ERR_INVALID_RECIPIENT "550 Invalid recipient\r\n"
 #define SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY "550 You are banned by local policy\r\n"
+#define SMTP_RESP_550_ERR "550 Service currently unavailable\r\n"
 
 
 // LMTP commands

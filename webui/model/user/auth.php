@@ -180,7 +180,6 @@ class ModelUserAuth extends Model {
 
       $ldap_type = '';
       $ldap_host = LDAP_HOST;
-      $ldap_port = LDAP_PORT;
       $ldap_base_dn = LDAP_BASE_DN;
       $ldap_helper_dn = LDAP_HELPER_DN;
       $ldap_helper_password = LDAP_HELPER_PASSWORD;
@@ -212,7 +211,7 @@ class ModelUserAuth extends Model {
 
       if($ldap_host == '' || $ldap_helper_password == '') { return 0; }
 
-      $ldap = new LDAP($ldap_host, $ldap_port, $ldap_helper_dn, $ldap_helper_password);
+      $ldap = new LDAP($ldap_host, $ldap_helper_dn, $ldap_helper_password);
 
       if($ldap->is_bind_ok()) {
 
@@ -221,7 +220,7 @@ class ModelUserAuth extends Model {
          if(isset($query->row['dn']) && $query->row['dn']) {
             $a = $query->row;
 
-            $ldap_auth = new LDAP($ldap_host, $ldap_port, $a['dn'], $password);
+            $ldap_auth = new LDAP($ldap_host, $a['dn'], $password);
 
             if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "ldap auth against '" . $ldap_host . "', dn: '" . $a['dn'] . "', result: " . $ldap_auth->is_bind_ok()); }
 
@@ -234,7 +233,7 @@ class ModelUserAuth extends Model {
                if($this->check_ldap_membership($ldap_auditor_member_dn, $query->rows) == 1) { $role = 2; }
                if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
-               $emails = $this->get_email_array_from_ldap_attr($query->rows);
+               $emails = $this->get_email_array_from_ldap_attr($query->rows, $ldap_distributionlist_objectclass);
 
                $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                $emails = array_merge($emails, $extra_emails);
@@ -292,11 +291,19 @@ class ModelUserAuth extends Model {
    }
 
 
-   public function get_email_array_from_ldap_attr($e = array()) {
+   public function get_email_array_from_ldap_attr($e = array(), $group_object_class) {
       global $mailattrs;
       $data = [];
+      $group_emails = [];
+      $user_emails = [];
 
       foreach($e as $a) {
+         $group_object = 0;
+
+         if($group_object_class && in_array($group_object_class, $a['objectclass'])) {
+            $group_object = 1;
+         }
+
          if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking ldap entry dn: " . $a['dn'] . ", cn: " . $a['cn']); }
 
          foreach ($mailattrs as $mailattr) {
@@ -316,7 +323,15 @@ class ModelUserAuth extends Model {
                         }
 
                         $email = preg_replace("/^([\w]+)\:/i", "", $a[$mailattr][$i]);
-                        if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
+                        if(validemail($email)) {
+                           if(!in_array($email, $data)) { array_push($data, $email); }
+
+                           if($group_object) {
+                              if(!in_array($email, $group_emails)) { array_push($group_emails, $email); }
+                           } else {
+                              if(!in_array($email, $user_emails)) { array_push($user_emails, $email); }
+                           }
+                        }
                      }
                   }
                }
@@ -324,11 +339,24 @@ class ModelUserAuth extends Model {
                   if(LOG_LEVEL >= DEBUG) { syslog(LOG_INFO, "checking entry #2: " . $a[$mailattr]); }
 
                   $email = strtolower(preg_replace("/^([\w]+)\:/i", "", $a[$mailattr]));
-                  if(validemail($email) && !in_array($email, $data)) { array_push($data, $email); }
+                  if(validemail($email)) {
+                     if(!in_array($email, $data)) { array_push($data, $email); }
+
+                     if($group_object) {
+                        if(!in_array($email, $group_emails)) { array_push($group_emails, $email); }
+                     } else {
+                        if(!in_array($email, $user_emails)) { array_push($user_emails, $email); }
+                     }
+                  }
                }
             }
          }
       }
+
+      $session = Registry::get('session');
+
+      $session->set("user_emails", $user_emails);
+      $session->set("group_emails", $group_emails);
 
       return $data;
    }
@@ -349,7 +377,7 @@ class ModelUserAuth extends Model {
 
       $uid = $this->model_user_user->get_uid_by_email($email);
       if($uid < 1) {
-         $uid = $this->model_user_user->get_next_uid(TABLE_EMAIL);
+         $uid = $this->model_user_user->get_next_uid();
          $query = $this->db->query("INSERT INTO " . TABLE_EMAIL . " (uid, email) VALUES(?,?)", array($uid, $email));
       }
 
@@ -478,7 +506,7 @@ class ModelUserAuth extends Model {
 
       if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, "sso login: $sso_user"); }
 
-      $ldap = new LDAP(LDAP_HOST, LDAP_PORT, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
+      $ldap = new LDAP(LDAP_HOST, LDAP_HELPER_DN, LDAP_HELPER_PASSWORD);
 
       if($ldap->is_bind_ok()) {
 
@@ -506,7 +534,7 @@ class ModelUserAuth extends Model {
 
             $query = $ldap->query(LDAP_BASE_DN, "(|(&(objectClass=user)(" . $ldap_mail_attr . "$username))(&(objectClass=group)(member=$username))(&(objectClass=group)(member=" . stripslashes($a['dn']) . ")))", array());
 
-            $emails = $this->get_email_array_from_ldap_attr($query->rows);
+            $emails = $this->get_email_array_from_ldap_attr($query->rows, LDAP_DISTRIBUTIONLIST_OBJECTCLASS);
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);

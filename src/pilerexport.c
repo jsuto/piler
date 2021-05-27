@@ -25,13 +25,17 @@ extern int optind;
 int dryrun = 0;
 int exportall = 0;
 int verification_status = 0;
-int rc = 0;
+int export_to_stdout = 0;
 char *query=NULL;
 int verbosity = 0;
 int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
 regex_t regexp;
 char *zipfile = NULL;
+struct zip *zip = NULL;
+uint64 *zip_ids = NULL;
+int zip_counter = 0;
+int zip_batch = 2000;
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
@@ -51,8 +55,12 @@ void usage(){
    printf("    -w <where condition>              Where condition to pass to sphinx, eg. \"match('@subject: piler')\"\n");
    printf("    -m <max. matches>                 Max. matches to apply to sphinx query (default: %d)\n", max_matches);
    printf("    -i <index list>                   Sphinx indices to use  (default: %s)\n", index_list);
+#if LIBZIP_VERSION_MAJOR >= 1
    printf("    -z <zip file>                     Write exported EML files to a zip file\n");
+   printf("    -Z <batch size>                   Zip batch size. Valid range: 10-10000, default: 2000\n");
+#endif
    printf("    -A                                Export all emails from archive\n");
+   printf("    -o                                Export emails to stdout\n");
    printf("    -d                                Dry run\n");
 
    regfree(&regexp);
@@ -155,16 +163,23 @@ int append_string_to_buffer(char **buffer, char *str){
 uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_ROW row;
    uint64 id=0;
-   char s[SMALLBUFSIZE];
+   char s[MAXBUFSIZE];
+   int rc=0;
 
    *num = 0;
 
    if(!where_condition) return id;
 
-   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE id IN (", SQL_METADATA_TABLE);
+   snprintf(s, sizeof(s)-1, "SELECT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM %s WHERE id IN (", SQL_METADATA_TABLE);
    rc += append_string_to_buffer(&query, s);
 
    snprintf(s, sizeof(s)-1, "SELECT id FROM %s WHERE %s AND id > %llu ORDER BY id ASC LIMIT 0,%d", index_list, where_condition, last_id, max_matches);
+
+   if(dryrun){
+      printf("sphinx query: %s\n", s);
+   }
+
+   syslog(LOG_PRIORITY, "sphinx query: %s", s);
 
    if(mysql_real_query(&(sdata2->mysql), s, strlen(s)) == 0){
       MYSQL_RES *res = mysql_store_result(&(sdata2->mysql));
@@ -183,6 +198,7 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
    }
 
    if(!rc) export_emails_matching_to_query(sdata, query, cfg);
+   else printf("error: append_string_to_buffer() in run_query()\n");
 
    free(query);
    query = NULL;
@@ -229,15 +245,16 @@ void export_emails_matching_id_list(struct session_data *sdata, struct session_d
 
 int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain, int minsize, int maxsize, unsigned long startdate, unsigned long stopdate){
    char s[SMALLBUFSIZE];
+   int rc=0;
 
    if(exportall == 1){
-      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest` FROM ");
+      rc = append_string_to_buffer(&query, "SELECT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM ");
       rc += append_string_to_buffer(&query, SQL_METADATA_TABLE);
       rc += append_string_to_buffer(&query, " WHERE deleted=0 ");
       return rc;
    }
 
-   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest` FROM %s WHERE deleted=0 ", SQL_MESSAGES_VIEW);
+   snprintf(s, sizeof(s)-1, "SELECT DISTINCT `id`, `piler_id`, `digest`, `bodydigest`, `attachments` FROM %s WHERE deleted=0 ", SQL_MESSAGES_VIEW);
 
    rc = append_string_to_buffer(&query, s);
 
@@ -315,28 +332,27 @@ int build_query_from_args(char *from, char *to, char *fromdomain, char *todomain
    return rc;
 }
 
+#if LIBZIP_VERSION_MAJOR >= 1
+void zip_flush(){
+   zip_close(zip);
 
-int write_to_zip_file(char *filename){
-   struct zip *z=NULL;
-   int errorp, ret=ERR;
+   zip = NULL;
+   zip_counter = 0;
 
-   z = zip_open(zipfile, ZIP_CREATE, &errorp);
-   if(!z){
-      printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
-      return ret;
+   if(!zip_ids) return;
+
+   for(int i=0; i<zip_batch; i++){
+      if(*(zip_ids+i)){
+         char filename[SMALLBUFSIZE];
+         snprintf(filename, sizeof(filename)-1, "%llu.eml", *(zip_ids+i));
+         unlink(filename);
+      }
    }
 
-   zip_source_t *zs = zip_source_file(z, filename, 0, 0);
-   if(zs && zip_file_add(z, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
-      ret = OK;
-   } else {
-      printf("error adding file %s: %s\n", filename, zip_strerror(z));
-   }
-
-   zip_close(z);
-
-   return ret;
+   free(zip_ids);
+   zip_ids = NULL;
 }
+#endif
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
@@ -344,6 +360,8 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
    struct sql sql;
+   int errorp, rc=0, attachments;
+   unsigned long total_attachments=0;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
@@ -360,6 +378,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    sql.sql[sql.pos] = sdata->ttmpfile; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
    sql.sql[sql.pos] = &digest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(digest)-2; sql.pos++;
    sql.sql[sql.pos] = &bodydigest[0]; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = sizeof(bodydigest)-2; sql.pos++;
+   sql.sql[sql.pos] = (char *)&attachments; sql.type[sql.pos] = TYPE_LONG; sql.len[sql.pos] = sizeof(int); sql.pos++;
 
    p_store_results(&sql);
 
@@ -368,6 +387,12 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
       if(id > 0){
 
          if(dryrun == 0){
+
+            if(export_to_stdout){
+               printf("%s", PILEREXPORT_BEGIN_MARK);
+               rc = retrieve_email_from_archive(sdata, stdout, cfg);
+               continue;
+            }
 
             snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
 
@@ -390,14 +415,43 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                   verification_status = 1;
                }
 
-               if(zipfile && write_to_zip_file(filename) == OK){
-                  unlink(filename);
-               }
+               if(zipfile){
+               #if LIBZIP_VERSION_MAJOR >= 1
+                  // Open zip file if handler is NULL
+                  if(!zip){
+                     zip = zip_open(zipfile, ZIP_CREATE, &errorp);
+                     if(!zip){
+                        printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);
+                        return ERR;
+                     }
+                  }
 
+                  if(!zip_ids) zip_ids = (uint64*) calloc(sizeof(uint64), zip_batch);
+
+                  if(!zip_ids){
+                     printf("calloc error for zip_ids\n");
+                     return ERR;
+                  }
+
+                  zip_source_t *zs = zip_source_file(zip, filename, 0, 0);
+                  if(zs && zip_file_add(zip, filename, zs, ZIP_FL_ENC_UTF_8) >= 0){
+                     *(zip_ids+zip_counter) = id;
+                     zip_counter++;
+                  } else {
+                     printf("error adding file %s: %s\n", filename, zip_strerror(zip));
+                     return ERR;
+                  }
+
+                  if(zip_counter == zip_batch){
+                     zip_flush();
+                  }
+               #endif
+               }
             }
             else printf("cannot open: %s\n", filename);
          }
          else {
+            total_attachments += attachments;
             printf("id:%llu\n", id);
          }
 
@@ -409,6 +463,10 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
 ENDE:
    close_prepared_statement(&sql);
+
+   if(dryrun){
+      printf("attachments: %lu\n", total_attachments);
+   }
 
    printf("\n");
 
@@ -442,6 +500,7 @@ int main(int argc, char **argv){
             {"all",          no_argument,        0,  'A' },
             {"dry-run",      no_argument,        0,  'd' },
             {"dryrun",       no_argument,        0,  'd' },
+            {"stdout",       no_argument,        0,  'o' },
             {"help",         no_argument,        0,  'h' },
             {"version",      no_argument,        0,  'v' },
             {"from",         required_argument,  0,  'f' },
@@ -451,6 +510,7 @@ int main(int argc, char **argv){
             {"start-date",   required_argument,  0,  'a' },
             {"stop-date",    required_argument,  0,  'b' },
             {"zip",          required_argument,  0,  'z' },
+            {"zip-batch",    required_argument,  0,  'Z' },
             {"where-condition", required_argument,  0,  'w' },
             {"max-matches",  required_argument,  0,  'm' },
             {"index-list",   required_argument,  0,  'i' },
@@ -459,9 +519,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Adhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?");
 #endif
 
       if(c == -1) break;
@@ -492,7 +552,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&from, optarg);
+                    if(append_email_to_buffer(&from, optarg)){
+                       printf("error: append_email_to_buffer() for from\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -503,7 +566,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&to, optarg);
+                    if(append_email_to_buffer(&to, optarg)){
+                       printf("error: append_email_to_buffer() for to\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -514,7 +580,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&fromdomain, optarg);
+                    if(append_email_to_buffer(&fromdomain, optarg)){
+                       printf("error: append_email_to_buffer() for fromdomain\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -525,7 +594,10 @@ int main(int argc, char **argv){
                        break;
                     }
 
-                    rc = append_email_to_buffer(&todomain, optarg);
+                    if(append_email_to_buffer(&todomain, optarg)){
+                       printf("error: append_email_to_buffer() for todomain\n");
+                       return 1;
+                    }
 
                     break;
 
@@ -553,6 +625,14 @@ int main(int argc, char **argv){
          case 'z':  zipfile = optarg;
                     break;
 
+         case 'Z':  zip_batch = atoi(optarg);
+                    if(zip_batch < 10 || zip_batch > 10000)
+                       zip_batch = 2000;
+                    break;
+
+         case 'o':
+                    export_to_stdout = 1;
+                    break;
 
          case 'd' :
                     dryrun = 1;
@@ -613,6 +693,12 @@ int main(int argc, char **argv){
    }
 
    close_database(&sdata);
+
+   if(zipfile){
+   #if LIBZIP_VERSION_MAJOR >= 1
+      zip_flush();
+   #endif
+   }
 
    return verification_status;
 }

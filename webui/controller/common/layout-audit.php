@@ -17,7 +17,6 @@ class ControllerCommonLayoutAudit extends Controller {
          $this->children = array(
                       "common/menu",
                       "search/folder",
-                      "search/popup",
                       "common/footer"
          );
 

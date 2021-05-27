@@ -416,7 +416,7 @@ int list_folders(struct data *data){
    }
 
    // trim the "A3 OK LIST completed" trailer off
-   if(p) *p = '\0';
+   if(p) *p = '\0'; //-V547
 
    memset(attrs, 0, sizeof(attrs));
 
@@ -449,21 +449,27 @@ int list_folders(struct data *data){
             } else {
 
                if(fldrlen) {
-                  ruf = malloc(strlen(q) * 2 + 1);
-                  memset(ruf, 0, strlen(q) * 2 + 1);
-                  memcpy(ruf, q, strlen(q));
-                  r = ruf;
-                  while(*r != '\0') {
-                     if(*r == '\\') {
-                        memmove(r + 1, r, strlen(r));
+                  int ruflen = strlen(q) * 2;
+                  ruf = malloc(ruflen + 1);
+                  if(ruf){
+                     snprintf(ruf, ruflen, "%s", q);
+                     r = ruf;
+                     while(*r != '\0') {
+                        if(*r == '\\') {
+                           memmove(r + 1, r, strlen(r));
+                           r++;
+                        }
                         r++;
                      }
-                     r++;
+
+                     snprintf(folder, sizeof(folder)-1, "%s", ruf);
+
+                     free(ruf);
+                  }
+                  else {
+                     printf("error: ruf = malloc()\n");
                   }
 
-                  snprintf(folder, sizeof(folder)-1, "%s", ruf);
-
-                  free(ruf);
                   fldrlen = 0;
                } else {
                   snprintf(folder, sizeof(folder)-1, "%s", q);

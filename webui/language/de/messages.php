@@ -197,6 +197,7 @@ $_['text_logout2'] = "Abmeldung";
 $_['text_maillog_status'] = "Sammelstatus Maillogbuch";
 $_['text_main_title'] = "Clapf Benutzeroberfläche";
 $_['text_mapped_domain'] = "Domänenalias";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Nachricht zum Löschen markiert";
 $_['text_memory_usage'] = "Arbeitsspeicher";
 $_['text_message'] = "Nachricht";
@@ -499,3 +500,5 @@ $_['text_no_selected_message'] = "no selected message";
 $_['text_create_note'] = "Create note";
 
 $_['text_wildcard_domains'] = "Wildcard domains";
+$_['text_remove_request'] = "remove request";
+$_['text_rejected_removal'] = "rejected removal";

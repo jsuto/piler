@@ -209,6 +209,7 @@ $_['text_logout2'] = "çıkış";
 $_['text_maillog_status'] = "e-posta logu toplama durumu";
 $_['text_main_title'] = "clapf web arabirimi";
 $_['text_mapped_domain'] = "Eşleşmiş alan adı";
+$_['text_mark_private'] = "private";
 $_['text_marked_for_removal'] = "Mesaj kaldırılmak üzere işaretlenmiş";
 $_['text_memory_usage'] = "Hafıza kullanımı";
 $_['text_message'] = "mesaj";
@@ -494,3 +495,6 @@ $_['text_user_data_officer'] = "Data officer";
 $_['text_no_selected_message'] = "no selected message";
 $_['text_create_note'] = "Create note";
 $_['text_wildcard_domains'] = "Wildcard domains";
+$_['text_remove_request'] = "remove request";
+
+$_['text_rejected_removal'] = "rejected removal";

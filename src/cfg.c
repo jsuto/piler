@@ -39,7 +39,7 @@ struct _parse_rule {
 
 struct _parse_rule config_parse_rules[] =
 {
-
+   { "archive_address", "string", (void*) string_parser, offsetof(struct config, archive_address), "", MAXVAL-1},
    { "archive_emails_not_having_message_id", "integer", (void*) int_parser, offsetof(struct config, archive_emails_not_having_message_id), "0", sizeof(int)},
    { "archive_only_mydomains", "integer", (void*) int_parser, offsetof(struct config, archive_only_mydomains), "0", sizeof(int)},
    { "backlog", "integer", (void*) int_parser, offsetof(struct config, backlog), "20", sizeof(int)},
@@ -84,11 +84,14 @@ struct _parse_rule config_parse_rules[] =
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct config, piler_header_field), "X-piler-id:", MAXVAL-1},
    { "process_rcpt_to_addresses", "integer", (void*) int_parser, offsetof(struct config, process_rcpt_to_addresses), "0", sizeof(int)},
    { "queuedir", "string", (void*) string_parser, offsetof(struct config, queuedir), QUEUE_DIR, MAXVAL-1},
+   { "security_header", "string", (void*) string_parser, offsetof(struct config, security_header), "", MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct config, server_id), "0", sizeof(int)},
+   { "smtp_access_list", "integer", (void*) int_parser, offsetof(struct config, smtp_access_list), "0", sizeof(int)},
    { "smtp_timeout", "integer", (void*) int_parser, offsetof(struct config, smtp_timeout), "60", sizeof(int)},
    { "spam_header_line", "string", (void*) string_parser, offsetof(struct config, spam_header_line), "", MAXVAL-1},
    { "syslog_recipients", "integer", (void*) int_parser, offsetof(struct config, syslog_recipients), "0", sizeof(int)},
    { "tls_enable", "integer", (void*) int_parser, offsetof(struct config, tls_enable), "0", sizeof(int)},
+   { "tls_min_version", "string", (void*) string_parser, offsetof(struct config, tls_min_version), "TLSv1.2", MAXVAL-1},
    { "tweak_sent_time_offset", "integer", (void*) int_parser, offsetof(struct config, tweak_sent_time_offset), "0", sizeof(int)},
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct config, update_counters_to_memcached), "0", sizeof(int)},
    { "username", "string", (void*) string_parser, offsetof(struct config, username), "piler", MAXVAL-1},
@@ -144,6 +147,24 @@ int parse_config_file(char *configfile, struct config *target_cfg, struct _parse
 }
 
 
+int get_tls_protocol_number(char *protocol){
+   struct tls_protocol tls_protocols[] = {
+      { "TLSv1", TLS1_VERSION },
+      { "TLSv1.1", TLS1_1_VERSION },
+      { "TLSv1.2", TLS1_2_VERSION },
+      { "TLSv1.3", TLS1_3_VERSION },
+   };
+
+   for(unsigned int i=0; i<sizeof(tls_protocols)/sizeof(struct tls_protocol); i++){
+      if(!strcmp(protocol, tls_protocols[i].proto)) {
+         return tls_protocols[i].version;
+      }
+   }
+
+   return 0;
+}
+
+
 int load_default_config(struct config *cfg, struct _parse_rule *rules){
    int i=0;
 
@@ -175,6 +196,9 @@ struct config read_config(char *configfile){
    if(parse_config_file(configfile, &cfg, config_parse_rules) == -1) printf("error parsing the configfile: %s\n", configfile);
 
    cfg.hostid_len = strlen(cfg.hostid);
+
+   // Get the TLS protocol constant from string, ie. TLSv1.3 -> 772
+   cfg.tls_min_version_number = get_tls_protocol_number(cfg.tls_min_version);
 
    return cfg;
 }
