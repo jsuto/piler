@@ -308,7 +308,7 @@ void remove_stripped_attachments(struct parser_state *state){
 }
 
 
-int process_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
+int is_duplicated_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
    int fd;
    char piler_id[SMALLBUFSIZE];
 
@@ -338,7 +338,6 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
    if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: touch %s OK (%s)", sdata->ttmpfile, state->message_id_hash, state->message_id);
 
 
-
    if(cfg->mmap_dedup_test == 1 && data->dedup != MAP_FAILED && data->child_serial >= 0 && data->child_serial < MAXCHILDREN){
 
       if(strstr(data->dedup, state->message_id_hash)){
@@ -354,6 +353,14 @@ int process_message(struct session_data *sdata, struct parser_state *state, stru
       memcpy(data->dedup + data->child_serial*DIGEST_LENGTH*2, state->message_id_hash, DIGEST_LENGTH*2);
    }
 
+   return OK;
+}
+
+
+int process_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
+
+   if(is_duplicated_message(sdata, state, data, cfg) == ERR_EXISTS)
+      return ERR_EXISTS;
 
    sdata->retained += query_retain_period(data, state, sdata->tot_len, sdata->spam_message, cfg);
 
