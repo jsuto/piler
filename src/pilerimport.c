@@ -316,6 +316,9 @@ int main(int argc, char **argv){
    /* make sure we don't discard messages without a valid Message-Id when importing manually */
    cfg.archive_emails_not_having_message_id = 1;
 
+   /* The mmap_dedup_test feature is expected to work with the piler daemon only */
+   cfg.mmap_dedup_test = 0;
+
    if(read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);
       return ERR;
