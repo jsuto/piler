@@ -315,6 +315,7 @@ struct import {
    int port;
    int seq;
    int table_id;
+   int delay;
    char *server;
    char *username;
    char *password;

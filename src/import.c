@@ -25,6 +25,14 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    struct parser_state state;
    struct counters counters;
 
+   if(data->import->delay > 0){
+      struct timespec req;
+
+      req.tv_sec = 0;
+      req.tv_nsec = 1000000 * data->import->delay;
+
+      nanosleep(&req, NULL);
+   }
 
    init_session_data(sdata, cfg);
 
