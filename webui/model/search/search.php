@@ -647,6 +647,8 @@ class ModelSearchSearch extends Model {
 
       $emails = $session->get($session_var);
 
+      if(!$emails) { return $s; }
+
       while(list($k, $v) = each($emails)) {
          if($s) { $s .= '| ' .  $this->fix_email_address_for_sphinx($v); }
          else { $s = $this->fix_email_address_for_sphinx($v); }
