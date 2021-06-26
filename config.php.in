@@ -327,7 +327,8 @@ $langs = array(
                 'pl',
                 'pt',
                 'ru',
-                'tr'
+                'tr',
+                'tw'
                );
 
 
