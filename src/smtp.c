@@ -171,10 +171,14 @@ int init_ssl(struct smtp_session *session){
       return 0;
    }
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+   SSL_CTX_set_options(session->net.ctx, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1);
+#else
    if(SSL_CTX_set_min_proto_version(session->net.ctx, session->cfg->tls_min_version_number) == 0){
       syslog(LOG_PRIORITY, "failed SSL_CTX_set_min_proto_version() to %s/%d", session->cfg->tls_min_version, session->cfg->tls_min_version_number);
       return 0;
    }
+#endif
 
    if(SSL_CTX_set_cipher_list(session->net.ctx, session->cfg->cipher_list) == 0){
       syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", session->cfg->cipher_list);

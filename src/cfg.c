@@ -152,7 +152,9 @@ int get_tls_protocol_number(char *protocol){
       { "TLSv1", TLS1_VERSION },
       { "TLSv1.1", TLS1_1_VERSION },
       { "TLSv1.2", TLS1_2_VERSION },
+   #if OPENSSL_VERSION_NUMBER >= 0x10100000L
       { "TLSv1.3", TLS1_3_VERSION },
+   #endif
    };
 
    for(unsigned int i=0; i<sizeof(tls_protocols)/sizeof(struct tls_protocol); i++){
