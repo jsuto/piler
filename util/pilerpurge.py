@@ -160,12 +160,12 @@ def unlink(filename="", opts={}):
 
 
 def get_m_file_path(id='', opts={}):
-    return "/".join([opts['storedir'], opts['server_id'], id[8:11], id[32:34],
+    return "/".join([opts['storedir'], id[24:26], id[8:11], id[32:34],
                     id[34:36], id + ".m"])
 
 
 def get_attachment_file_path(piler_id='', attachment_id=0, opts={}):
-    return "/".join([opts['storedir'], opts['server_id'], piler_id[8:11],
+    return "/".join([opts['storedir'], piler_id[24:26], piler_id[8:11],
                     piler_id[32:34], piler_id[34:36], piler_id + ".a" +
                     str(attachment_id)])
 
