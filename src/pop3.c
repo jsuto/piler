@@ -23,16 +23,6 @@
 #include <piler.h>
 
 
-int is_last_complete_pop3_packet(char *s, int len){
-
-   if(*(s+len-5) == '\r' && *(s+len-4) == '\n' && *(s+len-3) == '.' && *(s+len-2) == '\r' && *(s+len-1) == '\n'){
-      return 1;
-   }
-
-   return 0;
-}
-
-
 int connect_to_pop3_server(struct data *data){
    char buf[MAXBUFSIZE];
 
@@ -86,66 +76,79 @@ void get_number_of_total_messages(struct data *data){
 
 
 int pop3_download_email(struct data *data, int i){
-   int n, fd, pos=0, lastpos=0, nreads=0;
-   char *p, buf[MAXBUFSIZE];
-   char aggrbuf[3*MAXBUFSIZE];
+   char *p, buf[MAXBUFSIZE], savedbuf[MAXBUFSIZE], copybuf[2*MAXBUFSIZE];
 
    data->import->processed_messages++;
 
    snprintf(data->import->filename, SMALLBUFSIZE-1, "pop3-tmp-%d-%d.txt", getpid(), i);
    unlink(data->import->filename);
 
-   fd = open(data->import->filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
+   int fd = open(data->import->filename, O_CREAT|O_EXCL|O_RDWR|O_TRUNC, S_IRUSR|S_IWUSR);
    if(fd == -1){
       printf("cannot open: %s\n", data->import->filename);
       return ERR;
    }
 
+   memset(savedbuf, 0, sizeof(savedbuf));
+
    snprintf(buf, sizeof(buf)-1, "RETR %d\r\n", i);
    write1(data->net, buf, strlen(buf));
 
-   memset(aggrbuf, 0, sizeof(aggrbuf));
+   int nlines = 0;
+   int endofmessage = 0;
+   int savedlen = 0;
+   int n = 0;
 
    while((n = recvtimeoutssl(data->net, buf, sizeof(buf))) > 0){
-      nreads++;
+      if(savedlen){
+         memset(copybuf, 0, sizeof(copybuf));
+         memcpy(copybuf, savedbuf, savedlen);
+         memcpy(&copybuf[savedlen], buf, n);
 
-      if(nreads == 1){
+         savedlen = 0;
+         memset(savedbuf, 0, sizeof(savedbuf));
 
-         if(strncmp(buf, "+OK", 3) == 0){
-            p = strchr(&buf[3], '\n');
-            if(p){
-               *p = '\0';
-               pos = strlen(buf)+1;
-               *p = '\n';
+         p = &copybuf[0];
+      } else {
+         p = &buf[0];
+      }
+
+      int puflen=0;
+      int rc=OK;
+      do {
+         char puf[MAXBUFSIZE];
+
+         puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
+         nlines++;
+
+         if(nlines == 1){
+            if(strncmp(puf, "+OK", 3)){
+               printf("error: %s", puf);
+               return ERR;
+            }
+         } else {
+            if(puf[puflen-1] == '\n'){
+               if(puflen == 3 && puf[0] == '.' && puf[1] == '\r' && puf[2] == '\n'){
+                  endofmessage = 1;
+                  break;
+               }
+
+               int dotstuff = 0;
+               if(puf[0] == '.' && puf[1] != '\r' && puf[1] != '\n') dotstuff = 1;
+
+               if(write(fd, &puf[dotstuff], puflen-dotstuff) == -1) printf("ERROR: writing to fd\n");
+
+            } else if(puflen > 0) {
+               savedlen = puflen;
+               snprintf(savedbuf, sizeof(savedbuf)-1, "%s", puf);
             }
          }
-         else { printf("error: %s", buf); return ERR; }
 
-      }
+         p += puflen;
 
-      if((uint)(lastpos + 1 + n) < sizeof(aggrbuf)){
+      } while(puflen > 0);
 
-         if(nreads == 1){
-            memcpy(aggrbuf+lastpos, buf+pos, n-pos);
-            lastpos += n-pos;
-         }
-         else {
-            memcpy(aggrbuf+lastpos, buf, n);
-            lastpos += n;
-         }
-      }
-      else {
-         if(write(fd, aggrbuf, sizeof(buf)) == -1) printf("ERROR: writing to fd\n");
-
-         memmove(aggrbuf, aggrbuf+sizeof(buf), lastpos-sizeof(buf));
-         lastpos -= sizeof(buf);
-
-         memcpy(aggrbuf+lastpos, buf, n);
-         lastpos += n;
-      }
-
-      if(is_last_complete_pop3_packet(aggrbuf, lastpos) == 1){
-         if(write(fd, aggrbuf, lastpos-3) == -1) printf("ERROR: writing to fd\n");
+      if(endofmessage){
          break;
       }
    }
