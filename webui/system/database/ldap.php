@@ -12,6 +12,10 @@ class LDAP {
       ldap_set_option($this->link, LDAP_OPT_PROTOCOL_VERSION, 3);
       ldap_set_option($this->link, LDAP_OPT_REFERRALS, 0);
 
+      if (LDAP_USE_START_TLS == 1) {
+         ldap_start_tls($this->link);
+      }
+
       if(@ldap_bind($this->link, $binddn, $bindpw)) {
          $this->bind = 1;
       }
