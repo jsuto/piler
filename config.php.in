@@ -88,6 +88,7 @@ $config['LDAP_MAIL_ATTR'] = 'mail';
 $config['LDAP_AUDITOR_MEMBER_DN'] = '';
 $config['LDAP_ADMIN_MEMBER_DN'] = '';
 $config['LDAP_BASE_DN'] = '';
+$config['LDAP_USE_START_TLS'] = 0;
 
 // AD specific settings
 //
