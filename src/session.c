@@ -186,26 +186,33 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
       puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
       p += puflen;
 
+      // complete line: rc == OK and puflen > 0
+      // incomplete line with something in the buffer: rc == ERR and puflen > 0
+
       if(puflen > 0){
          // Update lasttime if we have a line to process
          time(&(session->lasttime));
 
-         // pass the puffer to process_data() only if there was an '\n'
-         // on the line or the puffer does not start with a period
-         if(session->protocol_state == SMTP_STATE_DATA && (rc == OK || puf[0] != '.')){
-            sig_block(SIGALRM);
-            process_data(session, puf, puflen);
-            sig_unblock(SIGALRM);
-         }
-         else if(session->protocol_state == SMTP_STATE_BDAT){
-            process_bdat(session, puf, puflen, cfg);
-         }
-         else if(rc == OK){
-            process_smtp_command(session, puf, cfg);
-         }
-         else {
-            snprintf(session->buf, MAXBUFSIZE-1, "%s", puf);
+         // Save incomplete line to buffer
+         if(rc == ERR){
+            snprintf(session->buf, sizeof(session->buf)-1, "%s", puf);
             session->buflen = puflen;
+         }
+
+         // We have a complete line to process
+
+         if(rc == OK){
+            if(session->protocol_state == SMTP_STATE_BDAT){
+               process_bdat(session, puf, puflen, cfg);
+            }
+            else if(session->protocol_state == SMTP_STATE_DATA){
+               sig_block(SIGALRM);
+               process_data(session, puf, puflen);
+               sig_unblock(SIGALRM);
+            }
+            else {
+               process_smtp_command(session, puf, cfg);
+            }
          }
       }
 
