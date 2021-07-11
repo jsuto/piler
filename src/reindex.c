@@ -135,8 +135,7 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
             unlink(filename);
 
             if(progressbar){
-               uint64 delta = to_id - from_id;
-               if(delta == 0) delta = 1;
+               uint64 delta = to_id - from_id + 1;
 
                printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
                fflush(stdout);
