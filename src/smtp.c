@@ -84,15 +84,15 @@ void process_data(struct smtp_session *session, char *buf, int buflen){
       // write line to file
       int written=0, n_writes=0;
 
+      // In the DATA phase skip the 1st character if it's a dot (.)
+      // and there are more characters before the trailing CR-LF
+      //
+      // See https://www.ietf.org/rfc/rfc5321.html#section-4.5.2 for more.
+
+      int dotstuff = 0;
+      if(*buf == '.' && buflen > 1 && *(buf+1) != '\r' && *(buf+1) != '\n') dotstuff = 1;
+
       while(written < buflen) {
-         // In the DATA phase skip the 1st character if it's a dot (.)
-         // and there are more characters before the trailing CR-LF
-         //
-         // See https://www.ietf.org/rfc/rfc5321.html#section-4.5.2 for more.
-
-         int dotstuff = 0;
-         if(*buf == '.' && buflen > 1 && *(buf+1) != '\r' && *(buf+1) != '\n') dotstuff = 1;
-
          int len = write(session->fd, buf+dotstuff+written, buflen-dotstuff-written);
 
          n_writes++;
@@ -101,6 +101,7 @@ void process_data(struct smtp_session *session, char *buf, int buflen){
             if(len != buflen-dotstuff) syslog(LOG_PRIORITY, "WARN: partial write: %d/%d bytes (round: %d)", len, buflen-dotstuff, n_writes);
             written += len + dotstuff;
             session->tot_len += len;
+            dotstuff = 0;
          }
          else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): written %d bytes", __LINE__, len);
       }
