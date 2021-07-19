@@ -65,7 +65,9 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    fclose(f);
 
    if(data->import && data->import->extra_recipient){
-      add_recipient(data->import->extra_recipient, strlen(data->import->extra_recipient), sdata, &state, data, cfg);
+      char tmpbuf[SMALLBUFSIZE];
+      snprintf(tmpbuf, sizeof(tmpbuf)-1, "%s", data->import->extra_recipient);
+      add_recipient(tmpbuf, strlen(tmpbuf), sdata, &state, data, cfg);
    }
 
    // If both Sender: and From: headers exist, and they are different, then append
