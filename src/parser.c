@@ -112,6 +112,15 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
       if(sdata->internal_recipient == 1 && sdata->external_recipient == 1) sdata->direction = DIRECTION_INTERNAL_AND_OUTGOING;
    }
 
+   char *q = strrchr(state->receivedbuf, ';');
+   if(q){
+      time_t received_timestamp = parse_date_header(q+1);
+      if(received_timestamp > 10000000){
+         // If the calculated date based on Date: header line differs more than 1 week
+         // then we'll override it with the data parsed from the first Received: line
+         if(labs(received_timestamp - sdata->sent) > 604800) sdata->sent = received_timestamp;
+      }
+   }
 
    for(i=1; i<=state->n_attachments; i++){
       char puf[SMALLBUFSIZE];
@@ -440,7 +449,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       }
 
       else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf);
-      else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
+      else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0){
+         state->message_state = MSG_RECEIVED;
+         state->received_header++;
+      }
       else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0){
          state->message_state = MSG_TO;
          buf += strlen(cfg->extra_to_field);
@@ -456,6 +468,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
       if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
          fill_attachment_name_buf(state, buf);
+      }
+
+      if(state->received_header == 1 && state->message_state == MSG_RECEIVED){
+         memcpy(&(state->receivedbuf[strlen(state->receivedbuf)]), buf, len);
       }
 
       /* we are interested in only From:, To:, Subject:, Received:, Content-*: header lines */

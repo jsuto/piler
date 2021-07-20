@@ -184,11 +184,13 @@ struct parser_state {
    int saved_size;
    unsigned int writebufpos;
    unsigned int abufpos;
+   unsigned int received_header;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char message_id_hash[2*DIGEST_LENGTH+1];
    char miscbuf[MAX_TOKEN_LEN];
    char qpbuf[MAX_TOKEN_LEN];
+   char receivedbuf[SMALLBUFSIZE];
    unsigned long n_token;
    unsigned long n_subject_token;
    unsigned long n_body_token;

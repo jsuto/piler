@@ -49,6 +49,7 @@ void init_state(struct parser_state *state){
    memset(state->message_id_hash, 0, 2*DIGEST_LENGTH+1);
    memset(state->miscbuf, 0, MAX_TOKEN_LEN);
    memset(state->qpbuf, 0, MAX_TOKEN_LEN);
+   memset(state->receivedbuf, 0, sizeof(state->receivedbuf));
 
    memset(state->type, 0, TINYBUFSIZE);
 
@@ -67,6 +68,7 @@ void init_state(struct parser_state *state){
 
    state->writebufpos = 0;
    state->abufpos = 0;
+   state->received_header = 0;
 
    inithash(state->boundaries);
    inithash(state->rcpt);
