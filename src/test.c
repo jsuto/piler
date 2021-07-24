@@ -183,7 +183,7 @@ int main(int argc, char **argv){
    clearhash(data.mydomains);
 
    for(i=1; i<=state.n_attachments; i++){
-      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, dumped: %d, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].dumped, state.attachments[i].digest);
       unlink(state.attachments[i].internalname);
    }
 

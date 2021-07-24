@@ -134,7 +134,7 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
 
       digest_file(state->attachments[i].internalname, &(state->attachments[i].digest[0]));
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s, dumped: %d", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest, state->attachments[i].dumped);
 
       char *p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
       len = strlen(p);
@@ -570,6 +570,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       if(strcasestr(buf, "message/rfc822")){
          state->message_rfc822 = 1;
          state->is_header = 1;
+
+         state->has_to_dump = 0;
 
          if(sdata->ms_journal == 1){
             state->is_1st_header = 1;
