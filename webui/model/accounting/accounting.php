@@ -36,7 +36,7 @@ class ModelAccountingAccounting extends Model {
 
       // emails sent to users
 
-      $tousers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `to`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `to`", array($start, $stop));
+      $tousers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `to`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE deleted=0 AND `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `to`", array($start, $stop));
 
       foreach($tousers->rows as $row) {
          $counter[$row['day']][$row['to']]['recd'] = $row['count'];
@@ -46,7 +46,7 @@ class ModelAccountingAccounting extends Model {
 
       // emails sent from users
 
-      $fromusers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `from`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `from`", array($start, $stop));
+      $fromusers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `from`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE deleted=0 AND `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `from`", array($start, $stop));
 
       foreach($fromusers->rows as $row) {
          $counter[$row['day']][$row['from']]['sent'] = $row['count'];
