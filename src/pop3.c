@@ -100,10 +100,14 @@ int pop3_download_email(struct data *data, int i){
    int n = 0;
 
    while((n = recvtimeoutssl(data->net, buf, sizeof(buf))) > 0){
+      int remaininglen = n;
+
       if(savedlen){
          memset(copybuf, 0, sizeof(copybuf));
          memcpy(copybuf, savedbuf, savedlen);
          memcpy(&copybuf[savedlen], buf, n);
+
+         remaininglen += savedlen;
 
          savedlen = 0;
          memset(savedbuf, 0, sizeof(savedbuf));
@@ -115,10 +119,13 @@ int pop3_download_email(struct data *data, int i){
 
       int puflen=0;
       int rc=OK;
+      int nullbyte=0;
+
       do {
          char puf[MAXBUFSIZE];
 
-         puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
+         puflen = read_one_line(p, remaininglen, '\n', puf, sizeof(puf)-1, &rc, &nullbyte);
+         remaininglen -= puflen;
          nlines++;
 
          if(nlines == 1){

@@ -99,6 +99,7 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, char *cli
    session->net.ctx = NULL;
    session->net.ssl = NULL;
 
+   session->nullbyte = 0;
    session->last_data_char = 0;
 
    session->fd = -1;
@@ -160,10 +161,12 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 
 
 void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   int puflen, rc;
+   int puflen, rc, nullbyte;
    char *p, copybuf[BIGBUFSIZE+MAXBUFSIZE], puf[MAXBUFSIZE];
 
    // if there's something in the saved buffer, then let's merge them
+
+   int remaininglen = readlen + session->buflen;
 
    if(session->buflen > 0){
       memset(copybuf, 0, sizeof(copybuf));
@@ -183,8 +186,13 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
 
 
    do {
-      puflen = read_one_line(p, '\n', puf, sizeof(puf)-1, &rc);
+      puflen = read_one_line(p, remaininglen, '\n', puf, sizeof(puf)-1, &rc, &nullbyte);
       p += puflen;
+      remaininglen -= puflen;
+
+      if(nullbyte){
+         session->nullbyte = 1;
+      }
 
       // complete line: rc == OK and puflen > 0
       // incomplete line with something in the buffer: rc == ERR and puflen > 0
@@ -195,7 +203,7 @@ void handle_data(struct smtp_session *session, char *readbuf, int readlen, struc
 
          // Save incomplete line to buffer
          if(rc == ERR){
-            snprintf(session->buf, sizeof(session->buf)-1, "%s", puf);
+            memcpy(session->buf, puf, puflen);
             session->buflen = puflen;
          }
 

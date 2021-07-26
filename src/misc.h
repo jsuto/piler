@@ -46,7 +46,7 @@ int create_and_bind(char *listen_addr, int listen_port);
 int can_i_write_directory(char *dir);
 
 void move_email(struct smtp_session *session);
-int read_one_line(char *s, int c, char *buf, int buflen, int *rc);
+int read_one_line(char *s, int slen, int c, char *buf, int buflen, int *rc, int *nullbyte);
 
 int init_ssl_to_server(struct data *data);
 

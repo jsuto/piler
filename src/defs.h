@@ -402,6 +402,7 @@ struct smtp_session {
    char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
    char buf[MAXBUFSIZE];
    char remote_host[INET6_ADDRSTRLEN+1];
+   char nullbyte;
    time_t lasttime;
    int protocol_state;
    int slot;
