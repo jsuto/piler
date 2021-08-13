@@ -205,6 +205,8 @@ class Piler_Mime_Decode {
       for($i=0; $i<count(self::HEADER_FIELDS); $i++) {
          if(!isset($headers[self::HEADER_FIELDS[$i]])) { $headers[self::HEADER_FIELDS[$i]] = ''; }
 
+         $headers[self::HEADER_FIELDS[$i]] = preg_replace("/gb2312/i", "GBK", $headers[self::HEADER_FIELDS[$i]]);
+
          $headers[self::HEADER_FIELDS[$i]] = iconv_mime_decode($headers[self::HEADER_FIELDS[$i]], ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
       }
 
@@ -325,6 +327,9 @@ class Piler_Mime_Decode {
       }
 
       if(isset($headers['content-type']['charset'])) {
+         if($headers['content-type']['charset'] == 'gb2312') {
+            $headers['content-type']['charset'] = 'GBK';
+         }
          $body = iconv($headers['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
       }
 
