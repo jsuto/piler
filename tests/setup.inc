@@ -13,6 +13,13 @@ setup() {
    add_data_officer "piler1"
 }
 
+cleanup_package() {
+   local pkg="$1"
+
+   log "Removing ${PACKAGE_DIR}/${pkg}"
+   rm -f "${PACKAGE_DIR}/${pkg}"
+}
+
 launch_containers() {
 
    log "starting syslog server"
@@ -28,6 +35,8 @@ launch_containers() {
       "$docker_image"
 
    wait_for_sleep_cycle_in_container "piler1"
+
+   cleanup_package "$PACKAGE"
 }
 
 create_rules() {
