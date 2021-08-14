@@ -470,7 +470,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          fill_attachment_name_buf(state, buf);
       }
 
-      if(state->received_header == 1 && state->message_state == MSG_RECEIVED){
+      if(state->received_header == 1 && state->message_state == MSG_RECEIVED && strlen(state->receivedbuf) + len < sizeof(state->receivedbuf)){
          memcpy(&(state->receivedbuf[strlen(state->receivedbuf)]), buf, len);
       }
 
