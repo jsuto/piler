@@ -79,7 +79,7 @@ class ControllerUserEdit extends Controller {
 
             $this->data['emails'] = $this->model_user_user->get_emails($this->data['user']['username']);
 
-            $this->data['user']['group'] = $this->model_group_group->get_groups_by_email(array($this->data['emails']));
+            $this->data['user']['group'] = $this->model_group_group->get_groups_by_email(explode("\n", $this->data['emails']));
          //}
       }
       else {
