@@ -144,10 +144,6 @@ class ModelAccountingAccounting extends Model {
 
       $search = preg_replace("/\s{1,}/", "", $search);
 
-      if($search) {
-         $search_cond .= " AND ( `email` LIKE '%".$search."%' OR `domain` LIKE '%".$search."%' )";
-      }
-
       $query = "SELECT `email` AS `item`, MIN(`date`) AS `oldest`, MAX(`date`) AS `newest`, SUM(`sent`) AS `sent`, SUM(`recd`) AS `recd`, SUM(`sentsize`) AS `sentsize`, SUM(`recdsize`) AS `recdsize` FROM " . TABLE_STAT_COUNTER;
 
       if($item == 'email') {
