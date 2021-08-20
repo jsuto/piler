@@ -683,6 +683,13 @@ class ModelSearchSearch extends Model {
 
       if($id == '') { return 0; }
 
+      if(Registry::get('data_officer') == 1) {
+         $query = $this->db->query("SELECT id FROM " . TABLE_DELETED . " WHERE deleted=-1 AND id=?", array($id));
+         if(!isset($query->row['id'])) {
+            return 0;
+         }
+      }
+
       if((Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) && RESTRICTED_AUDITOR == 0) { return 1; }
 
       $session = Registry::get('session');
