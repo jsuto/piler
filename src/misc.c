@@ -716,7 +716,7 @@ int init_ssl_to_server(struct data *data){
    n = SSL_connect(data->net->ssl);
    CHK_SSL(n, "internal ssl error");
 
-   printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
+   //printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
 
    server_cert = SSL_get_peer_certificate(data->net->ssl);
    CHK_NULL(server_cert, "server cert error");
