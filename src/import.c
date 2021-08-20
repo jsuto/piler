@@ -97,7 +97,10 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
          // When importing emails, we should add the retention value (later) to the original sent value
          sdata->retained = sdata->sent;
 
+         // backup original value of data->folder
+         int folder = data->folder;
          rc = process_message(sdata, &state, data, cfg);
+         data->folder = folder;
          unlink(state.message_id_hash);
       }
    }
