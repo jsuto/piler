@@ -85,7 +85,7 @@ def purge_attachments_by_attachment_id(opts={}):
     cursor = opts['db'].cursor()
 
     cursor.execute("SELECT i, piler_id, attachment_id, refcount FROM " +
-                   "v_attachment WHERE i IN (%s)" %
+                   "v_attachment WHERE refcount=0 AND i IN (%s)" %
                    (format), opts['referenced_attachments'])
 
     while True:
