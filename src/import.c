@@ -156,13 +156,14 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
 
 int update_import_table(struct session_data *sdata, struct data *data) {
-   int ret=ERR, status=2;
+   int ret=ERR, status=2, started=1;
    struct sql sql;
 
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_UPDATE_IMPORT_TABLE) == ERR) return ret;
 
    p_bind_init(&sql);
 
+   sql.sql[sql.pos] = (char *)&(started); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(status); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(data->import->tot_msgs); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(data->import->table_id); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
