@@ -68,9 +68,6 @@ class ModelUserUser extends Model {
 
       }
 
-      $emails = $this->get_email_addresses_from_groups($data);
-      $data = array_merge($data, $emails);
-
       return $data;
    }
 
