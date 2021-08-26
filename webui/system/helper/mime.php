@@ -317,17 +317,17 @@ class Piler_Mime_Decode {
    public static function fixMimeBodyPart($headers = array(), $body = '') {
 
       if(isset($headers['content-transfer-encoding'])) {
-         if($headers['content-transfer-encoding'] == 'quoted-printable') {
+         if(strtolower($headers['content-transfer-encoding']) == 'quoted-printable') {
             $body = quoted_printable_decode($body);
          }
 
-         if($headers['content-transfer-encoding'] == 'base64') {
+         if(strtolower($headers['content-transfer-encoding']) == 'base64') {
             $body = base64_decode($body);
          }
       }
 
       if(isset($headers['content-type']['charset'])) {
-         if($headers['content-type']['charset'] == 'gb2312') {
+         if(strtolower($headers['content-type']['charset']) == 'gb2312') {
             $headers['content-type']['charset'] = 'GBK';
          }
          $body = iconv($headers['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
