@@ -39,7 +39,9 @@ class Sphinx {
       $s = $this->link->prepare($sql);
       if(!$s) { return $query; }
 
-      $s->execute($arr);
+      if(!$s->execute($arr)) {
+         syslog(LOG_INFO, $s->errorInfo()[2]);
+      }
 
       $this->affected = $s->rowCount();
 
