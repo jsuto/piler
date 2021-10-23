@@ -49,7 +49,7 @@ class ModelUserUser extends Model {
       $data = array();
       $uids = $uid;
 
-      if($uid > 0) {
+      if($uid >= 0) {
          $query = $this->db->query("SELECT gid FROM " . TABLE_EMAIL_LIST . " WHERE uid=?", array((int)$uid));
 
          if(isset($query->rows)) {
