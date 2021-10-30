@@ -441,14 +441,14 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          if(strstr(buf, "=?") && strstr(buf, "?=")) fixupEncodedHeaderLine(buf, MAXBUFSIZE);
 
-         sdata->sent = parse_date_header(buf);
+         sdata->sent = parse_date_header(buf+5);
 
          /* allow +2 days drift in the parsed Date: value */
 
          if(sdata->sent - sdata->now > 2*86400) sdata->sent = sdata->now;
       }
 
-      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf);
+      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf+14);
       else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0){
          state->message_state = MSG_RECEIVED;
          state->received_header++;

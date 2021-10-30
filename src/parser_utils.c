@@ -126,7 +126,6 @@ time_t parse_date_header(char *datestr){
    char *p, *q, *r, *tz, s[SMALLBUFSIZE], tzh[4], tzm[3];
    struct tm tm;
 
-   datestr += 5;
    p = datestr;
 
    for(; *datestr; datestr++){
