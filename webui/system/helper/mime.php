@@ -147,7 +147,7 @@ class Piler_Mime_Decode {
       $s = self::remove_LF($message);
       if(strpos($s, $EOL . $EOL)) {
          list($headers, $body) = explode($EOL . $EOL, $s, 2);
-         if(strstr($headers, "\nX-MS-Journal-Report:")) {
+         if(!strstr($headers, "\nX-MS-Journal-Report:")) {
             return $has_journal;
          }
       }
