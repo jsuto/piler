@@ -144,24 +144,13 @@ class Piler_Mime_Decode {
    public static function removeJournal(&$message, $EOL = "\n") {
       $has_journal = 0;
 
-      $s = self::remove_LF($message);
-      if(strpos($s, $EOL . $EOL)) {
-         list($headers, $body) = explode($EOL . $EOL, $s, 2);
-         if(!strstr($headers, "\nX-MS-Journal-Report:")) {
-            return $has_journal;
-         }
+      self::splitMessageRaw($message, $headers, $journal, $body);
+
+      if($journal) {
+         $has_journal = 1;
       }
 
-      $p = strstr($message, "\nX-MS-Journal-Report:");
-      if($p) {
-         $q = stristr($p, "message/rfc822");
-         if($q) {
-            $has_journal = 1;
-            $i = strlen("message/rfc822");
-            while(ctype_space($q[$i])) { $i++; }
-            if($i > 0) { $message = substr($q, $i); }
-         }
-      }
+      $message = $headers . $EOL . $EOL . $body;
 
       return $has_journal;
    }
