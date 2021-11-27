@@ -325,6 +325,7 @@ $langs = array(
                 'es',
                 'fr',
                 'hu',
+                'it',
                 'pl',
                 'pt',
                 'ru',
