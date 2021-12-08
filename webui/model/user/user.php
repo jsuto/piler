@@ -557,6 +557,9 @@ class ModelUserUser extends Model {
 
       $query = $this->db->query("DELETE FROM " . TABLE_EMAIL . " WHERE uid=?", array((int)$uid));
       $query = $this->db->query("DELETE FROM " . TABLE_USER . " WHERE uid=?", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_USER_SETTINGS . " WHERE username IN (SELECT username FROM " . TABLE_USER . " WHERE uid=?)", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_USER . " WHERE uid=?", array((int)$uid));
 
       LOGGER("remove user: uid=$uid");
 
