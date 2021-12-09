@@ -130,7 +130,7 @@ function get_hash_values() {
       else { $stop_id = 1000000000; }
    }
 
-   $query = $db->query("SELECT id, digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ?", array($start_id, $stop_id));
+   $query = $db->query("SELECT id, digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ? ORDER BY id", array($start_id, $stop_id));
 
    foreach($query->rows as $q) {
       $count++;

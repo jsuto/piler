@@ -1,7 +1,7 @@
 - Introduced the archive_address feature, see etc/example.conf for the details
 - Introduced the raw: search label
 - Added Italian translation. Credits: Stefano Gatto
-
+- timestamp signing sorts by 'id' column
 
 1.3.12:
 -------

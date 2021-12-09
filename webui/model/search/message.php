@@ -353,7 +353,7 @@ class ModelSearchMessage extends Model {
        * If the hashes are the same, then verify by the public key as well
        */
 
-      $query = $this->db->query("SELECT `start_id`, `stop_id`, `hash_value`, `response_time`, `response_string` FROM " . TABLE_TIMESTAMP . " WHERE start_id <= ? AND stop_id >= ?", array($id, $id));
+      $query = $this->db->query("SELECT `start_id`, `stop_id`, `hash_value`, `response_time`, `response_string` FROM " . TABLE_TIMESTAMP . " WHERE start_id <= ? AND stop_id >= ? ORDER BY id", array($id, $id));
 
       if(isset($query->row['start_id']) && isset($query->row['stop_id'])) {
 
