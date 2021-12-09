@@ -54,12 +54,26 @@ def purge_m_files(ids=[], opts={}):
         remove_m_files(ids, opts)
 
         # Set deleted=1 for aged metadata entries
+        # as well as clean other tables
 
         if opts['dry_run'] is False:
             cursor = opts['db'].cursor()
             format = ", ".join(['%s'] * len(ids))
-            cursor.execute("UPDATE metadata SET deleted=1 WHERE piler_id IN " +
+            cursor.execute("UPDATE metadata SET deleted=1, subject=NULL, `from`=''," +
+                           "fromdomain='', message_id='' WHERE piler_id IN " +
                            "(%s)" % (format), ids)
+
+            cursor.execute("DELETE FROM rcpt WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM note WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM tag WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM private WHERE id IN (SELECT id FROM metadata" +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM folder_message WHERE id IN (SELECT id FROM " +
+                           "metadata WHERE piler_id IN (%s))" % (format), ids)
+
             opts['db'].commit()
 
 
