@@ -213,6 +213,33 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
       digest_string(state->reference, &ref[0]);
       update_metadata_reference(sdata, state, &ref[0], cfg);
    }
+   else if(state->reference[0] == 0){
+      // during import, the order of messages is often random
+      // check if this is a message which is already referenced
+      uint64 count=0;
+
+      digest_string(state->message_id, &ref[0]);
+      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_METADATA_REFERENCE) != ERR){
+         p_bind_init(&sql);
+
+         sql.sql[sql.pos] = &ref[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+
+         if(p_exec_stmt(sdata, &sql) == OK){
+	    p_bind_init(&sql);
+
+	    sql.sql[sql.pos] = (char *)&count; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+	    p_store_results(&sql);
+	    p_fetch_results(&sql);
+	    p_free_results(&sql);
+	 }
+      }
+
+      close_prepared_statement(&sql);
+
+      // no reference yet
+      if(count <= 0)
+         ref[0] = 0;
+   }
 
 
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_META_TABLE) == ERR) return ERR;
