@@ -417,7 +417,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->message_state = MSG_CC;
          buf += strlen("Bcc:");
       }
-      else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
+      else if(strncasecmp(buf, "Message-Id:", 11) == 0){
+         state->message_state = MSG_MESSAGE_ID;
+         buf += strlen("Message-Id:");
+      }
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0){
          state->message_state = MSG_SUBJECT;
@@ -459,11 +462,11 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       }
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
-         p = strchr(buf+11, ' ');
-         if(p) p = buf + 12;
-         else p = buf + 11;
+         while(isspace(*buf)){
+            buf++;
+         }
 
-         snprintf(state->message_id, SMALLBUFSIZE-1, "%s", p);
+         snprintf(state->message_id, SMALLBUFSIZE-1, "%s", buf);
       }
 
       if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
