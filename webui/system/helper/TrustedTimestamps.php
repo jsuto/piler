@@ -15,6 +15,11 @@
  *  http://www.slproweb.com/products/Win32OpenSSL.html
  *  http://www.switch.ch/aai/support/howto/openssl-windows.html
  *
+ * 2021-10-26 Frank Schmirler:
+ *  - extract certificate chain from TSResponse and feed into ts -verify as -untrusted
+ *  - unlink temporary files
+ *  - support for sha256 and sha512 hashes
+ *
  * @version 0.3
  * @author David Müller
  * @package trustedtimestamps
@@ -25,16 +30,22 @@ class TrustedTimestamps
     /**
      * Creates a Timestamp Requestfile from a hash
      *
-     * @param string $hash: The hashed data (sha1)
+     * @param string $hash: The hashed data (sha1, sha256 or sha512)
      * @return string: path of the created timestamp-requestfile
      */
     public static function createRequestfile ($hash)
     {
-        if (strlen($hash) !== 40)
+        if (strlen($hash) === 40)
+            $digest="-sha1";
+        elseif (strlen($hash) === 64)
+            $digest="-sha256";
+        elseif (strlen($hash) === 128)
+            $digest="-sha512";
+        else
             throw new Exception("Invalid Hash.");
 
         $outfilepath = self::createTempFile();
-        $cmd = OPENSSL_BINARY . " ts -query -digest ".escapeshellarg($hash)." -cert -out ".escapeshellarg($outfilepath);
+        $cmd = OPENSSL_BINARY . " ts -query $digest -digest ".escapeshellarg($hash)." -cert -out ".escapeshellarg($outfilepath);
 
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
@@ -106,6 +117,8 @@ class TrustedTimestamps
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
 
+        unlink($responsefile);
+
         if ($retcode !== 0)
             throw new Exception("The reply failed: ".implode(", ", $retarray));
 
@@ -144,7 +157,7 @@ class TrustedTimestamps
      */
     public static function validate ($hash, $base64_response_string, $response_time, $tsa_cert_file)
     {
-        if (strlen($hash) !== 40)
+        if (strlen($hash) !== 40 && strlen($hash) !== 64 && strlen($hash) !== 128)
             throw new Exception("Invalid Hash");
 
         $binary_response_string = base64_decode($base64_response_string);
@@ -160,10 +173,21 @@ class TrustedTimestamps
 
         $responsefile = self::createTempFile($binary_response_string);
 
-        $cmd = OPENSSL_BINARY . " ts -verify -digest ".escapeshellarg($hash)." -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file);
+        /*
+         * extract chain from response
+         * openssl ts -verify does not include them for verification despite of the man page stating otherwise
+         */
+        $untrustedfile = self::createTempFile();
+        $cmd = OPENSSL_BINARY . " ts -reply -in ".escapeshellarg($responsefile)." -token_out | " . OPENSSL_BINARY . " pkcs7 -inform DER -print_certs -out ".escapeshellarg($untrustedfile);
+        shell_exec($cmd);
+
+        $cmd = OPENSSL_BINARY . " ts -verify -digest ".escapeshellarg($hash)." -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file)." -untrusted ".escapeshellarg($untrustedfile);
 
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
+
+        unlink($untrustedfile);
+        unlink($responsefile);
 
         /*
          * just 2 "normal" cases:

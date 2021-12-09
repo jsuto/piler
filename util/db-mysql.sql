@@ -463,7 +463,7 @@ create table if not exists `timestamp` (
   `id` bigint unsigned not null auto_increment,
   `start_id` bigint default 0,
   `stop_id` bigint default 0,
-  `hash_value` char(40),
+  `hash_value` varchar(128),
   `count` int default 0,
   `response_time` bigint default 0,
   `response_string` blob not null,

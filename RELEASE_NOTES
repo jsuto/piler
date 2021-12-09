@@ -2,6 +2,10 @@
 - Introduced the raw: search label
 - Added Italian translation. Credits: Stefano Gatto
 - timestamp signing sorts by 'id' column
+- timestamp hash value defaults to sha256
+
+Be sure to apply util/db-upgrade.sql
+
 
 1.3.12:
 -------

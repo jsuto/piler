@@ -371,7 +371,14 @@ class ModelSearchMessage extends Model {
                $s .= $q['digest'];
             }
 
-            $computed_hash = sha1($s);
+            $len = strlen($query->row['hash_value']);
+            if($len == 64)
+               $algo='sha256';
+            elseif($len == 128)
+               $algo='sha512';
+            else
+               $algo='sha1';
+            $computed_hash = hash($algo, $s);
 
             if(MEMCACHED_ENABLED) {
                $memcache->add($cache_key, $computed_hash, 0, MEMCACHED_TTL);

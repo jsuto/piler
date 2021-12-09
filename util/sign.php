@@ -12,11 +12,13 @@ ini_set("session.save_path", "/tmp");
 $webuidir = "";
 $verbose = 0;
 $mode = "unit";
+$algo = "sha256";
 
 $opts = 'h::v';
 $lopts = array(
     'webui:',
     'mode:',
+    'algo:',
     'verbose'
     );
 
@@ -35,6 +37,10 @@ if ( $options = getopt( $opts, $lopts ) )
 
     if ( isset($options['mode']) && $options['mode'] == 'time') {
        $mode = $options['mode'];
+    }
+
+    if ( isset($options['algo']) ) {
+       $algo = $options['algo'];
     }
 
     if ( isset($options['h']) )
@@ -66,6 +72,7 @@ Registry::set('db', $db);
 Registry::set('DB_DRIVER', DB_DRIVER);
 
 define('MODE', $mode);
+define('ALGO', $algo);
 
 
 $data = get_hash_values();
@@ -143,7 +150,7 @@ function get_hash_values() {
       START_ID => $start_id,
       STOP_ID => $stop_id,
       COUNT => $count,
-      HASH_VALUE => sha1($s)
+      HASH_VALUE => hash(ALGO, $s)
    ];
 
 }
