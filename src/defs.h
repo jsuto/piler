@@ -171,6 +171,7 @@ struct parser_state {
    int qp;
    int htmltag;
    int style;
+   int meta_content_type;
    int skip_html;
    int has_to_dump;
    int has_to_dump_whole_body;

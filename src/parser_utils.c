@@ -40,6 +40,7 @@ void init_state(struct parser_state *state){
 
    state->htmltag = 0;
    state->style = 0;
+   state->meta_content_type = 0;
 
    state->skip_html = 0;
 
@@ -52,6 +53,7 @@ void init_state(struct parser_state *state){
    memset(state->receivedbuf, 0, sizeof(state->receivedbuf));
 
    memset(state->type, 0, TINYBUFSIZE);
+   memset(state->charset, 0, TINYBUFSIZE);
 
    memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
    state->anamepos = 0;
@@ -551,7 +553,7 @@ void markHTML(char *buf, struct parser_state *state){
 
             if(isspace(*s)){
                if(j > 0){
-                  setStateHTMLStyle(html, pos, state);
+                  setStateHTML(html, pos, state);
                   memset(html, 0, SMALLBUFSIZE); j=0;
                }
                pos++;
@@ -576,23 +578,51 @@ void markHTML(char *buf, struct parser_state *state){
 
          if(j > 0){
             strncat(html, " ", SMALLBUFSIZE-1);
-            setStateHTMLStyle(html, pos, state);
+            setStateHTML(html, pos, state);
             memset(html, 0, SMALLBUFSIZE); j=0;
          }
+         state->meta_content_type = 0;
       }
 
    }
 
    //printf("append last in line:*%s*, html=+%s+, j=%d\n", puf, html, j);
-   if(j > 0){ setStateHTMLStyle(html, pos, state); }
+   if(j > 0){ setStateHTML(html, pos, state); }
 
    strcpy(buf, puf);
 }
 
 
-void setStateHTMLStyle(char *htmlbuf, int pos, struct parser_state *state){
+void setStateHTML(char *htmlbuf, int pos, struct parser_state *state){
    if(pos == 0 && strncmp(htmlbuf, "style ", 6) == 0) state->style = 1;
    if(pos == 0 && strncmp(htmlbuf, "/style ", 7) == 0) state->style = 0;
+
+   if(pos == 0 && state->charset[0] == 0 && strncmp(htmlbuf, "meta ", 5) == 0) state->meta_content_type = 0x1;
+   if(state->meta_content_type){
+     if((state->meta_content_type & 0x2) == 0 && strstr(htmlbuf, "http-equiv=content-type "))
+       state->meta_content_type |= 0x2;
+
+     if((state->meta_content_type & 0x4) == 0 && strstr(htmlbuf, "content=text/html;"))
+       state->meta_content_type |= 0x4;
+
+     if(state->meta_content_type == 0x7){
+       char *p, *q;
+
+       p = strstr(htmlbuf, "charset=");
+       if(p){
+         p += 8;
+         for(q = p; isalnum(*q) || index("-_", *q); q++)
+           ;
+
+         if(q > p && q-p+1 < (int) sizeof(state->charset)){
+           syslog(LOG_PRIORITY, "Changing HTML charset from '%s' to '%*s' due to meta tag", state->charset, (int)(q-p), p);
+           strncpy(state->charset, p, q-p);
+           state->charset[q-p+1] = '\0';
+           state->meta_content_type = 0;
+         }
+       }
+     }
+   }
 }
 
 

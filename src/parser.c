@@ -641,7 +641,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       state->pushed_pointer = 0;
 
       memset(state->type, 0, TINYBUFSIZE);
-      snprintf(state->charset, TINYBUFSIZE-1, "unknown");
+      memset(state->charset, 0, TINYBUFSIZE);
 
       memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
       state->anamepos = 0;
@@ -684,7 +684,18 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
 
 
-   if(state->texthtml == 1) decodeHTML(buf, state->utf8);
+   if(state->texthtml == 1){
+      size_t buflen = strlen(buf);
+      decodeHTML(buf, state->utf8);
+      /* decodeHTML converted some entities to iso-8859-1 */
+      if(state->utf8 != 1 && strlen(buf) != buflen){
+        /* no charset or us-ascii: switch to iso-8859-1 */
+        if (state->charset[0] == 0 || strcasecmp(state->charset, "us-ascii") == 0){
+          syslog(LOG_PRIORITY, "%s: assuming iso-8859-1 encoding for HTML (was '%s')", sdata->ttmpfile, state->charset);
+          snprintf(state->charset, TINYBUFSIZE-1, "ISO8859-1");
+        }
+      }
+   }
 
    /* encode the body if it's not utf-8 encoded */
    if(state->message_state == MSG_BODY && state->utf8 != 1){
