@@ -346,7 +346,7 @@ int is_duplicated_message(struct session_data *sdata, struct parser_state *state
    if(sdata->duplicate_id > 0){
       remove_stripped_attachments(state);
 
-      if(strlen(state->b_journal_to) > 0){
+      if(sdata->restored_copy == 0 && strlen(state->b_journal_to) > 0){
          if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: trying to add journal rcpt (%s) to id=%llu for message-id: '%s'", sdata->ttmpfile, state->b_journal_to, sdata->duplicate_id, state->message_id);
          store_recipients(sdata, state->b_journal_to, sdata->duplicate_id, cfg);
       }
