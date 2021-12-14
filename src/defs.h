@@ -221,7 +221,7 @@ struct parser_state {
    unsigned int todomainlen;
    unsigned int found_security_header;
 
-   int journaltolen;
+   long unsigned int journaltolen;
 
    int retention;
 };
