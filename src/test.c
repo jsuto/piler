@@ -153,6 +153,7 @@ int main(int argc, char **argv){
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
    printf("sender: *%s (%s)*\n", state.b_sender, state.b_sender_domain);
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
+   printf("journal recipients: *%s*\n", state.b_journal_to);
    printf("reference: *%s*\n", state.reference);
    printf("subject: *%s*\n", state.b_subject);
    printf("body: *%s*\n", state.b_body);

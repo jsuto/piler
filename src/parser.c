@@ -457,7 +457,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->received_header++;
       }
       else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0){
-         state->message_state = MSG_TO;
+         state->message_state = MSG_RECIPIENT;
          buf += strlen(cfg->extra_to_field);
       }
 
