@@ -7,7 +7,8 @@
 */5 * * * *  /usr/bin/find LOCALSTATEDIR/piler/www/tmp -type f -name i.\* -exec rm -f {} \;
 */5 * * * * /usr/bin/find LOCALSTATEDIR/piler/error -type f|wc -l > LOCALSTATEDIR/piler/stat/error
 
-### optional: populate accouting data
+### optional
 ###30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui LOCALSTATEDIR/piler/www >/dev/null
+###*/5 * * * * LIBEXECDIR/piler/import.sh
 
 ### PILEREND
