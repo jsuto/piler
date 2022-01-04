@@ -9,9 +9,9 @@ create table if not exists `sph_counter` (
 create table if not exists `sph_index` (
   `id` bigint not null,
   `from` tinyblob default null,
-  `to` text(8192) default null,
-  `fromdomain` char(255) default null,
-  `todomain` text(512) default null,
+  `to` blob(8192) default null,
+  `fromdomain` tinyblob default null,
+  `todomain` blob(512) default null,
   `subject` blob(512) default null,
   `arrived` int unsigned not null,
   `sent` int unsigned not null,
