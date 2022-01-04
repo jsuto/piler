@@ -18,10 +18,10 @@ case1() {
    "$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --socket --no-counter
 
 
-   wait_until_emails_are_processed "piler1" 3013
+   wait_until_emails_are_processed "piler1" 3014
    docker exec "piler1" su piler -c /usr/libexec/piler/indexer.delta.sh 2>/dev/null
 
-   count_status_values 3013 2902 111 0
+   count_status_values 3014 2903 111 0
 
    test_retrieved_messages_are_the_same "piler1" "piler"
 
