@@ -99,7 +99,7 @@ class ControllerAuditHelper extends Controller {
       $s = preg_replace("/\s{1,}/", " ", $s);
       $b = explode(" ", $s);
 
-      while(list($k, $v) = each($b)) {
+      foreach ($b as $k => $v) {
          if($v == '') { continue; }
 
          if(preg_match("/(login|loginfailed|logout|view|download|search|restore|journal)$/", $v) && isset($actions[$v])) { $this->a['action'] .= "\t" . $actions[$v]; }

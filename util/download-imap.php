@@ -103,7 +103,7 @@ function saveMessages($storage, $folder = '', $num = 0) {
 
    $messages = $storage->piler_batch_fetch(1, $num);
 
-   while(list($k, $v) = each($messages)) {
+   foreach($messages as $k => $v) {
       $uuid = $storage->getUniqueId($k);
 
       $tmpname = "piler-" . $username . "-" . $folder . "-" . $k . "-" . $uuid . ".eml";

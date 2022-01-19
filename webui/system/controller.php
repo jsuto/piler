@@ -27,7 +27,9 @@ class Controller {
 
 
    public function args($args = array()){
-      while(list($key, $value) = each($args)) $this->data[$key] = $value;
+      foreach($args as $key => $value) {
+         $this->data[$key] = $value;
+      }
    }
 
 

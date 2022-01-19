@@ -199,7 +199,7 @@ class ModelHealthHealth extends Model {
    public function meminfo() {
       $m = explode("\n", file_get_contents("/proc/meminfo"));
 
-      while(list($k, $v) = each($m)) {
+      foreach($m as $k => $v) {
          $a = preg_split("/\ {1,}/", $v);
          if(isset($a[0]) && $a[0]) { $_m[$a[0]] = $a[1]; }
       }
@@ -219,7 +219,7 @@ class ModelHealthHealth extends Model {
 
       $partitions = Registry::get('partitions_to_monitor');
 
-      while(list($k, $v) = each($output)) {
+      foreach($output as $k => $v) {
          if($k > 0) {
             $p = preg_split("/\ {1,}/", $v);
             if(isset($p[5]) && in_array($p[5], $partitions) && !isset($a[$p[5]])) {

@@ -255,7 +255,8 @@ class Piler_Mime_Decode {
 
       }
 
-      while(list($k, $v) = each($result)) {
+      foreach($result as $k => $v) {
+
          if(strchr($v, "\n")) {
             $result[$k] = explode("\n", $v);
          }

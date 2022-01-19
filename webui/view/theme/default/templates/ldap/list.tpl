@@ -36,7 +36,7 @@
        <label class="control-label" for="ldap_type"><?php print $text_ldap_type; ?>:</label>
        <div class="controls">
           <select name="ldap_type" id="ldap_type" onchange="Piler.fix_ldap_display();" class="span4">
-       <?php while(list($k, $v) = each($ldap_types)) { ?>
+       <?php foreach($ldap_types as $k => $v) { ?>
           <option value="<?php print $v; ?>"<?php if(isset($a['ldap_type']) && $a['ldap_type'] == $v) { ?> selected="selected"<?php } ?>><?php print $v; ?></option>
        <?php } ?>
           </select>

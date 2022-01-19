@@ -17,7 +17,7 @@ class Language {
       else {
          $pref_langs = $this->get_preferred_languages();
 
-         while(list($k, $v) = each($pref_langs)) {
+         foreach($pref_langs as $k => $v) {
             if(in_array($v, $langs)) {
                $lang = $v;
                define('LANG', $lang);
@@ -53,7 +53,8 @@ class Language {
 
          $l = explode(";", $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 
-         while(list($k, $v) = each($l)) {
+         foreach($l as $k => $v) {
+
             $a = explode(",", $v);
 
             if(isset($a[0]) && substr($a[0], 0, 2) != 'q=') {

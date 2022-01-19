@@ -196,7 +196,7 @@ function first_n_characters($what, $n){
    $len = 0;
 
    $a = explode(" ", $what);
-   while(list($k, $v) = each($a)){
+   foreach($a as $k => $v) {
       $x .= "$v "; $len += strlen($v) + 1;
       if($len >= $n){ return $x . "..."; }
    }
@@ -279,7 +279,7 @@ function my_qp_encode($s){
       $res = "";
 
       $a = explode("\n", $s);
-      while(list($k, $v) = each($a)){
+      foreach($a as $k => $v) {
          $part = "";
 
          for($i=0; $i<strlen($v); $i++){
@@ -417,7 +417,7 @@ function parse_string_to_array($s = '', $arr = array()) {
 
    parse_str($s, $a);
 
-   while(list($k, $v) = each($a)) {
+   foreach($a as $k => $v) {
       if(!isset($arr[$k]) || $arr[$k] == '') $arr[$k] = $v;
    }
 
@@ -453,7 +453,7 @@ function convert_date_string_to_ymd_by_template($date_string, $date_template) {
       return [$Y, $m, $d];
    }
 
-   while(list($k, $v) = each($template_array)) {
+   foreach($template_array as $k => $v) {
       $$v = $date_array[$k];
    }
 
@@ -613,7 +613,7 @@ function get_ldap_attribute_names($ldap_type = '') {
 
 
 function htmlentities_on_array($arr = []) {
-   while(list($k, $v) = each($arr)) {
+   foreach($arr as $k => $v) {
       if(is_array($v)) {
          $arr[$k] = htmlentities_on_array($v);
       } else {

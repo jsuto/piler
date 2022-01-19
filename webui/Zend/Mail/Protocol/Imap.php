@@ -410,7 +410,7 @@ class Zend_Mail_Protocol_Imap
 
        $a = $this->requestAndResponse("LIST", array('""', '"*"'));
 
-       while(list($k, $v) = each($a)) {
+       foreach ($a as $k => $v) {
           if($v[1][0] == '\HasNoChildren') {
              array_push($folders, $v[3]);
           }

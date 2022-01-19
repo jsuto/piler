@@ -155,7 +155,7 @@ class ModelUserImport extends Model {
 
       /* build a list of DNs to exclude from the import */
 
-      while (list($k, $v) = each($globals)) {
+      foreach($globals as $k => $v) {
          if(preg_match("/^reject_/", $k)) {
             $exclude[$v] = $v;
          }

@@ -53,7 +53,7 @@ class MySQL {
 
       $R = $s->fetchAll(PDO::FETCH_ASSOC);
 
-      while(list ($k, $v) = each($R)){
+      foreach($R as $k => $v) {
          $data[$i] = $v;
          $i++;
       }

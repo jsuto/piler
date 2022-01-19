@@ -76,7 +76,7 @@ class ModelGoogleGoogle extends Model {
 
          $messages = $storage->piler_batch_fetch($from, $to);
 
-         while(list($k, $v) = each($messages)) {
+         foreach($messages as $k => $v) {
             $uuid = $storage->getUniqueId($k);
 
             $tmpname = "piler-" . $email . "-" . $k . "-" . $uuid . ".eml";
@@ -98,7 +98,7 @@ class ModelGoogleGoogle extends Model {
       }
 
 
-      syslog(LOG_INFO, "downloaded $count messages for $email");   
+      syslog(LOG_INFO, "downloaded $count messages for $email");
 
       return $count;
    }
@@ -174,5 +174,3 @@ class ModelGoogleGoogle extends Model {
 
 
 }
-
-?>

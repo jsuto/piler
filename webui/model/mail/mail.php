@@ -26,7 +26,7 @@ class ModelMailMail extends Model {
       fputs($r, "MAIL FROM: <$from>\r\n");
       $l = fgets($r, 4096);
 
-      while(list($k, $v) = each($to)) {
+      foreach($to as $k => $v) {
          fputs($r, "RCPT TO: <$v>\r\n");
          $l = fgets($r, 4096);
       }
