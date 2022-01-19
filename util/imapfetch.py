@@ -90,6 +90,7 @@ def main():
                         default="/etc/piler/piler.conf")
     parser.add_argument("-s", "--server", type=str, help="imap server")
     parser.add_argument("-P", "--port", type=int, help="port number", default=143)
+    parser.add_argument("--no_ssl", help="Do not use ssl/tls", action='store_true')
     parser.add_argument("-u", "--user", type=str, help="imap user")
     parser.add_argument("-p", "--password", type=str, help="imap password")
     parser.add_argument("-x", "--skip-list", type=str, help="IMAP folders to skip",
@@ -116,11 +117,15 @@ def main():
     opts['verbose'] = args.verbose
     opts['search'] = 'ALL'
     opts['counter'] = 0
+    opts['use_ssl'] = True
     opts['db'] = None
     opts['id'] = 0
 
     if args.date:
         opts['search'] = args.date
+
+    if args.no_ssl:
+        opts['use_ssl'] = False
 
     server = ''
     user = ''
@@ -152,7 +157,7 @@ def main():
     if opts['verbose']:
         print("Skipped folder list: {}".format(opts['skip_folders']))
 
-    if args.port == 993:
+    if opts['use_ssl']:
         conn = imaplib.IMAP4_SSL(server)
     else:
         conn = imaplib.IMAP4(server)
