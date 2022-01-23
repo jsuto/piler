@@ -115,9 +115,8 @@ class ModelSearchSearch extends Model {
       $i = 0;
       foreach($data['match'] as $k => $v) {
          if($v == "@attachment_types") {
-            list($k, $v) = each($data['match']);
             $i++;
-            if($v == "any") {
+            if($data['match'][$i] == "any") {
                $data['match'][$i-1] = "";
                $data['match'][$i] = "";
             }
