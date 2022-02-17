@@ -17,6 +17,7 @@
 - timestamp signing sorts by 'id' column
 - timestamp hash value defaults to sha256
 - Minor fixes
+- Added support for php 8.1
 
 Be sure to apply util/db-upgrade.sql
 
