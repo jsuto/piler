@@ -121,6 +121,12 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
             snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
+            struct stat st;
+            sdata->tot_len = stat(filename, &st) == 0 ? st.st_size : 0;
+
+            sdata->internal_sender = sdata->internal_recipient = sdata->external_recipient = sdata->direction = 0;
+            memset(sdata->attachments, 0, SMALLBUFSIZE);
+
             state = parse_message(sdata, 1, data, cfg);
             post_parse(sdata, &state, cfg);
 
