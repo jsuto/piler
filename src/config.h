@@ -39,6 +39,13 @@
 #define IPLEN 16+1
 #define KEYLEN 56
 #define MIN_EMAIL_ADDRESS_LEN 9
+// Sphinx 3.1.1 has an issue with tokens longer than 41 characters.
+// Sphinx-3.3.1+ seems to be fine, and not affected.
+//
+// Note that we use 42, because the parser adds a trailing space to the tokens
+// See https://www.mailpiler.org/wiki/current:sphinx3 and
+// https://bitbucket.org/jsuto/piler/issues/1082/no-sphinx-results-with-long-email for more
+#define MAX_EMAIL_ADDRESS_SPHINX_LEN 42
 
 #define CRLF "\n"
 

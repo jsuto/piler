@@ -14,6 +14,7 @@
    #include <tre/regex.h>
 #endif
 
+#include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
 #include <netinet/in.h>
