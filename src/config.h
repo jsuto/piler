@@ -39,8 +39,15 @@
 #define IPLEN 16+1
 #define KEYLEN 56
 #define MIN_EMAIL_ADDRESS_LEN 9
-// Sphinx 3.1.1 has an issue with tokens longer than 41 characters.
-// Sphinx-3.3.1+ seems to be fine, and not affected.
+// Sphinx 3.x has an issue with tokens longer than 41 characters.
+//
+// When a regular user executes a query, then his default email address filter
+// causes the query to fail with the below error message, even when the query
+// itself is correct:
+//
+// SELECT id FROM main1,dailydelta1,delta1 WHERE MATCH(' ( (@sender thisisanextremelylongemailaddressyesareallylongoneyeahitolyouXaddressXcom ) | (@rcpt thisisanextremelylongemailaddressyesareallylongoneyeahitolyouXaddressXcom) ) ') ORDER BY `sent` DESC LIMIT 0,20 OPTION max_matches=1000'
+//
+// ERROR 1064 (42000): index dailydelta1,delta1,main1: syntax error, unexpected $end near ' '
 //
 // Note that we use 42, because the parser adds a trailing space to the tokens
 // See https://www.mailpiler.org/wiki/current:sphinx3 and
