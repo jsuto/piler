@@ -18,6 +18,7 @@
 - timestamp hash value defaults to sha256
 - Minor fixes
 - Added support for php 8.1
+- Fixed handling long email addresses
 
 Be sure to apply util/db-upgrade.sql
 
