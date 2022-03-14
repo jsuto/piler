@@ -147,16 +147,6 @@ function checkemail($email, $domains) {
 function validemail($email = '') {
    if($email == '') { return 0; }
 
-   // sphinxsearch supports tokens up to 41 characters long
-   // If there's a longer token in the query, then sphinx
-   // reports a query error even if the query is itself correct
-   // So the workaround is to get rid of these email addresses
-   if(strlen($email) > MAX_EMAIL_LEN) {
-      $msg = sprintf("discarding email %s: longer than %d", $email, MAX_EMAIL_LEN);
-      syslog(LOG_INFO, $msg);
-      return 0;
-   }
-
    if(preg_match("/@local$/", $email)) { return 1; }
 
    if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $email)) {

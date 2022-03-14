@@ -843,6 +843,10 @@ class ModelSearchSearch extends Model {
 
 
    public function fix_email_address_for_sphinx($email = '') {
+      if(strlen($email) > MAX_EMAIL_LEN) {
+         return md5($email . ' ');
+      }
+
       $email = preg_replace("/\|@/", "|", $email);
       return preg_replace("/[\@\.\+\-\_]/", "X", $email);
    }
