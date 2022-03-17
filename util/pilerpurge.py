@@ -69,7 +69,7 @@ def purge_m_files(ids=[], opts={}):
                            "WHERE piler_id IN (%s))" % (format), ids)
             cursor.execute("DELETE FROM tag WHERE id IN (SELECT id FROM metadata " +
                            "WHERE piler_id IN (%s))" % (format), ids)
-            cursor.execute("DELETE FROM private WHERE id IN (SELECT id FROM metadata" +
+            cursor.execute("DELETE FROM private WHERE id IN (SELECT id FROM metadata " +
                            "WHERE piler_id IN (%s))" % (format), ids)
             cursor.execute("DELETE FROM folder_message WHERE id IN (SELECT id FROM " +
                            "metadata WHERE piler_id IN (%s))" % (format), ids)
