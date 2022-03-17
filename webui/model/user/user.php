@@ -49,7 +49,7 @@ class ModelUserUser extends Model {
       $data = array();
       $uids = $uid;
 
-      if($uid > 0) {
+      if($uid >= 0) {
          $query = $this->db->query("SELECT gid FROM " . TABLE_EMAIL_LIST . " WHERE uid=?", array((int)$uid));
 
          if(isset($query->rows)) {
@@ -67,9 +67,6 @@ class ModelUserUser extends Model {
          }
 
       }
-
-      $emails = $this->get_email_addresses_from_groups($data);
-      $data = array_merge($data, $emails);
 
       return $data;
    }
@@ -559,7 +556,10 @@ class ModelUserUser extends Model {
       if(!$this->check_uid($uid)){ return 0; }
 
       $query = $this->db->query("DELETE FROM " . TABLE_EMAIL . " WHERE uid=?", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_USER_SETTINGS . " WHERE username IN (SELECT username FROM " . TABLE_USER . " WHERE uid=?)", array((int)$uid));
       $query = $this->db->query("DELETE FROM " . TABLE_USER . " WHERE uid=?", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
+      $query = $this->db->query("DELETE FROM " . TABLE_FOLDER_USER . " WHERE uid=?", array((int)$uid));
 
       LOGGER("remove user: uid=$uid");
 

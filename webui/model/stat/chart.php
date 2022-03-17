@@ -69,7 +69,7 @@ class ModelStatChart extends Model {
 
       if($query->num_rows >= 15) {
          $i = 0;
-         while(list($k, $v) = each($dates)) {
+         foreach($dates as $k => $v) {
             $i++;
             if($i % 3) { $dates[$k] = ""; }
          }

@@ -132,3 +132,27 @@ void digest_string(char *s, char *digest){
       snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
 
 }
+
+
+void md5_string(char *s, char *digest){
+   int i;
+   unsigned char md[MD5_DIGEST_LENGTH];
+   MD5_CTX context;
+
+   memset(digest, 0, 2*MD5_DIGEST_LENGTH+2);
+
+   MD5_Init(&context);
+
+   MD5_Update(&context, s, strlen(s));
+
+   MD5_Final(md, &context);
+
+   for(i=0;i<MD5_DIGEST_LENGTH;i++)
+      snprintf(digest + i*2, 2*MD5_DIGEST_LENGTH, "%02x", md[i]);
+}
+
+
+void create_md5_from_email_address(char *puf, char *md5buf){
+   md5_string(puf, md5buf);
+   md5buf[2*MD5_DIGEST_LENGTH] = ' ';
+}

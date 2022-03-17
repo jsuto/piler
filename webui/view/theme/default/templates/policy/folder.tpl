@@ -91,7 +91,7 @@
         <div class="controls">
             <select class="ruleselect" name="folder_id">
                <option value="0">-</option>
-            <?php while(list($k,$v) = each($folders)) { ?>
+            <?php foreach($folders as $k => $v) { ?>
                <option value="<?php print $k; ?>"><?php print $v; ?></option>
             <?php } ?>
             </select>

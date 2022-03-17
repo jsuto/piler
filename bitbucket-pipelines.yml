@@ -18,5 +18,5 @@ pipelines:
           - mysql -u piler -ppiler123 piler1 < /usr/share/piler/db-mysql.sql
           - cd unit_tests
           - ./run.sh
-          - cd ..
+          - cd ../webui
           - phpunit

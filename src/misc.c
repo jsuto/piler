@@ -652,34 +652,42 @@ void move_email(struct smtp_session *session){
 
    snprintf(buf, sizeof(buf)-1, "%d/%s", session->ttmpfile[0] % session->cfg->number_of_worker_processes, session->ttmpfile);
 
+   if(session->nullbyte){
+      snprintf(buf, sizeof(buf)-1, "%s/%s", ERROR_DIR, session->ttmpfile);
+      syslog(LOG_PRIORITY, "ERROR: %s contains an invalid NUL-byte, moving it to %s", session->ttmpfile, ERROR_DIR);
+   }
+
    if(rename(session->ttmpfile, buf)){
       syslog(LOG_PRIORITY, "ERROR: couldn't rename %s to %s (reason: %s)", session->ttmpfile, buf, strerror(errno));
    }
 }
 
 
-int read_one_line(char *s, int c, char *buf, int buflen, int *rc){
+int read_one_line(char *s, int slen, int c, char *buf, int buflen, int *rc, int *nullbyte){
    int i=0;
 
    *rc = ERR;
+   *nullbyte = 0;
 
    memset(buf, 0, buflen);
 
-   if(s == NULL){
-      return i;
-   }
-
-   for(; *s; s++){
+   for(int j=0; j<slen; j++){
       if(i<buflen-2){
-         buf[i] = *s;
+         if(*(s+j) == 0){
+            *nullbyte = 1;
+         }
+
+         buf[i] = *(s+j);
          i++;
 
-         if(*s == c){
+         if(*(s+j) == c){
             *rc = OK;
             break;
          }
       }
-      else break;
+      else {
+         break;
+      }
    }
 
    return i;
@@ -708,7 +716,7 @@ int init_ssl_to_server(struct data *data){
    n = SSL_connect(data->net->ssl);
    CHK_SSL(n, "internal ssl error");
 
-   printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
+   //printf("Cipher: %s\n", SSL_get_cipher(data->net->ssl));
 
    server_cert = SSL_get_peer_certificate(data->net->ssl);
    CHK_NULL(server_cert, "server cert error");

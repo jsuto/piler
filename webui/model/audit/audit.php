@@ -43,7 +43,7 @@ class ModelAuditAudit extends Model {
       if(Registry::get('admin_user') == 0 && RESTRICTED_AUDITOR == 1) {
          $auditdomains = $session->get("auditdomains");
 
-         while(list($k, $v) = each($auditdomains)) {
+         foreach($auditdomains as $k => $v) {
             if($q) { $q .= ","; }
             $q .= "?";
             array_push($arr, $v);

@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("webui/system/model.php");
-include_once("webui/system/misc.php");
-include_once("webui/model/health/health.php");
+include_once("system/model.php");
+include_once("system/misc.php");
+include_once("model/health/health.php");
 
 final class FormatTest extends TestCase
 {

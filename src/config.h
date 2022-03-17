@@ -39,6 +39,20 @@
 #define IPLEN 16+1
 #define KEYLEN 56
 #define MIN_EMAIL_ADDRESS_LEN 9
+// Sphinx 3.x has an issue with tokens longer than 41 characters.
+//
+// When a regular user executes a query, then his default email address filter
+// causes the query to fail with the below error message, even when the query
+// itself is correct:
+//
+// SELECT id FROM main1,dailydelta1,delta1 WHERE MATCH(' ( (@sender thisisanextremelylongemailaddressyesareallylongoneyeahitolyouXaddressXcom ) | (@rcpt thisisanextremelylongemailaddressyesareallylongoneyeahitolyouXaddressXcom) ) ') ORDER BY `sent` DESC LIMIT 0,20 OPTION max_matches=1000'
+//
+// ERROR 1064 (42000): index dailydelta1,delta1,main1: syntax error, unexpected $end near ' '
+//
+// Note that we use 42, because the parser adds a trailing space to the tokens
+// See https://www.mailpiler.org/wiki/current:sphinx3 and
+// https://bitbucket.org/jsuto/piler/issues/1082/no-sphinx-results-with-long-email for more
+#define MAX_EMAIL_ADDRESS_SPHINX_LEN 42
 
 #define CRLF "\n"
 
@@ -108,9 +122,10 @@
 #define SQL_PREPARED_STMT_GET_FOLDER_ID              "SELECT `id` FROM " SQL_FOLDER_TABLE " WHERE `name`=? AND `parent_id`=?"
 #define SQL_PREPARED_STMT_INSERT_INTO_FOLDER_TABLE   "INSERT INTO `" SQL_FOLDER_TABLE "` (`name`, `parent_id`) VALUES(?,?)"
 #define SQL_PREPARED_STMT_UPDATE_METADATA_REFERENCE  "UPDATE " SQL_METADATA_TABLE " SET reference=? WHERE message_id=? AND reference=''"
+#define SQL_PREPARED_STMT_GET_METADATA_REFERENCE     "SELECT COUNT(*) AS count FROM " SQL_METADATA_TABLE " WHERE reference=?"
 #define SQL_PREPARED_STMT_GET_GUI_IMPORT_JOBS        "SELECT id, type, username, password, server FROM " SQL_IMPORT_TABLE " WHERE started=0 ORDER BY id LIMIT 0,1"
 #define SQL_PREPARED_STMT_INSERT_FOLDER_MESSAGE      "INSERT INTO " SQL_FOLDER_MESSAGE_TABLE " (`folder_id`, `id`) VALUES(?,?)"
-#define SQL_PREPARED_STMT_UPDATE_IMPORT_TABLE        "UPDATE " SQL_IMPORT_TABLE " SET status=?, imported=? WHERE id=?"
+#define SQL_PREPARED_STMT_UPDATE_IMPORT_TABLE        "UPDATE " SQL_IMPORT_TABLE " SET started=?, status=?, imported=? WHERE id=?"
 
 /* Error codes */
 

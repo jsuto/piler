@@ -144,24 +144,13 @@ class Piler_Mime_Decode {
    public static function removeJournal(&$message, $EOL = "\n") {
       $has_journal = 0;
 
-      $s = self::remove_LF($message);
-      if(strpos($s, $EOL . $EOL)) {
-         list($headers, $body) = explode($EOL . $EOL, $s, 2);
-         if(strstr($headers, "\nX-MS-Journal-Report:")) {
-            return $has_journal;
-         }
+      self::splitMessageRaw($message, $headers, $journal, $body);
+
+      if($journal) {
+         $has_journal = 1;
       }
 
-      $p = strstr($message, "\nX-MS-Journal-Report:");
-      if($p) {
-         $q = stristr($p, "message/rfc822");
-         if($q) {
-            $has_journal = 1;
-            $i = strlen("message/rfc822");
-            while(ctype_space($q[$i])) { $i++; }
-            if($i > 0) { $message = substr($q, $i); }
-         }
-      }
+      $message = $headers . $EOL . $EOL . $body;
 
       return $has_journal;
    }
@@ -204,6 +193,8 @@ class Piler_Mime_Decode {
 
       for($i=0; $i<count(self::HEADER_FIELDS); $i++) {
          if(!isset($headers[self::HEADER_FIELDS[$i]])) { $headers[self::HEADER_FIELDS[$i]] = ''; }
+
+         $headers[self::HEADER_FIELDS[$i]] = preg_replace("/gb2312/i", "GBK", $headers[self::HEADER_FIELDS[$i]]);
 
          $headers[self::HEADER_FIELDS[$i]] = iconv_mime_decode($headers[self::HEADER_FIELDS[$i]], ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
       }
@@ -264,7 +255,8 @@ class Piler_Mime_Decode {
 
       }
 
-      while(list($k, $v) = each($result)) {
+      foreach($result as $k => $v) {
+
          if(strchr($v, "\n")) {
             $result[$k] = explode("\n", $v);
          }
@@ -315,16 +307,19 @@ class Piler_Mime_Decode {
    public static function fixMimeBodyPart($headers = array(), $body = '') {
 
       if(isset($headers['content-transfer-encoding'])) {
-         if($headers['content-transfer-encoding'] == 'quoted-printable') {
+         if(strtolower($headers['content-transfer-encoding']) == 'quoted-printable') {
             $body = quoted_printable_decode($body);
          }
 
-         if($headers['content-transfer-encoding'] == 'base64') {
+         if(strtolower($headers['content-transfer-encoding']) == 'base64') {
             $body = base64_decode($body);
          }
       }
 
       if(isset($headers['content-type']['charset'])) {
+         if(strtolower($headers['content-type']['charset']) == 'gb2312') {
+            $headers['content-type']['charset'] = 'GBK';
+         }
          $body = iconv($headers['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
       }
 

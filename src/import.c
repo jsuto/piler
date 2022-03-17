@@ -25,6 +25,14 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
    struct parser_state state;
    struct counters counters;
 
+   if(data->import->delay > 0){
+      struct timespec req;
+
+      req.tv_sec = 0;
+      req.tv_nsec = 1000000 * data->import->delay;
+
+      nanosleep(&req, NULL);
+   }
 
    init_session_data(sdata, cfg);
 
@@ -89,7 +97,10 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
          // When importing emails, we should add the retention value (later) to the original sent value
          sdata->retained = sdata->sent;
 
+         // backup original value of data->folder
+         int folder = data->folder;
          rc = process_message(sdata, &state, data, cfg);
+         data->folder = folder;
          unlink(state.message_id_hash);
       }
    }
@@ -145,13 +156,14 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
 
 int update_import_table(struct session_data *sdata, struct data *data) {
-   int ret=ERR, status=2;
+   int ret=ERR, status=2, started=1;
    struct sql sql;
 
    if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_UPDATE_IMPORT_TABLE) == ERR) return ret;
 
    p_bind_init(&sql);
 
+   sql.sql[sql.pos] = (char *)&(started); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(status); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(data->import->tot_msgs); sql.type[sql.pos] = TYPE_LONG; sql.pos++;
    sql.sql[sql.pos] = (char *)&(data->import->table_id); sql.type[sql.pos] = TYPE_LONG; sql.pos++;

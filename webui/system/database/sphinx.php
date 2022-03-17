@@ -39,13 +39,15 @@ class Sphinx {
       $s = $this->link->prepare($sql);
       if(!$s) { return $query; }
 
-      $s->execute($arr);
+      if(!$s->execute($arr)) {
+         syslog(LOG_INFO, $s->errorInfo()[2]);
+      }
 
       $this->affected = $s->rowCount();
 
       $R = $s->fetchAll();
 
-      while(list ($k, $v) = each($R)){
+      foreach($R as $k => $v) {
          $data[$i] = $v;
          $i++;
       }
@@ -70,7 +72,7 @@ class Sphinx {
 
       $meta->execute();
       $R = $meta->fetchAll();
-      while(list ($k, $v) = each($R)){
+      foreach($R as $k => $v) {
          if($v[0] == "total_found") { $query->total_found = $v[1]; }
       }
 

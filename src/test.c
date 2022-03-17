@@ -153,6 +153,7 @@ int main(int argc, char **argv){
    printf("from: *%s (%s)*\n", state.b_from, state.b_from_domain);
    printf("sender: *%s (%s)*\n", state.b_sender, state.b_sender_domain);
    printf("to: *%s (%s)*\n", state.b_to, state.b_to_domain);
+   printf("journal recipients: *%s*\n", state.b_journal_to);
    printf("reference: *%s*\n", state.reference);
    printf("subject: *%s*\n", state.b_subject);
    printf("body: *%s*\n", state.b_body);
@@ -183,7 +184,7 @@ int main(int argc, char **argv){
    clearhash(data.mydomains);
 
    for(i=1; i<=state.n_attachments; i++){
-      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].digest);
+      printf("i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, dumped: %d, digest: %s\n", i, state.attachments[i].filename, state.attachments[i].type, state.attachments[i].size, state.attachments[i].internalname, state.attachments[i].dumped, state.attachments[i].digest);
       unlink(state.attachments[i].internalname);
    }
 
@@ -194,6 +195,8 @@ int main(int argc, char **argv){
    printf("direction: %d\n", sdata.direction);
 
    printf("spam: %d\n", sdata.spam_message);
+
+   printf("1st received line: %s\n", state.receivedbuf);
 
    if(sdata.internal_sender == 0 && sdata.internal_recipient == 0) printf("NOT IN mydomains\n");
 

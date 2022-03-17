@@ -147,16 +147,6 @@ function checkemail($email, $domains) {
 function validemail($email = '') {
    if($email == '') { return 0; }
 
-   // sphinxsearch supports tokens up to 41 characters long
-   // If there's a longer token in the query, then sphinx
-   // reports a query error even if the query is itself correct
-   // So the workaround is to get rid of these email addresses
-   if(strlen($email) > MAX_EMAIL_LEN) {
-      $msg = sprintf("discarding email %s: longer than %d", $email, MAX_EMAIL_LEN);
-      syslog(LOG_INFO, $msg);
-      return 0;
-   }
-
    if(preg_match("/@local$/", $email)) { return 1; }
 
    if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $email)) {
@@ -196,7 +186,7 @@ function first_n_characters($what, $n){
    $len = 0;
 
    $a = explode(" ", $what);
-   while(list($k, $v) = each($a)){
+   foreach($a as $k => $v) {
       $x .= "$v "; $len += strlen($v) + 1;
       if($len >= $n){ return $x . "..."; }
    }
@@ -279,7 +269,7 @@ function my_qp_encode($s){
       $res = "";
 
       $a = explode("\n", $s);
-      while(list($k, $v) = each($a)){
+      foreach($a as $k => $v) {
          $part = "";
 
          for($i=0; $i<strlen($v); $i++){
@@ -417,7 +407,7 @@ function parse_string_to_array($s = '', $arr = array()) {
 
    parse_str($s, $a);
 
-   while(list($k, $v) = each($a)) {
+   foreach($a as $k => $v) {
       if(!isset($arr[$k]) || $arr[$k] == '') $arr[$k] = $v;
    }
 
@@ -453,7 +443,7 @@ function convert_date_string_to_ymd_by_template($date_string, $date_template) {
       return [$Y, $m, $d];
    }
 
-   while(list($k, $v) = each($template_array)) {
+   foreach($template_array as $k => $v) {
       $$v = $date_array[$k];
    }
 
@@ -613,7 +603,7 @@ function get_ldap_attribute_names($ldap_type = '') {
 
 
 function htmlentities_on_array($arr = []) {
-   while(list($k, $v) = each($arr)) {
+   foreach($arr as $k => $v) {
       if(is_array($v)) {
          $arr[$k] = htmlentities_on_array($v);
       } else {

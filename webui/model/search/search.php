@@ -16,7 +16,7 @@ class ModelSearchSearch extends Model {
 
       $session = Registry::get('session');
 
-      while(list($k,$v) = each($data)) {
+      foreach($data as $k => $v) {
          if($v) { if(is_array($v)) { $v = implode(" ", $v); } $s .= '&' . $k . '=' . $v; }
       }
 
@@ -113,11 +113,10 @@ class ModelSearchSearch extends Model {
       $session = Registry::get('session');
 
       $i = 0;
-      while(list($k, $v) = each($data['match'])) {
+      foreach($data['match'] as $k => $v) {
          if($v == "@attachment_types") {
-            list($k, $v) = each($data['match']);
             $i++;
-            if($v == "any") {
+            if($data['match'][$i] == "any") {
                $data['match'][$i-1] = "";
                $data['match'][$i] = "";
             }
@@ -199,7 +198,7 @@ class ModelSearchSearch extends Model {
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
          $s = explode(" ", $data['folders']);
-         while(list($k,$v) = each($s)) {
+         foreach($s as $k => $v) {
             if(in_array($v, $session->get("folders"))) {
                array_push($__folders, $v);
             }
@@ -347,7 +346,7 @@ class ModelSearchSearch extends Model {
       $s = preg_replace("/httpX/", "http:", $s);
       $b = explode(" ", $s);
 
-      while(list($k, $v) = each($b)) {
+      foreach($b as $k => $v) {
          if($v == '') { continue; }
 
          if($v == 'from:') { $token = 'match'; $a['match'][] = FROM_TOKEN; continue; }
@@ -441,7 +440,7 @@ class ModelSearchSearch extends Model {
       $offset = $page * $pagelen;
 
       $s = explode(" ", $extra_folders);
-      while(list($k,$v) = each($s)) {
+      foreach($s as $k => $v) {
          if(in_array($v, $session->get("extra_folders")) && is_numeric($v)) {
             array_push($__folders, $v);
             if($q) { $q .= ",?"; }
@@ -647,7 +646,9 @@ class ModelSearchSearch extends Model {
 
       $emails = $session->get($session_var);
 
-      while(list($k, $v) = each($emails)) {
+      if(!$emails) { return $s; }
+
+      foreach($emails as $k => $v) {
          if($s) { $s .= '| ' .  $this->fix_email_address_for_sphinx($v); }
          else { $s = $this->fix_email_address_for_sphinx($v); }
       }
@@ -681,6 +682,13 @@ class ModelSearchSearch extends Model {
 
       if($id == '') { return 0; }
 
+      if(Registry::get('data_officer') == 1) {
+         $query = $this->db->query("SELECT id FROM " . TABLE_DELETED . " WHERE deleted=-1 AND id=?", array($id));
+         if(!isset($query->row['id'])) {
+            return 0;
+         }
+      }
+
       if((Registry::get('auditor_user') == 1 || Registry::get('data_officer') == 1) && RESTRICTED_AUDITOR == 0) { return 1; }
 
       $session = Registry::get('session');
@@ -695,7 +703,7 @@ class ModelSearchSearch extends Model {
 
          $auditdomains = $session->get("auditdomains");
 
-         while(list($k, $v) = each($auditdomains)) {
+         foreach($auditdomains as $k => $v) {
             if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
@@ -711,7 +719,7 @@ class ModelSearchSearch extends Model {
 
          $emails = $session->get("emails");
 
-         while(list($k, $v) = each($emails)) {
+         foreach($emails as $k => $v) {
             if(validemail($v) == 1) {
                $q .= ",?";
                array_push($a, $v);
@@ -767,7 +775,7 @@ class ModelSearchSearch extends Model {
 
          $auditdomains = $session->get("auditdomains");
 
-         while(list($k, $v) = each($auditdomains)) {
+         foreach($auditdomains as $k => $v) {
             if(validdomain($v) == 1 && !in_array($v, $a)) {
                $q .= ",?";
                array_push($a, $v);
@@ -778,7 +786,7 @@ class ModelSearchSearch extends Model {
          if(Registry::get('auditor_user') == 0) {
             $emails = $session->get("emails");
 
-            while(list($k, $v) = each($emails)) {
+            foreach($emails as $k => $v) {
                if(validemail($v) == 1) {
                   $q .= ",?";
                   array_push($a, $v);
@@ -835,6 +843,10 @@ class ModelSearchSearch extends Model {
 
 
    public function fix_email_address_for_sphinx($email = '') {
+      if(strlen($email) > MAX_EMAIL_LEN) {
+         return md5($email . ' ');
+      }
+
       $email = preg_replace("/\|@/", "|", $email);
       return preg_replace("/[\@\.\+\-\_]/", "X", $email);
    }
@@ -906,7 +918,7 @@ class ModelSearchSearch extends Model {
       $a = explode(" ", $s);
       $s = '';
 
-      while(list($k, $v) = each($a)) {
+      foreach($a as $k => $v) {
 
          if(substr($v, 0, 4) == 'http') {
             $v = preg_replace("/http(s){0,1}\:\/\//", "__URL__", $v);

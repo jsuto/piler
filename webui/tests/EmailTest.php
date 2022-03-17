@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 define('DIR_BASE', $_ENV['DIR_BASE']);
+define('MAX_EMAIL_LEN', 41);
 
 include_once(DIR_BASE . "system/model.php");
 include_once(DIR_BASE . "model/search/search.php");

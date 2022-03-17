@@ -213,7 +213,7 @@ class ModelSearchMessage extends Model {
       $a = explode(" ", $terms);
       $terms = array();
 
-      while(list($k, $v) = each($a)) {
+      foreach($a as $k => $v) {
          if(strlen($v) >= 3 && !in_array($v, $fields)) {
             $v = preg_replace("/\*/", "", $v);
             if($v) { array_push($terms, $v); }
@@ -223,7 +223,7 @@ class ModelSearchMessage extends Model {
       if(count($terms) <= 0) { return $s; }
 
       if($html == 0) {
-         while(list($k, $v) = each($terms)) {
+         foreach($terms as $k => $v) {
             $s = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $s);
          }
 
@@ -233,7 +233,7 @@ class ModelSearchMessage extends Model {
       $tokens = preg_split("/\</", $s);
       $s = '';
 
-      while(list($k, $token) = each($tokens)) {
+      foreach($tokens as $k => $token) {
 
          $pos = strpos($token, ">");
          if($pos > 0) {
@@ -245,7 +245,7 @@ class ModelSearchMessage extends Model {
                $str = substr($token, $pos+1, $len);
 
                reset($terms);
-               while(list($k, $v) = each($terms)) {
+               foreach($terms as $k => $v) {
                   $str = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $str);
                }
 
@@ -365,13 +365,20 @@ class ModelSearchMessage extends Model {
 
          if($computed_hash == '') {
 
-            $query2 = $this->db->query("SELECT digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ?", array($query->row['start_id'], $query->row['stop_id']));
+            $query2 = $this->db->query("SELECT digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ? ORDER BY id", array($query->row['start_id'], $query->row['stop_id']));
 
             foreach($query2->rows as $q) {
                $s .= $q['digest'];
             }
 
-            $computed_hash = sha1($s);
+            $len = strlen($query->row['hash_value']);
+            if($len == 64)
+               $algo='sha256';
+            elseif($len == 128)
+               $algo='sha512';
+            else
+               $algo='sha1';
+            $computed_hash = hash($algo, $s);
 
             if(MEMCACHED_ENABLED) {
                $memcache->add($cache_key, $computed_hash, 0, MEMCACHED_TTL);

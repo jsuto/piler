@@ -140,7 +140,7 @@ class ControllerSearchHelper extends Controller {
       $s = preg_replace("/OR/", "|", $data['search']);
       $b = preg_split("/\s/", $s);
 
-      while(list($k, $v) = each($b)) {
+      foreach ($b as $k => $v) {
          if($v == '') { continue; }
 
          if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {

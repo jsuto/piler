@@ -14,6 +14,7 @@
    #include <tre/regex.h>
 #endif
 
+#include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <openssl/ssl.h>
 #include <netinet/in.h>
@@ -171,6 +172,7 @@ struct parser_state {
    int qp;
    int htmltag;
    int style;
+   int meta_content_type;
    int skip_html;
    int has_to_dump;
    int has_to_dump_whole_body;
@@ -184,11 +186,13 @@ struct parser_state {
    int saved_size;
    unsigned int writebufpos;
    unsigned int abufpos;
+   unsigned int received_header;
    char attachedfile[RND_STR_LEN+SMALLBUFSIZE];
    char message_id[SMALLBUFSIZE];
    char message_id_hash[2*DIGEST_LENGTH+1];
    char miscbuf[MAX_TOKEN_LEN];
    char qpbuf[MAX_TOKEN_LEN];
+   char receivedbuf[SMALLBUFSIZE];
    unsigned long n_token;
    unsigned long n_subject_token;
    unsigned long n_body_token;
@@ -218,7 +222,7 @@ struct parser_state {
    unsigned int todomainlen;
    unsigned int found_security_header;
 
-   int journaltolen;
+   long unsigned int journaltolen;
 
    int retention;
 };
@@ -315,6 +319,7 @@ struct import {
    int port;
    int seq;
    int table_id;
+   int delay;
    char *server;
    char *username;
    char *password;
@@ -399,6 +404,7 @@ struct smtp_session {
    char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
    char buf[MAXBUFSIZE];
    char remote_host[INET6_ADDRSTRLEN+1];
+   char nullbyte;
    time_t lasttime;
    int protocol_state;
    int slot;

@@ -9,9 +9,9 @@ create table if not exists `sph_counter` (
 create table if not exists `sph_index` (
   `id` bigint not null,
   `from` tinyblob default null,
-  `to` text(8192) default null,
-  `fromdomain` char(255) default null,
-  `todomain` text(512) default null,
+  `to` blob(8192) default null,
+  `fromdomain` tinyblob default null,
+  `todomain` blob(512) default null,
   `subject` blob(512) default null,
   `arrived` int unsigned not null,
   `sent` int unsigned not null,
@@ -73,7 +73,7 @@ create index `rcpt_idx3` on `rcpt`(`todomain`);
 
 
 drop view if exists `v_messages`;
-create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`retained` AS `retained`, `metadata`.`arrived` AS `arrived`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest`, `metadata`.`deleted` AS `deleted` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
+create view `v_messages` AS select `metadata`.`id` AS `id`,`metadata`.`piler_id` AS `piler_id`,`metadata`.`from` AS `from`,`metadata`.`fromdomain` AS `fromdomain`,`rcpt`.`to` AS `to`,`rcpt`.`todomain` AS `todomain`,`metadata`.`subject` AS `subject`, `metadata`.`size` AS `size`, `metadata`.`direction` AS `direction`, `metadata`.`sent` AS `sent`, `metadata`.`retained` AS `retained`, `metadata`.`arrived` AS `arrived`, `metadata`.`digest` AS `digest`, `metadata`.`bodydigest` AS `bodydigest`, `metadata`.`deleted` AS `deleted`, `metadata`.`attachments` AS `attachments` from (`metadata` join `rcpt`) where (`metadata`.`id` = `rcpt`.`id`);
 
 
 create table if not exists `attachment` (
@@ -463,7 +463,7 @@ create table if not exists `timestamp` (
   `id` bigint unsigned not null auto_increment,
   `start_id` bigint default 0,
   `stop_id` bigint default 0,
-  `hash_value` char(40),
+  `hash_value` varchar(128),
   `count` int default 0,
   `response_time` bigint default 0,
   `response_string` blob not null,

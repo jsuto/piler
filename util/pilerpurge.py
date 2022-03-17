@@ -54,12 +54,26 @@ def purge_m_files(ids=[], opts={}):
         remove_m_files(ids, opts)
 
         # Set deleted=1 for aged metadata entries
+        # as well as clean other tables
 
         if opts['dry_run'] is False:
             cursor = opts['db'].cursor()
             format = ", ".join(['%s'] * len(ids))
-            cursor.execute("UPDATE metadata SET deleted=1 WHERE piler_id IN " +
+            cursor.execute("UPDATE metadata SET deleted=1, subject=NULL, `from`=''," +
+                           "fromdomain='', message_id='' WHERE piler_id IN " +
                            "(%s)" % (format), ids)
+
+            cursor.execute("DELETE FROM rcpt WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM note WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM tag WHERE id IN (SELECT id FROM metadata " +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM private WHERE id IN (SELECT id FROM metadata" +
+                           "WHERE piler_id IN (%s))" % (format), ids)
+            cursor.execute("DELETE FROM folder_message WHERE id IN (SELECT id FROM " +
+                           "metadata WHERE piler_id IN (%s))" % (format), ids)
+
             opts['db'].commit()
 
 
@@ -85,7 +99,7 @@ def purge_attachments_by_attachment_id(opts={}):
     cursor = opts['db'].cursor()
 
     cursor.execute("SELECT i, piler_id, attachment_id, refcount FROM " +
-                   "v_attachment WHERE i IN (%s)" %
+                   "v_attachment WHERE refcount=0 AND i IN (%s)" %
                    (format), opts['referenced_attachments'])
 
     while True:
@@ -160,12 +174,12 @@ def unlink(filename="", opts={}):
 
 
 def get_m_file_path(id='', opts={}):
-    return "/".join([opts['storedir'], opts['server_id'], id[8:11], id[32:34],
+    return "/".join([opts['storedir'], id[24:26], id[8:11], id[32:34],
                     id[34:36], id + ".m"])
 
 
 def get_attachment_file_path(piler_id='', attachment_id=0, opts={}):
-    return "/".join([opts['storedir'], opts['server_id'], piler_id[8:11],
+    return "/".join([opts['storedir'], piler_id[24:26], piler_id[8:11],
                     piler_id[32:34], piler_id[34:36], piler_id + ".a" +
                     str(attachment_id)])
 

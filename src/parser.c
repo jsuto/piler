@@ -65,7 +65,9 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    fclose(f);
 
    if(data->import && data->import->extra_recipient){
-      add_recipient(data->import->extra_recipient, strlen(data->import->extra_recipient), sdata, &state, data, cfg);
+      char tmpbuf[SMALLBUFSIZE];
+      snprintf(tmpbuf, sizeof(tmpbuf)-1, "%s", data->import->extra_recipient);
+      add_recipient(tmpbuf, strlen(tmpbuf), sdata, &state, data, cfg);
    }
 
    // If both Sender: and From: headers exist, and they are different, then append
@@ -110,6 +112,15 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
       if(sdata->internal_recipient == 1 && sdata->external_recipient == 1) sdata->direction = DIRECTION_INTERNAL_AND_OUTGOING;
    }
 
+   char *q = strrchr(state->receivedbuf, ';');
+   if(q){
+      time_t received_timestamp = parse_date_header(q+1);
+      if(received_timestamp > 10000000){
+         // If the calculated date based on Date: header line differs more than 1 week
+         // then we'll override it with the data parsed from the first Received: line
+         if(labs(received_timestamp - sdata->sent) > 604800) sdata->sent = received_timestamp;
+      }
+   }
 
    for(i=1; i<=state->n_attachments; i++){
       char puf[SMALLBUFSIZE];
@@ -123,7 +134,7 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
 
       digest_file(state->attachments[i].internalname, &(state->attachments[i].digest[0]));
 
-      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest);
+      if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "%s: attachment list: i:%d, name=*%s*, type: *%s*, size: %d, int.name: %s, digest: %s, dumped: %d", sdata->ttmpfile, i, state->attachments[i].filename, state->attachments[i].type, state->attachments[i].size, state->attachments[i].internalname, state->attachments[i].digest, state->attachments[i].dumped);
 
       char *p = determine_attachment_type(state->attachments[i].filename, state->attachments[i].type);
       len = strlen(p);
@@ -406,7 +417,10 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->message_state = MSG_CC;
          buf += strlen("Bcc:");
       }
-      else if(strncasecmp(buf, "Message-Id:", 11) == 0) state->message_state = MSG_MESSAGE_ID;
+      else if(strncasecmp(buf, "Message-Id:", 11) == 0){
+         state->message_state = MSG_MESSAGE_ID;
+         buf += strlen("Message-Id:");
+      }
       else if(strncasecmp(buf, "References:", 11) == 0) state->message_state = MSG_REFERENCES;
       else if(strncasecmp(buf, "Subject:", strlen("Subject:")) == 0){
          state->message_state = MSG_SUBJECT;
@@ -430,30 +444,37 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
          if(strstr(buf, "=?") && strstr(buf, "?=")) fixupEncodedHeaderLine(buf, MAXBUFSIZE);
 
-         sdata->sent = parse_date_header(buf);
+         sdata->sent = parse_date_header(buf+5);
 
          /* allow +2 days drift in the parsed Date: value */
 
          if(sdata->sent - sdata->now > 2*86400) sdata->sent = sdata->now;
       }
 
-      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf);
-      else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0) state->message_state = MSG_RECEIVED;
+      else if(strncasecmp(buf, "Delivery-date:", strlen("Delivery-date:")) == 0 && sdata->delivered == 0) sdata->delivered = parse_date_header(buf+14);
+      else if(strncasecmp(buf, "Received:", strlen("Received:")) == 0){
+         state->message_state = MSG_RECEIVED;
+         state->received_header++;
+      }
       else if(cfg->extra_to_field[0] != '\0' && strncasecmp(buf, cfg->extra_to_field, strlen(cfg->extra_to_field)) == 0){
-         state->message_state = MSG_TO;
+         state->message_state = MSG_RECIPIENT;
          buf += strlen(cfg->extra_to_field);
       }
 
       if(state->message_state == MSG_MESSAGE_ID && state->message_id[0] == 0){
-         p = strchr(buf+11, ' ');
-         if(p) p = buf + 12;
-         else p = buf + 11;
+         while(isspace(*buf)){
+            buf++;
+         }
 
-         snprintf(state->message_id, SMALLBUFSIZE-1, "%s", p);
+         snprintf(state->message_id, SMALLBUFSIZE-1, "%s", buf);
       }
 
       if(state->message_state == MSG_CONTENT_TYPE || state->message_state == MSG_CONTENT_DISPOSITION){
          fill_attachment_name_buf(state, buf);
+      }
+
+      if(state->received_header == 1 && state->message_state == MSG_RECEIVED && strlen(state->receivedbuf) + len < sizeof(state->receivedbuf)){
+         memcpy(&(state->receivedbuf[strlen(state->receivedbuf)]), buf, len);
       }
 
       /* we are interested in only From:, To:, Subject:, Received:, Content-*: header lines */
@@ -553,6 +574,8 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
          state->message_rfc822 = 1;
          state->is_header = 1;
 
+         state->has_to_dump = 0;
+
          if(sdata->ms_journal == 1){
             state->is_1st_header = 1;
 
@@ -618,7 +641,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
       state->pushed_pointer = 0;
 
       memset(state->type, 0, TINYBUFSIZE);
-      snprintf(state->charset, TINYBUFSIZE-1, "unknown");
+      memset(state->charset, 0, TINYBUFSIZE);
 
       memset(state->attachment_name_buf, 0, SMALLBUFSIZE);
       state->anamepos = 0;
@@ -661,7 +684,18 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
    if(state->texthtml == 1 && state->message_state == MSG_BODY) markHTML(buf, state);
 
 
-   if(state->texthtml == 1) decodeHTML(buf, state->utf8);
+   if(state->texthtml == 1){
+      size_t buflen = strlen(buf);
+      decodeHTML(buf, state->utf8);
+      /* decodeHTML converted some entities to iso-8859-1 */
+      if(state->utf8 != 1 && strlen(buf) != buflen){
+        /* no charset or us-ascii: switch to iso-8859-1 */
+        if (state->charset[0] == 0 || strcasecmp(state->charset, "us-ascii") == 0){
+          syslog(LOG_PRIORITY, "%s: assuming iso-8859-1 encoding for HTML (was '%s')", sdata->ttmpfile, state->charset);
+          snprintf(state->charset, TINYBUFSIZE-1, "ISO8859-1");
+        }
+      }
+   }
 
    /* encode the body if it's not utf-8 encoded */
    if(state->message_state == MSG_BODY && state->utf8 != 1){

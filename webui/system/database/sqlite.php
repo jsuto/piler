@@ -47,7 +47,7 @@ class SQLite {
 
       $R = $s->fetchAll();
 
-      while(list ($k, $v) = each($R)){
+      foreach($R as $k => $v) {
          $data[$i] = $v;
          $i++;
       }

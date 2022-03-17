@@ -12,11 +12,13 @@ ini_set("session.save_path", "/tmp");
 $webuidir = "";
 $verbose = 0;
 $mode = "unit";
+$algo = "sha256";
 
 $opts = 'h::v';
 $lopts = array(
     'webui:',
     'mode:',
+    'algo:',
     'verbose'
     );
 
@@ -35,6 +37,10 @@ if ( $options = getopt( $opts, $lopts ) )
 
     if ( isset($options['mode']) && $options['mode'] == 'time') {
        $mode = $options['mode'];
+    }
+
+    if ( isset($options['algo']) ) {
+       $algo = $options['algo'];
     }
 
     if ( isset($options['h']) )
@@ -66,6 +72,7 @@ Registry::set('db', $db);
 Registry::set('DB_DRIVER', DB_DRIVER);
 
 define('MODE', $mode);
+define('ALGO', $algo);
 
 
 $data = get_hash_values();
@@ -121,29 +128,29 @@ function get_hash_values() {
 
    if($last_id == 0) {
       $start_id = TSA_START_ID;
-      if(MODE == 'unit') { $stop_id = $start_id + TSA_STAMP_REQUEST_UNIT_SIZE - 1; }
-      else { $stop_id = 1000000000; }
-   }
-   else {
+   } else {
       $start_id = $last_id + 1;
-      if(MODE == 'unit') { $stop_id = $start_id + TSA_STAMP_REQUEST_UNIT_SIZE - 1; }
-      else { $stop_id = 1000000000; }
    }
 
-   $query = $db->query("SELECT id, digest FROM " . TABLE_META . " WHERE id >= ? AND id <= ?", array($start_id, $stop_id));
+   if(MODE == 'unit') {
+      $limit = TSA_STAMP_REQUEST_UNIT_SIZE;
+   } else {
+      $limit = 100000; // stay well below default PHP memory_limit
+   }
+
+   $query = $db->query("SELECT id, digest FROM " . TABLE_META . " WHERE id >= ? ORDER BY id LIMIT $limit", array($start_id));
 
    foreach($query->rows as $q) {
       $count++;
+      $last_id = $q['id'];
       $s .= $q['digest'];
    }
 
-   if(MODE == 'time') { $stop_id = $start_id + $count - 1; }
-
    return [
       START_ID => $start_id,
-      STOP_ID => $stop_id,
+      STOP_ID => $last_id,
       COUNT => $count,
-      HASH_VALUE => sha1($s)
+      HASH_VALUE => hash(ALGO, $s)
    ];
 
 }

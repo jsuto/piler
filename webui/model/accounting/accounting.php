@@ -36,7 +36,7 @@ class ModelAccountingAccounting extends Model {
 
       // emails sent to users
 
-      $tousers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `to`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `to`", array($start, $stop));
+      $tousers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `to`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE deleted=0 AND `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `to`", array($start, $stop));
 
       foreach($tousers->rows as $row) {
          $counter[$row['day']][$row['to']]['recd'] = $row['count'];
@@ -46,7 +46,7 @@ class ModelAccountingAccounting extends Model {
 
       // emails sent from users
 
-      $fromusers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `from`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `from`", array($start, $stop));
+      $fromusers = $this->db->query("SELECT `$column`-(`$column` % 86400) AS `day`, `from`, COUNT(*) AS `count`, SUM(`size`) AS `size` FROM " . VIEW_MESSAGES . " WHERE deleted=0 AND `$column` >= ? AND `$column` < ? GROUP BY FROM_UNIXTIME(`day`, '%Y.%m.%d.'), `from`", array($start, $stop));
 
       foreach($fromusers->rows as $row) {
          $counter[$row['day']][$row['from']]['sent'] = $row['count'];
@@ -143,10 +143,6 @@ class ModelAccountingAccounting extends Model {
       $account_for_domains = $this->__getDomains();
 
       $search = preg_replace("/\s{1,}/", "", $search);
-
-      if($search) {
-         $search_cond .= " AND ( `email` LIKE '%".$search."%' OR `domain` LIKE '%".$search."%' )";
-      }
 
       $query = "SELECT `email` AS `item`, MIN(`date`) AS `oldest`, MAX(`date`) AS `newest`, SUM(`sent`) AS `sent`, SUM(`recd`) AS `recd`, SUM(`sentsize`) AS `sentsize`, SUM(`recdsize`) AS `recdsize` FROM " . TABLE_STAT_COUNTER;
 

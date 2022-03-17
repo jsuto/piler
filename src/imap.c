@@ -159,7 +159,7 @@ int imap_select_cmd_on_folder(char *folder, struct data *data){
       }
    }
 
-   printf("found %d messages\n", messages);
+   if(data->quiet == 0){printf("found %d messages\n", messages); }
 
    data->import->total_messages += messages;
 
@@ -356,7 +356,7 @@ int process_imap_folder(char *folder, struct session_data *sdata, struct data *d
    }
 
 
-   printf("\n");
+   if(data->quiet == 0){printf("\n"); }
 
    return OK;
 }
@@ -375,7 +375,7 @@ int list_folders(struct data *data){
    char attrs[SMALLBUFSIZE], folder[SMALLBUFSIZE];
    int len=MAXBUFSIZE+3, pos=0, n, rc=ERR, fldrlen=0, result;
 
-   printf("List of IMAP folders:\n");
+   if(data->quiet == 0){printf("List of IMAP folders:\n"); }
 
    buf = malloc(len);
    if(!buf) return rc;
@@ -478,9 +478,9 @@ int list_folders(struct data *data){
                if(!strstr(attrs, "\\Noselect")){
                   addnode(data->imapfolders, folder);
                }
-               else printf("skipping ");
+               else if(data->quiet == 0){printf("skipping "); }
 
-               printf("=> '%s [%s]'\n", folder, attrs);
+               if(data->quiet == 0){printf("=> '%s [%s]'\n", folder, attrs); }
 
                memset(attrs, 0, sizeof(attrs));
             }

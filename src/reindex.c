@@ -75,11 +75,9 @@ uint64 get_max_meta_id(struct session_data *sdata){
 
 uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *data, uint64 from_id, uint64 to_id, struct config *cfg){
    char s[SMALLBUFSIZE];
-   uint64 stored_id=0, reindexed=0, delta;
+   uint64 stored_id=0, reindexed=0;
    struct parser_state state;
    struct sql sql;
-
-   delta = to_id - from_id;
 
    if(cfg->enable_folders == 1)
       snprintf(s, sizeof(s)-1, "SELECT m.`id`, `piler_id`, `arrived`, `sent`, f.folder_id FROM %s m, %s f WHERE m.id=f.id AND (m.id BETWEEN %llu AND %llu) AND `deleted`=0", SQL_METADATA_TABLE, SQL_FOLDER_MESSAGE_TABLE, from_id, to_id);
@@ -123,6 +121,12 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
 
             snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
+            struct stat st;
+            sdata->tot_len = stat(filename, &st) == 0 ? st.st_size : 0;
+
+            sdata->internal_sender = sdata->internal_recipient = sdata->external_recipient = sdata->direction = 0;
+            memset(sdata->attachments, 0, SMALLBUFSIZE);
+
             state = parse_message(sdata, 1, data, cfg);
             post_parse(sdata, &state, cfg);
 
@@ -137,6 +141,8 @@ uint64 retrieve_email_by_metadata_id(struct session_data *sdata, struct data *da
             unlink(filename);
 
             if(progressbar){
+               uint64 delta = to_id - from_id + 1;
+
                printf("processed: %8llu [%3d%%]\r", reindexed, (int)(100*reindexed/delta));
                fflush(stdout);
             }

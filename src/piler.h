@@ -38,6 +38,7 @@ int do_av_check(char *filename, struct config *cfg);
 int make_digests(struct session_data *sdata, struct config *cfg);
 void digest_file(char *filename, char *digest);
 void digest_string(char *s, char *digest);
+void create_md5_from_email_address(char *puf, char *md5buf);
 
 void remove_stripped_attachments(struct parser_state *state);
 int process_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);

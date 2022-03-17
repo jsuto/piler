@@ -58,7 +58,7 @@ void process_buffer(char *buf, int buflen, uint64 *count, struct session_data *s
 
 
 void import_from_pilerexport(struct session_data *sdata, struct data *data, struct config *cfg){
-   int n, rc, savedlen=0, puflen;
+   int n, rc, nullbyte, savedlen=0, puflen;
    uint64 count=0;
    char *p, copybuf[2*BIGBUFSIZE+1], buf[BIGBUFSIZE], savedbuf[BIGBUFSIZE], puf[BIGBUFSIZE];
 
@@ -70,11 +70,15 @@ void import_from_pilerexport(struct session_data *sdata, struct data *data, stru
       memset(buf, 0, sizeof(buf));
       n = fread(buf, 1, sizeof(buf)-1, stdin);
 
+      int remaininglen = n;
+
       if(savedlen > 0){
          memset(copybuf, 0, sizeof(copybuf));
 
          memcpy(copybuf, savedbuf, savedlen);
          memcpy(&copybuf[savedlen], buf, n);
+
+         remaininglen += savedlen;
 
          savedlen = 0;
          memset(savedbuf, 0, sizeof(savedbuf));
@@ -86,8 +90,9 @@ void import_from_pilerexport(struct session_data *sdata, struct data *data, stru
       }
 
       do {
-         puflen = read_one_line(p, '\n', puf, sizeof(puf), &rc);
+         puflen = read_one_line(p, remaininglen, '\n', puf, sizeof(puf), &rc, &nullbyte);
          p += puflen;
+         remaininglen -= puflen;
 
          if(puflen > 0){
             if(rc == OK){

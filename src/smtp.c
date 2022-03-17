@@ -84,14 +84,24 @@ void process_data(struct smtp_session *session, char *buf, int buflen){
       // write line to file
       int written=0, n_writes=0;
 
+      // In the DATA phase skip the 1st character if it's a dot (.)
+      // and there are more characters before the trailing CR-LF
+      //
+      // See https://www.ietf.org/rfc/rfc5321.html#section-4.5.2 for more.
+
+      int dotstuff = 0;
+      if(*buf == '.' && buflen > 1 && *(buf+1) != '\r' && *(buf+1) != '\n') dotstuff = 1;
+
       while(written < buflen) {
-         int len = write(session->fd, buf+written, buflen-written);
+         int len = write(session->fd, buf+dotstuff+written, buflen-dotstuff-written);
+
          n_writes++;
 
          if(len > 0){
-            if(len != buflen) syslog(LOG_PRIORITY, "WARN: partial write: %d/%d bytes (round: %d)", len, buflen, n_writes);
-            written += len;
+            if(len != buflen-dotstuff) syslog(LOG_PRIORITY, "WARN: partial write: %d/%d bytes (round: %d)", len, buflen-dotstuff, n_writes);
+            written += len + dotstuff;
             session->tot_len += len;
+            dotstuff = 0;
          }
          else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): written %d bytes", __LINE__, len);
       }
@@ -171,10 +181,14 @@ int init_ssl(struct smtp_session *session){
       return 0;
    }
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+   SSL_CTX_set_options(session->net.ctx, SSL_OP_NO_SSLv2|SSL_OP_NO_SSLv3|SSL_OP_NO_TLSv1|SSL_OP_NO_TLSv1_1);
+#else
    if(SSL_CTX_set_min_proto_version(session->net.ctx, session->cfg->tls_min_version_number) == 0){
       syslog(LOG_PRIORITY, "failed SSL_CTX_set_min_proto_version() to %s/%d", session->cfg->tls_min_version, session->cfg->tls_min_version_number);
       return 0;
    }
+#endif
 
    if(SSL_CTX_set_cipher_list(session->net.ctx, session->cfg->cipher_list) == 0){
       syslog(LOG_PRIORITY, "failed to set cipher list: '%s'", session->cfg->cipher_list);

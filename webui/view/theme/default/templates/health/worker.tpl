@@ -123,7 +123,7 @@
 				<tr>
 					<th colspan="2"><?php print $text_message_disposition; ?></th>
 				</tr>
-			   <?php while(list($k, $v) = each($health['counters'])) {
+			   <?php foreach($health['counters'] as $k => $v) {
 						if(!is_numeric($k)) { ?>
 						   <tr>
 							  <td><?php $a = preg_replace("/^_piler\:/", "", $k); if(isset($$a)) { print $$a; } else { print $k; } ?></td>

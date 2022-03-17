@@ -53,6 +53,7 @@ void usage(){
    printf("    -j <failed folder>                Move failed to import emails to this folder\n");
    printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
    printf("    -T <id>                           Update import table at id=<id>\n");
+   printf("    -Z <ms>                           Delay Z milliseconds in between emails being imported\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -y                                Read pilerexport data from stdin\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
@@ -100,6 +101,7 @@ int main(int argc, char **argv){
    import.tot_msgs = 0;
    import.table_id = 0;
    import.folder = NULL;
+   import.delay = 0;
 
    data.import = &import;
 
@@ -136,6 +138,7 @@ int main(int argc, char **argv){
             {"timeout",      required_argument,  0,  't' },
             {"start-position",required_argument,  0,  's' },
             {"table-id",     required_argument,  0,  'T' },
+            {"delay",        required_argument,  0,  'Z' },
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    no_argument,        0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
@@ -150,9 +153,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:yDRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:yDRroqh?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:yDRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:yDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -271,6 +274,15 @@ int main(int argc, char **argv){
                     data.import->table_id = atoi(optarg);
                     break;
 
+         case 'Z' :
+                    if(atoi(optarg) < 1){
+                       printf("invalid delay value: %s\n", optarg);
+                       return -1;
+                    }
+
+                    data.import->delay = atoi(optarg);
+                    break;
+
          case 'y' :
                     read_from_pilerexport = 1;
                     break;
@@ -315,6 +327,9 @@ int main(int argc, char **argv){
 
    /* make sure we don't discard messages without a valid Message-Id when importing manually */
    cfg.archive_emails_not_having_message_id = 1;
+
+   /* The mmap_dedup_test feature is expected to work with the piler daemon only */
+   cfg.mmap_dedup_test = 0;
 
    if(read_key(&cfg)){
       printf("%s\n", ERR_READING_KEY);

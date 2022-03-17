@@ -20,7 +20,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen);
 void fixupSoftBreakInQuotedPritableLine(char *buf, struct parser_state *state);
 void fixupBase64EncodedLine(char *buf, struct parser_state *state);
 void markHTML(char *buf, struct parser_state *state);
-void setStateHTMLStyle(char *htmlbuf, int pos, struct parser_state *state);
+void setStateHTML(char *htmlbuf, int pos, struct parser_state *state);
 void translateLine(unsigned char *p, struct parser_state *state);
 void fix_email_address_for_sphinx(char *s);
 void split_email_address(char *s);
