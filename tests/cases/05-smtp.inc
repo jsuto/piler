@@ -31,6 +31,8 @@ case1() {
    docker exec "piler1" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31'
 
    docker exec "piler1" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
+
+   run_import_job "piler1"
 }
 
 
@@ -73,4 +75,13 @@ append_queries() {
    append_query "select * from main1,dailydelta1,delta1 WHERE attachments > 0 AND MATCH('@subject spam @attachment_types image')" 15
    append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@(subject,body)  New Task TSK002*')" 29
    append_query "select * from main1,dailydelta1,delta1 WHERE MATCH('@subject \"virtualfax daily summary\" | \"adsl hibajegy\"')" 11
+}
+
+
+run_import_job() {
+   local container="$1"
+
+   log "${FUNCNAME[0]}"
+
+   docker exec "$container" su piler -c /usr/libexec/piler/import.sh
 }
