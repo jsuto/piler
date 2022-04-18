@@ -48,11 +48,15 @@ class ControllerImportTest extends Controller {
 
       }
 
-      else if($this->request->post['type'] == 'imap') {
+      else if($this->request->post['type'] == 'imap' || $this->request->post['type'] == 'imap-ssl') {
+         $ssl = false;
+         if($this->request->post['type'] == 'imap-ssl') {
+            $ssl = 'SSL';
+         }
 
          try {
 
-            $conn = new Zend_Mail_Protocol_Imap($this->request->post['server'], '143', false);
+            $conn = new Zend_Mail_Protocol_Imap($this->request->post['server'], null, $ssl);
 
             $login = $conn->login($this->request->post['username'], $this->request->post['password']);
 
@@ -61,7 +65,7 @@ class ControllerImportTest extends Controller {
             } else {
                print "<span class=\"text-error\">" . $this->request->post['username'] . ": " . $lang->data['text_login_failed'] . "</span> ";
             }
-            
+
          } catch (Zend_Mail_Protocol_Exception $e) {
              print "<span class=\"text-error\">" . $this->request->post['server'] . ": " . $lang->data['text_connection_failed'] . "</span> ";
          }
@@ -76,5 +80,3 @@ class ControllerImportTest extends Controller {
 
 
 }
-
-?>

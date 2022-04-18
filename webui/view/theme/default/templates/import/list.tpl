@@ -31,6 +31,7 @@
           <select name="type" id="type">
                  <option value="pop3"<?php if(isset($a['type']) && $a['type'] == 'pop3') { ?> selected="selected"<?php } ?>>pop3</option>
                  <option value="imap"<?php if(isset($a['type']) && $a['type'] == 'imap') { ?> selected="selected"<?php } ?>>imap</option>
+                 <option value="imap-ssl"<?php if(isset($a['type']) && $a['type'] == 'imap-ssl') { ?> selected="selected"<?php } ?>>imap-ssl</option>
           </select>
        </div>
     </div>
@@ -43,7 +44,7 @@
        </div>
     </div>
     <div class="control-group<?php if(isset($errors['username'])){ print " error"; } ?>">
-		<label class="control-label" for="username"><?php print $text_username; ?>:</label>
+        <label class="control-label" for="username"><?php print $text_username; ?>:</label>
         <div class="controls">
             <input type="text" class="text" name="username" id="username" placeholder="" value="<?php if(isset($a['username'])) { print $a['username']; } ?>" />
             <?php if ( isset($errors['username']) ) { ?><span class="help-inline"><?php print $errors['username']; ?></span><?php } ?>
