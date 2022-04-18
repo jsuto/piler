@@ -19,7 +19,7 @@ MYSQL_USERNAME="piler"
 
 SPHINX_TARGZ="sphinx-3.3.1-bin.tar.gz"
 DOWNLOAD_URL="https://download.mailpiler.com"
-PILER_DEB="piler_1.3.12-focal-a1b71bdd_amd64.deb"
+PILER_DEB="piler_1.3.12-focal-09dfc73e_amd64.deb"
 PILER_USER="piler"
 CONFIG_SITE_PHP="/etc/piler/config-site.php"
 
@@ -142,6 +142,8 @@ fix_configs() {
       chmod 600 /etc/piler/piler.conf
       chown $PILER_USER:$PILER_USER /etc/piler/piler.conf
    fi
+
+   sed -i 's/tls_enable=0/tls_enable=1/g' /etc/piler/piler.conf
 
    sed -i -e "s/MYSQL_HOSTNAME/${MYSQL_HOSTNAME}/g" \
           -e "s/MYSQL_DATABASE/${MYSQL_DATABASE}/g" \
