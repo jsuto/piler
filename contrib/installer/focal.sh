@@ -5,6 +5,7 @@ set -o pipefail
 set -o nounset
 set -x
 
+MY_IP="1.2.3.4"
 PILER_HOSTNAME="${PILER_HOSTNAME:-archive.yourdomain.com}"
 MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-abcde123}"
 MYSQL_PILER_PASSWORD="${MYSQL_PILER_PASSWORD:-piler123}"
@@ -19,7 +20,7 @@ MYSQL_USERNAME="piler"
 
 SPHINX_TARGZ="sphinx-3.3.1-bin.tar.gz"
 DOWNLOAD_URL="https://download.mailpiler.com"
-PILER_DEB="piler_1.3.12-focal-09dfc73e_amd64.deb"
+PILER_DEB="piler_1.3.12-focal-208de74a_amd64.deb"
 PILER_USER="piler"
 CONFIG_SITE_PHP="/etc/piler/config-site.php"
 
@@ -35,6 +36,9 @@ install_prerequisites() {
 
    wget -q -O "/tmp/${SPHINX_TARGZ}" "${DOWNLOAD_URL}/generic-local/${SPHINX_TARGZ}"
    tar -C / -zxvf "/tmp/${SPHINX_TARGZ}"
+   wget -O /usr/local/bin/traefik "${DOWNLOAD_URL}/generic-local/traefik"
+   chmod +x /usr/local/bin/traefik
+   setcap cap_net_bind_service+ep /usr/local/bin/traefik
 }
 
 
@@ -127,6 +131,7 @@ add_systemd_services() {
    systemctl enable piler
    systemctl enable piler-smtp
    systemctl enable pilersearch
+   systemctl enable traefik
 }
 
 
@@ -135,6 +140,11 @@ fix_configs() {
       sed -e "s%PILER_HOST%$PILER_HOSTNAME%g" -e "s%PHP_FPM_SOCKET%$PHP_FPM_SOCKET%g" /etc/piler/piler-nginx.conf.dist > /etc/piler/piler-nginx.conf
       nginx -t
       nginx -s reload
+
+      sed -i 's/server {/server {\n\tlisten 127.0.0.1:80;/' /etc/piler/piler-nginx.conf
+      systemctl stop nginx
+      sleep 5
+      systemctl start nginx
    fi
 
    if [[ ! -f /etc/piler/piler.conf ]]; then
@@ -152,6 +162,72 @@ fix_configs() {
           /etc/piler/sphinx.conf
 }
 
+setup_traefik() {
+   wget -O /etc/systemd/system/traefik.service "${DOWNLOAD_URL}/generic-local/traefik.service"
+
+   mkdir -p /usr/local/etc/traefik
+   touch /usr/local/etc/traefik/acme.json
+   chmod 600 /usr/local/etc/traefik/acme.json
+   chown www-data:www-data /usr/local/etc/traefik/acme.json
+
+   cat > /usr/local/etc/traefik/traefik.yaml << TRAEFIK
+log:
+  level: INFO
+
+entryPoints:
+  web:
+    address: "$MY_IP:80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: "$MY_IP:443"
+
+providers:
+  file:
+    filename: "/usr/local/etc/traefik/traefik.yaml"
+
+certificatesResolvers:
+  le:
+    acme:
+      storage: "/usr/local/etc/traefik/acme.json"
+      email: admin@$PILER_HOSTNAME
+      httpChallenge:
+        entryPoint: web
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13
+
+http:
+  middlewares:
+    piler_headers:
+      headers:
+        customResponseHeaders:
+          Server: ""
+          Strict-Transport-Security: "max-age=31536000"
+          X-Content-Type-Optionsi: "nosniff"
+          Referrer-Policy: "same-origin"
+  routers:
+    master:
+      rule: "Host(\`$PILER_HOSTNAME\`)"
+      service: www
+      middlewares:
+        - "piler_headers"
+      tls:
+        certResolver: le
+  services:
+    www:
+      loadBalancer:
+        servers:
+        - url: "http://127.0.0.1:80/"
+TRAEFIK
+}
+
 
 install_prerequisites
 
@@ -163,6 +239,8 @@ create_my_cnf "root" "${MYSQL_ROOT_PASSWORD}" /etc/piler/.my.cnf-root
 create_my_cnf "piler" "${MYSQL_PILER_PASSWORD}" /etc/piler/.my.cnf
 
 fix_config_site_php
+
+setup_traefik
 
 add_systemd_services
 
@@ -176,3 +254,4 @@ su -c "indexer --all -c /etc/piler/sphinx.conf" $PILER_USER
 systemctl start pilersearch
 systemctl start piler
 systemctl start piler-smtp
+systemctl start traefik
