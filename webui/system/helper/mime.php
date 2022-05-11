@@ -144,10 +144,20 @@ class Piler_Mime_Decode {
    public static function removeJournal(&$message, $EOL = "\n") {
       $has_journal = 0;
 
+      $crlfs = substr_count($message, "\r\n");
+
       self::splitMessageRaw($message, $headers, $journal, $body);
 
       if($journal) {
          $has_journal = 1;
+      }
+
+      // If the message has >10 CRLF sequences, then we assume
+      // that we need to restore the removed LF characters
+      if($crlfs > 10) {
+         $headers = str_replace("\n", "\r\n", $headers);
+         $body = str_replace("\n", "\r\n", $body);
+         $EOL = "\r\n";
       }
 
       $message = $headers . $EOL . $EOL . $body;
