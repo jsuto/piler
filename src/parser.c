@@ -113,7 +113,19 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    }
 
    char *q = strrchr(state->receivedbuf, ';');
-   if(q){
+   // I've seen some odd 1st Received: lines where the date
+   // wasn't the last item after a semicolon, eg.
+   //
+   // Received: from some.server.local [172.16.102.18]
+   //   by some.server.com with POP3 (Message Archiver)
+   //   for <nobody@127.0.0.1> (single-drop); Fri, 22 Nov 2019 11:24:49 -0500 (EST)
+   //   smtp.auth=3Daaaaaaaa@yourdomain.com|Received:=20by=20yourdomain
+   //   .com=20with=20ESMTPA=20id=20md50124862414.msg=3B=20Fri,=2022=20
+   //   ...
+   //
+   // Such line messes with the parse_date_header() function
+   // so the workaround is to discard such Received: line
+   if(q && strlen(q+1) < 45){
       time_t received_timestamp = parse_date_header(q+1);
       if(received_timestamp > 10000000){
          // If the calculated date based on Date: header line differs more than 1 week
