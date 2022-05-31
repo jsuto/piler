@@ -113,11 +113,11 @@ source note : base
 
 index main1
 {
-	source			= main1
-	path			= <?php print LOCALSTATEDIR; ?>/piler/sphinx/main1
+        source                  = main1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main1
 <?php if(SPHINX_VERSION < 300) { ?>
-	docinfo			= extern
-	dict			= keywords
+        docinfo                 = extern
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -131,7 +131,7 @@ index main2
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main2
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -145,7 +145,7 @@ index main3
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main3
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -159,7 +159,7 @@ index main4
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/main4
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -173,7 +173,7 @@ index dailydelta1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/dailydelta1
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -187,7 +187,7 @@ index delta1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/delta1
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -205,7 +205,7 @@ index tag1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/tag1
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -220,7 +220,7 @@ index note1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/sphinx/note1
 <?php if(SPHINX_VERSION < 300) { ?>
         docinfo                 = extern
-	dict			= keywords
+        dict                    = keywords
 <?php } ?>
         min_prefix_len          = 5
         min_word_len            = 1
@@ -231,23 +231,23 @@ index note1
 
 indexer
 {
-	mem_limit		= 256M
+        mem_limit               = 256M
 }
 
 
 searchd
 {
-	listen			= 127.0.0.1:9312
-	listen			= 127.0.0.1:9306:mysql41
-	log			= /dev/null
-	binlog_path             = 
-	##query_log		=
-	read_timeout		= 5
-	max_children		= 30
-	pid_file		= /var/run/piler/searchd.pid
-	seamless_rotate		= 1
-	preopen_indexes		= 1
-	unlink_old		= 1
-	thread_stack		= 512k
-	workers			= threads # for RT to work
+        listen                  = 127.0.0.1:9312
+        listen                  = 127.0.0.1:9306:mysql41
+        log                     = /dev/null
+        binlog_path             =
+        ##query_log             =
+        read_timeout            = 5
+        max_children            = 30
+        pid_file                = /var/run/piler/searchd.pid
+        seamless_rotate         = 1
+        preopen_indexes         = 1
+        unlink_old              = 1
+        thread_stack            = 512k
+        workers                 = thread_pool
 }
