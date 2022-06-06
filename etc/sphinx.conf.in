@@ -19,7 +19,7 @@ define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
 // NB: The SPHINX_STRICT_SCHEMA in sphinx.conf MUST BE THE SAME as in config.php (or in config-site.php)
 //
 define('SPHINX_STRICT_SCHEMA', 1);
-
+define('RT', 0);
 
 if(SPHINX_STRICT_SCHEMA) {
    define('SELECT_FIELDS', 'id, `from` as sender, `to` as rcpt, `fromdomain` as senderdomain, `todomain` as rcptdomain, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
@@ -46,7 +46,7 @@ source base
    sql_attr_uint = attachments
 }
 
-<?php if(RT == 0) { ?>
+<?php if(!RT) { ?>
 
 source delta : base
 {
@@ -91,7 +91,7 @@ source dailydelta : base
    sql_query_pre = SET NAMES utf8mb4
    sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
-?>
+<?php } ?>
 
 source tag : base
 {
@@ -113,7 +113,7 @@ source note : base
 
 }
 
-<?php if(RT == 0) { ?>
+<?php if(!RT) { ?>
 index main1
 {
         source                  = main1
@@ -232,25 +232,25 @@ index note1
 <?php print NGRAM_CONFIG; ?>
 }
 
-<?php if(RT == 1) { ?>
+<?php if(RT) { ?>
 index piler1
 {
-    type = rt
-    path = /var/piler/sphinx/piler1
-    rt_mem_limit = 128M
-    rt_field = sender
-    rt_field = rcpt
-    rt_field = senderdomain
-    rt_field = rcptdomain
-    rt_field = subject
-    rt_field = body
-    rt_field = attachment_types
-    rt_attr_bigint = arrived
-    rt_attr_bigint = sent
-    rt_attr_uint = size
-    rt_attr_uint = direction
-    rt_attr_uint = folder
-    rt_attr_uint = attachments
+        type = rt
+        path = /var/piler/sphinx/piler1
+        rt_mem_limit = 128M
+        rt_field = sender
+        rt_field = rcpt
+        rt_field = senderdomain
+        rt_field = rcptdomain
+        rt_field = subject
+        rt_field = body
+        rt_field = attachment_types
+        rt_attr_bigint = arrived
+        rt_attr_bigint = sent
+        rt_attr_uint = size
+        rt_attr_uint = direction
+        rt_attr_uint = folder
+        rt_attr_uint = attachments
 }
 <?php } ?>
 
@@ -268,7 +268,7 @@ searchd
         binlog_path             = /var/piler/sphinx
         binlog_max_log_size     = 16M
         binlog_flush            = 2
-<?php if(RT == 1) { ?>
+<?php if(RT) { ?>
         rt_flush_period         = 300
 <?php } ?>
         ##query_log             =
