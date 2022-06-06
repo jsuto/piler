@@ -20,7 +20,7 @@ case1() {
 
 
    wait_until_emails_are_processed "piler1" 3019
-   docker exec "piler1" su piler -c /usr/libexec/piler/indexer.delta.sh 2>/dev/null
+   [[ $RT -eq 1 ]] || docker exec "piler1" su piler -c /usr/libexec/piler/indexer.delta.sh 2>/dev/null
 
    count_status_values 3019 2908 111 0
 
