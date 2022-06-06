@@ -29,6 +29,7 @@ launch_containers() {
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name piler1 \
       -e PACKAGE="$PACKAGE" \
       -e PILER_HOST="cust1.acts.hu" \
+      -e RT="$RT" \
       -p 127.0.0.1:80:80 -p 25:25 \
       -v "${PACKAGE_DIR}:/data:ro" \
       -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" \
