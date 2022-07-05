@@ -61,7 +61,16 @@ def process_folder(conn, folder):
     if opts['verbose']:
         print("Processing {}".format(folder))
 
-    rc, data = conn.select(folder)
+    try:
+        rc, data = conn.select(folder)
+    except:
+        print("Error processing folder {}".format(folder))
+        return
+
+    if rc != "OK":
+        print("Error processing folder {}, rc={}, response={}".format(folder, rc, data))
+        return
+
     n = int(data[0])
     if opts['verbose']:
         print("Folder {} has {} messages".format(folder, n))
@@ -94,7 +103,7 @@ def main():
     parser.add_argument("-u", "--user", type=str, help="imap user")
     parser.add_argument("-p", "--password", type=str, help="imap password")
     parser.add_argument("-x", "--skip-list", type=str, help="IMAP folders to skip",
-                        default="junk,trash,spam,draft")
+                        default="junk,trash,spam,draft,\"[Gmail]\"")
     parser.add_argument("-f", "--folders", type=str,
                         help="Comma separated list of IMAP folders to download")
     parser.add_argument("--date", type=str, help="Search before/since a given date," +
