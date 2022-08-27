@@ -145,6 +145,7 @@ index piler1
     type = rt
     path = /var/piler/manticore/piler1
     rt_mem_limit = 512M
+    stored_fields =
     rt_field = sender
     rt_field = rcpt
     rt_field = senderdomain
@@ -169,7 +170,6 @@ source tag : base
 
    sql_attr_uint = iid
    sql_attr_uint = uid
-
 }
 
 source note : base
@@ -179,7 +179,6 @@ source note : base
 
    sql_attr_uint = iid
    sql_attr_uint = uid
-
 }
 
 index tag1
@@ -189,6 +188,7 @@ index tag1
         min_prefix_len          = 5
         min_word_len            = 1
         charset_table           = <?php print CHARSET_TABLE; ?>
+        stored_fields           =
 <?php print NGRAM_CONFIG; ?>
 }
 
@@ -200,6 +200,7 @@ index note1
         min_prefix_len          = 5
         min_word_len            = 1
         charset_table           = <?php print CHARSET_TABLE; ?>
+        stored_fields           =
 <?php print NGRAM_CONFIG; ?>
 }
 
