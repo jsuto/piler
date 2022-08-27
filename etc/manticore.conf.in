@@ -77,27 +77,6 @@ source dailydelta : base
    sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
 }
 
-source tag : base
-{
-   sql_query_pre = SET NAMES utf8mb4
-   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `tag` FROM `tag`
-
-   sql_attr_uint = iid
-   sql_attr_uint = uid
-
-}
-
-source note : base
-{
-   sql_query_pre = SET NAMES utf8mb4
-   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `note` FROM `note`
-
-   sql_attr_uint = iid
-   sql_attr_uint = uid
-
-}
-
-
 index main1
 {
         source                  = main1
@@ -159,28 +138,6 @@ index delta1
 }
 
 
-index tag1
-{
-        source                  = tag
-        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/tag1
-        min_prefix_len          = 5
-        min_word_len            = 1
-        charset_table           = <?php print CHARSET_TABLE; ?>
-<?php print NGRAM_CONFIG; ?>
-}
-
-
-index note1
-{
-        source                  = note
-        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/note1
-        min_prefix_len          = 5
-        min_word_len            = 1
-        charset_table           = <?php print CHARSET_TABLE; ?>
-<?php print NGRAM_CONFIG; ?>
-}
-
-
 <?php } else { ?>
 
 index piler1
@@ -203,32 +160,48 @@ index piler1
     rt_attr_uint = attachments
 }
 
+<?php } ?>
 
-index note1
+source tag : base
 {
-    type = rt
-    rt_mem_limit = 8M
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `tag` FROM `tag`
 
-    path = /var/piler/manticore/note1
-    rt_field = note
-    stored_fields = note
-    rt_attr_bigint = iid
-    rt_attr_uint = uid
+   sql_attr_uint = iid
+   sql_attr_uint = uid
+
+}
+
+source note : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `note` FROM `note`
+
+   sql_attr_uint = iid
+   sql_attr_uint = uid
+
 }
 
 index tag1
 {
-    type = rt
-    rt_mem_limit = 8M
-
-    path = /var/piler/manticore/tag1
-    rt_field = tag
-    stored_fields = tag
-    rt_attr_bigint = iid
-    rt_attr_uint = uid
+        source                  = tag
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/tag1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
 }
 
-<?php } ?>
+
+index note1
+{
+        source                  = note
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/note1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
 
 
 indexer
