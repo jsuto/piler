@@ -183,6 +183,27 @@ index note1
 
 <?php } else { ?>
 
+index piler1
+{
+    type = rt
+    path = /var/piler/manticore/piler1
+    rt_mem_limit = 512M
+    rt_field = sender
+    rt_field = rcpt
+    rt_field = senderdomain
+    rt_field = rcptdomain
+    rt_field = subject
+    rt_field = body
+    rt_field = attachment_types
+    rt_attr_bigint = arrived
+    rt_attr_bigint = sent
+    rt_attr_uint = size
+    rt_attr_uint = direction
+    rt_attr_uint = folder
+    rt_attr_uint = attachments
+}
+
+
 index note1
 {
     type = rt
