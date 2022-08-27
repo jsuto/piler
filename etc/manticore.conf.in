@@ -14,6 +14,8 @@ define('CHARSET_TABLE', "0..9, english, _, \
 
 define('SELECT_FIELDS', 'id, `from` as sender, `to` as rcpt, `fromdomain` as senderdomain, `todomain` as rcptdomain, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
 
+define('RT', 0);
+
 ?>
 
 #
@@ -32,6 +34,8 @@ source base
    sql_attr_uint = sent
    sql_attr_uint = attachments
 }
+
+<?php if(RT == 0) { ?>
 
 source delta : base
 {
@@ -177,6 +181,35 @@ index note1
 }
 
 
+<?php } else { ?>
+
+index note1
+{
+    type = rt
+    rt_mem_limit = 8M
+
+    path = /var/piler/manticore/note1
+    rt_field = note
+    stored_fields = note
+    rt_attr_bigint = iid
+    rt_attr_uint = uid
+}
+
+index tag1
+{
+    type = rt
+    rt_mem_limit = 8M
+
+    path = /var/piler/manticore/tag1
+    rt_field = tag
+    stored_fields = tag
+    rt_attr_bigint = iid
+    rt_attr_uint = uid
+}
+
+<?php } ?>
+
+
 indexer
 {
         mem_limit               = 256M
@@ -188,7 +221,9 @@ searchd
         listen                  = 127.0.0.1:9312
         listen                  = 127.0.0.1:9306:mysql41
         log                     = /var/piler/manticore/manticore.log
-        binlog_path             = /var/piler/manticore/
+        binlog_max_log_size     = 256M
+        binlog_path             = /var/piler/manticore
+        binlog_flush            = 2
         query_log               = /var/piler/manticore/query.log
         network_timeout         = 5
         pid_file                = /var/run/piler/searchd.pid
@@ -196,4 +231,8 @@ searchd
         preopen_indexes         = 1
         unlink_old              = 1
         thread_stack            = 512k
+<?php if(RT) { ?>
+        rt_flush_period         = 300
+<?php } ?>
+
 }
