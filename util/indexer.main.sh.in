@@ -5,10 +5,16 @@ set -o errexit
 set -o pipefail
 
 MAINTMPFILE="/var/run/piler/main.indexer.tmp"
-SPHINX_CONFIG="SYSCONFDIR/piler/sphinx.conf"
+CONFIG_FILE="SYSCONFDIR/piler/sphinx.conf"
+INDEXDIR=sphinx
 PRIORITY="mail.info"
 TOUCHFILE="/var/piler/stat/indexer"
 MAIN_INDEX="main1"
+
+if [[ -f SYSCONFDIR/piler/MANTICORE ]]; then
+   CONFIG_FILE=SYSCONFDIR/piler/manticore.conf
+   INDEXDIR=manticore
+fi
 
 export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 
@@ -30,7 +36,7 @@ trap finish EXIT
 
 echo "INDEXER INFO: merging to main started" | logger -p "$PRIORITY"
 
-indexer --config "$SPHINX_CONFIG" --quiet --merge "$MAIN_INDEX" dailydelta1 --merge-dst-range deleted 0 0 --rotate
+indexer --config "$CONFIG_FILE" --quiet --merge "$MAIN_INDEX" dailydelta1 --merge-dst-range deleted 0 0 --rotate
 
 echo "INDEXER INFO: merging to main finished" | logger -p "$PRIORITY"
 
@@ -38,12 +44,12 @@ sleep 5
 
 echo "INDEXER INFO: resetting daily delta started" | logger -p "$PRIORITY"
 
-indexer --config "$SPHINX_CONFIG" --quiet dailydelta1 --rotate
+indexer --config "$CONFIG_FILE" --quiet dailydelta1 --rotate
 
 echo "INDEXER INFO: resetting daily delta finished" | logger -p "$PRIORITY"
 
 sum=0
 while read -r a b; do
    sum=$(( sum + b ))
-done < <( find /var/piler/sphinx/ -type f -name main\*.spd -printf "%TY%Tm%Td %s\\n" )
+done < <( find /var/piler/${INDEXDIR}/ -type f -name main\*.spd -printf "%TY%Tm%Td %s\\n" )
 printf "%d" $sum > /var/piler/stat/main_index_size

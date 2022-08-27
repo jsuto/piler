@@ -36,7 +36,7 @@ load_default_values() {
    MYSQL_ROOT_PASSWORD=""
    MYSQL_SOCKET=""
 
-   SPHINXCFG="${PILER_CONFIG_DIR}/sphinx.conf"
+   SEARCHCFG="${PILER_CONFIG_DIR}/manticore.conf"
 
    WWWGROUP="apache"
    DOCROOT="/var/piler/www"
@@ -196,9 +196,9 @@ askYN() {
 preinstall_check() {
    check_user root
 
-   if [[ "$INDEXER" == "" ]]; then "ERROR: cannot find sphinx indexer"; echo ""; exit ; fi
+   if [[ "$INDEXER" == "" ]]; then "ERROR: cannot find indexer binary"; echo ""; exit ; fi
 
-   if [[ "$SEARCHD" == "" ]]; then "ERROR: cannot find sphinx searchd"; echo ""; exit 0; fi
+   if [[ "$SEARCHD" == "" ]]; then "ERROR: cannot find searchd binary"; echo ""; exit 0; fi
 
    if [[ -f "$KEYFILE" ]]; then echo "ERROR: found existing keyfile (${KEYFILE}), aborting install"; echo ""; exit 0; fi
 }
@@ -281,8 +281,8 @@ make_cron_entries() {
       echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh";
       echo "40 3 * * * ${LIBEXECDIR}/piler/purge.sh";
       echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh";
-      echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
-      echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/sphinx.conf";
+      echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
+      echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
       echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null";
       echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error";
       echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;";
@@ -316,8 +316,8 @@ show_summary() {
    echo "mysql password: *******"
    echo
 
-   echo "sphinx indexer: ${INDEXER}"
-   echo "sphinx config file: ${SPHINXCFG}"
+   echo "indexer: ${INDEXER}"
+   echo "config file: ${SEARCHCFG}"
    echo
 
    echo "vhost docroot: ${DOCROOT}"
@@ -358,14 +358,12 @@ execute_post_install_tasks() {
    echo "Done."
 
    echo -n "Writing sphinx configuration... ";
-   sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" "${SYSCONFDIR}/piler/sphinx.conf.dist" > "$SPHINXCFG"
-   chmod +x "$SPHINXCFG"
+   sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" "${SYSCONFDIR}/piler/manticore.conf.dist" > "$SEARCHCFG"
+   chmod +x "$SEARCHCFG"
    echo "Done."
 
-   if indexer --version | grep ^Sphinx\ 3; then sed -i 's/220/311/' "$SPHINXCFG"; fi
-
-   echo -n "Initializing sphinx indices... ";
-   su "$PILERUSER" -c "indexer --all --config ${SPHINXCFG}"
+   echo -n "Initializing manticore indices... ";
+   su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
    echo "Done."
 
 

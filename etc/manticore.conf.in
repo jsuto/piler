@@ -1,0 +1,199 @@
+#!/usr/bin/php
+<?php
+
+define('LOCALSTATEDIR', '/var');
+define('NGRAM_CONFIG', "        #ngram_len               = 1\n        #ngram_chars             = U+3000..U+2FA1F\n");
+
+# See http://sphinxsearch.com/wiki/doku.php?id=charset_tables for more on the charset_table settings
+# The following settings contains English and some Latin extras
+define('CHARSET_TABLE', "0..9, english, _, \
+                                  U+C1->U+E1, U+C4->U+E4, U+C5->U+E5, U+C6->U+E6, U+C9->U+E9, U+CD->U+ED, U+D3->U+F3, U+D6->U+F6, U+D8->U+F8, \
+                                  U+DA->U+FA, U+DC->U+FC, U+0150->U+0151, U+0152->U+0153, U+0170->U+0171, U+01E2->U+E6, U+01E3->U+E6, U+01FC->U+E6, \
+                                  U+01FD->U+E6, U+1D01->U+E6, U+1D02->U+E6, U+1D2D->U+E6, U+1D46->U+E6, \
+                                  U+DF, U+E1, U+E4, U+E5, U+E6, U+E9, U+ED, U+00F3, U+F6, U+F8, U+FA, U+FC, U+0151, U+0153, U+0171\n");
+
+define('SELECT_FIELDS', 'id, `from` as sender, `to` as rcpt, `fromdomain` as senderdomain, `todomain` as rcptdomain, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
+
+?>
+
+#
+# minimal sphinx configuration suited to piler
+#
+
+source base
+{
+   type = mysql
+   sql_host = MYSQL_HOSTNAME
+   sql_db = MYSQL_DATABASE
+   sql_user = MYSQL_USERNAME
+   sql_pass = MYSQL_PASSWORD
+
+   sql_attr_uint = size
+   sql_attr_uint = sent
+   sql_attr_uint = attachments
+}
+
+source delta : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query_pre  = REPLACE INTO sph_counter SELECT 1, IFNULL(MAX(id), 0) FROM sph_index
+   sql_query_post_index  = DELETE FROM sph_index WHERE id<=(SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id <= (SELECT max_doc_id FROM sph_counter WHERE counter_id=1)
+
+   sql_query_killlist = SELECT `id` FROM `metadata` WHERE `deleted`=1
+}
+
+source main1 : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
+}
+
+source main2 : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
+}
+
+source main3 : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
+}
+
+source main4 : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
+}
+
+source dailydelta : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query = SELECT <?php print SELECT_FIELDS; ?> FROM sph_index WHERE id=-1
+}
+
+source tag : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `tag` FROM `tag`
+
+   sql_attr_uint = iid
+   sql_attr_uint = uid
+
+}
+
+source note : base
+{
+   sql_query_pre = SET NAMES utf8mb4
+   sql_query  = SELECT `_id`, `id` AS iid, `uid`, `note` FROM `note`
+
+   sql_attr_uint = iid
+   sql_attr_uint = uid
+
+}
+
+
+index main1
+{
+        source                  = main1
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+index main2
+{
+        source                  = main2
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main2
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+index main3
+{
+        source                  = main3
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main3
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+index main4
+{
+        source                  = main4
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main4
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+index dailydelta1
+{
+        source                  = dailydelta
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/dailydelta1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+index delta1
+{
+        source                  = delta
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/delta1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+
+index tag1
+{
+        source                  = tag
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/tag1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+
+index note1
+{
+        source                  = note
+        path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/note1
+        min_prefix_len          = 5
+        min_word_len            = 1
+        charset_table           = <?php print CHARSET_TABLE; ?>
+<?php print NGRAM_CONFIG; ?>
+}
+
+
+indexer
+{
+        mem_limit               = 256M
+}
+
+
+searchd
+{
+        listen                  = 127.0.0.1:9312
+        listen                  = 127.0.0.1:9306:mysql41
+        log                     = /var/piler/manticore/manticore.log
+        binlog_path             = /var/piler/manticore/
+        query_log               = /var/piler/manticore/query.log
+        network_timeout         = 5
+        pid_file                = /var/run/piler/searchd.pid
+        seamless_rotate         = 1
+        preopen_indexes         = 1
+        unlink_old              = 1
+        thread_stack            = 512k
+}

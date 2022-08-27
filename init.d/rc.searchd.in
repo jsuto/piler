@@ -16,7 +16,13 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 NAME=searchd
 PID_FILE=/var/run/piler/searchd.pid
-PID_NUMBER=`test -f ${PID_FILE} && cat ${PID_FILE}`
+PID_NUMBER=$(test -f ${PID_FILE} && cat ${PID_FILE})
+CONFIG_FILE=sphinx.conf
+
+if [ -f SYSCONFDIR/piler/MANTICORE ]; then
+   CONFIG_FILE=manticore.conf
+fi
+
 
 start() {
 	echo "starting searchd . . ."
@@ -26,8 +32,8 @@ start() {
 		chown piler:piler /var/run/piler
 	fi
 
-        if [ `id -u` -eq 0 ]; then
-		su piler -c "searchd --config SYSCONFDIR/piler/sphinx.conf"
+        if [ $(id -u) -eq 0 ]; then
+		su piler -c "searchd --config SYSCONFDIR/piler/${CONFIG_FILE}"
 	else
 		searchd
 	fi
@@ -35,7 +41,7 @@ start() {
 
 stop() {
 	echo "stopping searchd"
-	kill ${PID_NUMBER}
+	kill "$PID_NUMBER"
 }
 
 check_status(){

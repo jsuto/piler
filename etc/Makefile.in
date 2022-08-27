@@ -32,7 +32,9 @@ all:
 install:
 	$(INSTALL) -m 0640 -g $(RUNNING_GROUP) $(srcdir)/piler.conf $(DESTDIR)$(sysconfdir)/piler/piler.conf.dist
 	sed -e 's%@LOCALSTATEDIR@%$(localstatedir)%g' $(srcdir)/sphinx.conf.in > sphinx.conf.dist
+	sed -e 's%@LOCALSTATEDIR@%$(localstatedir)%g' $(srcdir)/manticore.conf.in > manticore.conf.dist
 	$(INSTALL) -m 0755 -g $(RUNNING_GROUP) $(srcdir)/sphinx.conf.dist $(DESTDIR)$(sysconfdir)/piler/sphinx.conf.dist
+	$(INSTALL) -m 0755 -g $(RUNNING_GROUP) $(srcdir)/manticore.conf.dist $(DESTDIR)$(sysconfdir)/piler/manticore.conf.dist
 	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/config-site.dist.php $(DESTDIR)$(sysconfdir)/piler/config-site.dist.php
 	$(INSTALL) -m 0644 -g $(RUNNING_GROUP) $(srcdir)/cron.jobs.in $(DESTDIR)$(datarootdir)/piler/piler.cron
 	sed -i -e 's%LOCALSTATEDIR%$(localstatedir)%g' $(DESTDIR)$(datarootdir)/piler/piler.cron
