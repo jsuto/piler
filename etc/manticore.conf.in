@@ -146,6 +146,9 @@ index piler1
     path = /var/piler/manticore/piler1
     rt_mem_limit = 512M
     stored_fields =
+    # See https://manual.manticoresearch.com/Creating_an_index/Data_types#Row-wise-and-columnar-attribute-storages
+    # if you want to enable columnar storage
+    # columnar_attrs = *
     rt_field = sender
     rt_field = rcpt
     rt_field = senderdomain
