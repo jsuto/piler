@@ -82,7 +82,7 @@ installdirs: mkinstalldirs
 		$(DESTDIR)$(localstatedir)/piler/stat \
 		$(DESTDIR)$(localstatedir)/piler/tmp \
 		$(DESTDIR)$(localstatedir)/piler/error \
-		$(DESTDIR)$(localstatedir)/piler/sphinx
+		$(DESTDIR)$(localstatedir)/piler/sphinx \
 		$(DESTDIR)$(localstatedir)/piler/manticore
 
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/run/piler
