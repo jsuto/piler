@@ -3,7 +3,7 @@ Description=Searchd for piler daemon
 After=network.target mariadb.service
 
 [Service]
-ExecStart=/usr/bin/searchd --config /etc/piler/sphinx.conf
+ExecStart=/usr/bin/searchd --config /etc/piler/manticore.conf
 ExecStartPre=/bin/bash -c "if [[ ! -d /var/run/piler ]]; then mkdir -p /var/run/piler; chown piler:piler /var/run/piler; fi"
 PIDFile=/var/run/piler/searchd.pid
 KillMode=process
