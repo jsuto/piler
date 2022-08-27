@@ -20,7 +20,7 @@ MYSQL_USERNAME="piler"
 
 SPHINX_TARGZ="sphinx-3.3.1-bin.tar.gz"
 DOWNLOAD_URL="https://download.mailpiler.com"
-PILER_DEB="piler_1.3.12-focal-208de74a_amd64.deb"
+PILER_DEB="piler_1.3.12-focal-eb2b22b_amd64.deb"
 PILER_USER="piler"
 CONFIG_SITE_PHP="/etc/piler/config-site.php"
 
