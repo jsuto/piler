@@ -24,7 +24,7 @@ class ModelAuditAudit extends Model {
 
       $sortorder = "ORDER BY `$sort` $order";
 
-      if(isset($data['action']) && $data['action'] != ACTION_ALL) {
+      if(isset($data['action']) && $data['action'] && $data['action'] != ACTION_ALL) {
          $where .= " AND ( " . $this->append_search_criteria("action", $data['action'], $arr) . " )";
       }
 
