@@ -15,6 +15,7 @@ class ControllerStatStat extends Controller {
       $db = Registry::get('db');
 
       $this->load->model('user/user');
+      $this->load->model('stat/chart');
 
       $this->document->title = $this->data['text_statistics'];
 
@@ -24,10 +25,19 @@ class ControllerStatStat extends Controller {
       $this->data['admin_user'] = Registry::get('admin_user');
       $this->data['readonly_admin'] = Registry::get('readonly_admin');
 
+      $this->data['username'] = Registry::get('username');
+
+      $timespan = @$this->request->get['timespan'];
+
+      $db->select_db($db->database);
+
+      $chart = new ModelStatChart();
+
+      $this->data['data'] = $chart->lineChartArchivedMessages($timespan);
+
+
       $this->render();
    }
 
 
 }
-
-?>

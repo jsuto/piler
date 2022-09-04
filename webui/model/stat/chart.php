@@ -2,22 +2,10 @@
 
 class ModelStatChart extends Model {
 
-   public function lineChartHamSpam($timespan, $title, $size_x, $size_y, $output){
-      $ydata = array();
-      $ydata2 = array();
-      $dates = array();
+   public function lineChartArchivedMessages($timespan){
+      $data = [];
 
       $session = Registry::get('session');
-
-      $chart = new LineChart($size_x, $size_y);
-
-      $chart->getPlot()->getPalette()->setLineColor(array(
-         new Color(208, 48, 128),
-      ));
-
-      $line1 = new XYDataSet();
-
-      $limit = $this->getDataPoints($timespan);
 
       $range = $this->getRangeInSeconds($timespan);
 
@@ -27,10 +15,18 @@ class ModelStatChart extends Model {
 
       if($timespan == "daily"){
          $delta = 3600;
-         $date_format = "H:i";
+         $data_points = 24;
       } else {
          $delta = 86400;
-         $date_format = "m.d.";
+         $data_points = 30;
+      }
+
+      $now = time();
+      $now -= $now % $delta + ($data_points-1)*$delta;
+
+      for($i=0; $i<$data_points; $i++) {
+         $data[$now] = 0;
+         $now += $delta;
       }
 
       if(Registry::get('admin_user') == 0) {
@@ -42,57 +38,18 @@ class ModelStatChart extends Model {
             if($q) { $q .= ",?"; } else { $q = "?"; }
          }
          reset($auditdomains);
-         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $limit", $auditdomains);
+         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . VIEW_MESSAGES . " where arrived > $range AND todomain IN ($q) $domains $grouping ORDER BY ts DESC limit $data_points", $auditdomains);
       } else {
-         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $limit");
+         $query = $this->db->query("select (arrived-(arrived%$delta)) as ts, count(*) as num from " . TABLE_META . " where arrived > $range $grouping ORDER BY ts DESC limit $data_points");
       }
-
 
       foreach ($query->rows as $q) {
-         array_push($ydata, $q['num']);
-         array_push($dates, date($date_format, $q['ts']));
-      }
-
-      // If there's a single data point, then we can't draw a line
-      // so we add an artificial value of 0
-      if(count($ydata) <= 1) {
-         if($timespan == "daily") {
-            $ts = NOW - (NOW % 3600) - 3600;
-         } else {
-            $ts = NOW - (NOW % 86400) - 86400;
+         if(isset($data[$q['ts']])) {
+            $data[$q['ts']] = $q['num'];
          }
-
-         array_push($ydata, 0);
-         array_push($dates, date($date_format, $ts));
       }
 
-
-      if($query->num_rows >= 15) {
-         $i = 0;
-         foreach($dates as $k => $v) {
-            $i++;
-            if($i % 3) { $dates[$k] = ""; }
-         }
-         reset($dates);
-      }
-
-
-
-      $ydata = array_reverse($ydata);
-      $dates = array_reverse($dates);
-
-      for($i=0; $i<count($ydata); $i++){
-         $ts = $dates[$i];
-         $line1->addPoint(new Point("$ts", $ydata[$i]));
-      }
-
-
-      $chart->setDataSet($line1);
-
-      $chart->setTitle($title);
-      $chart->getPlot()->setGraphCaptionRatio(0.80);
-
-      $this->sendOutput($chart, $output);
+      return $data;
    }
 
 
