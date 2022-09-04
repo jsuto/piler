@@ -53,38 +53,6 @@ class ModelStatChart extends Model {
    }
 
 
-   public function pieChartHamSpam($emails = '', $timespan, $title, $output) {
-      $ham = $spam = 0;
-
-      $range = $this->getRangeInSeconds($timespan);
-
-      $chart = new PieChart(SIZE_X, SIZE_Y);
-
-      $query = $this->db->query("SELECT COUNT(*) AS SPAM FROM " . TABLE_META . " WHERE $emails AND arrived > $range");
-      if($query->num_rows > 0) { $spam = $query->row['SPAM']; }
-
-      $query = $this->db->query("SELECT COUNT(*) AS HAM FROM " . TABLE_META . " WHERE $emails AND arrived > $range");
-      if($query->num_rows > 0) { $ham = $query->row['HAM']; }
-
-      if($ham > $spam) {
-         $chart->getPlot()->getPalette()->setPieColor(array(new Color(26, 192, 144), new Color(208, 48, 128) ));
-      } else {
-         $chart->getPlot()->getPalette()->setPieColor(array(new Color(208, 48, 128), new Color(26, 192, 144) ));
-      }
-
-
-      $dataSet = new XYDataSet();
-
-      $dataSet->addPoint(new Point("HAM ($ham)", $ham));
-      $dataSet->addPoint(new Point("SPAM ($spam)", $spam));
-
-      $chart->setDataSet($dataSet);
-      $chart->setTitle($title);
-
-      @$this->sendOutput($chart, $output);
-   }
-
-
    private function getRangeInSeconds($timespan) {
       $range = 0;
 
@@ -95,29 +63,4 @@ class ModelStatChart extends Model {
    }
 
 
-   private function getDataPoints($timespan) {
-
-      if($timespan == "daily") { return 24; }
-      if($timespan == "weekly") { return 7; }
-
-      return 30;
-   }
-
-
-   private function sendOutput($chart, $output = '') {
-      if($output == "") {
-         header("Content-type: image/png");
-         header("Expires: now");
-      }
-
-      if($output) {
-         $chart->render($output);
-      }
-      else {
-         $chart->render();
-      }
-   }
-
 }
-
-?>
