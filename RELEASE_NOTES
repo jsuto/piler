@@ -1,7 +1,7 @@
 1.4.1
 -------
 
-- Replaced sphinx with manticore 5.0.2
+- Replaced sphinx with manticore 5.0.2, see https://www.mailpiler.org/wiki/current:manticore
 - Replaced obsoleted libchart library with chart.js
 - Added real-time index support
 
