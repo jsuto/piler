@@ -13,6 +13,7 @@
   <canvas id="myChart"></canvas>
 </div>
 
+<!-- See the docs at https://www.chartjs.org/docs/latest/ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
