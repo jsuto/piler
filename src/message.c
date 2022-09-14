@@ -206,11 +206,11 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
 
    snprintf(s, sizeof(s)-1, "%llu+%s%s%s%ld%ld%ld%d%d%d%d%s%s%s", id, subj, sender, state->message_id, sdata->now, sdata->sent, sdata->retained, sdata->tot_len, sdata->hdr_len, sdata->direction, state->n_attachments, sdata->ttmpfile, sdata->digest, sdata->bodydigest);
 
-   digest_string(s, &vcode[0]);
+   digest_string("sha256", s, &vcode[0]);
 
    memset(ref, 0, sizeof(ref));
    if(strlen(state->reference) > 10){
-      digest_string(state->reference, &ref[0]);
+      digest_string("sha256", state->reference, &ref[0]);
       update_metadata_reference(sdata, state, &ref[0], cfg);
    }
    else if(state->reference[0] == 0){
@@ -218,20 +218,20 @@ int store_meta_data(struct session_data *sdata, struct parser_state *state, stru
       // check if this is a message which is already referenced
       uint64 count=0;
 
-      digest_string(state->message_id, &ref[0]);
+      digest_string("sha256", state->message_id, &ref[0]);
       if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_METADATA_REFERENCE) != ERR){
          p_bind_init(&sql);
 
          sql.sql[sql.pos] = &ref[0]; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
 
          if(p_exec_stmt(sdata, &sql) == OK){
-	    p_bind_init(&sql);
+            p_bind_init(&sql);
 
-	    sql.sql[sql.pos] = (char *)&count; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
-	    p_store_results(&sql);
-	    p_fetch_results(&sql);
-	    p_free_results(&sql);
-	 }
+            sql.sql[sql.pos] = (char *)&count; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+            p_store_results(&sql);
+            p_fetch_results(&sql);
+            p_free_results(&sql);
+         }
       }
 
       close_prepared_statement(&sql);

@@ -29,7 +29,7 @@ static void test_digest_string(){
    };
 
    for(i=0; i<sizeof(tests)/sizeof(struct digest_test); i++){
-      digest_string(tests[i].s, &digest[0]);
+      digest_string("sha256", tests[i].s, &digest[0]);
       assert(strcmp(digest, tests[i].digest1) == 0 && "test_digest_string()");
    }
 

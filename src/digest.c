@@ -34,16 +34,30 @@ int search_header_end(char *p, int n){
 
 
 int make_digests(struct session_data *sdata, struct config *cfg){
-   int i=0, n, fd, offset=3, hdr_len=0;
+   int n, fd, offset=3, hdr_len=0;
    char *body=NULL;
-   unsigned char buf[BIGBUFSIZE], md[DIGEST_LENGTH], md2[DIGEST_LENGTH];
-   SHA256_CTX context, context2;
+   unsigned char buf[BIGBUFSIZE];
+
+   EVP_MD_CTX *ctx, *ctx2;
+   const EVP_MD *md, *md2;
+   unsigned int i=0, md_len, md_len2;
+   unsigned char md_value[EVP_MAX_MD_SIZE], md_value2[EVP_MAX_MD_SIZE];
 
    memset(sdata->bodydigest, 0, 2*DIGEST_LENGTH+1);
    memset(sdata->digest, 0, 2*DIGEST_LENGTH+1);
-   SHA256_Init(&context);
-   SHA256_Init(&context2);
 
+   md = EVP_get_digestbyname("sha256");
+   md2 = EVP_get_digestbyname("sha256");
+   if(md == NULL || md2 == NULL){
+      syslog(LOG_PRIORITY, "ERROR: unknown message digest: sha256 in %s:%d", __func__, __LINE__);
+      return 1;
+   }
+
+   ctx = EVP_MD_CTX_new();
+   EVP_DigestInit_ex(ctx, md, NULL);
+
+   ctx2 = EVP_MD_CTX_new();
+   EVP_DigestInit_ex(ctx2, md2, NULL);
 
    fd = open(sdata->filename, O_RDONLY);
    if(fd == -1) return -1;
@@ -51,7 +65,7 @@ int make_digests(struct session_data *sdata, struct config *cfg){
    memset(buf, 0, sizeof(buf));
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
-      SHA256_Update(&context2, buf, n);
+      EVP_DigestUpdate(ctx2, buf, n);
 
       body = (char *)&buf[0];
 
@@ -68,7 +82,7 @@ int make_digests(struct session_data *sdata, struct config *cfg){
       }
 
 
-      SHA256_Update(&context, body, n);
+      EVP_DigestUpdate(ctx, body, n);
 
       i++;
    }
@@ -77,82 +91,93 @@ int make_digests(struct session_data *sdata, struct config *cfg){
 
    sdata->hdr_len = hdr_len;
 
-   SHA256_Final(md, &context);
-   SHA256_Final(md2, &context2);
+   EVP_DigestFinal_ex(ctx, md_value, &md_len);
+   EVP_MD_CTX_free(ctx);
+   EVP_DigestFinal_ex(ctx2, md_value2, &md_len2);
+   EVP_MD_CTX_free(ctx2);
 
-   for(i=0;i<DIGEST_LENGTH;i++){
-      snprintf(sdata->bodydigest + i*2, 3, "%02x", md[i]);
-      snprintf(sdata->digest + i*2, 3, "%02x", md2[i]);
+   for(i=0;i<md_len;i++){
+      snprintf(sdata->bodydigest + i*2, 3, "%02x", md_value[i]);
+   }
+
+   for(i=0;i<md_len2;i++){
+      snprintf(sdata->digest + i*2, 3, "%02x", md_value2[i]);
    }
 
    return 0;
 }
 
 
-void digest_file(char *filename, char *digest){
-   int fd, i, n;
-   unsigned char buf[MAXBUFSIZE], md[DIGEST_LENGTH];
-   SHA256_CTX context;
+void raw_digest_file(char *digestname, char *filename, unsigned char *md_value){
+   int fd, n;
+   unsigned char buf[MAXBUFSIZE];
+   EVP_MD_CTX *ctx;
+   const EVP_MD *md;
+   unsigned int md_len;
 
-   memset(digest, 0, 2*DIGEST_LENGTH+1);
+   md = EVP_get_digestbyname(digestname);
+   if(md == NULL){
+      syslog(LOG_PRIORITY, "ERROR: unknown message digest: '%s' in %s:%d", digestname, __func__, __LINE__);
+      return;
+   }
 
    fd = open(filename, O_RDONLY);
    if(fd == -1) return;
 
-   SHA256_Init(&context);
+   ctx = EVP_MD_CTX_new();
+   EVP_DigestInit_ex(ctx, md, NULL);
 
    while((n = read(fd, buf, sizeof(buf))) > 0){
-      SHA256_Update(&context, buf, n);
+      EVP_DigestUpdate(ctx, buf, n);
    }
 
    close(fd);
 
-   SHA256_Final(md, &context);
-
-   for(i=0;i<DIGEST_LENGTH;i++)
-      snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
-
+   EVP_DigestFinal_ex(ctx, md_value, &md_len);
+   EVP_MD_CTX_free(ctx);
 }
 
 
-void digest_string(char *s, char *digest){
-   int i;
+void digest_file(char *filename, char *digest){
    unsigned char md[DIGEST_LENGTH];
-   SHA256_CTX context;
+
+   raw_digest_file("sha256", filename, &md[0]);
 
    memset(digest, 0, 2*DIGEST_LENGTH+1);
 
-   SHA256_Init(&context);
-
-   SHA256_Update(&context, s, strlen(s));
-
-   SHA256_Final(md, &context);
-
-   for(i=0;i<DIGEST_LENGTH;i++)
+   for(int i=0;i<SHA256_DIGEST_LENGTH;i++){
       snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md[i]);
-
+   }
 }
 
 
-void md5_string(char *s, char *digest){
-   int i;
-   unsigned char md[MD5_DIGEST_LENGTH];
-   MD5_CTX context;
+void digest_string(char *digestname, char *s, char *digest){
+   EVP_MD_CTX *ctx;
+   const EVP_MD *md;
+   unsigned int i, md_len;
+   unsigned char md_value[DIGEST_LENGTH];
 
-   memset(digest, 0, 2*MD5_DIGEST_LENGTH+2);
+   memset(digest, 0, 2*DIGEST_LENGTH+2);
 
-   MD5_Init(&context);
+   md = EVP_get_digestbyname(digestname);
+   if(md == NULL){
+      syslog(LOG_PRIORITY, "ERROR: unknown message digest: '%s' in %s:%d", digestname, __func__, __LINE__);
+      return;
+   }
 
-   MD5_Update(&context, s, strlen(s));
+   ctx = EVP_MD_CTX_new();
+   EVP_DigestInit_ex(ctx, md, NULL);
+   EVP_DigestUpdate(ctx, s, strlen(s));
+   EVP_DigestFinal_ex(ctx, md_value, &md_len);
+   EVP_MD_CTX_free(ctx);
 
-   MD5_Final(md, &context);
-
-   for(i=0;i<MD5_DIGEST_LENGTH;i++)
-      snprintf(digest + i*2, 2*MD5_DIGEST_LENGTH, "%02x", md[i]);
+   for(i=0;i<md_len;i++){
+      snprintf(digest + i*2, 2*DIGEST_LENGTH, "%02x", md_value[i]);
+   }
 }
 
 
 void create_md5_from_email_address(char *puf, char *md5buf){
-   md5_string(puf, md5buf);
+   digest_string("md5", puf, md5buf);
    md5buf[2*MD5_DIGEST_LENGTH] = ' ';
 }

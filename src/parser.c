@@ -169,7 +169,7 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    }
 
 
-   digest_string(state->message_id, &(state->message_id_hash[0]));
+   digest_string("sha256", state->message_id, &(state->message_id_hash[0]));
 
    if(sdata->sent == 0) sdata->sent = sdata->now;
 }
