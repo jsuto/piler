@@ -15,7 +15,12 @@ export LD_LIBRARY_PATH=../src
 pushd "$SCRIPT_DIR"
 
 setup_mysql() {
-   service mysql start
+   if [[ "$DISTRO" == "jammy" ]]; then
+      service mariadb start
+   else
+      service mysql start
+   fi
+
    mysql -u piler -ppiler123 piler1 < ../util/db-mysql.sql
 }
 
