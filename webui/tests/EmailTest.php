@@ -2,12 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 
-define('DIR_BASE', $_ENV['DIR_BASE']);
-define('MAX_EMAIL_LEN', 41);
-
-include_once(DIR_BASE . "system/model.php");
-include_once(DIR_BASE . "model/search/search.php");
-
+require_once dirname(dirname(__FILE__)) . '/config.php';
+require_once dirname(dirname(__FILE__)) . '/system/model.php';
+require_once dirname(dirname(__FILE__)) . '/system/loader.php';
+require_once dirname(dirname(__FILE__)) . '/system/language.php';
+require_once dirname(dirname(__FILE__)) . '/system/misc.php';
 
 final class SearchSearchTest extends TestCase {
 
@@ -27,7 +26,15 @@ final class SearchSearchTest extends TestCase {
     */
 
    public function test_get_boundary($input, $expected_result) {
-      $result = ModelSearchSearch::fix_email_address_for_sphinx($input);
+      $loader = new Loader();
+      Registry::set('load', $loader);
+      $language = new Language();
+      Registry::set('language', $language);
+
+      $loader->load->model('search/search');
+      $m = new ModelSearchSearch();
+
+      $result = $m->fix_email_address_for_sphinx($input);
       $this->assertEquals($result, $expected_result);
    }
 

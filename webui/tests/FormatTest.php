@@ -2,9 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("system/model.php");
-include_once("system/misc.php");
-include_once("model/health/health.php");
+require_once dirname(dirname(__FILE__)) . '/config.php';
+require_once dirname(dirname(__FILE__)) . '/system/model.php';
+require_once dirname(dirname(__FILE__)) . '/system/loader.php';
+require_once dirname(dirname(__FILE__)) . '/system/language.php';
+require_once dirname(dirname(__FILE__)) . '/system/misc.php';
 
 final class FormatTest extends TestCase
 {
@@ -22,7 +24,15 @@ final class FormatTest extends TestCase
     */
 
    public function test_format_time_1($timeval, $expected_result) {
-      $result = ModelHealthHealth::format_time($timeval);
+      $loader = new Loader();
+      Registry::set('load', $loader);
+      $language = new Language();
+      Registry::set('language', $language);
+
+      $loader->load->model('health/health');
+      $m = new ModelHealthHealth();
+
+      $result = $m->format_time($timeval);
       $this->assertEquals($result, $expected_result);
    }
 

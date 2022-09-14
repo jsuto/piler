@@ -12,7 +12,10 @@ class Language {
 
       if($session->get("lang")) {
          $file = DIR_LANGUAGE . $session->get("lang") . '/messages.php';
-         define('LANG', $session->get("lang"));
+         if(defined('LANG')) {}
+         else {
+            define('LANG', $session->get("lang"));
+         }
       }
       else {
          $pref_langs = $this->get_preferred_languages();
