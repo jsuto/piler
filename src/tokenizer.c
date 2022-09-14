@@ -50,7 +50,7 @@ void tokenize(char *buf, struct parser_state *state, struct session_data *sdata,
          continue;
       }
 
-      char md5buf[2*MD5_DIGEST_LENGTH+2];
+      char md5buf[2*DIGEST_LENGTH+2];
 
       if(state->message_state == MSG_FROM && state->is_1st_header == 1 && strlen(state->b_from) < SMALLBUFSIZE-len-1){
          strtolower(puf);
