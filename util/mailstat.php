@@ -17,7 +17,7 @@ $lopts = array(
                 'stop:',
                 'help'
               );
-    
+
 $options = getopt($opts, $lopts);
 
 if(isset($options['help']) || isset($options['h']) )
@@ -100,7 +100,7 @@ foreach($query->rows as $q) {
 }
 
 
-array_multisort($data, SORT_DESC); 
+array_multisort($data, SORT_DESC);
 
 foreach ($data as $q) {
    print $q['num'] . "\t" . $q['type'] . "\t" . $q[EMAIL] . "\n";
