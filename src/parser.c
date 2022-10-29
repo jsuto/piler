@@ -73,11 +73,15 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
    // If both Sender: and From: headers exist, and they are different, then append
    // the From: address to recipients list to give him access to this email as well
 
-   if(state.b_sender_domain[0] && strcmp(state.b_from, state.b_sender)){
-      char tmpbuf[SMALLBUFSIZE];
-      get_first_email_address_from_string(state.b_from, tmpbuf, sizeof(tmpbuf));
-      tmpbuf[strlen(tmpbuf)] = ' ';
-      add_recipient(tmpbuf, strlen(tmpbuf), sdata, &state, data, cfg);
+   if(state.b_sender_domain[0]){
+      char frombuf[SMALLBUFSIZE];
+      char senderbuf[SMALLBUFSIZE];
+      get_first_email_address_from_string(state.b_from, frombuf, sizeof(frombuf));
+      get_first_email_address_from_string(state.b_sender, senderbuf, sizeof(senderbuf));
+      if(strcmp(frombuf, senderbuf)){
+         frombuf[strlen(frombuf)] = ' ';
+         add_recipient(frombuf, strlen(frombuf), sdata, &state, data, cfg);
+      }
    }
 
    return state;
