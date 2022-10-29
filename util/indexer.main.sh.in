@@ -51,5 +51,5 @@ echo "INDEXER INFO: resetting daily delta finished" | logger -p "$PRIORITY"
 sum=0
 while read -r a b; do
    sum=$(( sum + b ))
-done < <( find /var/piler/${INDEXDIR}/ -type f -name main\*.spd -printf "%TY%Tm%Td %s\\n" )
+done < <( find /var/piler/${INDEXDIR}/ -type f -name main\*.sp[dp] -printf "%TY%Tm%Td %s\\n" )
 printf "%d" $sum > /var/piler/stat/main_index_size
