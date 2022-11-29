@@ -618,3 +618,11 @@ function htmlentities_on_array($arr = []) {
 function encrypt_password($password = '') {
    return crypt($password, '$6$rounds=5000$' . generate_random_string() . '$');
 }
+
+
+function get_q_string($arr = []) {
+   $q = str_repeat("?,", count($arr));
+   $q = substr($q, 0, strlen($q)-1);
+
+   return $q;
+}

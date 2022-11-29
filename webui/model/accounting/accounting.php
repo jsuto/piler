@@ -85,35 +85,44 @@ class ModelAccountingAccounting extends Model {
 
 
    public function get_accounting($item='email', $search='', $page=0, $pagelen=0, $sort='item', $order=0) {
-
-      // item can be either email or domain, maybe folder in the future??
-
       $_order = 0;
       $_order = "";
       $limit = "";
 
-      $account_for_emails = $this->__getEmails();
-      $account_for_domains = $this->__getDomains();
+      if(!in_array($item, ['email', 'domain'])) { return []; }
+
+      $domains = $this->__getDomains();
 
       $search = preg_replace("/\s{1,}/", "", $search);
 
+      $arr = array();
+
       if($item == 'email') {
-         $account_for_emails = $this->__getEmails();
-         $account_for_domains = $this->__getDomains();
          $query = "SELECT `email` AS `item`,MIN(`date`) as `oldest`,MAX(`date`) as `newest`,sum(`sent`) as `sent`,sum(`recd`) as `recd`,SUM(`sentsize`) as `sentsize`,AVG(`sentsize`) as `sentavg`,SUM(`recdsize`) as `recdsize`,AVG(`recdsize`) as `recdavg` FROM " . TABLE_STAT_COUNTER;
-         $where = "WHERE ( `email` IN ('".implode("','",$account_for_emails)."') OR `domain` IN ('".implode("','",$account_for_domains)."') )";
+
+         $q1 = get_q_string($this->__getEmails());
+         $q2 = get_q_string($domains);
+
+         $where = "WHERE ( `email` IN ($q1) OR `domain` IN ($q2) )";
+         $arr = array_merge($arr, $this->__getEmails(), $domains);
+
          if($search) {
-            $where .= " AND ( `email` like '%".$search."%' OR `domain` like '%".$search."%' )";
+            $where .= " AND (`email` LIKE ? OR `domain` LIKE ?)";
+            array_push($arr, "%$search%", "%$search%");
          }
-         $group = "GROUP BY `email`";
+
       } elseif ($item == 'domain') {
-         $account_for_domains = $this->__getDomains();
          $query = "SELECT `domain` AS `item`,MIN(`date`) as `oldest`,MAX(`date`) as `newest`,sum(`sent`) as `sent`,sum(`recd`) as `recd`,SUM(`sentsize`) as `sentsize`,AVG(`sentsize`) as `sentavg`,SUM(`recdsize`) as `recdsize`,AVG(`recdsize`) as `recdavg` FROM " . TABLE_STAT_COUNTER;
-         $where = "WHERE ( `domain` IN ('".implode("','",$account_for_domains)."') )";
+
+         $q = get_q_string($domains);
+         $where = "WHERE ( `domain` IN ($q) )";
+
+         $arr = array_merge($arr, $domains);
+
          if($search) {
-            $where .= " AND `domain` like '%".$search."%'";
+            $where .= " AND `domain` LIKE ?";
+            array_push($arr, "%$search%");
          }
-         $group = "GROUP BY `domain`";
       } else {
          return false;
       }
@@ -127,42 +136,47 @@ class ModelAccountingAccounting extends Model {
 
       if($pagelen > 0) { $limit = " LIMIT " . (int)$from . ", " . (int)$pagelen; }
 
-      $query = $this->db->query($query.' '.$where.' '.$group.' '.$_order.' '.$limit.';');
+      $query = $this->db->query("$query $where GROUP BY `$item` ORDER BY `$sort` $order $limit", $arr);
 
       if($query->num_rows >= 1) {
          return $query->rows;
       } else {
-         // no results found
          return false;
       }
    }
 
 
    public function count_accounting($item='email', $search='') {
-      $account_for_emails = $this->__getEmails();
-      $account_for_domains = $this->__getDomains();
+      if(!in_array($item, ['email', 'domain'])) { return []; }
+
+      $domains = $this->__getDomains();
 
       $search = preg_replace("/\s{1,}/", "", $search);
 
       $query = "SELECT `email` AS `item`, MIN(`date`) AS `oldest`, MAX(`date`) AS `newest`, SUM(`sent`) AS `sent`, SUM(`recd`) AS `recd`, SUM(`sentsize`) AS `sentsize`, SUM(`recdsize`) AS `recdsize` FROM " . TABLE_STAT_COUNTER;
 
+      $arr = array();
+
       if($item == 'email') {
-         $where = "WHERE `email` IN ('".implode("','",$account_for_emails)."') OR `domain` IN ('".implode("','",$account_for_domains)."')";
+         $q1 = get_q_string($this->__getEmails());
+         $q2 = get_q_string($domains);
+
+         $where = "WHERE (`email` IN ($q1) OR `domain` IN ($q2))";
+         $arr = array_merge($arr, $this->__getEmails(), $domains);
+
          if($search) {
-            $where .= " AND ( `email` LIKE '%".$search."%' OR `domain` LIKE '%".$search."%' )";
+            $where .= " AND (`email` LIKE ? OR `domain` LIKE ?)";
+            array_push($arr, "%$search%", "%$search%");
          }
-         $group = "GROUP BY `email`";
       } elseif ($item == 'domain') {
-        $where = "WHERE `domain` IN ('".implode("','",$account_for_domains)."')";
+        $where = sprintf("WHERE `domain` IN ('%s')", implode("','", $domains));
         if($search) {
-           $where .= " AND `domain` LIKE '%".$search."%'";
+           $where .= " AND `domain` LIKE ?";
+           array_push($arr, "%$search%");
         }
-        $group = "GROUP BY `domain`";
-      } else {
-         return false;
       }
 
-      $query = $this->db->query($query.' '.$where.' '.$group);
+      $query = $this->db->query("$query $where GROUP BY `$item`", $arr);
 
       return $query->num_rows;
    }

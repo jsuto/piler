@@ -478,8 +478,7 @@ class ModelSearchSearch extends Model {
 
       $session = Registry::get('session');
 
-      $q = str_repeat(",?", count($ids));
-      $q = substr($q, 1, strlen($q));
+      $q = get_q_string($ids);
 
       $query = $this->db->query("SELECT `id`, `to` FROM `" . TABLE_RCPT . "` WHERE `id` IN ($q)", $ids);
 
