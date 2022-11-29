@@ -212,7 +212,7 @@ $config['DEFAULT_POLICY'] = 'default_policy';
 
 $config['DIR_BASE'] = dirname(__FILE__) . '/';
 
-$config['DIR_SPHINX'] = '/var/piler/sphinx/';
+$config['DIR_SPHINX'] = '/var/piler/manticore/';
 $config['DIR_STAT'] = '/var/piler/stat';
 $config['DIR_IMAP'] = '/var/piler/imap';
 $config['DIR_TMP'] = '/var/piler/tmp';
