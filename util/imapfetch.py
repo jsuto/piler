@@ -15,6 +15,11 @@ INBOX = 'INBOX'
 ST_RUNNING = 1
 
 
+def generate_auth_string(user, token):
+    auth_string = f"user={user}\1auth=Bearer {token}\1\1"
+    return auth_string
+
+
 def read_options(filename="", opts={}):
     s = "[piler]\n" + open(filename, 'r').read()
     config = configparser.ConfigParser()
@@ -44,7 +49,8 @@ def read_folder_list(conn):
         if isinstance(folder, type(b'')):
             folder = folder.decode('utf-8')
         elif isinstance(folder, type(())):
-            folder = re.sub(r'\{\d+\}$', '', folder[0].decode('utf-8')) + folder[1].decode('utf-8')
+            folder = re.sub(r'\{\d+\}$', '',
+                            folder[0].decode('utf-8')) + folder[1].decode('utf-8')
 
         # The regex should match ' "/" ' and ' "." '
         if folder:
@@ -68,7 +74,8 @@ def process_folder(conn, folder):
         return
 
     if rc != "OK":
-        print("Error processing folder {}, rc={}, response={}".format(folder, rc, data))
+        print("Error processing folder {}, rc={}, response={}".format(folder,
+                                                                      rc, data))
         return
 
     n = int(data[0])
@@ -79,7 +86,8 @@ def process_folder(conn, folder):
         if opts['id']:
             cursor = opts['db'].cursor()
             data = (ST_RUNNING, n, opts['id'])
-            cursor.execute("UPDATE import SET status=%s, total=total+%s WHERE id=%s", data)
+            cursor.execute("UPDATE import SET status=%s, total=total+%s WHERE id=%s",
+                           data)
             opts['db'].commit()
 
         rc, data = conn.search(None, opts['search'])
@@ -102,6 +110,7 @@ def main():
     parser.add_argument("--no_ssl", help="Do not use ssl/tls", action='store_true')
     parser.add_argument("-u", "--user", type=str, help="imap user")
     parser.add_argument("-p", "--password", type=str, help="imap password")
+    parser.add_argument("--oauth2-token", type=str, help="oauth2 access token file")
     parser.add_argument("-x", "--skip-list", type=str, help="IMAP folders to skip",
                         default="junk,trash,spam,draft,\"[Gmail]\"")
     parser.add_argument("-f", "--folders", type=str,
@@ -129,12 +138,17 @@ def main():
     opts['use_ssl'] = True
     opts['db'] = None
     opts['id'] = 0
+    opts['access_token'] = ''
 
     if args.date:
         opts['search'] = args.date
 
     if args.no_ssl:
         opts['use_ssl'] = False
+
+    if args.oauth2_token:
+        with open(args.oauth2_token, 'r') as f:
+            opts['access_token'] = f.read()
 
     server = ''
     user = ''
@@ -147,7 +161,8 @@ def main():
                                        opts['password'], opts['database'])
 
             cursor = opts['db'].cursor()
-            cursor.execute("SELECT id, server, username, password FROM import WHERE started=0")
+            cursor.execute("SELECT id, server, username, password " +
+                           "FROM import WHERE started=0")
 
             row = cursor.fetchone()
             if row:
@@ -171,7 +186,12 @@ def main():
     else:
         conn = imaplib.IMAP4(server)
 
-    conn.login(user, password)
+    if opts['access_token']:
+        conn.authenticate("XOAUTH2", lambda x: generate_auth_string(
+            user, opts['access_token']))
+    else:
+        conn.login(user, password)
+
     conn.select()
 
     if args.folders:
