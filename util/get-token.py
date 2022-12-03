@@ -49,7 +49,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
 code = ''
 
-server_address = ('', 8745)
+server_address = ('127.0.0.1', 8745)
 httpd = http.server.HTTPServer(server_address, Handler)
 
 if not os.getenv('SSH_CONNECTION'):
