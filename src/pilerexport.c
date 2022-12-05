@@ -30,12 +30,14 @@ char *query=NULL;
 int verbosity = 0;
 int max_matches = 1000;
 char *index_list = "main1,dailydelta1,delta1";
+struct passwd *pwd;
 regex_t regexp;
 char *zipfile = NULL;
 struct zip *zip = NULL;
 uint64 *zip_ids = NULL;
 int zip_counter = 0;
 int zip_batch = 2000;
+int max_files_in_export_dir = 0;
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg);
 
@@ -60,6 +62,7 @@ void usage(){
    printf("    -Z <batch size>                   Zip batch size. Valid range: 10-10000, default: 2000\n");
 #endif
    printf("    -A                                Export all emails from archive\n");
+   printf("    -D <max files>                    Max. number of files to put in a single directory, default: 2000\n");
    printf("    -o                                Export emails to stdout\n");
    printf("    -d                                Dry run\n");
 
@@ -356,9 +359,10 @@ void zip_flush(){
 
 int export_emails_matching_to_query(struct session_data *sdata, char *s, struct config *cfg){
    FILE *f;
-   uint64 id, n=0;
+   uint64 id, n=0, dir_counter=0;
    char digest[SMALLBUFSIZE], bodydigest[SMALLBUFSIZE];
    char filename[SMALLBUFSIZE];
+   char export_subdir[SMALLBUFSIZE];
    struct sql sql;
    int errorp, rc=0, attachments;
    unsigned long total_attachments=0;
@@ -392,6 +396,19 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                printf("%s", PILEREXPORT_BEGIN_MARK);
                rc = retrieve_email_from_archive(sdata, stdout, cfg);
                continue;
+            }
+
+            if(max_files_in_export_dir > 0 && n % max_files_in_export_dir == 0){
+               dir_counter++;
+               snprintf(export_subdir, sizeof(export_subdir)-1, "export-%llu", dir_counter);
+               if(n > 0 && chdir("..")){
+                  p_clean_exit("error chdir(\"..\")", 1);
+               }
+
+               createdir(export_subdir, pwd->pw_uid, pwd->pw_gid, 0700);
+               if(chdir(export_subdir)){
+                  p_clean_exit("error chdir to export-* dir", 1);
+               }
             }
 
             snprintf(filename, sizeof(filename)-1, "%llu.eml", id);
@@ -512,6 +529,7 @@ int main(int argc, char **argv){
             {"zip",          required_argument,  0,  'z' },
             {"zip-batch",    required_argument,  0,  'Z' },
             {"where-condition", required_argument,  0,  'w' },
+            {"max-files",    required_argument,  0,  'D' },
             {"max-matches",  required_argument,  0,  'm' },
             {"index-list",   required_argument,  0,  'i' },
             {0,0,0,0}
@@ -519,9 +537,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:D:oAdhv?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:oAdhv?");
+      int c = getopt(argc, argv, "c:s:S:f:r:F:R:a:b:w:m:i:z:Z:D:oAdhv?");
 #endif
 
       if(c == -1) break;
@@ -630,6 +648,11 @@ int main(int argc, char **argv){
                        zip_batch = 2000;
                     break;
 
+         case 'D':  max_files_in_export_dir = atoi(optarg);
+                    if(max_files_in_export_dir < 10 || max_files_in_export_dir > 100000)
+                       max_files_in_export_dir = 2000;
+                    break;
+
          case 'o':
                     export_to_stdout = 1;
                     break;
@@ -660,6 +683,11 @@ int main(int argc, char **argv){
 
 
    if(read_key(&cfg)) p_clean_exit(ERR_READING_KEY, 1);
+
+   if(strlen(cfg.username) > 1){
+      pwd = getpwnam(cfg.username);
+      if(!pwd) __fatal(ERR_NON_EXISTENT_USER);
+   }
 
 
    init_session_data(&sdata, &cfg);

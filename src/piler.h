@@ -51,6 +51,7 @@ int query_attachments(struct session_data *sdata, struct ptr_array *ptr_arr);
 
 struct config read_config(char *configfile);
 
+void createdir(char *path, uid_t uid, gid_t gid, mode_t mode);
 void check_and_create_directories(struct config *cfg, uid_t uid, gid_t gid);
 
 void update_counters(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg);

@@ -4,7 +4,8 @@
 - Replaced sphinx with manticore 5.0.2, see https://www.mailpiler.org/wiki/current:manticore
 - Replaced obsoleted libchart library with chart.js
 - Added real-time index support
-
+- Added oauth2 support to imapfetch.py
+- Added support for pilerexport to spread files among several directories. See the -D option
 
 
 1.3.12:
