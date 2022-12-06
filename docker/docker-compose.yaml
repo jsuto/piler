@@ -33,7 +33,7 @@ services:
     command: -m 64
 
   piler:
-    image: sutoj/piler:1.3.10
+    image: sutoj/piler:1.4.1
     init: true
     environment:
       - MYSQL_DATABASE=piler

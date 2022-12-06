@@ -10,7 +10,7 @@ PILER_CONF="${CONFIG_DIR}/piler.conf"
 PILER_KEY="${CONFIG_DIR}/piler.key"
 PILER_PEM="${CONFIG_DIR}/piler.pem"
 PILER_NGINX_CONF="${CONFIG_DIR}/piler-nginx.conf"
-SPHINX_CONF="${CONFIG_DIR}/sphinx.conf"
+SPHINX_CONF="${CONFIG_DIR}/manticore.conf"
 CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
 
@@ -172,13 +172,13 @@ create_my_cnf_files() {
 start_services() {
    service rsyslog start
    service cron start
-   service php7.4-fpm start
+   service php8.1-fpm start
    service nginx start
 }
 
 
 start_piler() {
-   if [[ ! -f "${VOLUME_DIR}/sphinx/main1.spp" ]]; then
+   if [[ ! -f "${VOLUME_DIR}/manticore/main1.spp" ]]; then
       log "main1.spp does not exist, creating index files"
       su -c "indexer --all --config ${SPHINX_CONF}" piler
    fi
@@ -198,4 +198,4 @@ init_database
 start_services
 start_piler
 
-while true; do sleep 3600; done
+sleep infinity
