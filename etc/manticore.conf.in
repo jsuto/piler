@@ -83,6 +83,7 @@ index main1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main1
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
@@ -93,6 +94,7 @@ index main2
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main2
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
@@ -103,6 +105,7 @@ index main3
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main3
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
@@ -113,6 +116,7 @@ index main4
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/main4
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
@@ -123,6 +127,7 @@ index dailydelta1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/dailydelta1
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
@@ -133,6 +138,7 @@ index delta1
         path                    = <?php print LOCALSTATEDIR; ?>/piler/manticore/delta1
         min_prefix_len          = 5
         min_word_len            = 1
+        stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
 <?php print NGRAM_CONFIG; ?>
 }
