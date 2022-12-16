@@ -2,6 +2,7 @@
 ------
 
 - Fixed docker image
+- Fixed php socket path in piler-nginx.conf
 - Fixed manticore index data settings
 
 
