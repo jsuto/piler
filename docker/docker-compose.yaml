@@ -2,7 +2,8 @@ version: "3"
 services:
 
   mysql:
-    image: mariadb:10.5
+    image: mariadb:10.6
+    container_name: mysql
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -26,6 +27,7 @@ services:
       - db_data:/var/lib/mysql
 
   memcached:
+    container_name: memcached
     image: memcached:latest
     restart: unless-stopped
     cap_drop:
@@ -33,7 +35,8 @@ services:
     command: -m 64
 
   piler:
-    image: sutoj/piler:1.4.1
+    image: piler:1.4.1
+    container_name: piler
     init: true
     environment:
       - MYSQL_DATABASE=piler

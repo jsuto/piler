@@ -170,7 +170,7 @@ create_my_cnf_files() {
 
 
 start_services() {
-   service rsyslog start
+   rsyslogd
    service cron start
    service php8.1-fpm start
    service nginx start
