@@ -34,7 +34,7 @@ RUN apt-get update && \
     crontab -u $PILER_USER /usr/share/piler/piler.cron
 
 VOLUME ["/etc/piler"]
-VOLUME ["/var/piler"]
+VOLUME ["/var/piler/store"]
 
 EXPOSE 25 80 443
 

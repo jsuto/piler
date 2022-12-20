@@ -35,7 +35,7 @@ services:
     command: -m 64
 
   piler:
-    image: piler:1.4.1
+    image: sutoj/piler:1.4.2
     container_name: piler
     init: true
     environment:
@@ -51,7 +51,7 @@ services:
       - "443:443"
     volumes:
       - piler_etc:/etc/piler
-      - piler_var:/var/piler
+      - piler_var_store:/var/piler/store
     healthcheck:
       test: curl -s smtp://localhost/
       interval: "60s"
@@ -72,4 +72,4 @@ services:
 volumes:
   db_data: {}
   piler_etc: {}
-  piler_var: {}
+  piler_var_store: {}
