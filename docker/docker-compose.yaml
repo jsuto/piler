@@ -52,6 +52,7 @@ services:
     volumes:
       - piler_etc:/etc/piler
       - piler_var_store:/var/piler/store
+      - piler_var_manticore:/var/piler/manticore
     healthcheck:
       test: curl -s smtp://localhost/
       interval: "60s"
@@ -73,3 +74,4 @@ volumes:
   db_data: {}
   piler_etc: {}
   piler_var_store: {}
+  piler_var_manticore: {}

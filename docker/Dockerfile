@@ -35,6 +35,7 @@ RUN apt-get update && \
 
 VOLUME ["/etc/piler"]
 VOLUME ["/var/piler/store"]
+VOLUME ["/var/piler/manticore"]
 
 EXPOSE 25 80 443
 
