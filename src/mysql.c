@@ -254,23 +254,6 @@ int prepare_sql_statement(struct session_data *sdata, struct sql *sql, char *s){
 }
 
 
-int prepare_sphx_statement(struct session_data *sdata, struct sql *sql, char *s){
-
-   sql->stmt = mysql_stmt_init(&(sdata->sphx));
-   if(!(sql->stmt)){
-      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_init()", sdata->ttmpfile);
-      return ERR;
-   }
-
-   if(mysql_stmt_prepare(sql->stmt, s, strlen(s))){
-      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_prepare() %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(sql->stmt), s);
-      return ERR;
-   }
-
-   return OK;
-}
-
-
 void close_prepared_statement(struct sql *sql){
    if(sql->stmt) mysql_stmt_close(sql->stmt);
 }

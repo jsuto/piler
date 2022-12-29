@@ -755,3 +755,29 @@ char *strcasestr(const char *s, const char *find){
    return((char*)s);
 }
 #endif
+
+
+int append_string_to_buffer(char **buffer, char *str){
+   int arglen;
+   char *s=NULL;
+
+   arglen = strlen(str);
+
+   if(!*buffer){
+      *buffer = malloc(arglen+1);
+      memset(*buffer, 0, arglen+1);
+      memcpy(*buffer, str, arglen);
+   }
+   else {
+      int len = strlen(*buffer);
+      s = realloc(*buffer, len + arglen+1);
+      if(!s) return 1;
+
+      *buffer = s;
+
+      memset(*buffer+len, 0, arglen+1);
+      memcpy(*buffer+len, str, arglen);
+   }
+
+   return 0;
+}

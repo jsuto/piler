@@ -54,4 +54,6 @@ int init_ssl_to_server(struct data *data);
    char *strcasestr(const char *s, const char *find);
 #endif
 
+int append_string_to_buffer(char **buffer, char *str);
+
 #endif /* _MISC_H */

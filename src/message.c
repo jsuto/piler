@@ -31,12 +31,6 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    if(*subj == ' ') subj++;
 
 
-   if(cfg->rtindex){
-      if(prepare_sphx_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RT_TABLE) == ERR) return rc;
-   } else {
-      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
-   }
-
    fix_email_address_for_sphinx(state->b_from);
    fix_email_address_for_sphinx(state->b_sender);
    fix_email_address_for_sphinx(state->b_to);
@@ -49,27 +43,76 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
       sender_domain = state->b_sender_domain;
    }
 
-   p_bind_init(&sql);
+   if(cfg->rtindex){
+      // Manticore doesn't support prepared statements using sphinxQL
+      // so we have to go through a painful query assembly escaping
+      // the untrusted input
+      //
+      char a[4*MAXBUFSIZE+4*SMALLBUFSIZE];
+      char *query=NULL;
 
-   sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
-   sql.sql[sql.pos] = sender; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = state->b_to; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = state->b_to_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = state->b_body; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
-   sql.sql[sql.pos] = (char *)&sdata->now; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = (char *)&sdata->sent; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = (char *)&sdata->tot_len; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = (char *)&sdata->direction; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = (char *)&data->folder; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = (char *)&state->n_attachments; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
-   sql.sql[sql.pos] = sdata->attachments; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      snprintf(a, sizeof(a)-1, "INSERT INTO %s (id, arrived, sent, size, direction, folder, attachments, attachment_types, senderdomain, rcptdomain, sender, rcpt, subject, body) VALUES (%llu, %ld, %ld, %d, %d, %d, %d, '%s', '%s', '%s', '", cfg->sphinxdb, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments, sdata->attachments, sender_domain, state->b_to_domain);
 
-   if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
-   else syslog(LOG_PRIORITY, "ERROR: %s failed to store index data for id=%llu, sql_errno=%d", sdata->ttmpfile, id, sdata->sql_errno);
+      int ret = append_string_to_buffer(&query, a);
 
-   close_prepared_statement(&sql);
+      unsigned long len = strlen(sender);
+      char *s = calloc(1, 2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, sender, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "','");
+
+      len = strlen(state->b_to);
+      s = calloc(1, 2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, state->b_to, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "','");
+
+      len = strlen(subj);
+      s = calloc(1, 2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, subj, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "','");
+
+      len = strlen(state->b_body);
+      s = calloc(1, 2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, state->b_body, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "')");
+
+      if(mysql_real_query(&(sdata->sphx), query, strlen(query)) == OK) rc = OK;
+      else syslog(LOG_PRIORITY, "ERROR: %s failed to store index data for id=%llu, errno=%d, append ret=%d", sdata->ttmpfile, id, mysql_errno(&(sdata->sphx)), ret);
+
+      free(query);
+   }
+   else {
+      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
+
+      p_bind_init(&sql);
+
+      sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+      sql.sql[sql.pos] = sender; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = state->b_to; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = sender_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = state->b_to_domain; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = subj; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = state->b_body; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+      sql.sql[sql.pos] = (char *)&sdata->now; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = (char *)&sdata->sent; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = (char *)&sdata->tot_len; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = (char *)&sdata->direction; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = (char *)&data->folder; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = (char *)&state->n_attachments; sql.type[sql.pos] = TYPE_LONG; sql.pos++;
+      sql.sql[sql.pos] = sdata->attachments; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+
+      if(p_exec_stmt(sdata, &sql) == OK) rc = OK;
+      else syslog(LOG_PRIORITY, "ERROR: %s failed to store index data for id=%llu, sql_errno=%d", sdata->ttmpfile, id, sdata->sql_errno);
+
+      close_prepared_statement(&sql);
+   }
 
    return rc;
 }
