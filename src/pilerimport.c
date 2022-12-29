@@ -341,6 +341,7 @@ int main(int argc, char **argv){
 
    if(open_database(&sdata, &cfg) == ERR) return 0;
 
+   if(cfg.rtindex && open_sphx(&sdata, &cfg) == ERR) return 0;
 
    setlocale(LC_CTYPE, cfg.locale);
 
@@ -391,6 +392,8 @@ int main(int argc, char **argv){
    clearhash(data.mydomains);
 
    close_database(&sdata);
+
+   if(cfg.rtindex) close_sphx(&sdata);
 
    if(data.quiet == 0) printf("\n");
 

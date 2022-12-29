@@ -80,6 +80,12 @@ struct config {
    char mysqldb[MAXVAL];
    int mysql_connect_timeout;
 
+   // manticore stuff
+   char sphxhost[MAXVAL];
+   int sphxport;
+   char sphxdb[MAXVAL];
+   int rtindex;
+
    int update_counters_to_memcached;
    int memcached_to_db_interval;
 

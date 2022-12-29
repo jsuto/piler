@@ -33,8 +33,37 @@ int open_database(struct session_data *sdata, struct config *cfg){
 }
 
 
-void close_database(struct session_data *sdata){
+int open_sphx(struct session_data *sdata, struct config *cfg){
+   int rc=1;
+   char buf[BUFLEN];
+
+   mysql_init(&(sdata->sphx));
+
+   mysql_options(&(sdata->sphx), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg->mysql_connect_timeout);
+   mysql_options(&(sdata->sphx), MYSQL_OPT_RECONNECT, (const char*)&rc);
+
+   if(mysql_real_connect(&(sdata->sphx), cfg->sphxhost, "", "", cfg->sphxdb, cfg->sphxport, "", 0) == 0){
+      syslog(LOG_PRIORITY, "cant connect to %s:%d", cfg->sphxhost, cfg->sphxport);
+      return ERR;
+   }
+
+   snprintf(buf, sizeof(buf)-2, "SET NAMES %s", cfg->mysqlcharset);
+   mysql_real_query(&(sdata->sphx), buf, strlen(buf));
+
+   snprintf(buf, sizeof(buf)-2, "SET CHARACTER SET %s", cfg->mysqlcharset);
+   mysql_real_query(&(sdata->sphx), buf, strlen(buf));
+
+   return OK;
+}
+
+
+void close_sphx(struct session_data *sdata){
    mysql_close(&(sdata->mysql));
+}
+
+
+void close_database(struct session_data *sdata){
+   mysql_close(&(sdata->sphx));
 }
 
 
@@ -211,6 +240,23 @@ int p_get_affected_rows(struct sql *sql){
 int prepare_sql_statement(struct session_data *sdata, struct sql *sql, char *s){
 
    sql->stmt = mysql_stmt_init(&(sdata->mysql));
+   if(!(sql->stmt)){
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_init()", sdata->ttmpfile);
+      return ERR;
+   }
+
+   if(mysql_stmt_prepare(sql->stmt, s, strlen(s))){
+      syslog(LOG_PRIORITY, "%s: error: mysql_stmt_prepare() %s => sql: %s", sdata->ttmpfile, mysql_stmt_error(sql->stmt), s);
+      return ERR;
+   }
+
+   return OK;
+}
+
+
+int prepare_sphx_statement(struct session_data *sdata, struct sql *sql, char *s){
+
+   sql->stmt = mysql_stmt_init(&(sdata->sphx));
    if(!(sql->stmt)){
       syslog(LOG_PRIORITY, "%s: error: mysql_stmt_init()", sdata->ttmpfile);
       return ERR;

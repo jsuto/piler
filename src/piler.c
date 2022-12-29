@@ -287,9 +287,18 @@ void child_main(struct child *ptr){
 
       sig_block(SIGHUP);
 
-      if(open_database(&sdata, &cfg) == OK){
+      int sphxopen = 0;
+      if(cfg.rtindex && open_sphx(&sdata, &cfg) == OK){
+         sphxopen = 1;
+      }
+
+      if((cfg.rtindex == 0 || sphxopen == 1) && open_database(&sdata, &cfg) == OK){
          ptr->messages += process_dir(dir, &sdata, &data, &cfg);
          close_database(&sdata);
+
+         if(cfg.rtindex){
+            close_sphx(&sdata);
+         }
 
          sleep(1);
       }

@@ -245,6 +245,11 @@ int main(int argc, char **argv){
       p_clean_exit("cannot connect to mysql server", 1);
    }
 
+   if(cfg.rtindex && open_sphx(&sdata, &cfg) == ERR){
+      p_clean_exit("cannot connect to 127.0.0.1:9306", 1);
+   }
+
+
    load_rules(&sdata, data.folder_rules, SQL_FOLDER_RULE_TABLE);
 
    if(folder){
@@ -272,6 +277,7 @@ int main(int argc, char **argv){
    clearhash(data.mydomains);
 
    close_database(&sdata);
+   if(cfg.rtindex) close_sphx(&sdata);
 
    return 0;
 }

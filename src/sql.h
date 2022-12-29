@@ -7,8 +7,11 @@
 
 
 int open_database(struct session_data *sdata, struct config *cfg);
+int open_sphx(struct session_data *sdata, struct config *cfg);
 void close_database(struct session_data *sdata);
+void close_sphx(struct session_data *sdata);
 int prepare_sql_statement(struct session_data *sdata, struct sql *sql, char *s);
+int prepare_sphx_statement(struct session_data *sdata, struct sql *sql, char *s);
 void p_query(struct session_data *sdata, char *s);
 int p_exec_stmt(struct session_data *sdata, struct sql *sql);
 int p_store_results(struct sql *sql);

@@ -31,8 +31,11 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    if(*subj == ' ') subj++;
 
 
-   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
-
+   if(cfg->rtindex){
+      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RT_TABLE) == ERR) return rc;
+   } else {
+      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
+   }
 
    fix_email_address_for_sphinx(state->b_from);
    fix_email_address_for_sphinx(state->b_sender);

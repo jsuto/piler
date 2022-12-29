@@ -253,7 +253,7 @@ struct session_data {
    int journal_envelope_length, journal_bottom_length;
    unsigned int sql_errno;
 #ifdef NEED_MYSQL
-   MYSQL mysql;
+   MYSQL mysql, sphx;
 #endif
 };
 
