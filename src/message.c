@@ -30,7 +30,6 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
    subj = state->b_subject;
    if(*subj == ' ') subj++;
 
-
    fix_email_address_for_sphinx(state->b_from);
    fix_email_address_for_sphinx(state->b_sender);
    fix_email_address_for_sphinx(state->b_to);
@@ -51,39 +50,53 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
       char a[4*MAXBUFSIZE+4*SMALLBUFSIZE];
       char *query=NULL;
 
-      snprintf(a, sizeof(a)-1, "INSERT INTO %s (id, arrived, sent, size, direction, folder, attachments, attachment_types, senderdomain, rcptdomain, sender, rcpt, subject, body) VALUES (%llu, %ld, %ld, %d, %d, %d, %d, '%s', '%s', '%s', '", cfg->sphxdb, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments, sdata->attachments, sender_domain, state->b_to_domain);
+      snprintf(a, sizeof(a)-1, "INSERT INTO %s (id, arrived, sent, size, direction, folder, attachments, attachment_types, sender, rcpt, senderdomain, rcptdomain, subject, body) VALUES (%llu,%ld,%ld,%d,%d,%d,%d,'%s','", cfg->sphxdb, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments, sdata->attachments);
 
       int ret = append_string_to_buffer(&query, a);
 
       unsigned long len = strlen(sender);
-      char *s = calloc(1, 2*len+1);
+      char *s = malloc(2*len+1);
       mysql_real_escape_string(&(sdata->sphx), s, sender, len);
       ret += append_string_to_buffer(&query, s);
       free(s);
       ret += append_string_to_buffer(&query, "','");
 
       len = strlen(state->b_to);
-      s = calloc(1, 2*len+1);
+      s = malloc(2*len+1);
       mysql_real_escape_string(&(sdata->sphx), s, state->b_to, len);
       ret += append_string_to_buffer(&query, s);
       free(s);
       ret += append_string_to_buffer(&query, "','");
 
+      len = strlen(sender_domain);
+      s = malloc(2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, sender_domain, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "','");
+
+      len = strlen(state->b_to_domain);
+      s = malloc(2*len+1);
+      mysql_real_escape_string(&(sdata->sphx), s, state->b_to_domain, len);
+      ret += append_string_to_buffer(&query, s);
+      free(s);
+      ret += append_string_to_buffer(&query, "','");
+
       len = strlen(subj);
-      s = calloc(1, 2*len+1);
+      s = malloc(2*len+1);
       mysql_real_escape_string(&(sdata->sphx), s, subj, len);
       ret += append_string_to_buffer(&query, s);
       free(s);
       ret += append_string_to_buffer(&query, "','");
 
       len = strlen(state->b_body);
-      s = calloc(1, 2*len+1);
+      s = malloc(2*len+1);
       mysql_real_escape_string(&(sdata->sphx), s, state->b_body, len);
       ret += append_string_to_buffer(&query, s);
       free(s);
       ret += append_string_to_buffer(&query, "')");
 
-      if(mysql_real_query(&(sdata->sphx), query, strlen(query)) == OK) rc = OK;
+      if(ret == 0 && mysql_real_query(&(sdata->sphx), query, strlen(query)) == OK) rc = OK;
       else syslog(LOG_PRIORITY, "ERROR: %s failed to store index data for id=%llu, errno=%d, append ret=%d", sdata->ttmpfile, id, mysql_errno(&(sdata->sphx)), ret);
 
       free(query);
