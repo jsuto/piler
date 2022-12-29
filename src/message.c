@@ -32,7 +32,7 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
 
 
    if(cfg->rtindex){
-      if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RT_TABLE) == ERR) return rc;
+      if(prepare_sphx_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_RT_TABLE) == ERR) return rc;
    } else {
       if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE) == ERR) return rc;
    }
