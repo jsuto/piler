@@ -1,3 +1,9 @@
+1.4.3:
+------
+
+- Improved real-time index support (no need to use rtindex.py any more)
+
+
 1.4.2:
 ------
 
