@@ -57,12 +57,12 @@ int open_sphx(struct session_data *sdata, struct config *cfg){
 }
 
 
-void close_sphx(struct session_data *sdata){
+void close_database(struct session_data *sdata){
    mysql_close(&(sdata->mysql));
 }
 
 
-void close_database(struct session_data *sdata){
+void close_sphx(struct session_data *sdata){
    mysql_close(&(sdata->sphx));
 }
 
