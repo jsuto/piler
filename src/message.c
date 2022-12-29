@@ -51,7 +51,7 @@ int store_index_data(struct session_data *sdata, struct parser_state *state, str
       char a[4*MAXBUFSIZE+4*SMALLBUFSIZE];
       char *query=NULL;
 
-      snprintf(a, sizeof(a)-1, "INSERT INTO %s (id, arrived, sent, size, direction, folder, attachments, attachment_types, senderdomain, rcptdomain, sender, rcpt, subject, body) VALUES (%llu, %ld, %ld, %d, %d, %d, %d, '%s', '%s', '%s', '", cfg->sphinxdb, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments, sdata->attachments, sender_domain, state->b_to_domain);
+      snprintf(a, sizeof(a)-1, "INSERT INTO %s (id, arrived, sent, size, direction, folder, attachments, attachment_types, senderdomain, rcptdomain, sender, rcpt, subject, body) VALUES (%llu, %ld, %ld, %d, %d, %d, %d, '%s', '%s', '%s', '", cfg->sphxdb, id, sdata->now, sdata->sent, sdata->tot_len, sdata->direction, data->folder, state->n_attachments, sdata->attachments, sender_domain, state->b_to_domain);
 
       int ret = append_string_to_buffer(&query, a);
 
