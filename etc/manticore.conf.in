@@ -143,36 +143,6 @@ index delta1
 <?php print NGRAM_CONFIG; ?>
 }
 
-
-<?php } else { ?>
-
-index piler1
-{
-    type = rt
-    path = /var/piler/manticore/piler1
-    rt_mem_limit = 512M
-    stored_fields =
-    min_prefix_len = 5
-    # See https://manual.manticoresearch.com/Creating_an_index/Data_types#Row-wise-and-columnar-attribute-storages
-    # if you want to enable columnar storage
-    # columnar_attrs = *
-    rt_field = sender
-    rt_field = rcpt
-    rt_field = senderdomain
-    rt_field = rcptdomain
-    rt_field = subject
-    rt_field = body
-    rt_field = attachment_types
-    rt_attr_bigint = arrived
-    rt_attr_bigint = sent
-    rt_attr_uint = size
-    rt_attr_uint = direction
-    rt_attr_uint = folder
-    rt_attr_uint = attachments
-}
-
-<?php } ?>
-
 source tag : base
 {
    sql_query_pre = SET NAMES utf8mb4
@@ -214,11 +184,60 @@ index note1
 <?php print NGRAM_CONFIG; ?>
 }
 
+<?php } else { ?>
 
-indexer
+index piler1
 {
-        mem_limit               = 256M
+    type = rt
+    path = /var/piler/manticore/piler1
+    rt_mem_limit = 512M
+    stored_fields =
+    min_prefix_len = 5
+    # See https://manual.manticoresearch.com/Creating_an_index/Data_types#Row-wise-and-columnar-attribute-storages
+    # if you want to enable columnar storage
+    # columnar_attrs = *
+    rt_field = sender
+    rt_field = rcpt
+    rt_field = senderdomain
+    rt_field = rcptdomain
+    rt_field = subject
+    rt_field = body
+    rt_field = attachment_types
+    rt_attr_bigint = arrived
+    rt_attr_bigint = sent
+    rt_attr_uint = size
+    rt_attr_uint = direction
+    rt_attr_uint = folder
+    rt_attr_uint = attachments
 }
+
+index tag1
+{
+    type = rt
+    path = /var/piler/manticore/tag1
+    rt_mem_limit = 128M
+    stored_fields = tag
+    min_word_len = 1
+    min_prefix_len = 5
+    rt_field = tag
+    rt_attr_bigint = mid
+    rt_attr_uint = uid
+}
+
+index note1
+{
+    type = rt
+    path = /var/piler/manticore/note1
+    rt_mem_limit = 128M
+    stored_fields = note
+    min_word_len = 1
+    min_prefix_len = 5
+    rt_field = note
+    rt_attr_bigint = mid
+    rt_attr_uint = uid
+}
+
+<?php } ?>
 
 
 searchd
