@@ -19,8 +19,10 @@ define('RT', 0);
 ?>
 
 #
-# minimal sphinx configuration suited to piler
+# minimal manticore configuration suited to piler
 #
+
+<?php if(RT == 0) { ?>
 
 source base
 {
@@ -34,8 +36,6 @@ source base
    sql_attr_uint = sent
    sql_attr_uint = attachments
 }
-
-<?php if(RT == 0) { ?>
 
 source delta : base
 {
@@ -192,6 +192,7 @@ index piler1
     path = /var/piler/manticore/piler1
     rt_mem_limit = 512M
     stored_fields =
+    min_word_len = 1
     min_prefix_len = 5
     # See https://manual.manticoresearch.com/Creating_an_index/Data_types#Row-wise-and-columnar-attribute-storages
     # if you want to enable columnar storage
