@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+set -o pipefail
+
+read -r version < VERSION
+
+tarball="piler-${version}.tar.gz"
+
+git archive --prefix="piler-${version}/" HEAD | gzip -c > "$tarball"
+sha256sum "$tarball"
