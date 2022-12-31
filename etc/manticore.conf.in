@@ -194,6 +194,7 @@ index piler1
     stored_fields =
     min_word_len = 1
     min_prefix_len = 5
+    charset_table  = <?php print CHARSET_TABLE; ?>
     # See https://manual.manticoresearch.com/Creating_an_index/Data_types#Row-wise-and-columnar-attribute-storages
     # if you want to enable columnar storage
     # columnar_attrs = *
@@ -216,10 +217,11 @@ index tag1
 {
     type = rt
     path = /var/piler/manticore/tag1
-    rt_mem_limit = 128M
+    rt_mem_limit = 16M
     stored_fields = tag
-    min_word_len = 1
+    min_word_len = 2
     min_prefix_len = 5
+    charset_table  = <?php print CHARSET_TABLE; ?>
     rt_field = tag
     rt_attr_bigint = mid
     rt_attr_uint = uid
@@ -229,10 +231,11 @@ index note1
 {
     type = rt
     path = /var/piler/manticore/note1
-    rt_mem_limit = 128M
+    rt_mem_limit = 16M
     stored_fields = note
-    min_word_len = 1
+    min_word_len = 2
     min_prefix_len = 5
+    charset_table  = <?php print CHARSET_TABLE; ?>
     rt_field = note
     rt_attr_bigint = mid
     rt_attr_uint = uid
