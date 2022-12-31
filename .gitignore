@@ -3,6 +3,7 @@ Makefile
 *.so
 *.a
 *.deb
+src/libpiler.so.0*
 src/piler
 src/pilerconf
 src/piler-smtp
