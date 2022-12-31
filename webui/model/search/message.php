@@ -457,7 +457,11 @@ class ModelSearchMessage extends Model {
    public function get_message_tag($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 
-      $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
+      if(RT) {
+         $query = $this->sphx->query("SELECT tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid=$id");
+      } else {
+         $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
+      }
 
       if(isset($query->row['tag'])) { return strip_tags($query->row['tag']); }
 
@@ -469,11 +473,19 @@ class ModelSearchMessage extends Model {
       if($id == '' || $uid <= 0) { return 0; }
 
       if($tag == '') {
-         $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
+         if(RT) {
+            $this->sphx->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid=$id");
+         } else {
+            $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
+         }
       } else {
-         $query = $this->db->query("UPDATE " . TABLE_TAG . " SET tag=? WHERE uid=? AND id=?", array($tag, $uid, $id));
-         if($this->db->countAffected() == 0) {
-            $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
+         if(RT) {
+            $this->sphx->query("REPLACE INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES (?,?,?)",[$id,$uid,$tag]);
+         } else {
+            $query = $this->db->query("UPDATE " . TABLE_TAG . " SET tag=? WHERE uid=? AND id=?", array($tag, $uid, $id));
+            if($this->db->countAffected() == 0) {
+               $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
+            }
          }
       }
 
@@ -484,11 +496,20 @@ class ModelSearchMessage extends Model {
    public function bulk_add_message_tag($ids = array(), $uid = 0, $tag = '', $q = '') {
       $arr = array_merge(array($uid), $ids);
 
-      $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id IN ($q)", $arr);
+      if(RT) {
+         $ids_str = implode(",", $ids);
+         $this->sphx->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid IN ($ids_str)");
+      } else {
+         $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id IN ($q)", $arr);
+      }
 
       if($tag) {
          foreach ($ids as $id) {
-            $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
+            if(RT) {
+               $this->sphx->query("INSERT INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES(?,?,?)", [$id, $uid, $tag]);
+            } else {
+               $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
+            }
          }
       }
    }
@@ -497,7 +518,11 @@ class ModelSearchMessage extends Model {
    public function get_message_note($id = '', $uid = 0) {
       if($id == '' || $uid <= 0) { return ''; }
 
-      $query = $this->db->query("SELECT `note` FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
+      if(RT) {
+         $query = $this->sphx->query("SELECT note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=$uid AND mid=$id");
+      } else {
+         $query = $this->db->query("SELECT `note` FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
+      }
 
       if(isset($query->row['note'])) { return strip_tags(urldecode($query->row['note'])); }
 
@@ -520,6 +545,18 @@ class ModelSearchMessage extends Model {
       return 1;
    }
 
+
+   public function add_message_rt_note($id = '', $uid = 0, $note = '') {
+      if($id == '' || $uid <= 0) { return 0; }
+
+      $this->sphx->query("DELETE FROM " . SPHINX_NOTE_INDEX . " WHERE uid=$uid AND mid=$id");
+
+      if($note) {
+         $this->sphx->query("INSERT INTO " . SPHINX_NOTE_INDEX . " (mid, uid, note) VALUES (?,?,?)",[$id,$uid,$note]);
+      }
+
+      return 1;
+   }
 
    public function get_message_private($id = 0) {
       if($id == 0) { return 0; }

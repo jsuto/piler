@@ -416,10 +416,16 @@ class ModelSearchSearch extends Model {
 
       $s = $this->fixup_sphinx_operators($s);
 
-      $q = $this->sphx->query("SELECT iid FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+      if(RT) {
+         $idfield = 'mid';
+      } else {
+         $idfield = 'iid';
+      }
+
+      $q = $this->sphx->query("SELECT $idfield FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
 
       foreach($q->rows as $a) {
-         $id_list .= "," . $a['iid'];
+         $id_list .= "," . $a[$idfield];
       }
 
       if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
@@ -513,18 +519,28 @@ class ModelSearchSearch extends Model {
             }
          }
 
-         array_unshift($ids, (int)$session->get("uid"));
-
-         $tags = $this->db->query("SELECT `id`, `tag` FROM `" . TABLE_TAG . "` WHERE `uid`=? AND `id` IN ($q)", $ids);
-
-         foreach ($tags->rows as $t) {
-            $tag[$t['id']] = $t['tag'];
+         if(RT) {
+            $id_field = 'mid';
+            $ids_str = implode(",", $ids);
+            $tags = $this->sphx->query("SELECT mid, tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=" . (int)$session->get("uid") . " AND mid IN ($ids_str)");
+         } else {
+            $id_field = 'id';
+            array_unshift($ids, (int)$session->get("uid"));
+            $tags = $this->db->query("SELECT `id`, `tag` FROM `" . TABLE_TAG . "` WHERE `uid`=? AND `id` IN ($q)", $ids);
          }
 
-         $notes = $this->db->query("SELECT `id`, `note` FROM " . TABLE_NOTE . " WHERE `uid`=? AND `id` IN ($q)", $ids);
+         foreach ($tags->rows as $t) {
+            $tag[$t[$id_field]] = $t['tag'];
+         }
+
+         if(RT) {
+            $notes = $this->sphx->query("SELECT mid, note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=" . (int)$session->get("uid") . " AND mid IN ($ids_str)");
+         } else {
+            $notes = $this->db->query("SELECT `id`, `note` FROM " . TABLE_NOTE . " WHERE `uid`=? AND `id` IN ($q)", $ids);
+         }
 
          foreach ($notes->rows as $n) {
-            $note[$n['id']] = $n['note'];
+            $note[$n[$id_field]] = $n['note'];
          }
 
          $lang = Registry::get('language');

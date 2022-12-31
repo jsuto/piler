@@ -20,11 +20,13 @@ class ControllerMessageNote extends Controller {
       if(isset($this->request->post['note']) && isset($this->request->post['id'])) {
 
          if($this->model_search_search->check_your_permission_by_id($this->request->post['id']) == 1) {
-            $this->model_search_message->add_message_note($this->request->post['id'], $session->get("uid"), urldecode($this->request->post['note']));
+            if(RT) {
+               $this->model_search_message->add_message_rt_note($this->request->post['id'], $session->get("uid"), urldecode($this->request->post['note']));
+            } else {
+               $this->model_search_message->add_message_note($this->request->post['id'], $session->get("uid"), urldecode($this->request->post['note']));
+            }
          }
       }
    }
 
 }
-
-?>
