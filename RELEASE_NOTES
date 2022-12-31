@@ -2,6 +2,7 @@
 ------
 
 - Improved real-time index support (no need to use rtindex.py any more)
+  See https://www.mailpiler.org/wiki/current:manticore for more
 
 
 1.4.2:
