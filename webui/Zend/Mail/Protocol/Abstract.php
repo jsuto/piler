@@ -25,13 +25,13 @@
 /**
  * @see Zend_Validate
  */
-require_once 'Zend/Validate.php';
+//require_once 'Zend/Validate.php';
 
 
 /**
  * @see Zend_Validate_Hostname
  */
-require_once 'Zend/Validate/Hostname.php';
+//require_once 'Zend/Validate/Hostname.php';
 
 
 /**
@@ -134,16 +134,16 @@ abstract class Zend_Mail_Protocol_Abstract
      */
     public function __construct($host = '127.0.0.1', $port = null)
     {
-        $this->_validHost = new Zend_Validate();
-        $this->_validHost->addValidator(new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL));
+        //$this->_validHost = new Zend_Validate();
+        //$this->_validHost->addValidator(new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL));*/
 
-        if (!$this->_validHost->isValid($host)) {
+        //if (!$this->_validHost->isValid($host)) {
             /**
              * @see Zend_Mail_Protocol_Exception
              */
-            require_once 'Zend/Mail/Protocol/Exception.php';
-            throw new Zend_Mail_Protocol_Exception(join(', ', $this->_validHost->getMessages()));
-        }
+            //require_once 'Zend/Mail/Protocol/Exception.php';
+            //throw new Zend_Mail_Protocol_Exception(join(', ', $this->_validHost->getMessages()));
+        //}
 
         $this->_host = $host;
         $this->_port = $port;
