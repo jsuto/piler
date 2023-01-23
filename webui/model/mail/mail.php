@@ -3,7 +3,7 @@
 class ModelMailMail extends Model {
 
 
-   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = [], $msg, $username = "", $password = ""){
+   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = [], $msg){
 
       require_once 'Zend/Mail/Protocol/Smtp.php';
       require_once 'Zend/Mail/Protocol/Smtp/Auth/Login.php';
@@ -32,10 +32,11 @@ class ModelMailMail extends Model {
       $config['name'] = $yourdomain;
 
       try {
-         if($username && $password) {
+         $config['username'] = SMARTHOST_USER;
+         $config['password'] = SMARTHOST_PASSWORD;
+
+         if($config['username'] && $config['password']) {
             $config['auth'] = 'login';
-            $config['username'] = $username;
-            $config['password'] = $password;
             $connection = new Zend_Mail_protocol_Smtp_Auth_Login($smtphost, $smtpport, $config);
          } else {
             $connection = new Zend_Mail_protocol_Smtp($smtphost, $smtpport, $config);
