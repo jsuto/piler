@@ -9,7 +9,6 @@ class ModelMailMail extends Model {
       require_once 'Zend/Mail/Protocol/Smtp/Auth/Login.php';
 
       $ok = 0;
-      $queue_id = '';
 
       if($to == "" || strlen($msg) < 30){ return $ok; }
 
@@ -87,14 +86,14 @@ class ModelMailMail extends Model {
          $connection->data($msg);
 
          $connectionResponse = $connection->getResponse();
+
          $connectionResponseArray = explode(" ", $connectionResponse[0]);
 
-         if (array_key_exists('2', $connectionResponseArray)) {
-            $queue_id = $connectionResponseArray[2];
-         }
+         $queue_id = '';
 
-         if ($connectionResponseArray[0] == 250) {
+         if($connectionResponseArray[0] == 250) {
             $ok = 1;
+            $queue_id = trim($connectionResponse[0]);
          }
 
          syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok, queue_id=$queue_id");
