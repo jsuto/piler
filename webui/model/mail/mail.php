@@ -3,7 +3,11 @@
 class ModelMailMail extends Model {
 
 
-   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = array(), $msg){
+   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = [], $msg, $username = "", $password = ""){
+
+      require_once 'Zend/Mail/Protocol/Smtp.php';
+      require_once 'Zend/Mail/Protocol/Smtp/Auth/Login.php';
+
       $ok = 0;
       $queue_id = '';
 
@@ -13,42 +17,94 @@ class ModelMailMail extends Model {
          $msg = preg_replace("/Message-ID:([^\n]+)\n/i", "Message-ID: <" . generate_random_string(25) . '@' . SITE_NAME . ">\n", $msg);
       }
 
-      $msg = preg_replace("/^\..*$/m", ".$0", $msg);
+      # config array for connection configuration
+      $config = [];
 
-      $r = fsockopen($smtphost, $smtpport);
-      if(!$r){ return -1; }
-
-      $l = fgets($r, 4096);
-
-      fputs($r, "HELO $yourdomain\r\n");
-      $l = fgets($r, 4096);
-
-      fputs($r, "MAIL FROM: <$from>\r\n");
-      $l = fgets($r, 4096);
-
-      foreach($to as $k => $v) {
-         fputs($r, "RCPT TO: <$v>\r\n");
-         $l = fgets($r, 4096);
+      # setting implicit ssl/tls for port 465 and explicit ssl/tls for any other port
+      # in config array zend needs ssl and port 465 for implicit ssl/tls
+      # and tls with any other port for explicit ssl/tls
+      if ($smtpport == '465') {
+         $config['ssl'] = 'ssl';
+      } else {
+         $config['ssl'] = 'tls';
       }
 
-      fputs($r, "DATA\r\n");
-      $l = fgets($r, 4096);
-      if(!preg_match("/^354/", $l)){ $l = fgets($r, 4096); }
+      $config['port'] = $smtpport;
+      $config['name'] = $yourdomain;
 
-      fputs($r, $msg);
+      try {
+         if($username && $password) {
+            $config['auth'] = 'login';
+            $config['username'] = $username;
+            $config['password'] = $password;
+            $connection = new Zend_Mail_protocol_Smtp_Auth_Login($smtphost, $smtpport, $config);
+         } else {
+            $connection = new Zend_Mail_protocol_Smtp($smtphost, $smtpport, $config);
+         }
 
-      fputs($r, "\r\n.\r\n");
+         $connection->connect();
+         $connection->helo($smtphost);
+      } catch (Exception $e) {
+         $connection->__destruct();
 
-      $l = fgets($r, 4096);
+         # fallback to unencrypted connection if the port is not 465
+         if ($smtpport != '465') {
+            unset($config['ssl']);
 
-      if(preg_match("/^250/", $l)){ $queue_id = trim($l); $ok = 1; }
+            try {
 
-      fputs($r, "QUIT\r\n");
-      $l = fgets($r, 4096);
+               if ($username != "" && $password != "") {
+                  $config['auth'] = 'login';
+                  $config['username'] = $username;
+                  $config['password'] = $password;
+                  $connection = new Zend_Mail_protocol_Smtp_Auth_Login($smtphost, $smtpport, $config);
+               } else {
+                  $connection = new Zend_Mail_protocol_Smtp($smtphost, $smtpport, $config);
+               }
 
-      fclose($r);
+               $connection->connect();
+               $connection->helo($smtphost);
 
-      syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok, queue_id=$queue_id");
+            } catch (Exception $e) {
+               $connection->__destruct();
+               syslog(LOG_ERR, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok (" . $e->getCode() . "), msg=" . rtrim($e->getMessage()) );
+               return -1;
+            }
+         } else {
+            syslog(LOG_ERR, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok (" . $e->getCode() . "), msg=" . rtrim($e->getMessage()) );
+            return -1;
+         }
+      }
+
+
+      try {
+         $connection->mail($from);
+
+         foreach ($to as $recipient) {
+            $connection->rcpt($recipient);
+         }
+
+         $connection->data($msg);
+
+         $connectionResponse = $connection->getResponse();
+         $connectionResponseArray = explode(" ", $connectionResponse[0]);
+
+         if (array_key_exists('2', $connectionResponseArray)) {
+            $queue_id = $connectionResponseArray[2];
+         }
+
+         if ($connectionResponseArray[0] == 250) {
+            $ok = 1;
+         }
+
+         syslog(LOG_INFO, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok, queue_id=$queue_id");
+
+      } catch (Exception $e) {
+         syslog(LOG_ERR, "sending mail from=$from, rcpt=" . implode(" ", $to) . ", status=$ok (" . $e->getCode() . "), msg=" . rtrim($e->getMessage()) );
+         $ok = -1;
+      } finally {
+         $connection->__destruct();
+      }
 
       return $ok;
    }
@@ -101,7 +157,7 @@ class ModelMailMail extends Model {
 
       if($this->imap) {
          if($this->imap->login($session->get("username"), $session->get("password"))) { return 1; }
-      }   
+      }
 
       return 0;
    }
@@ -113,5 +169,3 @@ class ModelMailMail extends Model {
 
 
 }
-
-?>

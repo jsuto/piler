@@ -263,8 +263,15 @@ abstract class Zend_Mail_Protocol_Abstract
         $errorNum = 0;
         $errorStr = '';
 
+        $stream_context = stream_context_create(array(
+           'ssl' => array(
+              'verify_peer' => false,
+              'verify_peer_name' => false
+           )
+        ));
+
         // open connection
-        $this->_socket = @stream_socket_client($remote, $errorNum, $errorStr, self::TIMEOUT_CONNECTION);
+        $this->_socket = @stream_socket_client($remote, $errorNum, $errorStr, self::TIMEOUT_CONNECTION, STREAM_CLIENT_CONNECT, $stream_context);
 
         if ($this->_socket === false) {
             if ($errorNum == 0) {
