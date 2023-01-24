@@ -16,10 +16,8 @@
 #include <syslog.h>
 #include <openssl/blowfish.h>
 #include <openssl/evp.h>
-#ifdef OPENSSL_VERSION_MAJOR
-   #if OPENSSL_VERSION_MAJOR >= 3
-      #include <openssl/provider.h>
-   #endif
+#if OPENSSL_VERSION_MAJOR >= 3
+   #include <openssl/provider.h>
 #endif
 #include <zlib.h>
 #include <assert.h>
@@ -188,7 +186,9 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
-      OSSL_PROVIDER_load(NULL, "legacy");
+      #if OPENSSL_VERSION_MAJOR >= 3
+         OSSL_PROVIDER_load(NULL, "legacy");
+      #endif
 
       EVP_CIPHER_CTX_init(ctx);
       if(strstr(filename, "/5000")){
