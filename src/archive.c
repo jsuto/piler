@@ -16,6 +16,11 @@
 #include <syslog.h>
 #include <openssl/blowfish.h>
 #include <openssl/evp.h>
+#ifdef OPENSSL_VERSION_MAJOR
+   #if OPENSSL_VERSION_MAJOR >= 3
+      #include <openssl/provider.h>
+   #endif
+#endif
 #include <zlib.h>
 #include <assert.h>
 #include <piler.h>
@@ -183,7 +188,6 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
-      #include <openssl/provider.h>
       OSSL_PROVIDER_load(NULL, "legacy");
 
       EVP_CIPHER_CTX_init(ctx);
