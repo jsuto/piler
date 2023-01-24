@@ -168,9 +168,14 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
    #if OPENSSL_VERSION_NUMBER < 0x10100000L
       EVP_CIPHER_CTX_init(&ctx);
       if(strstr(filename, "/5000")){
-         EVP_DecryptInit_ex(&ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+         rc = EVP_DecryptInit_ex(&ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
       } else {
-         EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+         rc = EVP_DecryptInit_ex(&ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
+      if(!rc){
+         syslog(LOG_PRIORITY, "ERROR: EVP_DecryptInit_ex()");
+         goto CLEANUP;
       }
 
       blocklen = EVP_CIPHER_CTX_block_size(&ctx);
@@ -178,11 +183,19 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
+      #include <openssl/provider.h>
+      OSSL_PROVIDER_load(NULL, "legacy");
+
       EVP_CIPHER_CTX_init(ctx);
       if(strstr(filename, "/5000")){
-         EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
+         rc = EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
       } else {
-         EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+         rc = EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
+      }
+
+      if(!rc){
+         syslog(LOG_PRIORITY, "ERROR: EVP_DecryptInit_ex()");
+         goto CLEANUP;
       }
 
       blocklen = EVP_CIPHER_CTX_block_size(ctx);
