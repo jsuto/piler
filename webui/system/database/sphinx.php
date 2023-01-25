@@ -39,8 +39,11 @@ class Sphinx {
       $s = $this->link->prepare($sql);
       if(!$s) { return $query; }
 
-      if(!$s->execute($arr)) {
-         syslog(LOG_INFO, $s->errorInfo()[2]);
+      try {
+         $s->execute($arr);
+      } catch(PDOException $exception) {
+         syslog(LOG_INFO, "ERROR: " . $exception->getMessage());
+         return $query;
       }
 
       $this->affected = $s->rowCount();
