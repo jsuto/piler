@@ -554,8 +554,8 @@ class ModelSearchSearch extends Model {
             $m['shortfrom'] = make_short_string($m['from'], MAX_CGI_FROM_SUBJ_LEN);
             $m['from'] = escape_gt_lt_quote_symbols($m['from']);
 
-            isset($rcpt[$m['id']]) ? $m['to'] = $rcpt[$m['id']] : $m['to'] = '';
-            $m['shortto'] = make_short_string($this->get_preferred_recipient($rcpt[$m['id']]), MAX_CGI_FROM_SUBJ_LEN);
+            isset($rcpt[$m['id']]) ? $m['to'] = $rcpt[$m['id']] : $m['to'] = array('');
+            $m['shortto'] = make_short_string($this->get_preferred_recipient($m['to']), MAX_CGI_FROM_SUBJ_LEN);
             $m['to'] = escape_gt_lt_quote_symbols($m['to']);
 
 
