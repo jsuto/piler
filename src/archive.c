@@ -186,14 +186,13 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       ctx = EVP_CIPHER_CTX_new();
       if(!ctx) goto CLEANUP;
 
-      #if OPENSSL_VERSION_MAJOR >= 3
-         OSSL_PROVIDER_load(NULL, "legacy");
-      #endif
-
       EVP_CIPHER_CTX_init(ctx);
       if(strstr(filename, "/5000")){
          rc = EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, cfg->key, cfg->iv);
       } else {
+      #if OPENSSL_VERSION_MAJOR >= 3
+         OSSL_PROVIDER_load(NULL, "legacy");
+      #endif
          rc = EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
       }
 
