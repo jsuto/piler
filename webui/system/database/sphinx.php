@@ -29,6 +29,8 @@ class Sphinx {
       $query->error = 1;
       $query->errmsg = "Error";
       $query->query = $sql;
+      $query->num_rows = 0;
+      $query->rows = [];
       $query->total_found = 0;
 
       $time_start = microtime(true);
