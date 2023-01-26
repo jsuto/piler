@@ -37,7 +37,7 @@ launch_containers() {
 
    wait_for_sleep_cycle_in_container "piler1"
 
-   cleanup_package "$PACKAGE"
+   ###cleanup_package "$PACKAGE"
 }
 
 create_rules() {
