@@ -16,6 +16,7 @@ ClientId = "c6843299-05c4-4c2e-9398-64dd42f14b6d"  # Fix this value only
 ClientSecret = ""
 Scopes = ['https://outlook.office.com/IMAP.AccessAsUser.All']
 AccessTokenFileName = "access_token"
+RefreshTokenFileName = "refresh_token"
 
 
 cache = SerializableTokenCache()
@@ -70,7 +71,8 @@ if 'error' in token:
     print(token)
     sys.exit("Failed to get access token")
 
-# print(token['refresh_token'])
-
 with open(AccessTokenFileName, 'w') as f:
     f.write(token['access_token'])
+
+with open(RefreshTokenFileName, 'w') as f:
+    f.write(token['refresh_token'])
