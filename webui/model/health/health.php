@@ -31,7 +31,8 @@ class ModelHealthHealth extends Model {
       $this->data['indexer_stat'] = $this->indexer_stat();
       $this->data['purge_stat'] = $this->purge_stat();
 
-      $this->data['sphinx_current_main_size'] = $this->get_current_sphinx_main_index_size();
+      $this->data['sphinx_current_main_size'] = $this->get_index_size(SPHINX_CURRENT_MAIN_INDEX_SIZE);
+      $this->data['sphinx_total_size'] = $this->get_index_size(SPHINX_TOTAL_INDEX_SIZE);
 
       $this->get_average_count_values();
       $this->get_average_size_values($archivesizeraw);
@@ -83,7 +84,7 @@ class ModelHealthHealth extends Model {
          $averagesqlsizeraw = $this->get_database_size() / $this->data['counters']['rcvd'];
 
          //average message sphinx index size, computed for total messages in database
-         $averagesphinxsizeraw = $this->get_sphinx_size() / $this->data['counters']['rcvd'];
+         $averagesphinxsizeraw = $this->data['sphinx_total_size'] / $this->data['counters']['rcvd'];
       }
 
       // average total message size per day, computed over the time period since the first email was archived
@@ -320,31 +321,6 @@ class ModelHealthHealth extends Model {
    }
 
 
-   public function get_sphinx_size($directory = DIR_SPHINX) {
-      $dirSize=0;
-
-      if(!$dh=opendir($directory)) {
-         return false;
-      }
-
-      while($file = readdir($dh)) {
-         if($file == "." || $file == "..") {
-            continue;
-         }
-
-         if(is_file($directory."/".$file)) {
-            $dirSize += filesize($directory."/".$file);
-         }
-         if(is_dir($directory."/".$file)) {
-            $dirSize += $this->get_sphinx_size($directory."/".$file);
-         }
-      }
-
-      closedir($dh);
-      return $dirSize;
-   }
-
-
    public function indexer_stat() {
       $data = array('', '');
 
@@ -377,11 +353,11 @@ class ModelHealthHealth extends Model {
    }
 
 
-   public function get_current_sphinx_main_index_size() {
+   public function get_index_size($statfile = '') {
       $size = 0;
 
-      if(file_exists(SPHINX_MAIN_INDEX_SIZE)) {
-         $size = (int) file_get_contents(SPHINX_MAIN_INDEX_SIZE);
+      if(file_exists($statfile)) {
+         $size = (int) file_get_contents($statfile);
       }
 
       return $size;

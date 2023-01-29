@@ -156,14 +156,14 @@
 				  <td><?php if ($health['usagetrend'] > 0) { print $text_usage_increasing; } elseif($health['usagetrend'] < 0) { print $text_usage_decreasing; } else { print $text_usage_neutral; } ?></td>
 			   </tr>
                            <tr>
-                                  <td>Sphinx main index</td>
-                                  <td<?php if($health['sphinx_current_main_size'] > SPHINX_MAIN_INDEX_THRESHOLD) { ?> class="text-error"<?php } ?>><?php print nice_size($health['sphinx_current_main_size']); ?></td>
+                                  <td>Sphinx main (total) index</td>
+                                  <td<?php if($health['sphinx_current_main_size'] > SPHINX_MAIN_INDEX_THRESHOLD) { ?> class="text-error"<?php } ?>><?php print nice_size($health['sphinx_current_main_size']); ?> (<?php print nice_size($health['sphinx_total_size']); ?>) </td>
                            </tr>
-		 </table>
-          
-          
-		 </div>
-	</div>
+                 </table>
+
+
+                </div>
+    </div>
 </div>
 
 

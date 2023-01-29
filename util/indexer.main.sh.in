@@ -22,6 +22,16 @@ finish() {
    rm -f "$MAINTMPFILE"
 }
 
+get_index_size() {
+   local mainfiles="$1"
+   local sum=0
+
+   # shellcheck disable=SC2034
+   while read -r a b; do
+      sum=$(( sum + b ))
+   done < <( find /var/piler/${INDEXDIR}/ -type f -name "$mainfiles" -printf "%TY%Tm%Td %s\\n" )
+   printf "%d" $sum
+}
 
 if [[ -f "$MAINTMPFILE" ]]; then
    echo "INDEXER ERROR: indexer merging to main index is already running. It started at $(cat "$MAINTMPFILE")" | logger -p "$PRIORITY"
@@ -48,8 +58,5 @@ indexer --config "$CONFIG_FILE" --quiet dailydelta1 --rotate
 
 echo "INDEXER INFO: resetting daily delta finished" | logger -p "$PRIORITY"
 
-sum=0
-while read -r a b; do
-   sum=$(( sum + b ))
-done < <( find /var/piler/${INDEXDIR}/ -type f -name main\*.sp[dp] -printf "%TY%Tm%Td %s\\n" )
-printf "%d" $sum > /var/piler/stat/main_index_size
+get_index_size "main*.sp[dp]" > /var/piler/stat/total_index_size
+get_index_size "${MAIN_INDEX}*.sp[dp]" > /var/piler/stat/current_main_index_size

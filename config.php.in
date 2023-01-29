@@ -462,7 +462,8 @@ define('QSHAPE_DEFERRED_SENDER', DIR_STAT . '/deferred-sender');
 define('CPUSTAT', DIR_STAT . '/cpu.stat');
 define('AD_SYNC_STAT', DIR_STAT . '/adsync.stat');
 define('ARCHIVE_SIZE', DIR_STAT . '/archive.size');
-define('SPHINX_MAIN_INDEX_SIZE', DIR_STAT . '/main_index_size');
+define('SPHINX_CURRENT_MAIN_INDEX_SIZE', DIR_STAT . '/current_main_index_size');
+define('SPHINX_TOTAL_INDEX_SIZE', DIR_STAT . '/total_index_size');
 define('LOCK_FILE', DIR_LOG . 'lock');
 
 define('SEARCH_HELPER_URL', SITE_URL . 'search-helper.php');
