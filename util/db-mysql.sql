@@ -242,7 +242,7 @@ create table if not exists `email_groups` (
 ) ENGINE=InnoDB;
 
 
-create table if not exists `group` (
+create table if not exists `usergroup` (
    `id` bigint unsigned not null auto_increment primary key,
    `groupname` char(128) not null unique
 ) ENGINE=InnoDB;
