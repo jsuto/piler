@@ -1,3 +1,10 @@
+1.4.4:
+------
+
+Renamed "group" table to "usergroup"
+Be sure to run util/db-upgrade.sql on the mysql piler database
+
+
 1.4.3:
 ------
 
