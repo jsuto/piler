@@ -52,11 +52,8 @@ class ModelMailMail extends Model {
             unset($config['ssl']);
 
             try {
-
-               if ($username != "" && $password != "") {
+               if($config['username'] && $config['password']) {
                   $config['auth'] = 'login';
-                  $config['username'] = $username;
-                  $config['password'] = $password;
                   $connection = new Zend_Mail_protocol_Smtp_Auth_Login($smtphost, $smtpport, $config);
                } else {
                   $connection = new Zend_Mail_protocol_Smtp($smtphost, $smtpport, $config);
