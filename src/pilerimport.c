@@ -307,7 +307,7 @@ int main(int argc, char **argv){
    }
 
 
-   if(!mbox[0] && !data.import->mboxdir && !data.import->filename[0] && !directory && !imapserver && !pop3server) usage();
+   if(!mbox[0] && !data.import->mboxdir && !data.import->filename[0] && !directory && !imapserver && !pop3server && !read_from_pilerexport) usage();
 
    if(data.import->failed_folder && !can_i_write_directory(data.import->failed_folder)){
       printf("cannot write failed directory '%s'\n", data.import->failed_folder);
