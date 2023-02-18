@@ -180,7 +180,7 @@ start_services() {
 start_piler() {
    if [[ ! -f "${VOLUME_DIR}/manticore/main1.spp" ]]; then
       log "main1.spp does not exist, creating index files"
-      su -c "indexer --all --config ${SPHINX_CONF}" piler
+      su -c "indexer --all --config ${SPHINX_CONF}" "$PILER_USER"
    fi
 
    # No pid file should exist for piler
