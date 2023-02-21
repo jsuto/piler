@@ -181,7 +181,13 @@ class TrustedTimestamps
         $cmd = OPENSSL_BINARY . " ts -reply -in ".escapeshellarg($responsefile)." -token_out | " . OPENSSL_BINARY . " pkcs7 -inform DER -print_certs -out ".escapeshellarg($untrustedfile);
         shell_exec($cmd);
 
-        $cmd = OPENSSL_BINARY . " ts -verify -digest ".escapeshellarg($hash)." -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file)." -untrusted ".escapeshellarg($untrustedfile);
+        if(TSA_RELAXED_CHECK) {
+           $relaxed_check = " -no_check_time ";
+        } else {
+           $relaxed_check = "";
+        }
+
+        $cmd = OPENSSL_BINARY . " ts -verify -digest " . escapeshellarg($hash) . $relaxed_check . " -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file)." -untrusted ".escapeshellarg($untrustedfile);
 
         $retarray = array();
         exec($cmd." 2>&1", $retarray, $retcode);
