@@ -386,8 +386,14 @@ class ModelSearchMessage extends Model {
          }
 
          if($query->row['hash_value'] == $computed_hash) {
-            $validate = TrustedTimestamps::validate($query->row['hash_value'], $query->row['response_string'], $query->row['response_time'], TSA_PUBLIC_KEY_FILE);
-            if($validate == true) { return 1; }
+            try {
+               if(true === TrustedTimestamps::validate($query->row['hash_value'], $query->row['response_string'], $query->row['response_time'], TSA_PUBLIC_KEY_FILE)) {
+                  return 1;
+               }
+            } catch(Exception $e) {
+               syslog(LOG_INFO, "ERROR validating the timestamp: " . $e->getMessage());
+               return 0;
+            }
          }
 
       }
