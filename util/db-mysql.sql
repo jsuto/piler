@@ -344,7 +344,7 @@ create table if not exists `audit` (
    `email` varchar(128) not null,
    `domain` varchar(128) not null,
    `action` int not null,
-   `ipaddr` char(15) not null,
+   `ipaddr` varchar(39) not null,
    `meta_id` bigint unsigned not null,
    `description` varchar(255) default null,
    `vcode` char(64) default null,
