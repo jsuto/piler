@@ -145,13 +145,12 @@ function checkemail($email, $domains) {
 
 
 function validemail($email = '') {
-   if($email == '') { return 0; }
+   if($email == '' || !strchr($email, '@')) { return 0; }
 
-   if(preg_match("/@local$/", $email)) { return 1; }
+   $arr = explode("@", $email);
 
-   if(preg_match('/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,10})$/', $email)) {
-      return 1;
-   }
+   // This is a pretty relaxed formula making sure we have something as the local part
+   if(count($arr) == 2 && strlen($arr[0]) >= 1 && validdomain($arr[1])) { return 1; }
 
    return 0;
 }
@@ -173,7 +172,7 @@ function checkdomain($domain, $domains) {
 
 
 function validdomain($domain = '') {
-   if(preg_match("/@?local$/", $domain) || preg_match('/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,10}$/', $domain)) {
+   if(preg_match("/@?local$/", $domain) || preg_match(DOMAIN_REGEX, $domain)) {
       return 1;
    }
 

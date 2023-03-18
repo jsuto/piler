@@ -34,6 +34,8 @@ $config['TITLE_PREFIX'] = '';
 $config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
 $config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
 
+$config['DOMAIN_REGEX'] = '/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,20}$/';
+
 $config['BOOTSTRAP_THEME'] = '-cosmo';
 
 $config['DEFAULT_LANG'] = 'en';
