@@ -256,7 +256,7 @@ searchd
         network_timeout         = 5
         pid_file                = /var/run/piler/searchd.pid
         seamless_rotate         = 1
-        preopen_indexes         = 1
+        preopen_tables          = 1
         unlink_old              = 1
         thread_stack            = 512k
 <?php if(RT) { ?>
