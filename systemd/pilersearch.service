@@ -5,6 +5,7 @@ After=network.target mariadb.service
 [Service]
 ExecStart=/usr/bin/searchd --config /etc/piler/manticore.conf
 ExecStartPre=/bin/bash -c "if [[ ! -d /var/run/piler ]]; then mkdir -p /var/run/piler; chown piler:piler /var/run/piler; fi"
+ExecStop=/usr/bin/searchd --config /etc/piler/manticore.conf --stopwait
 PIDFile=/var/run/piler/searchd.pid
 KillMode=process
 Restart=on-failure
