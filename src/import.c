@@ -94,11 +94,11 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
          rc = ERR;
       }
       else if(data->import->after > 0 && sdata->sent < data->import->after){
-         if(cfg->verbosity > 1) printf("discarding older email: %s\n", sdata->filename);
+         if(cfg->verbosity > 1) printf("discarding older email: %s (%ld/%ld)\n", sdata->filename, sdata->sent, data->import->after);
          rc = ERR_DISCARDED;
       }
       else if(data->import->before > 0 && sdata->sent > data->import->before){
-         if(cfg->verbosity > 1) printf("discarding newer email: %s\n", sdata->filename);
+         if(cfg->verbosity > 1) printf("discarding newer email: %s (%ld/%ld)\n", sdata->filename, sdata->sent, data->import->before);
          rc = ERR_DISCARDED;
       }
       else {
