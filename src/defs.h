@@ -331,7 +331,7 @@ struct import {
    char *mboxdir;
    char *folder;
    char filename[SMALLBUFSIZE];
-   time_t started, updated, finished;
+   time_t started, updated, finished, after, before;
 };
 
 

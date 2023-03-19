@@ -59,6 +59,8 @@ void usage(){
    printf("    -o                                Only download emails for POP3/IMAP import\n");
    printf("    -r                                Remove imported emails\n");
    printf("    -q                                Quiet mode\n");
+   printf("    -A <timestamp>                    Import emails sent after this timestamp\n");
+   printf("    -B <timestamp>                    Import emails sent before this timestamp\n");
 
    exit(0);
 }
@@ -102,6 +104,8 @@ int main(int argc, char **argv){
    import.table_id = 0;
    import.folder = NULL;
    import.delay = 0;
+   import.after = 0;
+   import.before = 0;
 
    data.import = &import;
 
@@ -144,6 +148,8 @@ int main(int argc, char **argv){
             {"remove-after-import",no_argument,  0,  'r' },
             {"failed-folder",  required_argument,  0,  'j' },
             {"move-folder",  required_argument,  0,  'g' },
+            {"after",        required_argument,  0,  'A' },
+            {"before",       required_argument,  0,  'B' },
             {"only-download",no_argument,        0,  'o' },
             {"read-from-export",no_argument,     0,  'y' },
             {"dry-run",      no_argument,        0,  'D' },
@@ -153,9 +159,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:yDRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:A:B:yDRroqh?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:yDRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:A:B:yDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -293,6 +299,12 @@ int main(int argc, char **argv){
 
          case 'q' :
                     data.quiet = 1;
+                    break;
+
+         case 'A' : data.import->after = atol(optarg);
+                    break;
+
+         case 'B' : data.import->before = atol(optarg);
                     break;
 
          case 'h' :

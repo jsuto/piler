@@ -93,6 +93,14 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
          printf("%s: invalid message, hdr_len: %d\n", data->import->filename, sdata->hdr_len);
          rc = ERR;
       }
+      else if(data->import->after > 0 && sdata->sent < data->import->after){
+         if(cfg->verbosity > 1) printf("discarding older email: %s\n", sdata->filename);
+         rc = ERR_DISCARDED;
+      }
+      else if(data->import->before > 0 && sdata->sent > data->import->before){
+         if(cfg->verbosity > 1) printf("discarding newer email: %s\n", sdata->filename);
+         rc = ERR_DISCARDED;
+      }
       else {
          // When importing emails, we should add the retention value (later) to the original sent value
          sdata->retained = sdata->sent;
