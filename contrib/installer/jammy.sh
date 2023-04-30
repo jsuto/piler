@@ -19,7 +19,7 @@ MYSQL_DATABASE="piler"
 MYSQL_USERNAME="piler"
 
 DOWNLOAD_URL="https://download.mailpiler.com"
-PILER_DEB="piler_1.4.3-jammy-ee8912fe_amd64.deb"
+PILER_DEB="piler_1.4.4-jammy-0573c6da_amd64.deb"
 PILER_USER="piler"
 PILER_CONF="/etc/piler/piler.conf"
 CONFIG_SITE_PHP="/etc/piler/config-site.php"
@@ -44,7 +44,7 @@ install_prerequisites() {
    wget https://repo.manticoresearch.com/manticore-repo.noarch.deb && \
    dpkg -i manticore-repo.noarch.deb && \
    apt-get update && \
-   apt-get install -y manticore manticore-columnar-lib && \
+   apt-get install -y manticore manticore-columnar-lib manticore-extra && \
    rm -f manticore-repo.noarch.deb
    systemctl stop manticore
 }
@@ -108,7 +108,6 @@ fix_config_site_php() {
    {
       echo "\$config['SERVER_ID'] = $SERVER_ID;"
       echo "\$config['USE_SMTP_GATEWAY'] = $USE_SMTP_GATEWAY;"
-      echo "\$config['SPHINX_VERSION'] = 331;"
    } >> "$CONFIG_SITE_PHP"
 
    if [[ "$SPHINX_WORKER_LISTEN_ADDRESS" ]]; then
@@ -182,14 +181,6 @@ log:
   level: INFO
 
 entryPoints:
-  web:
-    address: "$MY_IP:80"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
   websecure:
     address: "$MY_IP:443"
 
@@ -202,8 +193,7 @@ certificatesResolvers:
     acme:
       storage: "/usr/local/etc/traefik/acme.json"
       email: admin@$PILER_HOSTNAME
-      httpChallenge:
-        entryPoint: web
+      tlsChallenge: {}
 
 tls:
   options:
