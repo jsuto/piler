@@ -14,6 +14,7 @@ opts = {}
 INBOX = 'INBOX'
 ST_RUNNING = 1
 
+imaplib._MAXLINE = 10000000
 
 def generate_auth_string(user, token):
     auth_string = f"user={user}\1auth=Bearer {token}\1\1"
@@ -99,6 +100,11 @@ def process_folder(conn, folder):
                 opts['counter'] += 1
                 with open("{}.eml".format(opts['counter']), "wb") as f:
                     f.write(data[0][1])
+                    if opts['remove']:
+                        conn.store(num, '+FLAGS', '\\Deleted')
+
+        if opts['remove']:
+            conn.expunge()
 
 
 def main():
@@ -121,6 +127,7 @@ def main():
                         default="/var/piler/imap")
     parser.add_argument("-i", "--import-from-table", action='store_true',
                         help="Read imap conn data from import table")
+    parser.add_argument("-r", "--remove", help="remove downloaded messages", action='store_true')
     parser.add_argument("-v", "--verbose", help="verbose mode", action='store_true')
 
     args = parser.parse_args()
@@ -139,6 +146,7 @@ def main():
     opts['db'] = None
     opts['id'] = 0
     opts['access_token'] = ''
+    opts['remove'] = args.remove
 
     if args.date:
         opts['search'] = args.date
