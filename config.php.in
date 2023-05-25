@@ -42,8 +42,8 @@ $config['DEFAULT_LANG'] = 'en';
 
 $config['THEME'] = 'default';
 
-$config['SITE_NAME'] = 'piler.yourdomain.com';
-$config['SITE_URL'] = 'http://piler.yourdomain.com/';
+$config['SITE_NAME'] = 'piler.example.com';
+$config['SITE_URL'] = 'http://piler.example.com/';
 
 $config['EXTERNAL_DASHBOARD_URL'] = '';
 
@@ -83,7 +83,7 @@ $config['WKHTMLTOPDF_COMMAND'] = "wkhtmltopdf";
 // authentication against an ldap directory (disabled by default)
 
 $config['ENABLE_LDAP_AUTH'] = 0;
-$config['LDAP_HOST'] = 'ldap.yourdomain.com';
+$config['LDAP_HOST'] = 'ldap.example.com';
 $config['LDAP_HELPER_DN'] = 'cn=....';
 $config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
 $config['LDAP_MAIL_ATTR'] = 'mail';
@@ -114,9 +114,9 @@ $config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
 //$config['LDAP_MAIL_ATTR'] = 'mail';
 
 // iredmail specific settings
-//$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=yourdomain,dc=com';
+//$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=example,dc=com';
 //$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'mailUser';
-//$config['LDAP_BASE_DN'] = 'o=domains,dc=yourdomain,dc=com';
+//$config['LDAP_BASE_DN'] = 'o=domains,dc=example,dc=com';
 //$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'mailList';
 //$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
 //$config['LDAP_MAIL_ATTR'] = 'mail';
@@ -139,14 +139,14 @@ $config['ENABLE_IMAP_AUTH'] = 0;
 $config['RESTORE_OVER_IMAP'] = 0;
 $config['IMAP_RESTORE_FOLDER_INBOX'] = 'INBOX';
 $config['IMAP_RESTORE_FOLDER_SENT'] = 'Sent';
-$config['IMAP_HOST'] = 'mail.yourdomain.com';
+$config['IMAP_HOST'] = 'mail.example.com';
 $config['IMAP_PORT'] =  993;
 $config['IMAP_SSL'] = true;
 
 // enable authentication against a pop3 server (disabled by default)
 
 $config['ENABLE_POP3_AUTH'] = 0;
-$config['POP3_HOST'] = 'mail.yourdomain.com';
+$config['POP3_HOST'] = 'mail.example.com';
 $config['POP3_PORT'] = 995;
 $config['POP3_SSL'] = true;
 
@@ -206,9 +206,9 @@ $config['SMARTHOST'] = '';
 $config['SMARTHOST_PORT'] = 25;
 $config['SMARTHOST_USER'] = '';
 $config['SMARTHOST_PASSWORD'] = '';
-$config['SMTP_DOMAIN'] = 'yourdomain.com';
-$config['SMTP_FROMADDR'] = 'no-reply@yourdomain.com';
-$config['ADMIN_EMAIL'] = 'admin@yourdomain.com';
+$config['SMTP_DOMAIN'] = 'example.com';
+$config['SMTP_FROMADDR'] = 'no-reply@example.com';
+$config['ADMIN_EMAIL'] = 'admin@example.com';
 
 $config['PILER_HEADER_FIELD'] = 'X-piler-id: ';
 

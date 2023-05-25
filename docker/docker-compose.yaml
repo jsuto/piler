@@ -43,7 +43,7 @@ services:
       - MYSQL_USER=piler
       - MYSQL_PASSWORD=piler123
       - MYSQL_HOSTNAME=mysql
-      - PILER_HOSTNAME=archive.yourdomain.com
+      - PILER_HOSTNAME=archive.example.com
       - MEMCACHED_HOST=memcached
     ports:
       - "25:25"

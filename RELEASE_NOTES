@@ -60,7 +60,7 @@ Be sure to apply util/db-upgrade.sql
 
 - [BUGFIX] Refactored the smtp timeout check
 - Obsoleted the LDAP port parameter. Specify the ldap host in the form
-  of protocol://hostname:port, eg. ldaps://ldap.yourdomain.com:636
+  of protocol://hostname:port, eg. ldaps://ldap.example.com:636
 
 1.3.10:
 -------

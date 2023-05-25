@@ -406,8 +406,8 @@ SOCKHELPER
       cp webui/.htaccess "$DOCROOT"
    fi
 
-   if [[ -d /var/www/piler.yourdomain.com ]]; then
-      mv /var/www/piler.yourdomain.com "$DOCROOT"
+   if [[ -d /var/www/piler.example.com ]]; then
+      mv /var/www/piler.example.com "$DOCROOT"
    fi
 
 

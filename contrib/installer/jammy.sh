@@ -6,7 +6,7 @@ set -o nounset
 set -x
 
 MY_IP="1.2.3.4"
-PILER_HOSTNAME="${PILER_HOSTNAME:-archive.yourdomain.com}"
+PILER_HOSTNAME="${PILER_HOSTNAME:-archive.example.com}"
 MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-abcde123}"
 MYSQL_PILER_PASSWORD="${MYSQL_PILER_PASSWORD:-piler123}"
 SERVER_ID="${SERVER_ID:-0}"
@@ -157,7 +157,7 @@ fix_configs() {
    fi
 
    if [[ ! -f "$PILER_CONF" ]]; then
-      sed -e "s/verystrongpassword/$MYSQL_PILER_PASSWORD/g" -e "s/piler.yourdomain.com/$PILER_HOSTNAME/g" /etc/piler/piler.conf.dist > "$PILER_CONF"
+      sed -e "s/verystrongpassword/$MYSQL_PILER_PASSWORD/g" -e "s/piler.example.com/$PILER_HOSTNAME/g" /etc/piler/piler.conf.dist > "$PILER_CONF"
       chmod 600 "$PILER_CONF"
       chown $PILER_USER:$PILER_USER "$PILER_CONF"
    fi

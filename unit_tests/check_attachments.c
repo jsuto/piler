@@ -27,7 +27,7 @@ static void test_attachments(struct config *cfg){
 
    TEST_HEADER();
 
-   snprintf(data.licence.hostname, TINYBUFSIZE-1, "yourdomain.com");
+   snprintf(data.licence.hostname, TINYBUFSIZE-1, "example.com");
 
    for(i=0; i<sizeof(tests)/sizeof(struct attachments); i++){
 
