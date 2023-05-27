@@ -274,6 +274,8 @@ $config['SIZE_Y'] = 250;
 $config['DATE_TEMPLATE'] = 'Y.m.d';
 $config['DATE_FORMAT'] = 'YYYY-MM-DD';
 $config['JQUERY_DATE_FORMAT'] = 'yy-mm-dd';
+$config['DECIMAL_SEPARATOR'] = "."; // See https://www.php.net/manual/en/function.number-format
+$config['THOUSANDS_SEPARATOR'] = ","; // for the format options
 
 
 $config['FROM_LENGTH_TO_SHOW'] = 28;

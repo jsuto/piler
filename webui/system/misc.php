@@ -291,6 +291,11 @@ function my_qp_encode($s){
 }
 
 
+function format_number($n) {
+   return number_format($n, 0, DECIMAL_SEPARATOR, THOUSANDS_SEPARATOR);
+}
+
+
 function nice_size($size = 0, $space = '') {
    if($size < 1000) return "1k";
    if($size < 1000000) return round($size/1000) . $space . "k";
