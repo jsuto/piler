@@ -18,12 +18,11 @@
 #include <piler.h>
 
 
-int import_message(struct session_data *sdata, struct data *data, struct config *cfg){
+int import_message(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    int rc=ERR;
    char *rule;
    struct stat st;
    struct parser_state state;
-   struct counters counters;
 
    if(data->import->delay > 0){
       struct timespec req;
@@ -122,22 +121,25 @@ int import_message(struct session_data *sdata, struct data *data, struct config 
 
    switch(rc) {
       case OK:
-                        bzero(&counters, sizeof(counters));
-                        counters.c_rcvd = 1;
-                        counters.c_size += sdata->tot_len;
-                        counters.c_stored_size = sdata->stored_len;
-                        update_counters(sdata, data, &counters, cfg);
+                        counters->c_rcvd++;
+                        counters->c_size += sdata->tot_len;
+                        counters->c_stored_size += sdata->stored_len;
 
                         break;
 
       case ERR_EXISTS:
                         rc = OK;
 
-                        bzero(&counters, sizeof(counters));
-                        counters.c_duplicate = 1;
-                        update_counters(sdata, data, &counters, cfg);
+                        counters->c_duplicate++;
 
                         if(data->quiet == 0) printf("duplicate: %s (duplicate id: %llu)\n", data->import->filename, sdata->duplicate_id);
+                        break;
+
+      case ERR_DISCARDED:
+                        rc = OK;
+
+                        counters->c_ignore++;
+
                         break;
 
       default:

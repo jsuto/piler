@@ -22,7 +22,7 @@
 #include <piler.h>
 
 
-int import_from_maildir(struct session_data *sdata, struct data *data, char *directory, struct config *cfg){
+int import_from_maildir(struct session_data *sdata, struct data *data, char *directory, struct counters *counters, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
@@ -46,7 +46,7 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
             snprintf(subdir, sizeof(subdir)-1, "%s", data->import->filename);
-            rc = import_from_maildir(sdata, data, subdir, cfg);
+            rc = import_from_maildir(sdata, data, subdir, counters, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
@@ -76,7 +76,7 @@ int import_from_maildir(struct session_data *sdata, struct data *data, char *dir
 
                }
 
-               rc = import_message(sdata, data, cfg);
+               rc = import_message(sdata, data, counters, cfg);
 
                if(rc == OK) (data->import->tot_msgs)++;
                else if(rc == ERR){

@@ -22,21 +22,21 @@
 #include <piler.h>
 
 
-void import_the_file(struct session_data *sdata, struct data *data, struct config *cfg){
+void import_the_file(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    close(data->import->fd);
    data->import->fd = -1;
 
-   if(import_message(sdata, data, cfg) != ERR){
+   if(import_message(sdata, data, counters, cfg) != ERR){
       unlink(data->import->filename);
    }
 }
 
 
-void process_buffer(char *buf, int buflen, uint64 *count, struct session_data *sdata, struct data *data, struct config *cfg){
+void process_buffer(char *buf, int buflen, uint64 *count, struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
 
    if(!strcmp(buf, PILEREXPORT_BEGIN_MARK)){
       if((*count) > 0){
-         import_the_file(sdata, data, cfg);
+         import_the_file(sdata, data, counters, cfg);
       }
 
       (*count)++;
@@ -57,7 +57,7 @@ void process_buffer(char *buf, int buflen, uint64 *count, struct session_data *s
 }
 
 
-void import_from_pilerexport(struct session_data *sdata, struct data *data, struct config *cfg){
+void import_from_pilerexport(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    int n, rc, nullbyte, savedlen=0, puflen;
    uint64 count=0;
    char *p, copybuf[2*BIGBUFSIZE+1], buf[BIGBUFSIZE], savedbuf[BIGBUFSIZE], puf[BIGBUFSIZE];
@@ -96,7 +96,7 @@ void import_from_pilerexport(struct session_data *sdata, struct data *data, stru
 
          if(puflen > 0){
             if(rc == OK){
-               process_buffer(puf, puflen, &count, sdata, data, cfg);
+               process_buffer(puf, puflen, &count, sdata, data, counters, cfg);
             }
             else {
                snprintf(savedbuf, sizeof(savedbuf)-1, "%s", puf);
@@ -109,6 +109,6 @@ void import_from_pilerexport(struct session_data *sdata, struct data *data, stru
    } while(n > 0);
 
    if(data->import->fd != -1){
-      import_the_file(sdata, data, cfg);
+      import_the_file(sdata, data, counters, cfg);
    }
 }

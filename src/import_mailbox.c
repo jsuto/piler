@@ -22,7 +22,7 @@
 #include <piler.h>
 
 
-int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *data, struct config *cfg){
+int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    FILE *F, *f=NULL;
    int rc=ERR, tot_msgs=0, ret=OK;
    char buf[MAXBUFSIZE];
@@ -44,7 +44,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *
          if(f){
             fclose(f);
             f = NULL;
-            rc = import_message(sdata, data, cfg);
+            rc = import_message(sdata, data, counters, cfg);
             if(rc == ERR){
                printf("error importing: '%s'\n", data->import->filename);
                ret = ERR;
@@ -64,7 +64,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *
 
    if(f){
       fclose(f);
-      rc = import_message(sdata, data, cfg);
+      rc = import_message(sdata, data, counters, cfg);
       if(rc == ERR){
          printf("ERROR: error importing: '%s'\n", data->import->filename);
          ret = ERR;
@@ -80,7 +80,7 @@ int import_from_mailbox(char *mailbox, struct session_data *sdata, struct data *
 }
 
 
-int import_mbox_from_dir(char *directory, struct session_data *sdata, struct data *data, struct config *cfg){
+int import_mbox_from_dir(char *directory, struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    DIR *dir;
    struct dirent *de;
    int rc=ERR, ret=OK, i=0;
@@ -103,7 +103,7 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct dat
       if(stat(fname, &st) == 0){
          if(S_ISDIR(st.st_mode)){
             folder = data->folder;
-            rc = import_mbox_from_dir(fname, sdata, data, cfg);
+            rc = import_mbox_from_dir(fname, sdata, data, counters, cfg);
             data->folder = folder;
             if(rc == ERR) ret = ERR;
          }
@@ -126,7 +126,7 @@ int import_mbox_from_dir(char *directory, struct session_data *sdata, struct dat
 
                }
 
-               rc = import_from_mailbox(fname, sdata, data, cfg);
+               rc = import_from_mailbox(fname, sdata, data, counters, cfg);
                if(rc == OK) (data->import->tot_msgs)++;
                else ret = ERR;
 

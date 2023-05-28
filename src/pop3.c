@@ -175,7 +175,7 @@ void pop3_delete_message(struct data *data, int i){
 }
 
 
-void process_pop3_emails(struct session_data *sdata, struct data *data, struct config *cfg){
+void process_pop3_emails(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    char buf[MAXBUFSIZE];
 
    data->import->processed_messages = 0;
@@ -191,7 +191,7 @@ void process_pop3_emails(struct session_data *sdata, struct data *data, struct c
          if(data->quiet == 0){ printf("processed: %7d [%3d%%]\r", data->import->processed_messages, 100*i/data->import->total_messages); fflush(stdout); }
 
          if(data->import->dryrun == 0){
-            int rc = import_message(sdata, data, cfg);
+            int rc = import_message(sdata, data, counters, cfg);
 
             if(data->import->remove_after_import == 1 && rc == OK){
                pop3_delete_message(data, i);

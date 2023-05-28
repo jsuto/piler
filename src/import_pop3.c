@@ -22,7 +22,7 @@
 #include <piler.h>
 
 
-void import_from_pop3_server(struct session_data *sdata, struct data *data, struct config *cfg){
+void import_from_pop3_server(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    int rc;
    char port_string[8];
    struct addrinfo hints, *res;
@@ -58,7 +58,7 @@ void import_from_pop3_server(struct session_data *sdata, struct data *data, stru
       goto ENDE_POP3;
    }
 
-   process_pop3_emails(sdata, data, cfg);
+   process_pop3_emails(sdata, data, counters, cfg);
 
    close_connection(data->net);
 

@@ -75,6 +75,9 @@ int main(int argc, char **argv){
    struct data data;
    struct import import;
    struct net net;
+   struct counters counters;
+
+   bzero(&counters, sizeof(counters));
 
    for(i=0; i<MBOX_ARGS; i++) mbox[i] = NULL;
 
@@ -384,24 +387,28 @@ int main(int argc, char **argv){
 
    load_mydomains(&sdata, &data, &cfg);
 
-   if(data.import->filename[0] != '\0') import_message(&sdata, &data, &cfg);
+   if(data.import->filename[0] != '\0') import_message(&sdata, &data, &counters, &cfg);
 
    if(mbox[0]){
       for(i=0; i<n_mbox; i++){
-         import_from_mailbox(mbox[i], &sdata, &data, &cfg);
+         import_from_mailbox(mbox[i], &sdata, &data, &counters, &cfg);
       }
    }
-   if(data.import->mboxdir) import_mbox_from_dir(data.import->mboxdir, &sdata, &data, &cfg);
-   if(directory) import_from_maildir(&sdata, &data, directory, &cfg);
-   if(imapserver) import_from_imap_server(&sdata, &data, &cfg);
-   if(pop3server) import_from_pop3_server(&sdata, &data, &cfg);
-   if(read_from_pilerexport) import_from_pilerexport(&sdata, &data, &cfg);
+   if(data.import->mboxdir) import_mbox_from_dir(data.import->mboxdir, &sdata, &data, &counters, &cfg);
+   if(directory) import_from_maildir(&sdata, &data, directory, &counters, &cfg);
+   if(imapserver) import_from_imap_server(&sdata, &data, &counters, &cfg);
+   if(pop3server) import_from_pop3_server(&sdata, &data, &counters, &cfg);
+   if(read_from_pilerexport) import_from_pilerexport(&sdata, &data, &counters, &cfg);
 
    clearrules(data.archiving_rules);
    clearrules(data.retention_rules);
    clearrules(data.folder_rules);
 
    clearhash(data.mydomains);
+
+   update_counters(&sdata, &data, &counters, &cfg);
+
+   syslog(LOG_PRIORITY, "imported=%lld, duplicated=%lld, discarded=%lld", counters.c_rcvd, counters.c_duplicate, counters.c_ignore);
 
    close_database(&sdata);
 

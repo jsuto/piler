@@ -22,7 +22,7 @@
 #include <piler.h>
 
 
-int import_from_imap_server(struct session_data *sdata, struct data *data, struct config *cfg){
+int import_from_imap_server(struct session_data *sdata, struct data *data, struct counters *counters, struct config *cfg){
    int i, rc=ERR, ret=OK, skipmatch;
    char port_string[8], puf[SMALLBUFSIZE];
    struct addrinfo hints, *res;
@@ -88,7 +88,7 @@ int import_from_imap_server(struct session_data *sdata, struct data *data, struc
             else {
                if(data->quiet == 0) printf("processing folder: %s... ", (char *)q->str);
 
-               if(process_imap_folder(q->str, sdata, data, cfg) == ERR) ret = ERR;
+               if(process_imap_folder(q->str, sdata, data, counters, cfg) == ERR) ret = ERR;
             }
 
          }
