@@ -408,7 +408,7 @@ int main(int argc, char **argv){
 
    update_counters(&sdata, &data, &counters, &cfg);
 
-   syslog(LOG_PRIORITY, "imported=%lld, duplicated=%lld, discarded=%lld", counters.c_rcvd, counters.c_duplicate, counters.c_ignore);
+   syslog(LOG_PRIORITY, "server=%s, user=%s, directory=%s, imported=%lld, duplicated=%lld, discarded=%lld", data.import->server, data.import->username, directory, counters.c_rcvd, counters.c_duplicate, counters.c_ignore);
 
    close_database(&sdata);
 
