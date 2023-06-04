@@ -224,6 +224,7 @@ class ModelSearchMessage extends Model {
 
       if($html == 0) {
          foreach($terms as $k => $v) {
+            $s = preg_replace("/THE_BREAK_HTML_TAG/", "<br />", $s);
             $s = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $s);
          }
 

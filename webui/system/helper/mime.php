@@ -5,6 +5,12 @@ class Piler_Mime_Decode {
    const HEADER_FIELDS = ['from', 'to', 'cc', 'subject', 'date'];
 
 
+   public static function normalize_message($message) {
+      $a = preg_split("/\r?\n/", $message);
+      return implode(EOL, $a);
+   }
+
+
    public static function parseMessage($message, &$result) {
 
       self::splitMessage($message, $headers, $body);
@@ -53,11 +59,9 @@ class Piler_Mime_Decode {
       $start = 0;
       $res = array();
 
-      $body = self::remove_LF($body);
-
       // Extract the mime parts excluding the boundary itself
 
-      $p = strpos($body, '--' . $boundary . "\n", $start);
+      $p = strpos($body, '--' . $boundary . EOL, $start);
       if($p === false) {
          // no parts found!
          return array();
@@ -67,7 +71,7 @@ class Piler_Mime_Decode {
 
       $start = $p + 3 + strlen($boundary);
 
-      while(($p = strpos($body, '--' . $boundary . "\n", $start)) !== false) {
+      while(($p = strpos($body, '--' . $boundary . EOL, $start)) !== false) {
          $res[] = substr($body, $start, $p-$start);
          $start = $p + 3 + strlen($boundary);
       }
@@ -86,22 +90,20 @@ class Piler_Mime_Decode {
    }
 
 
-   public static function splitMessage($message, &$headers, &$body, $EOL = "\n") {
+   public static function splitMessage($message, &$headers, &$body) {
       self::splitMessageRaw($message, $headers, $journal, $body);
       $headers = self::splitHeaders($headers);
    }
 
 
-   public static function splitMessageRaw($message, &$headers, &$journal, &$body, $EOL = "\n") {
+   public static function splitMessageRaw($message, &$headers, &$journal, &$body) {
       $headers = [];
       $body = '';
 
-      $message = self::remove_LF($message);
-
       // Find an empty line between headers and body, otherwise we got a header-only message
 
-      if(strpos($message, $EOL . $EOL)) {
-         list($headers, $body) = explode($EOL . $EOL, $message, 2);
+      if(strpos($message, EOL . EOL)) {
+         list($headers, $body) = explode(EOL . EOL, $message, 2);
 
          // Check if the header is actually a journal header
          $headers_array = self::splitHeaders($headers);
@@ -113,7 +115,7 @@ class Piler_Mime_Decode {
             if(count($parts) >= 2) {
                self::splitMessageRaw($parts[0], $s, $j, $journal);
 
-               $i = strpos($parts[1], $EOL . $EOL);
+               $i = strpos($parts[1], EOL . EOL);
                $msg = substr($parts[1], $i);
 
                $i = 0;
@@ -141,10 +143,8 @@ class Piler_Mime_Decode {
    }
 
 
-   public static function removeJournal(&$message, $EOL = "\n") {
+   public static function removeJournal(&$message) {
       $has_journal = 0;
-
-      $crlfs = substr_count($message, "\r\n");
 
       self::splitMessageRaw($message, $headers, $journal, $body);
 
@@ -152,15 +152,7 @@ class Piler_Mime_Decode {
          $has_journal = 1;
       }
 
-      // If the message has >10 CRLF sequences, then we assume
-      // that we need to restore the removed LF characters
-      if($crlfs > 10) {
-         $headers = str_replace("\n", "\r\n", $headers);
-         $body = str_replace("\n", "\r\n", $body);
-         $EOL = "\r\n";
-      }
-
-      $message = $headers . $EOL . $EOL . $body;
+      $message = $headers . EOL . EOL . $body;
 
       return $has_journal;
    }
@@ -222,7 +214,7 @@ class Piler_Mime_Decode {
       $last_token = '';
       $result = array();
 
-      $headers = explode("\n", $headers);
+      $headers = explode(EOL, $headers);
 
       foreach($headers as $h) {
 
@@ -236,7 +228,7 @@ class Piler_Mime_Decode {
 
          // Skip line if it doesn't have a colon (:) and the 1st character is not a whitespace
 
-         if(!ctype_space($h[0]) && !strchr($h, ':')) { continue; }
+         if($h && !ctype_space($h[0]) && !strchr($h, ':')) { continue; }
 
          if($line) {
             if(substr($line[0], -1) == ':') {
@@ -256,7 +248,7 @@ class Piler_Mime_Decode {
             }
             else {
                if($token) {
-                  $result[$last_token] .= "\n";
+                  $result[$last_token] .= EOL;
                }
 
                $result[$last_token] .= ' ' . $line_str;
@@ -267,8 +259,8 @@ class Piler_Mime_Decode {
 
       foreach($result as $k => $v) {
 
-         if(strchr($v, "\n")) {
-            $result[$k] = explode("\n", $v);
+         if(strchr($v, EOL)) {
+            $result[$k] = explode(EOL, $v);
          }
       }
 
@@ -296,12 +288,6 @@ class Piler_Mime_Decode {
       }
 
       return $split;
-   }
-
-
-   public static function remove_LF($message = '') {
-      return str_replace("\r", "", $message);
-      //return preg_replace("/\r/", "", $message);
    }
 
 
@@ -335,8 +321,8 @@ class Piler_Mime_Decode {
 
       if(strtolower($headers['content-type']['type']) == 'text/plain') {
          $body = self::escape_lt_gt_symbols($body);
-         $body = preg_replace("/\n/", "<br />\n", $body);
-         $body = "\n" . self::printNicely($body);
+         $body = preg_replace("/\n/", "THE_BREAK_HTML_TAG\n", $body);
+         $body = EOL . self::printNicely($body);
       }
 
       return $body;
@@ -361,9 +347,9 @@ class Piler_Mime_Decode {
          $nice .= $x[$i] . " ";
          $k += strlen($x[$i]);
 
-         if(strstr($x[$i], "\n")){ $k = 0; }
+         if(strstr($x[$i], EOL)){ $k = 0; }
 
-         if($k > 70){ $nice .= "\n"; $k = 0; }
+         if($k > 70){ $nice .= EOL; $k = 0; }
       }
 
       return $nice;

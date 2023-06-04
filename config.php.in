@@ -434,7 +434,7 @@ define('TABLE_PRIVATE', 'private');
 define('TABLE_DELETED', 'deleted');
 define('VIEW_MESSAGES', 'v_messages');
 
-define('EOL', "\n");
+define('EOL', "\r\n");
 
 define('DIR_SYSTEM', DIR_BASE . 'system/');
 define('DIR_MODEL', DIR_BASE . 'model/');

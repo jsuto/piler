@@ -8,6 +8,9 @@ class ModelMailMail extends Model {
       require_once 'Zend/Mail/Protocol/Smtp.php';
       require_once 'Zend/Mail/Protocol/Smtp/Auth/Login.php';
 
+      // Workaround for the zend framework
+      $msg = str_replace("\r", "", $msg);
+
       $ok = 0;
 
       if($to == "" || strlen($msg) < 30){ return $ok; }
