@@ -198,7 +198,7 @@ class ModelSearchMessage extends Model {
                    'cc' => $cc,
                    'subject' => $this->highlight_search_terms($subject, $terms),
                    'date' => $date,
-                   'message' => $this->message['text/html'] ? $this->message['text/html'] : $this->message['text/plain'],
+                   'message' => $this->message['text/html'] ? $this->highlight_search_terms($this->message['text/html']) : $this->highlight_search_terms($this->message['text/plain']),
                    'has_journal' => $has_journal,
                    'verification' => $this->verification
             );
@@ -220,11 +220,14 @@ class ModelSearchMessage extends Model {
          }
       }
 
+      if($html == 0) {
+         $s = preg_replace("/THE_BREAK_HTML_TAG/", "<br />", $s);
+      }
+
       if(count($terms) <= 0) { return $s; }
 
       if($html == 0) {
          foreach($terms as $k => $v) {
-            $s = preg_replace("/THE_BREAK_HTML_TAG/", "<br />", $s);
             $s = preg_replace("/$v/i", "<span class=\"mssghglght\">$v</span>", $s);
          }
 
