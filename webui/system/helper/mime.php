@@ -2,7 +2,7 @@
 
 
 class Piler_Mime_Decode {
-   const HEADER_FIELDS = ['from', 'to', 'cc', 'subject', 'date'];
+   const HEADER_FIELDS = ['from', 'sender', 'to', 'cc', 'subject', 'date'];
 
 
    public static function normalize_message($message) {
@@ -24,10 +24,10 @@ class Piler_Mime_Decode {
             self::parseMessage($body, $result);
          }
          else {
-            $result[] = array(
+            $result[] = [
                'headers' => $headers,
                'body' => $body
-            );
+            ];
          }
 
          return;
@@ -45,7 +45,7 @@ class Piler_Mime_Decode {
          }
          else {
             if(in_array($headers['content-type']['type'], ["text/plain", "text/html"])) {
-               $result[] = array('headers' => $headers, 'body' => $body);
+               $result[] = ['headers' => $headers, 'body' => $body];
             }
             else if($headers['content-type']['type'] == "message/rfc822") {
                self::parseMessage($body, $result);
@@ -57,14 +57,14 @@ class Piler_Mime_Decode {
 
    public static function splitMime($body, $boundary) {
       $start = 0;
-      $res = array();
+      $res = [];
 
       // Extract the mime parts excluding the boundary itself
 
       $p = strpos($body, '--' . $boundary . EOL, $start);
       if($p === false) {
          // no parts found!
-         return array();
+         return [];
       }
 
       // Position after first boundary line
@@ -80,7 +80,7 @@ class Piler_Mime_Decode {
 
       $p = strpos($body, '--' . $boundary . '--', $start);
       if($p === false) {
-         return array();
+         return [];
       }
 
       // The remaining part also needs to be parsed:
@@ -99,6 +99,8 @@ class Piler_Mime_Decode {
    public static function splitMessageRaw($message, &$headers, &$journal, &$body) {
       $headers = [];
       $body = '';
+
+      $message = self::normalize_message($message);
 
       // Find an empty line between headers and body, otherwise we got a header-only message
 
@@ -180,7 +182,7 @@ class Piler_Mime_Decode {
             continue;
          }
 
-         $headers[$lower] = array($headers[$lower], $header);
+         $headers[$lower] = [$headers[$lower], $header];
       }
 
       // Add some default values, if they are missing
@@ -196,9 +198,21 @@ class Piler_Mime_Decode {
       for($i=0; $i<count(self::HEADER_FIELDS); $i++) {
          if(!isset($headers[self::HEADER_FIELDS[$i]])) { $headers[self::HEADER_FIELDS[$i]] = ''; }
 
-         $headers[self::HEADER_FIELDS[$i]] = preg_replace("/gb2312/i", "GBK", $headers[self::HEADER_FIELDS[$i]]);
+         // If the mail header features the same field more than once, eg.
+         // Date: Wed, 23 Mar 2016 21:26:53 +0100
+         // Date: Wed, 23 Mar 2016 21:26:53 +0100
+         // then take the first occurance
 
-         $headers[self::HEADER_FIELDS[$i]] = iconv_mime_decode($headers[self::HEADER_FIELDS[$i]], ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
+         $header = $headers[self::HEADER_FIELDS[$i]];
+         if(is_array($header)) {
+            $header = $header[0];
+         }
+
+         if(ENABLE_GB2312_FIX) {
+            $header = preg_replace("/gb2312/i", "GBK", $header);
+         }
+
+         $headers[self::HEADER_FIELDS[$i]] = iconv_mime_decode($header, ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
       }
 
       $headers['content-type'] = self::splitContentType($headers['content-type']);
@@ -212,7 +226,7 @@ class Piler_Mime_Decode {
    public static function headersToArray($headers = '') {
       $token = '';
       $last_token = '';
-      $result = array();
+      $result = [];
 
       $headers = explode(EOL, $headers);
 
@@ -258,7 +272,6 @@ class Piler_Mime_Decode {
       }
 
       foreach($result as $k => $v) {
-
          if(strchr($v, EOL)) {
             $result[$k] = explode(EOL, $v);
          }
@@ -269,7 +282,7 @@ class Piler_Mime_Decode {
 
 
    public static function splitContentType($field = '') {
-      $split = array();
+      $split = [];
       $what  = 'type';
 
       $field = $what . '=' . $field;
@@ -277,7 +290,7 @@ class Piler_Mime_Decode {
          return $split;
       }
 
-      $split = array();
+      $split = [];
       foreach ($matches[1] as $key => $name) {
          $name = strtolower($name);
          if($matches[2][$key][0] == '"') {
@@ -291,7 +304,7 @@ class Piler_Mime_Decode {
    }
 
 
-   public static function getBoundary($headers = array()) {
+   public static function getBoundary($headers = []) {
       if(isset($headers['content-type']['boundary'])) {
          return $headers['content-type']['boundary'];
       }
@@ -300,7 +313,7 @@ class Piler_Mime_Decode {
    }
 
 
-   public static function fixMimeBodyPart($headers = array(), $body = '') {
+   public static function fixMimeBodyPart($headers = [], $body = '') {
 
       if(isset($headers['content-transfer-encoding'])) {
          if(strtolower($headers['content-transfer-encoding']) == 'quoted-printable') {
@@ -313,9 +326,10 @@ class Piler_Mime_Decode {
       }
 
       if(isset($headers['content-type']['charset'])) {
-         if(strtolower($headers['content-type']['charset']) == 'gb2312') {
+         if(ENABLE_GB2312_FIX && strtolower($headers['content-type']['charset']) == 'gb2312') {
             $headers['content-type']['charset'] = 'GBK';
          }
+
          $body = iconv($headers['content-type']['charset'], 'utf-8' . '//IGNORE', $body);
       }
 
