@@ -2,7 +2,7 @@
 
 
 class Piler_Mime_Decode {
-   const HEADER_FIELDS = ['from', 'sender', 'to', 'cc', 'subject', 'date'];
+   const HEADER_FIELDS = ['from', 'to', 'cc', 'subject', 'date'];
 
 
    public static function normalize_message($message) {
