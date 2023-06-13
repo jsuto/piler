@@ -35,7 +35,7 @@ services:
     command: -m 64
 
   piler:
-    image: sutoj/piler:1.4.2
+    image: sutoj/piler:1.4.4
     container_name: piler
     init: true
     environment:
@@ -53,6 +53,7 @@ services:
       - piler_etc:/etc/piler
       - piler_var_store:/var/piler/store
       - piler_var_manticore:/var/piler/manticore
+      - /dev/log:/dev/log
     healthcheck:
       test: curl -s smtp://localhost/
       interval: "60s"
