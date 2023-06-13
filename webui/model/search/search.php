@@ -65,7 +65,13 @@ class ModelSearchSearch extends Model {
          if(RESTRICTED_AUDITOR == 1) {
             $session_domains = $session->get('auditdomains');
 
-            $sd = $this->fix_email_address_for_sphinx($session->get('domain'));
+            $sd = "";
+
+            $domains = $session->get('domain');
+            foreach ($domains as $d) {
+               if($sd) { $sd .= '|'; }
+               $sd .= $this->fix_email_address_for_sphinx($d);
+            }
 
             foreach ($session_domains as $d) {
                if($d) { $sd .= '|' . $this->fix_email_address_for_sphinx($d); }
