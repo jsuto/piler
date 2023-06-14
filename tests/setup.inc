@@ -21,8 +21,9 @@ cleanup_package() {
 }
 
 launch_containers() {
+   pushd "${WORKSPACE}/${PROJECT_ID}/tests"
+
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
-   cat .env
 
    env|sort
    pwd
@@ -31,6 +32,8 @@ launch_containers() {
    wait_for_sleep_cycle_in_container "piler1"
 
    docker-compose ps
+
+   popd
 }
 
 launch_containers2() {
