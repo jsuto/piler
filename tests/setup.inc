@@ -21,6 +21,19 @@ cleanup_package() {
 }
 
 launch_containers() {
+   echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
+   cat .env
+
+   env|sort
+   pwd
+   log "running docker-compose"
+   docker-compose up -d
+   wait_for_sleep_cycle_in_container "piler1"
+
+   docker-compose ps
+}
+
+launch_containers2() {
 
    log "starting syslog server"
    docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name syslog.host sutoj/syslog

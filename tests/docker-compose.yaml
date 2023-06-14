@@ -1,0 +1,54 @@
+##docker run --rm --name builder-piler-58-jammy --memory 1G --pids-limit 64 --network piler -e DISTRO=jammy -e COMMIT_HASH=crlf_fix2 -e FORCE_BUILD=false -e SECRETS_FILE=/data/secrets.inc -e PROJECT_ID=piler -e BUILD_NUMBER=58 -e JOB_NAME=piler -e DRY_RUN=false -e DEBUG=false -e S3_HOST=ibm -e WORKSPACE=/home/jenkins/workspace/piler -e RT=0 -v /home/jenkins/data:/data -v /home/jenkins/config/config.json:/root/.mc/config.json:ro -v /home/jenkins/config/piler.pem:/etc/piler/piler.pem:ro -v /home/jenkins/config/piler.conf:/etc/piler/piler.conf:ro -v /home/jenkins/config/jenkins.key:/root/.ssh/jenkins.key:ro -v /home/jenkins/license:/license -v /usr/local/bin/mc:/usr/local/bin/mc:ro sutoj/builder:jammy
+
+version: '3.4'
+services:
+  syslog:
+    image: sutoj/syslog
+    container_name: syslog.host
+    networks:
+      - piler
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  piler:
+    image: sutoj/piler:jammy
+    container_name: piler1
+    networks:
+      - piler
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    env_file:
+      - ./.env
+    ports:
+      - "127.0.0.1:80:80"
+      - "25:25"
+    volumes:
+      - /home/jenkins/data:/data:ro
+      - /home/jenkins/config/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-s", "smtp://localhost"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - smarthost
+      - syslog
+
+  smarthost:
+    image: sutoj/smtps-source
+    container_name: smarthost.aaa.fu
+    networks:
+      - piler
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    command: smtp-sink -h smarthost.aaa.fu -u nobody :25 10
+
+networks:
+  piler:
