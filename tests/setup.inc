@@ -2,13 +2,11 @@ NODE_WORKERS=( "worker0" "worker1" )
 SMTP_GW="smtpgw"
 DOCKER_LIMIT=( --pids-limit 256 --memory 512M )
 
-export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" "piler1" "syslog.host" )
+export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" )
 
 setup() {
    destroy_containers
-   set -x
    launch_containers
-   set +x
    create_rules "piler1"
    add_data_officer "piler1"
 }
@@ -25,9 +23,12 @@ launch_containers() {
 
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
 
+   log "running docker-compose down"
+
    docker-compose down -v || true
 
-   log "running docker-compose"
+   log "running docker-compose up"
+
    docker-compose up -d
 
    wait_until_container_is_healthy "piler1"
