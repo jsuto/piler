@@ -36,10 +36,11 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - smarthost
+      - smarthost.aaa.fu
       - syslog
+      - imap.aaa.fu
 
-  smarthost:
+  smarthost.aaa.fu:
     image: sutoj/smtps-source
     container_name: smarthost.aaa.fu
     networks:
@@ -49,6 +50,16 @@ services:
         limits:
           memory: 64M
     command: smtp-sink -h smarthost.aaa.fu -u nobody :25 10
+
+  imap.aaa.fu:
+    image: sutoj/imap
+    container_name: imap.aaa.fu
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - piler
 
 networks:
   piler:

@@ -25,8 +25,11 @@ launch_containers() {
 
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
 
+   docker-compose down -v || true
+
    log "running docker-compose"
    docker-compose up -d
+
    wait_until_container_is_healthy "piler1"
 
    docker-compose ps
