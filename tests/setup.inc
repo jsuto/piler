@@ -39,26 +39,6 @@ launch_containers() {
    popd
 }
 
-launch_containers2() {
-
-   log "starting syslog server"
-   docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name syslog.host sutoj/syslog
-
-   log "starting piler"
-   docker run -d --net=piler "${DOCKER_LIMIT[@]}" --name piler1 \
-      -e PACKAGE="$PACKAGE" \
-      -e PILER_HOST="cust1.acts.hu" \
-      -e RT="$RT" \
-      -p 127.0.0.1:80:80 -p 25:25 \
-      -v "${PACKAGE_DIR}:/data:ro" \
-      -v "${CONFIG_DIR}/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro" \
-      "$docker_image"
-
-   wait_for_sleep_cycle_in_container "piler1"
-
-   ###cleanup_package "$PACKAGE"
-}
-
 setup_piler() {
    local container="$1"
 
