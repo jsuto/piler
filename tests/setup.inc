@@ -44,7 +44,6 @@ setup_piler() {
 
    pushd "${WORKSPACE}/${PROJECT_ID}/tests"
 
-   docker cp setup.sql "${container}:/tmp"
    docker exec "$container" /usr/local/bin/setup-piler.sh
 
    popd

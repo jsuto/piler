@@ -29,6 +29,7 @@ services:
     volumes:
       - /home/jenkins/data:/data:ro
       - /home/jenkins/config/11-aaaa.conf:/etc/rsyslog.d/11-aaaa.conf:ro
+      - ./setup.sql:/tmp/setup.sql:ro
     healthcheck:
       test: ["CMD", "curl", "-s", "smtp://localhost"]
       interval: 10s
