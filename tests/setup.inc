@@ -25,8 +25,6 @@ launch_containers() {
 
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
 
-   env|sort
-   pwd
    log "running docker-compose"
    docker-compose up -d
    wait_for_sleep_cycle_in_container "piler1"
