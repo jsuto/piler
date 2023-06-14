@@ -27,7 +27,7 @@ launch_containers() {
 
    log "running docker-compose"
    docker-compose up -d
-   wait_for_sleep_cycle_in_container "piler1"
+   wait_until_container_is_healthy "piler1"
 
    docker-compose ps
 
