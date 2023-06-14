@@ -21,6 +21,8 @@ cleanup_package() {
 launch_containers() {
    pushd "${WORKSPACE}/${PROJECT_ID}/tests"
 
+   CONTAINERS+=( "piler1" "syslog.host" )
+
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
 
    log "running docker-compose down"
