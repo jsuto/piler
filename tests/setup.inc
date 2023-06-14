@@ -7,7 +7,7 @@ export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER"
 setup() {
    destroy_containers
    launch_containers
-   setup_piler
+   setup_piler "piler1"
 }
 
 cleanup_package() {
