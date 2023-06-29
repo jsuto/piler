@@ -121,7 +121,7 @@ class ModelMailMail extends Model {
       $s = strstr($hdr, "Subject:");
       if($s) {
          $l1 = strlen($s);
-         $l2 = strlen(strstr($s, "\n"));
+         $l2 = strlen(strstr($s, EOL));
          if($l1 > $l2 + 10) {
             $subject = substr($s, 0, $l1 - $l2) . EOL;
          }
