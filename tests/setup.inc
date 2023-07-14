@@ -18,25 +18,23 @@ cleanup_package() {
 }
 
 launch_containers() {
+   local composefile="docker-compose-piler.yaml"
+
    log "${FUNCNAME[0]}"
 
    pushd "${WORKSPACE}/ci/test/docker-compose"
 
-   CONTAINERS+=( "piler1" "syslog.host" )
-
    echo -e "PACKAGE=$PACKAGE\nPILER_HOST=cust1.acts.hu\nRT=$RT" > .env
 
-   log "running docker-compose down"
-
-   docker-compose down -v || true
+   destroy_containers
 
    log "running docker-compose up"
 
-   docker-compose up -d
+   docker-compose -f "$composefile" up -d
 
    wait_until_container_is_healthy "piler1"
 
-   docker-compose ps
+   docker-compose -f "$composefile" ps
 
    popd
 }
