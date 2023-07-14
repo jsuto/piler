@@ -18,7 +18,9 @@ cleanup_package() {
 }
 
 launch_containers() {
-   pushd "${WORKSPACE}/${PROJECT_ID}/tests"
+   log "${FUNCNAME[0]}"
+
+   pushd "${WORKSPACE}/ci/test/docker-compose"
 
    CONTAINERS+=( "piler1" "syslog.host" )
 
