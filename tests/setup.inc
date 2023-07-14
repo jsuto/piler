@@ -5,7 +5,6 @@ DOCKER_LIMIT=( --pids-limit 256 --memory 512M )
 export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" )
 
 setup() {
-   destroy_containers
    launch_containers
    setup_piler "piler1"
 }
@@ -41,6 +40,8 @@ launch_containers() {
 
 setup_piler() {
    local container="$1"
+
+   log "${FUNCNAME[0]}"
 
    pushd "${WORKSPACE}/${PROJECT_ID}/tests"
 
