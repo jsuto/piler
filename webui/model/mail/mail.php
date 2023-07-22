@@ -63,7 +63,7 @@ class ModelMailMail extends Model {
                }
 
                $connection->connect();
-               $connection->helo($smtphost);
+               $connection->helo(SMTP_DOMAIN);
 
             } catch (Exception $e) {
                $connection->__destruct();
