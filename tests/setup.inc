@@ -2,7 +2,7 @@ NODE_WORKERS=( "worker0" "worker1" )
 SMTP_GW="smtpgw"
 DOCKER_LIMIT=( --pids-limit 256 --memory 512M )
 
-export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" )
+export CONTAINERS=( "$NODE_GUI" "${NODE_WORKERS[@]}" "$SMTP_GW" "$SINGLE_SERVER" "piler1" )
 
 setup() {
    launch_containers
