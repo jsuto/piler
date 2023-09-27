@@ -129,6 +129,7 @@ index dailydelta1
         min_word_len            = 1
         stored_fields           =
         charset_table           = <?php print CHARSET_TABLE; ?>
+        killlist_target         = main1:kl, main2:kl, main3:kl, main4:kl, dailydelta1:kl
 <?php print NGRAM_CONFIG; ?>
 }
 
