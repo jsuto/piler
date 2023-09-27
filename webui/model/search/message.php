@@ -180,17 +180,19 @@ class ModelSearchMessage extends Model {
                              'text/html' => ''
                             );
 
-      for($i=0; $i<count($parts); $i++) {
+      if(is_array($parts)) {
+         for($i=0; $i<count($parts); $i++) {
+            $body = Piler_Mime_Decode::fixMimeBodyPart($parts[$i]['headers'], $parts[$i]['body']);
 
-         $body = Piler_Mime_Decode::fixMimeBodyPart($parts[$i]['headers'], $parts[$i]['body']);
-
-         if($parts[$i]['headers']['content-type']['type'] == 'text/html') {
-            $this->message['text/html'] .= $purifier->purify($body);
+            if($parts[$i]['headers']['content-type']['type'] == 'text/html') {
+               $this->message['text/html'] .= $purifier->purify($body);
+            }
+            else {
+               $this->message['text/plain'] .= $body;
+            }
          }
-         else {
-            $this->message['text/plain'] .= $body;
-         }
-
+      } else {
+         $this->message_array[CONST_TEXTPLAIN] = 'EMPTY_MESSAGE_BODY';
       }
 
       return array('from' => $from,
