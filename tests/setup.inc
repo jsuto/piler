@@ -27,13 +27,13 @@ launch_containers() {
 
    destroy_containers
 
-   log "running docker-compose up"
+   log "running docker compose up"
 
-   docker-compose -f "$composefile" up -d
+   docker compose -f "$composefile" up -d
 
    wait_until_container_is_healthy "piler1"
 
-   docker-compose -f "$composefile" ps
+   docker compose -f "$composefile" ps
 
    popd
 }
