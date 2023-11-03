@@ -192,6 +192,7 @@ int retrieve_file_from_archive(char *filename, int mode, char **buffer, FILE *de
       } else {
       #if OPENSSL_VERSION_MAJOR >= 3
          OSSL_PROVIDER_load(NULL, "legacy");
+         OSSL_PROVIDER_load(NULL, "default");
       #endif
          rc = EVP_DecryptInit_ex(ctx, EVP_bf_cbc(), NULL, cfg->key, cfg->iv);
       }
