@@ -45,6 +45,7 @@ services:
       - MYSQL_HOSTNAME=mysql
       - PILER_HOSTNAME=archive.example.com
       - MEMCACHED_HOST=memcached
+      - RT=1
     ports:
       - "25:25"
       - "80:80"

@@ -13,7 +13,7 @@ PILER_NGINX_CONF="${CONFIG_DIR}/piler-nginx.conf"
 SPHINX_CONF="${CONFIG_DIR}/manticore.conf"
 CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
-
+RT="${RT:-0}"
 
 error() {
    echo "ERROR:" "$*" 1>&2
@@ -126,6 +126,14 @@ fix_configs() {
        -e "s%MYSQL_USERNAME%${MYSQL_USER}%" \
        -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" \
        -i "$SPHINX_CONF"
+
+   # Fixes for RT index
+
+   if [[ $RT -eq 1 ]]; then
+      sed -i "s/define('RT', 0)/define('RT', 1)/" "$SPHINX_CONF"
+      echo "\$config['RT'] = 1;" >> "$CONFIG_SITE_PHP"
+      sed -i "s%rtindex=.*%rtindex=1%" "$PILER_CONF"
+   fi
 }
 
 
@@ -177,7 +185,7 @@ start_services() {
 
 
 start_piler() {
-   if [[ ! -f "${VOLUME_DIR}/manticore/main1.spp" ]]; then
+   if [[ $RT -eq 0 && ! -f "${VOLUME_DIR}/manticore/main1.spp" ]]; then
       log "main1.spp does not exist, creating index files"
       su -c "indexer --all --config ${SPHINX_CONF}" "$PILER_USER"
    fi
