@@ -232,6 +232,11 @@ $config['TSA_START_ID'] = 1;
 $config['TSA_STAMP_REQUEST_UNIT_SIZE'] = 10000;
 $config['TSA_VERIFY_CERTIFICATE'] = true;
 $config['TSA_RELAXED_CHECK'] = false;
+$config['TSA_AUTH_USER'] = '';
+$config['TSA_AUTH_PASSWORD'] = '';
+$config['TSA_AUTH_CERT_FILE'] = '';
+$config['TSA_AUTH_KEY_FILE'] = '';
+$config['TSA_AUTH_KEY_PASSWORD'] = '';
 
 $config['DB_DRIVER'] = 'mysql';
 $config['DB_PREFIX'] = '';

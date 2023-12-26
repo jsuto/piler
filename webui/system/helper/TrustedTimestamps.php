@@ -71,6 +71,10 @@ class TrustedTimestamps
         if (!file_exists($requestfile_path))
             throw new Exception("The Requestfile was not found");
 
+        $header = array('Content-Type: application/timestamp-query');
+        if(TSA_AUTH_USER)
+            $header[] = "Authorization: Basic " . base64_encode(TSA_AUTH_USER . ':' . TSA_AUTH_PASSWORD);
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $tsa_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -78,9 +82,21 @@ class TrustedTimestamps
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($requestfile_path));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/timestamp-query'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TSA_VERIFY_CERTIFICATE);
+
+        if(TSA_AUTH_CERT_FILE && TSA_AUTH_KEY_FILE)
+        {
+            if(!file_exists(TSA_AUTH_CERT_FILE))
+                throw new Exception("Client certificate file " . TSA_AUTH_CERT_FILE . " not found");
+            curl_setopt($ch, CURLOPT_SSLCERT, TSA_AUTH_CERT_FILE);
+            if(!file_exists(TSA_AUTH_KEY_FILE))
+                throw new Exception("Client key file " . TSA_AUTH_KEY_FILE . " not found");
+            curl_setopt($ch, CURLOPT_SSLKEY, TSA_AUTH_KEY_FILE);
+            if(TSA_AUTH_KEY_PASSWORD)
+                curl_setopt($ch, CURLOPT_KEYPASSWD, TSA_AUTH_KEY_PASSWORD);
+        }
 
         $binary_response_string = curl_exec($ch);
 
