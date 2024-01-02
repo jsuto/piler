@@ -41,8 +41,10 @@ Registry::set('db', $db);
 
 Registry::set('DB_DRIVER', DB_DRIVER);
 
-$sphx = new DB(SPHINX_DRIVER, SPHINX_HOSTNAME, "", "", SPHINX_DATABASE, "");
+$sphx = new DB(SPHINX_DRIVER, SPHINX_HOSTNAME_READONLY, "", "", SPHINX_DATABASE, "");
+$sphxrw = new DB(SPHINX_DRIVER, SPHINX_HOSTNAME, "", "", SPHINX_DATABASE, "");
 Registry::set('sphx', $sphx);
+Registry::set('sphxrw', $sphxrw);
 
 
 if(MEMCACHED_ENABLED) {
@@ -94,7 +96,7 @@ else if(Registry::get('username')) {
 else {
    if(ENABLE_GOOGLE_LOGIN == 1 && isset($request->get['route']) && $request->get['route'] == 'login/google') {
       $action = new Router('login/google');
-   } 
+   }
    else if(ENABLE_SSO_LOGIN == 1) {
       if(isset($request->get['route']) && $request->get['route'] == 'login/login') {
          $action = new Router('login/login');
@@ -112,6 +114,3 @@ else {
 
 $controller = new Front();
 $controller->dispatch($action, new Router('common/not_found'));
-
-
-?>

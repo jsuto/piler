@@ -248,7 +248,8 @@ index note1
 searchd
 {
         listen                  = 127.0.0.1:9312
-        listen                  = 127.0.0.1:9306:mysql41
+        listen                  = 127.0.0.1:9306
+        listen                  = 127.0.0.1:9307:mysql_readonly
         log                     = /var/piler/manticore/manticore.log
         binlog_max_log_size     = 256M
         binlog_path             = /var/piler/manticore

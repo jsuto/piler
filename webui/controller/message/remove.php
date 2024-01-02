@@ -41,8 +41,8 @@ class ControllerMessageRemove extends Controller {
       $db->query("UPDATE " . TABLE_META . " SET retained=? WHERE id=?", [NOW, $id]);
       $db->query("UPDATE " . TABLE_DELETED . " SET deleted=1 WHERE id=?", [$id]);
       if(RT) {
-         $sphx = Registry::get('sphx');
-         $sphx->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=", (int)$this->data['id']);
+         $sphxrw = Registry::get('sphxrw');
+         $sphxrw->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=", (int)$this->data['id']);
       }
 
       syslog(LOG_INFO, $this->data['username'] . " removed message: $id");

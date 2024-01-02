@@ -1,8 +1,16 @@
+1.4.5:
+------
+
+- Added read-only connection support for manticore
+  If using sphinx, add the following to config-site.php:
+  $config['SPHINX_HOSTNAME_READONLY'] = '127.0.0.1:9306';
+
+
 1.4.4:
 ------
 
-Renamed "group" table to "usergroup"
-Be sure to run util/db-upgrade.sql on the mysql piler database
+- Renamed "group" table to "usergroup"
+  Be sure to run util/db-upgrade.sql on the mysql piler database
 
 
 1.4.3:

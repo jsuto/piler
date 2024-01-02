@@ -486,13 +486,13 @@ class ModelSearchMessage extends Model {
 
       if($tag == '') {
          if(RT) {
-            $this->sphx->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid=$id");
+            $this->sphxrw->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid=$id");
          } else {
             $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
          }
       } else {
          if(RT) {
-            $this->sphx->query("REPLACE INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES (?,?,?)",[$id,$uid,$tag]);
+            $this->sphxrw->query("REPLACE INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES (?,?,?)",[$id,$uid,$tag]);
          } else {
             $query = $this->db->query("UPDATE " . TABLE_TAG . " SET tag=? WHERE uid=? AND id=?", array($tag, $uid, $id));
             if($this->db->countAffected() == 0) {
@@ -510,7 +510,7 @@ class ModelSearchMessage extends Model {
 
       if(RT) {
          $ids_str = implode(",", $ids);
-         $this->sphx->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid IN ($ids_str)");
+         $this->sphxrw->query("DELETE FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid IN ($ids_str)");
       } else {
          $query = $this->db->query("DELETE FROM " . TABLE_TAG . " WHERE uid=? AND id IN ($q)", $arr);
       }
@@ -518,7 +518,7 @@ class ModelSearchMessage extends Model {
       if($tag) {
          foreach ($ids as $id) {
             if(RT) {
-               $this->sphx->query("INSERT INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES(?,?,?)", [$id, $uid, $tag]);
+               $this->sphxrw->query("INSERT INTO " . SPHINX_TAG_INDEX . " (mid, uid, tag) VALUES(?,?,?)", [$id, $uid, $tag]);
             } else {
                $query = $this->db->query("INSERT INTO " . TABLE_TAG . " (id, uid, tag) VALUES(?,?,?)", array($id, $uid, $tag));
             }
@@ -561,10 +561,10 @@ class ModelSearchMessage extends Model {
    public function add_message_rt_note($id = '', $uid = 0, $note = '') {
       if($id == '' || $uid <= 0) { return 0; }
 
-      $this->sphx->query("DELETE FROM " . SPHINX_NOTE_INDEX . " WHERE uid=$uid AND mid=$id");
+      $this->sphxrw->query("DELETE FROM " . SPHINX_NOTE_INDEX . " WHERE uid=$uid AND mid=$id");
 
       if($note) {
-         $this->sphx->query("INSERT INTO " . SPHINX_NOTE_INDEX . " (mid, uid, note) VALUES (?,?,?)",[$id,$uid,$note]);
+         $this->sphxrw->query("INSERT INTO " . SPHINX_NOTE_INDEX . " (mid, uid, note) VALUES (?,?,?)",[$id,$uid,$note]);
       }
 
       return 1;
