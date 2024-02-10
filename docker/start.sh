@@ -181,6 +181,7 @@ start_services() {
    service cron start
    service php8.1-fpm start
    service nginx start
+   rsyslogd
 }
 
 

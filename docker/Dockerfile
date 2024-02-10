@@ -17,7 +17,7 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install \
        wget openssl sysstat php8.1-cli php8.1-cgi php8.1-mysql php8.1-fpm php8.1-zip php8.1-ldap \
        php8.1-gd php8.1-curl php8.1-xml php8.1-memcached catdoc unrtf poppler-utils nginx tnef sudo libzip4 \
-       libtre5 cron libmariadb-dev mariadb-client-core-10.6 python3 python3-mysqldb ca-certificates curl && \
+       libtre5 cron libmariadb-dev mariadb-client-core-10.6 python3 python3-mysqldb ca-certificates curl rsyslog && \
     wget https://repo.manticoresearch.com/manticore-repo.noarch.deb && \
     dpkg -i manticore-repo.noarch.deb && \
     rm -f manticore-repo.noarch.deb && \
