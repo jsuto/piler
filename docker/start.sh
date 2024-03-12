@@ -131,7 +131,14 @@ fix_configs() {
 
    if [[ $RT -eq 1 ]]; then
       sed -i "s/define('RT', 0)/define('RT', 1)/" "$SPHINX_CONF"
-      echo "\$config['RT'] = 1;" >> "$CONFIG_SITE_PHP"
+      if ! grep "'RT'" "$CONFIG_SITE_PHP"; then
+         echo "\$config['RT'] = 1;" >> "$CONFIG_SITE_PHP"
+      fi
+
+      if ! grep "'SPHINX_MAIN_INDEX'" "$CONFIG_SITE_PHP"; then
+         echo "\$config['SPHINX_MAIN_INDEX'] = 'piler1';" >> "$CONFIG_SITE_PHP"
+      fi
+
       sed -i "s%rtindex=.*%rtindex=1%" "$PILER_CONF"
    fi
 }
