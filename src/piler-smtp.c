@@ -33,6 +33,7 @@ extern int optind;
 struct epoll_event event, *events=NULL;
 int num_connections = 0;
 int listenerfd = -1;
+int loglevel = 1;
 
 char *configfile = CONFIG_FILE;
 struct config cfg;
@@ -48,6 +49,7 @@ void usage(){
    printf("    -d                                Fork to the background\n");
    printf("    -v                                Return the version and build number\n");
    printf("    -V                                Return the version and some build parameters\n");
+   printf("    -L <log level>                    Set the log level: 1-5\n");
 
    exit(0);
 }
@@ -138,14 +140,18 @@ int main(int argc, char **argv){
    int client_len = sizeof(struct sockaddr_storage);
    ssize_t readlen;
    struct sockaddr_storage client_address;
-   char readbuf[BIGBUFSIZE];
+   char readbuf[REALLYBIGBUFSIZE];
    int efd;
 
-   while((i = getopt(argc, argv, "c:dvVh")) > 0){
+   while((i = getopt(argc, argv, "c:L:dvVh")) > 0){
       switch(i){
 
         case 'c' :
                    configfile = optarg;
+                   break;
+
+        case 'L':
+                   loglevel = atoi(optarg);
                    break;
 
         case 'd' :
@@ -321,6 +327,7 @@ int main(int argc, char **argv){
                   break;
                }
 
+               readbuf[readlen] = '\0';
                handle_data(session, &readbuf[0], readlen, &cfg);
 
                if(session->protocol_state == SMTP_STATE_BDAT && session->bad == 1){

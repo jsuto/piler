@@ -24,6 +24,13 @@ setup_mysql() {
    mysql -u piler -ppiler123 piler1 < ../util/db-mysql.sql
 }
 
+run_smtp_tests() {
+   mkdir -p /var/piler/store/00/piler /var/piler/tmp /var/piler/manticore
+   chown -R piler:piler /var/piler/
+   ../src/piler-smtp -L 5 -d
+   ./smtp -s 127.0.0.1
+}
+
 if [[ -v BUILD_NUMBER ]]; then
    setup_mysql
 fi
@@ -37,3 +44,5 @@ fi
 ./check_hash
 ./check_decoder
 ./check_attachments
+
+if [[ -v BUILD_NUMBER ]]; then run_smtp_tests; fi

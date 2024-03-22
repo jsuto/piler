@@ -5,11 +5,11 @@
 #ifndef _TAI_H
    #define _TAI_H
 
+#include "config.h"
+
 #define TAI_PACK 8
 #define TAIA_PACK 16
 #define TIMESTAMP 25
-
-typedef unsigned long long uint64;
 
 struct tai {
    uint64 x;

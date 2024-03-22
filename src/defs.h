@@ -403,7 +403,6 @@ struct smtp_session {
    char ttmpfile[SMALLBUFSIZE];
    char mailfrom[SMALLBUFSIZE];
    char rcptto[MAX_RCPT_TO][SMALLBUFSIZE];
-   char buf[MAXBUFSIZE];
    char remote_host[INET6_ADDRSTRLEN+1];
    char nullbyte;
    time_t lasttime;
@@ -411,13 +410,17 @@ struct smtp_session {
    int slot;
    int fd;
    int bad;
-   int buflen;
-   int last_data_char;
    int tot_len;
    int bdat_bytes_to_read;
    int num_of_rcpt_to;
    struct config *cfg;
    struct net net;
+   int max_message_size;
+   char *buf;
+   int buflen;
+   int bufsize;
+   int too_big;
+   int mail_size;
 };
 
 struct tls_protocol {

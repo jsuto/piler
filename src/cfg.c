@@ -23,6 +23,11 @@ int int_parser(char *src, int *target){
    return 0;
 };
 
+int uint64_parser(char *src, uint64 *target){
+   *target = strtoull(src, (char**)NULL, 10);
+   return 0;
+}
+
 struct _parse_rule {
    char *name;
    char *type;
@@ -63,7 +68,9 @@ struct _parse_rule config_parse_rules[] =
    { "listen_port", "integer", (void*) int_parser, offsetof(struct config, listen_port), "25", sizeof(int)},
    { "locale", "string", (void*) string_parser, offsetof(struct config, locale), "", MAXVAL-1},
    { "max_connections", "integer", (void*) int_parser, offsetof(struct config, max_connections), "64", sizeof(int)},
+   { "max_message_size", "integer", (void*) int_parser, offsetof(struct config, max_message_size), "50000000", sizeof(int)},
    { "max_requests_per_child", "integer", (void*) int_parser, offsetof(struct config, max_requests_per_child), "10000", sizeof(int)},
+   { "max_smtp_memory", "uint64", (void*) uint64_parser, offsetof(struct config, max_smtp_memory), "500000000", sizeof(uint64)},
    { "memcached_servers", "string", (void*) string_parser, offsetof(struct config, memcached_servers), "127.0.0.1", MAXVAL-1},
    { "memcached_to_db_interval", "integer", (void*) int_parser, offsetof(struct config, memcached_to_db_interval), "900", sizeof(int)},
    { "memcached_ttl", "integer", (void*) int_parser, offsetof(struct config, memcached_ttl), "86400", sizeof(int)},
@@ -217,6 +224,7 @@ struct config read_config(char *configfile){
 void print_config_item(struct config *cfg, struct _parse_rule *rules, int i){
    int j;
    float f;
+   uint64 u;
    char *p, buf[MAXVAL];
 
    p = (char*)cfg + rules[i].offset;
@@ -224,6 +232,10 @@ void print_config_item(struct config *cfg, struct _parse_rule *rules, int i){
    if(strcmp(rules[i].type, "integer") == 0){
       memcpy((char*)&j, p, sizeof(int));
       printf("%s=%d\n", rules[i].name, j);
+   }
+   else if(strcmp(rules[i].type, "uint64") == 0){
+      memcpy((char*)&u, p, sizeof(uint64));
+      printf("%s=%llu\n", rules[i].name, u);
    }
    else if(strcmp(rules[i].type, "float") == 0){
       memcpy((char*)&f, p, sizeof(float));

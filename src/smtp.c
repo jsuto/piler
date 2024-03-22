@@ -15,99 +15,64 @@
 #include "smtp.h"
 
 
-void process_smtp_command(struct smtp_session *session, char *buf, struct config *cfg){
+void process_smtp_command(struct smtp_session *session, struct config *cfg){
    char response[SMALLBUFSIZE];
 
-   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got on fd=%d: *%s*", session->net.socket, buf);
+   if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "got on fd=%d: *%s*", session->net.socket, session->buf);
 
-   if(strncasecmp(buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
+   if(strncasecmp(session->buf, SMTP_CMD_HELO, strlen(SMTP_CMD_HELO)) == 0){
       process_command_helo(session, response, sizeof(response));
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 ||
-         strncasecmp(buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
-      process_command_ehlo_lhlo(session, response, sizeof(response));
+   if(strncasecmp(session->buf, SMTP_CMD_EHLO, strlen(SMTP_CMD_EHLO)) == 0 ||
+         strncasecmp(session->buf, LMTP_CMD_LHLO, strlen(LMTP_CMD_LHLO)) == 0){
+      process_command_ehlo_lhlo(session, response, sizeof(response), cfg);
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_HELP, strlen(SMTP_CMD_HELP)) == 0){
+   if(strncasecmp(session->buf, SMTP_CMD_HELP, strlen(SMTP_CMD_HELP)) == 0){
       send_smtp_response(session, SMTP_RESP_221_PILER_SMTP_OK);
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
-      process_command_mail_from(session, buf);
+   if(strncasecmp(session->buf, SMTP_CMD_MAIL_FROM, strlen(SMTP_CMD_MAIL_FROM)) == 0){
+      process_command_mail_from(session);
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
-      process_command_rcpt_to(session, buf, cfg);
+   if(strncasecmp(session->buf, SMTP_CMD_RCPT_TO, strlen(SMTP_CMD_RCPT_TO)) == 0){
+      process_command_rcpt_to(session, cfg);
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
+   if(strncasecmp(session->buf, SMTP_CMD_DATA, strlen(SMTP_CMD_DATA)) == 0){
       process_command_data(session, cfg);
       return;
    }
 
    /* Support only BDAT xxxx LAST command */
-   if(session->cfg->enable_chunking == 1 && strncasecmp(buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strcasestr(buf, "LAST")){
-      get_bdat_size_to_read(session, buf);
+   if(session->cfg->enable_chunking == 1 && strncasecmp(session->buf, SMTP_CMD_BDAT, strlen(SMTP_CMD_BDAT)) == 0 && strcasestr(session->buf, "LAST")){
+      get_bdat_size_to_read(session);
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
+   if(strncasecmp(session->buf, SMTP_CMD_QUIT, strlen(SMTP_CMD_QUIT)) == 0){
       process_command_quit(session, response, sizeof(response));
       return;
    }
 
-   if(strncasecmp(buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
+   if(strncasecmp(session->buf, SMTP_CMD_RESET, strlen(SMTP_CMD_RESET)) == 0){
       process_command_reset(session);
       return;
    }
 
-   if(session->cfg->tls_enable == 1 && strncasecmp(buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && session->net.use_ssl == 0){
+   if(session->cfg->tls_enable == 1 && strncasecmp(session->buf, SMTP_CMD_STARTTLS, strlen(SMTP_CMD_STARTTLS)) == 0 && session->net.use_ssl == 0){
       process_command_starttls(session);
       return;
    }
 
    send_smtp_response(session, SMTP_RESP_502_ERR);
-}
-
-
-void process_data(struct smtp_session *session, char *buf, int buflen){
-   if(session->last_data_char == '\n' && strcmp(buf, ".\r\n") == 0){
-      process_command_period(session);
-   }
-   else {
-      // write line to file
-      int written=0, n_writes=0;
-
-      // In the DATA phase skip the 1st character if it's a dot (.)
-      // and there are more characters before the trailing CR-LF
-      //
-      // See https://www.ietf.org/rfc/rfc5321.html#section-4.5.2 for more.
-
-      int dotstuff = 0;
-      if(*buf == '.' && buflen > 1 && *(buf+1) != '\r' && *(buf+1) != '\n') dotstuff = 1;
-
-      while(written < buflen) {
-         int len = write(session->fd, buf+dotstuff+written, buflen-dotstuff-written);
-
-         n_writes++;
-
-         if(len > 0){
-            if(len != buflen-dotstuff) syslog(LOG_PRIORITY, "WARN: partial write: %d/%d bytes (round: %d)", len, buflen-dotstuff, n_writes);
-            written += len + dotstuff;
-            session->tot_len += len;
-            dotstuff = 0;
-         }
-         else syslog(LOG_PRIORITY, "ERROR (line: %d) process_data(): written %d bytes", __LINE__, len);
-      }
-   }
-
-   session->last_data_char = buf[buflen-1];
 }
 
 
@@ -152,7 +117,7 @@ void process_command_helo(struct smtp_session *session, char *buf, int buflen){
 }
 
 
-void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int buflen){
+void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int buflen, struct config *cfg){
    char extensions[SMALLBUFSIZE];
 
    memset(extensions, 0, sizeof(extensions));
@@ -163,7 +128,9 @@ void process_command_ehlo_lhlo(struct smtp_session *session, char *buf, int bufl
    if(session->net.use_ssl == 0 && session->cfg->tls_enable == 1) snprintf(extensions, sizeof(extensions)-1, "%s", SMTP_EXTENSION_STARTTLS);
    if(session->cfg->enable_chunking == 1) strncat(extensions, SMTP_EXTENSION_CHUNKING, sizeof(extensions)-strlen(extensions)-2);
 
-   snprintf(buf, buflen-1, SMTP_RESP_250_EXTENSIONS, session->cfg->hostid, extensions);
+   //#define SMTP_RESP_250_EXTENSIONS "250-%s\r\n%s250-SIZE %d\r\n250 8BITMIME\r\n"
+
+   snprintf(buf, buflen-1, SMTP_RESP_250_EXTENSIONS, session->cfg->hostid, cfg->max_message_size, extensions);
 
    send_smtp_response(session, buf);
 }
@@ -234,26 +201,29 @@ void process_command_starttls(struct smtp_session *session){
 }
 
 
-void process_command_mail_from(struct smtp_session *session, char *buf){
+void process_command_mail_from(struct smtp_session *session){
+   memset(session->mailfrom, 0, SMALLBUFSIZE);
+
    if(session->protocol_state != SMTP_STATE_HELO && session->protocol_state != SMTP_STATE_PERIOD && session->protocol_state != SMTP_STATE_BDAT){
       send(session->net.socket, SMTP_RESP_503_ERR, strlen(SMTP_RESP_503_ERR), 0);
    }
    else {
-      memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
-      make_random_string((unsigned char*)&(session->ttmpfile[0]), QUEUE_ID_LEN);
       session->protocol_state = SMTP_STATE_MAIL_FROM;
 
-      extractEmail(buf, session->mailfrom);
+      extractEmail(session->buf, session->mailfrom);
 
-      reset_bdat_counters(session);
-      session->tot_len = 0;
+      int mailsize = get_size_from_smtp_mail_from(session->buf);
+
+      reset_smtp_session(session);
+
+      session->mail_size = mailsize;
 
       send_smtp_response(session, SMTP_RESP_250_OK);
    }
 }
 
 
-void process_command_rcpt_to(struct smtp_session *session, char *buf, struct config *cfg){
+void process_command_rcpt_to(struct smtp_session *session, struct config *cfg){
 
    if(session->protocol_state == SMTP_STATE_MAIL_FROM || session->protocol_state == SMTP_STATE_RCPT_TO){
 
@@ -262,7 +232,7 @@ void process_command_rcpt_to(struct smtp_session *session, char *buf, struct con
       session->protocol_state = SMTP_STATE_RCPT_TO;
 
       if(session->num_of_rcpt_to < MAX_RCPT_TO){
-         extractEmail(buf, session->rcptto[session->num_of_rcpt_to]);
+         extractEmail(session->buf, session->rcptto[session->num_of_rcpt_to]);
 
          // Check if we should accept archive_address only
          if(cfg->archive_address[0] && !strstr(cfg->archive_address, session->rcptto[session->num_of_rcpt_to])){
@@ -322,13 +292,23 @@ void process_command_period(struct smtp_session *session){
 
    syslog(LOG_PRIORITY, "received: %s, from=%s, size=%d, client=%s, fd=%d, fsync=%ld", session->ttmpfile, session->mailfrom, session->tot_len, session->remote_host, session->net.socket, tvdiff(tv2, tv1));
 
-   move_email(session);
+   if(session->bad == 1 || session->too_big == 1){
+      snprintf(buf, sizeof(buf)-1, SMTP_RESP_451_ERR);
+      unlink(session->ttmpfile);
+      syslog(LOG_PRIORITY, "ERROR: problem in processing, removing %s", session->ttmpfile);
+      if(session->too_big)
+         snprintf(buf, sizeof(buf)-1, "%s", SMTP_RESP_552_ERR_TOO_BIG_EMAIL);
+      else
+         snprintf(buf, sizeof(buf)-1, "%s", SMTP_RESP_451_ERR);
+   } else {
+      move_email(session);
+      snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
+   }
 
-   snprintf(buf, sizeof(buf)-1, "250 OK <%s>\r\n", session->ttmpfile);
-
-   session->buflen = 0;
-   session->last_data_char = 0;
-   memset(session->buf, 0, sizeof(session->buf));
+   if(session->buf){
+      memset(session->buf, 0, session->bufsize);
+      session->buflen = 0;
+   }
 
    send_smtp_response(session, buf);
 }
@@ -344,15 +324,32 @@ void process_command_quit(struct smtp_session *session, char *buf, int buflen){
 
 
 void process_command_reset(struct smtp_session *session){
+   reset_smtp_session(session);
    send_smtp_response(session, SMTP_RESP_250_OK);
-
-   session->tot_len = 0;
-   session->fd = -1;
    session->protocol_state = SMTP_STATE_HELO;
-   session->last_data_char = 0;
+}
+
+
+void reset_smtp_session(struct smtp_session *session){
+   session->tot_len = 0;
+   session->mail_size = 0;
+   session->too_big = 0;
+   session->bad = 0;
+
+   session->fd = -1;
+
+   session->num_of_rcpt_to = 0;
+   for(int i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
 
    reset_bdat_counters(session);
 
+   time(&(session->lasttime));
+
    memset(&(session->ttmpfile[0]), 0, SMALLBUFSIZE);
-   make_random_string((unsigned char *)&(session->ttmpfile[0]), QUEUE_ID_LEN);
+   make_random_string((unsigned char*)&(session->ttmpfile[0]), QUEUE_ID_LEN);
+
+   if(session->buf){
+      memset(session->buf, 0, session->bufsize);
+   }
+   session->buflen = 0;
 }

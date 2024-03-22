@@ -26,21 +26,21 @@ void reset_bdat_counters(struct smtp_session *session){
 }
 
 
-void get_bdat_size_to_read(struct smtp_session *session, char *buf){
+void get_bdat_size_to_read(struct smtp_session *session){
    char *p;
 
    session->bdat_bytes_to_read = 0;
 
    session->protocol_state = SMTP_STATE_BDAT;
 
-   p = strcasestr(buf, " LAST");
+   p = strcasestr(session->buf, " LAST");
    if(p){
       *p = '\0';
    }
 
    // determine the size to be read
 
-   p = strchr(buf, ' ');
+   p = strchr(session->buf, ' ');
    if(p){
       session->bdat_bytes_to_read = atoi(p);
       if(session->cfg->verbosity >= _LOG_DEBUG) syslog(LOG_INFO, "fd=%d: BDAT len=%d", session->net.socket, session->bdat_bytes_to_read);

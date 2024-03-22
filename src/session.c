@@ -9,6 +9,36 @@
 int get_session_slot(struct smtp_session **sessions, int max_connections);
 void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg);
 
+#define GOT_CRLF_DOT_CRLF(p) *p == '\r' && *(p+1) == '\n' && *(p+2) == '.' && *(p+3) == '\r' && *(p+4) == '\n' ? 1 : 0
+
+uint64 get_sessions_total_memory(struct smtp_session **sessions, int max_connections){
+   uint64 total = 0;
+
+   for(int i=0; i<max_connections; i++){
+      if(sessions[i]) total += sessions[i]->bufsize;
+   }
+
+   return total;
+}
+
+
+/*
+ * If the sending party sets the email size when it sends the "mail from"
+ * part in the smtp transaction, eg. MAIL FROM:<jajaja@akakak.lo> size=509603
+ * then piler-smtp could know the email size in advance and could do
+ * a better estimate on the allowed number of smtp sessions.
+ */
+
+uint64 get_sessions_total_expected_mail_size(struct smtp_session **sessions, int max_connections){
+   uint64 total = 0;
+
+   for(int i=0; i<max_connections; i++){
+      if(sessions[i]) total += sessions[i]->mail_size;
+   }
+
+   return total;
+}
+
 
 int start_new_session(struct smtp_session **sessions, int socket, int *num_connections, struct smtp_acl *smtp_acl[], char *client_addr, struct config *cfg){
    int slot;
@@ -28,6 +58,21 @@ int start_new_session(struct smtp_session **sessions, int socket, int *num_conne
    if(cfg->smtp_access_list && is_blocked_by_pilerscreen(smtp_acl, client_addr)){
       send(socket, SMTP_RESP_550_ERR, strlen(SMTP_RESP_550_ERR), 0);
       close(socket);
+      return -1;
+   }
+
+   /*
+    * We are under the max_smtp_memory threshold
+    */
+
+   uint64 expected_total_mail_size = get_sessions_total_expected_mail_size(sessions, cfg->max_connections);
+   uint64 total_memory = get_sessions_total_memory(sessions, cfg->max_connections);
+
+   if(cfg->verbosity >= _LOG_DEBUG) syslog(LOG_PRIORITY, "DEBUG: total smtp memory allocated: %llu, expected total size: %llu", total_memory, expected_total_mail_size);
+
+   if(total_memory > cfg->max_smtp_memory || expected_total_mail_size > cfg->max_smtp_memory){
+      syslog(LOG_PRIORITY, "ERROR: too much memory consumption: %llu", total_memory);
+      send(socket, SMTP_RESP_451_ERR_TOO_MANY_REQUESTS, strlen(SMTP_RESP_451_ERR_TOO_MANY_REQUESTS), 0);
       return -1;
    }
 
@@ -84,11 +129,8 @@ struct smtp_session *get_session_by_socket(struct smtp_session **sessions, int m
 
 
 void init_smtp_session(struct smtp_session *session, int slot, int sd, char *client_addr, struct config *cfg){
-   int i;
-
    session->slot = slot;
 
-   session->buflen = 0;
    session->protocol_state = SMTP_STATE_INIT;
 
    session->cfg = cfg;
@@ -100,26 +142,23 @@ void init_smtp_session(struct smtp_session *session, int slot, int sd, char *cli
    session->net.ssl = NULL;
 
    session->nullbyte = 0;
-   session->last_data_char = 0;
 
-   session->fd = -1;
-
-   memset(session->mailfrom, 0, SMALLBUFSIZE);
-
-   session->num_of_rcpt_to = 0;
-   for(i=0; i<MAX_RCPT_TO; i++) memset(session->rcptto[i], 0, SMALLBUFSIZE);
-
-   memset(session->buf, 0, MAXBUFSIZE);
    snprintf(session->remote_host, sizeof(session->remote_host)-1, "%s", client_addr);
 
-   reset_bdat_counters(session);
+   session->buf = NULL;
+   session->buflen = 0;
+   session->bufsize = 0;
 
-   time(&(session->lasttime));
+   reset_smtp_session(session);
 }
 
 
 void free_smtp_session(struct smtp_session *session){
    if(session){
+
+      if(session->buf != NULL){
+         free(session->buf);
+      }
 
       if(session->net.use_ssl == 1){
          SSL_shutdown(session->net.ssl);
@@ -160,71 +199,126 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 }
 
 
+inline int get_last_newline_position(char *buf, int buflen){
+   int i;
+
+   for(i=buflen; i>0; i--){
+      if(*(buf+i) == '\n'){
+         i++;
+         break;
+      }
+   }
+
+   return i;
+}
+
+
+void flush_buffer(struct smtp_session *session){
+   // In the DATA phase skip the 1st character if it's a dot (.)
+   // and there are more characters before the trailing CR-LF
+   //
+   // See https://www.ietf.org/rfc/rfc5321.html#section-4.5.2 for more
+   for(int i=0; i<session->buflen; i++){
+      if(*(session->buf+i) == '\n' && *(session->buf+i+1) == '.' && *(session->buf+i+2) == '.'){
+         int dst = i + 2;
+         int src = dst + 1;
+         int l = session->buflen - src;
+         memmove(session->buf + dst, session->buf + src, l);
+         session->buflen -= 1;
+      }
+   }
+
+   // Exclude the trailing \r\n.\r\n sequence
+
+   session->buflen -= 5;
+
+   if(write(session->fd, session->buf, session->buflen) != session->buflen){
+      session->bad = 1;
+      syslog(LOG_PRIORITY, "ERROR (line: %d) %s: failed to write %d bytes", __LINE__, __func__, session->buflen);
+   }
+
+   session->tot_len = session->buflen;
+}
+
+
 void handle_data(struct smtp_session *session, char *readbuf, int readlen, struct config *cfg){
-   int puflen, rc, nullbyte;
-   char *p, copybuf[BIGBUFSIZE+MAXBUFSIZE], puf[MAXBUFSIZE];
+   // Update lasttime if we have something to process
+   time(&(session->lasttime));
 
-   // if there's something in the saved buffer, then let's merge them
+   if(session->protocol_state == SMTP_STATE_BDAT){
+      process_bdat(session, readbuf, readlen, cfg);
+      return;
+   }
 
-   int remaininglen = readlen + session->buflen;
+   // realloc memory if the new chunk doesn't fit in
 
-   if(session->buflen > 0){
-      memset(copybuf, 0, sizeof(copybuf));
+   if(session->buflen + readlen + 10 > session->bufsize){
+      // Handle if the current memory allocation for this email is above the max_message_size threshold
 
-      memcpy(copybuf, session->buf, session->buflen);
-      memcpy(&copybuf[session->buflen], readbuf, readlen);
+      if(session->buflen > cfg->max_message_size){
+         if(session->too_big == 0) syslog(LOG_PRIORITY, "ERROR: too big email: %d vs %d", session->buflen, cfg->max_message_size);
+         session->bad = 1;
+         session->too_big = 1;
+      }
 
+      if(session->bad == 0){
+         char *q = realloc(session->buf, session->bufsize + SMTPBUFSIZE);
+         if(q){
+            session->buf = q;
+            memset(session->buf+session->bufsize, 0, SMTPBUFSIZE);
+            session->bufsize += SMTPBUFSIZE;
+         } else {
+            syslog(LOG_PRIORITY, "ERROR: realloc %s %s %d", session->ttmpfile, __func__, __LINE__);
+            session->bad = 1;
+         }
+      }
+   }
+
+   // process smtp command
+   if(session->protocol_state != SMTP_STATE_DATA){
+
+      // We got ~2 MB of garbage and no valid smtp command
+      // Terminate the connection
+      if(session->buflen + readlen > SMTPBUFSIZE - 10){
+         session->bad = 1;
+      }
+
+      // We are at the beginning of the smtp transaction
+      if(session->bad == 1){
+         write1(&(session->net), SMTP_RESP_451_ERR, strlen(SMTP_RESP_451_ERR));
+         syslog(LOG_PRIORITY, "ERROR: sent 451 temp error back to client %s", session->ttmpfile);
+         return;
+      }
+
+      //printf("got %d *%s*\n", readlen, readbuf);
+
+      memcpy(session->buf + session->buflen, readbuf, readlen);
+      session->buflen += readlen;
+
+      int pos = get_last_newline_position(session->buf, session->buflen);
+
+      if(pos < readlen) return; // no complete command
+
+      process_smtp_command(session, cfg);
+
+      memset(session->buf, 0, session->bufsize);
       session->buflen = 0;
-      memset(session->buf, 0, MAXBUFSIZE);
 
-      p = &copybuf[0];
-   }
-   else {
-      readbuf[readlen] = 0;
-      p = readbuf;
+      return;
    }
 
+   if(session->bad == 0){
+      memcpy(session->buf + session->buflen, readbuf, readlen);
+      session->buflen += readlen;
 
-   do {
-      puflen = read_one_line(p, remaininglen, '\n', puf, sizeof(puf)-1, &rc, &nullbyte);
-      p += puflen;
-      remaininglen -= puflen;
-
-      if(nullbyte){
-         session->nullbyte = 1;
+      char *p = session->buf + session->buflen - 5;
+      if(session->buflen >= 5 && GOT_CRLF_DOT_CRLF(p)){
+         flush_buffer(session);
+         process_command_period(session);
       }
-
-      // complete line: rc == OK and puflen > 0
-      // incomplete line with something in the buffer: rc == ERR and puflen > 0
-
-      if(puflen > 0){
-         // Update lasttime if we have a line to process
-         time(&(session->lasttime));
-
-         // Save incomplete line to buffer
-         if(rc == ERR){
-            memcpy(session->buf, puf, puflen);
-            session->buflen = puflen;
-         }
-
-         // We have a complete line to process
-
-         if(rc == OK){
-            if(session->protocol_state == SMTP_STATE_BDAT){
-               process_bdat(session, puf, puflen, cfg);
-            }
-            else if(session->protocol_state == SMTP_STATE_DATA){
-               sig_block(SIGALRM);
-               process_data(session, puf, puflen);
-               sig_unblock(SIGALRM);
-            }
-            else {
-               process_smtp_command(session, puf, cfg);
-            }
-         }
-      }
-
-   } while(puflen > 0);
+   } else if(strstr(readbuf, "\r\n.\r\n")){
+      process_command_period(session);
+   }
 
 }
 

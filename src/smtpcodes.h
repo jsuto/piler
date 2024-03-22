@@ -38,7 +38,7 @@
 #define SMTP_RESP_220_READY_TO_START_TLS "220 Ready to start TLS\r\n"
 #define SMTP_RESP_221_GOODBYE "221 %s Goodbye\r\n"
 #define SMTP_RESP_250_OK "250 Ok\r\n"
-#define SMTP_RESP_250_EXTENSIONS "250-%s\r\n250-PIPELINING\r\n%s250-SIZE\r\n250 8BITMIME\r\n"
+#define SMTP_RESP_250_EXTENSIONS "250-%s\r\n250-SIZE %d\r\n%s250 8BITMIME\r\n"
 
 #define SMTP_EXTENSION_STARTTLS "250-STARTTLS\r\n"
 #define SMTP_EXTENSION_CHUNKING "250-CHUNKING\r\n"
@@ -51,6 +51,7 @@
 #define SMTP_RESP_421_ERR_TMP "421 %s service not available\r\n"
 #define SMTP_RESP_421_ERR_WRITE_FAILED "421 writing queue file failed\r\n"
 #define SMTP_RESP_421_ERR_ALL_PORTS_ARE_BUSY "421 All server ports are busy\r\n"
+#define SMTP_RESP_451_ERR_TOO_MANY_REQUESTS "451 Too many requests, try again later\r\n"
 #define SMTP_RESP_451_ERR "451 Error in processing, try again later\r\n"
 #define SMTP_RESP_454_ERR_TLS_TEMP_ERROR "454 TLS not available currently\r\n"
 
@@ -59,6 +60,7 @@
 #define SMTP_RESP_550_ERR_INVALID_RECIPIENT "550 Invalid recipient\r\n"
 #define SMTP_RESP_550_ERR_YOU_ARE_BANNED_BY_LOCAL_POLICY "550 You are banned by local policy\r\n"
 #define SMTP_RESP_550_ERR "550 Service currently unavailable\r\n"
+#define SMTP_RESP_552_ERR_TOO_BIG_EMAIL "552 Too big email\r\n"
 
 
 // LMTP commands

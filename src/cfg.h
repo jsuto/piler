@@ -110,6 +110,9 @@ struct config {
    int debug;
 
    int smtp_access_list;
+
+   int max_message_size;
+   uint64 max_smtp_memory;
 };
 
 

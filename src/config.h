@@ -9,6 +9,8 @@
 #include "piler-config.h"
 #include "params.h"
 
+typedef unsigned long long uint64;
+
 #define BUILD 1001
 
 #define HOSTID "mailarchiver"
@@ -30,6 +32,7 @@
 #define SMALLBUFSIZE 512
 #define BIGBUFSIZE 131072
 #define REALLYBIGBUFSIZE 524288
+#define SMTPBUFSIZE 2048000
 #define TINYBUFSIZE 128
 #define MAXVAL 256
 #define RANDOM_POOL "/dev/urandom"

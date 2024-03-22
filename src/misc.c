@@ -781,3 +781,29 @@ int append_string_to_buffer(char **buffer, char *str){
 
    return 0;
 }
+
+
+int get_size_from_smtp_mail_from(char *s){
+   int size=0;
+   char *p;
+
+   p = strcasestr(s, "SIZE=");
+   if(p){
+      p += strlen("SIZE=");
+      char *q = p;
+      for(; *q; q++){
+         if(isspace(*q)) break;
+      }
+
+      // We extract max. 9 characters, which is just under 1GB
+      // and not overflowing an int variable
+      if(q - p <= 9){
+         char c = *q;
+         *q = '\0';
+         size = atoi(p);
+         *q = c;
+      }
+   }
+
+   return size;
+}
