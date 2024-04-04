@@ -105,7 +105,12 @@ int connect_to_imap_server(struct data *data){
 
    /* imap cmd: LOGIN */
 
-   snprintf(buf, sizeof(buf)-1, "A%d LOGIN %s \"%s\"\r\n", data->import->seq, data->import->username, data->import->password);
+   if(strcmp(data->import->username, "ZIMBRA") == 0){
+      snprintf(buf, sizeof(buf)-1, "A%d AUTHENTICATE PLAIN %s\r\n", data->import->seq, data->import->password);
+   }
+   else {
+      snprintf(buf, sizeof(buf)-1, "A%d LOGIN %s \"%s\"\r\n", data->import->seq, data->import->username, data->import->password);
+   }
 
    write1(data->net, buf, strlen(buf));
    if(read_response(buf, sizeof(buf), data) == 0){

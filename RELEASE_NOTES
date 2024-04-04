@@ -5,6 +5,20 @@
   If using sphinx, add the following to config-site.php:
   $config['SPHINX_HOSTNAME_READONLY'] = '127.0.0.1:9306';
 
+- pilerimport supports Zimbra IMAP impersonation
+
+  Generate the following base64 encoded string:
+  (Be sure to use the actual usernames and password):
+
+  pw="$( printf '%s\0%s\0%s' 'username' 'zimbra_admin_username' 'zimbra_admin_password' | base64 )"
+
+  Then specify -u ZIMBRA -p "$pw" for pilerimport, eg.
+
+  pilerimport -i imap.server -u ZIMBRA -p "$pw" ...
+
+  Note that "ZIMBRA" is a special username, it indicates for pilerimport
+  to actually use the imap impersonation for Zimbra.
+
 
 1.4.4:
 ------
