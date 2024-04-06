@@ -25,6 +25,9 @@ PILER_CONF="/etc/piler/piler.conf"
 CONFIG_SITE_PHP="/etc/piler/config-site.php"
 SEARCHCFG="/etc/piler/manticore.conf"
 
+TRAEFIK_VERSION="v2.11.0"
+ARCH="amd64"
+
 export DEBIAN_FRONTEND=noninteractive
 
 install_prerequisites() {
@@ -37,8 +40,11 @@ install_prerequisites() {
       python3-mysqldb libmariadb-dev mariadb-client-core-10.6 \
       mariadb-server-10.6
 
-   wget -O /usr/local/bin/traefik "${DOWNLOAD_URL}/generic-local/traefik"
-   chmod +x /usr/local/bin/traefik
+   wget "https://github.com/traefik/traefik/releases/download/${TRAEFIK_VERSION}/traefik_${TRAEFIK_VERSION}_linux_${ARCH}.tar.gz"
+   tar zxvf "traefik_${TRAEFIK_VERSION}_linux_${ARCH}.tar.gz" traefik
+   chown root:root traefik
+   chmod 755 traefik
+   mv traefik /usr/local/bin
    setcap cap_net_bind_service+ep /usr/local/bin/traefik
 
    wget https://repo.manticoresearch.com/manticore-repo.noarch.deb && \
