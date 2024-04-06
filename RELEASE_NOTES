@@ -1,6 +1,20 @@
 1.4.5:
 ------
 
+- Introduced 2 new variables in /etc/piler/piler.conf affecting piler-smtp
+
+  ; max message size in bytes
+  ; piler-smtp will reject any message that's bigger than this number
+  max_message_size=50000000
+
+  ; max memory in bytes piler-smtp uses for buffering messages
+  ; when this limit is exceeded, no new emails will be accepted
+  ; until the used memory for all in progress emails decreases
+  ; below this level
+  max_smtp_memory=500000000
+
+  Be sure to adjust these values to your environment!
+
 - Added read-only connection support for manticore
   If using sphinx, add the following to config-site.php:
   $config['SPHINX_HOSTNAME_READONLY'] = '127.0.0.1:9306';

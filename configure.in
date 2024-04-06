@@ -537,12 +537,12 @@ AC_OUTPUT
 
 echo
 echo
-echo "IMPORTANT! If you upgrade, be sure to read http://www.mailpiler.org/wiki/current:upgrade"
+echo "IMPORTANT! If you upgrade, be sure to read https://www.mailpiler.org/upgrade-instructions/"
 echo
 echo
 
 echo
 echo "Did you know that piler has an enterprise edition as well?"
-echo "Check out what it can do for you at https://mailpiler.com/piler-enterprise-email-archiver-features/"
+echo "Check out what it can do for you at https://mailpiler.com/#features"
 echo
 echo
