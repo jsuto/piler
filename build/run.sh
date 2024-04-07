@@ -24,9 +24,6 @@ set_mysql_flavour() {
 }
 
 get_pkg_name() {
-   a="$(git log -n 1 --oneline)"
-   COMMIT_ID="${a%% *}"
-   VERSION="$(head -1 VERSION)"
    RPM_TAG="el9"
 
    if [[ "$DEBUG" == true ]]; then
