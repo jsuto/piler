@@ -1,0 +1,35 @@
+name: Piler build
+
+on:
+  push:
+
+env:
+  IMAGE_NAME: sutoj/piler
+  DISTRO: jammy
+  PROJECT_ID: piler
+  ARCH: amd64
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      IMAGE_TAG: ${{ steps.generate-version.outputs.IMAGE_TAG }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version tag
+        id: generate-version
+        run: |
+          IMAGE_TAG="$( head -1 VERSION | tr -d '[:blank:]' )-$( git rev-parse --short HEAD )"
+          echo "image tag: $IMAGE_TAG"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Build
+        id: build-package
+        run: |
+          docker run --rm -e PROJECT_ID -e DISTRO -e ARCH=amd64 -v $PWD:/repo -v /tmp/:/data sutoj/builder:0.1
+          ls -la /tmp
+        shell: bash
