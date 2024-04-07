@@ -3,7 +3,6 @@
 set -o nounset
 set -o errexit
 set -o pipefail
-set -x
 
 SCRIPT_PATH="$(readlink -f "$0")"
 SCRIPT_DIR="${SCRIPT_PATH%/*}"
@@ -39,8 +38,6 @@ get_pkg_name() {
    fi
 
    rm -f "${PACKAGE_OUTDIR}/${PACKAGE}"
-
-   #write_package_txt
 }
 
 make_deb_package() {
@@ -64,25 +61,22 @@ make_deb_package() {
    popd
 }
 
-make_tarball() {
-   local version
+make_certificate() {
+   SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=archive.example.com"
+   config_dir=/etc/piler
 
-   read -r version < VERSION
-
-   TARBALL="${PACKAGE_OUTDIR}/${PROJECT_ID}-${version}.tar.gz"
-
-   git archive --prefix="${PROJECT_ID}-${version}/" HEAD | gzip -c > "$TARBALL"
-   sha256sum "$TARBALL"
-
-   printf "%s" "$TARBALL" > "${PACKAGE_OUTDIR}/package-${PROJECT_ID}-tarball.txt"
+   openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "$SSL_CERT_DATA" -keyout "${config_dir}/piler.pem" -out "${config_dir}/1.cert" -sha256 2>/dev/null
+   cat "${config_dir}/1.cert" >> "${config_dir}/piler.pem"
+   rm -f "${config_dir}/1.cert"
+   chown root:piler "${config_dir}/piler.pem"
+   chmod 640 "${config_dir}/piler.pem"
 }
 
+make_certificate
 
 git config --global --add safe.directory /repo
 
 pushd "$REPO_ROOT"
-
-###[[ "$DISTRO" == "centos7" || "$DISTRO" == "xenial" ]] && sed -i -e 's/\-Wimplicit\-fallthrough=2//g' "/tmp/${PROJECT_ID}/configure"
 
 if [[ "$DEBUG" == "true" ]]; then
    DEBUG_OPTION="--enable-debug"
@@ -93,8 +87,6 @@ export DEBUG_OPTION
 set_mysql_flavour
 
 get_pkg_name
-
-make_tarball
 
 ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-database="$MYSQL_FLAVOUR" "$DEBUG_OPTION"
 make clean

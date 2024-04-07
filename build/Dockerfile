@@ -23,5 +23,6 @@ RUN apt-get update && \
     curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar
 
 COPY run.sh /run.sh
+COPY piler.conf /etc/piler/piler.conf
 
 CMD ["/run.sh"]
