@@ -9,6 +9,7 @@ env:
   DISTRO: jammy
   PROJECT_ID: piler
   ARCH: amd64
+  CONTAINER: piler
 
 jobs:
   build:
@@ -54,11 +55,56 @@ jobs:
           path: docker/*deb
           retention-days: 1
 
+  run-tests:
+    runs-on:
+      - self-hosted
+      - X64
+
+    needs:
+      - build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Destroy all containers
+        run: |
+          docker compose down -v || true
+        shell: bash
+
+      - name: Start containers
+        run: |
+          pushd docker
+          docker compose up -d
+          i=0
+          while [[ "$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER")" != "healthy" ]]; do
+            i=$((i+1))
+            sleep 2
+            if [[ $i -gt 45 ]]; then
+              "sleep is still not running inside ${CONTAINER}"
+              exit 1
+            fi
+          done
+          echo "${CONTAINER} is healthy"
+          popd
+        shell: bash
+
+      - name: Setup piler
+        run: |
+          ./tests/setup.sh
+        shell: bash
+
+      - name: Run tests
+        run: |
+          ./tests/run.sh
+        shell: bash
+
   publish-docker-image:
     if: github.ref_name == 'master'
 
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - run-tests
 
     steps:
       - uses: actions/checkout@v4
