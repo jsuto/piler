@@ -18,7 +18,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
   piler:
-    image: sutoj/piler:1.4.5
+    image: sutoj/piler:${VERSION:-1.4.4}
     container_name: piler
     init: true
     environment:
