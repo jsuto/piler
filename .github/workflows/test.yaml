@@ -2,6 +2,16 @@ name: Piler build
 
 on:
   push:
+    branches:
+      - master
+
+  pull_request:
+    types:
+      - opened # PR created
+      - synchronize # commit pushed to PR
+      - reopened # closed PR reopened
+    branches:
+      - master
 
 env:
   BUILDER_IMAGE: sutoj/builder:0.1
@@ -50,6 +60,13 @@ jobs:
           echo "Package: ${PACKAGE}"
         shell: bash
 
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: docker/*deb
+          retention-days: 1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -92,7 +109,8 @@ jobs:
         run: |
           export VERSION=${{ needs.build.outputs.VERSION }}
           pushd docker
-          docker compose up -d --pull always
+          docker compose pull piler
+          docker compose up -d
           i=0
           while [[ "$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER")" != "healthy" ]]; do
             i=$((i+1))
@@ -105,6 +123,9 @@ jobs:
           docker compose ps
           popd
         shell: bash
+
+      - name: Remove stale images
+        run: yes|docker image prune
 
       - name: Setup piler
         run: |
@@ -131,6 +152,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+          path: docker
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
