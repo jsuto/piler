@@ -1,4 +1,3 @@
-version: "3"
 services:
   mysql:
     image: mariadb:11.1.2
@@ -19,7 +18,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
   piler:
-    image: sutoj/piler:1.4.4
+    image: sutoj/piler:${VERSION:-1.4.5}
     container_name: piler
     init: true
     environment:
@@ -38,7 +37,7 @@ services:
       - piler_store:/var/piler/store
     healthcheck:
       test: curl -s smtp://localhost/
-      interval: "60s"
+      interval: "20s"
       timeout: "3s"
       start_period: "15s"
       retries: 3
