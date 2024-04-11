@@ -12,4 +12,5 @@ echo -e "$CONFIG_SITE_PHP" | docker exec -i "$CONTAINER" bash -c "cat >> /etc/pi
 docker cp setup.sql "${CONTAINER}:/tmp"
 docker exec "$CONTAINER" bash -c 'mysql --defaults-file=/etc/piler/.my.cnf < /tmp/setup.sql'
 docker exec "$CONTAINER" /etc/init.d/rc.piler reload
+docker exec "$CONTAINER" wget -qO /etc/piler/tsa.pem --no-check-certificate https://freetsa.org/files/cacert.pem
 popd
