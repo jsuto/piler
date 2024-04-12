@@ -8,12 +8,10 @@ on:
 env:
   IMAGE_NAME: sutoj/piler
   TEST_TAG: test
-  DISTRO: jammy
-  PROJECT_ID: piler
   ARCH: amd64
 
 jobs:
-  build:
+  publish:
     if: github.ref_name == 'master'
 
     runs-on:
