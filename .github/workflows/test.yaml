@@ -132,3 +132,4 @@ jobs:
         env:
           EML_DIR: ${{ vars.EML_DIR }}
           SMTP_SOURCE_PROG: ${{ vars.SMTP_SOURCE_PROG }}
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
