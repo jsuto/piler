@@ -48,7 +48,7 @@ void usage(){
    printf("\nusage: piler\n\n");
    printf("    -c <config file>                  Config file to use if not the default\n");
    printf("    -d                                Fork to the background\n");
-   printf("    -v                                Return the version and build number\n");
+   printf("    -v                                Return the version\n");
    printf("    -V                                Return the version and some build parameters\n");
 
    exit(0);
@@ -506,16 +506,16 @@ int main(int argc, char **argv){
                    break;
 
         case 'v' :
-                   printf("%s build %d\n", VERSION, get_build());
+                   printf("%s\n", VERSION);
                    return 0;
 
         case 'V' :
-                   printf("%s %s, build %d, Janos SUTO <sj@acts.hu>\n\n%s\nMySQL client library version: %s\n", PROGNAME, VERSION, get_build(), CONFIGURE_PARAMS, mysql_get_client_info());
+                   printf("%s %s, Janos SUTO <sj@acts.hu>\n\n%s\nMySQL client library version: %s\n", PROGNAME, VERSION, CONFIGURE_PARAMS, mysql_get_client_info());
                    get_extractor_list();
                    return 0;
 
         case 'h' :
-        default  : 
+        default  :
                    usage();
       }
    }
@@ -553,7 +553,7 @@ int main(int argc, char **argv){
       if(data.dedup == MAP_FAILED) syslog(LOG_INFO, "cannot mmap() %s, errno=%d", MESSAGE_ID_DEDUP_FILE, errno);
    }
 
-   syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
+   syslog(LOG_PRIORITY, "%s %s starting", PROGNAME, VERSION);
 
 #if HAVE_DAEMON == 1
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);

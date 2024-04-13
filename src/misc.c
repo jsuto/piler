@@ -27,11 +27,6 @@
 #include "tai.h"
 
 
-int get_build(){
-   return BUILD;
-}
-
-
 void get_extractor_list(){
    printf("Extractors: ");
 

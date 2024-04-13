@@ -47,7 +47,7 @@ void usage(){
    printf("\nusage: piler\n\n");
    printf("    -c <config file>                  Config file to use if not the default\n");
    printf("    -d                                Fork to the background\n");
-   printf("    -v                                Return the version and build number\n");
+   printf("    -v                                Return the version\n");
    printf("    -V                                Return the version and some build parameters\n");
    printf("    -L <log level>                    Set the log level: 1-5\n");
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv){
 
         case 'v' :
         case 'V' :
-                   printf("%s build %d\n", VERSION, get_build());
+                   printf("%s\n", VERSION);
                    return 0;
 
         case 'h' :
@@ -221,7 +221,7 @@ int main(int argc, char **argv){
 
    srand(getpid());
 
-   syslog(LOG_PRIORITY, "%s %s, build %d starting", PROGNAME, VERSION, get_build());
+   syslog(LOG_PRIORITY, "%s %s starting", PROGNAME, VERSION);
 
 #if HAVE_DAEMON == 1
    if(daemonise == 1 && daemon(1, 0) == -1) fatal(ERR_DAEMON);

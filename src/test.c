@@ -113,7 +113,7 @@ int main(int argc, char **argv){
    printf("locale: %s\n", setlocale(LC_MESSAGES, cfg.locale));
    setlocale(LC_CTYPE, cfg.locale);
 
-   printf("build: %d\n", get_build());
+   printf("version: %s\n", VERSION);
 
    data.import = &import;
 
@@ -206,5 +206,3 @@ int main(int argc, char **argv){
 
    return 0;
 }
-
-
