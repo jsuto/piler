@@ -1,0 +1,78 @@
+name: 'Build piler package'
+
+inputs:
+  ARCH:
+    required: true
+  BUILDER_IMAGE:
+    required: false
+    default: 'sutoj/builder:0.1'
+  COMMIT_ID:
+    required: true
+  DISTRO:
+    required: false
+    default: 'jammy'
+  DOCKER_USERNAME:
+    required: true
+  DOCKER_TOKEN:
+    required: true
+  IMAGE_NAME:
+    required: true
+  PROJECT_ID:
+    required: true
+  TEST_TAG:
+    required: true
+  VERSION:
+    required: true
+
+outputs:
+  PACKAGE:
+    description: 'The built package'
+    value: ${{ steps.build-package.outputs.PACKAGE }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Build package
+      id: build-package
+      run: |
+        echo github run id: $GITHUB_RUN_ID
+
+        docker run --rm \
+           -e PROJECT_ID=${{ inputs.PROJECT_ID }} \
+           -e DISTRO=${{ inputs.DISTRO }} \
+           -e ARCH=${{ inputs.ARCH }} \
+           -e VERSION=${{ inputs.VERSION }} \
+           -e COMMIT_ID=${{ inputs.COMMIT_ID }} \
+           -e BUILD_NUMBER=$GITHUB_RUN_ID \
+           -v $PWD:/repo \
+           -v $PWD/docker:/data \
+           ${{ inputs.BUILDER_IMAGE }}
+
+        docker run --rm -v ${{ github.workspace }}:/workspace ${{ inputs.BUILDER_IMAGE }} bash -c "chown -R $(id -u):$(id -g) /workspace"
+
+        ls -la docker
+        a="$(ls docker/*deb)"
+        PACKAGE="${a##*/}"
+        echo "PACKAGE=$PACKAGE" >> $GITHUB_OUTPUT
+        echo "PACKAGE=$PACKAGE" >> $GITHUB_ENV
+        echo "Package: ${PACKAGE}"
+      shell: bash
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.DOCKER_USERNAME }}
+        password: ${{ inputs.DOCKER_TOKEN }}
+
+    - name: Build image
+      uses: docker/build-push-action@v5
+      with:
+        context: docker
+        push: true
+        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
+        build-args: |
+          PACKAGE=${{ env.PACKAGE }}
