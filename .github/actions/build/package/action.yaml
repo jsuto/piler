@@ -15,8 +15,6 @@ inputs:
     required: true
   PROJECT_ID:
     required: true
-  TEST_TAG:
-    required: true
   VERSION:
     required: true
 
