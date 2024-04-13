@@ -69,7 +69,7 @@ jobs:
       - name: Create docker manifest
         run: |
           set -x
-          docker manifest rm ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}
+          docker manifest rm ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }} || true
           docker manifest create ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }} --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-amd64 --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-arm64
           docker manifest push ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}
         shell: bash
