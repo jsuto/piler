@@ -70,7 +70,8 @@ runs:
       uses: docker/build-push-action@v5
       with:
         context: docker
-        push: true
+        push: false
+        load: true
         tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
         build-args: |
           PACKAGE=${{ env.PACKAGE }}

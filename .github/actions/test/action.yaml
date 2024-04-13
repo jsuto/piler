@@ -1,0 +1,72 @@
+name: 'Run tests against the built docker image'
+
+inputs:
+  ARCH:
+    required: true
+  ARCHIVE_HOST:
+    required: true
+  CONFIG_SITE_PHP:
+    required: true
+  EML_DIR:
+    required: true
+  SMTP_SOURCE_PROG:
+    required: true
+  SMTP_HOST:
+    required: true
+  TEST_TAG:
+    required: true
+
+runs:
+  using: 'composite'
+
+  steps:
+
+    - name: Destroy all containers
+      run: |
+        pushd docker
+        # Fix compose file
+        sed -i 's/^volumes:/  imap.aaa.fu:\n    image: sutoj\/imap\n    container_name: imap.aaa.fu\n\nvolumes:/' docker-compose.yaml
+        docker compose down -v || true
+        popd
+      shell: bash
+
+    - name: Start containers
+      run: |
+        export VERSION=${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
+        export CONTAINER="piler"
+        pushd docker
+        docker compose up -d
+        i=0
+        while [[ "$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER")" != "healthy" ]]; do
+          i=$((i+1))
+          sleep 2
+          if [[ $i -gt 45 ]]; then
+            "sleep is still not running inside ${CONTAINER}"
+            exit 1
+          fi
+        done
+        docker compose ps
+        popd
+      shell: bash
+      env:
+        ARCHIVE_HOST: ${{ inputs.ARCHIVE_HOST }}
+
+    - name: Remove stale images
+      run: yes|docker image prune
+
+    - name: Setup piler
+      run: |
+        ./tests/setup.sh
+      shell: bash
+      env:
+        CONFIG_SITE_PHP: ${{ inputs.CONFIG_SITE_PHP }}
+
+    - name: Run tests
+      run: |
+        ./tests/run.sh
+      shell: bash
+      env:
+        ARCHIVE_HOST: ${{ inputs.ARCHIVE_HOST }}
+        EML_DIR: ${{ inputs.EML_DIR }}
+        SMTP_SOURCE_PROG: ${{ inputs.SMTP_SOURCE_PROG }}
+        SMTP_HOST: ${{ inputs.SMTP_HOST }}
