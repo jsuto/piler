@@ -48,7 +48,8 @@ jobs:
       - name: Build package
         id: build-package
         run: |
-          docker run --rm -u $(id -u):$(id -g) -e PROJECT_ID -e DISTRO -e ARCH -e VERSION -e COMMIT_ID -e BUILD_NUMBER=$GITHUB_RUN_ID -v $PWD:/repo -v $PWD/docker:/data ${{ env.BUILDER_IMAGE }}
+          docker run --rm -e PROJECT_ID -e DISTRO -e ARCH -e VERSION -e COMMIT_ID -e BUILD_NUMBER=$GITHUB_RUN_ID -v $PWD:/repo -v $PWD/docker:/data ${{ env.BUILDER_IMAGE }}
+          docker run --rm -v ${{ github.workspace }}:/workspace busybox:latest /bin/sh -c "chown -R $(id -u):$(id -g) /workspace"
           ls -la docker
           a="$(ls docker/*deb)"
           PACKAGE="${a##*/}"
