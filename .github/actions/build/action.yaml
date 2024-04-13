@@ -30,14 +30,12 @@ outputs:
     value: ${{ steps.build-package.outputs.PACKAGE }}
 
 runs:
-  using: "composite"
+  using: 'composite'
 
   steps:
     - name: Build package
       id: build-package
       run: |
-        echo github run id: $GITHUB_RUN_ID
-
         docker run --rm \
            -e PROJECT_ID=${{ inputs.PROJECT_ID }} \
            -e DISTRO=${{ inputs.DISTRO }} \
