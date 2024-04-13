@@ -75,3 +75,10 @@ runs:
         tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
         build-args: |
           PACKAGE=${{ env.PACKAGE }}
+
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        retention-days: 7
+        path: docker/*deb
+        name: package-${{ inputs.ARCH }}
