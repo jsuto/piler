@@ -9,8 +9,14 @@ inputs:
     required: true
   IMAGE_NAME:
     required: true
+  LOAD:
+    required: false
+    default: true
   PACKAGE:
     required: true
+  PUSH:
+    required: false
+    default: false
   TEST_TAG:
     required: true
 
@@ -50,8 +56,8 @@ runs:
       uses: docker/build-push-action@v5
       with:
         context: docker
-        push: false
-        load: true
+        push: ${{ inputs.PUSH }}
+        load: ${{ inputs.LOAD }}
         tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
         build-args: |
           PACKAGE=${{ inputs.PACKAGE }}
