@@ -26,7 +26,7 @@ services:
       - MYSQL_DATABASE=piler
       - MYSQL_USER=piler
       - MYSQL_PASSWORD=piler123
-      - PILER_HOSTNAME=cust1.acts.hu
+      - PILER_HOSTNAME=${ARCHIVE_HOST:-archive.example.com}
       - RT=1
     ports:
       - "25:25"
