@@ -4,19 +4,17 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-SCRIPT_PATH="$(readlink -f "$0")"
-SCRIPT_DIR="${SCRIPT_PATH%/*}"
-
-EML_DIR=/home/sj/temp/eml
-SMTP_SOURCE_PROG=/home/sj/devel/ci/test/smtp/smtp-source.py
-SMTP_HOST="127.0.0.1"
-
 declare -a SEARCH_QUERIES
 declare -a SEARCH_HITS
 declare -A SHA256_SUM
 
 VERDICT=0
 RESULT_CRITICAL=2
+
+error() {
+   echo "$@"
+   exit 1
+}
 
 set_verdict() {
    [[ ${VERDICT} -ge "$1" ]] || { VERDICT="$1"; echo "verdict: ${VERDICT}"; }
@@ -30,8 +28,9 @@ get_verdict() {
 count_status_values() {
    local logfile="mail.log"
 
-   echo "$FUNCNAME"
+   echo "${FUNCNAME[0]}"
 
+   # shellcheck disable=SC2153
    docker exec "$CONTAINER" cat "/var/log/${logfile}" > "$logfile"
 
    received=$(grep -c "received:" "$logfile")
@@ -64,7 +63,7 @@ append_queries() {
 }
 
 run_sphinx_tests() {
-   echo "$FUNCNAME"
+   echo "${FUNCNAME[0]}"
 
    append_queries
 
@@ -136,14 +135,11 @@ read_eml_files_data() {
 
    ts_stop="$(date +%s)"
    echo "${FUNCNAME[0]}" "took" $(( ts_stop - ts_start )) "secs"
-
-   READ_EML_TEST_FILES=1
 }
 
 test_retrieved_messages_are_the_same() {
    local container="$1"
    local database="$2"
-   local piler_id
    local message_id
    local i=0
    local bad=0
@@ -183,10 +179,10 @@ test_retrieved_messages_are_the_same() {
 }
 
 for i in Inbox Inbox2 Levelszemet Levelszemet2 spam0 spam1 spam2 journal deduptest special; do
-   "$SMTP_SOURCE_PROG" -s "$SMTP_HOST" -r archive@cust1.acts.hu -p 25 -t 20 --dir "$EML_DIR/$i" --no-counter
+   "$SMTP_SOURCE_PROG" -s "$SMTP_HOST" -r "archive@${ARCHIVE_HOST}" -p 25 -t 20 --dir "$EML_DIR/$i" --no-counter
 done
 
-"$SMTP_SOURCE_PROG" -s $SMTP_HOST -r archive@cust1.acts.hu extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --no-counter
+"$SMTP_SOURCE_PROG" -s "$SMTP_HOST" -r "archive@${ARCHIVE_HOST}" extra@addr.ess another@extra.addr -p 25 -t 20 --dir "$EML_DIR/virus" --no-counter
 
 wait_until_emails_are_processed "$CONTAINER" 3020
 
