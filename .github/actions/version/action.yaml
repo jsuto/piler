@@ -17,9 +17,10 @@ runs:
   using: 'composite'
 
   steps:
-    - name: 'Set version tag'
+    - name: 'Get version tag'
       id: generate-version
       run: |
+        git log -1
         read -r VERSION < VERSION
         COMMIT_ID="$( git rev-parse --short HEAD )"
         IMAGE_TAG="${VERSION}-${COMMIT_ID}"
