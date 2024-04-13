@@ -1,0 +1,32 @@
+name: 'Get version'
+
+outputs:
+  COMMIT_ID:
+    description: 'The short commit hash, eg. deadbeef'
+    value: ${{ steps.generate-version.outputs.COMMIT_ID }}
+
+  IMAGE_TAG:
+    description: 'The image tag, eg. 1.2.3-deadbeef'
+    value: ${{ steps.generate-version.outputs.IMAGE_TAG }}
+
+  VERSION:
+    description: 'The version number'
+    value: ${{ steps.generate-version.outputs.VERSION }}
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: 'Set version tag'
+      id: generate-version
+      run: |
+        read -r VERSION < VERSION
+        COMMIT_ID="$( git rev-parse --short HEAD )"
+        IMAGE_TAG="${VERSION}-${COMMIT_ID}"
+
+        echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_OUTPUT
+        echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+        echo "image tag: $IMAGE_TAG"
+      shell: bash
