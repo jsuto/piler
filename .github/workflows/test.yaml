@@ -37,13 +37,11 @@ jobs:
 
       - name: Build package
         id: build-package
-        uses: ./.github/actions/build
+        uses: ./.github/actions/build/package
         with:
           ARCH: ${{ env.ARCH }}
           COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: ${{ env.PROJECT_ID }}
           TEST_TAG: ${{ env.TEST_TAG }}
@@ -59,6 +57,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build image
+        uses: ./.github/actions/build/image
+        with:
+          ARCH: ${{ env.ARCH }}
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          PACKAGE: ${{ needs.build.outputs.PACKAGE }}
+          TEST_TAG: ${{ env.TEST_TAG }}
 
       - name: Run tests
         uses: ./.github/actions/test
