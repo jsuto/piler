@@ -45,7 +45,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          PROJECT_ID: piler
+          PROJECT_ID: ${{ env.PROJECT_ID }}
           TEST_TAG: ${{ env.TEST_TAG }}
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
@@ -60,52 +60,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Destroy all containers
-        run: |
-          pushd docker
-          # Fix compose file
-          sed -i 's/^volumes:/  imap.aaa.fu:\n    image: sutoj\/imap\n    container_name: imap.aaa.fu\n\nvolumes:/' docker-compose.yaml
-          docker compose down -v || true
-          popd
-        shell: bash
-
-      - name: Start containers
-        run: |
-          export VERSION=${{ env.TEST_TAG }}-${{ env.ARCH }}
-          pushd docker
-          docker compose pull piler
-          docker compose up -d
-          i=0
-          while [[ "$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER")" != "healthy" ]]; do
-            i=$((i+1))
-            sleep 2
-            if [[ $i -gt 45 ]]; then
-              "sleep is still not running inside ${CONTAINER}"
-              exit 1
-            fi
-          done
-          docker compose ps
-          popd
-        shell: bash
-        env:
-          ARCHIVE_HOST: ${{ vars.ARCHIVE_HOST }}
-
-      - name: Remove stale images
-        run: yes|docker image prune
-
-      - name: Setup piler
-        run: |
-          ./tests/setup.sh
-        shell: bash
-        env:
-          CONFIG_SITE_PHP: ${{ vars.CONFIG_SITE_PHP }}
-
       - name: Run tests
-        run: |
-          ./tests/run.sh
-        shell: bash
-        env:
-          ARCHIVE_HOST: ${[ vars.ARCHIVE_HOST }}
+        uses: ./.github/actions/test
+        with:
+          ARCH: ${{ env.ARCH }}
+          ARCHIVE_HOST: ${{ vars.ARCHIVE_HOST }}
+          CONFIG_SITE_PHP: ${{ vars.CONFIG_SITE_PHP }}
+          CONTAINER: 'piler'
           EML_DIR: ${{ vars.EML_DIR }}
           SMTP_SOURCE_PROG: ${{ vars.SMTP_SOURCE_PROG }}
           SMTP_HOST: ${{ vars.SMTP_HOST }}
+          TEST_TAG: ${{ env.TEST_TAG }}
