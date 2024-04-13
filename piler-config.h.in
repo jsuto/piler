@@ -2,6 +2,7 @@
  * piler-config.h.in, SJ
  */
 
+#define COMMIT_HASH ""
 #define VERSION "x.x.x"
 
 #define CONFDIR "/usr/local/etc"

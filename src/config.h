@@ -11,9 +11,7 @@
 
 typedef unsigned long long uint64;
 
-#define BUILD 1001
-
-#define HOSTID "mailarchiver"
+#define HOSTID "archive.example.com"
 
 #define CONFIG_FILE CONFDIR "/piler/piler.conf"
 #define SMTP_ACL_FILE CONFDIR "/piler/smtp.acl"
