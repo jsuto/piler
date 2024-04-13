@@ -98,7 +98,7 @@ jobs:
 
       - name: Start containers
         run: |
-          export VERSION=${{ env.TEST_TAG }}
+          export VERSION=${{ env.TEST_TAG }}-${{ env.ARCH }}
           pushd docker
           docker compose pull piler
           docker compose up -d
