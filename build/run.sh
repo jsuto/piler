@@ -87,7 +87,7 @@ set_mysql_flavour
 get_pkg_name
 
 ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-database="$MYSQL_FLAVOUR" "$DEBUG_OPTION"
-sed "s/#define COMMIT_HASH.*/#define COMMIT_HASH \"-$( git rev-parse --short HEAD )\"/" piler-config.h
+sed -i "s/#define COMMIT_HASH.*/#define COMMIT_HASH \"-$( git rev-parse --short HEAD )\"/" piler-config.h
 make clean
 make -j2
 
