@@ -53,9 +53,9 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           LOAD: false
-          PACKAGE: ${{ needs.build.outputs.PACKAGE }}
+          PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
           PUSH: true
-          TEST_TAG: ${{ needs.build.outputs.VERSION }}
+          TEST_TAG: ${{ steps.get-version.outputs.VERSION }}
 
   create-release:
     needs:
