@@ -1,0 +1,21 @@
+name: Check master merge
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    if: github.ref_name == 'master'
+
+    runs-on:
+      - self-hosted
+      - X64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Get version'
+        id: get-version
+        uses: ./.github/actions/version
