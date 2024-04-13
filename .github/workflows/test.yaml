@@ -51,6 +51,8 @@ jobs:
           ARCH: ${{ env.ARCH }}
           COMMIT_ID: ${{ env.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: piler
           TEST_TAG: ${{ env.TEST_TAG }}
