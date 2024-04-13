@@ -46,7 +46,7 @@ jobs:
 
       - name: Build package
         id: build-package
-        uses: ./github/actions/build
+        uses: ./.github/actions/build
         with:
           ARCH: ${{ env.ARCH }}
           COMMIT_ID: ${{ env.COMMIT_ID }}
