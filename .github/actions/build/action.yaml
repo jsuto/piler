@@ -18,7 +18,9 @@ inputs:
     required: true
 
 outputs:
-  PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
+  PACKAGE:
+    description: 'The built package'
+    value: ${{ steps.build-package.outputs.PACKAGE }}
 
 env:
   BUILDER_IMAGE: sutoj/builder:0.1
