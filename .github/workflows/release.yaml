@@ -16,7 +16,7 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: ['ARM64']
+        arch: ['arm64']
 
     runs-on:
       - self-hosted
