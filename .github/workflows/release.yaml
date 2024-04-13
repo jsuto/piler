@@ -47,8 +47,17 @@ jobs:
           TEST_TAG: ${{ env.TEST_TAG }}
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
-       # TODO: build and publish images
-
+      - name: Build image
+        uses: ./.github/actions/build/image
+        with:
+          ARCH: ${{ matrix.arch }}
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          LOAD: false
+          PACKAGE: ${{ needs.build.outputs.PACKAGE }}
+          PUSH: true
+          TEST_TAG: ${{ env.TEST_TAG }}
 
   create-release:
     needs:
