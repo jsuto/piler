@@ -11,6 +11,11 @@ declare -A SHA256_SUM
 VERDICT=0
 RESULT_CRITICAL=2
 
+error() {
+   echo "$@"
+   exit 1
+}
+
 set_verdict() {
    [[ ${VERDICT} -ge "$1" ]] || { VERDICT="$1"; echo "verdict: ${VERDICT}"; }
 }
