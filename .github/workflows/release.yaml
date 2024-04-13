@@ -41,9 +41,9 @@ jobs:
         with:
           ARCH: ${{ matrix.arch }}
           COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
-          DISTRO: ${{ env.DISTRO }}
+          DISTRO: 'jammy'
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          PROJECT_ID: ${{ env.PROJECT_ID }}
+          PROJECT_ID: 'piler'
           TEST_TAG: ${{ env.TEST_TAG }}
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
