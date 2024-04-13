@@ -13,13 +13,15 @@ env:
   TEST_TAG: test
   DISTRO: jammy
   PROJECT_ID: piler
-  ARCH: amd64
+  ARCH: arm64
   CONTAINER: piler
   RT: 1
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ARM64
 
     outputs:
       IMAGE_TAG: ${{ steps.generate-version.outputs.IMAGE_TAG }}
@@ -46,7 +48,7 @@ jobs:
       - name: Build package
         id: build-package
         run: |
-          docker run --rm -e PROJECT_ID -e DISTRO -e ARCH -e VERSION -e COMMIT_ID -e BUILD_NUMBER=$GITHUB_RUN_ID -v $PWD:/repo -v $PWD/docker:/data ${{ env.BUILDER_IMAGE }}
+          docker run --rm -u $(id -u):$(id -g) -e PROJECT_ID -e DISTRO -e ARCH -e VERSION -e COMMIT_ID -e BUILD_NUMBER=$GITHUB_RUN_ID -v $PWD:/repo -v $PWD/docker:/data ${{ env.BUILDER_IMAGE }}
           ls -la docker
           a="$(ls docker/*deb)"
           PACKAGE="${a##*/}"
@@ -69,14 +71,14 @@ jobs:
         with:
           context: docker
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}
+          tags: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}-${{ env.ARCH }}
           build-args: |
             PACKAGE=${{ env.PACKAGE }}
 
   run-tests:
     runs-on:
       - self-hosted
-      - X64
+      - ARM64
 
     needs:
       - build
@@ -126,3 +128,6 @@ jobs:
         run: |
           ./tests/run.sh
         shell: bash
+        env:
+          EML_DIR: ${{ vars.EML_DIR }}
+          SMTP_SOURCE_PROG: ${{ vars.SMTP_SOURCE_PROG }}
