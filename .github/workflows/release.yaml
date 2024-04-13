@@ -7,7 +7,6 @@ on:
 
 env:
   IMAGE_NAME: sutoj/piler
-  TEST_TAG: test
 
 permissions:
   contents: write
@@ -44,7 +43,6 @@ jobs:
           DISTRO: 'jammy'
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: 'piler'
-          TEST_TAG: ${{ env.TEST_TAG }}
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
       - name: Build image
@@ -57,7 +55,7 @@ jobs:
           LOAD: false
           PACKAGE: ${{ needs.build.outputs.PACKAGE }}
           PUSH: true
-          TEST_TAG: ${{ env.TEST_TAG }}
+          TEST_TAG: ${{ needs.build.outputs.VERSION }}
 
   create-release:
     needs:
@@ -68,6 +66,14 @@ jobs:
       - X64
 
     steps:
+      - name: Create docker manifest
+        run: |
+          set -x
+          docker manifest rm ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}
+          docker manifest create ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }} --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-amd64 --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-arm64
+          docker manifest push ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}
+        shell: bash
+
       - name: Download packages
         uses: actions/download-artifact@v4
         with:
