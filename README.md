@@ -1,3 +1,5 @@
+![test workflow](https://github.com/jsuto/piler/actions/workflows/test.yaml/badge.svg)
+
 piler is an open source email archival application. Please visit https://www.mailpiler.org/ for more.
 
 Features:
