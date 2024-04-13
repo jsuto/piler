@@ -3,6 +3,9 @@ name: 'Build piler package'
 inputs:
   ARCH:
     required: true
+  BUILDER_IMAGE:
+    required: false
+    default: 'sutoj/builder:0.1'
   COMMIT_ID:
     required: true
   DISTRO:
@@ -26,9 +29,6 @@ outputs:
     description: 'The built package'
     value: ${{ steps.build-package.outputs.PACKAGE }}
 
-env:
-  BUILDER_IMAGE: sutoj/builder:0.1
-
 runs:
   using: "composite"
 
@@ -36,6 +36,8 @@ runs:
     - name: Build package
       id: build-package
       run: |
+        echo github run id: $GITHUB_RUN_ID
+
         docker run --rm \
            -e PROJECT_ID=${{ inputs.PROJECT_ID }} \
            -e DISTRO=${{ inputs.DISTRO }} \
@@ -45,9 +47,9 @@ runs:
            -e BUILD_NUMBER=$GITHUB_RUN_ID \
            -v $PWD:/repo \
            -v $PWD/docker:/data \
-           ${{ env.BUILDER_IMAGE }}
+           ${{ inputs.BUILDER_IMAGE }}
 
-        docker run --rm -v ${{ github.workspace }}:/workspace ${{ env.BUILDER_IMAGE }} bash -c "chown -R $(id -u):$(id -g) /workspace"
+        docker run --rm -v ${{ github.workspace }}:/workspace ${{ inputs.BUILDER_IMAGE }} bash -c "chown -R $(id -u):$(id -g) /workspace"
 
         ls -la docker
         a="$(ls docker/*deb)"
