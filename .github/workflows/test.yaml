@@ -115,7 +115,7 @@ jobs:
           popd
         shell: bash
         env:
-          ARCHIVE_HOST: ${[ vars.ARCHIVE_HOST }}
+          ARCHIVE_HOST: ${{ vars.ARCHIVE_HOST }}
 
       - name: Remove stale images
         run: yes|docker image prune
