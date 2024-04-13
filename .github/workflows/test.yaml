@@ -23,40 +23,31 @@ jobs:
       - ARM64
 
     outputs:
-      IMAGE_TAG: ${{ steps.generate-version.outputs.IMAGE_TAG }}
-      VERSION: ${{ steps.generate-version.outputs.VERSION }}
+      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
+      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
       PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set version tag
-        id: generate-version
-        run: |
-          read -r VERSION < VERSION
-          COMMIT_ID="$( git rev-parse --short HEAD )"
-          IMAGE_TAG="${VERSION}-${COMMIT_ID}"
-
-          echo "image tag: $IMAGE_TAG"
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-        shell: bash
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/version
 
       - name: Build package
         id: build-package
         uses: ./.github/actions/build
         with:
           ARCH: ${{ env.ARCH }}
-          COMMIT_ID: ${{ env.COMMIT_ID }}
+          COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: piler
           TEST_TAG: ${{ env.TEST_TAG }}
-          VERSION: ${{ env.VERSION }}
+          VERSION: ${{ steps.get-version.outputs.VERSION }}
 
   run-tests:
     runs-on:
