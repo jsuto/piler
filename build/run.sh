@@ -4,8 +4,6 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-SCRIPT_PATH="$(readlink -f "$0")"
-SCRIPT_DIR="${SCRIPT_PATH%/*}"
 REPO_ROOT="/repo"
 DEBUG="${DEBUG:-false}"
 DEBUG_OPTION=""
@@ -89,6 +87,7 @@ set_mysql_flavour
 get_pkg_name
 
 ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-database="$MYSQL_FLAVOUR" "$DEBUG_OPTION"
+sed "s/#define COMMIT_HASH.*/#define COMMIT_HASH \"-$( git rev-parse --short HEAD )\"/" piler-config.h
 make clean
 make -j2
 
