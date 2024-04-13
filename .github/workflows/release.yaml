@@ -16,7 +16,7 @@ jobs:
   build:
     strategy:
       matrix:
-        arch: ['X64', 'ARM64']
+        arch: ['ARM64']
 
     runs-on:
       - self-hosted
@@ -51,7 +51,9 @@ jobs:
 
 
   create-release:
-
+    needs:
+      - build
+      
     runs-on:
       - self-hosted
       - X64
