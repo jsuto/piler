@@ -1,4 +1,4 @@
-name: Publish release
+name: Create release
 
 on:
   push:
@@ -13,13 +13,56 @@ permissions:
   contents: write
 
 jobs:
-  publish:
+  build:
+    strategy:
+      matrix:
+        arch: ['X64', 'ARM64']
+
+    runs-on:
+      - self-hosted
+      - ${{ matrix.arch }}
+
+    outputs:
+      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
+      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+      PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/version
+
+      - name: Build package
+        id: build-package
+        uses: ./.github/actions/build/package
+        with:
+          ARCH: ${{ matrix.arch }}
+          COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+          DISTRO: ${{ env.DISTRO }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          TEST_TAG: ${{ env.TEST_TAG }}
+          VERSION: ${{ steps.get-version.outputs.VERSION }}
+
+       # TODO: build and publish images
+
+
+  create-release:
 
     runs-on:
       - self-hosted
       - X64
 
     steps:
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          name: package-*
+          merge-multiple: true
+
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,4 +72,4 @@ jobs:
               --repo="$GITHUB_REPOSITORY" \
               --title="${GITHUB_REPOSITORY#*/} ${tag#*-}" \
               --generate-notes
-
+          gh release upload "$tag" piler*deb
