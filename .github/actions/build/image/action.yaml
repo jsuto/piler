@@ -1,8 +1,6 @@
 name: 'Build image'
 
 inputs:
-  ARCH:
-    required: true
   DOCKER_USERNAME:
     required: true
   DOCKER_TOKEN:
@@ -14,16 +12,11 @@ inputs:
     default: true
   PACKAGE:
     required: true
+  PLATFORMS:
+    required: true
   PUSH:
     required: false
     default: false
-  TEST_TAG:
-    required: true
-
-outputs:
-  IMAGE_NAME:
-    description: 'The built image'
-    value: ${{ steps.get-image-name.outputs.IMAGE_NAME }}
 
 runs:
   using: 'composite'
@@ -38,18 +31,9 @@ runs:
         username: ${{ inputs.DOCKER_USERNAME }}
         password: ${{ inputs.DOCKER_TOKEN }}
 
-    - name: Get built image name
-      id: get-image-name
-      run: |
-        IMAGE_NAME=${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
-        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Download package
       uses: actions/download-artifact@v4
       with:
-        name: package-${{ inputs.ARCH }}
         path: docker
 
     - name: Build image from package
@@ -58,7 +42,7 @@ runs:
         context: docker
         push: ${{ inputs.PUSH }}
         load: ${{ inputs.LOAD }}
-        #tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
-        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.ARCH }}
+        tags: ${{ inputs.IMAGE_NAME }}
+        platforms: ${{ inputs.PLATFORMS }}
         build-args: |
           PACKAGE=${{ inputs.PACKAGE }}

@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 
 ARG PACKAGE
+ARG TARGETARCH
 
 LABEL description="piler ubuntu jammy image" \
       maintainer="Janos SUTO, sj@acts.hu" \
@@ -11,8 +12,9 @@ ENV DEBIAN_FRONTEND="noninteractive" \
     PILER_USER="piler" \
     MYSQL_DATABASE="piler"
 
-COPY ${PACKAGE} /
+COPY ${PACKAGE}_${TARGETARCH}.deb /
 
+# hadolint ignore=DL3008,DL3015
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
        wget openssl sysstat php8.1-cli php8.1-cgi php8.1-mysql php8.1-fpm php8.1-zip php8.1-ldap \
@@ -26,10 +28,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     sed -i '/session    required     pam_loginuid.so/c\#session    required     pam_loginuid.so' /etc/pam.d/cron && \
-    dpkg -i ${PACKAGE} && \
+    dpkg -i ${PACKAGE}_${TARGETARCH}.deb && \
     touch /etc/piler/MANTICORE && \
     ln -sf /etc/piler/piler-nginx.conf /etc/nginx/sites-enabled && \
-    rm -f ${PACKAGE} /etc/nginx/sites-enabled/default /etc/piler/piler.key /etc/piler/piler.pem /etc/piler/config-site.php && \
+    rm -f ${PACKAGE}_${TARGETARCH}.deb /etc/nginx/sites-enabled/default /etc/piler/piler.key /etc/piler/piler.pem /etc/piler/config-site.php && \
     crontab -u $PILER_USER /usr/share/piler/piler.cron
 
 VOLUME ["/etc/piler"]

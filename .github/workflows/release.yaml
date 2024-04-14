@@ -6,13 +6,15 @@ on:
       - piler*
 
 env:
+  PROJECT_ID: piler
+  DISTRO: jammy
   IMAGE_NAME: sutoj/piler
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  build-package:
     strategy:
       matrix:
         arch: ['amd64','arm64']
@@ -40,40 +42,46 @@ jobs:
         with:
           ARCH: ${{ matrix.arch }}
           COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
-          DISTRO: 'jammy'
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          DISTRO: ${{ env.DISTRO }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.DISTRO }}-${{ matrix.arch }}
           PROJECT_ID: 'piler'
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
-      - name: Build image
-        uses: ./.github/actions/build/image
-        with:
-          ARCH: ${{ matrix.arch }}
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          LOAD: false
-          PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
-          PUSH: true
-          TEST_TAG: ${{ steps.get-version.outputs.VERSION }}
-
-  create-release:
+  build-image:
     needs:
-      - build
-      
+      - build-package
+
     runs-on:
       - self-hosted
       - X64
 
     steps:
-      - name: Create docker manifest
-        run: |
-          set -x
-          docker manifest rm ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }} || true
-          docker manifest create ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }} --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-amd64 --amend ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}-arm64
-          docker manifest push ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.VERSION }}
-        shell: bash
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          path: docker
+          merge-multiple: true
 
+      - name: Build image
+        uses: ./.github/actions/build/image
+        with:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ needs.build-package.outputs.VERSION }}
+          LOAD: false
+          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.build-package.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.build-package.outputs.COMMIT_ID }}
+          PLATFORMS: 'linux/amd64,linux/arm64'
+          PUSH: true
+
+  create-release:
+    needs:
+      - build-image
+
+    runs-on:
+      - self-hosted
+      - X64
+
+    steps:
       - name: Download packages
         uses: actions/download-artifact@v4
         with:
