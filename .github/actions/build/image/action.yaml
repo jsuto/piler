@@ -58,6 +58,7 @@ runs:
         context: docker
         push: ${{ inputs.PUSH }}
         load: ${{ inputs.LOAD }}
-        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
+        #tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
+        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}
         build-args: |
           PACKAGE=${{ inputs.PACKAGE }}
