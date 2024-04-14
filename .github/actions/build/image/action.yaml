@@ -59,6 +59,6 @@ runs:
         push: ${{ inputs.PUSH }}
         load: ${{ inputs.LOAD }}
         #tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
-        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.TEST_TAG }}
+        tags: ${{ inputs.IMAGE_NAME }}:${{ inputs.ARCH }}
         build-args: |
           PACKAGE=${{ inputs.PACKAGE }}
