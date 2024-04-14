@@ -44,7 +44,6 @@ jobs:
           DISTRO: ${{ env.DISTRO }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: ${{ env.PROJECT_ID }}
-          TEST_TAG: ${{ env.TEST_TAG }}
           VERSION: ${{ steps.get-version.outputs.VERSION }}
 
   run-tests:
@@ -58,20 +57,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          name: package-${{ env.ARCH }}
+          path: docker
+
       - name: Build image
         uses: ./.github/actions/build/image
         with:
-          ARCH: ${{ env.ARCH }}
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
-          PACKAGE: ${{ needs.build.outputs.PACKAGE }}
-          TEST_TAG: ${{ env.TEST_TAG }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}
+          LOAD: true
+          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.build.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.build.outputs.COMMIT_ID }}
+          PLATFORMS: 'linux/arm64'
+          PUSH: false
 
       - name: Run tests
         uses: ./.github/actions/test
         with:
-          ARCH: ${{ env.ARCH }}
           ARCHIVE_HOST: ${{ vars.ARCHIVE_HOST }}
           CONFIG_SITE_PHP: ${{ vars.CONFIG_SITE_PHP }}
           CONTAINER: 'piler'
