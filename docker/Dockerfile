@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 
 COPY ${PACKAGE}_${TARGETARCH}.deb /
 
-# hadolint ignore=DL3008,DL3015
+# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get -y --no-install-recommends install \
        wget openssl sysstat php8.1-cli php8.1-cgi php8.1-mysql php8.1-fpm php8.1-zip php8.1-ldap \
@@ -24,7 +24,7 @@ RUN apt-get update && \
     dpkg -i manticore-repo.noarch.deb && \
     rm -f manticore-repo.noarch.deb && \
     apt-get update && \
-    apt-get install -y manticore manticore-columnar-lib && \
+    apt-get install -y --no-install-recommends manticore manticore-columnar-lib && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     sed -i '/session    required     pam_loginuid.so/c\#session    required     pam_loginuid.so' /etc/pam.d/cron && \
