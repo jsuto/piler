@@ -1,8 +1,6 @@
 name: 'Run tests against the built docker image'
 
 inputs:
-  ARCH:
-    required: true
   ARCHIVE_HOST:
     required: true
   CONFIG_SITE_PHP:
@@ -34,7 +32,7 @@ runs:
 
     - name: Start containers
       run: |
-        export VERSION=${{ inputs.TEST_TAG }}-${{ inputs.ARCH }}
+        export VERSION=${{ inputs.TEST_TAG }}
         pushd docker
         docker compose up -d
         i=0
