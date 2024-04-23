@@ -199,7 +199,7 @@ void tear_down_session(struct smtp_session **sessions, int slot, int *num_connec
 }
 
 
-inline int get_last_newline_position(char *buf, int buflen){
+static inline int get_last_newline_position(char *buf, int buflen){
    int i;
 
    for(i=buflen; i>0; i--){
