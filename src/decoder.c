@@ -67,7 +67,7 @@ static int compmi(const void *m1, const void *m2){
 }
 
 
-inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, int *len){
+static inline void utf8_encode_char(unsigned char c, unsigned char *buf, int buflen, int *len){
    int count=0;
 
    memset(buf, 0, buflen);

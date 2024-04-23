@@ -9,7 +9,7 @@
 #include <piler.h>
 
 
-inline int hash(unsigned int key){
+static inline int hash(unsigned int key){
    return key % MAXHASH;
 }
 
