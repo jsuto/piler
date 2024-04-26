@@ -41,8 +41,9 @@ have_psql="no"
 have_tre="no"
 have_zip="no"
 have_zlib="no"
-have_tcpwrappers="no"
 have_tweak_sent_time="no"
+
+database=""
 
 pdftotext="no"
 catdoc="no"
@@ -115,16 +116,6 @@ AC_ARG_ENABLE(memcached,
         [  --enable-memcached      build memcached support], want_memcached=$enableval, want_memcached="no")
 
 
-dnl tcpwrappers library
-
-AC_CHECK_HEADERS(tcpd.h, have_tcpwrappers=yes, echo "tcpd.h is not found")
-AC_CHECK_LIB([wrap],[hosts_access],[AC_CHECK_LIB(wrap, hosts_access, have_tcpwrappers=yes, echo "libwrap is not found"; have_tcpwrappers=no)],[],[])ac_cv_lib_wrap=ac_cv_lib_wrap_main
-
-if test "$have_tcpwrappers" = "no"; then
-   echo "can't find either tcpd.h or libwrap. Tcpwrappers support is disabled";
-fi
-
-
 AC_ARG_ENABLE(tweak-sent-time,
 	[  --tweak-sent-time       tweak sent time], have_tweak_sent_time=$enableval, have_tweak_sent_time="no")
 
@@ -176,79 +167,39 @@ if test "$have_zlib" = "no"; then
 fi
 
 
-AC_ARG_WITH(database,
-[  --with-database[[=mysql]]  select the used database, currently mysql only (default: none)],[
-   if test "$withval" != "no" -a "$withval" != "yes"; then
-      DATABASE=$withval
+AC_CHECK_PROG(MYSQL_CONFIG, mariadb_config, yes)
+
+if test x$MYSQL_CONFIG = xyes; then
+   have_mysql="yes"
+fi
+
+if test "$have_mysql" = "yes"; then
+   sql_includes=`mariadb_config --cflags`
+   sql_libs=`mariadb_config --libs_r`
+   sql_obj="mysql.o"
+   database="mariadb"
+   echo "Found mariadb"
+fi
+
+if test "$have_mysql" = "no"; then
+   AC_CHECK_PROG(MYSQL_CONFIG, mysql_config, yes)
+   if test x$MYSQL_CONFIG = xyes; then
+      have_mysql="yes"
    fi
 
-
-   if test "$withval" = "mysql"; then
-
-      AC_CHECK_PROG(MYSQL_CONFIG, mysql_config, yes)
-
-      if test x$MYSQL_CONFIG = xyes; then
-         have_mysql="yes"
-      fi
-
-      if test "$have_mysql" = "yes"; then
-
-         sql_includes=`mysql_config --cflags`
-         sql_libs=`mysql_config --libs_r`
-         sql_obj="mysql.o"
-
-         AC_CHECK_LIB([guide],[main],[AC_CHECK_LIB(guide, _intel_fast_memset, have_icc_guide=yes, have_icc_guide=no)],[],[])ac_cv_lib_guide=ac_cv_lib_guide_main
-
-      else
-         echo "MySQL support is not found"
-         exit 1;
-      fi
+   if test "$have_mysql" = "yes"; then
+      sql_includes=`mysql_config --cflags`
+      sql_libs=`mysql_config --libs_r`
+      sql_obj="mysql.o"
+      database="mysql"
+      echo "Found mysql"
    fi
+fi
 
-
-   if test "$withval" = "mariadb"; then
-
-      AC_CHECK_PROG(MYSQL_CONFIG, mariadb_config, yes)
-
-      if test x$MYSQL_CONFIG = xyes; then
-         have_mysql="yes"
-      fi
-
-      if test "$have_mysql" = "yes"; then
-
-         sql_includes=`mariadb_config --cflags`
-         sql_libs=`mariadb_config --libs_r`
-         sql_obj="mysql.o"
-
-      else
-         echo "mariadb_config is not found, please install \"MariaDB Client Library for C 1.0.0 Stable\", see https://downloads.mariadb.org/client-native/1.0.0/"
-         exit 1;
-      fi
-   fi
-
-
-   if test "$withval" = "psql"; then
-
-      AC_CHECK_PROG(PSQL_CONFIG, pg_config, yes)
-
-      if test x$PSQL_CONFIG = xyes; then
-         have_psql="yes"
-      fi
-
-      if test "$have_psql" = "yes"; then
-
-         sql_includes="-I`pg_config --includedir`"
-         sql_libs="-L`pg_config --libdir`"
-         sql_obj="psql.o"
-
-      else
-         echo "PSQL support is not found"
-         exit 1;
-      fi
-   fi
-
-])
-
+if test "$have_mysql" = "no"; then
+   echo "MySQL support is not found"
+   exit 1
+fi
 
 dnl timeout binary
 
@@ -356,14 +307,6 @@ AC_DEFINE_UNQUOTED(DATAROOTDIR,"$dataroot_dir",[where to look for the share data
 
 
 
-if test "$have_mysql" = "no" && test "$have_psql" = "no"; then
-   echo
-   echo "please specify the used database with --with-database=..."
-   echo
-   exit 1
-fi
-
-
 dnl let us know if we are building on FreeBSD
 
 if test "$os" = "FreeBSD"; then
@@ -411,11 +354,7 @@ fi
 
 
 if test "$have_mysql" = "yes"; then
-   echo "database: mysql"
-fi
-
-if test "$have_psql" = "yes"; then
-   echo "database: psql"
+   echo "database: $database"
 fi
 
 
