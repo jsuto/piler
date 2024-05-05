@@ -20,7 +20,7 @@ $lopts = array(
                 'yesterday',
                 'help'
               );
-    
+
 $options = getopt($opts, $lopts);
 
 if(isset($options['help']) || isset($options['h']) )
@@ -137,7 +137,7 @@ Registry::set('sphx', $sphx);
 
 
 if(MEMCACHED_ENABLED) {
-   $memcache = new Memcache();
+   $memcache = new Memcached();
    foreach ($memcached_servers as $m){
       $memcache->addServer($m[0], $m[1]);
    }
