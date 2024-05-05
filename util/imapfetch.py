@@ -198,7 +198,7 @@ def main():
         conn.authenticate("XOAUTH2", lambda x: generate_auth_string(
             user, opts['access_token']))
     else:
-        conn.login(user, password)
+        conn.login(user, password.encode('utf-8'))
 
     conn.select()
 
