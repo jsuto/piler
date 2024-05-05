@@ -119,7 +119,7 @@ class ModelSaasCustomer extends Model
       }
 
       if(MEMCACHED_ENABLED && $cache_key) {
-         $memcache->add($cache_key, array('data' => serialize($data)), 0, MEMCACHED_TTL);
+         $memcache->add($cache_key, array('data' => serialize($data)), MEMCACHED_TTL);
       }
 
       return $data;

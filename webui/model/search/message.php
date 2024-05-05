@@ -387,7 +387,7 @@ class ModelSearchMessage extends Model {
             $computed_hash = hash($algo, $s);
 
             if(MEMCACHED_ENABLED) {
-               $memcache->add($cache_key, $computed_hash, 0, MEMCACHED_TTL);
+               $memcache->add($cache_key, $computed_hash, MEMCACHED_TTL);
             }
          }
 
