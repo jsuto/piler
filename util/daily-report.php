@@ -62,7 +62,7 @@ Registry::set('admin_user', 1);
 
 
 if(MEMCACHED_ENABLED) {
-   $memcache = new Memcache();
+   $memcache = new Memcached();
    foreach ($memcached_servers as $m){
       $memcache->addServer($m[0], $m[1]);
    }

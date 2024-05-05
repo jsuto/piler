@@ -14,7 +14,7 @@ $lopts = array(
                'stop:',
                'webui:',
               );
-    
+
 if($options = getopt($opts, $lopts)) {
 
    if(isset($options['h'])) {
@@ -54,7 +54,7 @@ $language = new Language();
 Registry::set('language', $language);
 
 if(MEMCACHED_ENABLED) {
-   $memcache = new Memcache();
+   $memcache = new Memcached();
    foreach ($memcached_servers as $m){
       $memcache->addServer($m[0], $m[1]);
    }

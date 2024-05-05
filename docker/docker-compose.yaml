@@ -47,9 +47,14 @@ services:
           memory: 512M
         limits:
           memory: 512M
-
     depends_on:
       - "mysql"
+      - "memcached"
+
+  memcached:
+    image: memcached
+    container_name: memcached
+    command: -m 64
 
 volumes:
   db_data: {}
