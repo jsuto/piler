@@ -7,5 +7,3 @@ $config['ENABLE_IMAP_AUTH'] = 1;
 $config['IMAP_HOST'] = 'imap.aaa.fu';
 $config['IMAP_PORT'] =  143;
 $config['IMAP_SSL'] = false;
-$config['MEMCACHED_ENABLED'] = 1;
-$memcached_server = ['memcached', 11211];
