@@ -39,8 +39,8 @@ void usage(){
    printf("    -d <dir>                          Directory with EML files to import\n");
    printf("    -i <imap server>                  IMAP server to connect\n");
    printf("    -K <pop3 server>                  POP3 server to connect\n");
-   printf("    -u <username>                     Username for imap/pop3 import\n");
-   printf("    -p <password>                     Password for imap/pop3 import\n");
+   printf("    -u <username>                     Username for imap/pop3 import; overrides PILER_USERNAME from the environment\n");
+   printf("    -p <password>                     Password for imap/pop3 import; overrides PILER_PASSWORD from the environment\n");
    printf("    -P <port>                         Port for imap/pop3 import (default: 143/110\n");
    printf("    -t <timeout>                      Timeout in sec for imap/pop3 import\n");
    printf("    -x <folder1,folder2,....folderN,> Comma separated list of imap folders to skip. Add the trailing comma!\n");
@@ -96,8 +96,8 @@ int main(int argc, char **argv){
    import.dryrun = 0;
    import.port = 143;
    import.server = NULL;
-   import.username = NULL;
-   import.password = NULL;
+   import.username = getenv("PILER_USERNAME");
+   import.password = getenv("PILER_PASSWORD");
    import.database = NULL;
    import.skiplist = SKIPLIST;
    import.folder_imap = NULL;
