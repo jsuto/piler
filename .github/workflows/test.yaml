@@ -8,6 +8,7 @@ on:
       - reopened # closed PR reopened
 
 env:
+  ARCHIVE_HOST: test1.acts.hu
   IMAGE_NAME: sutoj/piler
   TEST_TAG: test
   DISTRO: jammy
@@ -77,10 +78,6 @@ jobs:
       - name: Run tests
         uses: ./.github/actions/test
         with:
-          ARCHIVE_HOST: ${{ vars.ARCHIVE_HOST }}
-          CONFIG_SITE_PHP: ${{ vars.CONFIG_SITE_PHP }}
+          ARCHIVE_HOST: ${{ env.ARCHIVE_HOST }}
           CONTAINER: 'piler'
-          EML_DIR: ${{ vars.EML_DIR }}
-          SMTP_SOURCE_PROG: ${{ vars.SMTP_SOURCE_PROG }}
-          SMTP_HOST: ${{ vars.SMTP_HOST }}
           TEST_TAG: ${{ env.TEST_TAG }}

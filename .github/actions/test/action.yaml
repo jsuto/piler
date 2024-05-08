@@ -3,15 +3,7 @@ name: 'Run tests against the built docker image'
 inputs:
   ARCHIVE_HOST:
     required: true
-  CONFIG_SITE_PHP:
-    required: true
   CONTAINER:
-    required: true
-  EML_DIR:
-    required: true
-  SMTP_SOURCE_PROG:
-    required: true
-  SMTP_HOST:
     required: true
   TEST_TAG:
     required: true
@@ -60,8 +52,6 @@ runs:
       run: |
         ./tests/setup.sh
       shell: bash
-      env:
-        CONFIG_SITE_PHP: ${{ inputs.CONFIG_SITE_PHP }}
 
     - name: Run tests
       run: |
@@ -70,6 +60,3 @@ runs:
       env:
         ARCHIVE_HOST: ${{ inputs.ARCHIVE_HOST }}
         CONTAINER: ${{ inputs.CONTAINER }}
-        EML_DIR: ${{ inputs.EML_DIR }}
-        SMTP_SOURCE_PROG: ${{ inputs.SMTP_SOURCE_PROG }}
-        SMTP_HOST: ${{ inputs.SMTP_HOST }}
