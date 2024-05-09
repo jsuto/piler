@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print DEFAULT_LANG; ?>" lang="<?php print DEFAULT_LANG; ?>">
+<!DOCTYPE html>
+<html lang="<?php print DEFAULT_LANG; ?>">
 
 <head>
     <title><?php print $title; ?></title>
@@ -88,7 +88,7 @@
 
             <div id="mailcontframe">
                <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-               <div id="resultscontainer" class="boxlistcontent"> 
+               <div id="resultscontainer" class="boxlistcontent">
                   <?php print $content; ?>
                </div>
             </div>
