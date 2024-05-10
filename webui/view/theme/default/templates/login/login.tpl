@@ -8,13 +8,8 @@
     <?php if(SITE_DESCRIPTION) { ?><meta name="description" content="<?php print SITE_DESCRIPTION; ?>" /><?php } ?>
     <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-    <![endif]-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="/view/theme/default/assets/css/1.css" rel="stylesheet">
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
@@ -33,26 +28,30 @@
 
         <form name="login" action="login.php" method="post" class="form-signin">
 
-            <h2 class="form-signin-heading"><?php print $text_login; ?></h2>
+            <h2 class="h3 mb-3 fw-normal"><?php print $text_login; ?></h2>
 
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
-            <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>" required autofocus>
-            <input type="password" class="input-block-level" name="password" placeholder="<?php print $text_password; ?>">
+            <div class="form-floating">
+              <input name="username" type="email" class="form-control" id="username" placeholder="name@example.com" required autofocus>
+              <label for="floatingInput"><?php print $text_email; ?></label>
+            </div>
+            <div class="form-floating">
+              <input name="password" type="password" class="form-control" id="password" placeholder="Password">
+              <label for="floatingPassword"><?php print $text_password; ?></label>
+            </div>
 
         <?php if(CAPTCHA_FAILED_LOGIN_COUNT > 0 && $failed_login_count > CAPTCHA_FAILED_LOGIN_COUNT) { ?>
             <img src="securimage/securimage_show.php" alt="captcha image" id="captcha" />
             <input type="text" class="input-block-level" name="captcha" placeholder="CAPTCHA" />
         <?php } ?>
 
-            <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
+            <button class="btn btn-large btn-primary w-100 py-2" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
 
         </form>
 
-
-        <div id="compatibility" class="well well-large">
-
+        <div class="mt-5 mb-3 text-body-secondary text-center">
             <?php if(ENABLE_GOOGLE_LOGIN == 1) { ?>
                <p><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></p>
             <?php } ?>

@@ -13,23 +13,18 @@
    <meta name="robots" content="all" />
    <meta http-equiv="x-ua-compatible" content="IE=edge">
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" integrity="sha256-6MNujrdbV0Z7S927PzUMXOmMLwkKdsdD7XIl/w89HMQ=" crossorigin="anonymous">
+   <link href="/view/theme/default/assets/css/1.css" rel="stylesheet">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-      <style>body{padding-top:70px;}</style>
-    <![endif]-->
+   <!-- Fav and touch icons -->
+   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
+   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
+   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
+   <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
+   <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
 
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/view/theme/default/assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
-    <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
-
-    <?php print JS_CODE; ?>
+   <?php print JS_CODE; ?>
 </head>
 
 <body onload="Piler.add_shortcuts();<?php if(ENABLE_INSTANT_SEARCH){ ?>Piler.expert();<?php } ?>">
@@ -147,44 +142,41 @@
 <?php } ?>
 
 <?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
-    <div id="menu">
+    <div id="header">
         <?php print $menu; ?>
     </div>
 <?php } ?>
 
     <div id="messagebox1" class="alert alert-info lead"></div>
 
-    <div id="piler1" class="container-fluid">
+    <div class="searchcontainer">
+      <div class="row w-100 ms-0">
 
-    <div id="searchcontainer">
-         <input type="hidden" name="searchtype" id="searchtype" value="expert" />
-         <input type="hidden" name="sort" id="sort" value="date" />
-         <input type="hidden" name="order" id="order" value="0" />
-         <input type="hidden" name="ref" id="ref" value="" />
-         <input type="hidden" name="prefix" id="prefix" value="" />
-
-         <div class="control-group">
-            <div class="controls row-fluid">
-                <div id="input-span" class="span6">
-                    <label for="_search"><?php print $text_search; ?></label>
-                <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
-                </div>
-
-             <?php if(MOBILE_DEVICE == 0) { ?>
-                <div class="span6 input-append btn-group">
-                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.expert(this); return false;"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
-                    <button id="button_expert" class="btn btn-large btn-inverse" onclick="Piler.show_advanced_search_modal();"><?php print $text_advanced_search; ?> &nbsp;<span class="caret"></span></button>
-                    <button id="button_options" class="btn btn-large btn-inverse dropdown-toggle" data-toggle="dropdown"><?php print $text_options; ?> &nbsp;<span class="caret"></span></button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');"><?php print $text_save; ?></a></li>
-                        <li><a href="#" onclick="Piler.load_saved_search_terms();"><?php print $text_load; ?></a></li>
-                    </ul>
-                </div>
-             <?php } ?>
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div class="col ps-0">
+              <div class="d-flex align-items-center justify-content-start">
+                <input type="hidden" name="searchtype" id="searchtype" value="expert" />
+                <input type="hidden" name="sort" id="sort" value="date" />
+                <input type="hidden" name="order" id="order" value="0" />
+                <input type="hidden" name="ref" id="ref" value="" />
+                <input type="hidden" name="prefix" id="prefix" value="" />
+                <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
               </div>
             </div>
-         </div>
+            <div class="col me-0 pe-0">
+              <div class="d-flex align-items-center justify-content-start">
+                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+                <button id="button_expert" class="btn btn-large btn-secondary btn-search">Advanced search</button>
+                <button id="button_options" class="btn btn-large btn-secondary btn-options">Options</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
+
 
     <div id="mainscreen">
         <div id="mailleftcontainer">
