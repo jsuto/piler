@@ -22,6 +22,7 @@ services:
     container_name: piler
     init: true
     environment:
+      - MEMCACHED_HOSTNAME=memcached
       - MYSQL_HOSTNAME=mysql
       - MYSQL_DATABASE=piler
       - MYSQL_USER=piler
