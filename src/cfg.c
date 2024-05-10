@@ -91,7 +91,7 @@ struct _parse_rule config_parse_rules[] =
    { "piler_header_field", "string", (void*) string_parser, offsetof(struct config, piler_header_field), "X-piler-id:", MAXVAL-1},
    { "process_rcpt_to_addresses", "integer", (void*) int_parser, offsetof(struct config, process_rcpt_to_addresses), "0", sizeof(int)},
    { "queuedir", "string", (void*) string_parser, offsetof(struct config, queuedir), QUEUE_DIR, MAXVAL-1},
-   { "rtindex", "integer", (void*) int_parser, offsetof(struct config, rtindex), "0", sizeof(int)},
+   { "rtindex", "integer", (void*) int_parser, offsetof(struct config, rtindex), "1", sizeof(int)},
    { "security_header", "string", (void*) string_parser, offsetof(struct config, security_header), "", MAXVAL-1},
    { "server_id", "integer", (void*) int_parser, offsetof(struct config, server_id), "0", sizeof(int)},
    { "sphxdb", "string", (void*) string_parser, offsetof(struct config, sphxdb), "piler1", MAXVAL-1},
