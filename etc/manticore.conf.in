@@ -14,7 +14,7 @@ define('CHARSET_TABLE', "0..9, english, _, \
 
 define('SELECT_FIELDS', 'id, `from` as sender, `to` as rcpt, `fromdomain` as senderdomain, `todomain` as rcptdomain, `subject`, `arrived`, `sent`, `body`, `size`, `direction`, `folder`, `attachments`, `attachment_types`');
 
-define('RT', 0);
+define('RT', 1);
 
 ?>
 

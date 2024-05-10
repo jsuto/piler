@@ -88,12 +88,12 @@ check_user() {
 
 isFQDN() {
   # we need min. 2 dots
-  if [[ x"$1" = "xdogfood" ]]; then
+  if [[ "$1" == "xdogfood" ]]; then
     echo 1
     return
   fi
 
-  if [[ x"$1" = "x" ]]; then
+  if [[ "$1" == "x" ]]; then
     echo 0
     return
   fi
@@ -166,7 +166,7 @@ askYN() {
   PROMPT=$1
   DEFAULT=$2
 
-  if [[ "x$DEFAULT" == "xyes" || "x$DEFAULT" == "xYes" || "x$DEFAULT" == "xy" || "x$DEFAULT" == "xY" ]]; then
+  if [[ "$DEFAULT" == "yes" || "$DEFAULT" == "Yes" || "$DEFAULT" == "xy" || "$DEFAULT" == "xY" ]]; then
     DEFAULT="Y"
   else
     DEFAULT="N"
@@ -238,8 +238,8 @@ gather_mysql_account() {
    MYSQL_ROOT_PASSWORD="$response"
 
    s=$(echo "use information_schema; select TABLE_NAME from TABLES where TABLE_SCHEMA='${MYSQL_DATABASE}'" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD")
-   if [ $? -eq 0 ];
-   then
+   # shellcheck disable=SC2181
+   if [[ $? -eq 0 ]]; then
       echo "mysql connection successful"; echo;
       if [[ $(echo "$s" | grep -c metadata) -eq 1 ]]; then echo "ERROR: Detected metadata table in ${MYSQL_DATABASE}. Aborting"; exit 0; fi
    else
@@ -393,9 +393,12 @@ SOCKHELPER
    MYSQL_SOCKET=$(perl "$SOCKET_HELPER_SCRIPT" "$MYSQL_SOCKET")
 
    sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=${MYSQL_PASSWORD}/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=${MYSQL_SOCKET}/" "${SYSCONFDIR}/piler/piler.conf.dist" > "$PILERCONF_TMP"
-   [[ $(grep queuedir "$PILERCONF_TMP") ]] || echo queuedir=/var/piler/store >> "$PILERCONF_TMP"
+   if ! grep queuedir "$PILERCONF_TMP"; then echo queuedir=/var/piler/store >> "$PILERCONF_TMP"; fi
    cat "$PILERCONF_TMP" > "${SYSCONFDIR}/piler/piler.conf"
    rm -f "$PILERCONF_TMP"
+
+   # Manticore is the preferred search engine
+   touch "${SYSCONFDIR}/piler/MANTICORE"
 
    chmod 755 "${LOCALSTATEDIR}/piler/stat"
 
