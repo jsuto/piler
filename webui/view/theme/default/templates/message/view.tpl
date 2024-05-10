@@ -45,11 +45,20 @@
     </p>
 </div>
 
-<div id="notesbox" class="input-prepend input-append">
-   <span class="add-on"><i class="bi bi-sticky"></i>&nbsp;<?php print $text_notes; ?>:</span>
-   <input type="text" class="form-control" size="40" id="note" name="note" class="mynote" value="<?php print preg_replace("/\"/", "&quot;", $message['note']); ?>" />
-   <button class="btn btn-info" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); "><?php print $text_save; ?></button>
+<div id="notesbox" class="row g-3 align-items-center">
+  <div class="col-auto">
+    <label for="note" class="col-form-label"><i class="bi bi-sticky fs-5"></i> <?php print $text_notes; ?>:</label>
+  </div>
+  <div class="col-auto">
+    <input type="text" id="note" name="note" class="form-control" aria-describedby="notes">
+  </div>
+  <div class="col-auto">
+    <span id="notes" class="form-text">
+      <button class="btn btn-primary btn-sm" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); "><?php print $text_save; ?></button>
+    </span>
+  </div>
 </div>
+
 
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 <div id="folderbox" class="input-prepend input-append">

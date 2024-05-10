@@ -28,7 +28,7 @@
 
         <form name="login" action="login.php" method="post" class="form-signin">
 
-            <h2 class="h3 mb-3 fw-normal"><?php print $text_login; ?></h2>
+            <h2 class="fs-1 mb-3 fw-light"><?php print $text_login; ?></h2>
 
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
@@ -47,17 +47,25 @@
             <input type="text" class="input-block-level" name="captcha" placeholder="CAPTCHA" />
         <?php } ?>
 
-            <button class="btn btn-large btn-primary w-100 py-2" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
+            <button class="btn btn-large btn-primary w-100 mt-3 py-2" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
 
         </form>
 
-        <div class="mt-5 mb-3 text-body-secondary text-center">
+        <div class="container text-center">
+          <div class="row align-items-start">
+            <div class="col"></div>
+            <div class="col mt-2 mb-3 text-body-secondary text-bg-light compatibility">
             <?php if(ENABLE_GOOGLE_LOGIN == 1) { ?>
                <p><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></p>
             <?php } ?>
 
-            <p><?php print COMPATIBILITY; ?></p>
+              <p><?php print COMPATIBILITY; ?></p>
+            </div>
+            <div class="col"></div>
+          </div>
         </div>
+
+
 
    </div>
 

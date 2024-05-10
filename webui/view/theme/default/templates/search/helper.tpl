@@ -115,48 +115,60 @@
 
 </div>
 
-<div id="messagelistfooter" class="boxfooter">
-    <div class="row-fluid">
-       <div id="pagingrow" class="span4">
-            <div id="pagingbox">
-    <?php if($n > 0){ ?>
+<div id="messagelistfooter" class="boxfooter row w-100 ms-0">
+        <div class="col ps-2" style="border: 0px solid red;">
+          <div class="d-flex align-items-center justify-content-start functionbox ps-0 pt-1 pb-0 mb-0" style="border: 0px solid black;">
+
+    <?php if($n > 0) { ?>
+            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="bi bi-chevron-double-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-double-left muted"></i></span><?php } ?>
             &nbsp;
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="icon-double-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-double-angle-left icon-large muted"></i></span><?php } ?>
-            &nbsp;
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $prev_page; ?>);"><i class="icon-angle-left icon-large"></i></a><?php } else { ?><span class="navlink"><i class="icon-angle-left icon-large muted"></i></span><?php } ?>
+            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $prev_page; ?>);"><i class="bi bi-chevron-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-left muted"></i></span><?php } ?>
             &nbsp;
 
             <?php print $hits_from; ?>-<?php print $hits_to; ?>, <?php print $text_total; ?>: <?php print $hits; ?><?php if($total_found > MAX_SEARCH_HITS) { ?> (<?php print $total_found; ?>)<?php } ?>
 
             &nbsp;
-            <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $next_page; ?>);"><i class="icon-angle-right icon-large"></i></a> <?php } else { ?><span class="navlink"><i class="icon-angle-right icon-large muted"></i></span><?php } ?>
+            <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $next_page; ?>);"><i class="bi bi-chevron-right"></i></a> <?php } else { ?><span class="navlink"><i class="bi bi-chevron-right muted"></i></span><?php } ?>
             &nbsp;
-            <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="icon-double-angle-right icon-large"></i></a><?php } else { ?> <span class="navlink"><i class="icon-double-angle-right icon-large muted"></i></span><?php } ?>
+            <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="bi bi-chevron-double-right"></i></a><?php } else { ?> <span class="navlink"><i class="bi bi-chevron-double-right muted"></i></span><?php } ?>
             &nbsp;
 
+
          <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
-            <span style="margin-left: 30px;"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
+            <span class="ms-5"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
          <?php } ?>
 
     <?php } else { print $text_none_found; } ?>
-            </div>
+
+
+          </div>
+
         </div>
 
-        <div id="functionrow" class="span8">
+        <div class="col pe-0 " style="border: 0px solid blue;">
+          <div class="d-flex align-items-center justify-content-end functionbox pt-1 pb-0 mb-0" style="border: 0px solid blue; ">
+
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />
-            <div id="functionbox" class="input-prepend input-append pull-right">
 
-                <span class="add-on"><?php print $text_with_selected; ?>:&nbsp;</span>
+                <span class=""><?php print $text_with_selected; ?>:&nbsp;</span>
+
             <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-                <a href="#" class="btn btn-custom btn-inverse<?php if(Registry::get('auditor_user') == 1) { ?> confirm-delete"<?php } else { ?>" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" <?php } ?> title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="icon-share-alt"></i></a>
+                <!-- FIXME: auditor should be able set the recipient -->
+                <a href="#" class="btn btn-link" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
             <?php } ?>
-                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_messages();"  title="<?php print $text_bulk_download; ?>"><i class="icon-download-alt"></i></a>
-                <!--a href="#" class="btn btn-custom btn-inverse" onclick="Piler.download_selected_as_pdf();"  title="<?php print $text_download_selected_hits_as_pdf; ?>"><i class="icon-file"></i></a-->
-                <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?><a href="#" class="btn btn-custom btn-inverse" onclick="Piler.show_bulk_remove_modal();"  title="<?php print $text_remove; ?>"><i class="icon-remove-sign"></i></a><?php } ?>
+
+                <a href="#" class="btn btn-link" onclick="Piler.download_messages();" title="<?php print $text_bulk_download; ?>"><i class="bi bi-download"></i></a>
+
+            <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?>
+                <a href="#" class="btn btn-link" onclick="Piler.show_bulk_remove_modal();" title="<?php print $text_remove; ?>"><i class="bi bi-trash"></i></a>
+            <?php } ?>
+
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
-                <a href="#" class="btn btn-custom btn-inverse" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="icon-tags" title="Tag"></i></a>
-            </div>
+                <a href="#" class="btn btn-link" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="bi bi-tags" title="Tag"></i></a>
+
+          </div>
         </div>
-    </div>
+
+
 </div>
