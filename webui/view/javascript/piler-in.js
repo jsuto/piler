@@ -1273,9 +1273,6 @@ var Piler =
 
 var split = new rcube_webmail();
 
-$.datepicker.setDefaults($.datepicker.regional[Piler.piler_ui_lang]);
-
-
 
   $(function() {
 
@@ -1358,10 +1355,6 @@ $.datepicker.setDefaults($.datepicker.regional[Piler.piler_ui_lang]);
         $('ul:first',this).css('visibility', 'hidden');
 
     });
-
-
-    $("#date1").datepicker( {dateFormat: '<?php print JQUERY_DATE_FORMAT; ?>' });
-    $("#date2").datepicker( {dateFormat: '<?php print JQUERY_DATE_FORMAT; ?>' });
 
 
   });
