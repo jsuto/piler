@@ -1,3 +1,26 @@
+  <!-- auditor bulk restore modal -->
+
+  <div id="bulkRestoreModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><?php print $text_restore_messages; ?></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body mb-3">
+          <label for="FormControlInput1" class="form-label"><?php print $text_forward_selected_emails_to; ?></label>
+          <input type="text" class="form-control" id="bulk_restore_address" name="bulk_restore_address" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_cancel; ?></button>
+          <button type="button" class="btn btn-primary" onclick="let addr = $('#bulk_restore_address').val(); if(addr) { Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); } hide_modal('bulkRestoreModal');"><?php print $text_restore; ?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <!-- advanced search modal -->
 
   <div class="modal fade" id="advancedSearchModal" tabindex="-1" aria-labelledby="advancedSearchModalLabel" aria-hidden="true">

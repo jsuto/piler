@@ -115,8 +115,11 @@
                 <span class=""><?php print $text_with_selected; ?>:&nbsp;</span>
 
             <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-                <!-- FIXME: auditor should be able set the recipient -->
-                <a href="#" class="btn btn-link" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
+                <?php if(isAuditorUser() == 1) { ?>
+                   <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#bulkRestoreModal" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
+                <?php } else { ?>
+                   <a href="#" class="btn btn-link" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
+                <?php } ?>
             <?php } ?>
 
                 <a href="#" class="btn btn-link" onclick="Piler.download_messages();" title="<?php print $text_bulk_download; ?>"><i class="bi bi-download"></i></a>
