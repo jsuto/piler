@@ -11,18 +11,7 @@
     <meta name="rating" content="general" />
     <meta name="robots" content="all" />
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet" />
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-    <![endif]-->
-
-    <?php print JS_CODE; ?>
-
-    <script type="text/javascript" src="/view/javascript/jscolor.js"></script>
-    <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
+    <?php print CSS_CODE; ?>
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
@@ -30,6 +19,11 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
+
+    <?php print JS_CODE; ?>
+
+    <script type="text/javascript" src="/view/javascript/jscolor.js"></script>
+    <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
 </head>
 
 <body<?php
