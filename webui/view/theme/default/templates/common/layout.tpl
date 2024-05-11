@@ -42,18 +42,17 @@ if(isset($this->request->get['route'])) {
 
 <div id="messagebox1" class="alert alert-info lead"></div>
 
-<div id="piler1" class="container">
+<div class="searchcontainer text-center" style="border: 0px solid red;">
 
-
-   <div id="main">
-
+  <div id="main" class="container" style="border: 2px solid black; ">
+    <div class="col text-start">
       <?php if($title) { ?><h3><?php print $title; ?></h3><?php } ?>
-
       <?php print $content; ?>
+    </div>
 
-   </div> <!-- main -->
+  </div> <!-- main -->
 
-   <div id="footer"><?php print $footer; ?></div>
+  <div id="footer"><?php print $footer; ?></div>
 
 
 </div>

@@ -23,7 +23,7 @@ if(isset($_GET['refresh'])) {
 
    $p->update_ga_secret($session->get('username'), $new_secret);
 
-   print "$new_secret <a href=\"#\" onclick=\"Piler.new_qr(); return false;\">" . $language->data['text_refresh_qr_code'] . "</a><br /><img src=\"qr.php?ts=" . microtime(true) . "\" />\n";
+   print "$new_secret<br /><img src=\"qr.php?ts=" . microtime(true) . "\" />\n";
 
    exit;
 }
@@ -35,5 +35,3 @@ else if(isset($_GET['toggle'])) {
 $ga = $p->get_ga_settings($session->get('username'));
 
 QRcode::png("otpauth://totp/" . SITE_NAME . "?secret=" . $ga['ga_secret'], false, "L", 4, 2);
-
-?>

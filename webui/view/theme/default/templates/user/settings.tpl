@@ -96,23 +96,26 @@
 
 <form method="post" name="setqr" class="form-horizontal">
 
-   <h4><?php print $text_google_authenticator_settings; ?></h4>
+<h4><?php print $text_google_authenticator_settings; ?></h4>
 
-    <div class="control-group">
-        <label class="control-label" for="ga_enabled"><?php print $text_enable; ?></label>
-        <div class="controls">
-           <input type="checkbox" name="ga_enabled" id="ga_enabled" onclick="Piler.toggle_ga();" <?php if($ga['ga_enabled'] == 1) { ?>checked="checked"<?php } ?> />
-        </div>
+<div class="container text-start">
+  <div class="row justify-content-start">
+    <div class="col-2"><?php print $text_enable; ?></div>
+    <div class="col-2">
+      <input type="checkbox" name="ga_enabled" id="ga_enabled" onclick="Piler.toggle_ga();" <?php if($ga['ga_enabled'] == 1) { ?>checked="checked"<?php } ?> />
     </div>
-
-    <div class="control-group">
-        <label class="control-label" for="ga_secret"><?php print $text_qr_code; ?></label>
-        <div id="QR" class="controls">
-           <?php print $ga['ga_secret']; ?> <a href="#" onclick="Piler.new_qr(); return false;"> <?php print $text_refresh_qr_code; ?></a><br /><img src="qr.php?ts=<?php print time(); ?>" />
-        </div>
+  </div>
+  <div class="row justify-content-start">
+    <div class="col-2">
+      <a href="#" onclick="Piler.new_qr(); return false;"> <?php print $text_refresh_qr_code; ?></a>
     </div>
+    <div id="QR" class="col-2">
+      <?php print $ga['ga_secret']; ?><br />
+      <img src="qr.php?ts=<?php print time(); ?>" />
+    </div>
+  </div>
+</div>
 
-</form>
 
 <?php } ?>
 
@@ -121,17 +124,34 @@
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
 <h4><?php print $text_change_password; ?></h4>
-<form name="pwdchange" action="settings.php" method="post" autocomplete="off">
-   <table border="0" cellpadding="0" cellspacing="0">
-      <tr><td><?php print $text_password; ?>: </td><td><input type="password" name="password" /></td></tr>
-      <tr><td><?php print $text_password_again; ?>: </td><td><input type="password" name="password2" /></td></tr>
-     <tr><td>&nbsp;</td><td><input type="submit" value="<?php print $text_submit; ?>" /> <input type="reset" value="<?php print $text_cancel; ?>" /></td></tr>
-   </table>
+
+<form name="pwdchange" action="/settings.php" method="post" autocomplete="off">
+
+<div class="container text-start">
+  <div class="row justify-content-start">
+    <div class="col-2"><?php print $text_password; ?></div>
+    <div class="col-2"><input type="password" id="password" class="form-control"></div>
+  </div>
+
+  <div class="row justify-content-start">
+    <div class="col-2"><?php print $text_password_again; ?></div>
+    <div class="col-2"><input type="password" id="password2" class="form-control"></div>
+  </div>
+
+  <div class="row justify-content-start">
+    <div class="col-2"></div>
+    <div class="col-2">
+      <input type="submit" class="btn btn-primary" value="<?php print $text_submit; ?>" />
+      <input type="reset" class="btn btn-secondary" value="<?php print $text_cancel; ?>" />
+    </div>
+  </div>
+
+</div>
+
 </form>
+
 <?php } ?>
 
 <?php } else { ?>
-<?php print $x; ?>. <a href="settings.php"><?php print $text_back; ?></a>
+<?php print $x; ?>. <a href="/settings.php"><?php print $text_back; ?></a>
 <?php } ?>
-
-
