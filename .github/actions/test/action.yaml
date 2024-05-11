@@ -17,8 +17,7 @@ runs:
       run: |
         pushd docker
         # Fix compose file
-        sed -i 's/^volumes:/  imap.aaa.fu:\n    image: sutoj\/imap\n    container_name: imap.aaa.fu\n\nvolumes:/' docker-compose.yaml
-        sed -i 's/^volumes:/  smarthost:\n    image: sutoj\/smtp-sink\n    container_name: smarthost.aaa.fu\n    command: smtp-sink -h smarthost.aaa.fu -u nobody :25 10\n\nvolumes:/' docker-compose.yaml
+        sed -i 's/^volumes:/  smarthost:\n    image: sutoj\/smtp-sink\n    container_name: smarthost.aaa.fu\n    command: smtp-sink -h smarthost.aaa.fu -u nobody :25 10\n\n  imap.aaa.fu:\n    image: sutoj\/imap\n    container_name: imap.aaa.fu\n\nvolumes:/' ../docker/docker-compose.yaml
         docker compose down -v || true
         popd
       shell: bash
