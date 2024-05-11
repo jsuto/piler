@@ -364,13 +364,6 @@ var Piler =
     },
 
 
-    show_bulk_remove_modal:function()
-    {
-        Piler.log("[show_bulk_remove_modal]");
-
-        $('#deletebox-modal').modal('show');
-    },
-
     bulk_remove_messages:function(reason, text_successfully_removed, text_no_selected_message)
     {
         Piler.log("[bulk_remove_messages]");
@@ -1437,4 +1430,25 @@ function UpdateQueryString(key, value, url) { // from http://stackoverflow.com/q
         else
             return url;
     }
+}
+
+
+function hide_modal(id = '') {
+  try {
+    let modalId = document.getElementById(id)
+    const modal = bootstrap.Modal.getOrCreateInstance(modalId)
+    modal.hide()
+  } catch(e) {
+    console.log(e)
+  }
+}
+
+function show_modal(id = '') {
+  try {
+    let modalId = document.getElementById(id)
+    const modal = bootstrap.Modal.getOrCreateInstance(modalId)
+    modal.show()
+  } catch(e) {
+    console.log(e)
+  }
 }

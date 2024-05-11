@@ -122,7 +122,7 @@
                 <a href="#" class="btn btn-link" onclick="Piler.download_messages();" title="<?php print $text_bulk_download; ?>"><i class="bi bi-download"></i></a>
 
             <?php if(ENABLE_DELETE == 1 && isAuditorUser() == 1) { ?>
-                <a href="#" class="btn btn-link" onclick="Piler.show_bulk_remove_modal();" title="<?php print $text_remove; ?>"><i class="bi bi-trash text-danger"></i></a>
+                <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteModal" title="<?php print $text_remove; ?>"><i class="bi bi-trash text-danger"></i></a>
             <?php } ?>
 
                 <input type="text" id="tag_value" name="tag_value" class="tagtext" />
