@@ -126,6 +126,7 @@
   </div>
 </div>
 
+</form>
 
 <?php } ?>
 
@@ -138,12 +139,12 @@
 <div class="container text-start">
   <div class="row justify-content-start">
     <div class="col-3"><?php print $text_password; ?></div>
-    <div class="col-3"><input type="password" id="password" class="form-control"></div>
+    <div class="col-3"><input type="password" id="password" name="password" class="form-control"></div>
   </div>
 
   <div class="row justify-content-start">
     <div class="col-3"><?php print $text_password_again; ?></div>
-    <div class="col-3"><input type="password" id="password2" class="form-control"></div>
+    <div class="col-3"><input type="password" id="password2" name="password2" class="form-control"></div>
   </div>
 
   <div class="row justify-content-start mt-3">

@@ -1276,74 +1276,6 @@ var split = new rcube_webmail();
 
   $(function() {
 
-    $("#s_piler_email").autocomplete({
-        source: '/index.php?route=group/email&',
-        minLength: 2,
-        select: function( event, ui ) {
-                if(ui.item){
-                   var prefix = '\n';
-
-                   if($('#email').val() == '') prefix = '';
-
-                   $('#email').val($('#email').val() + prefix + ui.item.value);
-                }
-
-                ui.item.value = '';
-        }
-    });
-
-    $("#s_piler_domain").autocomplete({
-        source: '/index.php?route=domain/domains&',
-        minLength: 2,
-        select: function( event, ui ) {
-                if(ui.item){
-                   var prefix = '\n';
-
-                   if($('#domains').val() == '') prefix = '';
-
-                   $('#domains').val($('#domains').val() + prefix + ui.item.value);
-
-                }
-
-                ui.item.value = '';
-        }
-
-    });
-
-
-    $("#s_piler_group").autocomplete({
-        source: '/index.php?route=group/group&',
-        minLength: 2,
-        select: function( event, ui ) {
-                if(ui.item){
-                   var prefix = '\n';
-
-                   if($('#group').val() == '') prefix = '';
-
-                   $('#group').val($('#group').val() + prefix + ui.item.value);
-                }
-
-                ui.item.value = '';
-        }
-    });
-
-    $("#s_piler_folder").autocomplete({
-        source: '/index.php?route=folder/folder&',
-        minLength: 2,
-        select: function( event, ui ) {
-                if(ui.item){
-                   var prefix = '\n';
-
-                   if($('#folder').val() == '') prefix = '';
-
-                   $('#folder').val($('#folder').val() + prefix + ui.item.value);
-                }
-
-                ui.item.value = '';
-        }
-    });
-
-
     $("ul.dropdown li").hover(function(){
 
         $(this).addClass("hover");
@@ -1360,6 +1292,7 @@ var split = new rcube_webmail();
   });
 
 // modal additions
+// FIXME: Remove these functions
 
 $(document).on("click", ".confirm-delete", function (e) {
      e.preventDefault();
