@@ -53,6 +53,8 @@ input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 
 a{color:#2e8bcc;text-decoration:none;}
 a:hover{color:#20608e;text-decoration:underline;}
+a.xxx{color:#aaa;text-decoration:underline;}
+a.xxx:hover{color:#aaa;text-decoration:underline;}
 
 .splitter-h{cursor:n-resize;cursor:row-resize;background-position:center 2px;}
 .splitter-v{cursor:e-resize;cursor:col-resize;background-position:2px center;}
@@ -70,3 +72,12 @@ a:hover{color:#20608e;text-decoration:underline;}
 
 .ps10 { padding-left: 10px; }
 .pe10 { padding-right: 10px; }
+
+i.spam{color:#ffc40d;}
+i.attachment{color:#2e8bcc;}
+i.note{color:#00aba9;}
+i.tag{color:#7b4f9d;}
+i.verified{color:#339933;}
+.private{color:red;}
+
+.xxx{color:#aaa;}
