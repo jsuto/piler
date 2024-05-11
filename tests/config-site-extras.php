@@ -7,3 +7,7 @@ $config['ENABLE_IMAP_AUTH'] = 1;
 $config['IMAP_HOST'] = 'imap.aaa.fu';
 $config['IMAP_PORT'] =  143;
 $config['IMAP_SSL'] = false;
+$config['RT'] = 1;
+$config['SPHINX_MAIN_INDEX'] = 'piler1';
+$config['ENABLE_DELETE'] = 1;
+$config['SMARTHOST'] = 'smarthost.aaa.fu';
