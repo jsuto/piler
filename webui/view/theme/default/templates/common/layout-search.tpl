@@ -58,7 +58,12 @@
               <div class="d-flex align-items-center justify-content-start">
                 <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
                 <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced search</button>
-                <button id="button_options" class="btn btn-large btn-secondary btn-options">Options</button>
+
+                <button id="button_options" class="btn btn-large btn-secondary btn-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">Options</button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');"><?php print $text_save; ?></a></li>
+                    <li><a class="dropdown-item" href="#" onclick="Piler.load_saved_search_terms();"><?php print $text_load; ?></a></li>
+                  </ul>
               </div>
             </div>
           </div>
