@@ -50,7 +50,7 @@ class ControllerMessageBulkremove extends Controller {
             $db->query("UPDATE " . TABLE_META . " SET retained=? WHERE id=?", [NOW, $id]);
             if(RT) {
                $sphxrw = Registry::get('sphxrw');
-               $sphxrw->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=" . (int)$this->data['id']);
+               $sphxrw->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=" . (int)$id);
             }
 
             syslog(LOG_INFO, $this->data['username'] . " removed message: $id");
