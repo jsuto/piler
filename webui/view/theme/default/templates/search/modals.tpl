@@ -1,3 +1,25 @@
+  <!-- auditor restore modal -->
+
+  <div id="restoreModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><?php print $text_restore_message; ?></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body mb-3">
+          <label for="FormControlInput1" class="form-label"><?php print $text_email_address; ?></label>
+          <input type="text" class="form-control" id="restore_address" name="restore_address" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_cancel; ?></button>
+          <button type="button" class="btn btn-primary" onclick="let id=$('#xid').val(); Piler.restore_message_for_recipient(id, $('#restore_address').val(), '<?php print $text_restored; ?>', 'ERROR');"><?php print $text_restore; ?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- auditor bulk restore modal -->
 
   <div id="bulkRestoreModal" class="modal" tabindex="-1">

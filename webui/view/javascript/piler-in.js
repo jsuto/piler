@@ -863,42 +863,22 @@ var Piler =
     },
 
 
-    /*
-     * assemble a space separated list of the selected email addresses of the given message
-     */
-
-    restore_message_for_recipients:function(id, msgok, msgerr)
+    restore_message_for_recipient:function(id, rcpt, msgok, msgerr)
     {
-        Piler.log("[restore_message_for_recipients]", id);
+        Piler.log("[restore_message_for_recipient]", id, rcpt);
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        var z = $('#restorebox').children(), y = z.length, x;
-        var emails = '';
-
-        for ( ; --y >= 0 ; )
-        {
-            x = z[y];
-
-            if (x.id.substring(0, 5) == "rcpt_" )
-            {
-                if(document.getElementById(x.id).checked == 1){
-                   if(emails) emails += ' ';
-                   emails += x.id.substring(5, 1000);
-                }
-            }
-        }
-
-        if(emails) {
+        if(rcpt) {
            jQuery.ajax('index.php?route=message/restore', {
-              data: { rcpt: encodeURI(emails), id: id },
+              data: { rcpt: encodeURI(rcpt), id: id },
               type: "POST"
            })
            .done( function(a) {})
            .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
            Piler.show_message('messagebox1', msgok, 0.85);
-           $('#restorebox').hide();
+           hide_modal('restoreModal');
         }
         else {
            Piler.show_message('messagebox1', msgerr, 0.85);
