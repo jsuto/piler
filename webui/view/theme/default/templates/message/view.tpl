@@ -40,7 +40,7 @@
     <label for="note" class="col-form-label"><i class="bi bi-sticky fs-5"></i> <?php print $text_notes; ?>:</label>
   </div>
   <div class="col-auto">
-    <input type="text" id="note" name="note" class="form-control" aria-describedby="notes">
+    <input type="text" id="note" name="note" value="<?php H($message['note']); ?>" class="form-control" aria-describedby="notes">
   </div>
   <div class="col-auto">
     <span id="notes" class="form-text">
