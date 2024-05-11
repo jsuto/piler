@@ -42,9 +42,9 @@ if(isset($this->request->get['route'])) {
 
 <div id="messagebox1" class="alert alert-info lead"></div>
 
-<div class="searchcontainer text-center" style="border: 0px solid red;">
+<div class="searchcontainer text-center">
 
-  <div id="main" class="container" style="border: 2px solid black; ">
+  <div id="main" class="container">
     <div class="col text-start">
       <?php if($title) { ?><h3><?php print $title; ?></h3><?php } ?>
       <?php print $content; ?>
