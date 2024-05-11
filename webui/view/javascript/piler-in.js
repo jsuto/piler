@@ -693,7 +693,7 @@ var Piler =
         // a = $( a );// a == DOM element
         // a = Piler.getSource( a );// a == Javascript event
 
-        var z = $('div#advancedsearch-modal');
+        var z = $('div#advancedSearchModal');
 
         Piler.search = 'Complex';
 
@@ -728,6 +728,8 @@ var Piler =
         }
 
         $('input#_search').val('');
+
+        hide_modal('advancedSearchModal');
 
         Piler.load_search_results();
     },

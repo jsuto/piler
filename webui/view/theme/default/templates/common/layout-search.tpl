@@ -57,7 +57,7 @@
             <div class="col me-0 pe-0">
               <div class="d-flex align-items-center justify-content-start">
                 <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
-                <button id="button_expert" class="btn btn-large btn-secondary btn-search">Advanced search</button>
+                <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced search</button>
                 <button id="button_options" class="btn btn-large btn-secondary btn-options">Options</button>
               </div>
             </div>

@@ -1,3 +1,80 @@
+  <!-- advanced search modal -->
+
+  <div class="modal fade" id="advancedSearchModal" tabindex="-1" aria-labelledby="advancedSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="advancedSearchModalLabel"><?php print $text_advanced_search; ?></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <input type="hidden" name="xsearchtype" id="xsearchtype" value="simple" />
+          <input type="hidden" name="xsort" id="xsort" value="date" />
+          <input type="hidden" name="xorder" id="xorder" value="0" />
+          <input type="hidden" name="xref" id="xref" value="" />
+
+          <table class="table" aria-describedby="advanced search" role="presentation">
+            <tr>
+              <td><?php print $text_from; ?></td>
+              <td><input type="text" class="form-control" name="xfrom" id="xfrom" value="<?php if(isset($from)) { print $from; } ?>" v-model="complex_search.from" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_to; ?></td>
+              <td><input type="text" class="form-control" name="xto" id="xto" value="<?php if(isset($to)) { print $to; } ?>" v-model="complex_search.to" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_subject; ?></td>
+              <td><input type="text" class="form-control" name="xsubject" id="xsubject" value="<?php if(isset($subject)) { print $subject; } ?>" v-model="complex_search.subject" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_body; ?></td>
+              <td><input type="text" class="form-control" name="xbody" id="xbody" value="<?php if(isset($body)) { print $body; } ?>" v-model="complex_search.body" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_tags; ?></td>
+              <td><input type="text" class="form-control" name="xtag" id="xtag" value="<?php if(isset($tag)) { print $tag; } ?>" v-model="complex_search.tag" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_notes; ?></td>
+              <td><input type="text" class="form-control" name="xnote" id="xnote" value="<?php if(isset($note)) { print $note; } ?>" v-model="complex_search.note" /></td>
+            </tr>
+            <tr>
+              <td><?php print $text_attachment; ?></td>
+              <td>
+                <img src="/view/theme/default/assets/images/fileicons/doc.png" alt="Word" title="Word" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_doc" value="word" v-model="complex_search.attachments" id="xhas_attachment_doc" />&nbsp;
+                <img src="/view/theme/default/assets/images/fileicons/xls.png" alt="Excel" title="Excel" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_xls" value="excel" v-model="complex_search.attachments" id="xhas_attachment_xls" />&nbsp;
+                <img src="/view/theme/default/assets/images/fileicons/pdf.png" alt="PDF" title="PDF" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_pdf" value="pdf" v-model="complex_search.attachments" id="xhas_attachment_pdf" />&nbsp;
+                <img src="/view/theme/default/assets/images/fileicons/image.png" alt="image" title="image" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_image" value="image" v-model="complex_search.attachments" id="xhas_attachment_image" />&nbsp;
+                <img src="/view/theme/default/assets/images/fileicons/file.png" alt="any" title="any" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_any" value="any" v-model="complex_search.attachments" id="xhas_attachment_any" />
+              </td>
+            </tr>
+            <tr>
+              <td><?php print $text_date_from; ?></td>
+              <td><input id="date1" name="date1" class="form-control" type="date" v-model="complex_search.date1" /></td>
+            </tr>
+
+            <tr>
+              <td><?php print $text_date_to; ?></td>
+              <td><input id="date2" name="date2" class="form-control" type="date" v-model="complex_search.date2" /></td>
+            </tr>
+          </table>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_close; ?></button>
+          <button type="button" class="btn btn-primary" onclick="Piler.complex();"><?php print $text_search; ?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- delete modal -->
 
   <div id="deleteModal" class="modal" tabindex="-1">
