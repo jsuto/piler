@@ -19,10 +19,10 @@ class ControllerMessageRemove extends Controller {
 
       $this->document->title = $this->data['text_message'];
 
-      if(!isset($this->request->get['id']) || $this->request->get['id'] == '') { die("no id parameter given"); }
-      if(!isset($this->request->get['confirmed']) || $this->request->get['confirmed'] != 1) { die("not confirmed"); }
+      if(!isset($this->request->post['id']) || $this->request->post['id'] == '') { die("no id parameter given"); }
+      if(!isset($this->request->post['confirmed']) || $this->request->post['confirmed'] != 1) { die("not confirmed"); }
 
-      $id = (int)$this->request->get['id'];
+      $id = (int)$this->request->post['id'];
 
       // FIXME: For the moment data officer has no permission to see the message
       if(!$this->model_search_search->check_your_permission_by_id($id)) {
@@ -42,7 +42,7 @@ class ControllerMessageRemove extends Controller {
       $db->query("UPDATE " . TABLE_DELETED . " SET deleted=1 WHERE id=?", [$id]);
       if(RT) {
          $sphxrw = Registry::get('sphxrw');
-         $sphxrw->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=", (int)$id);
+         $sphxrw->query("DELETE FROM " . SPHINX_MAIN_INDEX . " WHERE id=", [(int)$id]);
       }
 
       syslog(LOG_INFO, $this->data['username'] . " removed message: $id");

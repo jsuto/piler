@@ -18,6 +18,8 @@ var Piler =
     bulkrestore_url: '/bulkrestore.php',
     bulkpdf_url: '/bulkpdf.php',
 
+    remove_message_id: 0,
+
     /*
      * variables used at search listing
      */
@@ -385,6 +387,43 @@ var Piler =
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
         Piler.show_message('messagebox1', text_successfully_removed, 0.8);
+    },
+
+
+    approve_message_removal:function(id)
+    {
+        Piler.log("[approve_message_removal]", id);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        jQuery.ajax('index.php?route=message/remove', {
+        data: { id: id, confirmed: 1 },
+           type: "POST"
+        })
+        .done( function(a) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+	hide_modal('removeApproveModal');
+
+        Piler.show_message('messagebox1', "Approved", 0.85);
+    },
+
+    reject_message_removal:function(id, reason2)
+    {
+        Piler.log("[reject_message_removal]", id);
+
+        Piler.poor_mans_keepalive_for_dummy_browsers();
+
+        jQuery.ajax('/rejectremove.php', {
+        data: { id: id, confirmed: 1, reason2: reason2 },
+           type: "POST"
+        })
+        .done( function(a) {})
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+
+        hide_modal('removeRejectModal');
+
+        Piler.show_message('messagebox1', "Rejected", 0.85);
     },
 
 

@@ -11,14 +11,7 @@
     <meta name="rating" content="general" />
     <meta name="robots" content="all" />
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet" />
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-      <style>body{padding-top:70px;}</style>
-    <![endif]-->
+    <?php print CSS_CODE; ?>
 
     <?php print JS_CODE; ?>
 
@@ -57,26 +50,30 @@
 </div>
 
 
-    <div id="piler1" class="container">
-
-      <div id="searchcontainer">
-
-         <input type="hidden" name="searchtype" id="searchtype" value="expert" />
-         <input type="hidden" name="sort" id="sort" value="date" />
-         <input type="hidden" name="order" id="order" value="0" />
-
-         <div class="control-group">
-            <div class="controls row-fluid">
-                <div id="input-span" class="span8">
-                    <label for="_search">Search</label>
-                    <input type="text" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
-                </div>
-                <div class="span4 input-append">
-                    <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
-                </div>
+    <div class="searchcontainer">
+      <div class="row w-100 ms-0">
+        <div class="container text-center">
+          <div class="row align-items-center">
+            <div class="col ps-0">
+              <div class="d-flex align-items-center justify-content-start">
+                <input type="hidden" name="searchtype" id="searchtype" value="expert" />
+                <input type="hidden" name="sort" id="sort" value="date" />
+                <input type="hidden" name="order" id="order" value="0" />
+                <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
+              </div>
             </div>
+            <div class="col me-0 pe-0">
+              <div class="d-flex align-items-center justify-content-start">
+                <button id="button_search" class="btn btn-large btn-danger" onclick="Piler.auditexpert(this);"><i class="icon-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+
+
+
     <div id="mainscreen">
 
       <div id="mailleftcontainer">

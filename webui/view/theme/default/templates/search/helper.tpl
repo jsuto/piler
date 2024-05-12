@@ -9,28 +9,28 @@
           <th id="id-header">&nbsp;</th>
           <th id="date-header">
              <?php print $text_date; ?>
-             <a xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-             <a xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'date' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'date' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
           </th>
           <th id="from-header">
              <?php print $text_from; ?>
-             <a xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'from' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-             <a xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'from' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'from' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'from' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
           </th>
           <th id="to-header">
              <?php print $text_to; ?>
-             <a xid="to" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up"></i></a>
-             <a xid="to" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down"></i></a>
+             <a class="navlink" xid="to" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up"></i></a>
+             <a class="navlink" xid="to" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down"></i></a>
           </th>
           <th id="subject-header">
              <?php print $text_subject; ?>
-             <a xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-             <a xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
           </th>
           <th id="size-header">
              <?php print $text_size; ?>
-             <a xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="icon-chevron-up<?php if($sort == 'size' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
-             <a xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="icon-chevron-down<?php if($sort == 'size' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'size' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'size' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
           </th>
           <th id="spam-header"><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i></th>
           <th id="attachment-header"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
