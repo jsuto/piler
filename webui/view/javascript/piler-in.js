@@ -414,16 +414,24 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('/rejectremove.php', {
-        data: { id: id, confirmed: 1, reason2: reason2 },
-           type: "POST"
-        })
-        .done( function(a) {})
-        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
+        if(reason2) {
+          jQuery.ajax('/rejectremove.php', {
+          data: { id: id, confirmed: 1, reason2: reason2 },
+             type: "POST"
+          })
+          .done( function(a) {})
+          .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        hide_modal('removeRejectModal');
+          hide_modal('removeRejectModal');
 
-        Piler.show_message('messagebox1', "Rejected", 0.85);
+          Piler.show_message('messagebox1', "Rejected", 0.85);
+        } else {
+          reject_label_color = $('#reject_label').css('color')
+          reason2_border = $('#reason2').css('border')
+
+          $('#reject_label').css({'color':'red'})
+          $('#reason2').css({'border':'1px solid red'})
+        }
     },
 
 
