@@ -36,11 +36,11 @@ if(isset($this->request->get['route'])) {
 
 } ?>>
 
+<?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
+
 <div id="menu">
     <?php print $menu; ?>
 </div>
-
-<div id="messagebox1" class="alert alert-info lead"></div>
 
 <div class="searchcontainer text-center">
 

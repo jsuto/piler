@@ -25,11 +25,11 @@
 
 <body onload="Piler.add_shortcuts();">
 
+<?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
+
     <div id="menu">
         <?php print $menu; ?>
     </div>
-
-    <div id="messagebox1" class="audit audit-info"></div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog" role="document">

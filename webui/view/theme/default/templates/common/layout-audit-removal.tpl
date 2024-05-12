@@ -24,6 +24,8 @@
 
 <body onload="Piler.add_shortcuts();">
 
+<?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
+
   <!-- remove approval modal -->
 
   <div id="removeApproveModal" class="modal" tabindex="-1">
@@ -51,7 +53,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body mb-3">
-          <label for="FormControlInput1" class="form-label"><?php print $text_reason_of_rejection; ?></label>
+          <label for="FormControlInput1" id="reject_label" class="form-label"><?php print $text_reason_of_rejection; ?></label>
           <input type="text" class="form-control" id="reason2" name="reason2" />
         </div>
         <div class="modal-footer">
@@ -67,9 +69,6 @@
     <div id="menu">
         <?php print $menu; ?>
     </div>
-
-    <div id="messagebox1" class="audit audit-info"></div>
-
 
     <div id="mainscreen">
 

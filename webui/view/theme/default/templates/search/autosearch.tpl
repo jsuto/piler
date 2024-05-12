@@ -74,6 +74,5 @@
 </div>
 
 <?php if($remove == 1) { ?>
-   <script>Piler.show_message('messagebox1', '<?php print $text_successfully_removed; ?>', 0.85);</script>
+   <script>show_message('INFO', '<?php print $text_successfully_removed; ?>');</script>
 <?php } ?>
-

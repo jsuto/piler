@@ -212,7 +212,7 @@ var Piler =
             alert("Problem retrieving XML data:" + b)
         });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        show_message('INFO', msg);
     },
 
 
@@ -326,7 +326,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', "OK", 0.8);
+        show_message('INFO', "OK");
     },
 
 
@@ -343,7 +343,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', "OK", 0.8);
+        show_message('INFO', "OK");
     },
 
 
@@ -355,7 +355,7 @@ var Piler =
         .done(function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', "OK", 0.8);
+        show_message('INFO', "OK");
     },
 
 
@@ -375,7 +375,7 @@ var Piler =
         var idlist = Piler.get_selected_messages_list();
 
         if(!idlist) {
-           Piler.show_message('messagebox1', text_no_selected_message, 2.5);
+           show_message('ERROR', text_no_selected_message);
            return;
         }
 
@@ -386,7 +386,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', text_successfully_removed, 0.8);
+        show_message('OK', text_successfully_removed);
     },
 
 
@@ -405,8 +405,9 @@ var Piler =
 
 	hide_modal('removeApproveModal');
 
-        Piler.show_message('messagebox1', "Approved", 0.85);
+        show_message('OK', 'Approved removal of message');
     },
+
 
     reject_message_removal:function(id, reason2)
     {
@@ -424,31 +425,10 @@ var Piler =
 
           hide_modal('removeRejectModal');
 
-          Piler.show_message('messagebox1', "Rejected", 0.85);
+          show_message('OK', 'Removal of message is rejected');
         } else {
-          reject_label_color = $('#reject_label').css('color')
-          reason2_border = $('#reason2').css('border')
-
-          $('#reject_label').css({'color':'red'})
-          $('#reason2').css({'border':'1px solid red'})
+          show_message('ERROR', 'Please provide reason for rejection');
         }
-    },
-
-
-    reject_removing_message:function(id, reason2)
-    {
-        Piler.log("[reject_removing_message]", id, reason2);
-
-        Piler.poor_mans_keepalive_for_dummy_browsers();
-
-        jQuery.ajax('/rejectremove.php', {
-           data: { id: id, confirmed: 1, reason2: reason2 },
-           type: "POST"
-        })
-        .done( function( a ) { location.reload(); })
-        .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
-
-        $('#delete-rejected-modal').modal('hide')
     },
 
 
@@ -469,7 +449,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.8);
+        show_message('INFO', msg);
     },
 
 
@@ -512,7 +492,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        show_message('INFO', msg);
     },
 
 
@@ -529,7 +509,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        show_message('INFO', msg);
     },
 
 
@@ -552,7 +532,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        show_message('INFO', msg);
     },
 
 
@@ -860,22 +840,6 @@ var Piler =
     },
 
 
-    /*
-     * show a temporary message to the user
-     */
-
-    show_message:function(id, msg, timeout)
-    {
-        msg = '<p>' + msg.replace("\n", "<br />") + '</p>';
-
-        Piler.log("[show_message]", id, msg);
-
-        $('#'+id).html(msg);
-        $('#'+id).show();
-        setTimeout(function() { $('#'+id).hide(); }, timeout*1000);
-    },
-
-
     load_health:function()
     {
         Piler.log("[load_health]");
@@ -924,11 +888,11 @@ var Piler =
            .done( function(a) {})
            .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-           Piler.show_message('messagebox1', msgok, 0.85);
+           show_message('OK', msgok);
            hide_modal('restoreModal');
         }
         else {
-           Piler.show_message('messagebox1', msgerr, 0.85);
+           show_message('ERROR', msgerr);
         }
 
     },
@@ -1119,7 +1083,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        Piler.show_message('messagebox1', msg, 0.85);
+        show_message('INFO', msg);
 
         Piler.current_message_id = 0;
     },
@@ -1405,5 +1369,23 @@ function show_modal(id = '') {
     modal.show()
   } catch(e) {
     console.log(e)
+  }
+}
+
+function show_message(title = '', msg = '', small = "Now") {
+  Piler.log("[show_message]")
+
+  let toastTitle = document.getElementById("toast-title")
+  let toastSmall = document.getElementById("toast-small")
+  let toastMsg = document.getElementById("toast-msg")
+
+  toastTitle.innerHTML = title
+  toastSmall.innerHTML = small
+  toastMsg.innerHTML = msg
+
+  const toastId = document.getElementById("ToastId")
+  if(toastId) {
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastId)
+    toastBootstrap.show()
   }
 }

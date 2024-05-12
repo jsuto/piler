@@ -29,6 +29,7 @@
 
 <body onload="Piler.add_shortcuts();<?php if(ENABLE_INSTANT_SEARCH){ ?>Piler.expert();<?php } ?>">
 
+<?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
 <?php include_once DIR_THEME . THEME . '/templates/search/modals.tpl'; ?>
 
 <?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
@@ -36,8 +37,6 @@
         <?php print $menu; ?>
     </div>
 <?php } ?>
-
-    <div id="messagebox1" class="alert alert-info lead"></div>
 
     <div class="searchcontainer">
       <div class="row w-100 ms-0">

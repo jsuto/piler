@@ -17,8 +17,6 @@ body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 //.navbar .brand{float:left;display:block;padding:7.5px 20px 7.5px;margin-left:-20px;font-size:20px;font-weight:200;color:#ffffff;text-shadow:0 1px 0 #2e63cc;}.navbar .brand:hover{text-decoration:none;}
 //.navbar .brand{padding:9.5px 20px;}
 
-#messagebox1{position:absolute;top:150px;z-index:2;width:300px;margin-left:-150px;left:50%;display:none;text-align:center;overflow:hidden;}
-
 .btn {border-radius:0;}
 .btn-search {width: 33%;}
 .btn-options {width: 34%;}
