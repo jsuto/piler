@@ -7,7 +7,7 @@
     <div class="col">
     </div>
     <div class="col text-end">
-      <form method="get" name="search1" action="legalhold.php">
+      <form method="get" name="search1" action="/domain.php">
         <div class="row justify-content-end">
           <div class="col-8">
             <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
