@@ -23,7 +23,7 @@ class ControllerPolicyRemovehold extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $this->data['email'] = @$this->request->get['name'];
+      $this->data['email'] = @$this->request->get['email'];
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
 
@@ -56,8 +56,8 @@ class ControllerPolicyRemovehold extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 3 || !validemail($this->request->get['name'])) {
-         $this->error['domain'] = $this->data['text_invalid_data'];
+      if(!isset($this->request->get['email']) || strlen($this->request->get['email']) < 3 || !validemail($this->request->get['email'])) {
+         $this->error['email'] = $this->data['text_invalid_data'];
       }
 
 
