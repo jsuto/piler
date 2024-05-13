@@ -1,3 +1,7 @@
+<div class="container text-danger text-start">
+<?php if(isset($errorstring)) { print $text_error . ': ' . $errorstring; } ?>
+</div>
+
 <div class="container text-start">
   <div class="row">
     <div class="col">
@@ -17,7 +21,11 @@
   </div>
 </div>
 
-<h4><?php print $text_add_new_entry; ?></h4>
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
+
+      <h4><?php print $text_add_new_entry; ?></h4>
 
       <form method="post" name="add1" action="index.php?route=policy/legalhold">
       <div class="row g-3 align-items-center">
@@ -29,23 +37,25 @@
         </div>
         <div class="col-auto">
           <span id="emailHelpInline" class="form-text">
-            <button type="button" class="btn btn-primary"><?php print $text_add; ?></button>
+            <button type="submit" class="btn btn-primary"><?php print $text_add; ?></button>
           </span>
         </div>
       </div>
       </form>
-
-<?php if(isset($errorstring)){ ?><div class="alert alert-danger"><?php print $text_error; ?>: <?php print $errorstring; ?></div><?php } ?>
-<?php if(isset($x)){ ?>
-    <div class="alert alert-success"><?php print $x; ?></div>
-<?php } ?>
+    </div>
+  </div>
+</div>
 
 
-<h4 class="mt-5"><?php print $text_existing_email; ?></h4>
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
 
-<div class="listarea">
+      <h4 class="mt-5"><?php print $text_existing_email; ?></h4>
 
-<?php if(isset($emails) && count($emails) > 0){ ?>
+      <div class="listarea">
+
+<?php if(isset($emails) && count($emails) > 0) { ?>
 
    <table id="ss1" class="table table-striped table-condensed">
       <tr>
@@ -60,8 +70,10 @@
       </tr>
 <?php } ?>
 
-   </div>
-
 <?php } else { print $text_not_found; } ?>
 
+      </div>
+
+    </div>
+  </div>
 </div>

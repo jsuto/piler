@@ -45,10 +45,16 @@ if(isset($this->request->get['route'])) {
 <div class="searchcontainer text-center">
 
   <div id="main" class="container">
-    <div class="col text-start">
-      <?php if($title) { ?><h3><?php print $title; ?></h3><?php } ?>
+      <?php if($title) { ?>
+
+      <div class="container text-start">
+        <div class="row">
+          <h2><?php print $title; ?></h2>
+        </div>
+      </div>
+
+      <?php } ?>
       <?php print $content; ?>
-    </div>
 
   </div> <!-- main -->
 
