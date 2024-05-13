@@ -33,6 +33,7 @@ class ControllerPolicyRemovehold extends Controller {
             $ret = $this->model_policy_hold->delete_email($this->data['email']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
+               header("Location: " . SITE_URL . "index.php?route=policy/legalhold");
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];

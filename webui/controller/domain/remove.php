@@ -23,7 +23,7 @@ class ControllerDomainRemove extends Controller {
 
       $this->data['username'] = Registry::get('username');
 
-      $this->data['domain'] = @$this->request->get['name'];
+      $this->data['domain'] = @$this->request->get['domain'];
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
 
@@ -33,6 +33,7 @@ class ControllerDomainRemove extends Controller {
             $ret = $this->model_domain_domain->deleteDomain($this->data['domain']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
+               header("Location: " . SITE_URL . "index.php?route=domain/domain");
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];
@@ -56,7 +57,7 @@ class ControllerDomainRemove extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 3 || ($this->request->get['name'] != "local" && !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,10})$/', $this->request->get['name'])) ) {
+      if(!isset($this->request->get['domain']) || strlen($this->request->get['domain']) < 3 || ($this->request->get['domain'] != "local" && !preg_match('/^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,10})$/', $this->request->get['domain'])) ) {
          $this->error['domain'] = $this->data['text_invalid_data'];
       }
 
@@ -71,5 +72,3 @@ class ControllerDomainRemove extends Controller {
 
 
 }
-
-?>
