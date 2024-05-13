@@ -1,7 +1,7 @@
 <div class="container text-start">
   <div class="row">
-    <div class="col">
-<strong><?php print $text_refresh_period; ?>:</strong> <?php print HEALTH_REFRESH; ?> sec
+    <div class="col mb-5 d-flex align-items-center" style="background: #d9edf7; color: #3a87ad; height: 40px;">
+      <strong><?php print $text_refresh_period; ?>:</strong>&nbsp;<?php print HEALTH_REFRESH; ?> sec
     </div>
   </div>
   <div class="row">
@@ -10,8 +10,8 @@
       <div class="container text-start">
         <div class="row">
           <div class="col">
-            <h2><i class="bi bi-speedometer2"></i><?php print $health['sysinfo'][0]; ?> <small><?php print $text_status; ?></small></h2>
-            <h3><strong>Up For:</strong> <?php print $health['uptime']; ?></h3>
+            <h2><i class="bi bi-speedometer2"></i> <?php print $health['sysinfo'][0]; ?> <small><?php print $text_status; ?></small></h2>
+            <h3><strong>uptime:</strong> <?php print $health['uptime']; ?></h3>
           </div>
         </div>
       </div>
