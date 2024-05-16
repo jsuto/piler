@@ -1,62 +1,79 @@
+<div class="container text-danger text-start">
+<?php if(isset($errorstring)) { print $text_error . ': ' . $errorstring; } ?>
+</div>
 
-<?php if(isset($errorstring)){ ?><div class="alert alert-danger"><?php print $text_error; ?>: <?php print $errorstring; ?></div><?php } ?>
-
-<?php if(isset($x)){ ?>
-
-<div class="alert alert-success"><?php print $x; ?>.</div>
-<p><a href="index.php?route=group/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
-
-<?php } else { ?>
-
-<p><a href="index.php?route=group/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
-
-<form action="index.php?route=group/add" name="addgroup" method="post" autocomplete="off" class="form-horizontal">
-
-    <div class="control-group">
-        <label class="control-label" for="groupname"><?php print $text_groupname; ?>:</label>
-        <div class="controls">
-            <input type="text" name="groupname" id="groupname" value="<?php if(isset($post['groupname'])){ print $post['groupname']; } ?>" class="text" />
-        </div>
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
     </div>
-   
-    <div class="control-group">
-        <label class="control-label" for="s_piler_email"><?php print $text_search_emails; ?>*:</label>
-        <div class="controls">
-            <input type="text" id="s_piler_email" name="s_piler_email" placeholder="<?php print $text_search_email_to_add; ?>" class="autocompletetext" />
-        </div>
-    </div>
-
-    <div class="control-group">
-	  <label class="control-label" for="throwaway"><?php print $text_select_letter; ?>:</label>
-	  <div class="controls">
-	<?php foreach(Registry::get('letters') as $letter) { ?>
-         <a href="#" onclick="window.open('<?php print SITE_URL; ?>index.php?route=group/email&term=<?php print $letter; ?>', 'aaa', 'width=300,height=400,scroll=yes');" ><?php print $letter; ?></a>
-<?php } ?>
-	  </div>
-    </div>
-    
-    <div class="control-group">
-        <label class="control-label" for="s_piler_email"><?php print $text_email_addresses; ?>**:</label>
-        <div class="controls">
-            <textarea style="height:280px;" name="email" id="email" class="domain"><?php if(isset($post['email'])){ print $post['email']; } ?></textarea>
-        </div>
-    </div>
-
-    <div class="control-group">
-          <label class="control-label" for="groupname"><?php print $text_assigned_email_addresses; ?>**:</label>
-          <div class="controls">
-            <textarea style="height:280px;" name="assigned_email" id="assigned_email" class="domain"><?php if(isset($assigned_email)){ print $assigned_email; } ?></textarea>
+    <div class="col text-end">
+      <form method="get" name="search1" action="/domain.php">
+        <div class="row justify-content-end">
+          <div class="col-8">
+            <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
           </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary"><?php print $text_search; ?></button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
+</div>
 
-    <div class="alert alert-info">*: <?php print $text_min_2_chars; ?><br />**: <?php print $text_enter_one_email_address_per_line; ?></div>
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
 
-    <div class="form-actions">
-        <input type="submit" id="button_add" class="btn btn-primary" value="<?php print $text_add; ?>" />
-        <a href="index.php?route=group/list" class="btn"><?php print $text_cancel; ?></a>
+      <h4><?php print $text_add_new_group; ?></h4>
+
+      <form method="post" name="add1" action="index.php?route=group/add">
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="groupname" class="col-form-label"><?php print $text_groupname; ?></label>
+        </div>
+        <div class="col-2">
+          <input type="text" name="groupname" id="groupname" class="form-control" value="<?php if(isset($post['groupname'])){ print $post['groupname']; } ?>" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text">Group name, mint 2 chars</span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="mapped" class="col-form-label"><?php print $text_email_addresses; ?></label>
+        </div>
+        <div class="col-2">
+          <textarea name="email" class="form-control" aria-describedby="help2"><?php if(isset($post['email'])){ print $post['email']; } ?></textarea>
+        </div>
+        <div class="col-auto">
+          <span id="help2" class="form-text">Email addresses in the group</span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="mapped" class="col-form-label"><?php print $text_assigned_email_addresses; ?></label>
+        </div>
+        <div class="col-2">
+          <textarea name="assigned_email" class="form-control" aria-describedby="help3"><?php if(isset($post['assigned_email'])){ print $post['assigned_email']; } ?></textarea>
+        </div>
+        <div class="col-auto">
+          <span id="help3" class="form-text">Assigned email addresses</span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+        </div>
+        <div class="col-2">
+          <button type="submit" class="btn btn-primary"><?php print $text_add; ?></button>
+          <a href="index.php?route=group/list" type="reset" class="btn btn-secondary"><?php print $text_cancel; ?></a>
+        </div>
+      </div>
+
+      </form>
     </div>
-    
-</form>
-
-<?php } ?>
-
+  </div>
+</div>
