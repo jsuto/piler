@@ -1140,6 +1140,7 @@ var Piler =
     test_pop3_connection:function()
     {
        Piler.log("[test_pop3_connection]");
+       $('#LDAPTEST').html('....');
 
        jQuery.ajax('index.php?route=import/test', {
            data: {
