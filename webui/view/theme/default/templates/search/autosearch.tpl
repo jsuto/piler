@@ -32,7 +32,7 @@
   <div class="row">
     <div class="col">
 
-      <h4 class="mt-5"><?php print $text_existing; ?></h4>
+      <h4 class="mt-5"><?php print $text_existing_entries; ?></h4>
 
       <table class="table table-striped">
         <thead class="table-dark">

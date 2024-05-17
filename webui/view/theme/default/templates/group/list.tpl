@@ -39,7 +39,7 @@
         <?php foreach($groups as $group) { ?>
           <tr>
             <td><?php print $group['groupname']; ?></td>
-            <td><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit_or_view; ?></a></td>
+            <td><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><i class="bi bi-pencil-square" title="<?php print $text_edit_or_view; ?>"></i></a></td>
             <td><a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
           </tr>
         <?php } ?>
