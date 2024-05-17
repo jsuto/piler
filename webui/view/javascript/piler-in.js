@@ -1022,7 +1022,7 @@ var Piler =
 
         jQuery.ajax('index.php?route=policy/apply', { cache: true })
         .done( function(a) {
-           $('#applyChangesOutput').html(a);
+           show_message(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },

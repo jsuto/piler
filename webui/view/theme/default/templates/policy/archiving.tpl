@@ -218,5 +218,5 @@
 
 
 <div>
-  <button type="button" class="btn btn-danger" onclick="Piler.reload_piler();"><?php print $text_apply_changes; ?></button> <span id="applyChangesOutput"></span>
+  <button type="button" class="btn btn-danger" onclick="Piler.reload_piler();"><?php print $text_apply_changes; ?></button>
 </div>

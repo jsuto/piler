@@ -22,16 +22,11 @@ class ControllerPolicyApply extends Controller {
 
       system(RELOAD_COMMAND, $val);
 
-      if($val === 0) {
-         $this->data['x'] = $lang->data['text_applied'];
-      } else {
-         $this->data['x'] = $lang->data['text_install_sudo_apply'];
+      if($val !== 0) {
+         print $lang->data['text_install_sudo_apply'];
       }
 
 
-      $this->render();
    }
 
 }
-
-?>
