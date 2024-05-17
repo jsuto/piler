@@ -53,26 +53,22 @@
 
       <h4 class="mt-5"><?php print $text_existing_email; ?></h4>
 
-      <div class="listarea">
-
-<?php if(isset($emails) && count($emails) > 0) { ?>
-
-   <table id="ss1" class="table table-striped table-condensed">
-      <tr>
-         <th><?php print $text_email; ?></th>
-         <th>&nbsp;</th>
-      </tr>
-
-<?php foreach($emails as $email) { ?>
-      <tr>
-         <td><?php print $email['email']; ?></a></td>
-         <td><a href="index.php?route=policy/removehold&amp;email=<?php print urlencode($email['email']); ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
-      </tr>
-<?php } ?>
-
-<?php } else { print $text_not_found; } ?>
-
-      </div>
+      <table class="table table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th><?php print $text_email; ?></th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($emails as $d) { ?>
+          <tr>
+            <td><?php print $d['email']; ?></a></td>
+            <td><a href="index.php?route=policy/removehold&amp;confirmed=1&amp;email=<?php print urlencode($d['email']); ?>"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+          </tr>
+        <?php } ?>
+        </tbody>
+      </table>
 
     </div>
   </div>
