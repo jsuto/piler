@@ -1,89 +1,77 @@
-<div id="deleteconfirm-modal" class="modal hide fade">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" role="dialog" aria-hidden="true"><i class="icon-remove"></i></button>
-    <h3><?php print $text_confirm; ?> <?php print $text_delete; ?></h3>
-  </div>
-  <div class="modal-body">
-    <p><?php print $text_user_delete_confirm_message; ?> <span id="name">ERROR</span>?</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
-    <a href="index.php?route=user/remove&amp;uid=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
-  </div>
+<div class="container text-danger text-start">
+<?php if(isset($errorstring)) { print $text_error . ': ' . $errorstring; } ?>
 </div>
 
-<form method="post" name="search1" action="index.php?route=user/list" class="form-inline pull-right">
-    <div class="input-append">
-        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
-        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
     </div>
-</form>
-
-<p><a href="index.php?route=user/add"><i class="icon-plus"></i>&nbsp;<?php print $text_add_new_user_alias; ?></a></p>
-
-<h4><?php print $text_existing_users; ?></h4>
-
-<?php if(isset($users) && is_array($users)){ ?>
-
-<div id="pagenav">
-   <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=0&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-left"></i><?php if($page > 0){ ?></a><?php } ?>
-   &nbsp;
-   <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=<?php print $prev_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-left"></i><?php if($page > 0){ ?></a><?php } ?>
-   &nbsp;
-   <?php print $users[0][$sort]; ?> - <?php print $users[count($users)-1][$sort]; ?>
-   &nbsp;
-   <?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?><a href="index.php?route=user/list&amp;page=<?php print $next_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-right"></i><?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?></a><?php } ?>
-   &nbsp;
-   <?php if($page < $total_pages){ ?><a href="index.php?route=user/list&amp;page=<?php print $total_pages; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-right"></i><?php if($page < $total_pages){ ?></a><?php } ?>
+    <div class="col text-end">
+      <form method="post" name="search1" action="index.php?route=user/list">
+        <div class="row justify-content-end">
+          <div class="col-8">
+            <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary"><?php print $text_search; ?></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
-   <table class="table table-striped table-condensed" id="ss1">
-      <tr class="domainrow">
-         <th><?php print $text_realname; ?> <a href="index.php?route=user/list&amp;sort=realname&amp;order=0<?php print $querystring; ?>"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=realname&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
-         <th><?php print $text_username; ?> <a href="index.php?route=user/list&amp;sort=username&amp;order=0<?php print $querystring; ?>"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=username&amp;order=1<?php print $querystring; ?>"<?php print $querystring; ?>><i class="icon-chevron-down"></i></a></th>
-         <th><?php print $text_email; ?> <a href="index.php?route=user/list&amp;sort=email&amp;order=0"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=email&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
-         <th><?php print $text_role; ?> <a href="index.php?route=user/list&amp;sort=role&amp;order=0"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=role&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
-         <th>&nbsp;</th>
-         <th>&nbsp;</th>
-      </tr>
+<div class="container text-start mt-3">
+  <div class="row">
+    <div class="col">
 
-<?php foreach($users as $user) { ?>
-      <tr class="domainrow">
-         <td><?php print $user['realname']; ?></td>
-         <td><?php print $user['username']; ?></td>
-         <td><?php if($user['email'] != $user['shortemail']){ ?><span><?php print $user['shortemail']; ?></span><?php } else { print $user['email']; } ?></td>
-         <td>
+      <h4><?php print $text_add_new_entry; ?> <a href="index.php?route=user/add"><i class="bi bi-plus"></i></a></h4>
+
+      <table class="table table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th><?php print $text_realname; ?> <a href="index.php?route=user/list&amp;sort=realname&amp;order=0<?php print $querystring; ?>"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=realname&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_username; ?> <a href="index.php?route=user/list&amp;sort=username&amp;order=0<?php print $querystring; ?>"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=username&amp;order=1<?php print $querystring; ?>"<?php print $querystring; ?>><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_email; ?> <a href="index.php?route=user/list&amp;sort=email&amp;order=0"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=email&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
+            <th><?php print $text_role; ?> <a href="index.php?route=user/list&amp;sort=role&amp;order=0"><i class="icon-chevron-up"></i> <a href="index.php?route=user/list&amp;sort=role&amp;order=1<?php print $querystring; ?>"><i class="icon-chevron-down"></i></a></th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($users as $user) { ?>
+          <tr class="domainrow">
+            <td><?php print $user['realname']; ?></td>
+            <td><?php print $user['username']; ?></td>
+            <td><?php if($user['email'] != $user['shortemail']){ ?><span><?php print $user['shortemail']; ?></span><?php } else { print $user['email']; } ?></td>
+            <td>
             <?php
                if($user['isadmin'] == 0){ print $text_user_regular; }
                if($user['isadmin'] == 1){ print $text_user_masteradmin; }
                if($user['isadmin'] == 2){ print $text_user_auditor; }
                if($user['isadmin'] == 4){ print $text_user_data_officer; }
             ?>
-         </td>
-         <td><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit_or_view; ?></a></td>
-         <td><a href="index.php?route=user/remove&amp;id=<?php print $user['uid']; ?>&amp;user=<?php print $user['username']; ?>" class="confirm-delete" data-id="<?php print $user['uid']; ?>" data-name="<?php print $user['realname']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
-      </tr>
-<?php } ?>
+            </td>
+            <td><a href="index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><i class="bi bi-pencil-square" title="<?php print $text_edit_or_view; ?>"></i></a></td>
+            <td><a href="index.php?route=user/remove&amp;id=<?php print $user['uid']; ?>&amp;user=<?php print $user['username']; ?>&amp'confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+          </tr>
+        <?php } ?>
+      </table>
 
-   </table>
+    <?php if($total_users > $page_len) { ?>
+      <div id="pagenav">
+      <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=0&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-double-left"></i><?php if($page > 0){ ?></a><?php } ?>
+   &nbsp;
+      <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=<?php print $prev_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-left"></i><?php if($page > 0){ ?></a><?php } ?>
+      &nbsp;
+      <?php print $users[0][$sort]; ?> - <?php print $users[count($users)-1][$sort]; ?>
+      &nbsp;
+      <?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?><a href="index.php?route=user/list&amp;page=<?php print $next_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-right"></i><?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?></a><?php } ?>
+      &nbsp;
+      <?php if($page < $total_pages){ ?><a href="index.php?route=user/list&amp;page=<?php print $total_pages; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-double-right"></i><?php if($page < $total_pages){ ?></a><?php } ?>
+      </div>
+    <?php } ?>
 
-
-<div id="pagenav">
-   <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=0&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-left"></i><?php if($page > 0){ ?></a><?php } ?>
-   &nbsp;
-   <?php if($page > 0){ ?><a href="index.php?route=user/list&amp;page=<?php print $prev_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-left"></i><?php if($page > 0){ ?></a><?php } ?>
-   &nbsp;
-   <?php print $users[0][$sort]; ?> - <?php print $users[count($users)-1][$sort]; ?>
-   &nbsp;
-   <?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?><a href="index.php?route=user/list&amp;page=<?php print $next_page; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-angle-right"></i><?php if($total_users >= $page_len*($page+1) && $total_users > $page_len){ ?></a><?php } ?>
-   &nbsp;
-   <?php if($page < $total_pages){ ?><a href="index.php?route=user/list&amp;page=<?php print $total_pages; ?>&amp;search=<?php print $search; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="icon-double-angle-right"></i><?php if($page < $total_pages){ ?></a><?php } ?>
+    </div>
+  </div>
 </div>
-
-<?php } else { ?>
-<div class="alert alert-error lead">
-<?php print $text_not_found; ?>
-</div>
-<?php } ?>
-
-
