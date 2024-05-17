@@ -7,7 +7,7 @@
     <div class="col">
     </div>
     <div class="col text-end">
-      <form method="get" name="search1" action="archiving.php">
+      <form method="get" name="search1" action="retention.php">
         <div class="row justify-content-end">
           <div class="col-8">
             <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
@@ -28,6 +28,21 @@
       <h4><?php print $text_add_new_rule; ?></h4>
 
       <form method="post" id="add1" name="add1" action="index.php?route=policy/retention" class="form-horizontal">
+
+    <?php if(ENABLE_SAAS == 1) { ?>
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="domain" class="col-form-label"><?php print $text_domain; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="domain" id="domain" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+    <?php } ?>
+
 
       <div class="row g-3 align-items-center">
         <div class="col-2">
