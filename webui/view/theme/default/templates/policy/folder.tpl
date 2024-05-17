@@ -1,160 +1,262 @@
-<form method="get" name="search1" action="folder.php" class="form-inline pull-right">
-    <div class="input-append">
-        <input type="text" name="search" class="input-medium" value="<?php print $search; ?>" />
-        <input type="submit" class="btn" value="<?php print $text_search; ?>" />
-    </div>
-</form>
-
-<h4><?php print $text_add_new_rule; ?></h4>
-
-<form method="post" id="add1" name="add1" action="index.php?route=policy/folder" class="form-horizontal">
-
-<?php if(ENABLE_SAAS == 1) { ?>
-      <div class="control-group">
-                <label class="control-label" for="domain"><?php print $text_domain; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="domain" />
-         </div>
-      </div>
-<?php } ?>
-
-      <div class="control-group">
-		<label class="control-label" for="from"><?php print $text_from; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="from" />
-         </div>
-      </div>
-      <div class="control-group">
-		<label class="control-label" for="to"><?php print $text_to; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="to" />
-         </div>
-      </div>      
-      <div class="control-group">
-		<label class="control-label" for="subject"><?php print $text_subject; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="subject" />
-         </div>
-      </div>
-      <div class="control-group">
-                <label class="control-label" for="body"><?php print $text_body; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="body" />
-         </div>
-      </div>
-      <div class="control-group">
-		<label class="control-label" for="size"><?php print $text_size; ?>:</label>
-        <div class="controls">
-            <select class="ruleselect" name="_size">
-               <option value=">">&gt;</option>
-               <option value="=">=</option>
-               <option value="<">&lt;</option>
-            </select>
-            <input type="text" class="ruletext" name="size" />
-         </div>
-      </div>
-      <div class="control-group">
-                <label class="control-label" for="attachment_name"><?php print $text_attachment_name; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="attachment_name" />
-         </div>
-      </div>
-      <div class="control-group">
-		<label class="control-label" for="attachment_type"><?php print $text_attachment_type; ?>:</label>
-        <div class="controls">
-            <input type="text" class="text" name="attachment_type" />
-         </div>
-      </div>
-      <div class="control-group">
-		<label class="control-label" for="attachment_size"><?php print $text_attachment_size; ?>:</label>
-        <div class="controls">
-            <select class="ruleselect" name="_attachment_size">
-               <option value=">">&gt;</option>
-               <option value="=">=</option>
-               <option value="<">&lt;</option>
-            </select>
-            <input type="text" class="ruletext" name="attachment_size" />
-         </div>
-      </div>        
-      <div class="control-group">
-		<label class="control-label" for="spam"><?php print $text_spam; ?>:</label>
-        <div class="controls">
-            <select class="ruleselect" name="spam">
-               <option value="-1">-</option>
-               <option value="0"><?php print $text_not_spam; ?></option>
-               <option value="1"><?php print $text_spam2; ?></option>
-            </select>
-         </div>
-      </div>
-      <div class="control-group">
-		<label class="control-label" for="days"><?php print $text_folder; ?>:</label>
-        <div class="controls">
-            <select class="ruleselect" name="folder_id">
-               <option value="0">-</option>
-            <?php foreach($folders as $k => $v) { ?>
-               <option value="<?php print $k; ?>"><?php print $v; ?></option>
-            <?php } ?>
-            </select>
-        </div>
-      </div>      
-      <div class="form-actions">
-          <input type="submit" class="btn btn-primary" value="<?php print $text_add; ?>" /><input type="reset" class="btn" value="<?php print $text_cancel; ?>" />
-      </div>
-</form>
-
-
-<h4><?php print $text_existing_rules; ?></h4>
-
-<?php if(isset($rules)){ ?>
-
-   <table id="ss1" class="table table-striped table-condensed">
-      <tr class="domainrow">
-<?php if(ENABLE_SAAS == 1) { ?>
-         <th><?php print $text_domain; ?></th>
-<?php } ?>
-         <th><?php print $text_from; ?></th>
-         <th><?php print $text_to; ?></th>
-         <th><?php print $text_subject; ?></th>
-         <th><?php print $text_body; ?></th>
-         <th><?php print $text_spam; ?></th>
-         <th><?php print $text_size; ?></th>
-         <th><?php print $text_attachment_name; ?></th>
-         <th><?php print $text_attachment_type; ?></th>
-         <th><?php print $text_attachment_size; ?></th>
-         <th><?php print $text_folder; ?></th>
-         <th>&nbsp;</th>
-      </tr>
-
-<?php foreach($rules as $rule) { ?>
-      <tr class="domainrow">
-<?php if(ENABLE_SAAS == 1) { ?>
-         <td><?php print $rule['domain']; ?></td>
-<?php } ?>
-         <td><?php print $rule['from']; ?></td>
-         <td><?php print $rule['to']; ?></td>
-         <td><?php print $rule['subject']; ?></td>
-         <td><?php print $rule['body']; ?></td>
-         <td><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></td>
-         <td><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></td>
-         <td><?php print $rule['attachment_name']; ?></td>
-         <td><?php print $rule['attachment_type']; ?></td>
-         <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
-         <td><?php print $folders[$rule['folder_id']]; ?></td>
-         <td><a href="index.php?route=policy/removefolder&amp;id=<?php print $rule['id']; ?>"><?php print $text_remove; ?></a></td>
-      </tr>
-<?php } ?>
-
-   </table>
-
-<?php } else { ?>
-<div class="alert alert-error lead">
-<?php print $text_not_found; ?>
+<div class="container text-danger text-start">
+<?php if(isset($errorstring)) { print $text_error . ': ' . $errorstring; } ?>
 </div>
-<?php } ?>
 
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
+    </div>
+    <div class="col text-end">
+      <form method="get" name="search1" action="folder.php">
+        <div class="row justify-content-end">
+          <div class="col-8">
+            <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary"><?php print $text_search; ?></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container text-start">
+  <div class="row">
+    <div class="col">
+
+      <h4><?php print $text_add_new_rule; ?></h4>
+
+      <form method="post" id="add1" name="add1" action="index.php?route=policy/folder" class="form-horizontal">
+
+    <?php if(ENABLE_SAAS == 1) { ?>
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="domain" class="col-form-label"><?php print $text_domain; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="domain" id="domain" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+    <?php } ?>
+
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="from" class="col-form-label"><?php print $text_from; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="from" id="from" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="to" class="col-form-label"><?php print $text_to; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="to" id="to" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="subject" class="col-form-label"><?php print $text_subject; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="subject" id="subject" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="body" class="col-form-label"><?php print $text_body; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="body" id="body" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="size" class="col-form-label"><?php print $text_size; ?></label>
+        </div>
+        <div class="col-1">
+          <select class="form-control" name="_size">
+            <option value=">">&gt;</option>
+            <option value="=">=</option>
+            <option value="<">&lt;</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <input type="text" name="size" id="size" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="attachment_name" class="col-form-label"><?php print $text_attachment_name; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="attachment_name" id="attachment_name" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="attachment_type" class="col-form-label"><?php print $text_attachment_type; ?></label>
+        </div>
+        <div class="col-5">
+          <input type="text" name="attachment_type" id="attachment_type" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="attachment_size" class="col-form-label"><?php print $text_attachment_size; ?></label>
+        </div>
+        <div class="col-1">
+          <select class="form-control" name="_attachment_size">
+            <option value=">">&gt;</option>
+            <option value="=">=</option>
+            <option value="<">&lt;</option>
+          </select>
+        </div>
+        <div class="col-4">
+          <input type="text" name="attachment_size" id="attachment_size" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="spam" class="col-form-label"><?php print $text_spam; ?></label>
+        </div>
+        <div class="col-5">
+          <select class="form-control" name="spam">
+            <option value="-1">-</option>
+            <option value="0"><?php print $text_not_spam; ?></option>
+            <option value="1"><?php print $text_spam2; ?></option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+     <div class="row g-3 align-items-center">
+        <div class="col-2">
+          <label for="folder" class="col-form-label"><?php print $text_folder; ?></label>
+        </div>
+        <div class="col-5">
+          <select class="form-control" name="folder_id">
+            <option value="0">-</option>
+          <?php foreach($folders as $k => $v) { ?>
+            <option value="<?php print $k; ?>"><?php print $v; ?></option>
+          <?php } ?>
+          </select>
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-2 align-items-center">
+        <div class="col-2">
+        </div>
+        <div class="col-2">
+          <button type="submit" class="btn btn-primary"><?php print $text_add; ?></button>
+          <button type="reset" class="btn btn-secondary"><?php print $text_cancel; ?></button>
+        </div>
+        <div class="col-auto">
+          <span id="help1" class="form-text"></span>
+        </div>
+      </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="container text-start mt-5">
+  <div class="row">
+    <div class="col">
+
+      <h4><?php print $text_existing_rules; ?></h4>
+
+      <table class="table table-striped">
+        <thead class="table-dark">
+          <tr>
+          <?php if(ENABLE_SAAS == 1) { ?>
+            <th><?php print $text_domain; ?></th>
+          <?php } ?>
+            <th><?php print $text_from; ?></th>
+            <th><?php print $text_to; ?></th>
+            <th><?php print $text_subject; ?></th>
+            <th><?php print $text_body; ?></th>
+            <th><?php print $text_spam; ?></th>
+            <th><?php print $text_size; ?></th>
+            <th><?php print $text_attachment_name; ?></th>
+            <th><?php print $text_attachment_type; ?></th>
+            <th><?php print $text_attachment_size; ?></th>
+            <th><?php print $text_folder; ?></th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($rules as $rule) { ?>
+          <tr>
+          <?php if(ENABLE_SAAS == 1) { ?>
+            <td><?php print $rule['domain']; ?></td>
+          <?php } ?>
+            <td><?php print htmlentities($rule['from']); ?></td>
+            <td><?php print htmlentities($rule['to']); ?></td>
+            <td><?php print htmlentities($rule['subject']); ?></td>
+            <td><?php print htmlentities($rule['body']); ?></td>
+            <td><?php if($rule['spam'] == -1) { print "-"; } else if($rule['spam'] == 0) { print $text_not_spam; } else { print $text_spam; } ?></td>
+            <td><?php if($rule['size'] > 0) { print $rule['_size']; ?> <?php print $rule['size']; } ?></td>
+            <td><?php print htmlentities($rule['attachment_name']); ?></td>
+            <td><?php print htmlentities($rule['attachment_type']); ?></td>
+            <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
+            <td><?php print $folders[$rule['folder_id']]; ?></td>
+            <td><a href="index.php?route=policy/removefolder&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
+          </tr>
+        <?php } ?>
+        <tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
 
 
 <div>
-   <input type="button" class="btn btn-danger" onclick="Piler.reload_piler();" value="<?php print $text_apply_changes; ?>" /> <span id="applyChangesOutput"></span>
+  <button type="button" class="btn btn-danger" onclick="Piler.reload_piler();"><?php print $text_apply_changes; ?></button>
 </div>
-
