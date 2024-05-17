@@ -12,9 +12,8 @@
 
       <h4><?php print $text_progress; ?></h4>
 
-      <div class="listarea">
-
-        <table id="ss1" class="table table-striped table-condensed">
+      <table class="table table-striped">
+        <thead class="table-dark">
           <tr>
             <th><?php print $text_type; ?></th>
             <th><?php print $text_username; ?></th>
@@ -23,7 +22,8 @@
             <th><?php print $text_status; ?></td>
             <th>&nbsp;</th>
           </tr>
-
+        </thead>
+        <tbody>
         <?php foreach($entries as $e) { ?>
           <tr>
             <td><?php print $e['type']; ?></td>
@@ -34,13 +34,8 @@
             <td><a href="index.php?route=import/remove&amp;id=<?php print $e['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
           </tr>
         <?php } ?>
-
-        </table>
-
-      </div>
-
-
-
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

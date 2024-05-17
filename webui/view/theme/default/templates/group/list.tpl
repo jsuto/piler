@@ -21,30 +21,30 @@
   </div>
 </div>
 
-<div class="container text-start">
+<div class="container text-start mt-3">
   <div class="row">
     <div class="col">
 
       <h4><?php print $text_add_new_entry; ?> <a href="index.php?route=group/add"><i class="bi bi-plus"></i></a></h4>
 
-    <table class="table table-striped table-condensed" id="ss1">
-      <thead>
-      <tr class="domainrow">
-         <th><?php print $text_groupname; ?> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=0"><i class="icon-chevron-up"></i></a>&nbsp;<a href="index.php?route=group/list&amp;sort=groupname&amp;order=1"><i class="icon-chevron-down"></i></a></th>
-         <th>&nbsp;</th>
-         <th>&nbsp;</th>
-      </tr>
-      </thead>
-      <tbody>
-<?php foreach($groups as $group) { ?>
-      <tr class="domainrow">
-         <td><?php print $group['groupname']; ?></td>
-         <td><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit_or_view; ?></a></td>
-         <td><a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
-      </tr>
-<?php } ?>
-      </tbody>
-   </table>
+      <table class="table table-striped mt-4">
+        <thead class="table-dark">
+          <tr>
+            <th><?php print $text_groupname; ?> <a href="index.php?route=group/list&amp;sort=groupname&amp;order=0"><i class="icon-chevron-up"></i></a>&nbsp;<a href="index.php?route=group/list&amp;sort=groupname&amp;order=1"><i class="icon-chevron-down"></i></a></th>
+            <th>&nbsp;</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($groups as $group) { ?>
+          <tr>
+            <td><?php print $group['groupname']; ?></td>
+            <td><a href="index.php?route=group/edit&amp;id=<?php print $group['id']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit_or_view; ?></a></td>
+            <td><a href="index.php?route=group/remove&amp;id=<?php print $group['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
+          </tr>
+        <?php } ?>
+        </tbody>
+      </table>
 
 <?php if($total_groups > $page_len) { ?>
 

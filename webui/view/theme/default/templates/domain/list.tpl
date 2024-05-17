@@ -90,28 +90,30 @@
 
       <h4 class="mt-5"><?php print $text_existing_domains; ?></h4>
 
-      <div class="listarea">
-
-        <table id="ss1" class="table table-striped table-condensed">
-        <tr>
-           <th><?php print $text_domain; ?></th>
-           <th><?php print $text_mapped_domain; ?></th>
-         <?php if(ENABLE_SAAS == 1) { ?>
-           <th><?php print $text_ldap; ?></th>
-         <?php } ?>
-           <th>&nbsp;</th>
-        </tr>
-
-      <?php foreach($domains as $domain) { ?>
-        <tr>
-          <td><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></td>
-          <td><?php print $domain['mapped']; ?></td>
-        <?php if(ENABLE_SAAS == 1) { ?>
-          <td><?php if(isset($domain['ldap'])) {print $domain['ldap'];} else {print '&nbsp;';} ?></td>
+      <table class="table table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th><?php print $text_domain; ?></th>
+            <th><?php print $text_mapped_domain; ?></th>
+          <?php if(ENABLE_SAAS == 1) { ?>
+            <th><?php print $text_ldap; ?></th>
+          <?php } ?>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach($domains as $domain) { ?>
+          <tr>
+            <td><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></td>
+            <td><?php print $domain['mapped']; ?></td>
+          <?php if(ENABLE_SAAS == 1) { ?>
+            <td><?php if(isset($domain['ldap'])) {print $domain['ldap'];} else {print '&nbsp;';} ?></td>
+          <?php } ?>
+            <td><a href="index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
+          </tr>
         <?php } ?>
-          <td><a href="index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
-        </tr>
-      <?php } ?>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
