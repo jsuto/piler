@@ -172,14 +172,10 @@ var Piler =
 
         if(cmd == 'start') {
           document.getElementById("spinner").classList.remove("hidden");
-          //$('#sspinner').show();
-          //$('#messagelistcontainer').hide();
         }
 
         if(cmd == 'stop') {
           document.getElementById("spinner").classList.add("hidden");
-          //$('#sspinner').hide();
-          //$('#messagelistcontainer').show();
         }
     },
 
@@ -384,14 +380,14 @@ var Piler =
     },
 
 
-    approve_message_removal:function(id)
+    approve_message_removal:function()
     {
-        Piler.log("[approve_message_removal]", id);
+        Piler.log("[approve_message_removal]", Piler.remove_message_id);
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax('index.php?route=message/remove', {
-        data: { id: id, confirmed: 1 },
+        data: { id: Piler.remove_message_id, confirmed: 1 },
            type: "POST"
         })
         .done( function(a) {})
@@ -403,15 +399,17 @@ var Piler =
     },
 
 
-    reject_message_removal:function(id, reason2)
+    reject_message_removal:function()
     {
-        Piler.log("[reject_message_removal]", id);
+        Piler.log("[reject_message_removal]", Piler.remove_message_id);
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
+	let reason2 = $('#reason2').val();
+
         if(reason2) {
           jQuery.ajax('/rejectremove.php', {
-          data: { id: id, confirmed: 1, reason2: reason2 },
+          data: { id: Piler.remove_message_id, confirmed: 1, reason2: reason2 },
              type: "POST"
           })
           .done( function(a) {})
