@@ -207,4 +207,6 @@ docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/sign.php --webui /v
 
 run_import_job
 
+docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
+
 get_verdict
