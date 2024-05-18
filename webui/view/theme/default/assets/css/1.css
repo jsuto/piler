@@ -41,6 +41,9 @@ input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 .messageheader{background-color:#f6f6f6;padding:8px;border-bottom:1px solid #ccc;}
 .messagecontents{background-color:#fff;padding:8px;}
 
+.resultrow{font-style:italic;cursor:pointer;}
+.resultrow.new{font-style:normal;}
+
 a{color:#2e8bcc;text-decoration:none;}
 a:hover{color:#20608e;text-decoration:underline;}
 a.xxx{color:#aaa;text-decoration:underline;}

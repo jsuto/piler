@@ -16,8 +16,6 @@ $config = [];
  * variable to be overridden in config-site.php
  */
 
-$config['ENABLE_MOBILE_PREVIEW'] = 0;
-
 $config['SITE_LOGO_LG'] = '/view/theme/default/assets/images/archive-logo-lg.png';
 $config['SITE_LOGO_SM'] = '/view/theme/default/assets/images/archive-logo-sm.png';
 $config['COMPATIBILITY'] = 'Which browsers are supported, etc';
@@ -35,8 +33,6 @@ $config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
 $config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
 
 $config['DOMAIN_REGEX'] = '/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,20}$/';
-
-$config['BOOTSTRAP_THEME'] = '-cosmo';
 
 $config['DEFAULT_LANG'] = 'en';
 
@@ -57,10 +53,7 @@ $config['ENABLE_REFERENCES'] = 1;
 $config['ENABLE_DOWNLOADING_ALL_SEARCH_HITS'] = 0;
 $config['EML_NAME_BASED_ON_SUBJECT'] = 1;
 
-$config['ENABLE_TABLE_RESIZE'] = 0;
 $config['DEMO_MODE'] = 0;
-
-$config['SHOW_MENU_FOR_OUTLOOK'] = 0;
 
 $config['SEARCH_QUERY_QUOTING'] = 0;
 

@@ -6,11 +6,7 @@ class ControllerCommonLayoutSearch extends Controller {
 
          $this->data['title'] = $this->document->title;
 
-         if(ENABLE_MOBILE_PREVIEW && MOBILE_DEVICE) {
-            $this->template = "common/layout-search-mobile.tpl";
-         } else {
-            $this->template = "common/layout-search.tpl";
-         }
+         $this->template = "common/layout-search.tpl";
 
          $this->data['search_args'] = '';
 

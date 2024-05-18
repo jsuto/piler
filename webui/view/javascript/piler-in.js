@@ -255,12 +255,12 @@ var Piler =
 
         if(Piler.prev_message_id > 0) { $('#e_' + Piler.prev_message_id).attr('class', 'resultrow'); }
 
-        $('#e_' + id).attr('class', 'resultrow selected');
+        $('#e_' + id).attr('class', 'resultrow selected table-info');
 
         Piler.prev_message_id = id;
         Piler.view_message(id);
 
-        $('#mailpreviewframe').scrollTop(0);
+        //$('#mailpreviewframe').scrollTop(0);
     },
 
 
@@ -1231,14 +1231,6 @@ var Piler =
           $('#ldap_distributionlist_attr_id').hide();
           $('#ldap_distributionlist_objectclass_id').hide();
        }
-    },
-
-
-    fix_page: function()
-    {
-<?php if(OUTLOOK == 1) { ?>
-        $('#mainscreen').css('top', '60px');
-<?php } ?>
     },
 
 

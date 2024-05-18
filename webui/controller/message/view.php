@@ -6,11 +6,7 @@ class ControllerMessageView extends Controller {
    public function index(){
 
       $this->id = "content";
-      if(ENABLE_MOBILE_PREVIEW && MOBILE_DEVICE) {
-         $this->template = "message/view-mobile.tpl";
-      } else {
-         $this->template = "message/view.tpl";
-      }
+      $this->template = "message/view.tpl";
       $this->layout = "common/layout-empty";
 
       $session = Registry::get('session');
@@ -119,5 +115,3 @@ class ControllerMessageView extends Controller {
 
 
 }
-
-?>
