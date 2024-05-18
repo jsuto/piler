@@ -218,7 +218,6 @@ class ModelSearchSearch extends Model {
          }
       }
 
-
       if(isset($data['tag']) && $data['tag']) {
          list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag', $page);
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
@@ -236,6 +235,13 @@ class ModelSearchSearch extends Model {
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
          $total_found = $query->total_found;
          $num_rows = $query->num_rows;
+
+         $b = preg_split("/\ ORDER\ /", $query->query);
+         $a = preg_split("/\ WHERE\ /", $b[0]);
+         if(isset($a[1])) {
+            $sphx_query = preg_replace("/\'/", "\'", $a[1]);
+            $session->set("sphx_query", $sphx_query);
+         }
       }
 
       /*
