@@ -35,7 +35,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_cancel; ?></button>
-          <button type="button" class="btn btn-primary" onclick="let addr = $('#bulk_restore_address').val(); if(addr) { Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); } hide_modal('bulkRestoreModal');"><?php print $text_restore; ?></button>
+          <button type="button" class="btn btn-primary" onclick="let addr = $('#bulk_restore_address').val(); if(addr) { Piler.bulk_restore_messages('<?php print $text_restored; ?>', addr); }"><?php print $text_restore; ?></button>
         </div>
       </div>
     </div>
@@ -135,7 +135,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_cancel; ?></button>
-          <button type="button" class="btn btn-danger" onclick="let reason = $('#reason').val(); if(reason) { Piler.bulk_remove_messages(reason, '<?php if(NEED_TO_APPROVE_DELETE) { print $text_need_to_approve_removal; } else { print $text_successfully_removed; } ?>', '<?php print $text_no_selected_message; ?>'); hide_modal('deleteModal');} else { show_message('ERROR', 'Please give a reason to delete this message'); } "><?php print $text_delete; ?></button>
+          <button type="button" class="btn btn-danger" onclick="let reason = $('#reason').val(); if(reason) { Piler.bulk_remove_messages(reason, '<?php if(NEED_TO_APPROVE_DELETE) { print $text_need_to_approve_removal; } else { print $text_successfully_removed; } ?>', '<?php print $text_no_selected_message; ?>'); } else { Piler.show_message('ERROR', 'Please give a reason to delete this message'); } "><?php print $text_delete; ?></button>
         </div>
       </div>
     </div>

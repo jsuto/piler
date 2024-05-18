@@ -202,7 +202,7 @@ var Piler =
             alert("Problem retrieving XML data:" + b)
         });
 
-        show_message('INFO', msg);
+        Piler.show_message('INFO', msg);
     },
 
 
@@ -218,7 +218,7 @@ var Piler =
         })
         .done( function( a )
         {
-            $('#mailcontframe').html( a );
+            $('#qqq').html( a );
         })
         .fail(function( a, b )
         {
@@ -316,7 +316,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', "OK");
+        Piler.show_message('INFO', "OK");
     },
 
 
@@ -333,7 +333,7 @@ var Piler =
         .done( function( a ) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', "OK");
+        Piler.show_message('INFO', "OK");
     },
 
 
@@ -345,7 +345,7 @@ var Piler =
         .done(function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', "OK");
+        Piler.show_message('INFO', "OK");
     },
 
 
@@ -365,7 +365,7 @@ var Piler =
         var idlist = Piler.get_selected_messages_list();
 
         if(!idlist) {
-           show_message('ERROR', text_no_selected_message);
+           Piler.show_message('ERROR', text_no_selected_message);
            return;
         }
 
@@ -376,7 +376,9 @@ var Piler =
         .done( function( a ) {})
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('OK', text_successfully_removed);
+        Piler.modal('deleteModal');
+
+        Piler.show_message('OK', text_successfully_removed);
     },
 
 
@@ -393,9 +395,9 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-	hide_modal('removeApproveModal');
+	Piler.modal('removeApproveModal');
 
-        show_message('OK', 'Approved removal of message');
+        Piler.show_message('OK', 'Approved removal of message');
     },
 
 
@@ -415,11 +417,11 @@ var Piler =
           .done( function(a) {})
           .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-          hide_modal('removeRejectModal');
+          Piler.modal('removeRejectModal');
 
-          show_message('OK', 'Removal of message is rejected');
+          Piler.show_message('OK', 'Removal of message is rejected');
         } else {
-          show_message('ERROR', 'Please provide reason for rejection');
+          Piler.show_message('ERROR', 'Please provide reason for rejection');
         }
     },
 
@@ -441,7 +443,9 @@ var Piler =
         .done( function( a ) {})
         .fail(function( a, b ) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', msg);
+        Piler.modal('bulkRestoreModal');
+
+        Piler.show_message('INFO', msg);
     },
 
 
@@ -484,7 +488,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', msg);
+        Piler.show_message('INFO', msg);
     },
 
 
@@ -501,7 +505,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', msg);
+        Piler.show_message('INFO', msg);
     },
 
 
@@ -524,7 +528,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', msg);
+        Piler.show_message('INFO', msg);
     },
 
 
@@ -748,7 +752,7 @@ var Piler =
 
         $('input#_search').val('');
 
-        hide_modal('advancedSearchModal');
+        Piler.modal('advancedSearchModal');
 
         Piler.load_search_results();
     },
@@ -880,11 +884,11 @@ var Piler =
            .done( function(a) {})
            .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-           show_message('OK', msgok);
-           hide_modal('restoreModal');
+           Piler.show_message('OK', msgok);
+           Piler.modal('restoreModal');
         }
         else {
-           show_message('ERROR', msgerr);
+           Piler.show_message('ERROR', msgerr);
         }
 
     },
@@ -1014,7 +1018,7 @@ var Piler =
 
         jQuery.ajax('index.php?route=policy/apply', { cache: true })
         .done( function(a) {
-           show_message(a);
+           Piler.show_message(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
@@ -1075,7 +1079,7 @@ var Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-        show_message('INFO', msg);
+        Piler.show_message('INFO', msg);
 
         Piler.current_message_id = 0;
     },
@@ -1270,45 +1274,37 @@ var Piler =
 
     },
 
+    modal: function(id, action='') {
+      try {
+        let modalId = document.getElementById(id)
+        const modal = bootstrap.Modal.getOrCreateInstance(modalId)
+        if(action == 'show') {
+          modal.show()
+        } else {
+          modal.hide()
+        }
+      } catch(e) {
+        Piler.log(e)
+      }
+    },
 
-}
 
+    show_message: function(title = '', msg = '', small = "Now") {
+      Piler.log("[show_message]")
 
+      let toastTitle = document.getElementById("toast-title")
+      let toastSmall = document.getElementById("toast-small")
+      let toastMsg = document.getElementById("toast-msg")
 
-function hide_modal(id = '') {
-  try {
-    let modalId = document.getElementById(id)
-    const modal = bootstrap.Modal.getOrCreateInstance(modalId)
-    modal.hide()
-  } catch(e) {
-    console.log(e)
-  }
-}
+      toastTitle.innerHTML = title
+      toastSmall.innerHTML = small
+      toastMsg.innerHTML = msg
 
-function show_modal(id = '') {
-  try {
-    let modalId = document.getElementById(id)
-    const modal = bootstrap.Modal.getOrCreateInstance(modalId)
-    modal.show()
-  } catch(e) {
-    console.log(e)
-  }
-}
+      const toastId = document.getElementById("ToastId")
+      if(toastId) {
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastId)
+        toastBootstrap.show()
+      }
+    }
 
-function show_message(title = '', msg = '', small = "Now") {
-  Piler.log("[show_message]")
-
-  let toastTitle = document.getElementById("toast-title")
-  let toastSmall = document.getElementById("toast-small")
-  let toastMsg = document.getElementById("toast-msg")
-
-  toastTitle.innerHTML = title
-  toastSmall.innerHTML = small
-  toastMsg.innerHTML = msg
-
-  const toastId = document.getElementById("ToastId")
-  if(toastId) {
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastId)
-    toastBootstrap.show()
-  }
 }
