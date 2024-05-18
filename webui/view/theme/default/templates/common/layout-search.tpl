@@ -30,48 +30,46 @@
 <?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
 <?php include_once DIR_THEME . THEME . '/templates/search/modals.tpl'; ?>
 
-<?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
   <div id="header">
     <?php print $menu; ?>
   </div>
-<?php } ?>
 
-    <div class="searchcontainer">
-      <div class="row w-100 ms-0">
+  <div class="searchcontainer">
+    <div class="row w-100 ms-0">
 
-        <div class="container text-center">
-          <div class="row align-items-center">
-            <div class="col ps-0">
-              <div class="d-flex align-items-center justify-content-start">
-                <input type="hidden" name="searchtype" id="searchtype" value="expert" />
-                <input type="hidden" name="sort" id="sort" value="date" />
-                <input type="hidden" name="order" id="order" value="0" />
-                <input type="hidden" name="ref" id="ref" value="" />
-                <input type="hidden" name="prefix" id="prefix" value="" />
-                <input type="text" class="form-control" id="_search" name="_search" placeholder="Enter your search terms" />
-              </div>
+      <div class="container text-center">
+        <div class="row align-items-center">
+          <div class="col ps-0">
+            <div class="d-flex align-items-center justify-content-start">
+              <input type="hidden" name="searchtype" id="searchtype" value="expert" />
+              <input type="hidden" name="sort" id="sort" value="date" />
+              <input type="hidden" name="order" id="order" value="0" />
+              <input type="hidden" name="ref" id="ref" value="" />
+              <input type="hidden" name="prefix" id="prefix" value="" />
+              <input type="text" class="form-control" id="_search" name="_search" placeholder="Enter your search terms" />
             </div>
-            <div class="col me-0 pe-0">
-              <div class="d-flex align-items-center justify-content-start">
-                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;Search</button>
-                <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced search</button>
+          </div>
+          <div class="col me-0 pe-0">
+            <div class="d-flex align-items-center justify-content-start">
+              <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;Search</button>
+              <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced search</button>
 
-                <button id="button_options" class="btn btn-large btn-secondary btn-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">Options</button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="Piler.saved_search_terms('Saved');">Save</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="Piler.load_saved_search_terms();">Load</a></li>
-                  </ul>
-              </div>
+              <button id="button_options" class="btn btn-large btn-secondary btn-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">Options</button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" onclick="Piler.saved_search_terms('Saved');">Save</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="Piler.load_saved_search_terms();">Load</a></li>
+                </ul>
             </div>
           </div>
         </div>
       </div>
-
     </div>
+
+  </div>
 
   <!-- Main content area with resizable panes -->
 
-  <div class="container-fluid container-panes mt-2">
+  <div class="container-fluid container-panes mt-3">
     <div class="pane pane-upper">
 
       <span id="qqq">Loading...</span>
