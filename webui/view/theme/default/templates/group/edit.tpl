@@ -38,7 +38,7 @@
           <input type="text" name="groupname" id="groupname" class="form-control" value="<?php if(isset($group['groupname'])){ print $group['groupname']; } ?>" aria-describedby="help1" />
         </div>
         <div class="col-auto">
-          <span id="help1" class="form-text">Group name, mint 2 chars</span>
+          <span id="help1" class="form-text"></span>
         </div>
       </div>
 
@@ -50,7 +50,7 @@
           <textarea name="email" class="form-control" aria-describedby="help2"><?php if(isset($email)){ print $email; } ?></textarea>
         </div>
         <div class="col-auto">
-          <span id="help2" class="form-text">Email addresses in the group</span>
+          <span id="help2" class="form-text"></span>
         </div>
       </div>
 

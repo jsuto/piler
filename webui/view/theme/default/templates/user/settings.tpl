@@ -1,7 +1,7 @@
 
-<h4 class="mt-4"><?php print $text_access_settings; ?></h4>
+<h4 class="mt-4 text-start"><?php print $text_access_settings; ?></h4>
 
-<p><em><?php print $text_access_setting_explanation; ?></em></p>
+<p class="text-start"><em><?php print $text_access_setting_explanation; ?></em></p>
 
 <div class="container text-start">
   <div class="row justify-content-start">
@@ -41,7 +41,7 @@
 
 <form action="/settings.php" method="post" name="setpagelen" class="form-horizontal">
 
-<h4 class="mt-5"><?php print $text_display_settings; ?></h4>
+<h4 class="mt-5 text-start"><?php print $text_display_settings; ?></h4>
 
 <div class="container text-start">
   <div class="row justify-content-start">
@@ -106,7 +106,7 @@
 
 <form method="post" name="setqr" class="form-horizontal">
 
-<h4 class="mt-5"><?php print $text_google_authenticator_settings; ?></h4>
+<h4 class="mt-5 text-start"><?php print $text_google_authenticator_settings; ?></h4>
 
 <div class="container text-start">
   <div class="row justify-content-start">
@@ -132,7 +132,7 @@
 
 
 <?php if(PASSWORD_CHANGE_ENABLED == 1) { ?>
-<h4 class="mt-5"><?php print $text_change_password; ?></h4>
+<h4 class="mt-5 text-start"><?php print $text_change_password; ?></h4>
 
 <form name="pwdchange" action="/settings.php" method="post" autocomplete="off">
 

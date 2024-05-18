@@ -12,7 +12,7 @@
 
       <h4><?php print $text_progress; ?></h4>
 
-      <table class="table table-striped">
+      <table class="table table-striped mt-3">
         <thead class="table-dark">
           <tr>
             <th><?php print $text_type; ?></th>

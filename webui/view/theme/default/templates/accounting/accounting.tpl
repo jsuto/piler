@@ -25,15 +25,15 @@
 
 <?php if ( $accounting ) { ?>
 
-    <table class="table table-striped table-condensed">
-
+    <table class="table table-striped mt-3">
+      <thead class="table-secondary">
         <tr>
             <th colspan="<?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>5<?php } else { ?>4<?php } ?>">&nbsp;</th>
             <th colspan="3"><?php print $text_sent; ?></th>
             <th colspan="3"><?php print $text_received; ?></th>
         </tr>
         <tr>
-            <th><?php echo $viewname; ?> <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>(<?php print $mydomain_count; ?>)<?php } ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="bi bi-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="bi bi-chevron-down"></i></a></th>
+            <th class="text-start"><?php echo $viewname; ?> <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>(<?php print $mydomain_count; ?>)<?php } ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=0"><i class="bi bi-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=item&amp;order=1"><i class="bi bi-chevron-down"></i></a></th>
 
         <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
             <th><?php print $text_users; ?> (<?php print $user_count; ?>)</th>
@@ -48,10 +48,11 @@
             <th><?php print $text_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=0"><i class="bi bi-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdsize&amp;order=1"><i class="bi bi-chevron-down"></i></a></th>
             <th><?php print $text_average_size; ?> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=0"><i class="bi bi-chevron-up"></i></a> <a href="index.php?route=accounting/accounting&amp;view=<?php echo $view; ?>&amp;sort=recdavg&amp;order=1"><i class="bi bi-chevron-down"></i></a></th>
         </tr>
-
+      </thead>
+      <tbody>
         <?php foreach($accounting as $details) {?>
         <tr>
-            <td><?php echo $details['item']; ?></td>
+            <td class="text-start"><?php echo $details['item']; ?></td>
 
         <?php if(ENABLE_SAAS == 1 && $view == 'domain') { ?>
             <td><a href="index.php?route=accounting/accounting&amp;view=accounts&amp;domain=<?php echo $details['item']; ?>"><?php echo count($accounts[$details['item']]); ?></a></td>
@@ -79,6 +80,7 @@
             </td>
         </tr>
         <?php } ?>
+      </tbody>
     </table>
 
     <div class="pagenav container">

@@ -35,7 +35,7 @@
   </div>
 
   <div class="searchcontainer">
-    <div class="row w-100 ms-0">
+    <div class="row w-100 ps-0 ms-0">
 
       <div class="container text-center">
         <div class="row align-items-center">

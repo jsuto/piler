@@ -1,5 +1,5 @@
-<div id="resultslistcontainer" class="boxlistcontent pane-upper-content">
-  <table class="table table-striped mt-4">
+<div id="resultslistcontainer" class="pane-upper-content">
+  <table class="table table-striped mt-0">
     <thead class="table-secondary">
       <tr>
         <th class="auditcell date header">

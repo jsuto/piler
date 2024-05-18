@@ -33,31 +33,31 @@
         <div class="col-2">
           <label for="domain" class="col-form-label"><?php print $text_domain; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <textarea name="domain" class="form-control" aria-describedby="help1"></textarea>
         </div>
         <div class="col-auto">
-          <span id="help1" class="form-text">Domain name</span>
+          <span id="help1" class="form-text"></span>
         </div>
       </div>
       <div class="row g-3 align-items-center">
         <div class="col-2">
           <label for="mapped" class="col-form-label"><?php print $text_mapped_domain; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <input type="text" name="mapped" class="form-control" aria-describedby="help2">
         </div>
         <div class="col-auto">
-          <span id="help2" class="form-text">Mapped domain name</span>
+          <span id="help2" class="form-text"></span>
         </div>
       </div>
 
-<?php if(ENABLE_SAAS == 1) { ?>
+    <?php if(ENABLE_SAAS == 1) { ?>
       <div class="row g-3 align-items-center">
         <div class="col-2">
           <label for="ldap" class="col-form-label"><?php print $text_ldap; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <select name="ldap_id" id="ldap_id" class="form-control">
             <option value="0"></option>
           <?php foreach ($ldap as $l) { ?>
@@ -66,11 +66,12 @@
           </select>
         </div>
         <div class="col-auto">
-          <span id="help2" class="form-text">Mapped domain name</span>
+          <span id="help2" class="form-text"></span>
         </div>
       </div>
-<?php } ?>
-      <div class="row g-3 align-items-center">
+    <?php } ?>
+
+      <div class="row g-3 align-items-center mt-2">
         <div class="col-2">
         </div>
         <div class="col-2">
@@ -90,7 +91,7 @@
 
       <h4 class="mt-5"><?php print $text_existing_domains; ?></h4>
 
-      <table class="table table-striped">
+      <table class="table table-striped mt-3">
         <thead class="table-dark">
           <tr>
             <th><?php print $text_domain; ?></th>

@@ -28,13 +28,11 @@
 <body onload="Piler.add_shortcuts();">
 
 <?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
-<?php include_once DIR_THEME . THEME . '/templates/common/modals.tpl'; ?>
+<?php include_once DIR_THEME . THEME . '/templates/search/modals.tpl'; ?>
 
-<?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
   <div id="header">
     <?php print $menu; ?>
   </div>
-<?php } ?>
 
     <div class="searchcontainer">
       <div class="row w-100 ms-0">

@@ -31,7 +31,7 @@ h2 i{font-size:60px;}
 .btn-search {width: 33%;}
 .btn-options {width: 34%;}
 
-.searchcontainer{padding-top: 20px; margin-left: 20px; margin-right: 20px;}
+.searchcontainer{padding-top: 20px; margin-left: 12px; margin-right: 12px;}
 
 input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 

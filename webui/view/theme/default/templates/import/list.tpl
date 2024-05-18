@@ -23,7 +23,7 @@
         <div class="col-2">
           <label for="type" class="col-form-label"><?php print $text_type; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <select name="type" id="type" class="form-control">
             <option value="pop3"<?php if(isset($a['type']) && $a['type'] == 'pop3') { ?> selected="selected"<?php } ?>>pop3</option>
             <option value="imap"<?php if(isset($a['type']) && $a['type'] == 'imap') { ?> selected="selected"<?php } ?>>imap</option>
@@ -39,7 +39,7 @@
         <div class="col-2">
           <label for="server" class="col-form-label"><?php print $text_server_name; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <input type="text" name="server" id="server" class="form-control" value="<?php if(isset($a['server'])){ print $a['server']; } ?>" aria-describedby="help1" />
         </div>
         <div class="col-auto">
@@ -51,7 +51,7 @@
         <div class="col-2">
           <label for="username" class="col-form-label"><?php print $text_username; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <input type="text" name="username" id="username" class="form-control" value="<?php if(isset($a['username'])){ print $a['username']; } ?>" aria-describedby="help1" />
         </div>
         <div class="col-auto">
@@ -63,7 +63,7 @@
         <div class="col-2">
           <label for="password" class="col-form-label"><?php print $text_password; ?></label>
         </div>
-        <div class="col-2">
+        <div class="col-4">
           <input type="password" name="password" id="password" class="form-control" value="<?php if(isset($a['password'])){ print $a['password']; } ?>" aria-describedby="help1" />
         </div>
         <div class="col-auto">
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <div class="row g-3 align-items-center">
+      <div class="row g-3 align-items-center mt-2">
         <div class="col-2">
         </div>
         <div class="col-2">
@@ -100,7 +100,7 @@
 
       <h4><?php print $text_existing_entries; ?> <a href="index.php?route=import/jobs"><?php print $text_view_progress; ?></a></h4>
 
-      <table class="table table-striped">
+      <table class="table table-striped mt-3">
         <thead class="table-dark">
           <tr>
             <th><?php print $text_type; ?></th>
