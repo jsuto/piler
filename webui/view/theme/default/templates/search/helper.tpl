@@ -1,6 +1,5 @@
-
-<div id="messagelistcontainer" class="boxlistcontent pane-upper-content">
-  <table id="results" class="table table-striped mt-4">
+<div id="messagelistcontainer" class="pane-upper-content">
+  <table id="results" class="table table-striped mt-0">
     <thead class="table-secondary">
       <tr>
         <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
@@ -72,7 +71,7 @@
 </div>
 
 <div id="messagelistfooter" class="boxfooter row w-100 ms-0 upper-pane-fixed">
-        <div class="col ps-2">
+        <div class="col ps-0">
           <div class="d-flex align-items-center justify-content-start functionbox ps-0 pt-1 pb-0 mb-0">
 
     <?php if($n > 0) { ?>
