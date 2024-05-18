@@ -378,8 +378,6 @@ Registry::set("session", $session);
 
 if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme"))) { $config['THEME'] = $session->get("theme"); }
 
-include("system/helper/detectmobilebrowser.php");
-
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
 if($session->get("username") == 'auditor@local' || isset($_SERVER['argv'][2]) ) { $config['RESTRICTED_AUDITOR'] = 0; }
