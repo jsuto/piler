@@ -149,19 +149,11 @@ var Piler =
                return true;
             }
 
-            $('#mailcontframe').html(a);
+            //$('#mailcontframe').html(a);
+            $('#qqq').html(a);
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
-            $('#resultsheader').show();
-
-<?php if(ENABLE_TABLE_RESIZE == 1) { ?>
-
-            $("table").resizableColumns({
-               store: store
-            });
-
-<?php } ?>
-
+            //$('#resultsheader').show();
         })
         .fail(function( a, b )// jqXHR, textStatus, errorThrown
         {
@@ -179,13 +171,15 @@ var Piler =
         Piler.log("[spinner]", cmd);
 
         if(cmd == 'start') {
-           $('#sspinner').show();
-           $('#messagelistcontainer').hide();
+          document.getElementById("spinner").classList.remove("hidden");
+          //$('#sspinner').show();
+          //$('#messagelistcontainer').hide();
         }
 
         if(cmd == 'stop') {
-           $('#sspinner').hide();
-           $('#messagelistcontainer').show();
+          document.getElementById("spinner").classList.add("hidden");
+          //$('#sspinner').hide();
+          //$('#messagelistcontainer').show();
         }
     },
 
@@ -293,7 +287,7 @@ var Piler =
               return true;
            }
 
-           $('#mailpreviewframe').html(a);
+           $('#preview').html(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
@@ -308,8 +302,8 @@ var Piler =
 
     view_journal:function(id)
     {
-         Piler.log("[view_journal]");
-         Piler.load_url_to_preview_pane('/index.php?route=message/journal&id=' + id);
+        Piler.log("[view_journal]");
+        Piler.load_url_to_preview_pane('/index.php?route=message/journal&id=' + id);
     },
 
 
@@ -547,7 +541,7 @@ var Piler =
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax(url, { cache: true })
-        .done( function(a) { $('#mailpreviewframe').html(a); })
+        .done( function(a) { $('#preview').html(a); })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
 
@@ -1276,14 +1270,11 @@ var Piler =
 
 <?php } ?>
 
-    }
+    },
 
 
 }
 
-
-
-var split = new rcube_webmail();
 
 
 function hide_modal(id = '') {

@@ -1,47 +1,46 @@
 
-<div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-<div id="messagelistcontainer" class="boxlistcontent">
-    <?php if($n > 0) { ?>
-    <table id="results" class="table table-striped table-condensed">
-      <thead>
-        <tr>
-          <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
-          <th id="id-header">&nbsp;</th>
-          <th id="date-header">
+<div id="messagelistcontainer" class="boxlistcontent pane-upper-content">
+  <table id="results" class="table table-striped mt-4">
+    <thead class="table-secondary">
+      <tr>
+        <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
+        <th id="id-header">&nbsp;</th>
+        <th id="date-header">
              <?php print $text_date; ?>
              <a class="navlink" xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'date' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
-          </th>
-          <th id="from-header">
+        </th>
+        <th id="from-header">
              <?php print $text_from; ?>
              <a class="navlink" xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'from' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'from' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
-          </th>
-          <th id="to-header">
+        </th>
+        <th id="to-header">
              <?php print $text_to; ?>
              <a class="navlink" xid="to" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up"></i></a>
              <a class="navlink" xid="to" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down"></i></a>
-          </th>
-          <th id="subject-header">
+        </th>
+        <th id="subject-header">
              <?php print $text_subject; ?>
              <a class="navlink" xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
-          </th>
-          <th id="size-header">
+        </th>
+        <th id="size-header">
              <?php print $text_size; ?>
              <a class="navlink" xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'size' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'size' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
-          </th>
-          <th id="spam-header"><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i></th>
-          <th id="attachment-header"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
-          <th id="note-header"><i class="bi bi-sticky notes" title="<?php print $text_notes_flag; ?>"></i></th>
-          <th id="tag-header"><i class="bi bi-tag tag" title="<?php print $text_tag_flag; ?>"></i>
+        </th>
+        <th id="spam-header"><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i></th>
+        <th id="attachment-header"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
+        <th id="note-header"><i class="bi bi-sticky notes" title="<?php print $text_notes_flag; ?>"></i></th>
+        <th id="tag-header"><i class="bi bi-tag tag" title="<?php print $text_tag_flag; ?>"></i>
      <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { ?>
-          <th id="verify-header"><i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i></th>
+        <th id="verify-header"><i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i></th>
      <?php } ?>
-       </tr>
-      </thead>
-      <tbody>
+      </tr>
+    </thead>
+    <tbody>
+
     <?php $i=0; foreach ($messages as $message) { ?>
 
          <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new <?php if($message['deleted'] == 1) { ?>xxx<?php } ?>" onclick="Piler.view_message_by_pos(<?php print $i; ?>);">
@@ -68,17 +67,13 @@
     <?php $i++; } ?>
       </tbody>
 
-    </table>
-
-    <?php } else if($n == 0) { ?>
-                <div class="alert alert-block alert-error lead"><i class="icon-exclamation-sign icon-2x pull-left"></i> <?php print $text_empty_search_result; ?></div>
-    <?php } ?>
+  </table>
 
 </div>
 
-<div id="messagelistfooter" class="boxfooter row w-100 ms-0">
-        <div class="col ps-2" style="border: 0px solid red;">
-          <div class="d-flex align-items-center justify-content-start functionbox ps-0 pt-1 pb-0 mb-0" style="border: 0px solid black;">
+<div id="messagelistfooter" class="boxfooter row w-100 ms-0 upper-pane-fixed">
+        <div class="col ps-2">
+          <div class="d-flex align-items-center justify-content-start functionbox ps-0 pt-1 pb-0 mb-0">
 
     <?php if($n > 0) { ?>
             <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="bi bi-chevron-double-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-double-left muted"></i></span><?php } ?>
@@ -99,15 +94,15 @@
             <span class="ms-5"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
          <?php } ?>
 
-    <?php } else { print $text_none_found; } ?>
+    <?php } else { ?><span class="text-danger fs-3"><?php print $text_none_found; ?></span><?php } ?>
 
 
           </div>
 
         </div>
 
-        <div class="col pe-0 " style="border: 0px solid blue;">
-          <div class="d-flex align-items-center justify-content-end functionbox pt-1 pb-0 mb-0" style="border: 0px solid blue; ">
+        <div class="col pe-0">
+          <div class="d-flex align-items-center justify-content-end functionbox pt-1 pb-0 mb-0">
 
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />
             <input type="hidden" id="_ref" name="_ref" value="<?php if(isset($_ref)) { print $_ref; } ?>" />

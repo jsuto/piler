@@ -1,8 +1,13 @@
 <input type="hidden" id="xid" value="<?php print $id; ?>" />
 
-<div class="messageheader">
+<div class="container-fluid text-start">
+  <div class="row">
+    <div class="col-8 text-start">
 
-    <p>
+      <div id="notesbox" class="row g-3 align-items-center">
+        <div class="col">
+
+       <label class="col-form-label">
     <?php if($can_download == 1) { ?>
        <a class="messagelink" href="index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="bi bi-cloud-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
     <?php } ?>
@@ -32,22 +37,33 @@
        if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified bi bi-x-square-fill text-danger" title="<?php print $text_unverified_flag; ?>"></i><?php }
     } ?>
 
-    </p>
+        </label>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col text-end">
+
+      <div id="notesbox" class="row g-3 align-items-center">
+        <div class="col">
+          <label for="note" class="col-form-label"><i class="bi bi-sticky fs-5"></i> <?php print $text_notes; ?>:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" id="note" name="note" value="<?php H($message['note']); ?>" class="form-control" aria-describedby="notes">
+        </div>
+        <div class="col-auto">
+          <span id="notes" class="form-text">
+            <button class="btn btn-primary btn-sm" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); "><?php print $text_save; ?></button>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<div id="notesbox" class="row g-3 align-items-center">
-  <div class="col-auto">
-    <label for="note" class="col-form-label"><i class="bi bi-sticky fs-5"></i> <?php print $text_notes; ?>:</label>
-  </div>
-  <div class="col-auto">
-    <input type="text" id="note" name="note" value="<?php H($message['note']); ?>" class="form-control" aria-describedby="notes">
-  </div>
-  <div class="col-auto">
-    <span id="notes" class="form-text">
-      <button class="btn btn-primary btn-sm" onclick="Piler.add_note_to_message(<?php print $id; ?>, '<?php print $text_saved; ?>'); "><?php print $text_save; ?></button>
-    </span>
-  </div>
-</div>
 
 
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
@@ -65,7 +81,7 @@
 
 <div id="messageblock">
 
-<div class="messageheader">
+  <div class="messageheader">
     <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
     <strong><?php print $message['from']; ?></strong><br />
     <strong><?php print $message['to']; ?></strong><br />
@@ -74,10 +90,10 @@
     <?php foreach($attachments as $a) { ?>
        <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
     <?php } ?><?php if(count($attachments) > 1) { ?>| <a href="index.php?route=message/attachments&id=<?php print $id; ?>"><i class="icon-briefcase"></i></a><?php } ?><br/>
-</div>
-<div class="messagecontents">
-<?php print $message['message']; ?>
-</div>
+  </div>
+  <div class="messagecontents">
+    <?php print $message['message']; ?>
+  </div>
 
 <?php foreach($images as $img) { ?>
    <p><img src="/tmp/<?php print $img['name']; ?>" alt="" /></p>

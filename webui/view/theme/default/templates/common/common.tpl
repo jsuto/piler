@@ -10,3 +10,11 @@
       <div id="toast-msg" class="toast-body"></div>
     </div>
   </div>
+
+  <!-- spinner -->
+
+  <div id="spinner" class="hidden middleofscreen">
+    <div class="spinner-border text-primary myspinner" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>

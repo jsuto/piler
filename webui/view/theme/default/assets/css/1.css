@@ -1,5 +1,5 @@
 html,body{height:auto !important;height:100%;min-height:100%;}
-body{margin:0;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:#333333;background-color:#ffffff;}
+body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:#333333;background-color:#ffffff;}
 body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 
 #header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase;}
@@ -11,6 +11,18 @@ a.dropdown-item {font-weight:100; text-decoration:none;}
 
 .menulink{text-shadow:0 0px 0 rgba(0, 0, 0, 0);padding-bottom:10px;margin-left:15px;padding-top:10px;color:#ffffff;font-size:24px;}
 .menulink:hover{color:#ffffff;text-decoration:none;background: #555;}
+
+
+
+.container-panes { height: calc(95vh - 56px); /* Height of the screen minus the navbar */ display: flex; flex-direction: column; }
+.pane { overflow-y: auto; flex-grow: 1; min-height: 300px; position: relative; }
+.resizer { height: 10px; background: #ddd; cursor: row-resize; }
+.pane-upper-content { height: calc(100% - 40px); /* 40px is the height of the fixed bottom row in the upper pane */ overflow-y: auto; }
+.pane-upper-fixed { height: 40px; background: #f1f1f1; position: absolute; bottom: 0; width: 100%; border-top: 1px solid #ddd; }
+#preview { height: 500px; }
+.no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+
+
 
 h1,h2,h3,h4 {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-weight:100;text-transform:lowercase;}
 h2 i{font-size:60px;}
@@ -26,9 +38,12 @@ input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 
 #mainscreen{position:absolute;top:120px;right:20px;bottom:20px;left:20px;min-width:320px;z-index:0;}
 #mailrightcontent{position:absolute;top:0px;left:0;right:0;bottom:0;}
-#mailcontframe{position:absolute;width:100%;top:1px;bottom:0;border:1px solid #999999;background-color:#F9F9F9;overflow:hidden;}
-.boxlistcontent{position:absolute;top:0px;bottom:34px;left:0;right:0;width:100%;overflow-y:auto;overflow-x:hidden;height:auto;}
-.boxfooter{position:absolute;bottom:0px;left:0px;right:0px;overflow:hidden;height:33px;border-top:1px solid #ccc;background-color:#f6f6f6;min-width:320px;}
+//#mailcontframe{position:absolute;width:100%;top:1px;bottom:0;border:1px solid #999999;background-color:#F9F9F9;overflow:hidden;}
+#mailcontframe{}
+//.boxlistcontent{position:absolute;top:0px;bottom:34px;left:0;right:0;width:100%;overflow-y:auto;overflow-x:hidden;height:auto;}
+.boxlistcontent{}
+//.boxfooter{position:absolute;bottom:0px;left:0px;right:0px;overflow:hidden;height:33px;border-top:1px solid #ccc;background-color:#f6f6f6;min-width:320px;}
+.boxfooter{left:0px;right:0px;overflow:hidden;height:33px;border-top:1px solid #ccc;background-color:#f6f6f6;min-width:320px;}
 
 //#pagingrow,#functionrow{height:33px;overflow:hidden;}
 #pagingrow,#functionrow{overflow:hidden;}
@@ -37,11 +52,13 @@ input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 .functionbox{border-left:1px solid #ccc;height:30px;overflow:hidden;}
 
 
-#mailpreviewframe{position:absolute;width:100%;top:205px;bottom:0px;border:1px solid #999999;background-color:#F9F9F9;text-align:left;overflow:auto;}
+//#mailpreviewframe{position:absolute;width:100%;top:205px;bottom:0px;border:1px solid #999999;background-color:#F9F9F9;text-align:left;overflow:auto;}
+#mailpreviewframe{}
 
 .messageheader{background-color:#f6f6f6;padding:8px;border-bottom:1px solid #666;}
 
-#notesbox{position:absolute;top:8px;right:8px;}
+//#notesbox{position:absolute;top:8px;right:8px;}
+#notesbox{}
 #restorebox{position:absolute;top:40px;left:15%;display:none;font-weight:bold;padding:15px;z-index:1;}
 
 .messageheader{background-color:#f6f6f6;padding:8px;border-bottom:1px solid #666;}
@@ -77,3 +94,7 @@ i.verified{color:#339933;}
 .private{color:red;}
 
 .xxx{color:#aaa;}
+
+.myspinner {width: 5rem; height: 5rem;}
+.middleofscreen {position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);}
+.hidden {visibility: hidden;}

@@ -23,19 +23,17 @@
    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
    <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
    <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
-
-   <?php print JS_CODE; ?>
 </head>
 
-<body onload="Piler.add_shortcuts();<?php if(ENABLE_INSTANT_SEARCH){ ?>Piler.expert();<?php } ?>">
+<body onload="Piler.add_shortcuts(); Piler.expert();">
 
 <?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
-<?php include_once DIR_THEME . THEME . '/templates/search/modals.tpl'; ?>
+<?php include_once DIR_THEME . THEME . '/templates/common/modals.tpl'; ?>
 
 <?php if( (OUTLOOK == 1 && SHOW_MENU_FOR_OUTLOOK == 1) || (OUTLOOK == 0 && MOBILE_DEVICE == 0) ) { ?>
-    <div id="header">
-        <?php print $menu; ?>
-    </div>
+  <div id="header">
+    <?php print $menu; ?>
+  </div>
 <?php } ?>
 
     <div class="searchcontainer">
@@ -50,18 +48,18 @@
                 <input type="hidden" name="order" id="order" value="0" />
                 <input type="hidden" name="ref" id="ref" value="" />
                 <input type="hidden" name="prefix" id="prefix" value="" />
-                <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
+                <input type="text" class="form-control" id="_search" name="_search" placeholder="Enter your search terms" />
               </div>
             </div>
             <div class="col me-0 pe-0">
               <div class="d-flex align-items-center justify-content-start">
-                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;<?php print $text_search; ?></button>
+                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;Search</button>
                 <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced search</button>
 
                 <button id="button_options" class="btn btn-large btn-secondary btn-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">Options</button>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="Piler.saved_search_terms('<?php print $text_saved; ?>');"><?php print $text_save; ?></a></li>
-                    <li><a class="dropdown-item" href="#" onclick="Piler.load_saved_search_terms();"><?php print $text_load; ?></a></li>
+                    <li><a class="dropdown-item" href="#" onclick="Piler.saved_search_terms('Saved');">Save</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="Piler.load_saved_search_terms();">Load</a></li>
                   </ul>
               </div>
             </div>
@@ -71,50 +69,24 @@
 
     </div>
 
+  <!-- Main content area with resizable panes -->
 
-    <div id="mainscreen">
-        <div id="mailleftcontainer">
-        <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
-        <div id="mailboxlist-container">
-        <?php print $folder; ?>
-        </div>
-        <script type="text/javascript">
-          var mailviewsplitv = new rcube_splitter({id:'splitter1', p1: 'mailleftcontainer', p2: 'mailrightcontainer', orientation: 'v', relative: true, start: 165});
-          split.add_onload('mailviewsplitv.init()');
-        </script>
-        <?php } ?>
-        </div>
-        <div id="mailrightcontainer<?php if(ENABLE_FOLDER_RESTRICTIONS == 0) { ?>nofolder<?php } ?>">
+  <div class="container-fluid container-panes mt-2">
+    <div class="pane pane-upper">
 
-            <div id="mailrightcontent">
-              <div id="mailcontframe">
-                <div id="sspinner" class="alert alert-info lead"><i class="icon-spinner icon-spin icon-2x pull-left"></i><?php print $text_working; ?></div>
-                <div id="messagelistcontainer" class="boxlistcontent" style="top:0">
+      <span id="qqq">Loading...</span>
 
-                <?php print $content; ?>
-
-                </div>
-              </div>
-
-        <script type="text/javascript">
-          var mailviewsplit = new rcube_splitter({id:'splitter2', p1: 'mailcontframe', p2: 'mailpreviewframe', orientation: 'h', relative: true, start: 341});
-          split.add_onload('mailviewsplit.init()');
-        </script>
-
-              <div id="mailpreviewframe"></div>
-
-          </div>
-
-        </div>
     </div>
+    <div class="resizer"></div>
 
-    <script type="text/javascript">
-    $(document).ready(function(){
-       split.init();
-    });
-    </script>
+    <div id="preview" class="pane pane-lower">
+      <h2>Preview Pane</h2>
+      <p>Click on a message to show</p>
+    </div>
+  </div>
 
-<?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
+<?php print JS_CODE; ?>
+<script src="/view/javascript/resizer.js"></script>
 
 </body>
 </html>
