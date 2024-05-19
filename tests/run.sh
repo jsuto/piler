@@ -200,8 +200,7 @@ test_retrieved_messages_are_the_same "$CONTAINER" "piler"
 
 run_sphinx_tests
 
-docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31
-'
+docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31'
 
 docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 

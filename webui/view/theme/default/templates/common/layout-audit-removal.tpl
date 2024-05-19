@@ -25,7 +25,7 @@
    <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
 </head>
 
-<body onload="Piler.add_shortcuts();">
+<body>
 
 <?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
 

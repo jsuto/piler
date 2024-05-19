@@ -19,6 +19,8 @@ let Piler =
 
     login_text: 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE',
 
+    refresh_interval: 300,
+
     /*
      * variables used at search listing
      */
@@ -1208,3 +1210,36 @@ let Piler =
     }
 
 }
+
+$(document).ready(function() {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const route = urlParams.get('route');
+
+  switch (route) {
+    case 'health/health':
+      Piler.load_health();
+      setInterval('Piler.load_health()', Piler.refresh_interval * 1000);
+      break;
+
+    case 'stat/online':
+    case 'import/jobs':
+      setInterval('Piler.reload_page()', Piler.refresh_interval * 1000);
+      break;
+
+    case 'audit/audit':
+    case 'audit/removal':
+      Piler.add_shortcuts();
+      break;
+
+    default:
+      const s = window.location.href;
+      if(s.endsWith('search.php')) {
+        Piler.add_shortcuts();
+        Piler.expert();
+      }
+
+      break;
+  }
+
+});

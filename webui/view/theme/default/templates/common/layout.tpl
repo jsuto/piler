@@ -19,21 +19,9 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
-
-    <?php print JS_CODE; ?>
-
-    <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
 </head>
 
-<body<?php
-
-if(isset($this->request->get['route'])) {
-
-   if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', <?php print HEALTH_REFRESH; ?> * 1000);"<?php }
-   if($this->request->get['route'] == 'stat/online') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
-   if($this->request->get['route'] == 'import/jobs') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
-
-} ?>>
+<body>
 
 <?php include_once DIR_THEME . THEME . '/templates/common/common.tpl'; ?>
 
@@ -63,6 +51,9 @@ if(isset($this->request->get['route'])) {
 </div>
 
 <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
+
+<?php print JS_CODE; ?>
+<script type="text/javascript" src="/view/javascript/fileupload.js"></script>
 
 </body>
 </html>
