@@ -79,10 +79,3 @@ class Language {
 
 
 }
-
-
-
-
-
-
-?>

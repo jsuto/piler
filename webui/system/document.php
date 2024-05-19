@@ -7,6 +7,3 @@ class Document {
    public $charset = 'utf-8';
    public $language = 'en-gb';
 }
-
-
-?>

@@ -20,3 +20,6 @@ insert into group_user (id, email) values(1, 'bela@aaa.fu'), (1, 'sanyi@aaa.fu')
 insert into group_email (id, email) values(1, 'hirlevel@gruppi.com');
 
 insert into autosearch (query) values('subject:slazenger');
+
+insert into search(email, ts, term) values('auditor@local', 1716110897, 'page=0&sort=1&order=date&type=search&search=a%3Apdf&searchtype=expert&ref=&folders=&extra_folders=');
+insert into search(email, ts, term) values('auditor@local', 1716111470, 'page=0&sort=1&order=date&type=search&search=subject%3Aslazenger&searchtype=expert&ref=&folders=&extra_folders=');

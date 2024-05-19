@@ -83,6 +83,8 @@ class ControllerAuditHelper extends Controller {
 
       if($this->data['hits_to'] > $this->data['n']) { $this->data['hits_to'] = $this->data['n']; }
 
+      $this->data['total_found'] = $this->data['n'];
+      $this->data['hits'] = $this->data['n'];
 
       $this->render();
    }
