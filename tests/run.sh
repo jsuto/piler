@@ -116,7 +116,7 @@ read_eml_files_data() {
    local sum
    local ts_start
    local ts_stop
-   local sumsfile="${HOME}/shasums.txt"
+   local sumsfile="/opt/tests/shasums.txt"
 
    ts_start="$(date +%s)"
 
