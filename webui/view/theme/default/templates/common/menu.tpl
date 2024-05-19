@@ -18,9 +18,6 @@
           <?php if(ENABLE_AUDIT) { ?>
             <li class="dropdown-item"><a class="dropdown-item" href="index.php?route=audit/audit"><i class="bi bi-book"></i>&nbsp;<?php print $text_audit; ?></a></li>
           <?php } ?>
-          <?php if(ENABLE_DELETE) { ?>
-            <li class="dropdown-item"><a class="dropdown-item" href="index.php?route=audit/removal"><i class="bi bi-eraser"></i>&nbsp;<?php print $text_remove; ?></a></li>
-          <?php } ?>
           </ul>
 
           <a href="#" class="menulink dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-gear"></i>&nbsp;<?php print $text_administration; ?><b class="caret"></b></a>

@@ -5,25 +5,6 @@
 <div class="container text-start">
   <div class="row">
     <div class="col">
-    </div>
-    <div class="col text-end">
-      <form method="get" name="search1" action="/domain.php">
-        <div class="row justify-content-end">
-          <div class="col-8">
-            <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
-          </div>
-          <div class="col-2">
-            <button type="submit" class="btn btn-primary"><?php print $text_search; ?></button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="container text-start">
-  <div class="row">
-    <div class="col">
 
       <h4><?php print $text_add_new_group; ?></h4>
 

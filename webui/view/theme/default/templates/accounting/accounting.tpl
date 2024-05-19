@@ -23,7 +23,7 @@
 </div>
 
 
-<?php if ( $accounting ) { ?>
+<?php if($accounting) { ?>
 
     <table class="table table-striped mt-3">
       <thead class="table-secondary">
@@ -83,8 +83,9 @@
       </tbody>
     </table>
 
+  <?php if($total_records > $page_len) { ?>
     <div class="pagenav container">
-        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-double-left icon-large"></i><?php if($page > 0){ ?></a><?php } ?>
+        <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=0&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-double-left"></i><?php if($page > 0){ ?></a><?php } ?>
         &nbsp;
         <?php if($page > 0){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $prev_page; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-left"></i><?php if($page > 0){ ?></a><?php } ?>
         &nbsp;
@@ -94,6 +95,7 @@
         &nbsp;
         <?php if($page < $total_pages){ ?><a href="index.php?route=accounting/accounting&amp;page=<?php print $total_pages; ?>&amp;view=<?php echo $view; ?>&amp;sort=<?php print $sort; ?>&amp;order=<?php print $order; ?>" class="navlink"><?php } ?><i class="bi bi-chevron-double-right"></i><?php if($page < $total_pages){ ?></a><?php } ?>
     </div>
+  <?php } ?>
 
 <?php } else { ?>
 <tr>

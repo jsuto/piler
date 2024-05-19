@@ -1,5 +1,5 @@
 <div id="resultslistcontainer" class="pane-upper-content">
-  <table class="table table-striped mt-0">
+  <table id="results" class="table table-striped mt-0">
     <thead class="table-secondary">
       <tr>
         <th class="auditcell date header">
@@ -31,7 +31,7 @@
       </tr>
     </thead>
     <tbody>
-    <?php foreach ($messages as $message) { $i++; ?>
+    <?php foreach ($messages as $message) { ?>
       <tr>
         <td class="auditcell date"><?php print $message['date']; ?></td>
         <td class="auditcell user"><?php print $message['email']; ?></td>
@@ -60,10 +60,10 @@
             &nbsp;
             <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="bi bi-chevron-double-right"></i></a><?php } else { ?> <span class="navlink"><i class="bi bi-chevron-double-right"></i></span><?php } ?>
             &nbsp;
-    <?php } else { print $text_none_found; } ?>
+    <?php } ?>
 
 <?php if($n > 0) { ?>
-   &nbsp; <a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
+<a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
 <?php } ?>
 
     </div>
