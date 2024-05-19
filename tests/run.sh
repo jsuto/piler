@@ -116,7 +116,7 @@ read_eml_files_data() {
    local sum
    local ts_start
    local ts_stop
-   local sumsfile="${HOME}/shasums.txt"
+   local sumsfile="/opt/tests/shasums.txt"
 
    ts_start="$(date +%s)"
 
@@ -200,11 +200,16 @@ test_retrieved_messages_are_the_same "$CONTAINER" "piler"
 
 run_sphinx_tests
 
-docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31
-'
+docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/generate_stats.php --webui /var/piler/www --start=2015/01/01 --stop=2021/12/31'
 
 docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 
 run_import_job
+
+docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
+
+docker exec "$CONTAINER" bash -c 'apt-get update && apt-get install -y vim'
+docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias n='tail -f /var/log/nginx/error.log'"
+docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias t='tail -f /var/log/mail.log'"
 
 get_verdict

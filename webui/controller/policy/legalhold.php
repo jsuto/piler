@@ -104,5 +104,3 @@ class ControllerPolicyLegalhold extends Controller {
 
 
 }
-
-?>

@@ -24,7 +24,6 @@ class ControllerGroupRemove extends Controller {
       $this->data['username'] = Registry::get('username');
 
       $this->data['id'] = (int)@$this->request->get['id'];
-      $this->data['group'] = @$this->request->get['group'];
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
 
@@ -34,6 +33,7 @@ class ControllerGroupRemove extends Controller {
             $ret = $this->model_group_group->delete_group($this->data['id']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
+               header('Location: ' . SITE_URL . '/index.php?route=group/list');
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];
@@ -58,7 +58,7 @@ class ControllerGroupRemove extends Controller {
       }
 
       if(!isset($this->request->get['id']) || !is_numeric($this->request->get['id']) || $this->request->get['id'] < 1 ) {
-         $this->error['groupname'] = $this->data['text_invalid_data'];
+         $this->error['id'] = $this->data['text_invalid_data'];
       }
 
 
@@ -72,5 +72,3 @@ class ControllerGroupRemove extends Controller {
 
 
 }
-
-?>

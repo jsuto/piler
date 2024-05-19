@@ -16,10 +16,8 @@ $config = [];
  * variable to be overridden in config-site.php
  */
 
-$config['ENABLE_MOBILE_PREVIEW'] = 0;
-
-$config['SITE_LOGO_LG'] = '/view/theme/default/assets/images/archive-logo-lg.png';
-$config['SITE_LOGO_SM'] = '/view/theme/default/assets/images/archive-logo-sm.png';
+$config['SITE_LOGO_LG'] = '/assets/images/archive-logo-lg.png';
+$config['SITE_LOGO_SM'] = '/assets/images/archive-logo-sm.png';
 $config['COMPATIBILITY'] = 'Which browsers are supported, etc';
 
 $config['BRANDING_TEXT'] = '';
@@ -27,7 +25,15 @@ $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
 $config['BRANDING_BACKGROUND_COLOUR'] = '';
 $config['BRANDING_TEXT_COLOUR'] = '';
-$config['BRANDING_FAVICON'] = '/view/theme/default/assets/ico/favicon.png';
+$config['BRANDING_FAVICON'] = '
+  <!-- Fav and touch icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+  <link rel="shortcut icon" href="/assets/ico/favicon.png">
+';
+
 $config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
@@ -35,8 +41,6 @@ $config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
 $config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
 
 $config['DOMAIN_REGEX'] = '/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,20}$/';
-
-$config['BOOTSTRAP_THEME'] = '-cosmo';
 
 $config['DEFAULT_LANG'] = 'en';
 
@@ -57,10 +61,7 @@ $config['ENABLE_REFERENCES'] = 1;
 $config['ENABLE_DOWNLOADING_ALL_SEARCH_HITS'] = 0;
 $config['EML_NAME_BASED_ON_SUBJECT'] = 1;
 
-$config['ENABLE_TABLE_RESIZE'] = 0;
 $config['DEMO_MODE'] = 0;
-
-$config['SHOW_MENU_FOR_OUTLOOK'] = 0;
 
 $config['SEARCH_QUERY_QUOTING'] = 0;
 
@@ -303,18 +304,17 @@ $config['MEMCACHED_PREFIX'] = '_piler:';
 $config['MEMCACHED_TTL'] = 900;
 
 $config['JS_CODE'] = '
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" integrity="sha256-sw0iNNXmOJbQhYFuC9OF2kOlD5KQKe1y5lfBn4C9Sjg=" crossorigin="anonymous"></script>
-
-    <script src="//stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
-
-    <script type="text/javascript" src="/view/javascript/rc-splitter.js"></script>
-    <script type="text/javascript" src="/view/javascript/piler.js"></script>
+    <script src="/assets/js/piler.js"></script>
 ';
 
+$config['CUSTOM_CSS'] = '';
 $config['CSS_CODE'] = '
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-   <link rel="stylesheet" href="/view/theme/default/assets/css/piler.css" />
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" integrity="sha256-6MNujrdbV0Z7S927PzUMXOmMLwkKdsdD7XIl/w89HMQ=" crossorigin="anonymous">
+
+   <link rel="stylesheet" href="/assets/css/piler.css" />
 ';
 
 $SUPPRESS_RECIPIENTS = array();
@@ -387,8 +387,6 @@ Registry::set("session", $session);
 
 if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme"))) { $config['THEME'] = $session->get("theme"); }
 
-include("system/helper/detectmobilebrowser.php");
-
 // make sure auditors are restricted in a saas environment
 if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
 if($session->get("username") == 'auditor@local' || isset($_SERVER['argv'][2]) ) { $config['RESTRICTED_AUDITOR'] = 0; }
@@ -449,22 +447,8 @@ define('DIR_DATABASE', DIR_BASE . 'system/database/');
 define('DIR_IMAGE', DIR_BASE . 'image/');
 define('DIR_LANGUAGE', DIR_BASE . 'language/');
 define('DIR_APPLICATION', DIR_BASE . 'controller/');
-define('DIR_THEME', DIR_BASE . 'view/theme/');
 define('DIR_REPORT', DIR_BASE . 'reports/');
 define('DIR_LOG', DIR_BASE . 'log/');
-
-define('REMOTE_IMAGE_REPLACEMENT', '/view/theme/' . THEME . '/images/remote.gif');
-define('ICON_ARROW_UP', '/view/theme/' . THEME . '/images/arrowup.gif');
-define('ICON_ARROW_DOWN', '/view/theme/' . THEME . '/images/arrowdown.gif');
-define('ICON_ATTACHMENT', '/view/theme/' . THEME . '/images/attachment_icon.png');
-define('ICON_TAG', '/view/theme/' . THEME . '/images/tag_blue.png');
-define('ICON_GREEN_OK', '/view/theme/' . THEME . '/images/green_ok.png');
-define('ICON_RED_X', '/view/theme/' . THEME . '/images/red_x.png');
-define('ICON_DOWNLOAD', '/view/theme/' . THEME . '/images/download_icon.jpg');
-define('ICON_NOTES', '/view/theme/' . THEME . '/images/notes.png');
-define('ICON_PLUS', '/view/theme/' . THEME . '/images/plus.gif');
-define('ICON_MINUS', '/view/theme/' . THEME . '/images/minus.gif');
-define('ICON_EMPTY', '/view/theme/' . THEME . '/images/1x1.gif');
 
 define('QSHAPE_ACTIVE_INCOMING', DIR_STAT . '/active+incoming');
 define('QSHAPE_ACTIVE_INCOMING_SENDER', DIR_STAT . '/active+incoming-sender');

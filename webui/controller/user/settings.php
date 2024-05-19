@@ -118,5 +118,3 @@ class ControllerUserSettings extends Controller {
 
 
 }
-
-?>

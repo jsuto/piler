@@ -34,6 +34,7 @@ class ControllerPolicyRemoveretention extends Controller {
             $ret = $this->model_policy_retention->remove_rule($this->data['id']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
+               header('Location:' . SITE_URL . 'index.php?route=policy/retention');
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];

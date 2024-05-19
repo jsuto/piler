@@ -338,7 +338,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    char filename[SMALLBUFSIZE];
    char export_subdir[SMALLBUFSIZE];
    struct sql sql;
-   int errorp, rc=0, attachments;
+   int rc=0, attachments;
    unsigned long total_attachments=0;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
@@ -410,6 +410,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                #if LIBZIP_VERSION_MAJOR >= 1
                   // Open zip file if handler is NULL
                   if(!zip){
+                     int errorp;
                      zip = zip_open(zipfile, ZIP_CREATE, &errorp);
                      if(!zip){
                         printf("error: error creating zip file=%s, error code=%d\n", zipfile, errorp);

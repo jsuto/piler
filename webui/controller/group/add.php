@@ -33,6 +33,7 @@ class ControllerGroupAdd extends Controller {
 
                if($ret == 1){
                   $this->data['x'] = $this->data['text_successfully_added'];
+                  header('Location: ' . SITE_URL . '/index.php?route=group/list');
                } else {
                   $this->data['errorstring'] = $this->data['text_failed_to_add'] . ": " . $ret;
                }
@@ -85,5 +86,3 @@ class ControllerGroupAdd extends Controller {
 
 
 }
-
-?>

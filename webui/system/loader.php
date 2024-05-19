@@ -44,7 +44,7 @@ class Loader {
       }
    }
 
- 
+
    public function database($driver, $hostname, $username, $password, $database, $prefix = NULL, $charset = 'UTF8') {
       $file  = DIR_SYSTEM . 'database/' . $driver . '.php';
       $class = 'Database' . preg_replace('/[^a-zA-Z0-9]/', '', $driver);
@@ -54,7 +54,7 @@ class Loader {
 
          Registry::set(str_replace('/', '_', $driver), new $class());
       } else {
-         exit('Error: Could not load database ' . $drvier . '!'); 
+         exit('Error: Could not load database ' . $drvier . '!');
       }
    }
 
@@ -79,7 +79,4 @@ class Loader {
       $this->language->load($language);
    }
 
-} 
-
-
-?>
+}

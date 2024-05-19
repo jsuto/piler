@@ -23,11 +23,7 @@ class ControllerSearchHelper extends Controller {
    public function index(){
 
       $this->id = "content";
-      if(ENABLE_MOBILE_PREVIEW && MOBILE_DEVICE) {
-         $this->template = "search/helper-mobile.tpl";
-      } else {
-         $this->template = "search/helper.tpl";
-      }
+      $this->template = "search/helper.tpl";
 
       $this->layout = "common/layout-empty";
 
@@ -168,5 +164,3 @@ class ControllerSearchHelper extends Controller {
 
 
 }
-
-?>

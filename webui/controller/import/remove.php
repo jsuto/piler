@@ -24,7 +24,6 @@ class ControllerImportRemove extends Controller {
       $this->data['username'] = Registry::get('username');
 
       $this->data['id'] = $this->request->get['id'];
-      $this->data['description'] = $this->request->get['name'];
       $this->data['confirmed'] = (int)$this->request->get['confirmed'];
 
 
@@ -34,6 +33,7 @@ class ControllerImportRemove extends Controller {
             $ret = $this->model_saas_import->delete($this->data['id'], $this->data['description']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
+               header('Location:' . SITE_URL . 'index.php?route=import/list');
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];
@@ -57,10 +57,6 @@ class ControllerImportRemove extends Controller {
          $this->error['admin'] = $this->data['text_you_are_not_admin'];
       }
 
-      if(!isset($this->request->get['name']) || strlen($this->request->get['name']) < 1) {
-         $this->error['description'] = $this->data['text_invalid_data'];
-      }
-
       if(!isset($this->request->get['id']) || !is_numeric($this->request->get['id'])) {
          $this->error['id'] = $this->data['text_invalid_data'];
       }
@@ -75,5 +71,3 @@ class ControllerImportRemove extends Controller {
 
 
 }
-
-?>

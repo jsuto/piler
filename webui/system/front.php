@@ -4,7 +4,7 @@ class Front {
    protected $error;
 
    private function sanitize_path($path){
-      return str_replace('../', '', $path); 
+      return str_replace('../', '', $path);
    }
 
 
@@ -55,5 +55,3 @@ class Front {
 
 
 }
-
-?>

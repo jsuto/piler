@@ -21,7 +21,7 @@ LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../src -L../../src
 LIBS = @LIBS@ @mysql_libs@
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
-OBJS = 
+OBJS =
 
 INSTALL = @INSTALL@
 
@@ -31,7 +31,7 @@ install:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/Zend
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/bootstrap
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/assets
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/controller
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/google-api
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/images
@@ -39,7 +39,7 @@ install:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/model
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/securimage
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/system
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/view
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/templates
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/tmp
 	$(INSTALL) $(srcdir)/.htaccess $(DESTDIR)$(localstatedir)/piler/www
 	$(INSTALL) $(srcdir)/config.php $(DESTDIR)$(localstatedir)/piler/www
@@ -49,14 +49,14 @@ install:
 	$(INSTALL) $(srcdir)/ok.txt $(DESTDIR)$(localstatedir)/piler/www
 	$(INSTALL) $(srcdir)/sso.php $(DESTDIR)$(localstatedir)/piler/www
 	cp -R $(srcdir)/Zend/* $(DESTDIR)$(localstatedir)/piler/www/Zend
-	cp -R $(srcdir)/bootstrap/* $(DESTDIR)$(localstatedir)/piler/www/bootstrap
+	cp -R $(srcdir)/assets/* $(DESTDIR)$(localstatedir)/piler/www/assets
 	cp -R $(srcdir)/controller/* $(DESTDIR)$(localstatedir)/piler/www/controller
 	cp -R $(srcdir)/google-api/* $(DESTDIR)$(localstatedir)/piler/www/google-api
 	cp -R $(srcdir)/language/* $(DESTDIR)$(localstatedir)/piler/www/language
 	cp -R $(srcdir)/model/* $(DESTDIR)$(localstatedir)/piler/www/model
 	cp -R $(srcdir)/securimage/* $(DESTDIR)$(localstatedir)/piler/www/securimage
 	cp -R $(srcdir)/system/* $(DESTDIR)$(localstatedir)/piler/www/system
-	cp -R $(srcdir)/view/* $(DESTDIR)$(localstatedir)/piler/www/view
+	cp -R $(srcdir)/templates/* $(DESTDIR)$(localstatedir)/piler/www/templates
 	cp -R $(srcdir)/tmp/* $(DESTDIR)$(localstatedir)/piler/www/tmp
 
 clean:

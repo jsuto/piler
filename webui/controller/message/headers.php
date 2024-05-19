@@ -6,11 +6,7 @@ class ControllerMessageHeaders extends Controller {
    public function index(){
 
       $this->id = "content";
-      if(ENABLE_MOBILE_PREVIEW && MOBILE_DEVICE) {
-         $this->template = "message/headers-mobile.tpl";
-      } else {
-         $this->template = "message/headers.tpl";
-      }
+      $this->template = "message/headers.tpl";
       $this->layout = "common/layout-empty";
 
       $request = Registry::get('request');
@@ -51,5 +47,3 @@ class ControllerMessageHeaders extends Controller {
 
 
 }
-
-?>
