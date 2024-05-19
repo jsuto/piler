@@ -208,4 +208,6 @@ run_import_job
 
 docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
 
+docker exec "$CONTAINER" bash -c 'apt-get update && apt-get install -y vim'
+
 get_verdict
