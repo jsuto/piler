@@ -10,13 +10,8 @@
 
     <base href="<?php print SITE_URL; ?>" />
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-    <![endif]-->
+    <?php print CSS_CODE; ?>
+    <?php print CUSTOM_CSS; ?>
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
@@ -24,13 +19,6 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/view/theme/default/assets/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="/view/theme/default/assets/ico/apple-touch-icon-57-precomposed.png">
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
-
-    <script type="text/javascript" src="/view/javascript/jquery.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/jquery-ui.min.js"></script>
-    <!--script type="text/javascript" src="/view/javascript/rc-splitter.js"></script-->
-    <script type="text/javascript" src="/view/javascript/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/view/javascript/piler.js"></script>
-
   </head>
 
 <body>
@@ -94,6 +82,8 @@
 
 
 </div>
+
+<?php print JS_CODE; ?>
 
 </body>
 </html>
