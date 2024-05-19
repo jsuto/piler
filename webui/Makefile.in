@@ -21,7 +21,7 @@ LIBDIR = -L. @LIBDIR@ @LDFLAGS@ -L../src -L../../src
 LIBS = @LIBS@ @mysql_libs@
 RUNNING_USER = @RUNNING_USER@
 RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
-OBJS = 
+OBJS =
 
 INSTALL = @INSTALL@
 
@@ -31,7 +31,6 @@ install:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/Zend
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/bootstrap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/controller
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/google-api
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(localstatedir)/piler/www/images
@@ -49,7 +48,6 @@ install:
 	$(INSTALL) $(srcdir)/ok.txt $(DESTDIR)$(localstatedir)/piler/www
 	$(INSTALL) $(srcdir)/sso.php $(DESTDIR)$(localstatedir)/piler/www
 	cp -R $(srcdir)/Zend/* $(DESTDIR)$(localstatedir)/piler/www/Zend
-	cp -R $(srcdir)/bootstrap/* $(DESTDIR)$(localstatedir)/piler/www/bootstrap
 	cp -R $(srcdir)/controller/* $(DESTDIR)$(localstatedir)/piler/www/controller
 	cp -R $(srcdir)/google-api/* $(DESTDIR)$(localstatedir)/piler/www/google-api
 	cp -R $(srcdir)/language/* $(DESTDIR)$(localstatedir)/piler/www/language
