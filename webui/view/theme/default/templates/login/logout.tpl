@@ -9,13 +9,8 @@
     <?php if(PROVIDED_BY) { ?><meta name="author" content="<?php print PROVIDED_BY; ?>" /><?php } ?>
     <meta http-equiv="refresh" content="5; url=<?php print SITE_URL; ?>">
 
-    <link href="/view/theme/default/assets/css/metro-bootstrap.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!-- original location: http://html5shim.googlecode.com/svn/trunk/html5.js -->
-    <!--[if lt IE 9]>
-      <script src="/view/theme/default/assets/js/html5.js"></script>
-    <![endif]-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="/view/theme/default/assets/css/1.css" rel="stylesheet">
 
     <!-- Fav and touch icons -->
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/view/theme/default/assets/ico/apple-touch-icon-144-precomposed.png">
@@ -25,24 +20,12 @@
     <?php if(BRANDING_FAVICON) { ?><link rel="shortcut icon" href="<?php print BRANDING_FAVICON; ?>" /><?php } ?>
   </head>
 
-<body>
+<body id="loginpage">
 
-<div id="piler1" class="container">
-
-   <div id="menu"></div>
-
-   <div id="main">
-
+  <div id="logincontainer" class="container">
       <h3><?php print $title; ?></h3>
       <p><?php print $text_logged_out; ?>. <a href="<?php if(ENABLE_SSO_LOGIN == 1) { ?>sso.php<?php } else { ?>login.php<?php } ?>" class="messagelink"><?php print $text_back; ?></a></p>
-
-   </div> <!-- main -->
-
-   <div id="footer">
-</div>
-
-
-</div>
+  </div>
 
 <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
 

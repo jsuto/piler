@@ -22,7 +22,6 @@
 
     <?php print JS_CODE; ?>
 
-    <script type="text/javascript" src="/view/javascript/jscolor.js"></script>
     <script type="text/javascript" src="/view/javascript/fileupload.js"></script>
 </head>
 
@@ -30,7 +29,7 @@
 
 if(isset($this->request->get['route'])) {
 
-   if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', Piler.health_refresh * 1000);"<?php }
+   if($this->request->get['route'] == 'health/health') { ?> onload="Piler.load_health(); setInterval('Piler.load_health()', <?php print HEALTH_REFRESH; ?> * 1000);"<?php }
    if($this->request->get['route'] == 'stat/online') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
    if($this->request->get['route'] == 'import/jobs') { ?> onload="setInterval('Piler.reload_page()', Piler.health_refresh * 1000);"<?php }
 

@@ -1,24 +1,23 @@
-
-var Piler =
+let Piler =
 {
     /*
      * which search type is active, it's set by clicking on the 'Search' button
      */
     search:'',
 
+    base_url: location.origin + '/',
+
     // legacy variable(s)
     expsrc: 0,
-    health_refresh: <?php print HEALTH_REFRESH; ?>,
-    piler_ui_lang: '<?php LANG == 'en' ? print 'en-GB' : print LANG; ?>',
     prev_message_id: 0,
     pos: -1,
     current_message_id: 0,
     folders: '',
     extra_folders: '',
-    bulkrestore_url: '/bulkrestore.php',
-    bulkpdf_url: '/bulkpdf.php',
 
     remove_message_id: 0,
+
+    login_text: 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE',
 
     /*
      * variables used at search listing
@@ -62,57 +61,15 @@ var Piler =
         }
     },
 
-    /**
-     * Returns the javascript event source.
-     *
-     * @param {Object}   a  Javascript event
-     * @param {Logical} [b] If exist the event propagation NOT! stoped
-     *
-     * @return {Object<jQuery>} Javascript event source
-     **/
-    getSource:function( a, b )
-    {
-        Piler.log("[getSource]", a, b );
-
-        if ( !b )
-        {
-            try {
-                if ( a.stopPropagation )
-                    a.stopPropagation();
-                else
-                    a.cancelBubble = !0;
-            }
-            catch ( e )
-            {
-                Piler.log("[getSource]", e );
-            }
-        }
-
-        return $( a.target ? a.target : a.srcElement );
-    },
-
-
     /*
      * Change the list order.
-     *
-     *    HTML: <a class="VALAMI" onclick="Piler.changeOrder(this)" xid="date" xorder="0"></a>
-     *     CSS: .VALAMI {
-     *              background: url("/view/theme/default/images/arrowup.gif") no-repeat scroll center center transparent;
-     *              cursor: pointer;
-     *              float: left;
-     *              height: 10px;
-     *              width: 10px;
-     *           }
-     * @param {Object} a  Javascript event
-     *
      */
-    changeOrder:function( a )
+    changeOrder:function(a)
     {
-        a = $( a );// a == DOM element
-        // a = Piler.getSource( a );// a == Javascript event
+        a = $(a);
 
-        Piler.Shared.sort = a.attr('xid');// {String} (date|from|subject|size)
-        Piler.Shared.order = a.attr('xorder');// {Number} (0|1) -> (ASC|DESC)
+        Piler.Shared.sort = a.attr('xid');
+        Piler.Shared.order = a.attr('xorder');
 
         Piler.log("[changeOrder]", Piler.Shared.sort, Piler.Shared.order);
 
@@ -127,25 +84,24 @@ var Piler =
 
     load_search_results:function( )
     {
-        var url;
+        let url;
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        Piler.Shared.type == 'search' ? url = '/search-helper.php' : url = '/audit-helper.php';
+        Piler.Shared.type == 'search' ? url = Piler.base_url + 'search-helper.php' : url = Piler.base_url + 'audit-helper.php';
 
         Piler.log("[load_search_results]", url);
 
         Piler.spinner('start');
 
-        jQuery.ajax( url, {
+        jQuery.ajax(url, {
             data: $.extend(!0, {}, Piler.Shared, Piler.Searches[Piler.search]),
             type: "POST"
         })
-        .done( function( a )// data, textStatus, jqXHR
+        .done( function(a)
         {
-
-            if(a.indexOf('<?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?>') > 0) {
-               document.location.href = '<?php print SITE_URL; ?>';
+            if(a.indexOf(Piler.login_text) > 0) {
+               document.location.href = Piler.base_url;
                return true;
             }
 
@@ -155,7 +111,7 @@ var Piler =
             Piler.spinner('stop');
             //$('#resultsheader').show();
         })
-        .fail(function( a, b )// jqXHR, textStatus, errorThrown
+        .fail(function(a, b)
         {
             alert("Problem retrieving XML data:" + b)
         });
@@ -190,7 +146,7 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax( '/index.php?route=search/save', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=search/save', {
             data: $.extend(!0, { }, Piler.Shared, Piler.Searches[Piler.search], {save: '1'} ),
             type: "POST"
         })
@@ -214,7 +170,7 @@ var Piler =
     {
         Piler.log("[load_saved_search_terms]");
 
-        jQuery.ajax( '/index.php?route=search/load', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=search/load', {
         })
         .done( function( a )
         {
@@ -231,7 +187,7 @@ var Piler =
     {
         Piler.log("[remove_saved_search_term]");
 
-        jQuery.ajax('/index.php?route=search/remove&ts=' + ts, {})
+        jQuery.ajax(Piler.base_url + 'index.php?route=search/remove&ts=' + ts, {})
         .done(function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
@@ -266,20 +222,19 @@ var Piler =
 
     view_message:function(id)
     {
-        var search = $('#_search').val();
+        let search = $('#_search').val();
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         Piler.log("[view_message]", id, search);
 
-        jQuery.ajax('/message.php', {
+        jQuery.ajax(Piler.base_url + 'message.php', {
            data: { id: id, search: search },
            type: "POST"
         })
         .done( function(a) {
-
-           if(a.indexOf('<?php print PILER_LOGIN_HELPER_PLACEHOLDER; ?>') > 0) {
-              document.location.href = '<?php print SITE_URL; ?>';
+           if(a.indexOf(Piler.login_text) > 0) {
+              document.location.href = Piler.base_url;
               return true;
            }
 
@@ -292,14 +247,14 @@ var Piler =
     view_headers:function(id)
     {
         Piler.log("[view_headers]");
-        Piler.load_url_to_preview_pane('/index.php?route=message/headers&id=' + id);
+        Piler.load_url_to_preview_pane(Piler.base_url + 'index.php?route=message/headers&id=' + id);
     },
 
 
     view_journal:function(id)
     {
         Piler.log("[view_journal]");
-        Piler.load_url_to_preview_pane('/index.php?route=message/journal&id=' + id);
+        Piler.load_url_to_preview_pane(Piler.base_url + 'index.php?route=message/journal&id=' + id);
     },
 
 
@@ -309,7 +264,7 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=message/notspam', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/notspam', {
            data: { id: id },
            type: "POST"
         })
@@ -326,7 +281,7 @@ var Piler =
 
        Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=message/private', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/private', {
            data: { id: id, val: val },
            type: "POST"
         })
@@ -341,7 +296,7 @@ var Piler =
     {
         Piler.log("[restore_message]");
 
-        jQuery.ajax('/index.php?route=message/restore&id=' + id, {})
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/restore&id=' + id, {})
         .done(function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
@@ -362,14 +317,14 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        var idlist = Piler.get_selected_messages_list();
+        let idlist = Piler.get_selected_messages_list();
 
         if(!idlist) {
            Piler.show_message('ERROR', text_no_selected_message);
            return;
         }
 
-        jQuery.ajax('/bulkremove.php', {
+        jQuery.ajax(Piler.base_url + 'bulkremove.php', {
            data: { idlist: idlist, reason: reason },
            type: "POST"
         })
@@ -388,7 +343,7 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=message/remove', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/remove', {
         data: { id: Piler.remove_message_id, confirmed: 1 },
            type: "POST"
         })
@@ -410,7 +365,7 @@ var Piler =
 	let reason2 = $('#reason2').val();
 
         if(reason2) {
-          jQuery.ajax('/rejectremove.php', {
+          jQuery.ajax(Piler.base_url + 'rejectremove.php', {
           data: { id: Piler.remove_message_id, confirmed: 1, reason2: reason2 },
              type: "POST"
           })
@@ -432,11 +387,11 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        var idlist = Piler.get_selected_messages_list();
+        let idlist = Piler.get_selected_messages_list();
 
         if(!idlist) return;
 
-        jQuery.ajax('/bulkrestore.php', {
+        jQuery.ajax(Piler.base_url + 'bulkrestore.php', {
            data: { download: '0', idlist: idlist, email: email },
            type: "POST"
         })
@@ -481,7 +436,7 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=message/note', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/note', {
            data: { id: id, note: encodeURI($('#note').val()) },
            type: "POST"
         })
@@ -498,7 +453,7 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=message/folder', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/folder', {
            data: { id: id, folder_id: $('#folder_id').val() },
            type: "POST"
         })
@@ -515,13 +470,13 @@ var Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        var idlist = Piler.get_selected_messages_list();
+        let idlist = Piler.get_selected_messages_list();
 
         Piler.log("[tag_search_results, idlist]", idlist);
 
         if(!idlist) return false;
 
-        jQuery.ajax('index.php?route=search/tag', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=search/tag', {
            data: { tag: encodeURI($('#tag_value').val()), idlist: idlist },
            type: "POST"
         })
@@ -556,7 +511,7 @@ var Piler =
     {
         Piler.log("[get_selected_messages_list]");
 
-        var idlist = '';
+        let idlist = '';
 
         for(i=0; i<Piler.Messages.length; i++) {
            if($('#r_' + Piler.Messages[i]).prop('checked')) {
@@ -574,7 +529,7 @@ var Piler =
 
     get_messages_list:function()
     {
-        var idlist = '';
+        let idlist = '';
 
         for(i=0; i<Piler.Messages.length; i++) {
            if(idlist) idlist += ",";
@@ -593,10 +548,12 @@ var Piler =
     {
         Piler.log("[fill_current_messages_array]");
 
-        var z = $('#results tbody').children(), y = z.length, x;
-        var u = [];
+        let z = $('#results tbody').children(), y = z.length, x;
+        let u = [];
 
         Piler.log("[fill_current_messages_array] y", y );
+
+        if (!y) { Piler.show_message('none found'); }
 
         for (i=0; i<y; i++)
         {
@@ -648,11 +605,11 @@ var Piler =
 
         terms = decodeURIComponent(terms);
 
-        var pairs = terms.split('&');
+        let pairs = terms.split('&');
         $.each(pairs, function(i, v){
-           var pair = v.split('=');
+           let pair = v.split('=');
            if(pair[0] == 'search') {
-              var search = decodeURIComponent(pair[1]);
+              let search = decodeURIComponent(pair[1]);
               $("input#_search").val(search.replace(/\+/g, " "));
            }
         });
@@ -666,18 +623,10 @@ var Piler =
 
     /*
      * expert search
-     *
-     *    HTML: <button onclick="Piler.simple(this)">Search</button>
-     *    <button onclick="script:var a=document.getElementById('ref'); if(a) a.value=''; a = document.getElementById('prefix'); if(a) a.value='';
-     *    load_search_results('http://demo.mailpiler.org/search-helper.php', assemble_search_term(count), 0);"
-     *    style="margin-left: 10px; margin-right: 0px; height: 20px; width: 70px;" class="active" id="button_search">Search</button>
      **/
-    expert:function( )// a )
+    expert:function()
     {
-        Piler.log("[expert]")//, a );
-
-        // a = $( a );// a == DOM element
-        // a = Piler.getSource( a );// a == Javascript event
+        Piler.log("[expert]");
 
         $('#prefix').val('');
 
@@ -704,19 +653,12 @@ var Piler =
 
     /**
      * complex search
-     *
-     *    HTML: <button id="simple" class="active" onclick="Piler.complex(this)">Search</button>
-     *     CSS: #expert { margin-left: 10px; margin-right: 0px; height: 20px; width: 70px; }
-     *
      **/
-    complex:function( )// a )
+    complex:function( )
     {
-        Piler.log("[complex]")//, a );
+        Piler.log("[complex]");
 
-        // a = $( a );// a == DOM element
-        // a = Piler.getSource( a );// a == Javascript event
-
-        var z = $('div#advancedSearchModal');
+        let z = $('div#advancedSearchModal');
 
         Piler.search = 'Complex';
 
@@ -725,7 +667,7 @@ var Piler =
 
         Piler.assemble_folder_restrictions();
 
-        var attachments_type = '';
+        let attachments_type = '';
 
         if($('input#xhas_attachment_any', z)[0].checked) { attachments_type += ',any'; }
         if($('input#xhas_attachment_doc', z)[0].checked) { attachments_type += ',word'; }
@@ -760,16 +702,10 @@ var Piler =
 
     /*
      * paging function
-     *
-     *    HTML: <a onclick="Piler.navigation(${PHP_PAGE})" class="navlink">${next page}</a>
-     *
      */
     navigation:function( a )
     {
-        Piler.log("[navigation]")//, a );
-
-        // a = $( a );// a == DOM element
-        // a = Piler.getSource( a );// a == Javascript event
+        Piler.log("[navigation]");
 
         Piler.Shared.page = a;
 
@@ -779,16 +715,10 @@ var Piler =
 
     /*
      * reset search fields
-     *
-     *    HTML: <input type="button" onclick="Piler.cancel()" value="Cancel">
-     *     CSS: input.advsecondary[type="button"]{ height: 20px; width: 70px; }
      */
     cancel:function( )//a )
     {
         Piler.log("[cancel]")//, a );
-
-        // a = $( a );// a == DOM element
-        // a = Piler.getSource( a );// a == Javascript event
 
         $('#_search').val('');
         $('#ref').val( '' );
@@ -842,12 +772,10 @@ var Piler =
 
         document.body.style.cursor = 'wait';
 
-        jQuery.ajax('/index.php?route=health/worker', { })
+        jQuery.ajax(Piler.base_url + 'index.php?route=health/worker', { })
         .done( function(a) {
            $('#A1').html(a);
            document.body.style.cursor = 'default';
-
-           //setInterval('Piler.load_health()', Piler.health_refresh * 1000);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
@@ -877,7 +805,7 @@ var Piler =
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         if(rcpt) {
-           jQuery.ajax('index.php?route=message/restore', {
+           jQuery.ajax(Piler.base_url + 'index.php?route=message/restore', {
               data: { rcpt: encodeURI(rcpt), id: id },
               type: "POST"
            })
@@ -899,13 +827,13 @@ var Piler =
         Piler.log("[download_messages_real]", idlist);
 
         if(idlist) {
-           var form = document.createElement("form");
+           let form = document.createElement("form");
 
            form.setAttribute("method", "post");
            form.setAttribute("action", url);
            form.setAttribute("name", "download");
 
-           var hiddenField = document.createElement("input");
+           let hiddenField = document.createElement("input");
 
            hiddenField.setAttribute("type", "hidden");
            hiddenField.setAttribute("name", "download");
@@ -929,8 +857,8 @@ var Piler =
 
     download_messages:function()
     {
-        var idlist = Piler.get_selected_messages_list();
-        Piler.download_messages_real(idlist, Piler.bulkrestore_url);
+        let idlist = Piler.get_selected_messages_list();
+        Piler.download_messages_real(idlist, Piler.base_url + 'bulkrestore.php');
     },
 
 
@@ -938,12 +866,12 @@ var Piler =
     {
         Piler.log("[download_all_search_hits]");
 
-        jQuery.ajax('/index.php?route=message/dl', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=message/dl', {
             type: "POST"
         })
         .done( function( a )
         {
-            Piler.download_messages_real(a, Piler.bulkrestore_url);
+            Piler.download_messages_real(a, Piler.base_url + 'bulkrestore.php');
         })
         .fail(function( a, b )
         {
@@ -957,9 +885,9 @@ var Piler =
     {
         Piler.log("[download_selected_as_pdf]");
 
-        var idlist = Piler.get_selected_messages_list();
+        let idlist = Piler.get_selected_messages_list();
         if(idlist) {
-           Piler.download_messages_real(idlist, Piler.bulkpdf_url);
+           Piler.download_messages_real(idlist, Piler.base_url + 'bulkpdf.php');
         }
     },
 
@@ -1016,7 +944,7 @@ var Piler =
     {
         Piler.log("[reload_piler]");
 
-        jQuery.ajax('index.php?route=policy/apply', { cache: true })
+        jQuery.ajax(Piler.base_url + 'index.php?route=policy/apply', { cache: true })
         .done( function(a) {
            Piler.show_message(a);
         })
@@ -1068,11 +996,9 @@ var Piler =
 
         if(id <= 0) { return 0; }
 
-        var folder_copy_url = '<?php print SITE_URL; ?>/index.php?route=folder/copy'
-
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-        jQuery.ajax('index.php?route=folder/copy', {
+        jQuery.ajax(Piler.base_url + 'index.php?route=folder/copy', {
            data: { folder_id: folder_id, id: id },
            type: "POST"
         })
@@ -1116,7 +1042,7 @@ var Piler =
     {
        Piler.log("[test_ldap_connection]");
 
-       jQuery.ajax('index.php?route=ldap/test', {
+       jQuery.ajax(Piler.base_url + 'index.php?route=ldap/test', {
            data: {
               description: $('#description').val(),
               ldap_host: $('#ldap_host').val(),
@@ -1138,7 +1064,7 @@ var Piler =
        Piler.log("[test_pop3_connection]");
        $('#LDAPTEST').html('....');
 
-       jQuery.ajax('index.php?route=import/test', {
+       jQuery.ajax(Piler.base_url + 'index.php?route=import/test', {
            data: {
               type: $('#type').val(),
               server: $('#server').val(),
@@ -1174,7 +1100,7 @@ var Piler =
 
     change_box_colour: function(srcid, dstid)
     {
-       var colour = $('#' + srcid).val();
+       let colour = $('#' + srcid).val();
        $('#' + dstid).css('background', colour);
     },
 
@@ -1186,7 +1112,7 @@ var Piler =
 
         document.body.style.cursor = 'wait';
 
-        jQuery.ajax('qr.php?refresh=1', { cache: false })
+        jQuery.ajax(Piler.base_url + 'qr.php?refresh=1', { cache: false })
         .done( function(a) {
            $('#QR').html(a);
            document.body.style.cursor = 'default';
@@ -1198,13 +1124,13 @@ var Piler =
 
     toggle_ga: function()
     {
-        var ga = 0;
+        let ga = 0;
 
         if(document.getElementById('ga_enabled').checked == 1){ ga = 1; }
 
         Piler.log("[toggle GA]", ga);
 
-        jQuery.ajax('qr.php?toggle=' + ga, { cache: false })
+        jQuery.ajax(Piler.base_url + 'qr.php?toggle=' + ga, { cache: false })
         .done( function(a) {
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
@@ -1214,7 +1140,7 @@ var Piler =
 
     fix_ldap_display: function()
     {
-       if($('#ldap_type').val() == '<?php print LDAP_TYPE_GENERIC; ?>') {
+       if($('#ldap_type').val() == 'generic_ldap') {
           $('#ldap_mail_attr_id').show();
           $('#ldap_account_objectclass_id').show();
           $('#ldap_distributionlist_attr_id').show();
@@ -1235,8 +1161,8 @@ var Piler =
 
 
     print_div: function(divID) {
-       var divElements = document.getElementById(divID).innerHTML;
-       var oldPage = document.body.innerHTML;
+       let divElements = document.getElementById(divID).innerHTML;
+       let oldPage = document.body.innerHTML;
 
        document.body.innerHTML = "<html><head><title></title></head><body>" + divElements + "</body></html>";
 
@@ -1246,25 +1172,7 @@ var Piler =
     },
 
 
-    poor_mans_keepalive_for_dummy_browsers: function()
-    {
-
-<?php if(ENABLE_SSO_LOGIN == 1) { ?>
-
-       // MSIE 11 and Outlook 2013 match this condition
-
-       if(Object.hasOwnProperty.call(window, "ActiveXObject") && !window.ActiveXObject) {
-
-          Piler.log("[poor_mans_keepalive_for_dummy_browsers]");
-
-          jQuery.ajax('/ok.txt', { async:   false })
-          .done( function(a) { } )
-          .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
-       }
-
-<?php } ?>
-
-    },
+    poor_mans_keepalive_for_dummy_browsers: function() { },
 
     modal: function(id, action='') {
       try {

@@ -8,7 +8,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body mb-3">
-          <label for="FormControlInput1" class="form-label"><?php print $text_email_address; ?></label>
+          <label for="FormControlInput1" class="form-label"><?php print $text_email; ?></label>
           <input type="text" class="form-control" id="restore_address" name="restore_address" />
         </div>
         <div class="modal-footer">
