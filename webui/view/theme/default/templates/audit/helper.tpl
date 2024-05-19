@@ -47,24 +47,12 @@
 
 
 <div id="messagelistfooter" class="boxfooter upper-pane-fixed">
-    <div id="pagingrow" class="pull-left">
-    <?php if($n >= $page_len){ ?>
-            &nbsp;
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="bi bi-chevron-double-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-double-left"></i></span><?php } ?>
-            &nbsp;
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $prev_page; ?>);"><i class="bi bi-chevron-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-left"></i></span><?php } ?>
-            &nbsp;
-            <?php print $hits_from; ?>-<?php print $hits_to; ?>, <?php print $text_total; ?>: <?php print $n; ?>
-            &nbsp;
-            <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $next_page; ?>);"><i class="bi bi-chevron-right"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-right"></i></span><?php } ?>
-            &nbsp;
-            <?php if($page < $total_pages) { ?> &nbsp; <a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="bi bi-chevron-double-right"></i></a><?php } else { ?> <span class="navlink"><i class="bi bi-chevron-double-right"></i></span><?php } ?>
-            &nbsp;
-    <?php } ?>
+  <div id="pagingrow">
+  <?php if($n >= $page_len) { include_once DIR_THEME . THEME . '/templates/common/paging.tpl'; } ?>
 
-<?php if($n > 0) { ?>
-<a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
-<?php } ?>
+  <?php if($n > 0) { ?>
+    <a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
+  <?php } ?>
 
-    </div>
+  </div>
 </div>

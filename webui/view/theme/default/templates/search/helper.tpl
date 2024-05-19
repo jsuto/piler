@@ -74,22 +74,10 @@
         <div class="col ps-0">
           <div class="d-flex align-items-center justify-content-start functionbox ps-0 pt-1 pb-0 mb-0">
 
-    <?php if($n > 0) { ?>
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(0);"><i class="bi bi-chevron-double-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-double-left muted"></i></span><?php } ?>
-            &nbsp;
-            <?php if($page > 0) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $prev_page; ?>);"><i class="bi bi-chevron-left"></i></a><?php } else { ?><span class="navlink"><i class="bi bi-chevron-left muted"></i></span><?php } ?>
-            &nbsp;
+    <?php if($n > 0) {
+         include_once DIR_THEME . THEME . '/templates/common/paging.tpl';
 
-            <?php print $hits_from; ?>-<?php print $hits_to; ?>, <?php print $text_total; ?>: <?php print $hits; ?><?php if($total_found > MAX_SEARCH_HITS) { ?> (<?php print $total_found; ?>)<?php } ?>
-
-            &nbsp;
-            <?php if($next_page <= $total_pages){ ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $next_page; ?>);"><i class="bi bi-chevron-right"></i></a> <?php } else { ?><span class="navlink"><i class="bi bi-chevron-right muted"></i></span><?php } ?>
-            &nbsp;
-            <?php if($page < $total_pages) { ?><a href="#" class="navlink" onclick="Piler.navigation(<?php print $total_pages; ?>);"><i class="bi bi-chevron-double-right"></i></a><?php } else { ?> <span class="navlink"><i class="bi bi-chevron-double-right muted"></i></span><?php } ?>
-            &nbsp;
-
-
-         <?php if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
+         if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
             <span class="ms-5"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
          <?php } ?>
 
@@ -108,8 +96,8 @@
 
                 <span class=""><?php print $text_with_selected; ?>:&nbsp;</span>
 
-            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { ?>
-                <?php if(isAuditorUser() == 1) { ?>
+            <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) {
+                if(isAuditorUser() == 1) { ?>
                    <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#bulkRestoreModal" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
                 <?php } else { ?>
                    <a href="#" class="btn btn-link" onclick="Piler.bulk_restore_messages('<?php print $text_restored; ?>', '');" title="<?php print $text_bulk_restore_selected_emails; ?>"><i class="bi bi-send"></i></a>
