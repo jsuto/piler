@@ -54,8 +54,11 @@ make_deb_package() {
       --iteration "${COMMIT_ID}${DEBUG_SUFFIX}" \
       --description "$description" \
       --before-install "${REPO_ROOT}/build/fpm-${project}-before-install.sh" \
-      --after-install "${REPO_ROOT}/build/fpm-${project}-after-install.sh"
-
+      --after-install "${REPO_ROOT}/build/fpm-${project}-after-install.sh" \
+      --depends libssl3t64 \
+      --depends libtre5 \
+      --depends libzip4t64 \
+      --depends libmariadb3
    popd
 }
 
