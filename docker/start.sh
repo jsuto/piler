@@ -188,7 +188,7 @@ create_my_cnf_files() {
 
 start_services() {
    service cron start
-   service php8.1-fpm start
+   service php8.3-fpm start
    service nginx start
    rsyslogd
 }
