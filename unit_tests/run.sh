@@ -15,7 +15,7 @@ export LD_LIBRARY_PATH=../src
 pushd "$SCRIPT_DIR"
 
 setup_mysql() {
-   if [[ "$DISTRO" == "jammy" ]]; then
+   if [[ "$DISTRO" =~ ^jammy|noble$ ]]; then
       service mariadb start
    else
       service mysql start
