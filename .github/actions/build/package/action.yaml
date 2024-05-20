@@ -5,12 +5,12 @@ inputs:
     required: true
   BUILDER_IMAGE:
     required: false
-    default: 'sutoj/builder:0.1'
+    default: 'sutoj/builder:noble'
   COMMIT_ID:
     required: true
   DISTRO:
     required: false
-    default: 'jammy'
+    default: 'noble'
   IMAGE_NAME:
     required: true
   PROJECT_ID:

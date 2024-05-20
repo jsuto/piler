@@ -1,6 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
-LABEL description="jammy builder container"
+LABEL description="noble builder image"
 LABEL maintainer="Janos SUTO, sj@acts.hu"
 
 ENV DEBIAN_FRONTEND="noninteractive"
@@ -9,8 +9,8 @@ SHELL ["/bin/bash", "-c", "-o", "pipefail"]
 
 # hadolint ignore=DL3001,DL3008,DL3028
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y gnupg git jq curl unzip openssl openssh-client make gcc sysstat catdoc unrtf poppler-utils tnef libwrap0-dev libssl-dev libtre-dev libzip-dev libmariadb-dev libcurl4-openssl-dev ruby ruby-dev mariadb-server phpunit \
-    php8.1-cli php8.1-mysql php8.1-zip php8.1-ldap php8.1-curl php8.1-xml php8.1-memcached php8.1-mbstring && \
+    apt-get install --no-install-recommends -y gnupg git jq curl unzip openssl openssh-client make gcc sysstat catdoc unrtf poppler-utils tnef libssl-dev libtre-dev libzip-dev libmariadb-dev libcurl4-openssl-dev ruby ruby-dev mariadb-server phpunit \
+    php8.3-cli php8.3-mysql php8.3-zip php8.3-ldap php8.3-curl php8.3-xml php8.3-memcached php8.3-mbstring && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     groupadd piler && useradd -g piler -s /bin/bash -d /var/piler piler && usermod -L piler && \
     mkdir -p /var/piler && \
@@ -18,8 +18,6 @@ RUN apt-get update && \
     echo "create database piler1 character set utf8mb4" | mysql && \
     echo "grant all privileges on piler1.* to piler@localhost identified by 'piler123'" | mysql && \
     gem install fpm && \
-    curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc && \
-    chmod +x /usr/local/bin/mc && \
     curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar
 
 COPY run.sh /run.sh
