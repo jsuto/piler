@@ -242,6 +242,23 @@ index note1
     rt_attr_uint = uid
 }
 
+index audit1
+{
+    type = rt
+    path = /var/piler/manticore/audit1
+    rt_mem_limit = 16M
+    stored_fields = *
+    min_word_len = 2
+    min_prefix_len = 5
+    charset_table  = <?php print CHARSET_TABLE; ?>
+    rt_field = email
+    rt_field = ipaddr
+    rt_field = description
+    rt_attr_bigint = ts
+    rt_attr_bigint = meta_id
+    rt_attr_uint = action
+}
+
 <?php } ?>
 
 

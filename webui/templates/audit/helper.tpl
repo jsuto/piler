@@ -48,7 +48,7 @@
 
 <div id="messagelistfooter" class="boxfooter upper-pane-fixed">
   <div id="pagingrow">
-  <?php if($n >= $page_len) { include_once DIR_BASE . 'templates/common/paging.tpl'; } ?>
+  <?php if($n > 0) { include_once DIR_BASE . 'templates/common/paging.tpl'; } ?>
 
   <?php if($n > 0) { ?>
     <a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
