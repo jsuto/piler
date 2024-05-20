@@ -254,6 +254,7 @@ $config['SPHINX_HOSTNAME_READONLY'] = '127.0.0.1:9307';
 $config['SPHINX_MAIN_INDEX'] = 'piler1';
 $config['SPHINX_TAG_INDEX'] = 'tag1';
 $config['SPHINX_NOTE_INDEX'] = 'note1';
+$config['SPHINX_AUDIT_INDEX'] = 'audit1';
 $config['SPHINX_STRICT_SCHEMA'] = 1;
 $config['RT'] = 1;
 $config['MAX_EMAIL_LEN'] = 41;

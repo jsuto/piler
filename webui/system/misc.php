@@ -34,13 +34,13 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
 
    $a = explode("@", $email);
 
-   $db = Registry::get('db');
+   $sphxrw = Registry::get('sphxrw');
 
    $description = htmlspecialchars($description);
 
-   $query = $db->query("INSERT INTO " . TABLE_AUDIT . " (ts, email, domain, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?,?)", array(time(), $email, $a[1], $action, $ipaddr, $id, $description));
+   $query = $sphxrw->query("INSERT INTO " . SPHINX_AUDIT_INDEX . " (ts, email, action, ipaddr, meta_id, description) VALUES(?,?,?,?,?,?)", array(time(), $email, $action, $ipaddr, $id, $description));
 
-   return $db->countAffected();
+   return $sphxrw->countAffected();
 }
 
 
@@ -111,7 +111,7 @@ function logout() {
 function isBinary($num = '') {
    if($num == 0 || $num == 1){ return 1; }
 
-   return 0; 
+   return 0;
 }
 
 

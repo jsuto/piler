@@ -13,8 +13,6 @@ class ControllerLoginLogout extends Controller {
       $request = Registry::get('request');
       $session = Registry::get('session');
 
-      $db = Registry::get('db');
-
       $this->load->model('user/auth');
 
       $this->data['title'] = $this->data['text_logout'];
@@ -32,5 +30,3 @@ class ControllerLoginLogout extends Controller {
 
 
 }
-
-?>

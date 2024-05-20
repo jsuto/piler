@@ -88,7 +88,7 @@ class Sphinx {
 
 
    public function countAffected() {
-      return mysql_affected_rows($this->link);
+      return $this->affected;
    }
 
 
