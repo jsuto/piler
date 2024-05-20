@@ -25,7 +25,7 @@ function LOGGER($event = '', $username = '') {
 
 function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '') {
 
-   if(ENABLE_AUDIT == 0) { return 0; }
+   if(ENABLE_AUDIT == 0 || RT == 0) { return 0; }
 
    $session = Registry::get('session');
 
