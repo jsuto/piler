@@ -77,7 +77,7 @@ class ControllerSearchHelper extends Controller {
          $this->data['hits'] = MAX_SEARCH_HITS;
       }
       else {
-         $this->data['total_pages'] = $this->data['total_pages'] = ceil($this->data['total_found'] / $this->data['page_len'])-1;
+         $this->data['total_pages'] = ceil($this->data['total_found'] / $this->data['page_len'])-1;
          $this->data['hits'] = $this->data['total_found'];
       }
 
