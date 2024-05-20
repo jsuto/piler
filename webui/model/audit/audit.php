@@ -113,7 +113,8 @@ class ModelAuditAudit extends Model {
       if(isset($a['where']) && isset($a['sortorder']) && isset($a['arr'])) {
          print 'Date' . DELIMITER . 'ID' . DELIMITER . 'User' . DELIMITER . 'IP-address' . DELIMITER . 'Action' . DELIMITER . 'Piler ID' . DELIMITER . "Description\n";
 
-         $query = $this->sphx->query('SELECT * FROM ' . SPHINX_AUDIT_INDEX . ' ' . $a['where'] . ' ' . $a['sortorder'], $a['arr']);
+	 $query = $this->sphx->query('SELECT * FROM ' . SPHINX_AUDIT_INDEX . ' ' . $a['where'] . ' ' . $a['sortorder'] . ' LIMIT 0,' . MAX_SEARCH_HITS . ' OPTION max_matches=' . MAX_SEARCH_HITS, $a['arr']);
+
          foreach($query->rows as $q) {
             if(DEMO_MODE == 1) { $q['ipaddr'] = anonimize_ip_addr($q['ipaddr']); }
 
