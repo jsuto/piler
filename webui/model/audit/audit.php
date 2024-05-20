@@ -2,7 +2,7 @@
 
 class ModelAuditAudit extends Model {
 
-   public function search_audit($data = array()) {
+   public function search_audit($data = array(), $page = 0) {
       $where = '';
       $arr = $results = array();
       $from = 0;
@@ -11,6 +11,9 @@ class ModelAuditAudit extends Model {
       $sortorder = "ORDER BY ts DESC";
       $date1 = $date2 = 0;
       $q = '';
+
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
 
       $session = Registry::get('session');
 
@@ -69,48 +72,26 @@ class ModelAuditAudit extends Model {
 
       $from = $data['page_len'] * $data['page'];
 
+      $query = $this->sphx->query('SELECT * FROM ' . SPHINX_AUDIT_INDEX . " $where $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS, $arr);
+      $total_found = $query->total_found;
+      $current_hits = $query->num_rows;
 
-      if($where) {
-         $query = $this->db->query("SELECT COUNT(*) AS count FROM " . TABLE_AUDIT . " $where", $arr);
-         $n = $query->row['count'];
+      foreach($query->rows as $a) {
+         $a['description'] = preg_replace("/\"/", "'", $a['description']);
 
-         if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("audit query: '%s' in %.2f s, %d hits", $query->query, $query->exec_time, $query->row['count'])); }
-      }
-      else { $n = MAX_AUDIT_HITS; }
-
-
-      if($n > 0) {
-         if($n > MAX_AUDIT_HITS) { $n = MAX_AUDIT_HITS; }
-
-         
-         $query = $this->db->query("SELECT * FROM " . TABLE_AUDIT . " $where $sortorder LIMIT $from," . $data['page_len'], $arr);
-
-         $this->session->set("audit_query", array('where' => $where, 'sortorder' => $sortorder, 'arr' => $arr));
-
-         if(LOG_LEVEL >= NORMAL) { syslog(LOG_INFO, sprintf("audit query: '%s', param: '%s' in %.2f s, %d hits", $query->query, implode(' ', $arr), $query->exec_time, $query->num_rows)); }
-
-         if(isset($query->rows)) {
-
-            foreach($query->rows as $a) {
-
-               $a['description'] = preg_replace("/\"/", "'", $a['description']);
-
-               $results[] = array(
-                                    'id' => $a['meta_id'],
-                                    'piler_id' => isset($m[$a['meta_id']]) ? $m[$a['meta_id']] : '',
-                                    'action' => $a['action'],
-                                    'email' => $a['email'],
-                                    'date' => date(DATE_TEMPLATE . " H:i", $a['ts']),
-                                    'ipaddr' => DEMO_MODE == 1 ? anonimize_ip_addr($a['ipaddr']) : $a['ipaddr'],
-                                    'description' => $a['description'],
-                                    'shortdescription' => make_short_string($a['description'], MAX_CGI_FROM_SUBJ_LEN)
-                                  );
-
-            }
-         }
+         $results[] = array(
+            'id' => $a['meta_id'],
+            'piler_id' => isset($m[$a['meta_id']]) ? $m[$a['meta_id']] : '',
+            'action' => $a['action'],
+            'email' => $a['email'],
+            'date' => date(DATE_TEMPLATE . " H:i", $a['ts']),
+            'ipaddr' => DEMO_MODE == 1 ? anonimize_ip_addr($a['ipaddr']) : $a['ipaddr'],
+            'description' => $a['description'],
+            'shortdescription' => make_short_string($a['description'], MAX_CGI_FROM_SUBJ_LEN)
+         );
       }
 
-      return array($n, $results);
+      return array($current_hits, $total_found, $results);
    }
 
 
@@ -187,5 +168,3 @@ class ModelAuditAudit extends Model {
    }
 
 }
-
-?>
