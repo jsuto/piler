@@ -14,7 +14,32 @@ permissions:
   contents: write
 
 jobs:
+  get-version:
+    runs-on:
+      - self-hosted
+      - X64
+
+    outputs:
+      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
+      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            VERSION
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/version
+
   build-package:
+    needs:
+      - get-version
+
     strategy:
       matrix:
         arch: ['amd64','arm64']
@@ -24,31 +49,25 @@ jobs:
       - ${{ matrix.arch }}
 
     outputs:
-      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
-      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
-      VERSION: ${{ steps.get-version.outputs.VERSION }}
       PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get version
-        id: get-version
-        uses: ./.github/actions/version
 
       - name: Build package
         id: build-package
         uses: ./.github/actions/build/package
         with:
           ARCH: ${{ matrix.arch }}
-          COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+          COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.DISTRO }}-${{ matrix.arch }}
           PROJECT_ID: 'piler'
-          VERSION: ${{ steps.get-version.outputs.VERSION }}
+          VERSION: ${{ needs.get-version.outputs.VERSION }}
 
   build-image:
     needs:
+      - get-version
       - build-package
 
     runs-on:
@@ -67,16 +86,13 @@ jobs:
         with:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ needs.build-package.outputs.VERSION }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ needs.get-version.outputs.VERSION }}
           LOAD: false
-          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.build-package.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.build-package.outputs.COMMIT_ID }}
+          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.get-version.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.get-version.outputs.COMMIT_ID }}
           PLATFORMS: 'linux/amd64,linux/arm64'
           PUSH: true
 
   create-release:
-    needs:
-      - build-image
-
     runs-on:
       - self-hosted
       - X64

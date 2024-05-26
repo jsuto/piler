@@ -18,34 +18,52 @@ env:
   RT: 1
 
 jobs:
-  build:
+  get-version:
     runs-on:
       - self-hosted
-      - ARM64
+      - X64
 
     outputs:
       IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
       COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
       VERSION: ${{ steps.get-version.outputs.VERSION }}
-      PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            VERSION
+            .github
+          sparse-checkout-cone-mode: false
 
       - name: Get version
         id: get-version
         uses: ./.github/actions/version
+
+  build:
+    needs:
+      - get-version
+
+    runs-on:
+      - self-hosted
+      - ARM64
+
+    outputs:
+      PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
+
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Build package
         id: build-package
         uses: ./.github/actions/build/package
         with:
           ARCH: ${{ env.ARCH }}
-          COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+          COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: ${{ env.PROJECT_ID }}
-          VERSION: ${{ steps.get-version.outputs.VERSION }}
+          VERSION: ${{ needs.get-version.outputs.VERSION }}
 
   run-tests:
     runs-on:
@@ -53,6 +71,7 @@ jobs:
       - ARM64
 
     needs:
+      - get-version
       - build
 
     steps:
@@ -71,7 +90,7 @@ jobs:
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}
           LOAD: true
-          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.build.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.build.outputs.COMMIT_ID }}
+          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.get-version.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.get-version.outputs.COMMIT_ID }}
           PLATFORMS: 'linux/arm64'
           PUSH: false
 

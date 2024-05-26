@@ -6,16 +6,27 @@ on:
       - master
 
 jobs:
-  publish:
+
+  get-version:
     if: github.ref_name == 'master'
 
     runs-on:
       - self-hosted
       - X64
 
+    outputs:
+      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
+      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            VERSION
+            .github
+          sparse-checkout-cone-mode: false
 
-      - name: 'Get version'
+      - name: Get version
         id: get-version
         uses: ./.github/actions/version
