@@ -1,0 +1,29 @@
+FROM ubuntu:18.04
+
+LABEL description="bionic builder image"
+LABEL maintainer="Janos SUTO, sj@acts.hu"
+
+ENV DEBIAN_FRONTEND="noninteractive"
+
+SHELL ["/bin/bash", "-c", "-o", "pipefail"]
+
+# hadolint ignore=DL3001,DL3008,DL3028
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y gnupg git jq curl unzip openssl openssh-client make gcc sysstat catdoc unrtf poppler-utils tnef libssl-dev libtre-dev libzip-dev libmariadb-dev libcurl4-openssl-dev ruby ruby-dev mariadb-server phpunit \
+    php7.2-cli php7.2-mysql php7.2-zip php7.2-ldap php7.2-curl php7.2-xml php7.2-memcached php7.2-mbstring && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    groupadd piler && useradd -g piler -s /bin/bash -d /var/piler piler && usermod -L piler && \
+    mkdir -p /var/piler && \
+    service mysql start && \
+    echo "create database piler1 character set utf8mb4" | mysql && \
+    echo "grant all privileges on piler1.* to piler@localhost identified by 'piler123'" | mysql && \
+    gem install dotenv -v 2.8.1 && \
+    gem install fpm && \
+    curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar && \
+    curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc && \
+    chmod +x /usr/local/bin/mc
+
+COPY run.sh /run.sh
+COPY piler.conf /etc/piler/piler.conf
+
+CMD ["/run.sh"]

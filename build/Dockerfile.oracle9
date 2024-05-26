@@ -1,0 +1,27 @@
+FROM oraclelinux:9
+
+LABEL description="Oracle Linux 9 builder image"
+LABEL maintainer="Janos SUTO, sj@acts.hu"
+
+ENV DOWNLOAD_URL="https://download.mailpiler.com/generic-local"
+
+SHELL ["/bin/bash", "-c", "-o", "pipefail"]
+
+# hadolint ignore=DL3001,DL3008,DL3028
+RUN yum install -y which gettext openssh-clients openssl-devel unzip mariadb-server mariadb-connector-c-devel gcc make autoconf \
+    automake sysstat poppler-utils bzip2 cronie ruby ruby-devel curl libcurl-devel rpm-build \
+    rpm-build-libs git "${DOWNLOAD_URL}/tre-0.8.0-1.el7.x86_64.rpm" "${DOWNLOAD_URL}/catdoc-0.95-1.el7.x86_64.rpm" \
+    "${DOWNLOAD_URL}/tnef-1.4.17-1.el7.x86_64.rpm" "${DOWNLOAD_URL}/unrtf-0.21.9-1.el7.x86_64.rpm" \
+    "${DOWNLOAD_URL}/libzip-1.7.3-el9.x86_64.rpm" \
+    php-cli php-fpm php-intl php-json php-ldap php-mbstring php-pdo php-gd php-common && \
+    groupadd piler && useradd -g piler -s /bin/bash -d /var/piler piler && usermod -L piler && \
+    mkdir -p /var/piler && \
+    gem install fpm && \
+    curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar && \
+    curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc && \
+    chmod +x /usr/local/bin/mc
+
+COPY run.sh /run.sh
+COPY piler.conf /etc/piler/piler.conf
+
+CMD ["/run.sh"]

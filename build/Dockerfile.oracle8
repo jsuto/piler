@@ -1,0 +1,32 @@
+FROM oraclelinux:8
+
+LABEL description="Oracle Linux 8 builder image"
+LABEL maintainer="Janos SUTO, sj@acts.hu"
+
+ENV DOWNLOAD_URL="https://download.mailpiler.com/generic-local"
+
+SHELL ["/bin/bash", "-c", "-o", "pipefail"]
+
+# hadolint ignore=DL3001,DL3008,DL3028
+RUN yum install -y which gettext wget openssh-clients openssl-devel unzip mariadb-server mariadb-devel gcc make autoconf \
+    automake sysstat poppler-utils bzip2 libzip libzip-devel cronie curl libcurl-devel rpm-build git \
+    rpm-build-libs git "${DOWNLOAD_URL}/tre-0.8.0-1.el7.x86_64.rpm" "${DOWNLOAD_URL}/catdoc-0.95-1.el7.x86_64.rpm" \
+    "${DOWNLOAD_URL}/tnef-1.4.17-1.el7.x86_64.rpm" "${DOWNLOAD_URL}/unrtf-0.21.9-1.el7.x86_64.rpm" \
+    php-cli php-fpm php-intl php-json php-ldap php-mbstring php-pdo php-gd php-common && \
+    groupadd piler && useradd -g piler -s /bin/bash -d /var/piler piler && usermod -L piler && \
+    mkdir -p /var/piler
+
+RUN git clone https://github.com/Homebrew/brew /home/homebrew
+RUN chown -R 1000:1000 /home/homebrew
+USER 1000
+RUN /home/homebrew/bin/brew install ruby@3.1
+
+RUN /home/homebrew/opt/ruby@3.1/bin/gem install fpm && \
+    ln -sf /home/homebrew/lib/ruby/gems/3.1.0/bin/fpm /usr/bin/fpm
+
+RUN curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar
+
+COPY run.sh /run.sh
+COPY piler.conf /etc/piler/piler.conf
+
+CMD ["/run.sh"]
