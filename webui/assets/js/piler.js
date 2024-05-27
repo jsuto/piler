@@ -352,7 +352,7 @@ let Piler =
         .done( function(a) {})
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
 
-	Piler.modal('removeApproveModal');
+        Piler.modal('removeApproveModal');
 
         Piler.show_message('OK', 'Approved removal of message');
     },
@@ -364,7 +364,7 @@ let Piler =
 
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
-	let reason2 = $('#reason2').val();
+        let reason2 = $('#reason2').val();
 
         if(reason2) {
           jQuery.ajax(Piler.base_url + 'rejectremove.php', {
