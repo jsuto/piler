@@ -1234,7 +1234,7 @@ $(document).ready(function() {
 
     default:
       const s = window.location.href;
-      if(s.endsWith('search.php')) {
+      if(/search.php#?$/.test(s)) {
         Piler.add_shortcuts();
         Piler.expert();
       }
