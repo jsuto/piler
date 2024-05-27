@@ -21,7 +21,7 @@
     <div id="logincontainer" class="container">
         <div id="logo-lg"><img src="<?php print SITE_LOGO_LG; ?>" alt="Archive Logo Image" title="<?php print $text_login; ?>" /></div>
 
-        <form name="login" action="index.php?route=login/ga" method="post" class="form-signin" autocomplete="off">
+        <form name="login" action="<?php print PATH_PREFIX; ?>index.php?route=login/ga" method="post" class="form-signin" autocomplete="off">
 
             <h2 class="form-signin-heading"><?php print $text_enter_google_authenticator_code; ?></h2>
 

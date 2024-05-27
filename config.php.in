@@ -34,6 +34,13 @@ $config['BRANDING_FAVICON'] = '
   <link rel="shortcut icon" href="/assets/ico/favicon.png">
 ';
 
+$config['PATH_PREFIX'] = '/';
+$config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';
+$config['ICON_XLS'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/xls.png';
+$config['ICON_PDF'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/pdf.png';
+$config['ICON_IMAGE'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/image.png';
+$config['ICON_FILE'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/file.png';
+
 $config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
