@@ -6,8 +6,6 @@
   <div class="row">
     <div class="col">
 
-      <h4><?php print $text_edit_group; ?></h4>
-
       <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=group/edit">
         <input type="hidden" name="id" value="<?php print $id; ?>" />
 

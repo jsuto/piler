@@ -2,8 +2,8 @@
   <div class="row">
     <div class="col">
 <p>
-<?php if ($view == 'email') { echo '<strong>'.$text_accounting_email.'</strong>'; } else { echo '<a href="<?php print PATH_PREFIX; ?>index.php?route=accounting/accounting&amp;view=email">'.$text_accounting_email.'</a>'; } ?> |
-<?php if ($view == 'domain') { echo '<strong>'.$text_accounting_domain.'</strong>'; } else { echo '<a href="<?php print PATH_PREFIX; ?>index.php?route=accounting/accounting&amp;view=domain">'.$text_accounting_domain.'</a>'; } ?>
+<?php if ($view == 'email') { echo '<strong>'.$text_accounting_email.'</strong>'; } else { echo '<a href="' . PATH_PREFIX . 'index.php?route=accounting/accounting&amp;view=email">'.$text_accounting_email.'</a>'; } ?> |
+<?php if ($view == 'domain') { echo '<strong>'.$text_accounting_domain.'</strong>'; } else { echo '<a href="' . PATH_PREFIX . 'index.php?route=accounting/accounting&amp;view=domain">'.$text_accounting_domain.'</a>'; } ?>
 </p>
 
     </div>

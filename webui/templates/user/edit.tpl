@@ -6,8 +6,6 @@
   <div class="row">
     <div class="col">
 
-      <h4><?php print $text_edit_user; ?></h4>
-
       <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=user/edit" autocomplete="off">
       <input type="hidden" name="uid" value="<?php print $uid; ?>" />
 
