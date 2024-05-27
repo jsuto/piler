@@ -75,7 +75,7 @@
   </div>
 
 <?php print JS_CODE; ?>
-<script src="/assets/js/resizer.js"></script>
+<script src="<?php print PATH_PREFIX; ?>assets/js/resizer.js"></script>
 
 </body>
 </html>

@@ -8,7 +8,7 @@
   </div>
   <div class="modal-footer">
     <a href="#" class="btn" data-dismiss="modal" aria-hidden="true"><?php print $text_close; ?></a>
-    <a href="index.php?route=ldap/remove&amp;id=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
+    <a href="<?php print PATH_PREFIX; ?>index.php?route=ldap/remove&amp;id=-1&amp;name=Error&amp;confirmed=0" class="btn btn-primary" id="id"><?php print $text_delete; ?></a>
   </div>
 </div>
 
@@ -26,7 +26,7 @@
     <div class="alert alert-success"><?php print $x; ?></div>
 <?php } ?>
 
-<form method="post" name="add1" action="index.php?route=ldap/list" class="form-horizontal">
+<form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=ldap/list" class="form-horizontal">
 
  <?php if(isset($id) && ($id > 0)) { ?>
     <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
@@ -118,7 +118,7 @@
     <div class="form-actions">
         <input type="submit" value="<?php if(isset($id) && ($id > 0)) { print $text_modify; } else { print $text_add; } ?>" class="btn btn-primary" />
         <?php if(isset($id) && ($id > 0)) { ?>
-            <a href="index.php?route=ldap/list" class="btn"><?php print $text_cancel; ?></a>
+            <a href="<?php print PATH_PREFIX; ?>index.php?route=ldap/list" class="btn"><?php print $text_cancel; ?></a>
         <?php } else { ?>
             <input type="reset" value="<?php print $text_clear; ?>" class="btn" onclick="Piler.clear_ldap_test();" />
         <?php } ?>
@@ -159,8 +159,8 @@
          <td><?php print $e['ldap_base_dn']; ?></td>
          <td><?php print $e['ldap_bind_dn']; ?></td>
          <td><?php print $e['ldap_auditor_member_dn']; ?></td>
-         <td><a href="index.php?route=ldap/list&amp;id=<?php print $e['id']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit; ?></a></td>
-         <td><a href="index.php?route=ldap/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['description']); ?>&amp;confirmed=1" class="confirm-delete" data-id="<?php print $e['id']; ?>" data-name="<?php print $e['description']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
+         <td><a href="<?php print PATH_PREFIX; ?>index.php?route=ldap/list&amp;id=<?php print $e['id']; ?>"><i class="icon-edit"></i>&nbsp;<?php print $text_edit; ?></a></td>
+         <td><a href="<?php print PATH_PREFIX; ?>index.php?route=ldap/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['description']); ?>&amp;confirmed=1" class="confirm-delete" data-id="<?php print $e['id']; ?>" data-name="<?php print $e['description']; ?>"><i class="icon-remove-sign"></i>&nbsp;<?php print $text_remove; ?></a></td>
       </tr>
 <?php } ?>
 

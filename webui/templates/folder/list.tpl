@@ -33,7 +33,7 @@
       <?php foreach($extra_folders as $folder) { ?>
                 <tr>
                     <td><?php print $folder['name']; ?></td>
-                    <td><a href="index.php?route=folder/edit&id=<?php print $folder['id']; ?>"><?php print $text_edit; ?></a></td>
+                    <td><a href="<?php print PATH_PREFIX; ?>index.php?route=folder/edit&id=<?php print $folder['id']; ?>"><?php print $text_edit; ?></a></td>
                     <td><a href="/folders.php?id=<?php print $folder['id']; ?>&remove=1"><?php print $text_remove; ?></a></td>
                 </tr>
       <?php } ?>
@@ -46,5 +46,5 @@
 
 <?php } else { ?>
 <div class="alert alert-info"><?php print $x; ?>.</div>
-<p><a href="index.php?route=common/home"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
+<p><a href="<?php print PATH_PREFIX; ?>index.php?route=common/home"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
 <?php } ?>

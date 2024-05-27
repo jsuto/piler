@@ -7,6 +7,6 @@
 
 <?php } ?>
 
-<p><a href="index.php?route=customer/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
+<p><a href="<?php print PATH_PREFIX; ?>index.php?route=customer/list"><i class="icon-circle-arrow-left"></i>&nbsp;<?php print $text_back; ?></a></p>
 
 </div>

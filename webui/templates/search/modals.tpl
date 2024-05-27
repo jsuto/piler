@@ -92,11 +92,11 @@
             <tr>
               <td><?php print $text_attachment; ?></td>
               <td>
-                <img src="/assets/images/fileicons/doc.png" alt="Word" title="Word" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_doc" value="word" v-model="complex_search.attachments" id="xhas_attachment_doc" />&nbsp;
-                <img src="/assets/images/fileicons/xls.png" alt="Excel" title="Excel" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_xls" value="excel" v-model="complex_search.attachments" id="xhas_attachment_xls" />&nbsp;
-                <img src="/assets/images/fileicons/pdf.png" alt="PDF" title="PDF" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_pdf" value="pdf" v-model="complex_search.attachments" id="xhas_attachment_pdf" />&nbsp;
-                <img src="/assets/images/fileicons/image.png" alt="image" title="image" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_image" value="image" v-model="complex_search.attachments" id="xhas_attachment_image" />&nbsp;
-                <img src="/assets/images/fileicons/file.png" alt="any" title="any" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_any" value="any" v-model="complex_search.attachments" id="xhas_attachment_any" />
+                <img src="<?php print ICON_DOC; ?>" alt="Word" title="Word" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_doc" value="word" v-model="complex_search.attachments" id="xhas_attachment_doc" />&nbsp;
+                <img src="<?php print ICON_XLS; ?>" alt="Excel" title="Excel" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_xls" value="excel" v-model="complex_search.attachments" id="xhas_attachment_xls" />&nbsp;
+                <img src="<?php print ICON_PDF; ?>" alt="PDF" title="PDF" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_pdf" value="pdf" v-model="complex_search.attachments" id="xhas_attachment_pdf" />&nbsp;
+                <img src="<?php print ICON_IMAGE; ?>" alt="image" title="image" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_image" value="image" v-model="complex_search.attachments" id="xhas_attachment_image" />&nbsp;
+                <img src="<?php print ICON_FILE; ?>" alt="any" title="any" /> <input type="checkbox" class="form-check-input align-middle" name="xhas_attachment_any" value="any" v-model="complex_search.attachments" id="xhas_attachment_any" />
               </td>
             </tr>
             <tr>

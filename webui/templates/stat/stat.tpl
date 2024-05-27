@@ -1,9 +1,9 @@
 <p>
 
 <?php if($timespan == "daily"){ $date_format = "H:i"; ?>
-<strong><?php print $text_daily_report; ?></strong> <a href="index.php?route=stat/stat&amp;timespan=monthly<?php if(isset($uid)) { ?>&amp;uid=<?php print $uid; } ?>"><?php print $text_monthly_report; ?></a>
+<strong><?php print $text_daily_report; ?></strong> <a href="<?php print PATH_PREFIX; ?>index.php?route=stat/stat&amp;timespan=monthly<?php if(isset($uid)) { ?>&amp;uid=<?php print $uid; } ?>"><?php print $text_monthly_report; ?></a>
 <?php } else { $date_format = "m.d."; ?>
-<a href="index.php?route=stat/stat&amp;timespan=daily<?php if(isset($uid)) { ?>&amp;uid=<?php print $uid; } ?>"><?php print $text_daily_report; ?></a> <strong><?php print $text_monthly_report; ?></strong>
+<a href="<?php print PATH_PREFIX; ?>index.php?route=stat/stat&amp;timespan=daily<?php if(isset($uid)) { ?>&amp;uid=<?php print $uid; } ?>"><?php print $text_daily_report; ?></a> <strong><?php print $text_monthly_report; ?></strong>
 <?php } ?>
 
 </p>

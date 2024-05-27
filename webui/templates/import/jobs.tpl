@@ -31,7 +31,7 @@
             <td><?php print $e['server']; ?></td>
             <td><?php print $e['imported']; ?> / <?php print $e['total']; ?></td>
             <td><?php print $import_status[$e['status']]; ?></td>
-            <td><a href="index.php?route=import/remove&amp;id=<?php print $e['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=import/remove&amp;id=<?php print $e['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
           </tr>
         <?php } ?>
         </tbody>

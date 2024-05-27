@@ -13,7 +13,7 @@
 
       <h4><?php if(isset($id) && ($id > 0)) { print $text_edit_entry; } else { print $text_add_new_entry; } ?></h4>
 
-      <form method="post" name="add1" action="index.php?route=import/list" class="form-horizontal">
+      <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=import/list" class="form-horizontal">
 
       <?php if(isset($id) && ($id > 0)) { ?>
         <input type="hidden" name="id" id="id" value="<?php print $id; ?>" />
@@ -79,7 +79,7 @@
         <div class="col-2">
           <input type="submit" value="<?php if(isset($id) && ($id > 0)) { print $text_modify; } else { print $text_add; } ?>" class="btn btn-primary" />
         <?php if(isset($id) && ($id > 0)) { ?>
-            <a href="index.php?route=import/list" class="btn btn-secondary"><?php print $text_cancel; ?></a>
+            <a href="<?php print PATH_PREFIX; ?>index.php?route=import/list" class="btn btn-secondary"><?php print $text_cancel; ?></a>
         <?php } else { ?>
             <button class="btn btn-secondary" onclick="Piler.clear_ldap_test();"><?php print $text_clear; ?></button>
         <?php } ?>
@@ -98,7 +98,7 @@
     <div class="col">
 
 
-      <h4><?php print $text_existing_entries; ?> <a href="index.php?route=import/jobs"><?php print $text_view_progress; ?></a></h4>
+      <h4><?php print $text_existing_entries; ?> <a href="<?php print PATH_PREFIX; ?>index.php?route=import/jobs"><?php print $text_view_progress; ?></a></h4>
 
       <table class="table table-striped mt-3">
         <thead class="table-dark">
@@ -118,8 +118,8 @@
             <td><?php print $e['username']; ?></td>
             <td>*******</td>
             <td><?php print $e['server']; ?></td>
-            <td><a href="index.php?route=import/list&amp;id=<?php print $e['id']; ?>"><i class="bi bi-pencil-square" title="<?php print $text_edit; ?>"></i></a></td>
-            <td><a href="index.php?route=import/remove&amp;id=<?php print $e['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=import/list&amp;id=<?php print $e['id']; ?>"><i class="bi bi-pencil-square" title="<?php print $text_edit; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=import/remove&amp;id=<?php print $e['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
          </tr>
        <?php } ?>
         </tbody>

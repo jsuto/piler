@@ -19,7 +19,7 @@
 
   <div id="logincontainer" class="container">
       <h3><?php print $title; ?></h3>
-      <p><?php print $text_logged_out; ?>. <a href="<?php if(ENABLE_SSO_LOGIN == 1) { ?>sso.php<?php } else { ?>login.php<?php } ?>" class="messagelink"><?php print $text_back; ?></a></p>
+      <p><?php print $text_logged_out; ?>. <a href="<?php print PATH_PREFIX; if(ENABLE_SSO_LOGIN == 1) { ?>sso.php<?php } else { ?>login.php<?php } ?>" class="messagelink"><?php print $text_back; ?></a></p>
   </div>
 
 <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>

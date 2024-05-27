@@ -51,7 +51,7 @@
   <?php if($n > 0) { include_once DIR_BASE . 'templates/common/paging.tpl'; } ?>
 
   <?php if($n > 0) { ?>
-    <a href="index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
+    <a href="<?php print PATH_PREFIX; ?>index.php?route=audit/download"><button class="btn btn-small btn-secondary">Export CSV</button></a>
   <?php } ?>
 
   </div>

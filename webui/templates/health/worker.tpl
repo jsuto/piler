@@ -68,7 +68,7 @@
       <div class="container text-start">
         <div class="row">
           <div class="col-2"><?php print $text_online_users; ?></div>
-          <div class="col"><a href="index.php?route=stat/online"><?php print $health['num_of_online_users']; ?></a></div>
+          <div class="col"><a href="<?php print PATH_PREFIX; ?>index.php?route=stat/online"><?php print $health['num_of_online_users']; ?></a></div>
         </div>
       </div>
 <?php } ?>

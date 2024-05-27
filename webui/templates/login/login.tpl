@@ -21,7 +21,7 @@
     <div id="logincontainer" class="container">
         <div id="logo-lg"><img src="<?php print SITE_LOGO_LG; ?>" alt="Archive Logo Image" title="Login" /></div>
 
-        <form name="login" action="login.php" method="post" class="form-signin">
+        <form name="login" action="<?php print PATH_PREFIX; ?>login.php" method="post" class="form-signin">
 
             <h2 class="fs-1 mb-3 fw-light"><?php print $text_login; ?></h2>
 

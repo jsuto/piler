@@ -12,7 +12,7 @@ class ControllerLoginFoureyes extends Controller {
 
 
       if(Registry::get('username')) {
-         header("Location: search.php");
+         header('Location: ' . SITE_URL . 'search.php');
          exit;
       }
 

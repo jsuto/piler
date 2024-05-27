@@ -49,7 +49,7 @@
 <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
 
 <?php print JS_CODE; ?>
-<script type="text/javascript" src="/assets/js/fileupload.js"></script>
+<script type="text/javascript" src="<?php print PATH_PREFIX; ?>assets/js/fileupload.js"></script>
 
 </body>
 </html>

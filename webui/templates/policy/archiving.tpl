@@ -27,7 +27,7 @@
 
       <h4><?php print $text_add_new_rule; ?></h4>
 
-      <form method="post" id="add1" name="add1" action="index.php?route=policy/archiving" class="form-horizontal">
+      <form method="post" id="add1" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=policy/archiving" class="form-horizontal">
 
       <div class="row g-3 align-items-center">
         <div class="col-2">
@@ -206,7 +206,7 @@
             <td><?php print htmlentities($rule['attachment_name']); ?></td>
             <td><?php print htmlentities($rule['attachment_type']); ?></td>
             <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
-            <td><a href="index.php?route=policy/removearchiving&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=policy/removearchiving&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
           </tr>
         <?php } ?>
         <tbody>

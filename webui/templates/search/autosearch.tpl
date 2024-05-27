@@ -45,7 +45,7 @@
         <?php foreach($data as $d) { ?>
           <tr>
             <td><?php print $d['query']; ?></a></td>
-            <td><a href="index.php?route=search/autosearch&amp;remove=1&amp;id=<?php print $d['id']; ?>"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=search/autosearch&amp;remove=1&amp;id=<?php print $d['id']; ?>"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
           </tr>
         <?php } ?>
         </tbody>

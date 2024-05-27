@@ -1,3 +1,45 @@
+1.4.6:
+-----
+
+- Updated the GUI to use latest bootstrap (5.3.3) and jquery (3.7.1)
+
+- Write audit records to manticore
+
+  Note that it requires real-time (rt) index. When using plain index,
+  then no audit record is written
+
+- Added support for path prefix, ie. when the archive can be accessed
+  at https://example.com/archive/ (instead of using a dedicated hostname,
+  eg. https://archive.example.com).
+
+  To do that:
+    * fix the PATH_PREFIX and SITE_URL in config-site.php, eg.
+      $config['PATH_PREFIX'] = '/archive/';
+      $config['SITE_URL'] = 'https://' . $config[SITE_NAME_CONST] . '/archive/';
+
+    * fix the base_url in assets/js/piler.js, eg.
+      base_url: location.origin + '/archive/',
+
+    * fix <sysconfdir>/piler/piler-nginx.conf (eg. /etc/piler/piler-nginx.conf)
+      ** fix the location, eg.
+
+         location /archive {
+            alias /var/piler/www;
+            index  index.php index.html;
+            try_files $uri $uri/ /index.php;
+
+            ....
+         }
+
+      ** fix the rewrite rules, eg.
+
+      rewrite /search.php /index.php?route=search/search&type=simple;
+
+      becomes
+
+      rewrite /archive/search.php /archive/index.php?route=search/search&type=simple;
+
+
 1.4.5:
 ------
 

@@ -9,7 +9,7 @@
 
        <label class="col-form-label">
     <?php if($can_download == 1) { ?>
-       <a class="messagelink" href="index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="bi bi-cloud-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
+       <a class="messagelink" href="<?php print PATH_PREFIX; ?>index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="bi bi-cloud-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
     <?php } ?>
     <?php if(SMARTHOST || ENABLE_IMAP_AUTH == 1) { if(Registry::get('auditor_user') == 1) { ?>
        <a class="messagelink" href="#" data-bs-toggle="modal" data-bs-target="#restoreModal"><i class="bi bi-arrow-90deg-right"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a> |
@@ -19,7 +19,7 @@
        <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><i class="bi bi-envelope"></i>&nbsp;<?php print $text_view_headers; ?></a>
 
     <?php if(ENABLE_PDF_DOWNLOAD) { ?>
-       | <a class="messagelink" href="index.php?route=message/pdf&amp;id=<?php print $id; ?>"><img src="/assets/images/fileicons/pdf.png" />&nbsp;<?php print "PDF"; ?></a>
+       | <a class="messagelink" href="<?php print PATH_PREFIX; ?>index.php?route=message/pdf&amp;id=<?php print $id; ?>"><i class="bi bi-file-pdf"></i>&nbsp;<?php print "PDF"; ?></a>
     <?php } ?>
 
     <?php if($message['has_journal'] == 1 && Registry::get('auditor_user') == 1 && SHOW_ENVELOPE_JOURNAL == 1) { ?>
@@ -88,8 +88,8 @@
     <?php if(strlen($message['cc']) > 6) { ?><strong><?php print $message['cc']; ?></strong><br /><?php } ?>
     <strong><?php print $message['date']; ?></strong><br />
     <?php foreach($attachments as $a) { ?>
-       <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
-    <?php } ?><?php if(count($attachments) > 1) { ?>| <a href="index.php?route=message/attachments&id=<?php print $id; ?>"><i class="icon-briefcase"></i></a><?php } ?><br/>
+       <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="<?php print PATH_PREFIX; ?>index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
+    <?php } ?><?php if(count($attachments) > 1) { ?>| <a href="<?php print PATH_PREFIX; ?>index.php?route=message/attachments&id=<?php print $id; ?>"><i class="icon-briefcase"></i></a><?php } ?><br/>
   </div>
   <div class="messagecontents">
     <?php print $message['message']; ?>
