@@ -12,3 +12,4 @@ $config['SPHINX_MAIN_INDEX'] = 'piler1';
 $config['ENABLE_DELETE'] = 1;
 $config['NEED_TO_APPROVE_DELETE'] = 0;
 $config['SMARTHOST'] = 'smarthost.aaa.fu';
+$config['ENABLE_PDF_DOWNLOAD'] = 1;
