@@ -1,3 +1,23 @@
+1.4.6:
+-----
+
+- Updated the GUI to use latest bootstrap (5.3.3) and jquery (3.7.1)
+
+- Write audit records to manticore
+
+  Note that it requires real-time (rt) index. When using plain index,
+  then no audit record is written
+
+- Added support for path prefix, ie. when the archive can be accessed
+  at https://example.com/archive/ (instead of using a dedicated hostname,
+  eg. https://archive.example.com).
+
+  To do that
+    * fix the PATH_PREFIX and SITE_URL in config-site.php
+    * fix the base_url in assets/js/piler.js
+    * add JS_CODE (see config.php) to config-site.php, and fix the path for piler.js
+
+
 1.4.5:
 ------
 
