@@ -27,7 +27,7 @@
 
       <h4><?php print $text_add_new_rule; ?></h4>
 
-      <form method="post" id="add1" name="add1" action="index.php?route=policy/folder" class="form-horizontal">
+      <form method="post" id="add1" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=policy/folder" class="form-horizontal">
 
     <?php if(ENABLE_SAAS == 1) { ?>
       <div class="row g-3 align-items-center">
@@ -246,7 +246,7 @@
             <td><?php print htmlentities($rule['attachment_type']); ?></td>
             <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
             <td><?php print $folders[$rule['folder_id']]; ?></td>
-            <td><a href="index.php?route=policy/removefolder&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=policy/removefolder&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
           </tr>
         <?php } ?>
         <tbody>

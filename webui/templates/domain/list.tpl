@@ -28,7 +28,7 @@
 
       <h4><?php print $text_add_new_domain; ?></h4>
 
-      <form method="post" name="add1" action="index.php?route=domain/domain">
+      <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=domain/domain">
       <div class="row g-3 align-items-center">
         <div class="col-2">
           <label for="domain" class="col-form-label"><?php print $text_domain; ?></label>
@@ -105,12 +105,12 @@
         <tbody>
         <?php foreach($domains as $domain) { ?>
           <tr>
-            <td><a href="index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=user/list&search=@<?php print $domain['domain']; ?>"><?php print $domain['domain']; ?></a></td>
             <td><?php print $domain['mapped']; ?></td>
           <?php if(ENABLE_SAAS == 1) { ?>
             <td><?php if(isset($domain['ldap'])) {print $domain['ldap'];} else {print '&nbsp;';} ?></td>
           <?php } ?>
-            <td><a href="index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=domain/remove&amp;domain=<?php print urlencode($domain['domain']); ?>&amp;confirmed=1"><i class="bi bi-trash text-danger"></i></a></td>
           </tr>
         <?php } ?>
         </tbody>

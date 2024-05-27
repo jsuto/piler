@@ -27,7 +27,7 @@
 
       <h4><?php print $text_add_new_entry; ?></h4>
 
-      <form method="post" name="add1" action="index.php?route=policy/legalhold">
+      <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=policy/legalhold">
       <div class="row g-3 align-items-center">
         <div class="col-auto">
           <label for="inputEmail" class="col-form-label"><?php print $text_email; ?></label>
@@ -64,7 +64,7 @@
         <?php foreach($emails as $d) { ?>
           <tr>
             <td><?php print $d['email']; ?></a></td>
-            <td><a href="index.php?route=policy/removehold&amp;confirmed=1&amp;email=<?php print urlencode($d['email']); ?>"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=policy/removehold&amp;confirmed=1&amp;email=<?php print urlencode($d['email']); ?>"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
           </tr>
         <?php } ?>
         </tbody>

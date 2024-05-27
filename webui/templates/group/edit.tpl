@@ -8,7 +8,7 @@
 
       <h4><?php print $text_edit_group; ?></h4>
 
-      <form method="post" name="add1" action="index.php?route=group/edit">
+      <form method="post" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=group/edit">
         <input type="hidden" name="id" value="<?php print $id; ?>" />
 
       <div class="row g-3 align-items-center">
@@ -52,7 +52,7 @@
         </div>
         <div class="col-2">
           <button type="submit" class="btn btn-primary"><?php print $text_add; ?></button>
-          <a href="index.php?route=group/list" type="reset" class="btn btn-secondary"><?php print $text_cancel; ?></a>
+          <a href="<?php print PATH_PREFIX; ?>index.php?route=group/list" type="reset" class="btn btn-secondary"><?php print $text_cancel; ?></a>
         </div>
       </div>
 

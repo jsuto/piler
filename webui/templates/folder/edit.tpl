@@ -1,7 +1,7 @@
 
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 
-<form action="index.php?route=folder/edit" method="post" name="extra_folders" class="form-horizontal">
+<form action="<?php print PATH_PREFIX; ?>index.php?route=folder/edit" method="post" name="extra_folders" class="form-horizontal">
 
     <div class="control-group">
 		<label class="control-label" for="domain"><?php print $text_folder; ?>:</label>
@@ -32,7 +32,7 @@
       <?php foreach($extra_folders as $folder) { ?>
                 <tr>
                     <td><?php print $folder['name']; ?></td>
-                    <td><a href="index.php?route=folder/edit&id=<?php print $folder['id']; ?>"><?php print $text_edit; ?></a></td>
+                    <td><a href="<?php print PATH_PREFIX; ?>index.php?route=folder/edit&id=<?php print $folder['id']; ?>"><?php print $text_edit; ?></a></td>
                     <td><a href="/folders.php?id=<?php print $folder['id']; ?>&remove=1"><?php print $text_remove; ?></a></td>
                 </tr>
       <?php } ?>
