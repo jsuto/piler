@@ -39,6 +39,8 @@
 
       rewrite /archive/search.php /archive/index.php?route=search/search&type=simple;
 
+- import.sh and accounting are enabled in piler's crontab by default
+
 
 1.4.5:
 ------
