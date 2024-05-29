@@ -9,6 +9,6 @@
 
 ### optional
 ###30 6 * * * /usr/bin/php LIBEXECDIR/piler/generate_stats.php --webui LOCALSTATEDIR/piler/www >/dev/null
-###*/5 * * * * LIBEXECDIR/piler/import.sh
+*/5 * * * * LIBEXECDIR/piler/import.sh
 
 ### PILEREND
