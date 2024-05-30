@@ -41,6 +41,9 @@
 
 - import.sh and accounting are enabled in piler's crontab by default
 
+- Created a tool to mass download emails from Microsoft365 (formerly office365)
+  You may find it in the contrib/o365 dir
+
 
 1.4.5:
 ------
