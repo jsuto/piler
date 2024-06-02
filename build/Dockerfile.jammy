@@ -5,6 +5,8 @@ LABEL maintainer="Janos SUTO, sj@acts.hu"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
+ARG TARGETARCH
+
 SHELL ["/bin/bash", "-c", "-o", "pipefail"]
 
 # hadolint ignore=DL3001,DL3008,DL3028
@@ -18,9 +20,9 @@ RUN apt-get update && \
     echo "create database piler1 character set utf8mb4" | mysql && \
     echo "grant all privileges on piler1.* to piler@localhost identified by 'piler123'" | mysql && \
     gem install fpm && \
-    curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar && \
-    curl -L -o /usr/local/bin/mc https://dl.min.io/client/mc/release/linux-amd64/mc && \
-    chmod +x /usr/local/bin/mc
+    curl -L -o /tmp/composer.phar https://getcomposer.org/composer-stable.phar
+
+COPY mc-${TARGETARCH} /usr/local/bin/mc
 
 COPY run.sh /run.sh
 COPY piler.conf /etc/piler/piler.conf
