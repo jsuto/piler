@@ -107,11 +107,10 @@ let Piler =
                return true;
             }
 
-            //$('#mailcontframe').html(a);
             $('#qqq').html(a);
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
-            //$('#resultsheader').show();
+	    Piler.resize_result_columns();
         })
         .fail(function(a, b)
         {
@@ -1207,7 +1206,40 @@ let Piler =
         const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastId)
         toastBootstrap.show()
       }
+    },
+
+    resize_result_columns: function() {
+      Piler.log("[resize_result_columns]");
+
+      const table = document.getElementById('results');
+      const cols = table.querySelectorAll('th');
+      const container = document.querySelector('.container');
+
+      cols.forEach((col, index) => {
+        const resizer = document.createElement('div');
+        resizer.className = 'resizer-search-results';
+        col.appendChild(resizer);
+        resizer.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          document.addEventListener('mousemove', resizeColumn);
+          document.addEventListener('mouseup', stopResize);
+
+          let startX = e.pageX;
+          let startWidth = col.offsetWidth;
+
+          function resizeColumn(e) {
+            const newWidth = startWidth + (e.pageX - startX);
+            col.style.width = newWidth + 'px';
+          }
+
+          function stopResize() {
+            document.removeEventListener('mousemove', resizeColumn);
+            document.removeEventListener('mouseup', stopResize);
+          }
+        });
+      });
     }
+
 
 }
 

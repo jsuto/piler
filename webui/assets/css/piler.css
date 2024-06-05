@@ -23,6 +23,7 @@ a.dropdown-item {font-weight:100; text-decoration:none;}
 .no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
 
 
+.resizer-search-results { display: inline-block; width: 5px; height: 100%; position: absolute; right: 0; top: 0; cursor: col-resize; }
 
 h1,h2,h3,h4 {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-weight:100;text-transform:lowercase;}
 h2 i{font-size:60px;}
@@ -71,3 +72,6 @@ i.verified{color:#339933;}
 .myspinner {width: 5rem; height: 5rem;}
 .middleofscreen {position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);}
 .hidden {visibility: hidden;}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border: 1px solid #ccc; position: relative; }
