@@ -102,6 +102,7 @@ jobs:
     needs:
       - build-image
 
+    steps:
       - name: Run tests
         uses: ./.github/actions/test
         with:
