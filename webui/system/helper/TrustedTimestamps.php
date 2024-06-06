@@ -27,6 +27,20 @@
 
 class TrustedTimestamps
 {
+    private static function getHashType($hash) {
+       $len = strlen($hash);
+
+       $hash_type = match($len) {
+          40      => 'sha1',
+          64      => 'sha256',
+          128     => 'sha512',
+          default => throw new Exception('invalid hash: ' . $hash),
+       };
+
+       return $hash_type;
+    }
+
+
     /**
      * Creates a Timestamp Requestfile from a hash
      *
@@ -35,14 +49,7 @@ class TrustedTimestamps
      */
     public static function createRequestfile ($hash)
     {
-        if (strlen($hash) === 40)
-            $digest="-sha1";
-        elseif (strlen($hash) === 64)
-            $digest="-sha256";
-        elseif (strlen($hash) === 128)
-            $digest="-sha512";
-        else
-            throw new Exception("Invalid Hash.");
+        $digest = '-' . self::getHashType($hash);
 
         $outfilepath = self::createTempFile();
         $cmd = OPENSSL_BINARY . " ts -query $digest -digest ".escapeshellarg($hash)." -cert -out ".escapeshellarg($outfilepath);
@@ -173,8 +180,7 @@ class TrustedTimestamps
      */
     public static function validate ($hash, $base64_response_string, $response_time, $tsa_cert_file)
     {
-        if (strlen($hash) !== 40 && strlen($hash) !== 64 && strlen($hash) !== 128)
-            throw new Exception("Invalid Hash");
+        $hash_type = self::getHashType($hash);
 
         $binary_response_string = base64_decode($base64_response_string);
 
@@ -188,6 +194,29 @@ class TrustedTimestamps
             throw new Exception("The TSA-Certificate could not be found");
 
         $responsefile = self::createTempFile($binary_response_string);
+
+        if(MEMCACHED_ENABLED) {
+           $cache_key = 'rfc3161_hash:' . $hash;
+           $memcache = Registry::get('memcache');
+           $val = $memcache->get($cache_key);
+
+           if(!$val) {
+              $cmd = OPENSSL_BINARY . ' ts -reply -text -in ' . escapeshellarg($responsefile);
+              $retarray = array();
+              exec($cmd." 2>&1", $retarray, $retcode);
+
+              if($retcode === 0) {
+                 $val = strtoupper($hash_type) . ': ' . $hash . '\n';
+                 foreach($retarray as $line) {
+                    if(preg_match("/^(Time\sstamp|TSA)\:\s/", $line, $matches)) {
+                       $val .= $line . '\n';
+                    }
+                 }
+
+                 if($val) { $memcache->set($cache_key, $val); }
+              }
+           }
+        }
 
         /*
          * extract chain from response

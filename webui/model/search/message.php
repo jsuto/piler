@@ -392,6 +392,8 @@ class ModelSearchMessage extends Model {
          if($query->row['hash_value'] == $computed_hash) {
             try {
                if(true === TrustedTimestamps::validate($query->row['hash_value'], $query->row['response_string'], $query->row['response_time'], TSA_PUBLIC_KEY_FILE)) {
+                  $session = Registry::get('session');
+                  $session->set('tsa_hash', $computed_hash);
                   return 1;
                }
             } catch(Exception $e) {
@@ -403,6 +405,24 @@ class ModelSearchMessage extends Model {
       }
 
       return 0;
+   }
+
+
+   public function get_tsa_award() {
+      $val = '';
+
+      $session = Registry::get('session');
+      $hash = $session->get('tsa_hash');
+
+      if(MEMCACHED_ENABLED && $hash !== '') {
+         $cache_key = 'rfc3161_hash:' . $hash;
+         $memcache = Registry::get('memcache');
+         $val = $memcache->get($cache_key);
+         $val = explode('\n', $val);
+         array_pop($val);
+      }
+
+      return $val;
    }
 
 
