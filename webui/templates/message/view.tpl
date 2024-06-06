@@ -33,10 +33,7 @@
     <?php } ?>
        | <a href="#" onclick="Piler.print_div('messageblock');"><i class="bi bi-printer"></i>&nbsp;<?php print $text_print_message; ?></a>
 
-    <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
-       if ($message['verification'] == 1) { ?><?php print $text_verified_flag; ?> <i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified bi bi-x-square-fill text-danger" title="<?php print $text_unverified_flag; ?>"></i><?php }
-    } ?>
-
+    <?php if ($message['verification'] == 1) { print $text_verified_flag; ?> <i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified bi bi-x-square-fill text-danger" title="<?php print $text_unverified_flag; ?>"></i><?php } ?>
         </label>
 
         </div>

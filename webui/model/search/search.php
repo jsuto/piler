@@ -581,16 +581,6 @@ class ModelSearchSearch extends Model {
 
             in_array($m['from'], $session->get("emails")) ? $m['yousent'] = 1 : $m['yousent'] = 0;
 
-            /*
-             * verifying 20 messages takes some time, still it's useful
-             */
-
-            if(ENABLE_ON_THE_FLY_VERIFICATION == 1) {
-               $data = $this->model_search_message->get_raw_message($m['piler_id']);
-               $m['verification'] = $this->model_search_message->verify_message($m['piler_id'], $data);
-               $data = '';
-            }
-
             if(isset($tag[$m['id']])) { $m['tag'] = $tag[$m['id']]; } else { $m['tag'] = ''; }
             if(isset($note[$m['id']])) { $m['note'] = $note[$m['id']]; } else { $m['note'] = ''; }
 

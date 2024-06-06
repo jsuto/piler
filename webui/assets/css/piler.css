@@ -74,4 +74,6 @@ i.verified{color:#339933;}
 .hidden {visibility: hidden;}
 
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px; border: 1px solid #ccc; position: relative; }
+th { padding: 10px; border: 1px solid #ccc; position: relative; }
+th.centered, td.centered { text-align: center; }
+th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }

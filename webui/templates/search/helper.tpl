@@ -2,8 +2,8 @@
   <table id="results" class="table table-striped mt-0">
     <thead class="table-secondary">
       <tr>
-        <th id="restore-header"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
-        <th id="id-header">&nbsp;</th>
+        <th id="restore-header" class="auto-width"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
+        <th id="id-header" class="auto-width">&nbsp;</th>
         <th id="date-header">
              <?php print $text_date; ?>
              <a class="navlink" xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
@@ -24,18 +24,15 @@
              <a class="navlink" xid="subj" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'subj' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="subj" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'subj' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
         </th>
-        <th id="size-header">
+        <th id="size-header" class="centered">
              <?php print $text_size; ?>
              <a class="navlink" xid="size" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'size' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
              <a class="navlink" xid="size" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'size' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
         </th>
-        <th id="spam-header"><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i></th>
-        <th id="attachment-header"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
-        <th id="note-header"><i class="bi bi-sticky notes" title="<?php print $text_notes_flag; ?>"></i></th>
-        <th id="tag-header"><i class="bi bi-tag tag" title="<?php print $text_tag_flag; ?>"></i>
-     <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { ?>
-        <th id="verify-header"><i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i></th>
-     <?php } ?>
+        <th id="spam-header" class="centered"><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i></th>
+        <th id="attachment-header" class="centered"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
+        <th id="note-header" class="centered"><i class="bi bi-sticky notes" title="<?php print $text_notes_flag; ?>"></i></th>
+        <th id="tag-header" class="centered"><i class="bi bi-tag tag" title="<?php print $text_tag_flag; ?>"></i>
       </tr>
     </thead>
     <tbody>
@@ -43,24 +40,19 @@
     <?php $i=0; foreach ($messages as $message) { ?>
 
          <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new <?php if($message['deleted'] == 1) { ?>xxx<?php } ?>" onclick="Piler.view_message_by_pos(<?php print $i; ?>);">
-            <td id="c1_r<?php print $i; ?>" class="resultcell restore" onclick="Piler.stop_propagation(event);"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></td>
-            <td id="c2_r<?php print $i; ?>" class="resultcell id"><?php print ($page*$page_len) + $i + 1; ?></td>
-            <td id="c3_r<?php print $i; ?>" class="resultcell date"><?php print $message['date']; ?></td>
-            <td id="c4_r<?php print $i; ?>" class="resultcell from"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
-            <td id="c5_r<?php print $i; ?>" class="resultcell to"><?php if(count($message['to']) > 1) { ?><span title="<?php print implode("\n", $message['to']); ?>"><?php print $message['shortto']; ?>&nbsp;<i class="muted icon-group"></i></span><?php } else { print $message['shortto']; } ?></td>
+            <td id="c1_r<?php print $i; ?>" class="auto-width" onclick="Piler.stop_propagation(event);"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></td>
+            <td id="c2_r<?php print $i; ?>" class="auto-width"><?php print ($page*$page_len) + $i + 1; ?></td>
+            <td id="c3_r<?php print $i; ?>"><?php print $message['date']; ?></td>
+            <td id="c4_r<?php print $i; ?>"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
+            <td id="c5_r<?php print $i; ?>"><?php if(count($message['to']) > 1) { ?><span title="<?php print implode("\n", $message['to']); ?>"><?php print $message['shortto']; ?>&nbsp;<i class="muted icon-group"></i></span><?php } else { print $message['shortto']; } ?></td>
 
-            <td id="c6_r<?php print $i; ?>" class="resultcell subject"><a href="#" <?php if($message['deleted'] == 1) { ?>class="xxx"<?php } ?>><?php print $message['subject']; ?></a><?php if(ENABLE_REFERENCES == 1 && $message['reference']) { ?> <a href="#" <?php if($message['deleted'] == 1) { ?>class="xxx"<?php } ?> title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?><?php if($message['private'] == 1) { ?> <i class="bi bi-incognito private" title="private"></i><?php } ?> <?php if($message['marked_for_removal'] == 1) { ?> <span class="private">R</span><?php } ?></td>
+            <td id="c6_r<?php print $i; ?>"><a href="#" <?php if($message['deleted'] == 1) { ?>class="xxx"<?php } ?>><?php print $message['subject']; ?></a><?php if(ENABLE_REFERENCES == 1 && $message['reference']) { ?> <a href="#" <?php if($message['deleted'] == 1) { ?>class="xxx"<?php } ?> title="<?php print $text_conversation_available; ?>" onclick="$('#ref').val('<?php print $message['reference']; ?>'); Piler.expert(this);">[+]</span></a><?php } ?><?php if($message['private'] == 1) { ?> <i class="bi bi-incognito private" title="private"></i><?php } ?> <?php if($message['marked_for_removal'] == 1) { ?> <span class="private">R</span><?php } ?></td>
 
-            <td id="c7_r<?php print $i; ?>" class="resultcell size"><?php print $message['size']; ?></td>
-            <td id="c8_r<?php print $i; ?>" class="resultcell end"><?php if($message['spam'] == 1) { ?><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-            <td id="c9_r<?php print $i; ?>" class="resultcell end"><?php if($message['attachments'] > 0) { ?><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-            <td id="c10_r<?php print $i; ?>" class="resultcell end"><?php if($message['note']) { ?><i class="bi bi-sticky notes" title="<?php print $message['note']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-            <td id="c11_r<?php print $i; ?>" class="resultcell end"><?php if($message['tag']) { ?><i class="bi bi-tag tag" title="<?php print $message['tag']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
-         <?php if(ENABLE_ON_THE_FLY_VERIFICATION == 1) { if ($message['verification'] == 1) {?>
-            <td id="c12_r<?php print $i; ?>" class="resultcell end"><i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i></td>
-         <?php } else { ?>
-            <td id="c12_r<?php print $i; ?>" class="resultcell end"><i class="unverified bi bi-x-square-fill text-danger" title="<?php print $text_unverified_flag; ?>"></i></td>
-         <?php } } ?>
+            <td id="c7_r<?php print $i; ?>" class="centered"><?php print $message['size']; ?></td>
+            <td id="c8_r<?php print $i; ?>" class="centered"><?php if($message['spam'] == 1) { ?><i class="bi bi-exclamation-triangle spam" title="<?php print $text_spam_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+            <td id="c9_r<?php print $i; ?>" class="centered"><?php if($message['attachments'] > 0) { ?><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+            <td id="c10_r<?php print $i; ?>" class="centered"><?php if($message['note']) { ?><i class="bi bi-sticky notes" title="<?php print $message['note']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+            <td id="c11_r<?php print $i; ?>" class="centered"><?php if($message['tag']) { ?><i class="bi bi-tag tag" title="<?php print $message['tag']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
          </tr>
 
     <?php $i++; } ?>

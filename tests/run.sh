@@ -171,7 +171,7 @@ test_retrieved_messages_are_the_same() {
       # mime message inside which overrides the first Message-ID
       # found by a naive grep in read_eml_files_data()
       if [[ ${SHA256_SUM["$message_id"]+abc} ]]; then
-         [[ "$retrieved_cksum" == "${SHA256_SUM["$message_id"]}" ]] || { bad=$(( bad + 1 )); log "$message_id" is BAD; }
+         [[ "$retrieved_cksum" == "${SHA256_SUM["$message_id"]}" ]] || { bad=$(( bad + 1 )); echo "$message_id" is BAD; }
       fi
    done
 
