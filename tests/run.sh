@@ -8,6 +8,8 @@ EML_DIR="/opt/tests/eml"
 SMTP_HOST="127.0.0.1"
 SMTP_SOURCE_PROG="/usr/local/bin/smtp-source.py"
 
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="${SCRIPT_PATH%/*}"
 
 declare -a SEARCH_QUERIES
 declare -a SEARCH_HITS
