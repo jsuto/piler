@@ -40,7 +40,7 @@ jobs:
         id: get-version
         uses: ./.github/actions/version
 
-  build:
+  build-package:
     needs:
       - get-version
 
@@ -72,7 +72,7 @@ jobs:
 
     needs:
       - get-version
-      - build
+      - build-package
 
     steps:
       - uses: actions/checkout@v4

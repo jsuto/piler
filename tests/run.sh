@@ -210,6 +210,9 @@ docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
 
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias n='tail -f /var/log/nginx/error.log'"
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias t='tail -f /var/log/mail.log'"
+
+pushd "$SCRIPT_DIR"
 docker cp addons.sh "${CONTAINER}:/tmp"
+popd
 
 get_verdict
