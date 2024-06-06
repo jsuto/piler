@@ -38,13 +38,13 @@ load_default_values() {
 
    SEARCHCFG="${PILER_CONFIG_DIR}/manticore.conf"
 
-   WWWGROUP="apache"
+   WWWGROUP="www-data"
    DOCROOT="/var/piler/www"
 
    SMARTHOST=""
    SMARTHOST_PORT=25
 
-   SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+   SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=archive.example.com"
 }
 
 
