@@ -94,6 +94,10 @@ class ControllerMessageView extends Controller {
          $this->data['folder_id'] = $this->model_folder_folder->get_folder_id_by_id($this->data['id']);
       }
 
+      if(TSA_PUBLIC_KEY_FILE && MEMCACHED_ENABLED) {
+         $this->data['tsa'] = $this->model_search_message->get_tsa_award();
+      }
+
       foreach($this->data['attachments'] as $a) {
          if(preg_match("/image/", $a['type'])) {
             $attachment = $this->model_search_message->get_attachment_by_id($a['id']);

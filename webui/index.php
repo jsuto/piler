@@ -49,10 +49,7 @@ Registry::set('sphxrw', $sphxrw);
 
 if(MEMCACHED_ENABLED) {
    $memcache = new Memcached();
-   foreach ($memcached_servers as $m){
-      $memcache->addServer($m[0], $m[1]);
-   }
-
+   $memcache->addServer($memcached_server[0], $memcached_server[1]);
    Registry::set('memcache', $memcache);
 }
 

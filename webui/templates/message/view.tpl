@@ -61,7 +61,17 @@
   </div>
 </div>
 
-
+<?php if(isset($tsa)) { ?>
+<div class="container-fluid text-start tsa">
+  <div class="row">
+    <div class="col text-start">
+    <?php foreach($tsa as $t) {
+       print $t . '<br />';
+    } ?>
+    </div>
+  </div>
+</div>
+<?php } ?>
 
 <?php if(ENABLE_FOLDER_RESTRICTIONS == 1) { ?>
 <div id="folderbox" class="input-prepend input-append">
