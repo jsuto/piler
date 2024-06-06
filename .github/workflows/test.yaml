@@ -40,7 +40,7 @@ jobs:
         id: get-version
         uses: ./.github/actions/version
 
-  build:
+  build-package:
     needs:
       - get-version
 
@@ -65,14 +65,14 @@ jobs:
           PROJECT_ID: ${{ env.PROJECT_ID }}
           VERSION: ${{ needs.get-version.outputs.VERSION }}
 
-  run-tests:
+  build-image:
     runs-on:
       - self-hosted
       - ARM64
 
     needs:
       - get-version
-      - build
+      - build-package
 
     steps:
       - uses: actions/checkout@v4
@@ -94,6 +94,15 @@ jobs:
           PLATFORMS: 'linux/arm64'
           PUSH: false
 
+  run-tests:
+    runs-on:
+      - self-hosted
+      - ARM64
+
+    needs:
+      - build-image
+
+    steps:
       - name: Run tests
         uses: ./.github/actions/test
         with:

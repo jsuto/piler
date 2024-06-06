@@ -8,6 +8,8 @@ EML_DIR="/opt/tests/eml"
 SMTP_HOST="127.0.0.1"
 SMTP_SOURCE_PROG="/usr/local/bin/smtp-source.py"
 
+SCRIPT_PATH="$(readlink -f "$0")"
+SCRIPT_DIR="${SCRIPT_PATH%/*}"
 
 declare -a SEARCH_QUERIES
 declare -a SEARCH_HITS
@@ -208,8 +210,11 @@ run_import_job
 
 docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
 
-docker exec "$CONTAINER" bash -c 'apt-get update && apt-get install -y vim'
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias n='tail -f /var/log/nginx/error.log'"
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias t='tail -f /var/log/mail.log'"
+
+pushd "$SCRIPT_DIR"
+docker cp addons.sh "${CONTAINER}:/tmp"
+popd
 
 get_verdict
