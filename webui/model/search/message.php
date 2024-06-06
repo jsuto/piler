@@ -61,9 +61,7 @@ class ModelSearchMessage extends Model {
          pclose($handle);
       }
 
-      if(ENABLE_ON_THE_FLY_VERIFICATION == 0) {
-         $this->verification = $this->verify_message($id, $s);
-      }
+      $this->verification = $this->verify_message($id, $s);
 
       if(Registry::get('auditor_user') == 0 && HEADER_LINE_TO_HIDE) {
          $s = preg_replace("/" . HEADER_LINE_TO_HIDE . ".{1,}(\n(\ |\t){1,}.{1,}){0,}" . "\n/i", "", $s);
