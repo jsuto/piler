@@ -65,7 +65,7 @@ jobs:
           PROJECT_ID: ${{ env.PROJECT_ID }}
           VERSION: ${{ needs.get-version.outputs.VERSION }}
 
-  run-tests:
+  build-image:
     runs-on:
       - self-hosted
       - ARM64
@@ -93,6 +93,14 @@ jobs:
           PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.get-version.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.get-version.outputs.COMMIT_ID }}
           PLATFORMS: 'linux/arm64'
           PUSH: false
+
+  run-tests:
+    runs-on:
+      - self-hosted
+      - ARM64
+
+    needs:
+      - build-image
 
       - name: Run tests
         uses: ./.github/actions/test

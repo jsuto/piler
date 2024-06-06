@@ -208,8 +208,8 @@ run_import_job
 
 docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
 
-docker exec "$CONTAINER" bash -c 'apt-get update && apt-get install -y vim'
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias n='tail -f /var/log/nginx/error.log'"
 docker exec -i "$CONTAINER" bash -c 'cat >>/root/.bashrc' <<< "alias t='tail -f /var/log/mail.log'"
+docker cp addons.sh "${CONTAINER}:/tmp"
 
 get_verdict
