@@ -292,7 +292,7 @@ make_cron_entries() {
       echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null";
       echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error";
       echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;";
-      echo "#*/5 * * * * ${LIBEXECDIR}/piler/import.sh";
+      echo "*/10 * * * * ${LIBEXECDIR}/piler/import.sh";
       echo "### PILEREND";
    } >> "$CRON_TMP"
 }
