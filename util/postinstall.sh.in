@@ -36,6 +36,8 @@ load_default_values() {
    MYSQL_ROOT_PASSWORD=""
    MYSQL_SOCKET=""
 
+   RT=1
+
    SEARCHCFG="${PILER_CONFIG_DIR}/manticore.conf"
 
    WWWGROUP="www-data"
@@ -237,6 +239,11 @@ gather_mysql_account() {
    askNonBlankNoEcho "Please enter mysql root password. If its a recent version of mysql and uses socket authentication, then any string would do here" ""
    MYSQL_ROOT_PASSWORD="$response"
 
+   askYN "Real time index for manticore? [Y/N]" "Y"
+   if [[ "$response" != "yes" ]]; then
+      RT=0
+   fi
+
    s=$(echo "use information_schema; select TABLE_NAME from TABLES where TABLE_SCHEMA='${MYSQL_DATABASE}'" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD")
    # shellcheck disable=SC2181
    if [[ $? -eq 0 ]]; then
@@ -277,12 +284,11 @@ make_cron_entries() {
    {
       echo "";
       echo "### PILERSTART";
-      echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh";
-      echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh";
+      [[ $RT -eq 1 ]] || echo "5,35 * * * * ${LIBEXECDIR}/piler/indexer.delta.sh";
+      [[ $RT -eq 1 ]] || echo "30   2 * * * ${LIBEXECDIR}/piler/indexer.main.sh";
       echo "40 3 * * * ${LIBEXECDIR}/piler/purge.sh";
-      echo "3 * * * * ${LIBEXECDIR}/piler/watch_sphinx_main_index.sh";
-      echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
-      echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
+      [[ $RT -eq 1 ]] || echo "*/15 * * * * ${INDEXER} --quiet tag1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
+      [[ $RT -eq 1 ]] || echo "*/15 * * * * ${INDEXER} --quiet note1 --rotate --config ${PILER_CONFIG_DIR}/manticore.conf";
       echo "30   6 * * * /usr/bin/php ${LIBEXECDIR}/piler/generate_stats.php --webui ${DOCROOT} >/dev/null";
       echo "*/5 * * * * /usr/bin/find ${LOCALSTATEDIR}/piler/error -type f|wc -l > ${LOCALSTATEDIR}/piler/stat/error";
       echo "*/5 * * * * /usr/bin/find ${DOCROOT}/tmp -type f -name i.\* -exec rm -f {} \;";
@@ -318,6 +324,7 @@ show_summary() {
 
    echo "indexer: ${INDEXER}"
    echo "config file: ${SEARCHCFG}"
+   echo "real time index: ${RT}"
    echo
 
    echo "vhost docroot: ${DOCROOT}"
@@ -332,7 +339,7 @@ show_summary() {
    cat "$CRON_TMP"
    echo; echo;
 
-   export HOSTNAME SITE_NAME DOCROOT SMTP_DOMAIN MYSQL_HOSTNAME MYSQL_USERNAME MYSQL_PASSWORD MYSQL_DATABASE SMARTHOST SMARTHOST_PORT
+   export HOSTNAME SITE_NAME DOCROOT SMTP_DOMAIN MYSQL_HOSTNAME MYSQL_USERNAME MYSQL_PASSWORD MYSQL_DATABASE SMARTHOST SMARTHOST_PORT RT
 
    askYN "Correct? [Y/N]" "N"
    if [[ $response != "yes" ]]; then
@@ -362,10 +369,11 @@ execute_post_install_tasks() {
    chmod +x "$SEARCHCFG"
    echo "Done."
 
-   #echo -n "Initializing manticore indices... ";
-   #su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
-   #echo "Done."
-
+   if [[ $RT -eq 0 ]]; then
+      echo -n "Initializing manticore index data... ";
+      su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
+      echo "Done."
+   fi
 
    echo -n "installing cron entries for ${PILERUSER}... "
    crontab -u "$PILERUSER" "$CRON_TMP"
@@ -393,6 +401,8 @@ SOCKHELPER
    MYSQL_SOCKET=$(perl "$SOCKET_HELPER_SCRIPT" "$MYSQL_SOCKET")
 
    sed -e "s/mysqlpwd=verystrongpassword/mysqlpwd=${MYSQL_PASSWORD}/" -e "s/tls_enable=0/tls_enable=1/" -e "s/mysqlsocket=\/var\/run\/mysqld\/mysqld.sock/mysqlsocket=${MYSQL_SOCKET}/" "${SYSCONFDIR}/piler/piler.conf.dist" > "$PILERCONF_TMP"
+   if [[ $RT -eq 0 ]]; then sed -e "s/rtindex=.*/rtindex=0/" "$PILERCONF_TMP"; fi
+
    if ! grep queuedir "$PILERCONF_TMP"; then echo queuedir=/var/piler/store >> "$PILERCONF_TMP"; fi
    cat "$PILERCONF_TMP" > "${SYSCONFDIR}/piler/piler.conf"
    rm -f "$PILERCONF_TMP"
@@ -424,6 +434,8 @@ webui_install() {
    chown "${PILERUSER}:${WWWGROUP}" "${DOCROOT}/tmp"
 
    envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
+
+   if [[ $RT -eq 0 ]]; then sed -i "s/define('RT', 1)/define('RT', 0)/" "$CONFIG_SITE_PHP"; fi
 
    echo "Done."
 }
