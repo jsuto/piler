@@ -370,7 +370,8 @@ execute_post_install_tasks() {
    echo "Done."
 
    if [[ $RT -eq 0 ]]; then
-      echo -n "Initializing manticore index data... ";
+      echo -n "Initializing manticore index data... "
+      sed -i "s/define('RT', 1)/define('RT', 0)/" "$SEARCHCFG"
       su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
       echo "Done."
    fi
@@ -389,6 +390,8 @@ execute_post_install_tasks() {
 
    echo "Fix piler.conf path in pilerpurge.py"
    sed -i "s%\/etc\/piler\/piler\.conf%${SYSCONFDIR}\/piler\/piler\.conf%" "${LIBEXECDIR}/piler/pilerpurge.py"
+
+   envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
 
    make_certificate
 
@@ -432,10 +435,6 @@ SOCKHELPER
 webui_install() {
    chmod 770 "${DOCROOT}/tmp" "${DOCROOT}/images"
    chown "${PILERUSER}:${WWWGROUP}" "${DOCROOT}/tmp"
-
-   envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
-
-   if [[ $RT -eq 0 ]]; then sed -i "s/define('RT', 1)/define('RT', 0)/" "$CONFIG_SITE_PHP"; fi
 
    echo "Done."
 }
