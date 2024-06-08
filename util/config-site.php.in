@@ -17,3 +17,4 @@ config['DB_DATABASE'] = '$MYSQL_DATABASE';
 
 config['SMARTHOST'] = '$SMARTHOST';
 config['SMARTHOST_PORT'] = '$SMARTHOST_PORT';
+config['RT'] = $RT;

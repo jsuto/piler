@@ -303,7 +303,6 @@ void child_main(struct child *ptr){
          sleep(1);
       }
       else {
-         syslog(LOG_PRIORITY, "ERROR: cannot open database");
          sleep(10);
       }
 
