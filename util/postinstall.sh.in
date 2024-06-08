@@ -357,14 +357,14 @@ execute_post_install_tasks() {
    mysql -h "$MYSQL_HOSTNAME" -u "$MYSQL_USERNAME" --password="$MYSQL_PASSWORD" "$MYSQL_DATABASE" < "${DATAROOTDIR}/piler/db-mysql.sql"
    echo "Done."
 
-   echo -n "Writing sphinx configuration... ";
+   echo -n "Writing manticore configuration... ";
    sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" "${SYSCONFDIR}/piler/manticore.conf.dist" > "$SEARCHCFG"
    chmod +x "$SEARCHCFG"
    echo "Done."
 
-   echo -n "Initializing manticore indices... ";
-   su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
-   echo "Done."
+   #echo -n "Initializing manticore indices... ";
+   #su "$PILERUSER" -c "indexer --all --config ${SEARCHCFG}"
+   #echo "Done."
 
 
    echo -n "installing cron entries for ${PILERUSER}... "
