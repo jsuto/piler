@@ -129,7 +129,7 @@ class ModelUserAuth extends Model {
          $data['auditdomains'] = $this->model_user_user->get_users_all_domains($query->row['uid']);
 
          if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-            call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            $data['emails'] = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
          }
          else {
             $data['emails'] = $this->model_user_user->get_users_all_email_addresses($query->row['uid']);
@@ -563,7 +563,7 @@ class ModelUserAuth extends Model {
          syslog(LOG_INFO, LDAP_HELPER_DN . " cannot bind to " . LDAP_HOST);
       }
 
-      return 0; 
+      return 0;
    }
 
 
