@@ -116,10 +116,6 @@ void initialise_configuration(){
       if(!pwd) fatal(ERR_NON_EXISTENT_USER);
    }
 
-   if(getuid() == 0 && pwd){
-      check_and_create_directories(&cfg, pwd->pw_uid, pwd->pw_gid);
-   }
-
    if(chdir(cfg.workdir)){
       syslog(LOG_PRIORITY, "workdir: *%s*", cfg.workdir);
       fatal(ERR_CHDIR);
@@ -187,6 +183,8 @@ int main(int argc, char **argv){
    }
 
    if(drop_privileges(pwd)) fatal(ERR_SETUID);
+
+   check_and_create_directories(&cfg);
 
    efd = epoll_create1(0);
    if(efd == -1){

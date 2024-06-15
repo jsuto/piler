@@ -379,7 +379,7 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
                   p_clean_exit("error chdir(\"..\")", 1);
                }
 
-               createdir(export_subdir, pwd->pw_uid, pwd->pw_gid, 0700);
+               createdir(export_subdir, 0700);
                if(chdir(export_subdir)){
                   p_clean_exit("error chdir to export-* dir", 1);
                }
