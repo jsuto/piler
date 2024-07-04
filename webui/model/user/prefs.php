@@ -19,23 +19,23 @@ class ModelUserPrefs extends Model {
 
    public function set_user_preferences($username = '', $prefs = array() ) {
 
-      if(!isset($prefs['pagelen']) || !is_numeric($prefs['pagelen']) || $prefs['pagelen'] < 10 || $prefs['pagelen'] > 1000
-         || !isset($prefs['theme']) || !preg_match("/^([a-zA-Z0-9\-\_]+)$/", $prefs['theme']) || !file_exists(DIR_THEME . $prefs['theme']) ) { return 1; }
+      if(!isset($prefs['pagelen']) || !is_numeric($prefs['pagelen']) || $prefs['pagelen'] < 10 || $prefs['pagelen'] > 1000) {
+         return 1;
+      }
 
       $session = Registry::get('session');
 
       $query = $this->db->query("SELECT COUNT(*) AS num FROM " . TABLE_USER_SETTINGS . " WHERE username=?", array($username));
 
       if((int)@$query->row['num'] == 1) {
-         $query = $this->db->query("UPDATE " . TABLE_USER_SETTINGS . " SET pagelen=?, theme=?, lang=? WHERE username=?", array((int)@$prefs['pagelen'], $prefs['theme'], $prefs['lang'], $username));
+         $query = $this->db->query("UPDATE " . TABLE_USER_SETTINGS . " SET pagelen=?, lang=? WHERE username=?", array((int)@$prefs['pagelen'], $prefs['lang'], $username));
       }
       else {
-         $query = $this->db->query("INSERT INTO " . TABLE_USER_SETTINGS . " (username, pagelen, theme, lang) VALUES(?,?,?,?)", array($username, (int)@$prefs['pagelen'], $prefs['theme'], $prefs['lang']));
+         $query = $this->db->query("INSERT INTO " . TABLE_USER_SETTINGS . " (username, pagelen, theme, lang) VALUES(?,?,?,?)", array($username, (int)@$prefs['pagelen'], 'default', $prefs['lang']));
       }
 
 
       $session->set("pagelen", $prefs['pagelen']);
-      $session->set("theme", $prefs['theme']);
       $session->set("lang", $prefs['lang']);
 
       LOGGER("set user preference", $username);
