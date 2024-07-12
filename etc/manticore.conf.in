@@ -278,6 +278,10 @@ searchd
         preopen_tables          = 1
         unlink_old              = 1
         thread_stack            = 512k
+        # https://manticoresearch.com/blog/manticoresearch-buddy-intro/
+        # Give a value to the buddy_path variable to enable manticore-buddy
+        # Be sure that user piler has read/write access to it
+        buddy_path              =
 <?php if(RT) { ?>
         rt_flush_period         = 300
 <?php } ?>
