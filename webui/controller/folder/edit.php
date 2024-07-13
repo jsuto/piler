@@ -21,7 +21,7 @@ class ControllerFolderEdit extends Controller {
       if(isset($this->request->post['name']) && $this->request->post['name']) {
          $this->model_folder_folder->update_folder($this->request->post);
 
-         Header("Location: folders.php");
+         Header('Location: ' . SITE_URL . 'folders.php');
          return;
       }
 

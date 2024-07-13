@@ -31,7 +31,7 @@ class ControllerHealthHealth extends Controller {
       else {
          if(isset($_GET['toggle_enable_purge'])) {
             $this->model_health_health->toggle_option('enable_purge');
-            header("Location: " . HEALTH_URL);
+            header('Location: ' . SITE_URL . HEALTH_URL);
             exit;
          }
 

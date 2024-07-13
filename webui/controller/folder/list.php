@@ -21,7 +21,7 @@ class ControllerFolderList extends Controller {
       if(isset($this->request->post['name']) && $this->request->post['name']) {
          $this->model_folder_folder->add_folder($this->request->post['name']);
 
-         Header("Location: folders.php");
+         Header('Location: ' . SITE_URL . 'folders.php');
          return;
       }
 
@@ -29,7 +29,7 @@ class ControllerFolderList extends Controller {
       if(isset($this->request->get['id']) && $this->request->get['id'] > 0) {
          $this->model_folder_folder->remove_folder($this->request->get['id']);
 
-         Header("Location: folders.php");
+         Header('Location: ' . SITE_URL . 'folders.php');
          return;
       }
 
