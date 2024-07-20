@@ -15,7 +15,7 @@ CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
 RT="${RT:-0}"
 MEMCACHED_HOSTNAME="${MEMCACHED_HOSTNAME:-memcached}"
-
+TMP_CONF_DIR="/tmp/piler-conf"
 
 error() {
    echo "ERROR:" "$*" 1>&2
@@ -77,6 +77,11 @@ make_piler_key() {
 fix_configs() {
    [[ -f "$PILER_KEY" ]] || make_piler_key "$PILER_KEY"
    [[ -f "$PILER_PEM" ]] || make_certificate "$PILER_PEM"
+
+   [[ -f /etc/piler/MANTICORE ]] || touch /etc/piler/MANTICORE
+   for f in config-site.dist.php manticore.conf manticore.conf.dist piler-nginx.conf.dist piler.conf.dist; do
+      if [[ ! -f "/etc/piler/${f}" ]]; then cp "${TMP_CONF_DIR}/${f}" /etc/piler; fi
+   done
 
    if [[ ! -f "$PILER_NGINX_CONF" ]]; then
       log "Writing ${PILER_NGINX_CONF}"
