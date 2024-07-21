@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: piler
-  DISTRO: jammy
+  DISTRO: noble
   IMAGE_NAME: sutoj/piler
 
 permissions:
@@ -93,6 +93,9 @@ jobs:
           PUSH: true
 
   create-release:
+    needs:
+      - build-package
+
     runs-on:
       - self-hosted
       - X64
