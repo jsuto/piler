@@ -111,9 +111,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, help="piler.conf path",
                         default="/etc/piler/piler.conf")
+    parser.add_argument("--security", type=str, help="imap security. None, TLS or SSL")
     parser.add_argument("-s", "--server", type=str, help="imap server")
     parser.add_argument("-P", "--port", type=int, help="port number", default=143)
-    parser.add_argument("--no_ssl", help="Do not use ssl/tls", action='store_true')
     parser.add_argument("-u", "--user", type=str, help="imap user")
     parser.add_argument("-p", "--password", type=str, help="imap password")
     parser.add_argument("--oauth2-token", type=str, help="oauth2 access token file")
@@ -142,7 +142,6 @@ def main():
     opts['verbose'] = args.verbose
     opts['search'] = 'ALL'
     opts['counter'] = 0
-    opts['use_ssl'] = True
     opts['db'] = None
     opts['id'] = 0
     opts['access_token'] = ''
@@ -151,13 +150,11 @@ def main():
     if args.date:
         opts['search'] = args.date
 
-    if args.no_ssl:
-        opts['use_ssl'] = False
-
     if args.oauth2_token:
         with open(args.oauth2_token, 'r') as f:
             opts['access_token'] = f.read()
 
+    security = ''
     server = ''
     user = ''
     password = ''
@@ -169,12 +166,13 @@ def main():
                                        opts['password'], opts['database'])
 
             cursor = opts['db'].cursor()
-            cursor.execute("SELECT id, server, username, password " +
+            cursor.execute("SELECT id, type, server, username, password " +
                            "FROM import WHERE started=0")
 
             row = cursor.fetchone()
             if row:
-                (opts['id'], server, user, password) = row
+                (opts['id'], security, server, user, password) = row
+                security = row[1]
             else:
                 print("Nothing to read from import table")
                 sys.exit(0)
@@ -182,6 +180,7 @@ def main():
         except dbapi.DatabaseError as e:
             print("Error %s" % e)
     else:
+        security = args.security
         server = args.server
         user = args.user
         password = args.password
@@ -189,10 +188,13 @@ def main():
     if opts['verbose']:
         print("Skipped folder list: {}".format(opts['skip_folders']))
 
-    if opts['use_ssl']:
-        conn = imaplib.IMAP4_SSL(server)
-    else:
+    if security == 'None':
         conn = imaplib.IMAP4(server)
+    elif security == 'imap-ssl':
+        conn = imaplib.IMAP4_SSL(server)
+    elif security == 'imap-tls':
+        conn = imaplib.IMAP4(server)
+        conn.starttls()
 
     if opts['access_token']:
         conn.authenticate("XOAUTH2", lambda x: generate_auth_string(
