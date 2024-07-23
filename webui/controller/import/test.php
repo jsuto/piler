@@ -48,10 +48,13 @@ class ControllerImportTest extends Controller {
 
       }
 
-      else if($this->request->post['type'] == 'imap' || $this->request->post['type'] == 'imap-ssl') {
+      else if($this->request->post['type'] == 'imap' || $this->request->post['type'] == 'imap-ssl' || $this->request->post['type'] == 'imap-tls') {
          $ssl = false;
          if($this->request->post['type'] == 'imap-ssl') {
             $ssl = 'SSL';
+		 }
+         if($this->request->post['type'] == 'imap-tls') {
+            $ssl = 'TLS';
          }
 
          try {
