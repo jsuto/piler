@@ -99,15 +99,21 @@ class ControllerMessageView extends Controller {
       }
 
       foreach($this->data['attachments'] as $a) {
-         if(preg_match("/image/", $a['type'])) {
+         if(preg_match('/image/', $a['type'])) {
             $attachment = $this->model_search_message->get_attachment_by_id($a['id']);
-            $fp = fopen(DIR_BASE . 'tmp/' . "i." . $a['id'], "w+");
+
+            $fname = 'i.' . $a['id'];
+            if(strstr($a['type'], 'svg')) {
+               $fname .= '.svg';
+            }
+
+            $fp = fopen(DIR_BASE . 'tmp/' . $fname, 'w+');
             if($fp) {
                fwrite($fp, $attachment['attachment']);
                fclose($fp);
 
                $this->data['images'][] = array(
-                                           'name' => "i." . $a['id']
+                                           'name' => $fname
                                          );
             }
          }

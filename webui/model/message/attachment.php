@@ -59,16 +59,23 @@ class ModelMessageAttachment extends Model {
 
       foreach($attachments as $a) {
 
-         if(preg_match("/image/", $a['type'])) {
+         if(preg_match('/image/', $a['type'])) {
 
             $attachment = $this->get_attachment_by_id($a['id']);
 
-            $fp = fopen(DIR_BASE . 'tmp/' . "i." . $a['id'], "w+");
+            $fname = 'i.' . $a['id'];
+
+            if(strstr($a['type'], 'svg')) {
+               $fname .= '.svg';
+            }
+
+            $fp = fopen(DIR_BASE . 'tmp/' . $fname, 'w+');
+
             if($fp) {
                fwrite($fp, $attachment['attachment']);
                fclose($fp);
 
-               $images[] = ['name' => "i." . $a['id']];
+               $images[] = ['name' => $fname];
             }
          }
       }
