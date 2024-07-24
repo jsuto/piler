@@ -28,6 +28,7 @@
             <option value="pop3"<?php if(isset($a['type']) && $a['type'] == 'pop3') { ?> selected="selected"<?php } ?>>pop3</option>
             <option value="imap"<?php if(isset($a['type']) && $a['type'] == 'imap') { ?> selected="selected"<?php } ?>>imap</option>
             <option value="imap-ssl"<?php if(isset($a['type']) && $a['type'] == 'imap-ssl') { ?> selected="selected"<?php } ?>>imap-ssl</option>
+            <option value="imap-tls"<?php if(isset($a['type']) && $a['type'] == 'imap-tls') { ?> selected="selected"<?php } ?>>imap-tls</option>
           </select>
         </div>
         <div class="col-auto">
