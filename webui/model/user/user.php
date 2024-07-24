@@ -362,10 +362,6 @@ class ModelUserUser extends Model {
          if($ret == 0) { return -2; }
       }
 
-      $this->update_domains_settings((int)$user['uid'], $user['domains']);
-      $this->update_group_settings($emails[0], $user['group']);
-      $this->update_folder_settings((int)$user['uid'], $user['folder']);
-
       return 1;
    }
 
@@ -444,10 +440,6 @@ class ModelUserUser extends Model {
          }
 
       }
-
-      $this->update_domains_settings((int)$user['uid'], $user['domains']);
-      $this->update_group_settings($emails[0], $user['group']);
-      $this->update_folder_settings((int)$user['uid'], $user['folder']);
 
       return 1;
    }

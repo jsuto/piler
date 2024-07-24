@@ -53,7 +53,7 @@
             ?>
             </td>
             <td><a href="<?php print PATH_PREFIX; ?>index.php?route=user/edit&amp;uid=<?php print $user['uid']; ?>"><i class="bi bi-pencil-square" title="<?php print $text_edit_or_view; ?>"></i></a></td>
-            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=user/remove&amp;id=<?php print $user['uid']; ?>&amp;user=<?php print $user['username']; ?>&amp'confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=user/remove&amp;id=<?php print $user['uid']; ?>&amp;user=<?php print $user['username']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></i></a></td>
           </tr>
         <?php } ?>
       </table>
