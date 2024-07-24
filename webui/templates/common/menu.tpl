@@ -32,7 +32,9 @@
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=import/list"><i class="bi bi-lightbulb"></i>&nbsp;<?php print $text_import; ?></a></li>
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=policy/archiving"><i class="bi bi-shield-exclamation"></i>&nbsp;<?php print $text_archiving_rules; ?></a></li>
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=policy/retention"><i class="bi bi-hourglass"></i>&nbsp;<?php print $text_retention_rules; ?></a></li>
+         <?php if(ENABLE_FOLDER_RESTRICTIONS) { ?>
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=policy/folder"><i class="bi bi-folder2-open"></i>&nbsp;<?php print $text_folder_rules; ?></a></li>
+         <?php } ?>
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=policy/legalhold"><i class="bi bi-hammer"></i>&nbsp;<?php print $text_legal_hold; ?></a></li>
             <li class="dropdown-item"><a class="dropdown-item" href="<?php print PATH_PREFIX; ?>index.php?route=search/autosearch"><i class="bi bi-search"></i>&nbsp;<?php print $text_automated_search; ?></a></li>
           </ul>
