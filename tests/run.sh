@@ -76,7 +76,7 @@ run_sphinx_tests() {
 
    for i in $(seq 0 $((${#SEARCH_QUERIES[@]}-1)) )
    do
-      hits=$( echo "${SEARCH_QUERIES[$i]}; show meta" | docker exec -i "$CONTAINER" mysql -h 127.0.0.1 -P9306 | grep total_found|awk '{ print $2 }' )
+      hits=$( echo "${SEARCH_QUERIES[$i]}; show meta" | docker exec -i "$CONTAINER" mysql -h manticore -P9306 | grep total_found|awk '{ print $2 }' )
       echo "${hits} ${SEARCH_HITS[$i]}"
    done
 }
