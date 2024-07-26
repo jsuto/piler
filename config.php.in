@@ -34,7 +34,7 @@ $config['BRANDING_FAVICON'] = '
   <link rel="shortcut icon" href="/assets/ico/favicon.png">
 ';
 
-$config['PREVIEW'] = '#preview'; // or '#preview_modal'
+$config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
 
 $config['PATH_PREFIX'] = '/';
 $config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';

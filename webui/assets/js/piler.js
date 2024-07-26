@@ -202,7 +202,7 @@ let Piler =
      * load the selected message by position to preview area
      */
 
-    view_message_by_pos:function(pos)
+    view_message_by_pos:function(pos, preview_pane=false)
     {
         Piler.log("[view_message_by_pos]", pos, Piler.Messages[pos]);
 
@@ -217,13 +217,13 @@ let Piler =
         $('#e_' + id).attr('class', 'resultrow selected table-info');
 
         Piler.prev_message_id = id;
-        Piler.view_message(id);
+        Piler.view_message(id, preview_pane);
 
         $(Piler.preview_id).scrollTop(0);
     },
 
 
-    view_message:function(id)
+    view_message:function(id, preview_pane)
     {
         let search = $('#_search').val();
 
@@ -241,7 +241,7 @@ let Piler =
               return true;
            }
 
-           if(Piler.preview_id == '#preview_modal') {
+           if(!preview_pane) {
              Piler.modal('previewMessageModal', 'show');
            }
 
@@ -1247,28 +1247,12 @@ let Piler =
     },
 
 
-    get_settings: function()
-    {
-
-        Piler.log("[get_settings]");
-
-        jQuery.ajax(Piler.base_url + 'settings.php')
-        .done( function(a) {
-           let settings = JSON.parse(a);
-           Piler.preview_id = settings['preview'];
-        })
-        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
-    }
-
-
 }
 
 $(document).ready(function() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const route = urlParams.get('route');
-
-  Piler.get_settings();
 
   switch (route) {
     case 'health/health':

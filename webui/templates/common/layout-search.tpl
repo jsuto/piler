@@ -70,7 +70,7 @@
 
     </div>
 
-<?php if(PREVIEW == '#preview') { ?>
+<?php if(PREVIEW_PANE) { ?>
     <div class="resizer"></div>
 
     <div id="preview" class="pane pane-lower">
