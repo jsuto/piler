@@ -17,8 +17,24 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - db_data:/var/lib/mysql
+
+  manticore:
+    image: manticoresearch/manticore:6.3.2
+    container_name: manticore
+    restart: unless-stopped
+    init: true
+    volumes:
+      - ./manticore.conf:/etc/manticoresearch/manticore.conf
+      - manticore_data:/var/lib/manticore
+    deploy:
+      resources:
+        reservations:
+          memory: 512M
+        limits:
+          memory: 512M
+
   piler:
-    image: sutoj/piler:${VERSION:-1.4.5}
+    image: sutoj/piler:${VERSION:-1.4.6}
     container_name: piler
     init: true
     environment:
@@ -34,7 +50,6 @@ services:
       - "80:80"
     volumes:
       - piler_etc:/etc/piler
-      - piler_manticore:/var/piler/manticore
       - piler_store:/var/piler/store
     healthcheck:
       test: curl -s smtp://localhost/
@@ -51,6 +66,7 @@ services:
     depends_on:
       - "mysql"
       - "memcached"
+      - "manticore"
 
   memcached:
     image: memcached
@@ -60,5 +76,5 @@ services:
 volumes:
   db_data: {}
   piler_etc: {}
-  piler_manticore: {}
+  manticore_data: {}
   piler_store: {}
