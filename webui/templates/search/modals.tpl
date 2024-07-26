@@ -152,7 +152,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body mb-3">
-          <span id="preview"></span>
+          <div id="preview"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_close; ?></button>
