@@ -22,7 +22,6 @@ services:
     image: manticoresearch/manticore:6.3.2
     container_name: manticore
     restart: unless-stopped
-    init: true
     volumes:
       - ./manticore.conf:/etc/manticoresearch/manticore.conf
       - manticore_data:/var/lib/manticore

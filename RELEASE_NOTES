@@ -1,3 +1,21 @@
+1.4.7:
+-----
+
+- Moved manticore to a dedicated docker image
+
+  When using piler in docker, be sure to update /etc/piler/piler.conf, and set
+
+  sphxhost=manticore
+
+  Also fix /etc/piler/config-site.php:
+
+  $config['SPHINX_HOSTNAME'] = 'manticore:9306';
+  $config['SPHINX_HOSTNAME_READONLY'] = 'manticore:9307'
+
+- Display svg images in preview pane (#97)
+
+
+
 1.4.6:
 -----
 
