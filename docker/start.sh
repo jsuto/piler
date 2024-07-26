@@ -5,7 +5,6 @@ set -o pipefail
 set -o nounset
 
 CONFIG_DIR="/etc/piler"
-VOLUME_DIR="/var/piler"
 PILER_CONF="${CONFIG_DIR}/piler.conf"
 PILER_KEY="${CONFIG_DIR}/piler.key"
 PILER_PEM="${CONFIG_DIR}/piler.pem"
@@ -108,6 +107,9 @@ fix_configs() {
       give_it_to_piler "$PILER_CONF"
    fi
 
+   # Make sure that sphxhost is set
+   sed -i -e "s/sphxhost=.*/sphxhost=manticore/g" "$PILER_CONF"
+
    if [[ ! -f "$CONFIG_SITE_PHP" ]]; then
       log "Writing ${CONFIG_SITE_PHP}"
 
@@ -147,6 +149,14 @@ fix_configs() {
       fi
 
       sed -i "s%rtindex=.*%rtindex=1%" "$PILER_CONF"
+   fi
+
+   if ! grep "'SPHINX_HOSTNAME'" "$CONFIG_SITE_PHP"; then
+      echo "\$config['SPHINX_HOSTNAME'] = 'manticore:9306';" >> "$CONFIG_SITE_PHP"
+   fi
+
+   if ! grep "'SPHINX_HOSTNAME_READONLY'" "$CONFIG_SITE_PHP"; then
+      echo "\$config['SPHINX_HOSTNAME_READONLY'] = 'manticore:9307';" >> "$CONFIG_SITE_PHP"
    fi
 }
 
@@ -200,15 +210,9 @@ start_services() {
 
 
 start_piler() {
-   if [[ $RT -eq 0 && ! -f "${VOLUME_DIR}/manticore/main1.spp" ]]; then
-      log "main1.spp does not exist, creating index files"
-      su -c "indexer --all --config ${SPHINX_CONF}" "$PILER_USER"
-   fi
-
    # No pid file should exist for piler
    rm -f /var/run/piler/*pid
 
-   /etc/init.d/rc.searchd start
    /etc/init.d/rc.piler start
 }
 
