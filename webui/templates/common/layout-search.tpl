@@ -69,12 +69,16 @@
       <span id="qqq"><?php print $text_loading; ?>...</span>
 
     </div>
+
+<?php if(PREVIEW == '#preview') { ?>
     <div class="resizer"></div>
 
     <div id="preview" class="pane pane-lower">
       <h2>Preview Pane</h2>
       <p>Click on a message to show</p>
     </div>
+<?php } ?>
+
   </div>
 
 <?php print JS_CODE; ?>

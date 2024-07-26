@@ -15,6 +15,8 @@ let Piler =
     folders: '',
     extra_folders: '',
 
+    preview_id: '#preview',
+
     remove_message_id: 0,
 
     login_text: 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE',
@@ -110,7 +112,7 @@ let Piler =
             $('#qqq').html(a);
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
-	    Piler.resize_result_columns();
+            Piler.resize_result_columns();
         })
         .fail(function(a, b)
         {
@@ -217,7 +219,7 @@ let Piler =
         Piler.prev_message_id = id;
         Piler.view_message(id);
 
-        $('#preview').scrollTop(0);
+        $(Piler.preview_id).scrollTop(0);
     },
 
 
@@ -239,7 +241,11 @@ let Piler =
               return true;
            }
 
-           $('#preview').html(a);
+           if(Piler.preview_id == '#preview_modal') {
+             Piler.modal('previewMessageModal', 'show');
+           }
+
+           $(Piler.preview_id).html(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
@@ -499,7 +505,7 @@ let Piler =
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax(url, { cache: true })
-        .done( function(a) { $('#preview').html(a); })
+        .done( function(a) { $(Piler.preview_id).html(a); })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
 
@@ -1238,6 +1244,20 @@ let Piler =
           }
         });
       });
+    },
+
+
+    get_settings: function()
+    {
+
+        Piler.log("[get_settings]");
+
+        jQuery.ajax(Piler.base_url + 'settings.php')
+        .done( function(a) {
+           let settings = JSON.parse(a);
+           Piler.preview_id = settings['preview'];
+        })
+        .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     }
 
 
@@ -1247,6 +1267,8 @@ $(document).ready(function() {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const route = urlParams.get('route');
+
+  Piler.get_settings();
 
   switch (route) {
     case 'health/health':
