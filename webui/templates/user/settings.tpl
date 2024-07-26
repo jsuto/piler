@@ -78,17 +78,6 @@
     </div>
   </div>
 
-  <div class="row justify-content-start">
-    <div class="col-3"><?php print $text_page_length; ?></div>
-    <div class="col-3">
-      <select name="pagelen" class="form-control">
-      <?php foreach(Registry::get('paging') as $t) { ?>
-        <option value="<?php print $t; ?>"<?php if($page_len == $t) { ?> selected="selected"<?php } ?>><?php print $t; ?></option>
-      <?php } ?>
-      </select>
-    </div>
-  </div>
-
   <div class="row justify-content-start mt-3">
     <div class="col-3"></div>
     <div class="col-3">

@@ -140,3 +140,24 @@
       </div>
     </div>
   </div>
+
+<?php if(!PREVIEW_PANE) { ?>
+  <!-- preview modal -->
+
+  <div id="previewMessageModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><?php print $text_message; ?></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body mb-3">
+          <div id="preview"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php print $text_close; ?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+<?php } ?>

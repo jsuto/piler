@@ -15,6 +15,8 @@ let Piler =
     folders: '',
     extra_folders: '',
 
+    preview_id: '#preview',
+
     remove_message_id: 0,
 
     login_text: 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE',
@@ -110,7 +112,7 @@ let Piler =
             $('#qqq').html(a);
             Piler.fill_current_messages_array();
             Piler.spinner('stop');
-	    Piler.resize_result_columns();
+            Piler.resize_result_columns();
         })
         .fail(function(a, b)
         {
@@ -200,7 +202,7 @@ let Piler =
      * load the selected message by position to preview area
      */
 
-    view_message_by_pos:function(pos)
+    view_message_by_pos:function(pos, preview_pane=false)
     {
         Piler.log("[view_message_by_pos]", pos, Piler.Messages[pos]);
 
@@ -215,13 +217,13 @@ let Piler =
         $('#e_' + id).attr('class', 'resultrow selected table-info');
 
         Piler.prev_message_id = id;
-        Piler.view_message(id);
+        Piler.view_message(id, preview_pane);
 
-        $('#preview').scrollTop(0);
+        $(Piler.preview_id).scrollTop(0);
     },
 
 
-    view_message:function(id)
+    view_message:function(id, preview_pane)
     {
         let search = $('#_search').val();
 
@@ -239,7 +241,11 @@ let Piler =
               return true;
            }
 
-           $('#preview').html(a);
+           if(!preview_pane) {
+             Piler.modal('previewMessageModal', 'show');
+           }
+
+           $(Piler.preview_id).html(a);
         })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
@@ -499,7 +505,7 @@ let Piler =
         Piler.poor_mans_keepalive_for_dummy_browsers();
 
         jQuery.ajax(url, { cache: true })
-        .done( function(a) { $('#preview').html(a); })
+        .done( function(a) { $(Piler.preview_id).html(a); })
         .fail(function(a, b) { alert("Problem retrieving XML data:" + b) });
     },
 
