@@ -44,6 +44,7 @@ $_['text_bulk_restore_selected_emails'] = "Restauration en masse des sélectionn
 $_['text_bulk_update_selected_uids'] = "Mise à jour massive des uids sélectionnés";
 
 $_['text_cancel'] = "Annuler";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "changer les propriétés de l'utilisateur";
 $_['text_clienthost'] = "Hôte client";
 $_['text_close'] = "Fermer";

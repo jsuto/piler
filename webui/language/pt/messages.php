@@ -40,6 +40,7 @@ $_['text_bulk_restore_selected_emails'] = "Reenviar  e-mails selecionados";
 $_['text_bulk_update_selected_uids'] = "Atualização de UIDs selecionados ";
 
 $_['text_cancel'] = "Cancelar";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "alterar configuração de usuário";
 $_['text_clienthost'] = "Servidor do cliente";
 $_['text_close'] = "Fechar";

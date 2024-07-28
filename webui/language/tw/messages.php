@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "批次還原已選取的項目";
 $_['text_bulk_update_selected_uids'] = "批次更新已選擇的 uid";
 
 $_['text_cancel'] = "取消";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "變更使用者設定";
 $_['text_clienthost'] = "Client host";
 $_['text_close'] = "關閉";

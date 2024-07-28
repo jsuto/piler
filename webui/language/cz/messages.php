@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "Hromadně obnovit zvolené";
 $_['text_bulk_update_selected_uids'] = "Hromadně aktualizovat zvolená uid";
 
 $_['text_cancel'] = "Storno";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "změnit uživatelská nastavení";
 $_['text_clienthost'] = "Host klienta";
 $_['text_close'] = "Zavřít";

@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "Ripristina tutti gli ID selezionati";
 $_['text_bulk_update_selected_uids'] = "Aggiorna tutti gli ID selezionati";
 
 $_['text_cancel'] = "Cancella";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "modifica impostazioni utente";
 $_['text_clienthost'] = "Client host";
 $_['text_close'] = "Chiudi";

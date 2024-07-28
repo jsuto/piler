@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "Kiválasztott levelek visszaállítá
 $_['text_bulk_update_selected_uids'] = "Kiválasztott azonosítók szerkesztése";
 
 $_['text_cancel'] = "Mégse";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "beállítások mentése";
 $_['text_clienthost'] = "Kliens gép";
 $_['text_close'] = "Bezár";

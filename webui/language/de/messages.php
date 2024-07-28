@@ -42,6 +42,7 @@ $_['text_bulk_restore_selected_emails'] = "Ausgewählte Nachrichten wiederherste
 $_['text_bulk_update_selected_uids'] = "Ausgewählte Benutzerkennungen aktualisieren";
 
 $_['text_cancel'] = "Abbrechen";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "Benutzereinstellungen ändern";
 $_['text_clienthost'] = "Clientrechner";
 $_['text_close'] = "Schließen";
