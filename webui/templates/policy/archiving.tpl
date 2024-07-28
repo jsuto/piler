@@ -43,7 +43,7 @@
 
       <div class="row g-3 align-items-center">
         <div class="col-2">
-          <label for="to" class="col-form-label"><?php print $text_to; ?></label>
+          <label for="to" class="col-form-label"><?php print $text_to; ?>/<?php print $text_cc; ?></label>
         </div>
         <div class="col-5">
           <input type="text" name="to" id="to" class="form-control" aria-describedby="help1" />

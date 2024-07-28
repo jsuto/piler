@@ -44,6 +44,7 @@ $_['text_bulk_restore_selected_emails'] = "Seçilenleri toplu geri yükle";
 $_['text_bulk_update_selected_uids'] = "Seçili uid'leri toplu güncelle";
 
 $_['text_cancel'] = "İptal";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "kullanıcı ayarlarını değiştir";
 $_['text_clienthost'] = "İstemci makine";
 $_['text_close'] = "Kapat";

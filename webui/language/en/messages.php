@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "Bulk restore selected";
 $_['text_bulk_update_selected_uids'] = "Bulk update selected uids";
 
 $_['text_cancel'] = "Cancel";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "change user settings";
 $_['text_clienthost'] = "Client host";
 $_['text_close'] = "Close";

@@ -44,6 +44,7 @@ $_['text_bulk_restore_selected_emails'] = "Пакетное восстановл
 $_['text_bulk_update_selected_uids'] = "Пакетное обновление выбранных uids";
 
 $_['text_cancel'] = "Отмена";
+$_['text_cc'] = "Cc";
 $_['text_change_user_settings'] = "именить настройки пользователя";
 $_['text_clienthost'] = "Компьютер клиента";
 $_['text_close'] = "Закрыть";
