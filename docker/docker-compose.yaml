@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./manticore.conf:/etc/manticoresearch/manticore.conf
-      - manticore_data:/var/lib/manticore
+      - piler_manticore:/var/lib/manticore
     deploy:
       resources:
         reservations:
@@ -76,5 +76,5 @@ services:
 volumes:
   db_data: {}
   piler_etc: {}
-  manticore_data: {}
+  piler_manticore: {}
   piler_store: {}
