@@ -3,7 +3,7 @@
 Edit the variables in docker-compose.yaml, then run
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 ## How to build the image for yourself
