@@ -26,8 +26,19 @@ class ControllerPolicyArchiving extends Controller {
 
       $this->data['search'] = '';
 
+      $order = 'ASC';
+      $sort = 'from';
+
       if(isset($this->request->post['search'])) { $this->data['search'] = $this->request->post['search']; }
       else if(isset($this->request->get['search'])) { $this->data['search'] = $this->request->get['search']; }
+
+      if(isset($this->request->get['order'])) { $order = $this->request->get['order']; }
+      if(isset($this->request->get['sort'])) { $sort = $this->request->get['sort']; }
+
+      // toggle sort order
+      $order == 'ASC' ? $order_to_display = 'DESC' : $order_to_display = 'ASC';
+
+      $this->data['MEURL'] = $_SERVER['DOCUMENT_URI'] . '?route=policy/archiving&order=' . $order_to_display;
 
       if(Registry::get('admin_user') == 0) {
          die("go away");
@@ -41,7 +52,7 @@ class ControllerPolicyArchiving extends Controller {
          }
       }
 
-      $this->data['rules'] = htmlentities_on_array($this->model_policy_archiving->get_rules($this->data['search']));
+      $this->data['rules'] = htmlentities_on_array($this->model_policy_archiving->get_rules($this->data['search'], $sort, $order));
 
 
       $this->render();

@@ -182,9 +182,9 @@
       <table class="table table-striped">
         <thead class="table-dark">
           <tr>
-            <th><?php print $text_from; ?></th>
-            <th><?php print $text_to; ?></th>
-            <th><?php print $text_subject; ?></th>
+            <th><?php print $text_from; ?> <a href="<?php print $MEURL; ?>&sort=from"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th><?php print $text_to; ?> <a href="<?php print $MEURL; ?>&sort=to"><i class="bi bi-arrow-down-up"></i></a></th>
+            <th><?php print $text_subject; ?> <a href="<?php print $MEURL; ?>&sort=subject"><i class="bi bi-arrow-down-up"></i></a></th>
             <th><?php print $text_body; ?></th>
             <th><?php print $text_spam; ?></th>
             <th><?php print $text_size; ?></th>
