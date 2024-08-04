@@ -33,7 +33,7 @@
 
       <div class="container text-center">
         <div class="row align-items-center">
-          <div class="col ps-0">
+          <div class="col<?php if(!FULL_GUI) { ?>-10<?php } ?> ps-0">
             <div class="d-flex align-items-center justify-content-start">
               <input type="hidden" name="searchtype" id="searchtype" value="expert" />
               <input type="hidden" name="sort" id="sort" value="date" />
@@ -43,9 +43,9 @@
               <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
             </div>
           </div>
-          <div class="col me-0 pe-0">
+          <div class="col<?php if(!FULL_GUI) { ?>-2<?php } ?> me-0 pe-0">
             <div class="d-flex align-items-center justify-content-start">
-              <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search"></i>&nbsp;<?php if(FULL_GUI) { print $text_search; } ?></button>
+              <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search"></i><?php if(FULL_GUI) { print '&nbsp;' . $text_search; } ?></button>
               <?php if(FULL_GUI) { ?>
               <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal"><?php print $text_advanced_search; ?></button>
 

@@ -4,6 +4,7 @@
       <tr>
         <th id="restore-header" class="auto-width"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
         <th id="id-header" class="auto-width">&nbsp;</th>
+      <?php if(FULL_GUI) { ?>
         <th id="date-header">
              <?php print $text_date; ?>
              <a class="navlink" xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
@@ -33,6 +34,19 @@
         <th id="attachment-header" class="centered"><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i></th>
         <th id="note-header" class="centered"><i class="bi bi-sticky notes" title="<?php print $text_notes_flag; ?>"></i></th>
         <th id="tag-header" class="centered"><i class="bi bi-tag tag" title="<?php print $text_tag_flag; ?>"></i>
+      <?php } else { ?>
+
+        <th id="date-header">
+             <?php print $text_date; ?>
+             <a class="navlink" xid="date" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'date' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="date" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'date' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+
+             <?php print $text_from; ?>
+             <a class="navlink" xid="from" xorder="1" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-up<?php if($sort == 'from' && $order == 1) { ?> bottomborder<?php } ?>"></i></a>
+             <a class="navlink" xid="from" xorder="0" onclick="Piler.changeOrder(this);"><i class="bi bi-chevron-down<?php if($sort == 'from' && $order == 0) { ?> bottomborder<?php } ?>"></i></a>
+        </th>
+
+      <?php } ?>
       </tr>
     </thead>
     <tbody>
@@ -42,6 +56,7 @@
          <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new <?php if($message['deleted'] == 1) { ?>xxx<?php } ?>" onclick="Piler.view_message_by_pos(<?php print $i; ?>);">
             <td id="c1_r<?php print $i; ?>" class="auto-width" onclick="Piler.stop_propagation(event);"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></td>
             <td id="c2_r<?php print $i; ?>" class="auto-width"><?php print ($page*$page_len) + $i + 1; ?></td>
+         <?php if(FULL_GUI) { ?>
             <td id="c3_r<?php print $i; ?>"><?php print $message['date']; ?></td>
             <td id="c4_r<?php print $i; ?>"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
             <td id="c5_r<?php print $i; ?>"><?php if(count($message['to']) > 1) { ?><span title="<?php print implode("\n", $message['to']); ?>"><?php print $message['shortto']; ?>&nbsp;<i class="muted icon-group"></i></span><?php } else { print $message['shortto']; } ?></td>
@@ -53,6 +68,16 @@
             <td id="c9_r<?php print $i; ?>" class="centered"><?php if($message['attachments'] > 0) { ?><i class="bi bi-paperclip attachment" title="<?php print $text_attachment_flag; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
             <td id="c10_r<?php print $i; ?>" class="centered"><?php if($message['note']) { ?><i class="bi bi-sticky notes" title="<?php print $message['note']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
             <td id="c11_r<?php print $i; ?>" class="centered"><?php if($message['tag']) { ?><i class="bi bi-tag tag" title="<?php print $message['tag']; ?>"></i><?php } else { ?>&nbsp;<?php } ?></td>
+          <?php } else { ?>
+            <td>
+              <?php
+                 print $message['date'] . ' ';
+                 print $message['size'] . ' ';
+                 print $message['shortfrom'] . '<br />';
+                 print $message['subject'];
+              ?>
+            </td>
+          <?php } ?>
          </tr>
 
     <?php $i++; } ?>
@@ -69,7 +94,7 @@
     <?php if($n > 0) {
          include_once DIR_BASE . 'templates/common/paging.tpl';
 
-         if(Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
+         if(FULL_GUI && Registry::get('auditor_user') == 1 && $session->get("sphx_query")) { ?>
             <span class="ms-5"><a href="#" onclick="Piler.show_message('messagebox1', '<?php H($session->get("sphx_query")); ?>', 5);">sphinx</a></span>
          <?php } ?>
 
@@ -80,7 +105,7 @@
 
         </div>
 
-        <div class="col pe-0">
+        <div class="col pe-0 d-none d-lg-block">
           <div class="d-flex align-items-center justify-content-end functionbox pt-1 pb-0 mb-0">
 
             <input type="hidden" id="tag_keys" name="tag_keys" value="<?php print $all_ids; ?>" />

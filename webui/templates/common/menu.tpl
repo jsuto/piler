@@ -53,7 +53,9 @@
          </div>
          <div class="col">
           <div class="d-flex align-items-center justify-content-end">
-           <a href="<?php print PATH_PREFIX; ?>settings.php" class="menulink"><i class="bi bi-person pe-2"></i><?php if(FULL_GUI) { print $realname; } ?></a>
+          <?php if(FULL_GUI) { ?>
+           <a href="<?php print PATH_PREFIX; ?>settings.php" class="menulink"><i class="bi bi-person pe-2"></i><?php print $realname; ?></a>
+          <?php } ?>
            <a href="<?php print PATH_PREFIX; ?>logout.php" class="menulink" title="<?php print $text_logout; ?>"><i class="bi bi-door-open"></i></a>
           </div>
          </div>

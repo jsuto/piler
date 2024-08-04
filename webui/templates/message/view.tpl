@@ -8,6 +8,8 @@
         <div class="col">
 
        <label class="col-form-label">
+<?php if(FULL_GUI) { ?>
+
     <?php if($can_download == 1) { ?>
        <a class="messagelink" href="<?php print PATH_PREFIX; ?>index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="bi bi-cloud-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
     <?php } ?>
@@ -34,6 +36,15 @@
        | <a href="#" onclick="Piler.print_div('messageblock');"><i class="bi bi-printer"></i>&nbsp;<?php print $text_print_message; ?></a>
 
     <?php if ($message['verification'] == 1) { print $text_verified_flag; ?> <i class="verified bi bi-check-circle-fill text-success" title="<?php print $text_verified_flag; ?>"></i><?php } else { ?><?php print $text_unverified_flag; ?> <i class="unverified bi bi-x-square-fill text-danger" title="<?php print $text_unverified_flag; ?>"></i><?php } ?>
+
+<?php } else { // full gui ?>
+   <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><i class="bi bi-envelope"></i>&nbsp;<?php print $text_view_headers; ?></a>
+
+   <?php if ($message['verification'] == 1) { ?><i class="verified bi bi-check-circle-fill text-success"></i><?php } else { ?><i class="unverified bi bi-x-square-fill text-danger"></i><?php } ?>
+
+<?php } ?>
+
+
         </label>
 
         </div>
@@ -42,7 +53,7 @@
     </div>
 
     <div class="col text-end">
-
+    <?php if(FULL_GUI) { ?>
       <div id="notesbox" class="row g-3 align-items-center">
         <div class="col">
           <label for="note" class="col-form-label"><i class="bi bi-sticky fs-5"></i> <?php print $text_notes; ?>:</label>
@@ -56,12 +67,13 @@
           </span>
         </div>
       </div>
+    <?php } ?>
 
     </div>
   </div>
 </div>
 
-<?php if(isset($tsa)) { ?>
+<?php if(FULL_GUI && isset($tsa)) { ?>
 <div class="container-fluid text-start tsa">
   <div class="row">
     <div class="col text-start">

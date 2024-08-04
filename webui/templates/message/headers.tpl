@@ -3,6 +3,9 @@
 <div class="messageheader">
 
 <p>
+
+<?php if(FULL_GUI) { ?>
+
 <?php if($can_download == 1) { ?>
    <a class="messagelink" href="<?php print PATH_PREFIX; ?>index.php?route=message/download&amp;id=<?php print $id; ?>"><i class="bi bi-cloud-download"></i>&nbsp;<?php print $text_download_message; ?></a> |
 <?php } ?>
@@ -19,6 +22,10 @@
 
 <?php if($message['has_journal'] == 1 && Registry::get('auditor_user') == 1 && SHOW_ENVELOPE_JOURNAL == 1) { ?>
    | <a class="messagelink" href="#" onclick="Piler.view_journal(<?php print $id; ?>);"><i class="bi bi-envelope"></i>&nbsp;<?php print $text_view_journal_envelope; ?></a>
+<?php } ?>
+
+<?php } else { // full gui ?>
+   <a class="messagelink" href="#" onclick="Piler.view_message(<?php print $id; ?>);"><i class="bi bi-envelope"></i>&nbsp;<?php print $text_view_message; ?></a>
 <?php } ?>
 
 </p>
