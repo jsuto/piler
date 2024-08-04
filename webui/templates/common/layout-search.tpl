@@ -70,7 +70,7 @@
 
     </div>
 
-<?php if(PREVIEW_PANE) { ?>
+<?php if(!REDUCED_GUI && PREVIEW_PANE) { ?>
     <div class="resizer"></div>
 
     <div id="preview" class="pane pane-lower">

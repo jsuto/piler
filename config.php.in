@@ -35,6 +35,12 @@ $config['BRANDING_FAVICON'] = '
 ';
 
 $config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
+$config['REDUCED_GUI'] = 0;
+
+// use a reduced gui for small screens
+if(isset($_COOKIE['SCREEN_X']) && int($_COOKIE['SCREEN_X']) < 992) {
+  $config['REDUCED_GUI'] = 1;
+}
 
 $config['PATH_PREFIX'] = '/';
 $config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';

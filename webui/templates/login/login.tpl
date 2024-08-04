@@ -70,5 +70,17 @@
 
   <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
 
+  <script>
+    function getScreenSize() {
+      let width = window.screen.width
+      let height = window.screen.height
+
+      document.cookie = "SCREEN_X=" + width + "; path=/"
+      document.cookie = "SCREEN_Y=" + height + "; path=/"
+    }
+
+    window.onload = getScreenSize
+  </script>
+
   </body>
 </html>
