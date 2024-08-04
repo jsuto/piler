@@ -3,11 +3,21 @@
 
 class ModelPolicyArchiving extends Model {
 
-   public function get_rules($s = '') {
-      if($s) {
-         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " WHERE `from` LIKE ? OR `to` LIKE ? OR `subject` LIKE ? OR `body` LIKE ? ORDER BY domain, id", array('%' . $s . '%', '%' . $s . '%', '%' . $s . '%', '%' . $s . '%'));
+   public function get_rules($s = '', $sort = 'from', $order = 'ASC') {
+      if(in_array($sort, ['from', 'to', 'subject'])) {
+         $sort = '`' . $sort . '`';
       } else {
-         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " ORDER BY id");
+         $sort = '`from`';
+      }
+
+      if(!in_array($order, ['ASC', 'DESC'])) {
+         $order = 'ASC';
+      }
+
+      if($s) {
+         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " WHERE `from` LIKE ? OR `to` LIKE ? OR `subject` LIKE ? OR `body` LIKE ? ORDER BY $sort $order", array('%' . $s . '%', '%' . $s . '%', '%' . $s . '%', '%' . $s . '%'));
+      } else {
+         $query = $this->db->query("SELECT * FROM " . TABLE_ARCHIVING_RULE . " ORDER BY $sort $order");
       }
 
       if(isset($query->rows)) { return $query->rows; }
@@ -39,5 +49,3 @@ class ModelPolicyArchiving extends Model {
 
 
 }
-
-?>
