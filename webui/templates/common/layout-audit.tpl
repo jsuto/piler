@@ -33,7 +33,7 @@
 
         <div class="container text-center">
           <div class="row align-items-center">
-            <div class="col ps-0">
+            <div class="col<?php if(!FULL_GUI) { ?>-10<?php } ?> ps-0">
               <div class="d-flex align-items-center justify-content-start">
                 <input type="hidden" name="searchtype" id="searchtype" value="expert" />
                 <input type="hidden" name="sort" id="sort" value="date" />
@@ -41,9 +41,9 @@
                 <input type="text" class="form-control" id="_search" name="_search" placeholder="Enter your search terms" />
               </div>
             </div>
-            <div class="col me-0 pe-0">
+            <div class="col<?php if(!FULL_GUI) { ?>-2<?php } ?> me-0 pe-0">
               <div class="d-flex align-items-center justify-content-start">
-                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.auditexpert(this); return false;"><i class="bi bi-search icon-large"></i>&nbsp;Search</button>
+                <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.auditexpert(this); return false;"><i class="bi bi-search icon-large"></i><?php if(FULL_GUI) { print '&nbsp;' . $text_search; } ?></button>
               </div>
             </div>
           </div>
@@ -60,6 +60,8 @@
       <span id="qqq">Loading...</span>
 
     </div>
+
+<?php if(FULL_GUI && PREVIEW_PANE) { ?>
     <div class="resizer"></div>
 
     <div id="preview" class="pane pane-lower">
@@ -67,6 +69,7 @@
       <p>Click on a message to show</p>
     </div>
   </div>
+<?php } ?>
 
 <?php print JS_CODE; ?>
 <script src="<?php print PATH_PREFIX; ?>assets/js/resizer.js"></script>
