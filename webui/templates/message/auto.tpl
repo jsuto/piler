@@ -66,7 +66,7 @@
 </div>
 
 <?php foreach($images as $img) { ?>
-   <p><img src="<?php print SITE_URL; ?>/tmp/<?php print $img['name']; ?>" alt="" /></p>
+   <p><img src="<?php print SITE_URL; ?>tmp/<?php print $img['name']; ?>" alt="" /></p>
 <?php } ?>
 
 

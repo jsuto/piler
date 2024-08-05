@@ -43,7 +43,7 @@ class ControllerMessagePDF extends Controller {
          fwrite($fp, $this->data['message']['message']);
 
          foreach($images as $img) {
-            fwrite($fp, "<p><img src=" . SITE_URL . "/tmp/" . $img['name'] . " alt=\"\" /></p>\n");
+            fwrite($fp, "<p><img src=" . SITE_URL . "tmp/" . $img['name'] . " alt=\"\" /></p>\n");
          }
 
          fwrite($fp, "</body></html>");

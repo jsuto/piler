@@ -33,7 +33,7 @@ class ControllerGroupRemove extends Controller {
             $ret = $this->model_group_group->delete_group($this->data['id']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
-               header('Location: ' . SITE_URL . '/index.php?route=group/list');
+               header('Location: ' . SITE_URL . 'index.php?route=group/list');
             }
             else {
                $this->data['x'] = $this->data['text_failed_to_remove'];
