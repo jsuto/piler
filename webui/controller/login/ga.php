@@ -40,7 +40,7 @@ class ControllerLoginGA extends Controller {
          $data = $session->get("auth_data");
 
          if(!isset($data['username'])) {
-            header("Location: " . SITE_URL . "/login.php");
+            header("Location: " . SITE_URL . "login.php");
             exit;
          }
 

@@ -46,7 +46,7 @@ class ControllerGroupEdit extends Controller {
 
                if($ret == 1){
                   $this->data['x'] = $this->data['text_successfully_modified'];
-                  header('Location: ' . SITE_URL . '/index.php?route=group/list');
+                  header('Location: ' . SITE_URL . 'index.php?route=group/list');
                } else {
                   $this->template = "common/error.tpl";
                   $this->data['errorstring'] = $this->data['text_failed_to_modify'] . ": " . $ret;
