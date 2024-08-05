@@ -141,7 +141,7 @@
     </div>
   </div>
 
-<?php if(!PREVIEW_PANE) { ?>
+<?php if(!FULL_GUI || !PREVIEW_PANE) { ?>
   <!-- preview modal -->
 
   <div id="previewMessageModal" class="modal" tabindex="-1">
