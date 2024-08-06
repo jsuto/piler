@@ -32,6 +32,13 @@ int import_message(struct session_data *sdata, struct data *data, struct counter
 
       nanosleep(&req, NULL);
    }
+   if (data->import->la_limit > 0) {
+     double loadavg[3];
+     while(1) {
+       if (getloadavg(loadavg, 3) == -1 || loadavg[0] < data->import->la_limit) break;
+       sleep(1);
+     }
+   }
 
    init_session_data(sdata, cfg);
 
