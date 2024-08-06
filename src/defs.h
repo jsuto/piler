@@ -321,6 +321,7 @@ struct import {
    int seq;
    int table_id;
    int delay;
+   int la_limit;
    char *server;
    char *username;
    char *password;

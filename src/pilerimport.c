@@ -54,6 +54,7 @@ void usage(){
    printf("    -a <recipient>                    Add recipient to the To:/Cc: list\n");
    printf("    -T <id>                           Update import table at id=<id>\n");
    printf("    -Z <ms>                           Delay Z milliseconds in between emails being imported\n");
+   printf("    -z <integer>                      Wait whenever the load average is above the number\n");
    printf("    -D                                Dry-run, do not import anything\n");
    printf("    -y                                Read pilerexport data from stdin\n");
    printf("    -o                                Only download emails for POP3/IMAP import\n");
@@ -107,6 +108,7 @@ int main(int argc, char **argv){
    import.table_id = 0;
    import.folder = NULL;
    import.delay = 0;
+   import.la_limit = 0;
    import.after = 0;
    import.before = 0;
 
@@ -146,6 +148,7 @@ int main(int argc, char **argv){
             {"start-position",required_argument,  0,  's' },
             {"table-id",     required_argument,  0,  'T' },
             {"delay",        required_argument,  0,  'Z' },
+            {"loadaverage",  required_argument,  0,  'z' },
             {"quiet",        no_argument,        0,  'q' },
             {"recursive",    no_argument,        0,  'R' },
             {"remove-after-import",no_argument,  0,  'r' },
@@ -162,9 +165,9 @@ int main(int argc, char **argv){
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:A:B:yDRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:yDRroqh?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:A:B:yDRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:yDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -291,7 +294,14 @@ int main(int argc, char **argv){
 
                     data.import->delay = atoi(optarg);
                     break;
+         case 'z' :
+                    if (atoi(optarg) < 1) {
+                       fprintf(stderr, "invalid load average value: %s\n", optarg);
+                       return -1;
+                    }
 
+                    data.import->la_limit = atoi(optarg);
+                    break;
          case 'y' :
                     read_from_pilerexport = 1;
                     break;
