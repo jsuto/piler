@@ -20,7 +20,7 @@ RewriteRule ^domain.php /index.php?route=domain/domain [QSA,L]
 RewriteRule ^ldap.php /index.php?route=ldap/list [QSA,L]
 RewriteRule ^customer.php /index.php?route=customer/list [QSA,L]
 RewriteRule ^retention.php /index.php?route=policy/retention [QSA,L]
-RewriteRule ^archiving.php /index.php?route=policy/archiving [QSA,L]
+RewriteRule ^exclusion.php /index.php?route=policy/exclusion [QSA,L]
 RewriteRule ^legalhold.php /index.php?route=policy/legalhold [QSA,L]
 
 <IfModule auth_ntlm_winbind_module>
