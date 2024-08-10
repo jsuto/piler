@@ -15,7 +15,7 @@ define('SPHINX_CHARSET_TABLE', "0..9, english, _, \
 
 // Sphinx 3.3.1 introduced some strict rules for fulltext search column names
 // In order to comply with it you must enable SPHINX_STRICT_SCHEMA variable
-// Be sure to check out http://www.mailpiler.org/wiki/current:sphinx3 for more
+// Be sure to check out https://www.mailpiler.org/sphinx-3/ for more
 // NB: The SPHINX_STRICT_SCHEMA in sphinx.conf MUST BE THE SAME as in config.php (or in config-site.php)
 //
 define('SPHINX_STRICT_SCHEMA', 1);
