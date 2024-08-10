@@ -1,13 +1,13 @@
 <?php
 
 
-class ControllerPolicyArchiving extends Controller {
+class ControllerPolicyExclusion extends Controller {
    private $error = array();
 
    public function index(){
 
       $this->id = "content";
-      $this->template = "policy/archiving.tpl";
+      $this->template = "policy/exclusion.tpl";
       $this->layout = "common/layout";
 
 
@@ -16,9 +16,9 @@ class ControllerPolicyArchiving extends Controller {
       $db = Registry::get('db');
       $lang = Registry::get('language');
 
-      $this->load->model('policy/archiving');
+      $this->load->model('policy/exclusion');
 
-      $this->document->title = $this->data['text_archiving_rules'];
+      $this->document->title = $this->data['text_exclusion_rules'];
 
       $this->data['rules'] = array();
 
@@ -38,7 +38,7 @@ class ControllerPolicyArchiving extends Controller {
       // toggle sort order
       $order == 'ASC' ? $order_to_display = 'DESC' : $order_to_display = 'ASC';
 
-      $this->data['MEURL'] = $_SERVER['DOCUMENT_URI'] . '?route=policy/archiving&order=' . $order_to_display;
+      $this->data['MEURL'] = $_SERVER['DOCUMENT_URI'] . '?route=policy/exclusion&order=' . $order_to_display;
 
       if(Registry::get('admin_user') == 0) {
          die("go away");
@@ -46,13 +46,13 @@ class ControllerPolicyArchiving extends Controller {
 
       if($_SERVER['REQUEST_METHOD'] == 'POST') {
          if($this->validate() == true) {
-            $rc = $this->model_policy_archiving->add_new_rule($this->request->post);
+            $rc = $this->model_policy_exclusion->add_new_rule($this->request->post);
          } else {
             $this->data['error'] = $lang->data['text_invalid_data'];
          }
       }
 
-      $this->data['rules'] = htmlentities_on_array($this->model_policy_archiving->get_rules($this->data['search'], $sort, $order));
+      $this->data['rules'] = htmlentities_on_array($this->model_policy_exclusion->get_rules($this->data['search'], $sort, $order));
 
 
       $this->render();

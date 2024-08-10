@@ -1,7 +1,7 @@
 <?php
 
 
-class ModelPolicyArchiving extends Model {
+class ModelPolicyExclusion extends Model {
 
    public function get_rules($s = '', $sort = 'from', $order = 'ASC') {
       if(in_array($sort, ['from', 'to', 'subject'])) {

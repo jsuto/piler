@@ -25,7 +25,6 @@ $_['text_apply_changes'] = "Applica modifiche";
 $_['text_archive_size'] = "Dimensione archivio";
 $_['text_archive_size_before_compression'] = "Dimensione archivio pruima della compressione";
 $_['text_archived_messages'] = "Messaggi archiviati";
-$_['text_archiving_rules'] = "Regole di archiviazione";
 $_['text_assigned_email_addresses'] = "Indirizzi email assegnati";
 $_['text_attachment'] = "Allegato";
 $_['text_attachment_name'] = "Nome dell'allegato";
@@ -33,7 +32,7 @@ $_['text_attachment_size'] = "Dimensione dell'allegato";
 $_['text_attachment_type'] = "Tipo di allegato";
 $_['text_audit'] = "Audit";
 $_['text_automated_search'] = "Ricerca automatica";
-
+$_['text_exclusion_rules'] = "Exclusion rules";
 $_['text_back'] = "Indietro";
 $_['text_background_colour'] = "Colore di sfondo";
 $_['text_body'] = "Corpo";
@@ -124,6 +123,7 @@ $_['text_enter_search_terms'] = "Inserisci i termini di ricerca";
 $_['text_error'] = "Errore";
 $_['text_exact_domain_name_or_email_address'] = "esatto nome a domino o indirizzo email";
 $_['text_exclude'] = "Escludi";
+
 $_['text_existing'] = "Esistente";
 $_['text_existing_domains'] = "Dominio esistente";
 $_['text_existing_email'] = "Email esistente";

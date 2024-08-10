@@ -7,7 +7,7 @@
     <div class="col">
     </div>
     <div class="col text-end">
-      <form method="get" name="search1" action="archiving.php">
+      <form method="get" name="search1" action="exclusion.php">
         <div class="row justify-content-end">
           <div class="col-8">
             <input type="text" name="search" class="form-control" value="<?php print $search; ?>">
@@ -27,7 +27,7 @@
 
       <h4><?php print $text_add_new_rule; ?></h4>
 
-      <form method="post" id="add1" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=policy/archiving" class="form-horizontal">
+      <form method="post" id="add1" name="add1" action="<?php print PATH_PREFIX; ?>index.php?route=policy/exclusion" class="form-horizontal">
 
       <div class="row g-3 align-items-center">
         <div class="col-2">
@@ -206,7 +206,7 @@
             <td><?php print htmlentities($rule['attachment_name']); ?></td>
             <td><?php print htmlentities($rule['attachment_type']); ?></td>
             <td><?php if($rule['attachment_size'] > 0) { print $rule['_attachment_size']; ?> <?php print $rule['attachment_size']; } ?></td>
-            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=policy/removearchiving&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
+            <td><a href="<?php print PATH_PREFIX; ?>index.php?route=policy/removeexclusion&amp;id=<?php print $rule['id']; ?>&amp;confirmed=1"><i class="bi bi-trash text-danger" title="<?php print $text_remove; ?>"></a></td>
           </tr>
         <?php } ?>
         <tbody>
