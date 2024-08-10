@@ -1,23 +1,23 @@
 <?php
 
 
-class ControllerPolicyRemovearchiving extends Controller {
+class ControllerPolicyRemoveexclusion extends Controller {
    private $error = array();
 
 
    public function index(){
 
       $this->id = "content";
-      $this->template = "policy/removearchiving.tpl";
+      $this->template = "policy/removeexclusion.tpl";
       $this->layout = "common/layout";
 
 
       $request = Registry::get('request');
       $db = Registry::get('db');
 
-      $this->load->model('policy/archiving');
+      $this->load->model('policy/exclusion');
 
-      $this->document->title = $this->data['text_archiving_rules'];
+      $this->document->title = $this->data['text_exclusion_rules'];
 
 
       $this->data['username'] = Registry::get('username');
@@ -26,15 +26,15 @@ class ControllerPolicyRemovearchiving extends Controller {
       $this->data['confirmed'] = (int)@$this->request->get['confirmed'];
 
 
-      $this->data['rule'] = htmlentities_on_array($this->model_policy_archiving->get_rule($this->data['id']));
+      $this->data['rule'] = htmlentities_on_array($this->model_policy_exclusion->get_rule($this->data['id']));
 
       if($this->validate() == true) {
 
          if($this->data['confirmed'] == 1) {
-            $ret = $this->model_policy_archiving->remove_rule($this->data['id']);
+            $ret = $this->model_policy_exclusion->remove_rule($this->data['id']);
             if($ret == 1){
                $this->data['x'] = $this->data['text_successfully_removed'];
-               header('Location:' . SITE_URL . 'index.php?route=policy/archiving');
+               header('Location:' . SITE_URL . 'index.php?route=policy/exclusion');
             }
             else {
                $this->data['errorstring'] = $this->data['text_failed_to_remove'];
