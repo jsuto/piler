@@ -32,8 +32,6 @@ struct config {
    char tls_min_version[MAXVAL];
    int tls_min_version_number;
 
-   int use_antivirus;
-
    char memcached_servers[MAXVAL];
    int memcached_ttl;
 

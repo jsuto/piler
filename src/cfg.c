@@ -106,7 +106,6 @@ struct _parse_rule config_parse_rules[] =
    { "tweak_sent_time_offset", "integer", (void*) int_parser, offsetof(struct config, tweak_sent_time_offset), "0", sizeof(int)},
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct config, update_counters_to_memcached), "0", sizeof(int)},
    { "username", "string", (void*) string_parser, offsetof(struct config, username), "piler", MAXVAL-1},
-   { "use_antivirus", "integer", (void*) int_parser, offsetof(struct config, use_antivirus), "1", sizeof(int)},
    { "verbosity", "integer", (void*) int_parser, offsetof(struct config, verbosity), "1", sizeof(int)},
    { "workdir", "string", (void*) string_parser, offsetof(struct config, workdir), WORK_DIR, MAXVAL-1},
 
