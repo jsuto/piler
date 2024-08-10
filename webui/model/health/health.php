@@ -31,8 +31,7 @@ class ModelHealthHealth extends Model {
       $this->data['indexer_stat'] = $this->indexer_stat();
       $this->data['purge_stat'] = $this->purge_stat();
 
-      $this->data['sphinx_current_main_size'] = $this->get_index_size(SPHINX_CURRENT_MAIN_INDEX_SIZE);
-      $this->data['sphinx_total_size'] = $this->get_index_size(SPHINX_TOTAL_INDEX_SIZE);
+      $this->data['sphinx_total_size'] = $this->get_index_size() ;
 
       $this->get_average_count_values();
       $this->get_average_size_values($archivesizeraw);
@@ -282,8 +281,8 @@ class ModelHealthHealth extends Model {
    public function get_database_size() {
       $data = array();
 
-      $query = $this->db->query("SELECT table_schema AS `name`, 
-								SUM( data_length + index_length ) AS `size` 
+      $query = $this->db->query("SELECT table_schema AS `name`,
+								SUM( data_length + index_length ) AS `size`
 								FROM information_schema.TABLES
 								WHERE table_schema = '".DB_DATABASE."'
 								GROUP BY table_schema;");
@@ -353,11 +352,15 @@ class ModelHealthHealth extends Model {
    }
 
 
-   public function get_index_size($statfile = '') {
+   public function get_index_size() {
       $size = 0;
 
-      if(file_exists($statfile)) {
-         $size = (int) file_get_contents($statfile);
+      $indexes = explode(',', SPHINX_MAIN_INDEX);
+      foreach($indexes as $index) {
+         $query = $this->sphx->query('SHOW INDEX ' . $index . ' STATUS LIKE \'disk_bytes\'');
+         foreach($query->rows as $row) {
+            $size += $row[1];
+         }
       }
 
       return $size;
