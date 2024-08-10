@@ -6,31 +6,18 @@ set -o pipefail
 
 MAINTMPFILE="/var/run/piler/main.indexer.tmp"
 CONFIG_FILE="SYSCONFDIR/piler/sphinx.conf"
-INDEXDIR=sphinx
 PRIORITY="mail.info"
 TOUCHFILE="/var/piler/stat/indexer"
 MAIN_INDEX="main1"
 
 if [[ -f SYSCONFDIR/piler/MANTICORE ]]; then
    CONFIG_FILE=SYSCONFDIR/piler/manticore.conf
-   INDEXDIR=manticore
 fi
 
 export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 
 finish() {
    rm -f "$MAINTMPFILE"
-}
-
-get_index_size() {
-   local mainfiles="$1"
-   local sum=0
-
-   # shellcheck disable=SC2034
-   while read -r a b; do
-      sum=$(( sum + b ))
-   done < <( find /var/piler/${INDEXDIR}/ -type f -name "$mainfiles" -printf "%TY%Tm%Td %s\\n" )
-   printf "%d" $sum
 }
 
 if [[ -f "$MAINTMPFILE" ]]; then
@@ -57,6 +44,3 @@ echo "INDEXER INFO: resetting daily delta started" | logger -p "$PRIORITY"
 indexer --config "$CONFIG_FILE" --quiet dailydelta1 --rotate
 
 echo "INDEXER INFO: resetting daily delta finished" | logger -p "$PRIORITY"
-
-get_index_size "main*.sp[dp]" > /var/piler/stat/total_index_size
-get_index_size "${MAIN_INDEX}*.sp[dp]" > /var/piler/stat/current_main_index_size
