@@ -391,21 +391,6 @@ function escape_gt_lt_quote_symbols($s = '') {
 }
 
 
-function get_search_url_by_page($page = 0) {
-
-   return "/search-helper.php?page=$page";
-
-   /*isset($_SERVER['REQUEST_URI']) ? $a = preg_replace("/\/([\w]+)\.php\?{0,1}/", "", $_SERVER['REQUEST_URI']) : "";
-
-   $a = preg_replace("/page=\d{0,100}\&{0,1}/", "", $a);
-
-   if($page <= 0) { return "search.php?$a"; }
-   if($page >= 1 && $a == "") { return "search.php?page=$page"; }
-
-   return "search.php?page=$page&$a";*/
-}
-
-
 function parse_string_to_array($s = '', $arr = array()) {
    $a = array();
 
