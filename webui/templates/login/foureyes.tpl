@@ -23,21 +23,26 @@
 
         <form name="login" action="index.php?route=login/foureyes" method="post" class="form-signin">
 
-            <h2 class="form-signin-heading">4eyes <?php print $text_login; ?></h2>
+            <h2 class="fs-1 mb-3 fw-light">4eyes <?php print $text_login; ?></h2>
 
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
-
-            <input type="text" class="input-block-level" name="username" placeholder="<?php print $text_email; ?>" required autofocus>
-            <input type="password" class="input-block-level" name="password" placeholder="<?php print $text_password; ?>">
+            <div class="form-floating">
+              <input name="username" type="email" class="form-control" id="username" placeholder="name@example.com" required autofocus>
+              <label for="floatingInput"><?php print $text_email; ?></label>
+            </div>
+            <div class="form-floating">
+              <input name="password" type="password" class="form-control" id="password" placeholder="Password">
+              <label for="floatingPassword"><?php print $text_password; ?></label>
+            </div>
 
         <?php if(CAPTCHA_FAILED_LOGIN_COUNT > 0 && $failed_login_count > CAPTCHA_FAILED_LOGIN_COUNT) { ?>
             <img src="securimage/securimage_show.php" alt="captcha image" id="captcha" />
             <input type="text" class="input-block-level" name="captcha" placeholder="CAPTCHA" />
         <?php } ?>
 
-            <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
-            <button class="btn btn-large" type="reset" value="<?php print $text_cancel; ?>" onclick="document.location.href='logout.php';"><?php print $text_cancel; ?></button>
+            <button class="btn btn-large btn-primary w-100 mt-3 py-2" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
+            <button class="btn btn-large w-100 mt-3 py-2" type="reset" value="<?php print $text_cancel; ?>" onclick="document.location.href='logout.php';"><?php print $text_cancel; ?></button>
 
         </form>
 
