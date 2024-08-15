@@ -50,6 +50,9 @@ class ModelHealthHealth extends Model {
          }
       }
 
+      if(MEMCACHED_ENABLED) {
+         $this->data['memcached_version'] = $this->get_memcached_version();
+      }
    }
 
 
@@ -364,6 +367,15 @@ class ModelHealthHealth extends Model {
       }
 
       return $size;
+   }
+
+   public function get_memcached_version() {
+      $m = Registry::get('memcache');
+      $stats = $m->getStats();
+      foreach($stats as $server => $info) {
+         return $info['version'];
+      }
+      return "ERROR";
    }
 
 }
