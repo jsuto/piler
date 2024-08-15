@@ -139,6 +139,31 @@
       </div>
     <?php } ?>
 
+    <?php if(MEMCACHED_ENABLED) { ?>
+      <div class="container text-start">
+        <div class="row">
+          <div class="col">
+            <h2><i class="bi bi-database"></i> Memcached</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="container text-start">
+        <div class="row">
+          <div class="col-2">Extension</div>
+          <div class="col"><?php if(extension_loaded('memcached')) { ?><i class="verified bi bi-check-circle-fill text-success"></i><?php } else { ?><i class="unverified bi bi-x-square-fill text-danger"></i><?php } ?></div>
+        </div>
+      </div>
+
+      <div class="container text-start">
+        <div class="row">
+          <div class="col-2">Version</div>
+          <div class="col"><?php print $health['memcached_version']; ?></div>
+        </div>
+      </div>
+
+    <?php } ?>
+
     </div>
 
     <div class="col-4"> <!-- right side -->
