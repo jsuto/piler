@@ -53,10 +53,6 @@ class ModelUserAuth extends Model {
       if(ENABLE_LDAP_AUTH == 1) {
          $ok = $this->checkLoginAgainstLDAP($username, $password, $data);
          if($ok == 1) {
-            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
-            }
-
             return $ok;
          }
       }
@@ -71,10 +67,6 @@ class ModelUserAuth extends Model {
          $ok = $this->checkLoginAgainstIMAP($imap_server, $username, $password, $data);
 
          if($ok == 1) {
-            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
-            }
-
             return $ok;
          }
       }
@@ -84,10 +76,6 @@ class ModelUserAuth extends Model {
          $ok = $this->checkLoginAgainstPOP3($username, $password, $data);
 
          if($ok == 1) {
-            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
-            }
-
             return $ok;
          }
       }
@@ -234,6 +222,10 @@ class ModelUserAuth extends Model {
                if($this->check_ldap_membership($ldap_admin_member_dn, $query->rows) == 1) { $role = 1; }
 
                $emails = $this->get_email_array_from_ldap_attr($query->rows, $ldap_distributionlist_objectclass);
+
+               if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+                  $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+               }
 
                $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                $emails = array_merge($emails, $extra_emails);
@@ -413,15 +405,14 @@ class ModelUserAuth extends Model {
          if($imap->login($login, $password)) {
             $imap->logout();
 
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);
 
-            $data['username'] = $username;
-            $data['email'] = $username;
-            $data['emails'] = $emails;
-            $data['role'] = 0;
-
-            $data = $this->fix_user_data($username, $username, $emails, 0);
+            $data = $this->fix_user_data($username, $emails[0], $emails, 0);
 
             $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
@@ -455,10 +446,14 @@ class ModelUserAuth extends Model {
                try {
                   $conn->login($username, $password);
 
+                  if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+                     $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+                  }
+
                   $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                   $emails = array_merge($emails, $extra_emails);
 
-                  $data = $this->fix_user_data($username, $username, $emails, 0);
+                  $data = $this->fix_user_data($username, $emails[0], $emails, 0);
 
                   $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
@@ -536,6 +531,10 @@ class ModelUserAuth extends Model {
 
             $emails = $this->get_email_array_from_ldap_attr($query->rows, LDAP_DISTRIBUTIONLIST_OBJECTCLASS);
 
+            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
+               $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+            }
+
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);
 
@@ -550,10 +549,6 @@ class ModelUserAuth extends Model {
             $this->model_user_prefs->get_user_preferences($username);
 
             AUDIT(ACTION_LOGIN, $username, '', '', 'successful auth against LDAP');
-
-            if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $sso_user);
-            }
 
             return 1;
          }
