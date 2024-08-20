@@ -14,6 +14,7 @@ CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
 RT="${RT:-0}"
 MEMCACHED_HOSTNAME="${MEMCACHED_HOSTNAME:-memcached}"
+MANTICORE_HOSTNAME="${MANTICORE_HOSTNAME:-manticore}"
 TMP_CONF_DIR="/tmp/piler-conf"
 
 error() {
@@ -108,7 +109,7 @@ fix_configs() {
    fi
 
    # Make sure that sphxhost is set
-   sed -i -e "s/sphxhost=.*/sphxhost=manticore/g" "$PILER_CONF"
+   sed -i -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" "$PILER_CONF"
 
    if [[ ! -f "$CONFIG_SITE_PHP" ]]; then
       log "Writing ${CONFIG_SITE_PHP}"
@@ -152,11 +153,11 @@ fix_configs() {
    fi
 
    if ! grep "'SPHINX_HOSTNAME'" "$CONFIG_SITE_PHP"; then
-      echo "\$config['SPHINX_HOSTNAME'] = 'manticore:9306';" >> "$CONFIG_SITE_PHP"
+      echo "\$config['SPHINX_HOSTNAME'] = '${MANTICORE_HOSTNAME}:9306';" >> "$CONFIG_SITE_PHP"
    fi
 
    if ! grep "'SPHINX_HOSTNAME_READONLY'" "$CONFIG_SITE_PHP"; then
-      echo "\$config['SPHINX_HOSTNAME_READONLY'] = 'manticore:9307';" >> "$CONFIG_SITE_PHP"
+      echo "\$config['SPHINX_HOSTNAME_READONLY'] = '${MANTICORE_HOSTNAME}:9307';" >> "$CONFIG_SITE_PHP"
    fi
 }
 
