@@ -38,6 +38,7 @@ services:
     container_name: piler
     init: true
     environment:
+      - MANTICORE_HOSTNAME=manticore
       - MEMCACHED_HOSTNAME=memcached
       - MYSQL_HOSTNAME=mysql
       - MYSQL_DATABASE=piler
