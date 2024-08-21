@@ -18,12 +18,6 @@ $config = [];
 
 $config['COMPATIBILITY'] = 'Which browsers are supported, etc';
 
-$config['BRANDING_TEXT'] = '';
-$config['BRANDING_URL'] = '';
-$config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
-$config['BRANDING_BACKGROUND_COLOUR'] = '';
-$config['BRANDING_TEXT_COLOUR'] = '';
-
 $config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
 $config['FULL_GUI'] = 1;
 
@@ -401,6 +395,12 @@ $config['BRANDING_FAVICON'] = '
 
 $config['SITE_LOGO_LG'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-lg.png';
 $config['SITE_LOGO_SM'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-sm.png';
+
+$config['BRANDING_TEXT'] = '';
+$config['BRANDING_URL'] = '';
+$config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
+$config['BRANDING_BACKGROUND_COLOUR'] = '';
+$config['BRANDING_TEXT_COLOUR'] = '';
 
 $config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';
 $config['ICON_XLS'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/xls.png';
