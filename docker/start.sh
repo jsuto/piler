@@ -164,7 +164,7 @@ fix_configs() {
    HAS_PREFIX=`grep --invert-match '^[[:blank:]]*#[^!]' $CONFIG_SITE_PHP | grep PATH_PREFIX || true`
    if [[ ! -z "$HAS_PREFIX" ]];
      then
-       PATH_PRFIX=`echo $HAS_PREFIX | awk '{ print $3 }' | tr ";" ","`
+       PATH_PRFIX=`echo $HAS_PREFIX | awk 'BEGIN { FS="="}{ print $2 }' | awk '{$1=$1};1' | tr ";" ","`
        log "PATH_PREFIX set $PATH_PRFIX"
        sed -i -e "s#location.origin\ +\ .*#location.origin\ +\ $PATH_PRFIX#" /var/piler/www/assets/js/piler.js
    fi
