@@ -1,7 +1,8 @@
 <?php
 
 config['SITE_NAME'] = '$HOSTNAME';
-config['SITE_URL'] = 'http://' . config['SITE_NAME'] . '/';
+config['PATH_PREFIX'] = '/';
+config['SITE_URL'] = 'http://' . config['SITE_NAME'] . config['PATH_PREFIX'];
 config['DIR_BASE'] = '$DOCROOT/';
 
 config['SMTP_DOMAIN'] = '$HOSTNAME';
