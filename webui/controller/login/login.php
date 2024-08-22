@@ -47,6 +47,12 @@ class ControllerLoginLogin extends Controller {
 
          if($this->model_user_auth->checkLogin($this->request->post['username'], $_POST['password']) == 1) {
 
+            if($session->get('disabled') == 1) {
+               syslog(LOG_INFO, $this->request->post['username'] . ' is disabled');
+               $this->render();
+               exit;
+            }
+
             if($session->get("ga_block") == 1) {
                header("Location: " . SITE_URL . "index.php?route=login/ga");
                exit;
