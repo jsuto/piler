@@ -19,10 +19,6 @@ struct config {
    char listen_addr[MAXVAL];
    int listen_port;
 
-   char clamd_addr[MAXVAL];
-   int clamd_port;
-   char clamd_socket[MAXVAL];
-
    int encrypt_messages;
 
    int enable_chunking;

@@ -152,13 +152,6 @@ int process_email(char *filename, struct session_data *sdata, struct data *data,
 
    bzero(&counters, sizeof(counters));
 
-#ifdef HAVE_ANTIVIRUS
-   if(do_av_check(filename, cfg) == AVIR_VIRUS){
-      unlink(filename);
-      return OK;
-   }
-#endif
-
    init_session_data(sdata, cfg);
 
    sdata->tot_len = size;
