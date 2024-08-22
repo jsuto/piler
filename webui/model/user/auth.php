@@ -224,7 +224,7 @@ class ModelUserAuth extends Model {
                $emails = $this->get_email_array_from_ldap_attr($query->rows, $ldap_distributionlist_objectclass);
 
                if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-                  $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+                  $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $emails);
                }
 
                $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
@@ -532,7 +532,7 @@ class ModelUserAuth extends Model {
             $emails = $this->get_email_array_from_ldap_attr($query->rows, LDAP_DISTRIBUTIONLIST_OBJECTCLASS);
 
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+               $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $emails);
             }
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
