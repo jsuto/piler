@@ -38,7 +38,7 @@ install: install-piler
 
 
 piler: piler.c libpiler.a
-	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@ @libclamav_extra_libs@
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
 libpiler.a: $(OBJS) $(SQL_OBJS)
 	ar cr libpiler.a $(OBJS) $(SQL_OBJS)
@@ -100,4 +100,3 @@ clean:
 
 distclean: clean
 	rm -f Makefile
-
