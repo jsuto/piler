@@ -654,7 +654,6 @@ CFGDIR
 MYSQL_CONFIG
 iv
 id_bin
-libclamav_extra_libs
 sql_obj
 sql_libs
 sql_includes
@@ -720,7 +719,6 @@ ac_user_opts='
 enable_option_checking
 enable_static_build
 enable_compat_layout
-enable_clamd
 enable_memcached
 enable_tweak_sent_time
 with_piler_user
@@ -1351,7 +1349,6 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-static-build   build statically linked executables (default: dynamically linked)
   --enable-compat-layout  support for older storage layout (default: no)
-  --enable-clamd          build clamd antivirus support
   --enable-memcached      build memcached support
   --tweak-sent-time       tweak sent time
 
@@ -3566,12 +3563,8 @@ fi
 
 
 
-
-have_libclamav="no"
 have_libtool="no"
-have_clamd="no"
 
-have_antivirus="no"
 have_mysql="no"
 have_psql="no"
 have_tre="no"
@@ -3645,22 +3638,6 @@ else $as_nop
   have_compat_storage_layout="no"
 fi
 
-
-
-
-
-# Check whether --enable-clamd was given.
-if test ${enable_clamd+y}
-then :
-  enableval=$enable_clamd; want_clamd=$enableval
-else $as_nop
-  want_clamd="no"
-fi
-
-   if test "$want_clamd" = "yes"; then
-      have_clamd="yes"
-      have_antivirus="yes"
-   fi
 
 
 # Check whether --enable-memcached was given.
@@ -4517,12 +4494,6 @@ printf "%s\n" "#define HAVE_DAEMON 0" >>confdefs.h
    if test -x /usr/xpg4/bin/id; then id_bin="/usr/xpg4/bin/id"; fi
 fi
 
-
-if test "$have_clamd" = "yes" ; then
-   defs="$defs -DHAVE_ANTIVIRUS"
-   objs="$objs avir.o"
-fi
-
 echo; echo
 
 echo "run as user: $RUNNING_USER"
@@ -4568,12 +4539,6 @@ fi
 
 
 echo
-
-if test "$have_clamd" = "yes"; then
-   echo "clamd support: yes"
-   objs="$objs clamd.o"
-   defs="$defs -DHAVE_CLAMD"
-fi
 
 if test "$want_memcached" = "yes"; then
    echo "memcached support: yes"

@@ -15,7 +15,6 @@
 #include <defs.h>
 #include <tai.h>
 #include <sig.h>
-#include <av.h>
 #include <rules.h>
 #include <screen.h>
 #include <sql.h>
@@ -32,8 +31,6 @@ int read_key(struct config *cfg);
 void insert_offset(struct session_data *sdata, int server_id);
 
 void tear_down_client(int n);
-
-int do_av_check(char *filename, struct config *cfg);
 
 int make_digests(struct session_data *sdata, struct config *cfg);
 void digest_file(char *filename, char *digest);

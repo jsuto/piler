@@ -5,7 +5,6 @@ piler is an open source email archival application. Please visit https://www.mai
 Features:
 
 - built-in smtp server
-- clamd support
 - archival rules
 - retention rules
 - legal hold

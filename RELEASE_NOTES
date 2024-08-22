@@ -14,6 +14,8 @@
 
 - Display svg images in preview pane (#97)
 
+- Removed non-functioning clamd support
+  I suggest to run an anti-virus software on your MX
 
 
 1.4.6:
@@ -25,6 +27,9 @@
 
   Note that it requires real-time (rt) index. When using plain index,
   then no audit record is written
+
+  When using piler in docker, be sure to update /etc/piler/manticore.conf
+  to include the index audit1 {} block
 
 - Added support for path prefix, ie. when the archive can be accessed
   at https://example.com/archive/ (instead of using a dedicated hostname,

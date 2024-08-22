@@ -61,11 +61,7 @@ void check_and_create_directories(struct config *cfg){
 
    for(i=0; i<cfg->number_of_worker_processes; i++){
       snprintf(s, sizeof(s)-1, "%s/%d", cfg->workdir, i);
-   #ifdef HAVE_ANTIVIRUS
-      createdir(s, 0711);
-   #else
       createdir(s, 0700);
-   #endif
    }
 
 }
