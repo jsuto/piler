@@ -161,7 +161,7 @@ fix_configs() {
    fi
 
    # Fix for PATH_PREFIX
-   if [[ -v "$PATH_PREFIX" ]];
+   if [[ -v PATH_PREFIX ]];
      then
        log "PATH_PREFIX set $PATH_PREFIX"
        sed -i -e "s#location.origin\ +\ .*#location.origin\ +\ $PATH_PREFIX,#" /var/piler/www/assets/js/piler.js
