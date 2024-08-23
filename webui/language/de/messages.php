@@ -490,16 +490,15 @@ $_['text_compliance_warning'] = 'Die Löschfunktion ist aktiviert, aus diesem Gr
 $_['text_folder_rules'] = "Verzeichnisregeln";
 $_['text_private'] = "Privat";
 
-$_['text_delete_reason'] = "Reason of removal";
-$_['text_need_to_approve_removal'] = "Need to approve removal";
-$_['text_deleted'] = "Deleted";
-$_['text_reason_of_rejection'] = "Reason of rejection";
-$_['text_reject'] = "Reject";
-$_['text_user_data_officer'] = "Data officer";
+$_['text_delete_reason'] = "Grund für die Löschung";
+$_['text_need_to_approve_removal'] = "Löschen muss bestätigt werden";
+$_['text_deleted'] = "Gelöscht";
+$_['text_reason_of_rejection'] = "Grund für die Ablehnung";
+$_['text_reject'] = "Ablehnen";
+$_['text_user_data_officer'] = "Datenbeauftragter";
 
-$_['text_no_selected_message'] = "no selected message";
-$_['text_create_note'] = "Create note";
+$_['text_no_selected_message'] = "keine Nachricht ausgewählt";
+$_['text_create_note'] = "Erstelle Notiz";
 
-$_['text_wildcard_domains'] = "Wildcard domains";
-$_['text_remove_request'] = "remove request";
-$_['text_rejected_removal'] = "rejected removal";
+$_['text_wildcard_domains'] = "Wildcard Domains";
+$_['text_remove_request'] = "Anfrage löschen";
