@@ -38,7 +38,7 @@
                 <input type="hidden" name="searchtype" id="searchtype" value="expert" />
                 <input type="hidden" name="sort" id="sort" value="date" />
                 <input type="hidden" name="order" id="order" value="0" />
-                <input type="text" class="form-control" id="_search" name="_search" placeholder="Enter your search terms" />
+                <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
               </div>
             </div>
             <div class="col<?php if(!FULL_GUI) { ?>-2<?php } ?> me-0 pe-0">
