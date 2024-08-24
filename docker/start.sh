@@ -159,6 +159,14 @@ fix_configs() {
    if ! grep "'SPHINX_HOSTNAME_READONLY'" "$CONFIG_SITE_PHP"; then
       echo "\$config['SPHINX_HOSTNAME_READONLY'] = '${MANTICORE_HOSTNAME}:9307';" >> "$CONFIG_SITE_PHP"
    fi
+
+   # Fix for PATH_PREFIX
+   if [[ -v PATH_PREFIX ]];
+     then
+       log "PATH_PREFIX set $PATH_PREFIX"
+       sed -i -e "s#location.origin\ +\ .*#location.origin\ +\ $PATH_PREFIX,#" /var/piler/www/assets/js/piler.js
+       sed -i -e "s#^\$config\['PATH_PREFIX'\].*#\$config\['PATH_PREFIX'\] = '$PATH_PREFIX';#" "$CONFIG_SITE_PHP"
+   fi
 }
 
 
