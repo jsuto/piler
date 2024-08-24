@@ -165,10 +165,7 @@ fix_configs() {
      then
        log "PATH_PREFIX set $PATH_PREFIX"
        sed -i -e "s#location.origin\ +\ .*#location.origin\ +\ $PATH_PREFIX,#" /var/piler/www/assets/js/piler.js
-       sed -i "s%PATH_PREFIX%${PATH_PREFIX}%" "$CONFIG_SITE_PHP"
-       if ! grep "'PATH_PREFIX'" "$CONFIG_SITE_PHP"; then
-         echo "\$config['PATH_PREFIX'] = '${PATH_PREFIX}';" >> "$CONFIG_SITE_PHP"
-       fi
+       sed -i -e "s#^\$config\['PATH_PREFIX'\].*#\$config\['PATH_PREFIX'\] = '$PATH_PREFIX';#" "$CONFIG_SITE_PHP"
    fi
 }
 
