@@ -9,4 +9,4 @@ pushd /var/piler/imap
 
 [[ "${FLOCKER}" != "$0" ]] && exec env FLOCKER="$0" flock -en "$0" "$0" "$@"
 
-imapfetch.py -i
+imapfetch.py -i -c SYSCONFDIR/piler/piler.conf
