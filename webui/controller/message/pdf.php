@@ -40,6 +40,18 @@ class ControllerMessagePDF extends Controller {
       $fp = fopen(DIR_BASE . 'tmp/' . $tmpname, "w+");
       if($fp) {
          fwrite($fp, "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head><body>");
+
+         fwrite($fp, '<strong>' . $this->data['message']['subject'] . '</strong><br />');
+         fwrite($fp, '<strong>' . $this->data['message']['from'] . '</strong><br />');
+         fwrite($fp, '<strong>' . $this->data['message']['to'] . '</strong><br />');
+         fwrite($fp, '<strong>' . $this->data['message']['date'] . '</strong><br />');
+
+         if(strlen($this->data['message']['cc']) > 6) {
+            fwrite($fp, '<strong>' . $this->data['message']['cc'] . '</strong><br />');
+         }
+
+         fwrite($fp, '<hr />');
+
          fwrite($fp, $this->data['message']['message']);
 
          foreach($images as $img) {
