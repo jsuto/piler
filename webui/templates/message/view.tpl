@@ -2,7 +2,7 @@
 
 <div class="container-fluid text-start">
   <div class="row">
-    <div class="col-8 text-start">
+    <div class="<?php if(FULL_GUI) { ?>col-8<?php } else { ?>col-12<?php } ?> text-start">
 
       <div id="notesbox" class="row g-3 align-items-center">
         <div class="col">
@@ -39,6 +39,10 @@
 
 <?php } else { // full gui ?>
    <a class="messagelink" href="#" onclick="Piler.view_headers(<?php print $id; ?>);"><i class="bi bi-envelope"></i>&nbsp;<?php print $text_view_headers; ?></a>
+
+   <?php if($can_restore == 1) { ?>
+     <a class="messagelink" href="#" onclick="Piler.restore_message(<?php print $id; ?>);"><i class="bi bi-arrow-90deg-right"></i>&nbsp;<?php print $text_restore_to_mailbox; ?></a>
+   <?php } ?>
 
    <?php if ($message['verification'] == 1) { ?><i class="verified bi bi-check-circle-fill text-success"></i><?php } else { ?><i class="unverified bi bi-x-square-fill text-danger"></i><?php } ?>
 
