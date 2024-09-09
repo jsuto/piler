@@ -2,7 +2,9 @@
   <table id="results" class="table table-striped mt-0">
     <thead class="table-secondary">
       <tr>
+      <?php if(FULL_GUI) { ?>
         <th id="restore-header" class="auto-width"><input type="checkbox" id="bulkcheck" name="bulkcheck" value="1" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" onclick="Piler.toggle_bulk_check('');" /></th>
+      <?php } ?>
         <th id="id-header" class="auto-width">&nbsp;</th>
       <?php if(FULL_GUI) { ?>
         <th id="date-header">
@@ -54,7 +56,9 @@
     <?php $i=0; foreach ($messages as $message) { ?>
 
          <tr onmouseover="Piler.current_message_id = <?php print $message['id']; ?>; return false;" id="e_<?php print $message['id']; ?>" class="resultrow new <?php if($message['deleted'] == 1) { ?>xxx<?php } ?>" onclick="Piler.view_message_by_pos(<?php print $i; ?>);">
+         <?php if(FULL_GUI) { ?>
             <td id="c1_r<?php print $i; ?>" class="auto-width" onclick="Piler.stop_propagation(event);"><input type="checkbox" id="r_<?php print $message['id']; ?>" name="r_<?php print $message['id']; ?>" value="iiii" <?php if(SEARCH_RESULT_CHECKBOX_CHECKED == 1) { ?>checked="checked"<?php } ?> class="restorebox" /></td>
+         <?php } ?>
             <td id="c2_r<?php print $i; ?>" class="auto-width"><?php print ($page*$page_len) + $i + 1; ?></td>
          <?php if(FULL_GUI) { ?>
             <td id="c3_r<?php print $i; ?>"><?php print $message['date']; ?></td>
