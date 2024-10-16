@@ -34,7 +34,8 @@ def read_options(filename="", opts={}):
     opts['database'] = config.get('piler', 'mysqldb')
     opts['storedir'] = config.get('piler', 'queuedir')
     opts['rtindex'] = config.getint('piler', 'rtindex', fallback=0)
-    opts['sphxhost'] = config.get('piler', 'sphxhost', fallback='127.0.0.1')
+    opts['sphxdb'] = config.get('piler', 'sphxdb', fallback='piler1')
+    opts['sphxport'] = config.getint('piler', 'sphxport', fallback=9306)
     opts['sphxport'] = config.getint('piler', 'sphxport', fallback=9306)
     opts['server_id'] = "%02x" % config.getint('piler', 'server_id')
 
@@ -194,7 +195,7 @@ def purge_index_data(ids=[], opts={}):
     if opts['rtindex'] == 1 and opts['dry_run'] is False:
         cursor = opts['sphx'].cursor()
         a = "," . join([str(x) for x in ids])
-        cursor.execute("DELETE FROM piler WHERE id IN (%s)" % (a))
+        cursor.execute("DELETE FROM %s WHERE id IN (%s)" % (opts['sphxdb'], a))
 
 
 def main():
