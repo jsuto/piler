@@ -35,7 +35,7 @@ def read_options(filename="", opts={}):
     opts['storedir'] = config.get('piler', 'queuedir')
     opts['rtindex'] = config.getint('piler', 'rtindex', fallback=0)
     opts['sphxdb'] = config.get('piler', 'sphxdb', fallback='piler1')
-    opts['sphxport'] = config.getint('piler', 'sphxport', fallback=9306)
+    opts['sphxhost'] = config.get('piler', 'sphxhost', fallback='127.0.0.1')
     opts['sphxport'] = config.getint('piler', 'sphxport', fallback=9306)
     opts['server_id'] = "%02x" % config.getint('piler', 'server_id')
 
