@@ -185,6 +185,44 @@ test_retrieved_messages_are_the_same() {
    echo "tested ${i} messages"
 }
 
+purge_300_emails() {
+   local container="$1"
+   local manticore_host="$2"
+   local piler_id
+   local found
+
+   echo "${FUNCNAME[0]}"
+
+   piler_id="$(docker exec -i "$container" mysql --defaults-file=/etc/piler/.my.cnf -N piler <<< "select piler_id from metadata where id=1" 2>/dev/null)"
+
+   echo "piler id: ${piler_id}"
+
+   found=$(docker exec -i "$container" find "/var/piler/store/00/" -name "${piler_id}.m" 2>/dev/null | wc -l)
+   [[ $found -eq 1 ]] || set_verdict $RESULT_CRITICAL
+
+   echo "Purging emails"
+
+   docker exec -i "$container" mysql --defaults-file=/etc/piler/.my.cnf piler <<< "update metadata set retained=1000000 where id<=300" 2>/dev/null
+   docker exec "$container" su piler -c "/usr/libexec/piler/purge.sh" 2>/dev/null
+
+   echo "Test if emails are purge from manticore"
+
+   if [[ $(docker exec -i "$container" mysql -N -h "$manticore_host" -P9306 <<< "select count(*) as count from piler1 where id<=300") -gt 0 ]]; then
+      echo "Purge has not removed all messages from 1-300"
+      docker exec -i "$container" mysql -N -h "$manticore_host" -P9306 <<< "select count(*) as count from piler1 where id<=300"
+      set_verdict $RESULT_CRITICAL
+   fi
+
+   echo "Test if ${piler_id} still exists"
+
+   found=$(docker exec -i "$container" find "/var/piler/store/00" -name "${piler_id}.m" 2>/dev/null | wc -l)
+   if [[ $found -gt 0 ]]; then
+      echo "Still found ${found} messages that supposed to be deleted"
+      set_verdict $RESULT_CRITICAL
+   fi
+}
+
+
 for i in Inbox Inbox2 Levelszemet Levelszemet2 spam0 spam1 spam2 journal deduptest special; do
    "$SMTP_SOURCE_PROG" -s "$SMTP_HOST" -r "archive@${ARCHIVE_HOST}" -p 25 -t 20 --dir "$EML_DIR/$i" --no-counter
 done
@@ -207,6 +245,8 @@ docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/generate_stats.php 
 docker exec "$CONTAINER" su piler -c 'php /usr/libexec/piler/sign.php --webui /var/piler/www --mode time'
 
 run_import_job
+
+purge_300_emails "$CONTAINER" "manticore"
 
 docker exec "$CONTAINER" tail -30 /var/log/nginx/error.log
 
