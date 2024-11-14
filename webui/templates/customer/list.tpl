@@ -91,7 +91,8 @@
           <label for="background_colour" class="col-form-label"><?php print $text_background_colour; ?></label>
         </div>
         <div class="col-4">
-          <input type="text" name="background_colour" id="background_colour" class="form-control" placeholder="" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } ?>" aria-describedby="help1" />
+          <input type="hidden" name="background_colour" id="background_colour" />
+          <input type="color" id="background-color-picker" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } else { ?>#d0d0d0<?php } ?>">
         </div>
         <div class="col-auto">
           <span id="help1" class="form-text"></span>
@@ -103,7 +104,8 @@
           <label for="text_colour" class="col-form-label"><?php print $text_text_colour; ?></label>
         </div>
         <div class="col-4">
-          <input type="text" name="text_colour" id="text_colour" class="form-control" placeholder="" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } ?>" aria-describedby="help1" />
+          <input type="hidden" name="text_colour" id="text_colour" />
+          <input type="color" id="text-color-picker" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } else { ?>#5f5f5f<?php } ?>">
         </div>
         <div class="col-auto">
           <span id="help1" class="form-text"></span>
