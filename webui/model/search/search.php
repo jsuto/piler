@@ -67,14 +67,8 @@ class ModelSearchSearch extends Model {
 
             $sd = "";
 
-            $domains = $session->get('domain');
-            foreach ($domains as $d) {
-               if($sd) { $sd .= '|'; }
-               $sd .= $this->fix_email_address_for_sphinx($d);
-            }
-
-            foreach ($session_domains as $d) {
-               if($d) { $sd .= '|' . $this->fix_email_address_for_sphinx($d); }
+            foreach($session_domains as $d) {
+               $sd .= '|' . $this->fix_email_address_for_sphinx($d);
             }
 
             $sd = preg_replace("/^\|/", "", $sd);
@@ -82,10 +76,10 @@ class ModelSearchSearch extends Model {
             return sprintf(" (%s %s | %s %s ) ", TODOMAIN_TOKEN, $sd, FROMDOMAIN_TOKEN, $sd);
          }
 
-         else { return ""; }
+         else { return ''; }
       }
 
-      if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ""; }
+      if(ENABLE_FOLDER_RESTRICTIONS == 1) { return ''; }
 
       $all_your_addresses = $this->get_all_your_address("emails");
       $all_your_wildcard_domains = $this->get_all_your_address("wildcard_domains");
