@@ -1270,17 +1270,6 @@ $(document).ready(function() {
       Piler.add_shortcuts();
       break;
 
-    case 'customer/list':
-      $('#background-color-picker').on('input', function() {
-        var color = $(this).val();
-        $('#background_colour').val(color);
-      });
-      $('#text-color-picker').on('input', function() {
-        var color = $(this).val();
-        $('#text_colour').val(color);
-      });
-      break;
-
     default:
       const s = window.location.href;
       if(/search.php#?$/.test(s)) {

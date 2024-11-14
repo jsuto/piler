@@ -86,32 +86,6 @@
         </div>
       </div>
 
-      <div class="row g-3 align-items-center">
-        <div class="col-2">
-          <label for="background_colour" class="col-form-label"><?php print $text_background_colour; ?></label>
-        </div>
-        <div class="col-4">
-          <input type="hidden" name="background_colour" id="background_colour" />
-          <input type="color" id="background-color-picker" value="<?php if(isset($a['background_colour'])) { print $a['background_colour']; } else { ?>#d0d0d0<?php } ?>">
-        </div>
-        <div class="col-auto">
-          <span id="help1" class="form-text"></span>
-        </div>
-      </div>
-
-      <div class="row g-3 align-items-center">
-        <div class="col-2">
-          <label for="text_colour" class="col-form-label"><?php print $text_text_colour; ?></label>
-        </div>
-        <div class="col-4">
-          <input type="hidden" name="text_colour" id="text_colour" />
-          <input type="color" id="text-color-picker" value="<?php if(isset($a['text_colour'])) { print $a['text_colour']; } else { ?>#5f5f5f<?php } ?>">
-        </div>
-        <div class="col-auto">
-          <span id="help1" class="form-text"></span>
-        </div>
-      </div>
-
       <div class="row g-3 mt-2 align-items-center">
         <div class="col-2">
         </div>
@@ -143,9 +117,6 @@
             <th><?php print $text_domain; ?></th>
             <th><?php print $text_branding_text; ?></th>
             <th><?php print $text_branding_url; ?></th>
-            <th><?php print $text_branding_logo; ?></th>
-            <th><?php print $text_background_colour; ?></th>
-            <th><?php print $text_text_colour; ?></th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
           </tr>
@@ -156,9 +127,6 @@
             <td><?php print $e['domain']; ?></td>
             <td><?php print $e['branding_text']; ?></td>
             <td><?php print $e['branding_url']; ?></td>
-            <td><?php if($e['branding_logo']) { ?><img src="/images/<?php print $e['branding_logo']; ?>" style="height: 50px;" /><?php } ?></td>
-            <td><span class="label" style="background-color:<?php print $e['background_colour']; ?>"><?php print $e['background_colour']; ?></span></td>
-            <td><span class="label" style="background-color:<?php print $e['text_colour']; ?>"><?php print $e['text_colour']; ?></span></td>
             <td><a href="<?php print PATH_PREFIX; ?>index.php?route=customer/list&amp;id=<?php print $e['id']; ?>"><i class="bi bi-pencil-square"></i>&nbsp;<?php print $text_edit; ?></a></td>
             <td><a href="<?php print PATH_PREFIX; ?>index.php?route=customer/remove&amp;id=<?php print $e['id']; ?>&amp;name=<?php print urlencode($e['domain']); ?>&amp;confirmed=1" class="confirm-delete" data-id="<?php print $e['id']; ?>" data-name="<?php print $e['domain']; ?>"><i class="bi bi-trash text-danger"></i>&nbsp;<?php print $text_remove; ?></a></td>
           </tr>
