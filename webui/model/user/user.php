@@ -98,12 +98,12 @@ class ModelUserUser extends Model {
       if($uid > 0) {
          $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN_USER . " WHERE uid=?", array((int)$uid));
 
-         if(isset($query->rows)) {
-            foreach ($query->rows as $q) {
-               if(!in_array($q['domain'], $data)) { array_push($data, $q['domain']); }
-            }
+         foreach ($query->rows as $q) {
+            array_push($data, $q['domain']);
          }
       }
+
+      if($data) { array_shift($data); }
 
       return $data;
    }
@@ -362,6 +362,8 @@ class ModelUserUser extends Model {
          if($ret == 0) { return -2; }
       }
 
+      $this->update_domains_settings($user);
+
       return 1;
    }
 
@@ -441,26 +443,23 @@ class ModelUserUser extends Model {
 
       }
 
+      $this->update_domains_settings($user);
+
       return 1;
    }
 
 
-   private function update_domains_settings($uid = -1, $domains = '') {
+   private function update_domains_settings($user = array()) {
       $__d = array();
 
-      if($uid <= 0) { return 0; }
+      if((int)$user['uid'] <= 0) { return 0; }
 
-      $query = $this->db->query("DELETE FROM `" . TABLE_DOMAIN_USER . "` WHERE uid=?", array($uid));
+      $query = $this->db->query("DELETE FROM `" . TABLE_DOMAIN_USER . "` WHERE uid=?", array($user['uid']));
 
-      $all_domains = $this->get_email_domains();
-      $submitted_domains = explode("\n", $domains);
+      $query = $this->db->query("SELECT domain FROM " . TABLE_DOMAIN . " WHERE mapped=?", array($user['domain']));
 
-      foreach($submitted_domains as $d) {
-         $d = trim($d);
-
-         if($d && checkdomain($d, $all_domains) > 0) {
-            $query = $this->db->query("INSERT INTO `" . TABLE_DOMAIN_USER . "` (domain, uid) VALUES(?,?)", array($d, (int)$uid));
-         }
+      foreach ($query->rows as $q) {
+         $query = $this->db->query("INSERT INTO `" . TABLE_DOMAIN_USER . "` (domain, uid) VALUES(?,?)", array($q['domain'], $user['uid']));
       }
 
       return 1;
