@@ -79,3 +79,5 @@ th.centered, td.centered { text-align: center; }
 th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
 
 .tsa {border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;}
+
+.branding_logo {max-height:25px;}
