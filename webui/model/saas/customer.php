@@ -113,7 +113,7 @@ class ModelSaasCustomer extends Model
       if($query->num_rows > 0) {
          if($query->row['branding_text']) { $data['branding_text'] = $query->row['branding_text']; }
          if($query->row['branding_url']) { $data['branding_url'] = $query->row['branding_url']; }
-         if($query->row['branding_logo']) { $data['branding_logo'] = $query->row['branding_logo']; }
+         if($query->row['branding_logo']) { $data['branding_logo'] = PATH_PREFIX . 'images/' . $query->row['branding_logo']; }
       }
 
       if(MEMCACHED_ENABLED && $cache_key) {

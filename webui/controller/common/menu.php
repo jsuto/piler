@@ -1,4 +1,4 @@
-<?php  
+<?php
 
 
 class ControllerCommonMenu extends Controller {
@@ -26,7 +26,3 @@ class ControllerCommonMenu extends Controller {
 
 
 }
-
-
-
-?>

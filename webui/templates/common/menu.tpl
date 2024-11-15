@@ -5,7 +5,7 @@
           <div class="d-flex align-items-center">
 
           <?php if(FULL_GUI) { ?>
-           <a class="menulink"<?php if($settings['branding_url']) { ?> target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"<?php } ?>><?php if($settings['branding_logo']) { ?><img class="branding_logo" src="<?php print PATH_PREFIX . 'images/' . $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>"/><?php } ?></a>
+           <a class="menulink"<?php if($settings['branding_url']) { ?> target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"<?php } ?>><?php if($settings['branding_logo']) { ?><img class="branding_logo" src="<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>"/><?php } ?></a>
           <?php } ?>
 
         <?php if($admin_user) { ?>
