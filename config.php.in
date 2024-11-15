@@ -396,11 +396,11 @@ $config['BRANDING_FAVICON'] = '
 $config['SITE_LOGO_LG'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-lg.png';
 $config['SITE_LOGO_SM'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-sm.png';
 
+$config['BRANDING_LOGO_PLACEHOLDER'] = $config['PATH_PREFIX'] . 'assets/images/branding-logo.png';
+
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
-$config['BRANDING_BACKGROUND_COLOUR'] = '';
-$config['BRANDING_TEXT_COLOUR'] = '';
 
 $config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';
 $config['ICON_XLS'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/xls.png';

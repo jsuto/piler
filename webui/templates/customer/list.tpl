@@ -76,10 +76,13 @@
 
       <div class="row g-3 align-items-center">
         <div class="col-2">
-          <label for="support_link" class="col-form-label"><?php print $text_support_link; ?></label>
+          <label for="branding_logo" class="col-form-label"><?php print $text_branding_logo; ?></label>
         </div>
         <div class="col-4">
-          <input type="text" name="support_link" id="support_link" class="form-control" value="<?php if(isset($a['support_link'])) { print $a['support_link']; } ?>" aria-describedby="help1" />
+          <input type="file" name="branding_logo" id="branding_logo" class="form-control" aria-describedby="help1" />
+        </div>
+        <div class="col-2">
+          <?php if(isset($a['branding_logo']) && $a['branding_logo']) { ?><img class="branding_logo" src="<?php print PATH_PREFIX; ?>images/<?php print htmlspecialchars($a['branding_logo'], ENT_QUOTES, 'UTF-8'); ?>" /> <a href="<?php print PATH_PREFIX; ?>index.php?route=customer/removelogo&amp;id=<?php print $id; ?>"><i class="bi bi-trash text-danger"></i></a><?php } else { ?><img src="<?php print BRANDING_LOGO_PLACEHOLDER; ?>" /><?php } ?>
         </div>
         <div class="col-auto">
           <span id="help1" class="form-text"></span>
