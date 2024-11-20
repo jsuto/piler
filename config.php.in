@@ -16,6 +16,22 @@ $config = [];
  * variable to be overridden in config-site.php
  */
 
+
+$config['BRANDING_FAVICON'] = '
+  <!-- Fav and touch icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+  <link rel="shortcut icon" href="/assets/ico/favicon.png">
+';
+
+$config['SITE_LOGO_LG'] = '/assets/images/archive-logo-lg.png';
+
+$config['BRANDING_TEXT'] = '';
+$config['BRANDING_URL'] = '';
+$config['BRANDING_LOGO'] = '/assets/images/archive-logo-sm.png';
+
 $config['COMPATIBILITY'] = 'Which browsers are supported, etc';
 
 $config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
@@ -26,9 +42,13 @@ if(isset($_COOKIE['SCREEN_X']) && (int)$_COOKIE['SCREEN_X'] < 992) {
   $config['FULL_GUI'] = 0;
 }
 
+// If you override the default PATH_PREFIX in config-site.php,
+// then fix the following settings as well in config-site.php:
+// - BRANDING_FAVICON
+// - BRANDING_LOGO
+// - SITE_LOGO_LG
 $config['PATH_PREFIX'] = '/';
 
-$config['SUPPORT_LINK'] = '';
 $config['TITLE_PREFIX'] = '';
 
 $config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
@@ -384,23 +404,7 @@ $config['CSS_CODE'] = '
 ';
 
 
-$config['BRANDING_FAVICON'] = '
-  <!-- Fav and touch icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="' . $config['PATH_PREFIX'] . 'assets/ico/apple-touch-icon-144-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="' . $config['PATH_PREFIX'] . 'assets/ico/apple-touch-icon-114-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="' . $config['PATH_PREFIX'] . 'assets/ico/apple-touch-icon-72-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" href="' . $config['PATH_PREFIX'] . 'assets/ico/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="' . $config['PATH_PREFIX'] . 'assets/ico/favicon.png">
-';
-
-$config['SITE_LOGO_LG'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-lg.png';
-$config['SITE_LOGO_SM'] = $config['PATH_PREFIX'] . 'assets/images/archive-logo-sm.png';
-
 $config['BRANDING_LOGO_PLACEHOLDER'] = $config['PATH_PREFIX'] . 'assets/images/branding-logo.png';
-
-$config['BRANDING_TEXT'] = '';
-$config['BRANDING_URL'] = '';
-$config['BRANDING_LOGO'] = $config['SITE_LOGO_SM'];
 
 $config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';
 $config['ICON_XLS'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/xls.png';

@@ -17,6 +17,17 @@
 - Removed non-functioning clamd support
   I suggest to run an anti-virus software on your MX
 
+- Path prefix changes
+
+  If you want to override the default PATH_PREFIX (/) in
+  config-site.php, then fix the following settings as well in config-site.php:
+
+  * BRANDING_FAVICON
+  * BRANDING_LOGO
+  * SITE_LOGO_LG
+
+
+
 
 1.4.6:
 -----
