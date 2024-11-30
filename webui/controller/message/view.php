@@ -86,6 +86,8 @@ class ControllerMessageView extends Controller {
 
       $this->data['images'] = array();
 
+      $this->data['meta'] = $this->model_search_message->get_metadata_by_id($this->data['id']);
+
       $this->data['can_download'] = $this->model_audit_audit->can_download();
       $this->data['can_restore'] = $this->model_audit_audit->can_restore();
 
