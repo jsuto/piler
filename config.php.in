@@ -291,6 +291,7 @@ $config['SIZE_X'] = 430;
 $config['SIZE_Y'] = 250;
 
 $config['DATE_TEMPLATE'] = 'Y.m.d';
+$config['DATE_PREVIEW_TEMPLATE'] = 'Y.m.d H:i:s T';
 $config['DATE_FORMAT'] = 'YYYY-MM-DD';
 $config['JQUERY_DATE_FORMAT'] = 'yy-mm-dd';
 $config['DECIMAL_SEPARATOR'] = "."; // See https://www.php.net/manual/en/function.number-format
