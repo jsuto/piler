@@ -571,6 +571,7 @@ class ModelSearchSearch extends Model {
             $m['shortsubject'] = make_short_string($m['subject'], MAX_CGI_FROM_SUBJ_LEN);
 
             $m['date'] = date(DATE_TEMPLATE, $m['sent']);
+            $m['preview_date'] = date(DATE_PREVIEW_TEMPLATE, $m['sent']);
             $m['size'] = nice_size($m['size']);
 
             in_array($m['from'], $session->get("emails")) ? $m['yousent'] = 1 : $m['yousent'] = 0;
