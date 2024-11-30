@@ -129,7 +129,6 @@ class ControllerSearchHelper extends Controller {
    private function naive_preprocess_post_expert_request($data = array()) {
       $ndate = 0;
       $from = $match = '';
-      $prev_token_is_email = 0;
 
       if(!isset($data['search'])) { return; }
 
@@ -142,11 +141,6 @@ class ControllerSearchHelper extends Controller {
          if(preg_match("/\d{4}\-\d{1,2}\-\d{1,2}/", $v) || preg_match("/\d{1,2}\/\d{1,2}\/\d{4}/", $v)) {
             $ndate++;
             $this->a["date$ndate"] = $v;
-         }
-         else if(strchr($v, '@')) {
-            $prev_token_is_email = 1;
-            if($from == '') { $from = FROM_TOKEN; }
-            $from .= " $v";
          }
          else {
             $match .= ' ' . $v;
