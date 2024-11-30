@@ -61,7 +61,7 @@
          <?php } ?>
             <td id="c2_r<?php print $i; ?>" class="auto-width"><?php print ($page*$page_len) + $i + 1; ?></td>
          <?php if(FULL_GUI) { ?>
-            <td id="c3_r<?php print $i; ?>"><?php print $message['date']; ?></td>
+            <td id="c3_r<?php print $i; ?>"><span title="<?php print $message['preview_date']; ?>"><?php print $message['date']; ?></span></td>
             <td id="c4_r<?php print $i; ?>"><?php if($message['from'] != $message['shortfrom']) { ?><span title="<?php print $message['from']; ?>"><?php print $message['shortfrom']; ?></span><?php } else { print $message['from']; } ?></td>
             <td id="c5_r<?php print $i; ?>"><?php if(count($message['to']) > 1) { ?><span title="<?php print implode("\n", $message['to']); ?>"><?php print $message['shortto']; ?>&nbsp;<i class="muted icon-group"></i></span><?php } else { print $message['shortto']; } ?></td>
 
