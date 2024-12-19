@@ -341,3 +341,31 @@ int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *en
 
    return ret;
 }
+
+
+char *url_encode(const char *str){
+   size_t len = strlen(str);
+
+   char *result = malloc(3*len + 1);  // Worst case scenario: each char becomes %XX
+   if(!result){
+      fprintf(stderr, "malloc() error in %s:%d", __func__, __LINE__);
+      return NULL;
+   }
+
+   char *out = result;
+
+   while(*str){
+      unsigned char c = *str;
+      if(isalnum(c) || c == '_' || c == '-' || c == '.' || c == '~') {
+         *out++ = c;
+      } else {
+         sprintf(out, "%%%02X", c);
+         out += 3;
+      }
+      str++;
+   }
+
+   *out = '\0';
+
+   return result;
+}
