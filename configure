@@ -3570,6 +3570,7 @@ have_psql="no"
 have_tre="no"
 have_zip="no"
 have_zlib="no"
+have_curl="no"
 have_tweak_sent_time="no"
 
 database=""
@@ -4242,6 +4243,102 @@ if test "$have_zlib" = "no"; then
 fi
 
 
+       for ac_header in curl/curl.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "curl/curl.h" "ac_cv_header_curl_curl_h" "$ac_includes_default"
+if test "x$ac_cv_header_curl_curl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_CURL_CURL_H 1" >>confdefs.h
+ have_curl=yes
+else $as_nop
+  echo "curl.h is not found"
+fi
+
+done
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lcurl" >&5
+printf %s "checking for main in -lcurl... " >&6; }
+if test ${ac_cv_lib_curl_main+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcurl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_curl_main=yes
+else $as_nop
+  ac_cv_lib_curl_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_curl_main" >&5
+printf "%s\n" "$ac_cv_lib_curl_main" >&6; }
+if test "x$ac_cv_lib_curl_main" = xyes
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for curl_easy_setopt in -lcurl" >&5
+printf %s "checking for curl_easy_setopt in -lcurl... " >&6; }
+if test ${ac_cv_lib_curl_curl_easy_setopt+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcurl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char curl_easy_setopt ();
+int
+main (void)
+{
+return curl_easy_setopt ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_curl_curl_easy_setopt=yes
+else $as_nop
+  ac_cv_lib_curl_curl_easy_setopt=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_curl_curl_easy_setopt" >&5
+printf "%s\n" "$ac_cv_lib_curl_curl_easy_setopt" >&6; }
+if test "x$ac_cv_lib_curl_curl_easy_setopt" = xyes
+then :
+  have_curl=yes
+else $as_nop
+  echo "curl.so is not found"; have_curl=no
+fi
+
+fi
+ac_cv_lib_curl=ac_cv_lib_curl_main
+
+if test "$have_curl" = "no"; then
+   echo "please install the libcurl development packages"
+   exit 1;
+fi
+
 # Extract the first word of "mariadb_config", so it can be a program name with args.
 set dummy mariadb_config; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -4537,6 +4634,13 @@ else
    echo "zip library: no"
 fi
 
+if test "$have_curl" = "yes"; then
+   echo "curl library: yes"
+   defs="$defs -DHAVE_CURL"
+   antispam_libs="$antispam_libs -lcurl"
+else
+   echo "curl library: no"
+fi
 
 echo
 

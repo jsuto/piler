@@ -429,4 +429,15 @@ struct tls_protocol {
    int version;
 };
 
+struct MemoryStruct {
+   char *memory;
+   size_t size;
+   size_t written_size;
+};
+
+struct FolderList {
+   char **folders;
+   size_t count;
+};
+
 #endif /* _DEFS_H */
