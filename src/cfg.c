@@ -104,6 +104,7 @@ struct _parse_rule config_parse_rules[] =
    { "update_counters_to_memcached", "integer", (void*) int_parser, offsetof(struct config, update_counters_to_memcached), "0", sizeof(int)},
    { "username", "string", (void*) string_parser, offsetof(struct config, username), "piler", MAXVAL-1},
    { "verbosity", "integer", (void*) int_parser, offsetof(struct config, verbosity), "1", sizeof(int)},
+   { "verifyssl", "integer", (void*) int_parser, offsetof(struct config, verifyssl), "1", sizeof(int)},
    { "workdir", "string", (void*) string_parser, offsetof(struct config, workdir), WORK_DIR, MAXVAL-1},
 
    {NULL, NULL, NULL, 0, 0, 0}

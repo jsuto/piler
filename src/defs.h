@@ -322,7 +322,7 @@ struct import {
    int table_id;
    int delay;
    int la_limit;
-   int noverify;
+   int verifyssl;
    char *server;
    char *username;
    char *password;

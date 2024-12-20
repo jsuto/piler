@@ -107,6 +107,8 @@ struct config {
 
    int max_message_size;
    uint64 max_smtp_memory;
+
+   int verifyssl;
 };
 
 

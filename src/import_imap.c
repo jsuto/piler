@@ -25,7 +25,7 @@
 #define SSL_SETUP(curl, data)  \
    if(!strncmp(data->import->server, "imaps://", 8)) {    \
       curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);  \
-      if(data->import->noverify == 1) {                \
+      if(data->import->verifyssl == 0) {                \
          curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);    \
          curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);    \
       }                                   \

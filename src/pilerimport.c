@@ -111,7 +111,7 @@ int main(int argc, char **argv){
    import.la_limit = 0;
    import.after = 0;
    import.before = 0;
-   import.noverify = 0;
+   import.verifyssl = 1;
 
    data.import = &import;
 
@@ -160,16 +160,15 @@ int main(int argc, char **argv){
             {"only-download",no_argument,        0,  'o' },
             {"read-from-export",no_argument,     0,  'y' },
             {"dry-run",      no_argument,        0,  'D' },
-            {"noverify",     no_argument,        0,  'n' },
             {"help",         no_argument,        0,  'h' },
             {0,0,0,0}
          };
 
       int option_index = 0;
 
-      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:nyDRroqh?", long_options, &option_index);
+      int c = getopt_long(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:yDRroqh?", long_options, &option_index);
 #else
-      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:nyDRroqh?");
+      int c = getopt(argc, argv, "c:m:M:e:d:i:K:u:p:P:x:F:f:a:b:t:s:g:j:T:Z:z:A:B:yDRroqh?");
 #endif
 
       if(c == -1) break;
@@ -234,10 +233,6 @@ int main(int argc, char **argv){
 
          case 'f' :
                     data.import->folder_imap = optarg;
-                    break;
-
-         case 'n' :
-                    data.import->noverify = 1;
                     break;
 
          case 'R' :
@@ -348,6 +343,8 @@ int main(int argc, char **argv){
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    cfg = read_config(configfile);
+
+   data.import->verifyssl = cfg.verifyssl;
 
    memset(cfg.security_header, 0, MAXVAL);
 
