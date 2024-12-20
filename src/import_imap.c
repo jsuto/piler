@@ -302,6 +302,8 @@ int import_from_imap_server(struct session_data *sdata, struct data *data, struc
    int check_skip_list = 0;
    if(data->import->skiplist && strlen(data->import->skiplist) > 0) check_skip_list = 1;
 
+   data->import->remove_after_import = 1;
+
    struct FolderList *folders = list_folders_curl(curl, data);
    if(folders){
       uint64 total_counter = 0;
