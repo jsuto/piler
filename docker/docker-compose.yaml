@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mariadb:11.1.2
+    image: mariadb:11.6.2
     container_name: mysql
     restart: unless-stopped
     cap_drop:
@@ -20,7 +20,7 @@ services:
       - ./piler.cnf:/etc/mysql/conf.d/piler.cnf:ro
 
   manticore:
-    image: manticoresearch/manticore:6.3.2
+    image: manticoresearch/manticore:6.3.8
     container_name: manticore
     restart: unless-stopped
     volumes:
@@ -34,7 +34,7 @@ services:
           memory: 512M
 
   piler:
-    image: sutoj/piler:${VERSION:-1.4.6}
+    image: sutoj/piler:${VERSION:-1.4.7}
     container_name: piler
     init: true
     environment:
