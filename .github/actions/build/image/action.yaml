@@ -32,11 +32,6 @@ runs:
         username: ${{ inputs.DOCKER_USERNAME }}
         password: ${{ inputs.DOCKER_TOKEN }}
 
-    - name: Download package
-      uses: actions/download-artifact@v4
-      with:
-        path: docker
-
     - name: Build image from package
       uses: docker/build-push-action@v5
       with:

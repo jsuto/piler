@@ -30,6 +30,7 @@ runs:
     - name: Build package
       id: build-package
       run: |
+        uname -a
         docker run --rm \
            -e PROJECT_ID=${{ inputs.PROJECT_ID }} \
            -e DISTRO=${{ inputs.DISTRO }} \

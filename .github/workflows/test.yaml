@@ -7,6 +7,10 @@ on:
       - synchronize # commit pushed to PR
       - reopened # closed PR reopened
 
+concurrency:
+  group: ${{ github.ref_name == 'master' && 'master' || github.ref_name }}
+  cancel-in-progress: ${{ github.ref_name != 'master' }}
+
 env:
   ARCHIVE_HOST: test1.acts.hu
   IMAGE_NAME: sutoj/piler
@@ -20,8 +24,7 @@ env:
 jobs:
   get-version:
     runs-on:
-      - self-hosted
-      - X64
+      - ubuntu-latest
 
     outputs:
       IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}

@@ -16,8 +16,7 @@ permissions:
 jobs:
   get-version:
     runs-on:
-      - self-hosted
-      - X64
+      - ubuntu-latest
 
     outputs:
       IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
@@ -36,20 +35,12 @@ jobs:
         id: get-version
         uses: ./.github/actions/version
 
-  build-package:
+  build-package-amd64:
     needs:
       - get-version
 
-    strategy:
-      matrix:
-        arch: ['amd64','arm64']
-
     runs-on:
-      - self-hosted
-      - ${{ matrix.arch }}
-
-    outputs:
-      PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
+      - ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +49,29 @@ jobs:
         id: build-package
         uses: ./.github/actions/build/package
         with:
-          ARCH: ${{ matrix.arch }}
+          ARCH: amd64
+          COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
+          DISTRO: ${{ env.DISTRO }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.DISTRO }}-${{ matrix.arch }}
+          PROJECT_ID: 'piler'
+          VERSION: ${{ needs.get-version.outputs.VERSION }}
+
+  build-package-arm64:
+    needs:
+      - get-version
+
+    runs-on:
+      - self-hosted
+      - ARM64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build package
+        id: build-package
+        uses: ./.github/actions/build/package
+        with:
+          ARCH: arm64
           COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.DISTRO }}-${{ matrix.arch }}
@@ -68,13 +81,15 @@ jobs:
   build-image:
     needs:
       - get-version
-      - build-package
+      - build-package-amd64
+      - build-package-arm64
 
     runs-on:
-      - self-hosted
-      - X64
+      - ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download packages
         uses: actions/download-artifact@v4
         with:
@@ -94,13 +109,14 @@ jobs:
 
   create-release:
     needs:
-      - build-package
+      - build-image
 
     runs-on:
-      - self-hosted
-      - X64
+      - ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download packages
         uses: actions/download-artifact@v4
         with:
