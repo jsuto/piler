@@ -37,6 +37,7 @@ have_psql="no"
 have_tre="no"
 have_zip="no"
 have_zlib="no"
+have_curl="no"
 have_tweak_sent_time="no"
 
 database=""
@@ -151,6 +152,15 @@ if test "$have_zlib" = "no"; then
    exit 1;
 fi
 
+dnl libcurl
+
+AC_CHECK_HEADERS(curl/curl.h, have_curl=yes, echo "curl.h is not found")
+AC_CHECK_LIB([curl],[main],[AC_CHECK_LIB(curl, curl_easy_setopt, have_curl=yes, echo "curl.so is not found"; have_curl=no)],[],[])ac_cv_lib_curl=ac_cv_lib_curl_main
+
+if test "$have_curl" = "no"; then
+   echo "please install the libcurl development packages"
+   exit 1;
+fi
 
 AC_CHECK_PROG(MYSQL_CONFIG, mariadb_config, yes)
 
@@ -350,6 +360,13 @@ else
    echo "zip library: no"
 fi
 
+if test "$have_curl" = "yes"; then
+   echo "curl library: yes"
+   defs="$defs -DHAVE_CURL"
+   antispam_libs="$antispam_libs -lcurl"
+else
+   echo "curl library: no"
+fi
 
 echo
 

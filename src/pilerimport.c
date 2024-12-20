@@ -111,6 +111,7 @@ int main(int argc, char **argv){
    import.la_limit = 0;
    import.after = 0;
    import.before = 0;
+   import.verifyssl = 1;
 
    data.import = &import;
 
@@ -342,6 +343,8 @@ int main(int argc, char **argv){
    if(!can_i_write_directory(NULL)) __fatal("cannot write current directory!");
 
    cfg = read_config(configfile);
+
+   data.import->verifyssl = cfg.verifyssl;
 
    memset(cfg.security_header, 0, MAXVAL);
 

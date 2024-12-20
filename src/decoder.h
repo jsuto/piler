@@ -11,5 +11,6 @@ void decodeQP(char *p);
 void decodeHTML(char *p, int utf8);
 void decodeURL(char *p);
 int utf8_encode(char *inbuf, int inbuflen, char *outbuf, int outbuflen, char *encoding);
+char *url_encode(const char *str);
 
 #endif /* _DECODER_H */

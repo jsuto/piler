@@ -11,6 +11,7 @@ pushd "$SCRIPT_DIR"
 docker exec -i "$CONTAINER" bash -c "cat >> /etc/piler/config-site.php" < config-site-extras.php
 docker cp setup.sql "${CONTAINER}:/tmp"
 docker exec "$CONTAINER" bash -c 'mysql --defaults-file=/etc/piler/.my.cnf < /tmp/setup.sql'
+docker exec "$CONTAINER" bash -c "sed -i 's/verifyssl=1/verifyssl=0/' /etc/piler/piler.conf"
 docker exec "$CONTAINER" /etc/init.d/rc.piler reload
 docker exec "$CONTAINER" wget -qO /etc/piler/tsa.pem --no-check-certificate https://freetsa.org/files/cacert.pem
 popd

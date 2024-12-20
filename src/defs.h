@@ -322,6 +322,7 @@ struct import {
    int table_id;
    int delay;
    int la_limit;
+   int verifyssl;
    char *server;
    char *username;
    char *password;
@@ -427,6 +428,17 @@ struct smtp_session {
 struct tls_protocol {
    char *proto;
    int version;
+};
+
+struct MemoryStruct {
+   char *memory;
+   size_t size;
+   size_t written_size;
+};
+
+struct FolderList {
+   char **folders;
+   size_t count;
 };
 
 #endif /* _DEFS_H */
