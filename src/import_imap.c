@@ -22,7 +22,14 @@
 #include <syslog.h>
 #include <piler.h>
 
-#define IS_SSL(s) strncmp(s, "imaps://", 8) ? 0 : 1
+#define SSL_SETUP(curl, data)  \
+   if(!strncmp(data->import->server, "imaps://", 8)) {    \
+      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);  \
+      if(data->import->noverify == 1) {                \
+         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);    \
+         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);    \
+      }                                   \
+   }
 
 void free_folder_list(struct FolderList *list){
    if(list){
@@ -84,11 +91,7 @@ struct FolderList* list_folders_curl(CURL *curl, struct data *data){
    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
-   if(IS_SSL(data->import->server)){
-      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
-      //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-   }
+   SSL_SETUP(curl, data);
 
    res = curl_easy_perform(curl);
    if(res != CURLE_OK){
@@ -164,11 +167,7 @@ int examine_imap_folder(CURL *curl, struct data *data, const char *folder){
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
-    if(IS_SSL(data->import->server)){
-       curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
-       //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-       //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-    }
+    SSL_SETUP(curl, data);
 
     char command[SMALLBUFSIZE];
     snprintf(command, sizeof(command), "EXAMINE %s", folder);
@@ -233,11 +232,7 @@ int download_email(CURL *curl, struct data *data, const char *url, int seq_num, 
    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&fetch_size);
    curl_easy_setopt(curl, CURLOPT_HEADERDATA, (void *)&message);
 
-   if(IS_SSL(seq_url)){
-      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
-      //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-   }
+   SSL_SETUP(curl, data);
 
    // Fetch command to get entire email body
    char command[SMALLBUFSIZE];
