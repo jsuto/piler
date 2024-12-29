@@ -45,6 +45,7 @@ $_['text_bulk_restore_selected_emails'] = "選択メールをまとめて復元"
 $_['text_bulk_update_selected_uids'] = "選択uidの一括更新";
 
 $_['text_cancel'] = "キャンセル";
+$_['text_cc'] = "CC";
 $_['text_change_user_settings'] = "ユーザー設定変更";
 $_['text_clienthost'] = "クライアントホスト";
 $_['text_close'] = "閉じる";
