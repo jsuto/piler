@@ -124,6 +124,7 @@ $_['text_enter_search_terms'] = "検索語を入力";
 $_['text_error'] = "エラー";
 $_['text_exact_domain_name_or_email_address'] = "正確なドメイン名かメールアドレス";
 $_['text_exclude'] = "除外";
+$_['text_exclusion_rules'] = "除外ルール";
 $_['text_existing'] = "登録済み";
 $_['text_existing_domains'] = "登録済みドメイン";
 $_['text_existing_email'] = "登録済みメールアドレス";
