@@ -103,6 +103,13 @@ struct FolderList* list_folders_curl(CURL *curl, struct data *data){
    char buf[MAXBUFSIZE];
    char *p = chunk.memory;
 
+   if(data->import->folder_imap){
+      char tmpbuf[SMALLBUFSIZE];
+
+      snprintf(tmpbuf, sizeof(tmpbuf)-1, "* LIST (\\HasNoChildren) \".\" \"%s\"\r\n", data->import->folder_imap);
+      p = tmpbuf;
+   }
+
    do {
       memset(buf, 0, sizeof(buf));
       p = split(p, '\n', buf, sizeof(buf)-1, &rc);
