@@ -69,7 +69,10 @@ def process_folder(conn, folder):
         print("Processing {}".format(folder))
 
     try:
-        rc, data = conn.select(folder)
+        readonly = True
+        if opts['remove']:
+            readonly = False
+        rc, data = conn.select(folder, readonly=readonly)
     except:
         print("Error processing folder {}".format(folder))
         return
@@ -111,7 +114,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, help="piler.conf path",
                         default="/etc/piler/piler.conf")
-    parser.add_argument("--security", type=str, help="imap security. None, TLS or SSL")
+    parser.add_argument("--security", type=str, help="imap security. no, TLS or SSL", default="no")
     parser.add_argument("-s", "--server", type=str, help="imap server")
     parser.add_argument("-P", "--port", type=int, help="port number", default=143)
     parser.add_argument("-u", "--user", type=str, help="imap user")
@@ -188,7 +191,7 @@ def main():
     if opts['verbose']:
         print("Skipped folder list: {}".format(opts['skip_folders']))
 
-    if security == 'None':
+    if security == 'no':
         conn = imaplib.IMAP4(server)
     elif security == 'imap-ssl':
         conn = imaplib.IMAP4_SSL(server)
