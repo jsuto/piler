@@ -346,3 +346,48 @@ int retrieve_email_from_archive(struct session_data *sdata, FILE *dest, struct c
 
    return 0;
 }
+
+
+int recover_email_from_archive(char *filename, struct config *cfg){
+   char *buffer=NULL;
+
+   retrieve_file_from_archive(filename, WRITE_TO_BUFFER, &buffer, stdout, cfg);
+
+   char *B = buffer;
+   do {
+      char line[MAXBUFSIZE];
+      int result;
+
+      memset(line, 0, sizeof(line));
+      B = split(B, '\n', line, sizeof(line)-1, &result);
+
+      char *p = strstr(line, "ATTACHMENT_POINTER_");
+      if(p){
+         char *q = strstr(p, "_XXX_PILER");
+         if(q){
+            *q = '\0';
+            char afile[SMALLBUFSIZE];
+
+            char *a = p+strlen("ATTACHMENT_POINTER_");
+            snprintf(afile, sizeof(afile)-1, "%s/%c%c/%c%c%c/%c%c/%c%c/%s", cfg->queuedir, *(a+24), *(a+25), *(a+8), *(a+9), *(a+10), *(a+RND_STR_LEN-4), *(a+RND_STR_LEN-3), *(a+RND_STR_LEN-2), *(a+RND_STR_LEN-1), a);
+
+            //printf("afile: %s\n", afile);
+
+            retrieve_file_from_archive(afile, WRITE_TO_STDOUT, NULL, stdout, cfg);
+
+            printf("%s\n", q+strlen("_XXX_PILER"));
+         }
+      }
+      else printf("%s\n", line);
+
+      //if(*line == '\0') continue;
+
+   } while(B);
+
+
+   //ATTACHMENT_POINTER_500000006789e73628ea923c005452d5ffe5.a1_XXX_PILER
+
+   free(buffer);
+
+   return 0;
+}
