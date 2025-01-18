@@ -33,7 +33,7 @@ MAKE = `which make`
 
 INSTALL = @INSTALL@
 
-all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport reindex test stats piler-smtp
+all: libpiler.a piler pilerconf pilerget pileraget pilerimport pilerexport reindex recover test stats piler-smtp
 install: install-piler
 
 
@@ -68,6 +68,9 @@ pilerconf: pilerconf.c libpiler.a
 reindex: reindex.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
 
+recover: recover.c libpiler.a
+	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o $@ $< -lpiler $(LIBS) $(LIBDIR)
+
 test: test.c libpiler.a
 	$(CC) $(CFLAGS) $(INCDIR) $(DEFS) -o pilertest $< -lpiler $(LIBS) $(LIBDIR) @LDFLAGS@
 
@@ -96,7 +99,7 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerstats $(DESTDIR)$(bindir)
 
 clean:
-	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilertest pilerstats reindex piler-smtp
+	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilertest pilerstats reindex recover piler-smtp
 
 distclean: clean
 	rm -f Makefile
