@@ -28,7 +28,7 @@
             <?php if(isset($x)){ ?><p class="alert alert-error lead"><?php print $x; ?></p><?php } ?>
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
-            <input type="password" class="input-block-level bold" id="ga_code" name="ga_code" placeholder="<?php print $text_google_authenticator_code; ?>" required autofocus>
+            <input type="text" class="input-block-level bold" id="ga_code" name="ga_code" placeholder="<?php print $text_google_authenticator_code; ?>" required autofocus>
 
             <button class="btn btn-large btn-primary" type="submit" value="<?php print $text_submit; ?>"><?php print $text_submit; ?></button>
             <button class="btn btn-large" type="reset" value="<?php print $text_cancel; ?>" onclick="document.location.href='logout.php';"><?php print $text_cancel; ?></button>
