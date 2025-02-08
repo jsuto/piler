@@ -243,7 +243,7 @@ int download_email(CURL *curl, struct data *data, const char *url, int seq_num, 
 
    // Fetch command to get entire email body
    char command[SMALLBUFSIZE];
-   snprintf(command, sizeof(command), "UID FETCH %d BODY[]", seq_num);
+   snprintf(command, sizeof(command), "FETCH %d BODY[]", seq_num);
    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
 
    res = curl_easy_perform(curl);
