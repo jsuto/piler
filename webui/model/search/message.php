@@ -190,7 +190,7 @@ class ModelSearchMessage extends Model {
             }
          }
       } else {
-         $this->message_array[CONST_TEXTPLAIN] = 'EMPTY_MESSAGE_BODY';
+         $this->message['text/plain'] = 'EMPTY_MESSAGE_BODY';
       }
 
       return array('from' => $from,

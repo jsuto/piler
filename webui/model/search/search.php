@@ -570,7 +570,7 @@ class ModelSearchSearch extends Model {
             $m['subject'] = escape_gt_lt_quote_symbols($m['subject']);
             $m['shortsubject'] = make_short_string($m['subject'], MAX_CGI_FROM_SUBJ_LEN);
 
-            $m['date'] = date(DATE_TEMPLATE, $m['sent']);
+            $m['date'] = date(DATE_TEMPLATE_SEARCH_HITS, $m['sent']);
             $m['preview_date'] = date(DATE_PREVIEW_TEMPLATE, $m['sent']);
             $m['size'] = nice_size($m['size']);
 
