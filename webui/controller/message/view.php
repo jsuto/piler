@@ -100,6 +100,10 @@ class ControllerMessageView extends Controller {
          $this->data['tsa'] = $this->model_search_message->get_tsa_award();
       }
 
+      if(Registry::get('auditor_user') == 1 && SHOW_HEADERS_FOR_AUDITOR_MESSAGE_PREVIEW) {
+         $this->data['headers'] = $this->model_search_message->get_message_headers($this->data['piler_id']);
+      }
+
       foreach($this->data['attachments'] as $a) {
          if(preg_match('/image/', $a['type'])) {
             $attachment = $this->model_search_message->get_attachment_by_id($a['id']);
