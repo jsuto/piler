@@ -104,12 +104,17 @@
 
 <div id="messageblock">
 
-  <div class="messageheader">
-    <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
-    <strong><?php print $message['from']; ?></strong><br />
-    <strong><?php print $message['to']; ?></strong><br />
-    <?php if(strlen($message['cc']) > 6) { ?><strong><?php print $message['cc']; ?></strong><br /><?php } ?>
-    <strong>Date: <?php print date(DATE_PREVIEW_TEMPLATE, $meta['sent']); ?></strong><br />
+   <div class="messageheader">
+      <?php if(isset($headers['headers'])) { ?>
+         <pre><?php print $headers['headers']; ?></pre>
+      <?php } else { ?>
+         <strong><?php if($message['subject'] == "" || $message['subject'] == "Subject:") { print "&lt;" . $text_no_subject . "&gt;"; } else { print $message['subject']; } ?></strong><br />
+         <strong><?php print $message['from']; ?></strong><br />
+         <strong><?php print $message['to']; ?></strong><br />
+         <?php if(strlen($message['cc']) > 6) { ?><strong><?php print $message['cc']; ?></strong><br /><?php } ?>
+         <strong>Date: <?php print date(DATE_PREVIEW_TEMPLATE, $meta['sent']); ?></strong><br />
+    <?php } ?>
+
     <?php foreach($attachments as $a) { ?>
        <span><i class="attachment icon-paper-clip icon-large" title="Message Attachment"></i>&nbsp;<a href="<?php print PATH_PREFIX; ?>index.php?route=message/attachment&id=<?php print $a['id']; ?>"><?php print $a['name']; ?></a></span>
     <?php } ?><?php if(count($attachments) > 1) { ?>| <a href="<?php print PATH_PREFIX; ?>index.php?route=message/attachments&id=<?php print $id; ?>"><i class="icon-briefcase"></i></a><?php } ?><br/>
