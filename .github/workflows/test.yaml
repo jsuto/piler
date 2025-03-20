@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'master' }}
 
 env:
-  ARCHIVE_HOST: test1.acts.hu
+  ARCHIVE_HOST: test1.wadzu.com
   IMAGE_NAME: sutoj/piler
   TEST_TAG: test
   DISTRO: noble
