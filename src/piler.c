@@ -497,7 +497,7 @@ int main(int argc, char **argv){
                    return 0;
 
         case 'V' :
-                   printf("%s %s, Janos SUTO <sj@acts.hu>\n\n%s\nMySQL client library version: %s\n", PROGNAME, VERSION, CONFIGURE_PARAMS, mysql_get_client_info());
+                   printf("%s %s, %s\nMySQL client library version: %s\n", PROGNAME, VERSION, CONFIGURE_PARAMS, mysql_get_client_info());
                    get_extractor_list();
                    return 0;
 
