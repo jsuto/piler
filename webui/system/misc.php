@@ -4,13 +4,24 @@ function H($s = '') {
    print htmlentities($s);
 }
 
+function getRemoteAddr() {
+   if(count(TRUSTED_PROXIES) > 0 && in_array($_SERVER['REMOTE_ADDR'], TRUSTED_PROXIES) && isset($_SERVER['HTTP_'.REAL_IP_HEADER])) {
+      return $_SERVER['HTTP_'.REAL_IP_HEADER];
+   }
+
+   if(isset($_SERVER['REMOTE_ADDR'])) {
+      return $_SERVER['REMOTE_ADDR'];
+   }
+
+   return '';
+}
 
 function LOGGER($event = '', $username = '') {
    $ipaddr = '';
 
    if($event == "") { return 0; }
 
-   if(isset($_SERVER['REMOTE_ADDR'])) { $ipaddr = $_SERVER['REMOTE_ADDR']; }
+   $ipaddr = getRemoteAddr();
 
    $session = Registry::get('session');
 
@@ -29,7 +40,7 @@ function AUDIT($action = 0, $email = '', $ipaddr = '', $id = 0, $description = '
 
    $session = Registry::get('session');
 
-   if($ipaddr == '' && isset($_SERVER['REMOTE_ADDR'])) { $ipaddr = $_SERVER['REMOTE_ADDR']; }
+   if($ipaddr == '') { $ipaddr = getRemoteAddr(); }
    if($email == '') { $email = $session->get("email"); }
 
    $a = explode("@", $email);

@@ -1102,10 +1102,11 @@ class Zend_Mail extends Zend_Mime_Message
 
         $time = time();
 
+        $ipaddr = getRemoteAddr();
         if ($this->_from !== null) {
             $user = $this->_from;
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-            $user = $_SERVER['REMOTE_ADDR'];
+        } elseif ($ipaddr != '') {
+            $user = $ipaddr;
         } else {
             $user = getmypid();
         }

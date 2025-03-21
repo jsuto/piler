@@ -82,10 +82,10 @@ else if(Registry::get('username')) {
    }
 
    if(ENABLE_SAAS == 1) {
-      $query = $db->query("UPDATE " . TABLE_ONLINE . " SET last_activity=? WHERE username=? AND ipaddr=?", array(NOW, $session->get('email'), $_SERVER['REMOTE_ADDR']));
+      $query = $db->query("UPDATE " . TABLE_ONLINE . " SET last_activity=? WHERE username=? AND ipaddr=?", array(NOW, $session->get('email'), getRemoteAddr()));
 
       if($db->countAffected() == 0) {
-         $query = $db->query("INSERT INTO " . TABLE_ONLINE . " (username, ts, last_activity, ipaddr) VALUES(?,?,?,?)", array($session->get('email'), NOW, NOW, $_SERVER['REMOTE_ADDR']));
+         $query = $db->query("INSERT INTO " . TABLE_ONLINE . " (username, ts, last_activity, ipaddr) VALUES(?,?,?,?)", array($session->get('email'), NOW, NOW, getRemoteAddr()));
       }
    }
 

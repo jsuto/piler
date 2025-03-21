@@ -65,6 +65,13 @@ $config['SITE_URL'] = 'http://piler.example.com/';
 
 $config['EXTERNAL_DASHBOARD_URL'] = '';
 
+// IP of proxy servers that are trusted to set the real IP address
+$config['TRUSTED_PROXIES'] = array();
+
+// HTTP header name that contains the real IP address
+// Has to be upper case and - replaced with _
+$config['REAL_IP_HEADER'] = 'X_REAL_IP';
+
 $config['SESSION_EXPIRY'] = 3600;
 $config['DELTA_INDEXER_PERIOD'] = 1800;
 
