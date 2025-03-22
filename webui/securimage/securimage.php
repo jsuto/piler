@@ -735,7 +735,7 @@ class Securimage
     public static function getCaptchaId($new = true, array $options = array())
     {
         if (is_null($new) || (bool)$new == true) {
-            $id = sha1(uniqid($_SERVER['REMOTE_ADDR'], true));
+            $id = sha1(uniqid(getRemoteAddr(), true));
             $opts = array('no_session'    => true,
                           'use_database'  => true);
             if (sizeof($options) > 0) $opts = array_merge($options, $opts);
@@ -1588,7 +1588,7 @@ class Securimage
 
         if ($this->use_database && $this->pdo_conn) {
             $id = $this->getCaptchaId(false);
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = getRemoteAddr();
 
             if (empty($id)) {
                 $id = $ip;
@@ -1820,7 +1820,7 @@ class Securimage
                 $stmt   = $this->pdo_conn->prepare($query);
                 $result = $stmt->execute(array(Securimage::$_captchaId));
             } else {
-                $ip = $_SERVER['REMOTE_ADDR'];
+                $ip = getRemoteAddr();
                 $ns = $this->namespace;
 
                 // ip is stored in id column when no captchaId
@@ -1856,7 +1856,7 @@ class Securimage
     protected function clearCodeFromDatabase()
     {
         if ($this->pdo_conn) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = getRemoteAddr();
             $ns = $this->pdo_conn->quote($this->namespace);
             $id = Securimage::$_captchaId;
 
