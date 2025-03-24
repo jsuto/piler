@@ -24,3 +24,17 @@ unit_tests/check_parser
 unit_tests/check_parser_utils
 unit_tests/check_rules
 unit_tests/smtp
+config.log
+config.status
+etc/piler.conf
+init.d/rc.piler
+init.d/rc.searchd
+params.h
+piler-config.h
+stamp-h1
+util/import.sh
+util/indexer.attachment.sh
+util/indexer.delta.sh
+util/indexer.main.sh
+util/postinstall.sh
+webui/config.php
