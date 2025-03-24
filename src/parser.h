@@ -34,7 +34,7 @@ char *determine_attachment_type(char *filename, char *type);
 char *get_attachment_extractor_by_filename(char *filename);
 void parse_reference(struct parser_state *state, char *s);
 int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen);
-void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len);
+void fix_recipient_delimiter_in_email_address(char *puf, char **at_sign, unsigned int *len, char *delimiter);
 void tokenize(char *buf, struct parser_state *state, struct session_data *sdata, struct data *data, struct config *cfg);
 void flush_attachment_buffer(struct parser_state *state, char *abuffer, unsigned int abuffersize);
 void fill_attachment_name_buf(struct parser_state *state, char *buf);

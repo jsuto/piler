@@ -106,6 +106,7 @@ struct _parse_rule config_parse_rules[] =
    { "verbosity", "integer", (void*) int_parser, offsetof(struct config, verbosity), "1", sizeof(int)},
    { "verifyssl", "integer", (void*) int_parser, offsetof(struct config, verifyssl), "1", sizeof(int)},
    { "workdir", "string", (void*) string_parser, offsetof(struct config, workdir), WORK_DIR, MAXVAL-1},
+   { "recipient_delimiter", "string", (void*) string_parser, offsetof(struct config, recipient_delimiter), "+", MAXVAL-1},
 
    {NULL, NULL, NULL, 0, 0, 0}
 };

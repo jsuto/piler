@@ -1055,16 +1055,19 @@ int base64_decode_attachment_buffer(char *p, unsigned char *b, int blen){
 }
 
 
-void fix_plus_sign_in_email_address(char *puf, char **at_sign, unsigned int *len){
+void fix_recipient_delimiter_in_email_address(char *puf, char **at_sign, unsigned int *len, char *delimiter){
    char *r;
 
-   r = strchr(puf, '+');
-   if(r){
-      int n = strlen(*at_sign);
-      memmove(r, *at_sign, n);
-      *(r+n) = '\0';
-      *len = strlen(puf);
-      *at_sign = r;
+   // loop over configured delimiters since there may be multiple delimiters configured
+   for(; *delimiter; delimiter++){
+      r = strchr(puf, *delimiter);
+      if(r){
+         int n = strlen(*at_sign);
+         memmove(r, *at_sign, n);
+         *(r+n) = '\0';
+         *len = strlen(puf);
+         *at_sign = r;
+      }
    }
 }
 
