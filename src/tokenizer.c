@@ -56,7 +56,7 @@ void tokenize(char *buf, struct parser_state *state, struct session_data *sdata,
          strtolower(puf);
 
          q = strchr(puf, '@');
-         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+         if(q) fix_recipient_delimiter_in_email_address(puf, &q, &len, cfg->recipient_delimiter);
 
          memcpy(&(state->b_from[strlen(state->b_from)]), puf, len);
 
@@ -86,7 +86,7 @@ void tokenize(char *buf, struct parser_state *state, struct session_data *sdata,
          strtolower(puf);
 
          q = strchr(puf, '@');
-         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+         if(q) fix_recipient_delimiter_in_email_address(puf, &q, &len, cfg->recipient_delimiter);
 
          memcpy(&(state->b_sender[strlen(state->b_sender)]), puf, len);
 
@@ -110,8 +110,9 @@ void tokenize(char *buf, struct parser_state *state, struct session_data *sdata,
          strtolower(puf);
 
          /* fix aaa+bbb@ccc.fu address to aaa@ccc.fu, 2017.02.04, SJ */
+         /* recipient_delimiter (+ by default) can be configured to multiple chars on some mail systems, 2025.03.24, PM */
          q = strchr(puf, '@');
-         if(q) fix_plus_sign_in_email_address(puf, &q, &len);
+         if(q) fix_recipient_delimiter_in_email_address(puf, &q, &len, cfg->recipient_delimiter);
 
          if((state->message_state == MSG_RECIPIENT || state->message_state == MSG_ENVELOPE_TO) && findnode(state->journal_recipient, puf) == NULL && state->journaltolen < sizeof(state->b_journal_to)-len-1){
             addnode(state->journal_recipient, puf);

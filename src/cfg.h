@@ -109,6 +109,8 @@ struct config {
    uint64 max_smtp_memory;
 
    int verifyssl;
+
+   char recipient_delimiter[MAXVAL];
 };
 
 
