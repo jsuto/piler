@@ -180,7 +180,9 @@ void decodeQP(char *p){
 
    if(p == NULL) return;
 
-   for(i=0; i<strlen((char*)p); i++){
+   size_t len = strlen(p);
+
+   for(i=0; i<len; i++){
       char c = p[i];
 
       if(p[i] == '=' && isxdigit(p[i+1]) && isxdigit(p[i+2])){
