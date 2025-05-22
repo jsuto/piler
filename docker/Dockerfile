@@ -15,7 +15,8 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 COPY ${PACKAGE}_${TARGETARCH}.deb /
 
 # hadolint ignore=DL3008
-RUN apt-get update && \
+RUN userdel -r ubuntu && \
+    apt-get update && \
     apt-get -y --no-install-recommends install \
        wget openssl sysstat php8.3-cli php8.3-cgi php8.3-mysql php8.3-fpm php8.3-zip php8.3-ldap \
        php8.3-gd php8.3-curl php8.3-xml php8.3-memcached catdoc unrtf poppler-utils nginx tnef sudo libzip4t64 \
