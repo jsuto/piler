@@ -42,7 +42,7 @@ int open_sphx(struct session_data *sdata, struct config *cfg){
    mysql_options(&(sdata->sphx), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg->mysql_connect_timeout);
    mysql_options(&(sdata->sphx), MYSQL_OPT_RECONNECT, (const char*)&rc);
 
-   if(mysql_real_connect(&(sdata->sphx), cfg->sphxhost, "", "", cfg->sphxdb, cfg->sphxport, "", 0) == 0){
+   if(mysql_real_connect(&(sdata->sphx), cfg->sphxhost, "", "", "", cfg->sphxport, "", 0) == 0){
       syslog(LOG_PRIORITY, "ERROR: cant connect to %s:%d", cfg->sphxhost, cfg->sphxport);
       return ERR;
    }
