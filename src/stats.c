@@ -99,13 +99,15 @@ int get_last_email_archived_timestamp(struct session_data *sdata, struct stats *
 }
 
 
-void sphinx_queries(struct session_data *sdata, struct stats *stats){
+void sphinx_queries(struct session_data *sdata, struct stats *stats, struct config *cfg){
    MYSQL_RES *result;
    MYSQL_ROW row;
+   char s[SMALLBUFSIZE];
 
-   p_query(sdata, "SHOW STATUS LIKE 'queries'");
+   snprintf(s, sizeof(s)-1, "SHOW STATUS LIKE 'queries'");
+   if(mysql_real_query(&(sdata->sphx), s, strlen(s)) == ERR) return;
 
-   result = mysql_store_result(&(sdata->mysql));
+   result = mysql_store_result(&(sdata->sphx));
    if(result){
       row = mysql_fetch_row(result);
 
@@ -118,9 +120,14 @@ void sphinx_queries(struct session_data *sdata, struct stats *stats){
       mysql_free_result(result);
    }
 
-   p_query(sdata, "SHOW INDEX main1 STATUS");
+   snprintf(s, sizeof(s)-1, "SHOW INDEX main1 STATUS");
+   if(cfg->rtindex){
+      snprintf(s, sizeof(s)-1, "SHOW INDEX %s STATUS", cfg->sphxdb);
+   }
 
-   result = mysql_store_result(&(sdata->mysql));
+   if(mysql_real_query(&(sdata->sphx), s, strlen(s)) == ERR) return;
+
+   result = mysql_store_result(&(sdata->sphx));
    if(result){
       while((row = mysql_fetch_row(result))){
          if(strcmp((char*)row[0], "ram_bytes") == 0) stats->ram_bytes = strtoull(row[1], NULL, 10);
@@ -243,16 +250,11 @@ int main(){
 
    close_database(&sdata);
 
+   if(open_sphx(&sdata, &cfg) == ERR) return 0;
 
-   cfg.mysqlsocket[0] = '\0';
-   snprintf(cfg.mysqlhost, MAXVAL-2, "127.0.0.1");
-   cfg.mysqlport = 9306;
+   sphinx_queries(&sdata, &stats, &cfg);
 
-   if(open_database(&sdata, &cfg) == ERR) return 0;
-
-   sphinx_queries(&sdata, &stats);
-
-   close_database(&sdata);
+   close_sphx(&sdata);
 
    count_error_emails(&stats);
 
