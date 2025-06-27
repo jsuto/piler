@@ -99,7 +99,7 @@ int get_last_email_archived_timestamp(struct session_data *sdata, struct stats *
 }
 
 
-void sphinx_queries(struct session_data *sdata, struct stats *stats){
+void sphinx_queries(struct session_data *sdata, struct stats *stats, struct config *cfg){
    MYSQL_RES *result;
    MYSQL_ROW row;
 
@@ -118,7 +118,13 @@ void sphinx_queries(struct session_data *sdata, struct stats *stats){
       mysql_free_result(result);
    }
 
-   p_query(sdata, "SHOW INDEX main1 STATUS");
+   char s[SMALLBUFSIZE];
+   snprintf(s, sizeof(s)-1, "SHOW INDEX main1 STATUS");
+   if(cfg->rtindex){
+      snprintf(s, sizeof(s)-1, "SHOW INDEX %s STATUS", cfg->sphxdb);
+   }
+
+   p_query(sdata, s);
 
    result = mysql_store_result(&(sdata->mysql));
    if(result){
@@ -243,16 +249,11 @@ int main(){
 
    close_database(&sdata);
 
+   if(open_sphx(&sdata, &cfg) == ERR) return 0;
 
-   cfg.mysqlsocket[0] = '\0';
-   snprintf(cfg.mysqlhost, MAXVAL-2, "127.0.0.1");
-   cfg.mysqlport = 9306;
+   sphinx_queries(&sdata, &stats, &cfg);
 
-   if(open_database(&sdata, &cfg) == ERR) return 0;
-
-   sphinx_queries(&sdata, &stats);
-
-   close_database(&sdata);
+   close_sphx(&sdata);
 
    count_error_emails(&stats);
 
