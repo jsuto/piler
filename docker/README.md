@@ -12,5 +12,5 @@ Pick the latest deb package from Github releases (https://github.com/jsuto/piler
 and use it as the PACKAGE build argument, eg.
 
 ```
-docker buildx build --load --platform linux/amd64 -t sutoj/piler:1.4.5 --build-arg PACKAGE=piler_1.4.5-jammy-ba34363 .
+docker buildx build --load --platform linux/amd64 -t sutoj/piler:1.4.7 --build-arg PACKAGE=piler_1.4.7-noble-874c0a6 .
 ```
