@@ -19,7 +19,7 @@ int open_database(struct session_data *sdata, struct config *cfg){
    mysql_options(&(sdata->mysql), MYSQL_OPT_RECONNECT, (const char*)&rc);
 
    if(mysql_real_connect(&(sdata->mysql), cfg->mysqlhost, cfg->mysqluser, cfg->mysqlpwd, cfg->mysqldb, cfg->mysqlport, cfg->mysqlsocket, 0) == 0){
-      syslog(LOG_PRIORITY, "ERROR: cant connect to mysql server");
+      syslog(LOG_PRIORITY, "ERROR: cant connect to mysql server, error=%s", mysql_error(&(sdata->mysql)));
       return ERR;
    }
 
@@ -43,7 +43,7 @@ int open_sphx(struct session_data *sdata, struct config *cfg){
    mysql_options(&(sdata->sphx), MYSQL_OPT_RECONNECT, (const char*)&rc);
 
    if(mysql_real_connect(&(sdata->sphx), cfg->sphxhost, "", "", "", cfg->sphxport, "", 0) == 0){
-      syslog(LOG_PRIORITY, "ERROR: cant connect to %s:%d", cfg->sphxhost, cfg->sphxport);
+      syslog(LOG_PRIORITY, "ERROR: cant connect to %s:%d, error=%s", cfg->sphxhost, cfg->sphxport, mysql_error(&(sdata->sphx)));
       return ERR;
    }
 
