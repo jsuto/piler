@@ -99,6 +99,8 @@ fix_configs() {
          -e "s/verystrongpassword/${MYSQL_PASSWORD}/g" \
          -e "s/hostid=.*/hostid=${PILER_HOSTNAME}/g" \
          -e "s/tls_enable=.*/tls_enable=1/g" \
+         -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" \
+         -e "s/rtindex=.*/rtindex=${RT}/g" \
          -e "s/mysqlsocket=.*/mysqlsocket=/g" "${PILER_CONF}.dist" > "$PILER_CONF"
 
       {
@@ -107,9 +109,6 @@ fix_configs() {
 
       give_it_to_piler "$PILER_CONF"
    fi
-
-   # Make sure that sphxhost is set
-   sed -i -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" "$PILER_CONF"
 
    if [[ ! -f "$CONFIG_SITE_PHP" ]]; then
       log "Writing ${CONFIG_SITE_PHP}"
@@ -148,8 +147,6 @@ fix_configs() {
       if ! grep "'SPHINX_MAIN_INDEX'" "$CONFIG_SITE_PHP"; then
          echo "\$config['SPHINX_MAIN_INDEX'] = 'piler1';" >> "$CONFIG_SITE_PHP"
       fi
-
-      sed -i "s%rtindex=.*%rtindex=1%" "$PILER_CONF"
    fi
 
    if ! grep "'SPHINX_HOSTNAME'" "$CONFIG_SITE_PHP"; then
