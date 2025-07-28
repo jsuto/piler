@@ -158,8 +158,8 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
    syslog(LOG_PRIORITY, "sphinx query: %s", s);
 
-   if(mysql_real_query(&(sdata2->mysql), s, strlen(s)) == 0){
-      MYSQL_RES *res = mysql_store_result(&(sdata2->mysql));
+   if(mysql_real_query(&(sdata2->sphx), s, strlen(s)) == 0){
+      MYSQL_RES *res = mysql_store_result(&(sdata2->sphx));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             id = strtoull(row[0], NULL, 10);
@@ -189,8 +189,8 @@ uint64 get_total_found(struct session_data *sdata){
    MYSQL_ROW row;
    uint64 total_found=0;
 
-   if(mysql_real_query(&(sdata->mysql), "SHOW META LIKE 'total_found'", 28) == 0){
-      MYSQL_RES *res = mysql_store_result(&(sdata->mysql));
+   if(mysql_real_query(&(sdata->sphx), "SHOW META LIKE 'total_found'", 28) == 0){
+      MYSQL_RES *res = mysql_store_result(&(sdata->sphx));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             total_found = strtoull(row[1], NULL, 10);
@@ -342,7 +342,6 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
    unsigned long total_attachments=0;
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
-
 
    p_bind_init(&sql);
 
@@ -677,17 +676,13 @@ int main(int argc, char **argv){
 
       init_session_data(&sdata2, &cfg);
 
-      strcpy(cfg.mysqlhost, "127.0.0.1");
-      cfg.mysqlport = 9306;
-      cfg.mysqlsocket[0] = '\0';
-
-      if(open_database(&sdata2, &cfg) == ERR){
-         p_clean_exit("cannot connect to 127.0.0.1:9306", 1);
+      if(open_sphx(&sdata2, &cfg) == ERR){
+         p_clean_exit("cannot connect to manticore", 1);
       }
 
       export_emails_matching_id_list(&sdata, &sdata2, where_condition, &cfg);
 
-      close_database(&sdata2);
+      close_sphx(&sdata2);
    }
    else {
       if(build_query_from_args(from, to, fromdomain, todomain, minsize, maxsize, startdate, stopdate) > 0) p_clean_exit("malloc problem building query", 1);
