@@ -3,6 +3,7 @@
 class Sphinx {
    private $link;
    private $prefix;
+   private $affected;
 
    public function __construct($hostname, $username, $password, $database, $prefix = NULL) {
 

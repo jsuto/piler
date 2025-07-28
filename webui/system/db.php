@@ -3,6 +3,7 @@
 class DB {
    private $driver;
    private $prefix;
+   private $database;
 
    public function __construct($driver, $hostname, $username, $password, $database, $prefix = NULL) {
       if (!@require_once(DIR_DATABASE . $driver . '.php')) {
