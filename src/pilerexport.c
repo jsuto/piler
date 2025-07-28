@@ -137,7 +137,7 @@ int append_email_to_buffer(char **buffer, char *email){
 }
 
 
-uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
+uint64 run_query(struct session_data *sdata, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_ROW row;
    uint64 id=0;
    char s[MAXBUFSIZE];
@@ -158,8 +158,8 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
    syslog(LOG_PRIORITY, "sphinx query: %s", s);
 
-   if(mysql_real_query(&(sdata2->mysql), s, strlen(s)) == 0){
-      MYSQL_RES *res = mysql_store_result(&(sdata2->mysql));
+   if(mysql_real_query(&(sdata->sphx), s, strlen(s)) == 0){
+      MYSQL_RES *res = mysql_store_result(&(sdata->sphx));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             id = strtoull(row[0], NULL, 10);
@@ -189,8 +189,8 @@ uint64 get_total_found(struct session_data *sdata){
    MYSQL_ROW row;
    uint64 total_found=0;
 
-   if(mysql_real_query(&(sdata->mysql), "SHOW META LIKE 'total_found'", 28) == 0){
-      MYSQL_RES *res = mysql_store_result(&(sdata->mysql));
+   if(mysql_real_query(&(sdata->sphx), "SHOW META LIKE 'total_found'", 28) == 0){
+      MYSQL_RES *res = mysql_store_result(&(sdata->sphx));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             total_found = strtoull(row[1], NULL, 10);
@@ -203,17 +203,17 @@ uint64 get_total_found(struct session_data *sdata){
 }
 
 
-void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, char *where_condition, struct config *cfg){
+void export_emails_matching_id_list(struct session_data *sdata, char *where_condition, struct config *cfg){
    int n;
    uint64 count=0, last_id=0, total_found=0;
 
-   last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
+   last_id = run_query(sdata, where_condition, last_id, &n, cfg);
    count += n;
 
-   total_found = get_total_found(sdata2);
+   total_found = get_total_found(sdata);
 
    while(count < total_found){
-      last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
+      last_id = run_query(sdata, where_condition, last_id, &n, cfg);
       count += n;
    }
 
@@ -343,7 +343,6 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
    if(prepare_sql_statement(sdata, &sql, s) == ERR) return ERR;
 
-
    p_bind_init(&sql);
 
    if(p_exec_stmt(sdata, &sql) == ERR) goto ENDE;
@@ -472,7 +471,7 @@ int main(int argc, char **argv){
    unsigned long startdate=0, stopdate=0;
    char *configfile=CONFIG_FILE;
    char *to=NULL, *from=NULL, *todomain=NULL, *fromdomain=NULL, *where_condition=NULL;
-   struct session_data sdata, sdata2;
+   struct session_data sdata;
    struct config cfg;
 
 
@@ -675,19 +674,13 @@ int main(int argc, char **argv){
 
    if(where_condition){
 
-      init_session_data(&sdata2, &cfg);
-
-      strcpy(cfg.mysqlhost, "127.0.0.1");
-      cfg.mysqlport = 9306;
-      cfg.mysqlsocket[0] = '\0';
-
-      if(open_database(&sdata2, &cfg) == ERR){
-         p_clean_exit("cannot connect to 127.0.0.1:9306", 1);
+      if(open_sphx(&sdata, &cfg) == ERR){
+         p_clean_exit("cannot connect to manticore", 1);
       }
 
-      export_emails_matching_id_list(&sdata, &sdata2, where_condition, &cfg);
+      export_emails_matching_id_list(&sdata, where_condition, &cfg);
 
-      close_database(&sdata2);
+      close_sphx(&sdata);
    }
    else {
       if(build_query_from_args(from, to, fromdomain, todomain, minsize, maxsize, startdate, stopdate) > 0) p_clean_exit("malloc problem building query", 1);
