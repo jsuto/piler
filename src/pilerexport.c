@@ -137,7 +137,7 @@ int append_email_to_buffer(char **buffer, char *email){
 }
 
 
-uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *where_condition, uint64 last_id, int *num, struct config *cfg){
+uint64 run_query(struct session_data *sdata, char *where_condition, uint64 last_id, int *num, struct config *cfg){
    MYSQL_ROW row;
    uint64 id=0;
    char s[MAXBUFSIZE];
@@ -158,8 +158,8 @@ uint64 run_query(struct session_data *sdata, struct session_data *sdata2, char *
 
    syslog(LOG_PRIORITY, "sphinx query: %s", s);
 
-   if(mysql_real_query(&(sdata2->sphx), s, strlen(s)) == 0){
-      MYSQL_RES *res = mysql_store_result(&(sdata2->sphx));
+   if(mysql_real_query(&(sdata->sphx), s, strlen(s)) == 0){
+      MYSQL_RES *res = mysql_store_result(&(sdata->sphx));
       if(res != NULL){
          while((row = mysql_fetch_row(res))){
             id = strtoull(row[0], NULL, 10);
@@ -203,17 +203,17 @@ uint64 get_total_found(struct session_data *sdata){
 }
 
 
-void export_emails_matching_id_list(struct session_data *sdata, struct session_data *sdata2, char *where_condition, struct config *cfg){
+void export_emails_matching_id_list(struct session_data *sdata, char *where_condition, struct config *cfg){
    int n;
    uint64 count=0, last_id=0, total_found=0;
 
-   last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
+   last_id = run_query(sdata, where_condition, last_id, &n, cfg);
    count += n;
 
-   total_found = get_total_found(sdata2);
+   total_found = get_total_found(sdata);
 
    while(count < total_found){
-      last_id = run_query(sdata, sdata2, where_condition, last_id, &n, cfg);
+      last_id = run_query(sdata, where_condition, last_id, &n, cfg);
       count += n;
    }
 
@@ -471,7 +471,7 @@ int main(int argc, char **argv){
    unsigned long startdate=0, stopdate=0;
    char *configfile=CONFIG_FILE;
    char *to=NULL, *from=NULL, *todomain=NULL, *fromdomain=NULL, *where_condition=NULL;
-   struct session_data sdata, sdata2;
+   struct session_data sdata;
    struct config cfg;
 
 
@@ -674,15 +674,13 @@ int main(int argc, char **argv){
 
    if(where_condition){
 
-      init_session_data(&sdata2, &cfg);
-
-      if(open_sphx(&sdata2, &cfg) == ERR){
+      if(open_sphx(&sdata, &cfg) == ERR){
          p_clean_exit("cannot connect to manticore", 1);
       }
 
-      export_emails_matching_id_list(&sdata, &sdata2, where_condition, &cfg);
+      export_emails_matching_id_list(&sdata, where_condition, &cfg);
 
-      close_sphx(&sdata2);
+      close_sphx(&sdata);
    }
    else {
       if(build_query_from_args(from, to, fromdomain, todomain, minsize, maxsize, startdate, stopdate) > 0) p_clean_exit("malloc problem building query", 1);
