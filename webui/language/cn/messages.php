@@ -175,7 +175,7 @@ $_['text_import_users'] = "汇入用户";
 $_['text_import_users_from_LDAP'] = "从 LDAP 汇入用户";
 $_['text_inbound'] = "inbound";
 $_['text_indexer_job'] = "索引器作业";
-$_['text_install_sudo_apply'] = "加入以下内容到 /etc/sudoers: 'www-data ALL=NOPASSWD: /etc/init.d/rc.piler reload'";
+$_['text_install_sudo_apply'] = "加入以下内容到 /etc/sudoers: 'www-data ALL=NOPASSWD: systemctl reload piler'";
 $_['text_internal'] = "internal";
 $_['text_invalid_data'] = "无效的资料";
 $_['text_invalid_email'] = "无效的邮件";
