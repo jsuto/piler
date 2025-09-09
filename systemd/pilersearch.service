@@ -5,6 +5,7 @@ After=network.target mariadb.service
 [Service]
 ExecStart=/usr/bin/searchd --config /etc/piler/manticore.conf
 ExecStop=/usr/bin/searchd --config /etc/piler/manticore.conf --stopwait
+ExecReload=/bin/kill -HUP $MAINPID
 PIDFile=/var/run/piler/searchd.pid
 KillMode=process
 Restart=on-failure
