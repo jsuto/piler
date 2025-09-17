@@ -76,8 +76,8 @@
     <div class="resizer"></div>
 
     <div id="preview" class="pane pane-lower">
-      <h2>Preview Pane</h2>
-      <p>Click on a message to show</p>
+      <h2><?php print $text_preview_pane; ?></h2>
+      <p><?php print $text_preview_pane_hint; ?></p>
     </div>
 <?php } ?>
 
