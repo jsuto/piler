@@ -29,7 +29,7 @@ class ControllerStatStat extends Controller {
 
       $timespan = @$this->request->get['timespan'];
 
-      $db->select_db($db->database);
+      $db->select_db($db);
 
       $chart = new ModelStatChart();
 

@@ -22,7 +22,7 @@ class ControllerHealthWorker extends Controller {
       $lang = Registry::get('language');
 
       $db = Registry::get('db');
-      $db->select_db($db->database);
+      $db->select_db($db);
 
 
       if(Registry::get('admin_user') != 1 && Registry::get('readonly_admin') != 1) {
