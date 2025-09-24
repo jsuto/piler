@@ -3,7 +3,7 @@
 class ModelMailMail extends Model {
 
 
-   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to = [], $msg){
+   public function send_smtp_email($smtphost, $smtpport, $yourdomain, $from, $to, $msg){
 
       require_once 'Zend/Mail/Protocol/Smtp.php';
       require_once 'Zend/Mail/Protocol/Smtp/Auth/Login.php';
