@@ -82,6 +82,15 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
 
 .branding_logo {max-height:25px;}
 
+/* Highlighted row (selected message) */
+.highlighted {
+  background-color: #d1ecf1 !important;
+}
+
+.highlighted td {
+  background-color: #d1ecf1 !important;
+}
+
 /* Dark mode styles */
 [data-theme="dark"] {
   --bs-body-bg: #1a1a1a;
@@ -319,6 +328,15 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
 
 [data-theme="dark"] .form-label {
   color: #e0e0e0;
+}
+
+[data-theme="dark"] .highlighted {
+  background-color: #2c5282 !important;
+}
+
+[data-theme="dark"] .highlighted td {
+  background-color: #2c5282 !important;
+  color: #e0e0e0 !important;
 }
 
 /* Dark mode toggle button */

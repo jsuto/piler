@@ -214,7 +214,7 @@ let Piler =
 
         if(Piler.prev_message_id > 0) { $('#e_' + Piler.prev_message_id).attr('class', 'resultrow'); }
 
-        $('#e_' + id).attr('class', 'resultrow selected table-info');
+        $('#e_' + id).attr('class', 'resultrow highlighted');
 
         Piler.prev_message_id = id;
         Piler.view_message(id, preview_pane);
