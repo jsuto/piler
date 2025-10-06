@@ -56,6 +56,9 @@
           <?php if(FULL_GUI) { ?>
            <a href="<?php print PATH_PREFIX; ?>settings.php" class="menulink"><i class="bi bi-person pe-2"></i><?php print $realname; ?></a>
           <?php } ?>
+           <button id="theme-toggle" class="menulink" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+             <i class="bi bi-moon-fill" id="theme-icon"></i>
+           </button>
            <a href="<?php print PATH_PREFIX; ?>logout.php" class="menulink" title="<?php print $text_logout; ?>"><i class="bi bi-door-open"></i></a>
           </div>
          </div>

@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<?php if(FULL_GUI && isset($tsa)) { ?>
+<?php if(FULL_GUI && isset($tsa) && is_array($tsa)) { ?>
 <div class="container-fluid text-start tsa">
   <div class="row">
     <div class="col text-start">

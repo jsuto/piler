@@ -11,7 +11,8 @@ class MySQL {
          $this->link = new PDO("mysql:host=$hostname;dbname=$database", $username, $password,
                                   array(
                                      PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES " . DB_CHARSET,
-                                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET CHARACTER SET " . DB_CHARSET
+                                     PDO::MYSQL_ATTR_INIT_COMMAND => "SET CHARACTER SET " . DB_CHARSET,
+                                     PDO::ATTR_PERSISTENT => true
                                   )
                               );
 

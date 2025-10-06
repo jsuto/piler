@@ -17,12 +17,20 @@
 
 <body id="loginpage">
 
+  <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+    <button id="theme-toggle" class="btn" style="background: transparent; border: 1px solid #ccc; padding: 8px 12px;" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+      <i class="bi bi-moon-fill" id="theme-icon" style="font-size: 20px;"></i>
+    </button>
+  </div>
+
   <div id="logincontainer" class="container">
       <h3><?php print $title; ?></h3>
       <p><?php print $text_logged_out; ?>. <a href="<?php print PATH_PREFIX; if(ENABLE_SSO_LOGIN == 1) { ?>sso.php<?php } else { ?>login.php<?php } ?>" class="messagelink"><?php print $text_back; ?></a></p>
   </div>
 
 <?php if(TRACKING_CODE) { print TRACKING_CODE; } ?>
+
+<script src="<?php print PATH_PREFIX; ?>assets/js/dark-mode.js"></script>
 
 </body>
 </html>
