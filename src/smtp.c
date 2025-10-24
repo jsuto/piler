@@ -279,6 +279,12 @@ void process_command_period(struct smtp_session *session){
    struct timezone tz;
    struct timeval tv1, tv2;
 
+   // Defensive check: ensure session pointer is valid
+   if(session == NULL){
+      syslog(LOG_PRIORITY, "ERROR: process_command_period() called with NULL session");
+      return;
+   }
+
    session->protocol_state = SMTP_STATE_PERIOD;
 
    // TODO: add some error handling
