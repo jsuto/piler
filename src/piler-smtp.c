@@ -302,6 +302,7 @@ int main(int argc, char **argv){
                continue;
             }
 
+            int slot = session->slot;
             time(&(session->lasttime));
 
             while(1){
@@ -328,10 +329,24 @@ int main(int argc, char **argv){
                readbuf[readlen] = '\0';
                handle_data(session, &readbuf[0], readlen, &cfg);
 
+               // Check if session was freed during handle_data() (e.g., by timeout)
+               if(sessions[slot] == NULL){
+                  if(cfg.verbosity >= _LOG_DEBUG)
+                     syslog(LOG_PRIORITY, "session was freed during handle_data(), slot=%d", slot);
+                  break;
+               }
+
                if(session->protocol_state == SMTP_STATE_BDAT && session->bad == 1){
                   done = 1;
                   break;
                }
+            }
+
+            // Revalidate session pointer after the loop
+            session = sessions[slot];
+            if(session == NULL){
+               // Session was already freed, nothing more to do
+               continue;
             }
 
             /* Don't wait until the remote client closes the connection after he sent the QUIT command */
