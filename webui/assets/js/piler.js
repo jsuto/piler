@@ -1184,6 +1184,10 @@ let Piler =
     modal: function(id, action='') {
       try {
         let modalId = document.getElementById(id)
+        if (!modalId) {
+          Piler.log("[modal] element not found:", id)
+          return
+        }
         const modal = bootstrap.Modal.getOrCreateInstance(modalId)
         if(action == 'show') {
           modal.show()
