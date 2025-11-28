@@ -214,6 +214,67 @@ cleanup2:
    return n_messages;
 }
 
+int delete_emails_from_imap(CURL *curl, struct data *data, const char *url, int *seq_nums, int count){
+   CURLcode res;
+   struct MemoryStruct chunk;
+   char command[MAXBUFSIZE];
+   int offset = 0;
+
+   if(count <= 0) return 0;
+
+   chunk.memory = malloc(1);
+   chunk.written_size = 0;
+   chunk.size = 0;
+
+   // Build STORE command to mark messages as deleted
+   offset = snprintf(command, sizeof(command), "STORE ");
+   for(int i=0; i<count; i++){
+      if(i > 0) offset += snprintf(command + offset, sizeof(command) - offset, ",");
+      offset += snprintf(command + offset, sizeof(command) - offset, "%d", seq_nums[i]);
+   }
+   snprintf(command + offset, sizeof(command) - offset, " +FLAGS (\\Deleted)");
+
+   curl_easy_reset(curl);
+   curl_easy_setopt(curl, CURLOPT_URL, url);
+   curl_easy_setopt(curl, CURLOPT_USERNAME, data->import->username);
+   curl_easy_setopt(curl, CURLOPT_PASSWORD, data->import->password);
+   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
+   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+   SSL_SETUP(curl, data);
+
+   res = curl_easy_perform(curl);
+   if(res != CURLE_OK){
+      fprintf(stderr, "Failed to mark messages as deleted: %s\n", curl_easy_strerror(res));
+      free(chunk.memory);
+      return -1;
+   }
+
+   // Now expunge to permanently remove the deleted messages
+   curl_easy_reset(curl);
+   curl_easy_setopt(curl, CURLOPT_URL, url);
+   curl_easy_setopt(curl, CURLOPT_USERNAME, data->import->username);
+   curl_easy_setopt(curl, CURLOPT_PASSWORD, data->import->password);
+   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
+   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
+
+   SSL_SETUP(curl, data);
+
+   res = curl_easy_perform(curl);
+   if(res != CURLE_OK){
+      fprintf(stderr, "Failed to expunge deleted messages: %s\n", curl_easy_strerror(res));
+      free(chunk.memory);
+      return -1;
+   }
+
+   if(data->quiet == 0) printf("Deleted %d messages from server\n", count);
+
+   free(chunk.memory);
+   return 0;
+}
+
 int download_email(CURL *curl, struct data *data, const char *url, int seq_num, const char *output_path){
    char seq_url[SMALLBUFSIZE];
    CURLcode res;
@@ -309,8 +370,6 @@ int import_from_imap_server(struct session_data *sdata, struct data *data, struc
    int check_skip_list = 0;
    if(data->import->skiplist && strlen(data->import->skiplist) > 0) check_skip_list = 1;
 
-   data->import->remove_after_import = 1;
-
    struct FolderList *folders = list_folders_curl(curl, data);
    if(folders){
       uint64 total_counter = 0;
@@ -340,23 +399,49 @@ int import_from_imap_server(struct session_data *sdata, struct data *data, struc
             snprintf(url, sizeof(url), "%s/%s", data->import->server, folder_name);
             free(folder_name);
 
+            // Track downloaded message sequence numbers for deletion
+            int *seq_nums_to_delete = NULL;
+            int delete_count = 0;
+            if(data->import->remove_after_import == 1){
+               seq_nums_to_delete = malloc(n * sizeof(int));
+               if(!seq_nums_to_delete){
+                  fprintf(stderr, "Failed to allocate memory for deletion tracking\n");
+               }
+            }
+
             for(int j=1; j<=n; j++) {
                char output_path[SMALLBUFSIZE];
                total_counter++;
                snprintf(output_path, sizeof(output_path), "%llu.eml", total_counter);
 
-               if(download_email(curl, data, url, j, output_path) != 0) {
+               if(download_email(curl, data, url, j, output_path) == 0) {
+                  // Track successfully downloaded message for deletion
+                  if(seq_nums_to_delete){
+                     seq_nums_to_delete[delete_count++] = j;
+                  }
+               } else {
                   fprintf(stderr, "Failed to download email %d from %s\n", j, folders->folders[i]);
                }
 
                // Import every downloaded 1000 messages
-               if(total_counter % 1000){
+               if(total_counter % 1000 == 0){
                   import_from_maildir(sdata, data, ".", counters, cfg);
                }
             }
 
             // Import the rest
             import_from_maildir(sdata, data, ".", counters, cfg);
+
+            // Delete successfully imported messages from server if requested
+            if(data->import->remove_after_import == 1 && seq_nums_to_delete && delete_count > 0){
+               if(delete_emails_from_imap(curl, data, url, seq_nums_to_delete, delete_count) != 0){
+                  fprintf(stderr, "Failed to delete messages from %s\n", folders->folders[i]);
+               }
+            }
+
+            if(seq_nums_to_delete){
+               free(seq_nums_to_delete);
+            }
          }
       }
 
