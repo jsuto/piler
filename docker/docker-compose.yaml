@@ -20,7 +20,7 @@ services:
       - ./piler.cnf:/etc/mysql/conf.d/piler.cnf:ro
 
   manticore:
-    image: manticoresearch/manticore:13.11.0
+    image: manticoresearch/manticore:14.1.0
     container_name: manticore
     restart: unless-stopped
     volumes:
