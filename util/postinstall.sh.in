@@ -168,11 +168,14 @@ askYN() {
   PROMPT=$1
   DEFAULT=$2
 
-  if [[ "$DEFAULT" == "yes" || "$DEFAULT" == "Yes" || "$DEFAULT" == "xy" || "$DEFAULT" == "xY" ]]; then
+  case "$DEFAULT" in
+  yes|Yes|y|Y)
     DEFAULT="Y"
-  else
+    ;;
+  *)
     DEFAULT="N"
-  fi
+    ;;
+  esac
 
   while true; do
     ask "$PROMPT" "$DEFAULT"
