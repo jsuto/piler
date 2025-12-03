@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-c", "-o", "pipefail"]
 # hadolint ignore=DL3001,DL3008,DL3028
 RUN apt-get update && \
     apt-get install --no-install-recommends -y gnupg git jq curl unzip openssl openssh-client make gcc sysstat \
-    catdoc unrtf poppler-utils tnef libssl-dev libtre-dev libzip-dev libmariadb-dev libcurl4-openssl-dev ruby ruby-dev mariadb-server phpunit \
+    catdoc unrtf poppler-utils tnef libssl-dev libtre-dev libzip-dev libmariadb-dev libcurl4-openssl-dev libsodium-dev ruby ruby-dev mariadb-server phpunit \
     php8.3-cli php8.3-mysql php8.3-zip php8.3-ldap php8.3-curl php8.3-xml php8.3-memcached php8.3-mbstring && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     groupadd piler && useradd -g piler -s /bin/bash -d /var/piler piler && usermod -L piler && \
