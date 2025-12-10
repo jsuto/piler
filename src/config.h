@@ -19,7 +19,7 @@ typedef unsigned long long uint64;
 #define QUEUE_DIR DATADIR "/piler/store"
 #define ERROR_DIR DATADIR "/piler/error"
 
-#define PIDFILE "/var/run/piler/piler.pid"
+#define PIDFILE "/run/piler/piler.pid"
 #define QUARANTINELEN 255
 #define TIMEOUT 60
 #define TIMEOUT_USEC 500000

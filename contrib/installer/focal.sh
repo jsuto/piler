@@ -12,7 +12,7 @@ MYSQL_PILER_PASSWORD="${MYSQL_PILER_PASSWORD:-piler123}"
 SERVER_ID="${SERVER_ID:-0}"
 USE_SMTP_GATEWAY="${USE_SMTP_GATEWAY:-0}"
 SPHINX_WORKER_LISTEN_ADDRESS="${SPHINX_WORKER_LISTEN_ADDRESS:-}"
-PHP_FPM_SOCKET="/var/run/php/php7.4-fpm.sock"
+PHP_FPM_SOCKET="/run/php/php7.4-fpm.sock"
 
 MYSQL_HOSTNAME="localhost"
 MYSQL_DATABASE="piler"
@@ -249,7 +249,7 @@ init_db
 
 su -c "indexer --all -c /etc/piler/sphinx.conf" $PILER_USER
 
-[[ ! -d /var/run/piler ]] || mkdir -p /var/run/piler
+[[ ! -d /run/piler ]] || mkdir -p /run/piler
 
 systemctl start pilersearch
 systemctl start piler

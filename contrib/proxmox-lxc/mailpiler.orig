@@ -87,7 +87,7 @@ cp /tmp/piler-$PILER_VER/contrib/webserver/piler-nginx.conf /etc/nginx/sites-ava
 ln -s /etc/nginx/sites-available/piler-nginx.conf /etc/nginx/sites-enabled/piler-nginx.conf
 
 sed -i "s|PILER_HOST|$PILER_DOM|g" /etc/nginx/sites-available/piler-nginx.conf
-sed -i "s|/var/run/php/php7.4-fpm.sock|/var/run/php/php$PHP_VER-fpm.sock|g" /etc/nginx/sites-available/piler-nginx.conf
+sed -i "s|/run/php/php7.4-fpm.sock|/run/php/php$PHP_VER-fpm.sock|g" /etc/nginx/sites-available/piler-nginx.conf
 
 sed -i "/server_name.*/a \\
         listen 443 ssl http2;\n\n\

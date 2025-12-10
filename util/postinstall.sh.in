@@ -218,7 +218,7 @@ gather_webserver_data() {
 gather_mysql_account() {
 
    if [[ -e /var/lib/mysql/mysql.sock ]]; then MYSQL_SOCKET="/var/lib/mysql/mysql.sock"; fi
-   if [[ -e /var/run/mysqld/mysqld.sock ]]; then MYSQL_SOCKET="/var/run/mysqld/mysqld.sock"; fi
+   if [[ -e /run/mysqld/mysqld.sock ]]; then MYSQL_SOCKET="/run/mysqld/mysqld.sock"; fi
 
    askNonBlank "Please enter mysql hostname" "$MYSQL_HOSTNAME"
    MYSQL_HOSTNAME="$response"

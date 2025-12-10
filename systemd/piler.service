@@ -5,7 +5,7 @@ After=network.target mariadb.service
 [Service]
 ExecStart=/usr/sbin/piler -d
 ExecReload=/bin/kill -HUP $MAINPID
-PIDFile=/var/run/piler/piler.pid
+PIDFile=/run/piler/piler.pid
 KillMode=process
 Restart=on-failure
 RestartPreventExitStatus=255
