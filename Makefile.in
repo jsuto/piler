@@ -78,6 +78,7 @@ installdirs: mkinstalldirs
 		$(DESTDIR)$(sysconfdir) \
 		$(DESTDIR)$(sysconfdir)/piler \
 		$(DESTDIR)/etc/init.d \
+		$(DESTDIR)$(localstatedir)/piler/run \
 		$(DESTDIR)$(localstatedir)/piler/store \
 		$(DESTDIR)$(localstatedir)/piler/stat \
 		$(DESTDIR)$(localstatedir)/piler/tmp \
@@ -85,7 +86,7 @@ installdirs: mkinstalldirs
 		$(DESTDIR)$(localstatedir)/piler/export \
 		$(DESTDIR)$(localstatedir)/piler/manticore
 
-	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/run/piler
+	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/run
 	$(INSTALL) -d -m 0700 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/store
 	$(INSTALL) -d -m 0700 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/imap
 	$(INSTALL) -d -m 0755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) $(DESTDIR)$(localstatedir)/piler/stat
@@ -127,6 +128,3 @@ key:
 
 postinstall:
 	@bash util/postinstall.sh $(RUNNING_USER) $(RUNNING_GROUP) $(sysconfdir) $(localstatedir) $(libexecdir)
-
-
-
