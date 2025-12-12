@@ -25,7 +25,7 @@ RUNNING_GROUP = `@id_bin@ -gn $(RUNNING_USER)`
 INSTALL = @INSTALL@
 
 all:
-	sed -e 's%pidfile=.*%pidfile=$(localstatedir)/run/piler/piler.pid%g' \
+	sed -e 's%pidfile=.*%pidfile=$(localstatedir)/piler/run/piler.pid%g' \
 	-e 's%pemfile=%pemfile=$(sysconfdir)/piler/piler.pem%g' \
 	-e 's%workdir=.*%workdir=$(localstatedir)/piler/tmp%g' < $(srcdir)/example.conf | grep -v ^\; | grep '=' | sort > $(srcdir)/piler.conf
 

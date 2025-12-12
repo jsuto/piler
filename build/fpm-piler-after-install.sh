@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 config_dir=/etc/piler
-SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+SSL_CERT_DATA="/C=HU/ST=Pest/L=Budapest/O=Example/CN=archive.example.com"
 WWW_GROUP="www-data"
 
 
