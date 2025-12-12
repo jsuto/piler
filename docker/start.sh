@@ -217,7 +217,7 @@ start_services() {
 
 start_piler() {
    # No pid file should exist for piler
-   rm -f /var/run/piler/*pid
+   rm -f /var/piler/run/*pid
 
    /etc/init.d/rc.piler start
 }

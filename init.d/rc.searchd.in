@@ -15,7 +15,7 @@
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 NAME=searchd
-PID_FILE=/var/run/piler/searchd.pid
+PID_FILE=/var/piler/run/searchd.pid
 PID_NUMBER=$(test -f ${PID_FILE} && cat ${PID_FILE})
 CONFIG_FILE=sphinx.conf
 
@@ -27,9 +27,9 @@ fi
 start() {
 	echo "starting searchd . . ."
 
-	if [ ! -d /var/run/piler ]; then
-		mkdir -p /var/run/piler
-		chown piler:piler /var/run/piler
+	if [ ! -d /var/piler/run ]; then
+		mkdir -p /var/piler/run
+		chown piler:piler /var/piler/run
 	fi
 
         if [ $(id -u) -eq 0 ]; then
@@ -77,4 +77,3 @@ case "$1" in
 	*)
 		echo "Usage: $0 start|stop|restart|status"
 esac
-

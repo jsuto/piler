@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-MAINTMPFILE="/var/run/piler/main.indexer.tmp"
+MAINTMPFILE="/var/piler/run/main.indexer.tmp"
 CONFIG_FILE="SYSCONFDIR/piler/sphinx.conf"
 PRIORITY="mail.info"
 TOUCHFILE="/var/piler/stat/indexer"
