@@ -274,7 +274,7 @@ searchd
         ##query_log             =
         read_timeout            = 5
         max_children            = 30
-        pid_file                = /var/run/piler/searchd.pid
+        pid_file                = /var/piler/run/searchd.pid
         seamless_rotate         = 1
         preopen_indexes         = 1
         unlink_old              = 1

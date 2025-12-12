@@ -4,9 +4,6 @@ set -o nounset
 set -o errexit
 set -o pipefail
 
-SCRIPT_PATH="$(readlink -f "$0")"
-SCRIPT_DIR="${SCRIPT_PATH%/*}"
-
 INDEXER="$(command -v indexer)"
 SEARCHD="$(command -v searchd)"
 CRON_ORIG="/tmp/crontab.piler.orig"
@@ -24,7 +21,6 @@ load_default_values() {
    PILER_CONFIG_DIR="${SYSCONFDIR}/piler"
    CONFIG_SITE_PHP="${PILER_CONFIG_DIR}/config-site.php"
 
-   KEYTMPFILE="piler.key"
    KEYFILE="${PILER_CONFIG_DIR}/piler.key"
 
    HOSTNAME="$(hostname --fqdn)"
@@ -46,7 +42,7 @@ load_default_values() {
    SMARTHOST=""
    SMARTHOST_PORT=25
 
-   SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=archive.example.com"
+   SSL_CERT_DATA="/C=HU/ST=Pest/L=Budapest/O=Example/CN=archive.example.com"
 }
 
 
@@ -204,8 +200,6 @@ preinstall_check() {
    if [[ "$INDEXER" == "" ]]; then "ERROR: cannot find indexer binary"; echo ""; exit ; fi
 
    if [[ "$SEARCHD" == "" ]]; then "ERROR: cannot find searchd binary"; echo ""; exit 0; fi
-
-   if [[ -f "$KEYFILE" ]]; then echo "ERROR: found existing keyfile (${KEYFILE}), aborting install"; echo ""; exit 0; fi
 }
 
 
@@ -251,7 +245,6 @@ gather_mysql_account() {
    # shellcheck disable=SC2181
    if [[ $? -eq 0 ]]; then
       echo "mysql connection successful"; echo;
-      if [[ $(echo "$s" | grep -c metadata) -eq 1 ]]; then echo "ERROR: Detected metadata table in ${MYSQL_DATABASE}. Aborting"; exit 0; fi
    else
       echo "ERROR: failed to connect to mysql";
       gather_mysql_account
@@ -302,9 +295,12 @@ make_cron_entries() {
 
 
 make_new_key() {
-   dd if=/dev/urandom bs=56 count=1 of="$KEYTMPFILE" 2>/dev/null
-
-   if [ "$(stat -c '%s' "$KEYTMPFILE")" -ne 56 ]; then echo "could not read 56 bytes from /dev/urandom to ${KEYTMPFILE}"; exit 1; fi
+   if [[ ! -f "$KEYFILE" ]]; then
+      dd if=/dev/urandom bs=56 count=1 of="$KEYFILE" 2>/dev/null
+      if [ "$(stat -c '%s' "$KEYFILE")" -ne 64 ]; then echo "could not read 64 bytes from /dev/urandom to ${KEYFILE}"; exit 1; fi
+      chgrp "$PILERUSER" "$KEYFILE"
+      chmod 640 "$KEYFILE"
+   fi
 }
 
 
@@ -349,11 +345,11 @@ show_summary() {
       echo "Aborted."
       exit
    fi
-
 }
 
 
 execute_post_install_tasks() {
+   local create_db=1
 
    askYN "Continue and modify system? [Y/N]" "N"
    if [[ "$response" != "yes" ]]; then
@@ -361,11 +357,23 @@ execute_post_install_tasks() {
       exit
    fi
 
-   echo;
-   echo -n "Creating mysql database... ";
-   sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%g" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%g" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%g" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%g" "${DATAROOTDIR}/piler/db-mysql-root.sql.in" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD"
-   mysql -h "$MYSQL_HOSTNAME" -u "$MYSQL_USERNAME" --password="$MYSQL_PASSWORD" "$MYSQL_DATABASE" < "${DATAROOTDIR}/piler/db-mysql.sql"
-   echo "Done."
+   s=$(echo "use information_schema; select TABLE_NAME from TABLES where TABLE_SCHEMA='${MYSQL_DATABASE}'" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD")
+   # shellcheck disable=SC2181
+   if [[ $? -eq 0 ]]; then
+      echo "mysql connection successful"; echo;
+      if [[ $(echo "$s" | grep -c metadata) -eq 1 ]]; then echo "ERROR: Detected metadata table in ${MYSQL_DATABASE}."; create_db=0; fi
+   else
+      echo "ERROR: failed to connect to mysql";
+      exit 1
+   fi
+
+   if [[ $create_db -eq 1 ]]; then
+      echo
+      echo -n "Creating mysql database... ";
+      sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%g" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%g" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%g" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%g" "${DATAROOTDIR}/piler/db-mysql-root.sql.in" | mysql -h "$MYSQL_HOSTNAME" -u root --password="$MYSQL_ROOT_PASSWORD"
+      mysql -h "$MYSQL_HOSTNAME" -u "$MYSQL_USERNAME" --password="$MYSQL_PASSWORD" "$MYSQL_DATABASE" < "${DATAROOTDIR}/piler/db-mysql.sql"
+      echo "Done."
+   fi
 
    echo -n "Writing manticore configuration... ";
    sed -e "s%MYSQL_HOSTNAME%${MYSQL_HOSTNAME}%" -e "s%MYSQL_DATABASE%${MYSQL_DATABASE}%" -e "s%MYSQL_USERNAME%${MYSQL_USERNAME}%" -e "s%MYSQL_PASSWORD%${MYSQL_PASSWORD}%" "${SYSCONFDIR}/piler/manticore.conf.dist" > "$SEARCHCFG"
@@ -384,17 +392,32 @@ execute_post_install_tasks() {
    echo "Done."
 
 
-   echo -n "installing keyfile (${KEYTMPFILE}) to ${KEYFILE}... "
-   cp "$KEYTMPFILE" "$KEYFILE"
-   chgrp "$PILERUSER" "$KEYFILE"
-   chmod 640 "$KEYFILE"
-   rm -f "$KEYTMPFILE"
-   echo "Done."
-
    echo "Fix piler.conf path in pilerpurge.py"
    sed -i "s%\/etc\/piler\/piler\.conf%${SYSCONFDIR}\/piler\/piler\.conf%" "${LIBEXECDIR}/piler/pilerpurge.py"
 
-   envsubst < "${SCRIPT_DIR}/config-site.php.in" | sed s%config%\$config%g > "$CONFIG_SITE_PHP"
+   cat > "$CONFIG_SITE_PHP" << EOF
+<?php
+
+\$config['SITE_NAME'] = '$HOSTNAME';
+\$config['PATH_PREFIX'] = '/';
+\$config['SITE_URL'] = 'http://' . config['SITE_NAME'] . config['PATH_PREFIX'];
+\$config['DIR_BASE'] = '$DOCROOT/';
+
+\$config['SMTP_DOMAIN'] = '$HOSTNAME';
+\$config['SMTP_FROMADDR'] = 'no-reply@' . config['SMTP_DOMAIN'];
+\$config['ADMIN_EMAIL'] = 'admin@' . config['SMTP_DOMAIN'];
+
+\$config['DB_DRIVER'] = 'mysql';
+\$config['DB_PREFIX'] = '';
+\$config['DB_HOSTNAME'] = '$MYSQL_HOSTNAME';
+\$config['DB_USERNAME'] = '$MYSQL_USERNAME';
+\$config['DB_PASSWORD'] = '$MYSQL_PASSWORD';
+\$config['DB_DATABASE'] = '$MYSQL_DATABASE';
+
+\$config['SMARTHOST'] = '$SMARTHOST';
+\$config['SMARTHOST_PORT'] = '$SMARTHOST_PORT';
+\$config['RT'] = $RT;
+EOF
 
    make_certificate
 
@@ -425,13 +448,7 @@ SOCKHELPER
       cp webui/.htaccess "$DOCROOT"
    fi
 
-   if [[ -d /var/www/piler.example.com ]]; then
-      mv /var/www/piler.example.com "$DOCROOT"
-   fi
-
-
    if [[ -d "$DOCROOT" ]]; then webui_install; fi
-
 }
 
 

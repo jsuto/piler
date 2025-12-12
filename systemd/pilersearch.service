@@ -1,19 +1,20 @@
 [Unit]
-Description=Searchd for piler daemon
-After=network.target mariadb.service
+Description=Manticore Search Engine for Piler
+Documentation=https://manual.manticoresearch.com/
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 ExecStart=/usr/bin/searchd --config /etc/piler/manticore.conf
 ExecStop=/usr/bin/searchd --config /etc/piler/manticore.conf --stopwait
 ExecReload=/bin/kill -HUP $MAINPID
-PIDFile=/var/run/piler/searchd.pid
+PIDFile=/var/piler/run/searchd.pid
 KillMode=process
 Restart=on-failure
 RestartPreventExitStatus=255
 Type=forking
 User=piler
-RuntimeDirectory=piler
+Group=piler
 
 [Install]
 WantedBy=multi-user.target
-Alias=pilersearch.service

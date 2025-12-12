@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 config_dir=/etc/piler
-SSL_CERT_DATA="/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"
+SSL_CERT_DATA="/C=HU/ST=Pest/L=Budapest/O=Example/CN=archive.example.com"
 WWW_GROUP="www-data"
 
 
@@ -60,9 +60,9 @@ chgrp "$WWW_GROUP" /var/piler/export
 [[ -f "${config_dir}/piler.key" ]] || make_piler_key
 [[ -f "${config_dir}/piler.pem" ]] || make_certificate
 
-log "fixing /var/run/piler ownership"
+log "fixing /var/piler/run ownership"
 
-chown piler:piler /var/piler/error /var/piler/imap /var/piler/stat /var/piler/store /var/piler/tmp /var/run/piler
+chown piler:piler /var/piler/error /var/piler/imap /var/piler/stat /var/piler/store /var/piler/tmp /var/piler/run
 
 if [[ -d /var/piler/sphinx ]]; then
    chown piler:piler /var/piler/sphinx

@@ -1,17 +1,19 @@
 [Unit]
-Description=Piler daemon
-After=network.target mariadb.service
+Description=Piler Email Archive
+Documentation=https://www.mailpiler.org
+After=network-online.target mysql.service pilersearch.service
+Wants=network-online.target
+Requires=pilersearch.service
 
 [Service]
 ExecStart=/usr/sbin/piler -d
 ExecReload=/bin/kill -HUP $MAINPID
-PIDFile=/var/run/piler/piler.pid
+PIDFile=/var/piler/run/piler.pid
 KillMode=process
-Restart=on-failure
+Restart=always
 RestartPreventExitStatus=255
 Type=forking
 User=root
 
 [Install]
 WantedBy=multi-user.target
-Alias=piler.service
