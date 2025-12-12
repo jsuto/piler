@@ -405,7 +405,7 @@ void p_clean_exit(){
 
    if(data.dedup != MAP_FAILED) munmap(data.dedup, MAXCHILDREN*DIGEST_LENGTH*2);
 
-   exit(1);
+   exit(0);
 }
 
 
