@@ -1,8 +1,10 @@
 ![test workflow](https://github.com/jsuto/piler/actions/workflows/test.yaml/badge.svg)
 
+# piler email archiver
+
 piler is an open source email archival application. Please visit https://www.mailpiler.org/ for more.
 
-Features:
+## Features
 
 - built-in smtp server
 - archival rules
@@ -33,3 +35,35 @@ Features:
 - online status info
 - accounting
 - recognised formats: PST, EML, Maildir, mailbox
+
+## Quick deb package install
+
+### Install the prerequisites
+
+```
+apt-get update
+apt-get -y --no-install-recommends install \
+   wget openssl sysstat php8.3-cli php8.3-cgi php8.3-mysql \
+   php8.3-fpm php8.3-zip php8.3-ldap php8.3-gd php8.3-curl \
+   php8.3-xml php8.3-memcached catdoc unrtf poppler-utils \
+   nginx tnef sudo libzip4t64 libtre5 cron libmariadb-dev \
+   mariadb-server mariadb-client-core python3 python3-mysqldb \
+   ca-certificates curl rsyslog gnupg
+
+wget https://repo.manticoresearch.com/manticore-repo.noarch.deb
+dpkg -i manticore-repo.noarch.deb
+apt-get update && apt-get install -y manticore manticore-columnar-lib manticore-extra
+rm -f manticore-repo.noarch.deb
+```
+
+### Deploy piler
+
+```
+dpkg -i piler_1.4.8-noble-e885d9b_arm64.deb
+```
+
+Run the postinstall script to bootstrap the database, create crontab entries, etc.
+
+```
+/usr/libexec/piler/postinstall.sh
+```
