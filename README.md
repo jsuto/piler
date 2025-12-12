@@ -46,7 +46,7 @@ apt-get -y --no-install-recommends install \
    wget openssl sysstat php-cli php-cgi php-mysql \
    php-fpm php-zip php-ldap php-gd php-curl \
    php-xml php-memcached catdoc unrtf poppler-utils \
-   nginx tnef sudo libzip4t64 libtre5 cron libmariadb-dev \
+   nginx tnef sudo libzip4t64 libtre5 cron \
    mariadb-server mariadb-client-core python3 python3-mysqldb \
    ca-certificates curl rsyslog gnupg
 
