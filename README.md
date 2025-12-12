@@ -43,9 +43,9 @@ piler is an open source email archival application. Please visit https://www.mai
 ```
 apt-get update
 apt-get -y --no-install-recommends install \
-   wget openssl sysstat php8.3-cli php8.3-cgi php8.3-mysql \
-   php8.3-fpm php8.3-zip php8.3-ldap php8.3-gd php8.3-curl \
-   php8.3-xml php8.3-memcached catdoc unrtf poppler-utils \
+   wget openssl sysstat php-cli php-cgi php-mysql \
+   php-fpm php-zip php-ldap php-gd php-curl \
+   php-xml php-memcached catdoc unrtf poppler-utils \
    nginx tnef sudo libzip4t64 libtre5 cron libmariadb-dev \
    mariadb-server mariadb-client-core python3 python3-mysqldb \
    ca-certificates curl rsyslog gnupg
