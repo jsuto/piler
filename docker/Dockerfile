@@ -18,9 +18,11 @@ COPY ${PACKAGE}_${TARGETARCH}.deb /
 RUN userdel -r ubuntu && \
     apt-get update && \
     apt-get -y --no-install-recommends install \
-       wget openssl sysstat php8.3-cli php8.3-cgi php8.3-mysql php8.3-fpm php8.3-zip php8.3-ldap \
-       php8.3-gd php8.3-curl php8.3-xml php8.3-memcached catdoc unrtf poppler-utils nginx tnef sudo libzip4t64 \
-       libtre5 cron libmariadb-dev mariadb-client-core python3 python3-mysqldb ca-certificates curl rsyslog gnupg && \
+       wget openssl sysstat php-cli php-cgi php-mysql php-fpm php-zip php-ldap \
+       php-gd php-curl php-xml php-memcached catdoc unrtf poppler-utils \
+       nginx tnef sudo libzip4t64 libtre5 cron \
+       mariadb-client-core python3 python3-mysqldb \
+       ca-certificates curl rsyslog gnupg && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     sed -i '/session    required     pam_loginuid.so/c\#session    required     pam_loginuid.so' /etc/pam.d/cron && \
