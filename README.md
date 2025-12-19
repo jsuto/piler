@@ -42,7 +42,7 @@ piler is an open source email archival application. Please visit https://www.mai
 
 ```
 apt-get update
-apt-get -y --no-install-recommends install \
+apt-get install -y --no-install-recommends \
    wget openssl sysstat php-cli php-cgi php-mysql \
    php-fpm php-zip php-ldap php-gd php-curl \
    php-xml php-memcached catdoc unrtf poppler-utils \
