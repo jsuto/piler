@@ -17,11 +17,12 @@ COPY ${PACKAGE}_${TARGETARCH}.deb /
 # hadolint ignore=DL3008
 RUN userdel -r ubuntu && \
     apt-get update && \
-    apt-get -y --no-install-recommends install \
-       wget openssl sysstat php-cli php-cgi php-mysql php-fpm php-zip php-ldap \
-       php-gd php-curl php-xml php-memcached catdoc unrtf poppler-utils \
+    apt-get install -y --no-install-recommends \
+       wget openssl sysstat php-cli php-cgi php-mysql \
+       php-fpm php-zip php-ldap php-gd php-curl \
+       php-xml php-memcached catdoc unrtf poppler-utils \
        nginx tnef sudo libzip4t64 libtre5 cron \
-       mariadb-client-core python3 python3-mysqldb \
+       mariadb-server mariadb-client-core python3 python3-mysqldb \
        ca-certificates curl rsyslog gnupg && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
