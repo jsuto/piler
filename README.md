@@ -34,4 +34,23 @@ piler is an open source email archival application. Please visit https://www.mai
 - search in audit logs
 - online status info
 - accounting
-- recognised formats: PST, EML, Maildir, mailbox
+- recognised formats: EML, Maildir, mailbox
+
+## Build a deb package for Ubuntu 24.04 LTS
+
+Clone the repo, and the following command in the repo root:
+
+```
+      docker run --rm \
+           -e PROJECT_ID=piler \
+           -e DISTRO=noble \
+           -e ARCH=amd64 \
+           -e VERSION=1.4.8 \
+           -e COMMIT_ID=deadbeef \
+           -e BUILD_NUMBER=1234 \
+           -v $PWD:/repo \
+           -v $PWD/docker:/data \
+           sutoj/builder:noble
+```
+
+This works for any branch, not just master.
