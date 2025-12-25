@@ -353,6 +353,17 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
       char *p = v;
 
+      /*
+       * https://www.ietf.org/rfc/rfc2047.txt says that
+       *
+       * "When displaying a particular header field that contains multiple
+       *  'encoded-word's, any 'linear-white-space' that separates a pair of
+       *  adjacent 'encoded-word's is ignored." (6.2)
+       */
+
+      if(n_tokens > 0 && prev_encoded != 1)
+         strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+
       do {
          memset(u, 0, sizeof(u));
 
@@ -368,10 +379,15 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
           */
 
          int b64=0, qp=0;
+         prev_encoded = 0;
          memset(encoding, 0, sizeof(encoding));
 
          r = strstr(p, "=?");
          if(r){
+            *r = '\0';
+            strncat(puf, p, sizeof(puf)-strlen(puf)-1);
+            *r = '=';
+
             p = r + 2;
 
             e = strchr(p, '?');
@@ -418,18 +434,6 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          if(b64 == 1) decodeBase64(u);
          else if(qp == 1) decodeQP(u);
 
-
-         /*
-          * https://www.ietf.org/rfc/rfc2047.txt says that
-          *
-          * "When displaying a particular header field that contains multiple
-          *  'encoded-word's, any 'linear-white-space' that separates a pair of
-          *  adjacent 'encoded-word's is ignored." (6.2)
-          */
-         if(prev_encoded == 1 && (b64 == 1 || qp == 1)) {}
-         else if(n_tokens > 1){
-            strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
-         }
 
          if(b64 == 1 || qp == 1){
             prev_encoded = 1;
