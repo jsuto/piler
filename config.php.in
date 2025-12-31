@@ -185,6 +185,10 @@ $config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
 $config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
 $config['GOOGLE_ALL_MAIL'] = '[Gmail]/All Mail';
 
+// Mailcow
+
+$config['MAILCOW_API_KEY'] = '';
+$config['MAILCOW_HOST'] = '';
 
 $config['ENABLE_AUDIT'] = 1;
 $config['MEMCACHED_ENABLED'] = 0;
