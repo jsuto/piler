@@ -214,11 +214,26 @@ cleanup2:
    return n_messages;
 }
 
+static CURLcode send_imap_command(CURL *curl, struct data *data, const char *url, struct MemoryStruct *chunk, const char *command){
+   curl_easy_reset(curl);
+   curl_easy_setopt(curl, CURLOPT_URL, url);
+   curl_easy_setopt(curl, CURLOPT_USERNAME, data->import->username);
+   curl_easy_setopt(curl, CURLOPT_PASSWORD, data->import->password);
+   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
+   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)chunk);
+   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+   SSL_SETUP(curl, data);
+
+   return curl_easy_perform(curl);
+}
+
 int delete_emails_from_imap(CURL *curl, struct data *data, const char *url, int *seq_nums, int count){
    CURLcode res;
    struct MemoryStruct chunk;
    char command[MAXBUFSIZE];
    int offset = 0;
+   int i = 0;
 
    if(count <= 0) return 0;
 
@@ -226,43 +241,49 @@ int delete_emails_from_imap(CURL *curl, struct data *data, const char *url, int 
    chunk.written_size = 0;
    chunk.size = 0;
 
-   // Build STORE command to mark messages as deleted
+   // Build and send STORE commands in batches to avoid buffer overflow
+   // Reserve space for "STORE " prefix (6) and " +FLAGS (\Deleted)" suffix (18) plus safety margin
+   const int max_offset = sizeof(command) - 32;
+
    offset = snprintf(command, sizeof(command), "STORE ");
-   for(int i=0; i<count; i++){
-      if(i > 0) offset += snprintf(command + offset, sizeof(command) - offset, ",");
+
+   for(i = 0; i < count; i++){
+      int needed = snprintf(NULL, 0, "%s%d", (offset > 6) ? "," : "", seq_nums[i]);
+
+      if(offset + needed >= max_offset){
+         // Buffer full, send current batch
+         snprintf(command + offset, sizeof(command) - offset, " +FLAGS (\\Deleted)");
+
+         res = send_imap_command(curl, data, url, &chunk, command);
+         if(res != CURLE_OK){
+            fprintf(stderr, "Failed to mark messages as deleted: %s\n", curl_easy_strerror(res));
+            free(chunk.memory);
+            return -1;
+         }
+
+         // Start new batch
+         offset = snprintf(command, sizeof(command), "STORE ");
+      }
+
+      // Add sequence number to current batch
+      if(offset > 6) offset += snprintf(command + offset, sizeof(command) - offset, ",");
       offset += snprintf(command + offset, sizeof(command) - offset, "%d", seq_nums[i]);
    }
-   snprintf(command + offset, sizeof(command) - offset, " +FLAGS (\\Deleted)");
 
-   curl_easy_reset(curl);
-   curl_easy_setopt(curl, CURLOPT_URL, url);
-   curl_easy_setopt(curl, CURLOPT_USERNAME, data->import->username);
-   curl_easy_setopt(curl, CURLOPT_PASSWORD, data->import->password);
-   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
-   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+   // Send remaining batch
+   if(offset > 6){
+      snprintf(command + offset, sizeof(command) - offset, " +FLAGS (\\Deleted)");
 
-   SSL_SETUP(curl, data);
-
-   res = curl_easy_perform(curl);
-   if(res != CURLE_OK){
-      fprintf(stderr, "Failed to mark messages as deleted: %s\n", curl_easy_strerror(res));
-      free(chunk.memory);
-      return -1;
+      res = send_imap_command(curl, data, url, &chunk, command);
+      if(res != CURLE_OK){
+         fprintf(stderr, "Failed to mark messages as deleted: %s\n", curl_easy_strerror(res));
+         free(chunk.memory);
+         return -1;
+      }
    }
 
    // Now expunge to permanently remove the deleted messages
-   curl_easy_reset(curl);
-   curl_easy_setopt(curl, CURLOPT_URL, url);
-   curl_easy_setopt(curl, CURLOPT_USERNAME, data->import->username);
-   curl_easy_setopt(curl, CURLOPT_PASSWORD, data->import->password);
-   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
-   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
-   curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
-
-   SSL_SETUP(curl, data);
-
-   res = curl_easy_perform(curl);
+   res = send_imap_command(curl, data, url, &chunk, "EXPUNGE");
    if(res != CURLE_OK){
       fprintf(stderr, "Failed to expunge deleted messages: %s\n", curl_easy_strerror(res));
       free(chunk.memory);
