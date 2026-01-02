@@ -42,7 +42,7 @@
           </ul>
         <?php } ?>
 
-        <?php if(!$admin_user) { ?>
+        <?php if(!$admin_user || ADMIN_CAN_POWER_SEARCH) { ?>
            <a href="<?php print PATH_PREFIX; ?>search.php" class="menulink"><i class="bi bi-search"></i><?php if(FULL_GUI) { print $text_search; } ?></a>
         <?php } ?>
 
