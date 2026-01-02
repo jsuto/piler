@@ -218,7 +218,7 @@ class ModelHealthHealth extends Model {
       $shortinfo = array();
       $a = array();
 
-      $s = exec("df", $output);
+      $s = exec("df -a", $output);
 
       $partitions = Registry::get('partitions_to_monitor');
 
