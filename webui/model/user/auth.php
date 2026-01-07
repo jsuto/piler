@@ -405,6 +405,12 @@ class ModelUserAuth extends Model {
          if($imap->login($login, $password)) {
             $imap->logout();
 
+            if(MAILCOW_API_KEY) {
+               $userinfo = $this->get_mailcow_userinfo($username);
+               $emails = $userinfo['emails'];
+               $realname = $userinfo['realname'];
+            }
+
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
                $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
             }
@@ -648,6 +654,68 @@ class ModelUserAuth extends Model {
 
         return str_replace($metaChars, $quotedMetaChars, $str);
     }
-}
 
-?>
+
+   private function mailcow_query($path = '') {
+      if($path === '') { return []; }
+
+      $ch = curl_init();
+
+      $uri = MAILCOW_HOST . $path;
+
+      $headers = [
+         'Accept: application/json',
+         'X-API-Key: ' . MAILCOW_API_KEY
+      ];
+
+      curl_setopt($ch, CURLOPT_URL, $uri);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+      if(ENABLE_SSL_VERIFY == 0) {
+         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+      }
+
+      $ret = curl_exec($ch);
+
+      curl_close($ch);
+
+      $ret = json_decode($ret, true);
+
+      return $ret;
+   }
+
+
+   public function get_mailcow_userinfo($username = '') {
+      $emails = [$username];
+
+      // Get all aliases
+      $aliases = $this->mailcow_query('/api/v1/get/alias/all');
+
+      // TODO: Cache the results?
+
+      foreach($aliases as $alias) {
+         if(isset($alias['active']) && $alias['active'] !== 1) {
+            continue;
+         }
+
+         if(isset($alias['active_int']) && $alias['active_int'] !== 1) {
+            continue;
+         }
+
+         array_push($emails, strtolower($alias['address']));
+
+         //syslog(LOG_INFO, 'mailcow alias: ' . $alias['address']);
+      }
+
+      // Get user's real name
+
+      $user = $this->mailcow_query('/api/v1/get/mailbox/' . $username);
+
+      return [
+         'realname' => $user['name'],
+         'emails'   => $emails
+      ];
+   }
+}
