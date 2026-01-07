@@ -48,6 +48,24 @@ class ControllerLoginGA extends Controller {
 
          if(strlen($this->request->post['ga_code']) > 5 && $GA->verifyCode($settings['ga_secret'], $this->request->post['ga_code'], 2)) {
 
+            // RFC 6238 replay protection: reject previously used OTP codes
+            if(MEMCACHED_ENABLED) {
+               $memcache = Registry::get('memcache');
+               $cache_key = 'otp:' . $data['username'] . ':' . $this->request->post['ga_code'];
+
+               if($memcache->get($cache_key)) {
+                  syslog(LOG_INFO, "GA auth rejected (OTP replay) for " . $data['username']);
+                  $this->model_user_auth->increment_failed_login_count($this->data['failed_login_count']);
+                  $this->data['failed_login_count']++;
+                  $this->data['x'] = $this->data['text_invalid_pin_code'];
+                  $this->render();
+                  return;
+               }
+
+               // Store used OTP for 180 seconds (covers ±60s discrepancy window plus buffer)
+               $memcache->add($cache_key, '1', 180);
+            }
+
             syslog(LOG_INFO, "GA auth successful for " . $data['username']);
 
             $session->set("ga_block", "");
