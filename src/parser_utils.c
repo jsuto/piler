@@ -349,10 +349,6 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
    q = buf;
 
    do {
-      q = split_str(q, " ", v, sizeof(v)-1);
-
-      char *p = v;
-
       /*
        * https://www.ietf.org/rfc/rfc2047.txt says that
        *
@@ -361,8 +357,23 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
        *  adjacent 'encoded-word's is ignored." (6.2)
        */
 
-      if(n_tokens > 0 && prev_encoded != 1)
+      if(prev_encoded == 1){
+         r = strstr(q, "=?");
+         if(r){
+            s = q;
+            while(s < r && *s == ' ')
+               ++s;
+            if(s == r)
+               q = r;
+         }
+      }
+      else if(n_tokens > 0)
          strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+
+      q = split_str(q, " ", v, sizeof(v)-1);
+
+      char *p = v;
+      prev_encoded = 0;
 
       do {
          memset(u, 0, sizeof(u));
@@ -379,7 +390,6 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
           */
 
          int b64=0, qp=0;
-         prev_encoded = 0;
          memset(encoding, 0, sizeof(encoding));
 
          r = strstr(p, "=?");
@@ -455,6 +465,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
             }
          }
          else {
+            prev_encoded = 0;
             strncat(puf, u, sizeof(puf)-strlen(puf)-1);
          }
 
