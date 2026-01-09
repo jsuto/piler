@@ -400,12 +400,12 @@ execute_post_install_tasks() {
 
 \$config['SITE_NAME'] = '$HOSTNAME';
 \$config['PATH_PREFIX'] = '/';
-\$config['SITE_URL'] = 'http://' . config['SITE_NAME'] . config['PATH_PREFIX'];
+\$config['SITE_URL'] = 'http://' . \$config['SITE_NAME'] . \$config['PATH_PREFIX'];
 \$config['DIR_BASE'] = '$DOCROOT/';
 
 \$config['SMTP_DOMAIN'] = '$HOSTNAME';
-\$config['SMTP_FROMADDR'] = 'no-reply@' . config['SMTP_DOMAIN'];
-\$config['ADMIN_EMAIL'] = 'admin@' . config['SMTP_DOMAIN'];
+\$config['SMTP_FROMADDR'] = 'no-reply@' . \$config['SMTP_DOMAIN'];
+\$config['ADMIN_EMAIL'] = 'admin@' . \$config['SMTP_DOMAIN'];
 
 \$config['DB_DRIVER'] = 'mysql';
 \$config['DB_PREFIX'] = '';
