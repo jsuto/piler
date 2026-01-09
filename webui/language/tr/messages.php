@@ -169,7 +169,7 @@ $_['text_import_users'] = "Kullanıcıları ithal et";
 $_['text_import_users_from_LDAP'] = "Kullanıcıları LDAP'tan ithal et";
 $_['text_inbound'] = "gelen";
 $_['text_indexer_job'] = "Dizinleme işi";
-$_['text_install_sudo_apply'] = "Şu ifadeyi /etc/sudoers dosyasına ekleyin: 'www-data ALL=NOPASSWD: systemctl reload piler'";
+$_['text_install_sudo_apply'] = "Şu ifadeyi /etc/sudoers.d/piler dosyasına ekleyin: 'www-data ALL=NOPASSWD: /usr/bin/systemctl reload piler'";
 $_['text_internal'] = "dahili";
 $_['text_invalid_data'] = "Geçersiz veri";
 $_['text_invalid_email'] = "Geçersiz e-posta";

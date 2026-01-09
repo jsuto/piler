@@ -171,7 +171,7 @@ $_['text_import_users'] = "Import uživatelů";
 $_['text_import_users_from_LDAP'] = "Import uživatelů z LDAP";
 $_['text_inbound'] = "příchozí";
 $_['text_indexer_job'] = "Indexovací úloha";
-$_['text_install_sudo_apply'] = "Přidejte následující do /etc/sudoers: 'www-data ALL=NOPASSWD: systemctl reload piler'";
+$_['text_install_sudo_apply'] = "Přidejte následující do /etc/sudoers.d/piler: 'www-data ALL=NOPASSWD: /usr/bin/systemctl reload piler'";
 $_['text_internal'] = "interní";
 $_['text_invalid_data'] = "Chybná data";
 $_['text_invalid_email'] = "Chybný email";

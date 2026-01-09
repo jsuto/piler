@@ -176,7 +176,7 @@ $_['text_import_users'] = "ユーザーをインポート";
 $_['text_import_users_from_LDAP'] = "LDAPからユーザーをインポート";
 $_['text_inbound'] = "インバウンド";
 $_['text_indexer_job'] = "インデクサジョブ";
-$_['text_install_sudo_apply'] = "/etc/sudoers へ次を追加してください: 'www-data ALL=NOPASSWD: systemctl reload piler'";
+$_['text_install_sudo_apply'] = "/etc/sudoers.d/piler へ次を追加してください: 'www-data ALL=NOPASSWD: /usr/bin/systemctl reload piler'";
 $_['text_internal'] = "内部";
 $_['text_invalid_data'] = "無効なデータ";
 $_['text_invalid_email'] = "無効なメールアドレス";
