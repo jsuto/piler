@@ -279,7 +279,7 @@ $config['SPHINX_STRICT_SCHEMA'] = 1;
 $config['RT'] = 1;
 $config['MAX_EMAIL_LEN'] = 41;
 
-$config['RELOAD_COMMAND'] = 'sudo -n /etc/init.d/rc.piler reload';
+$config['RELOAD_COMMAND'] = 'sudo -n /usr/bin/systemctl reload piler';
 $config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
 $config['CPU_USAGE_COMMAND'] = "LC_ALL=C mpstat | tail -1 | rev | awk '{ print $1 }' | rev";
 $config['PILER_BINARY'] = "SBINDIR/piler";
