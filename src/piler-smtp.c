@@ -76,7 +76,7 @@ void p_clean_exit(int sig){
 
    ERR_free_strings();
 
-   exit(1);
+   exit(0);
 }
 
 
