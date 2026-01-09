@@ -365,7 +365,11 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
                ++s;
             if(s == r)
                q = r;
+            else
+               strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
          }
+         else
+            strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
       }
       else if(n_tokens > 0)
          strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
