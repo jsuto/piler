@@ -1103,11 +1103,6 @@ void fill_attachment_name_buf(struct parser_state *state, char *buf){
    if(len + state->anamepos < SMALLBUFSIZE-3){
       memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
       state->anamepos += len;
-
-      // add a trailing separator semicolon to make sure there's separation
-      // with the next item
-      state->attachment_name_buf[state->anamepos] = ';';
-      state->anamepos++;
    }
 }
 
