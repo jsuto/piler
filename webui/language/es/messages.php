@@ -1,5 +1,6 @@
 <?php
 
+$_['text_ok'] = "Ok";
 $_['text_60_minutes'] = "60 mins";
 
 $_['text_action'] = "Acción";

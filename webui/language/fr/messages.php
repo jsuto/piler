@@ -1,5 +1,6 @@
 <?php
 // Translation v 10 Sep 2014
+$_['text_ok'] = "D’Accord";
 $_['text_60_minutes'] = "60 minutes";
 
 $_['text_action'] = "Action";
