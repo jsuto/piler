@@ -139,26 +139,22 @@ fi
 
 if [[ -f /usr/libexec/piler/piler.service ]]; then
    ln -sf /usr/libexec/piler/piler.service /lib/systemd/system
-   /usr/bin/systemctl enable piler.service
-   /usr/bin/systemctl start piler.service
+   /usr/bin/systemctl enable --now piler.service
 fi
 
 if [[ -f /usr/libexec/piler/piler-smtp.service ]]; then
    ln -sf /usr/libexec/piler/piler-smtp.service /lib/systemd/system
-   /usr/bin/systemctl enable piler-smtp.service
-   /usr/bin/systemctl start piler-smtp.service
+   /usr/bin/systemctl enable --now piler-smtp.service
 fi
 
 if [[ -f /usr/libexec/piler/pilersearch.service ]]; then
    ln -sf /usr/libexec/piler/pilersearch.service /lib/systemd/system
-   /usr/bin/systemctl enable pilersearch.service
-   /usr/bin/systemctl start pilersearch.service
+   /usr/bin/systemctl enable --now pilersearch.service
 fi
 
 if [[ -f /usr/libexec/piler/tika.service ]]; then
    ln -sf /usr/libexec/piler/tika.service /lib/systemd/system
-   /usr/bin/systemctl enable tika.service
-   /usr/bin/systemctl start tika.service
+   /usr/bin/systemctl enable --now tika.service
 fi
 
 if [[ $(pgrep -c systemd) -gt 0 && -x /bin/systemctl ]]; then
