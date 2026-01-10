@@ -53,6 +53,20 @@ make_deb_package() {
       -v "${VERSION}-${DISTRO}" \
       --iteration "${COMMIT_ID}${DEBUG_SUFFIX}" \
       --description "$description" \
+      --depends catdoc \
+      --depends libtre5 \
+      --depends php-curl \
+      --depends php-fpm \
+      --depends php-gd \
+      --depends php-ldap \
+      --depends php-mysql \
+      --depends php-xml \
+      --depends php-zip \
+      --depends poppler-utils \
+      --depends python3 \
+      --depends python3-mysqldb \
+      --depends tnef \
+      --depends unrtf \
       --before-install "${REPO_ROOT}/build/fpm-${project}-before-install.sh" \
       --after-install "${REPO_ROOT}/build/fpm-${project}-after-install.sh"
 
