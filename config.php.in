@@ -32,7 +32,7 @@ $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
 $config['BRANDING_LOGO'] = '/assets/images/archive-logo-sm.png';
 
-$config['COMPATIBILITY'] = 'Which browsers are supported, etc';
+$config['LOGIN_EXTRA_NOTES'] = '';
 
 $config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
 $config['FULL_GUI'] = 1;
