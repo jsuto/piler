@@ -216,6 +216,10 @@ let Piler =
 
         $('#e_' + id).attr('class', 'resultrow highlighted');
 
+        // Scroll the selected row into view
+        let row = document.getElementById('e_' + id);
+        if(row) { row.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+
         Piler.prev_message_id = id;
         Piler.view_message(id, preview_pane);
 
@@ -931,17 +935,25 @@ let Piler =
            if(e.which == 13){
               $("#button_search").click();
            }
+        });
 
-           // 37: left, 38: up, 39: right, 40: down
+        // Use keydown for arrow keys as keypress doesn't fire for them
+        $(document).keydown(function(e){
+           // Don't handle arrow keys when focused on input fields
+           if($(e.target).is('input, textarea, select')) {
+              return;
+           }
 
+           // 38: up, 40: down
            if(e.keyCode == 38){
+              e.preventDefault();
               Piler.show_prev_message();
            }
 
            if(e.keyCode == 40){
+              e.preventDefault();
               Piler.show_next_message();
            }
-
         });
 
     },
