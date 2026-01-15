@@ -90,7 +90,7 @@ int import_message(struct session_data *sdata, struct data *data, struct counter
 
    if(rule){
       if(data->quiet == 0) printf("discarding %s by archiving policy: %s\n", data->import->filename, rule);
-      rc = OK;
+      rc = ERR_DISCARDED;
    }
    else {
       make_digests(sdata, cfg);
