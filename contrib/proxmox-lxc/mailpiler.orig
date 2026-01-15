@@ -119,7 +119,7 @@ cat >> /usr/local/etc/piler/config-site.php <<EOF
 // CUSTOM
 \$config['PROVIDED_BY'] = '$PILER_DOM';
 \$config['SUPPORT_LINK'] = 'https://$PILER_DOM';
-\$config['COMPATIBILITY'] = '';
+\$config['LOGIN_EXTRA_NOTES'] = '';
 
 // fancy features.
 \$config['ENABLE_INSTANT_SEARCH'] = 1;
