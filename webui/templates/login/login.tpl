@@ -60,7 +60,7 @@
                <p><a href="<?php print $auth_url; ?>"><?php print $text_login_via_google; ?></a></p>
             <?php } ?>
 
-              <p><?php print COMPATIBILITY; ?></p>
+              <p><?php print LOGIN_EXTRA_NOTES; ?></p>
             </div>
             <div class="col"></div>
           </div>
