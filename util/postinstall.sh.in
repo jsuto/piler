@@ -450,9 +450,15 @@ SOCKHELPER
 
    if [[ -d "$DOCROOT" ]]; then webui_install; fi
 
+   if [[ -f "/usr/bin/systemctl" ]]; then
+      RELOAD_COMMAND="/usr/bin/systemctl reload piler"
+   else
+      RELOAD_COMMAND="/etc/init.d/rc.piler reload"
+   fi
+
    if [[ -d "/etc/sudoers.d" ]]; then
       echo -n "Creating sudoers file"
-      echo "www-data ALL=NOPASSWD: /usr/bin/systemctl reload piler" >> /etc/sudoers.d/piler
+      echo "www-data ALL=NOPASSWD: ${RELOAD_COMMAND}" >> /etc/sudoers.d/piler
    fi
 
 }
