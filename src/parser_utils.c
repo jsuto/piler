@@ -361,7 +361,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          r = strstr(q, "=?");
          if(r){
             s = q;
-            while(s < r && *s == ' ')
+            while(s < r && (*s == ' ' || *s == '\t'))
                ++s;
             if(s == r)
                q = r;
