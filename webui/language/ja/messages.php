@@ -1,5 +1,6 @@
 <?php
 
+$_['text_ok'] = "了解";
 $_['text_60_minutes'] = "60 分";
 
 $_['text_action'] = "操作";

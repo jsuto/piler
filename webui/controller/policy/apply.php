@@ -24,6 +24,8 @@ class ControllerPolicyApply extends Controller {
 
       if($val !== 0) {
          print $lang->data['text_install_sudo_apply'];
+      } else {
+         print $lang->data['text_ok'];
       }
 
 
