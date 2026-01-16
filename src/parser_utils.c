@@ -349,9 +349,35 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
    q = buf;
 
    do {
+      /*
+       * https://www.ietf.org/rfc/rfc2047.txt says that
+       *
+       * "When displaying a particular header field that contains multiple
+       *  'encoded-word's, any 'linear-white-space' that separates a pair of
+       *  adjacent 'encoded-word's is ignored." (6.2)
+       */
+
+      if(prev_encoded == 1){
+         r = strstr(q, "=?");
+         if(r){
+            s = q;
+            while(s < r && (*s == ' ' || *s == '\t'))
+               ++s;
+            if(s == r)
+               q = r;
+            else
+               strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+         }
+         else
+            strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+      }
+      else if(n_tokens > 0)
+         strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
+
       q = split_str(q, " ", v, sizeof(v)-1);
 
       char *p = v;
+      prev_encoded = 0;
 
       do {
          memset(u, 0, sizeof(u));
@@ -372,6 +398,10 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
          r = strstr(p, "=?");
          if(r){
+            *r = '\0';
+            strncat(puf, p, sizeof(puf)-strlen(puf)-1);
+            *r = '=';
+
             p = r + 2;
 
             e = strchr(p, '?');
@@ -419,18 +449,6 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          else if(qp == 1) decodeQP(u);
 
 
-         /*
-          * https://www.ietf.org/rfc/rfc2047.txt says that
-          *
-          * "When displaying a particular header field that contains multiple
-          *  'encoded-word's, any 'linear-white-space' that separates a pair of
-          *  adjacent 'encoded-word's is ignored." (6.2)
-          */
-         if(prev_encoded == 1 && (b64 == 1 || qp == 1)) {}
-         else if(n_tokens > 1){
-            strncat(puf, " ", sizeof(puf)-strlen(puf)-1);
-         }
-
          if(b64 == 1 || qp == 1){
             prev_encoded = 1;
             need_encoding = 0;
@@ -451,6 +469,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
             }
          }
          else {
+            prev_encoded = 0;
             strncat(puf, u, sizeof(puf)-strlen(puf)-1);
          }
 
@@ -1084,11 +1103,6 @@ void fill_attachment_name_buf(struct parser_state *state, char *buf){
    if(len + state->anamepos < SMALLBUFSIZE-3){
       memcpy(&(state->attachment_name_buf[state->anamepos]), p, len);
       state->anamepos += len;
-
-      // add a trailing separator semicolon to make sure there's separation
-      // with the next item
-      state->attachment_name_buf[state->anamepos] = ';';
-      state->anamepos++;
    }
 }
 
