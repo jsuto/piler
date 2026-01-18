@@ -159,7 +159,7 @@ $_['text_import_users'] = "Importar usuarios";
 $_['text_import_users_from_LDAP'] = "Importar usuarios de LDAP";
 $_['text_inbound'] = "entrante";
 $_['text_indexer_job'] = "Trabajo de indexador";
-$_['text_install_sudo_apply'] = "Añada lo siguiente a /etc/sudoers: 'www-data ALL=NOPASSWD: systemctl reload piler'";
+$_['text_install_sudo_apply'] = "Añada lo siguiente a /etc/sudoers.d/piler: 'www-data ALL=NOPASSWD: /usr/bin/systemctl reload piler'";
 $_['text_internal'] = "internalo";
 $_['text_invalid_data'] = "Data inválida";
 $_['text_invalid_email'] = "Email inválido";
