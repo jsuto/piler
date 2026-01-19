@@ -23,14 +23,14 @@ $config['BRANDING_FAVICON'] = '
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
   <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="/assets/ico/favicon.png">
+  <link rel="shortcut icon" href="/assets/ico/favicon.svg" type="image/svg">
 ';
 
-$config['SITE_LOGO_LG'] = '/assets/images/archive-logo-lg.png';
+$config['SITE_LOGO_LG'] = '/assets/images/piler_logo.svg';
 
 $config['BRANDING_TEXT'] = '';
 $config['BRANDING_URL'] = '';
-$config['BRANDING_LOGO'] = '/assets/images/archive-logo-sm.png';
+$config['BRANDING_LOGO'] = '/assets/images/piler_logo_inv_text.svg';
 
 $config['LOGIN_EXTRA_NOTES'] = '';
 
