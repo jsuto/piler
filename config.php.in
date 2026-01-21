@@ -29,7 +29,7 @@ $config['BRANDING_FAVICON'] = '
 $config['SITE_LOGO_LG'] = '/assets/images/piler_logo.svg';
 
 $config['BRANDING_TEXT'] = '';
-$config['BRANDING_URL'] = '';
+$config['BRANDING_URL'] = 'https://www.mailpiler.org';
 $config['BRANDING_LOGO'] = '/assets/images/piler_logo_inv_text.svg';
 
 $config['LOGIN_EXTRA_NOTES'] = '';
