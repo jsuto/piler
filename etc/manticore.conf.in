@@ -271,7 +271,8 @@ searchd
         binlog_max_log_size     = 256M
         binlog_path             = /var/piler/manticore
         binlog_flush            = 2
-        query_log               = /var/piler/manticore/query.log
+        # Uncomment the following line to enable the query_log
+        #query_log               = /var/piler/manticore/query.log
         network_timeout         = 5
         pid_file                = /var/piler/run/searchd.pid
         seamless_rotate         = 1
