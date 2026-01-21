@@ -42,6 +42,7 @@ Clone the repo, and the following command in the repo root:
 
 ```
       docker run --rm \
+           --security-opt apparmor=unconfined \
            -e PROJECT_ID=piler \
            -e DISTRO=noble \
            -e ARCH=amd64 \
