@@ -195,6 +195,9 @@
           <button type="reset" class="btn btn-secondary"><?php print $text_cancel; ?></button>
         </div>
         <div class="col-auto">
+          <button type="button" class="btn btn-danger" onclick="Piler.reload_piler();"><?php print $text_apply_changes; ?></button>
+        </div>
+        <div class="col-auto">
           <span id="help1" class="form-text"></span>
         </div>
       </div>
@@ -254,9 +257,4 @@
 
     </div>
   </div>
-</div>
-
-
-<div>
-  <button type="button" class="btn btn-danger" onclick="Piler.reload_piler();"><?php print $text_apply_changes; ?></button>
 </div>
