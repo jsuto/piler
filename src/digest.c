@@ -69,6 +69,7 @@ int make_digests(struct session_data *sdata, struct config *cfg){
    unsigned char *buf = calloc(1, cfg->max_header_size);
    if(!buf) {
       syslog(LOG_PRIORITY, "ERROR: calloc() %s:%d", __func__, __LINE__);
+      close(fd);
       EVP_MD_CTX_free(ctx);
       EVP_MD_CTX_free(ctx2);
       return 1;
