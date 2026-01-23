@@ -29,7 +29,7 @@ int export_to_stdout = 0;
 char *query=NULL;
 int verbosity = 0;
 int max_matches = 1000;
-char *index_list = "main1,dailydelta1,delta1";
+char *index_list = "piler1";
 struct passwd *pwd;
 regex_t regexp;
 char *zipfile = NULL;
@@ -395,7 +395,10 @@ int export_emails_matching_to_query(struct session_data *sdata, char *s, struct 
 
                snprintf(sdata->filename, SMALLBUFSIZE-1, "%s", filename);
 
-               make_digests(sdata, cfg);
+               // I want to export no matter what, so an error won't block
+               if(make_digests(sdata, cfg)) {
+                  printf("digest calculation error: %s\n", filename);
+               }
 
                if(strcmp(digest, sdata->digest) == 0 && strcmp(bodydigest, sdata->bodydigest) == 0){
                   printf("exported: %10llu\r", n); fflush(stdout);

@@ -93,9 +93,13 @@ int import_message(struct session_data *sdata, struct data *data, struct counter
       rc = ERR_DISCARDED;
    }
    else {
-      make_digests(sdata, cfg);
+      int rd = make_digests(sdata, cfg);
 
-      if(sdata->hdr_len < 10){
+      if(rd) {
+         fprintf(stderr, "%s: cannot make digest\n", data->import->filename);
+         rc = ERR;
+      }
+      else if(sdata->hdr_len < 10){
          printf("%s: invalid message, hdr_len: %d\n", data->import->filename, sdata->hdr_len);
          rc = ERR;
       }

@@ -65,6 +65,7 @@ struct _parse_rule config_parse_rules[] =
    { "listen_port", "integer", (void*) int_parser, offsetof(struct config, listen_port), "25", sizeof(int)},
    { "locale", "string", (void*) string_parser, offsetof(struct config, locale), "", MAXVAL-1},
    { "max_connections", "integer", (void*) int_parser, offsetof(struct config, max_connections), "64", sizeof(int)},
+   { "max_header_size", "integer", (void*) int_parser, offsetof(struct config, max_header_size), "131072", sizeof(int)},
    { "max_message_size", "integer", (void*) int_parser, offsetof(struct config, max_message_size), "50000000", sizeof(int)},
    { "max_requests_per_child", "integer", (void*) int_parser, offsetof(struct config, max_requests_per_child), "10000", sizeof(int)},
    { "max_smtp_memory", "uint64", (void*) uint64_parser, offsetof(struct config, max_smtp_memory), "500000000", sizeof(uint64)},
@@ -208,6 +209,11 @@ struct config read_config(char *configfile){
 
    cfg.hostid_len = strlen(cfg.hostid);
 
+   // Some basic sanity checks
+   if(cfg.max_header_size < 1000) {
+      __fatal("invalid max_header_size value");
+   }
+   
    // Get the TLS protocol constant from string, ie. TLSv1.3 -> 772
    cfg.tls_min_version_number = get_tls_protocol_number(cfg.tls_min_version);
 

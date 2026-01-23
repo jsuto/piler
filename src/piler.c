@@ -121,7 +121,10 @@ int perform_checks(char *filename, struct session_data *sdata, struct data *data
       return ERR_DISCARDED;
    }
 
-   make_digests(sdata, cfg);
+   if(make_digests(sdata, cfg)) {
+      syslog(LOG_PRIORITY, "%s: cannot make digest", filename);
+      return ERR;
+   }
 
    // A normal header is much bigger than 10 bytes. We get here for header-only
    // messages without a Message-ID: line. I believe that no such message is valid, and
