@@ -209,6 +209,11 @@ struct config read_config(char *configfile){
 
    cfg.hostid_len = strlen(cfg.hostid);
 
+   // Some basic sanity checks
+   if(cfg.max_header_size < 1000) {
+      __fatal("invalid max_header_size value");
+   }
+   
    // Get the TLS protocol constant from string, ie. TLSv1.3 -> 772
    cfg.tls_min_version_number = get_tls_protocol_number(cfg.tls_min_version);
 
