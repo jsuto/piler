@@ -96,7 +96,7 @@ int import_message(struct session_data *sdata, struct data *data, struct counter
       int rd = make_digests(sdata, cfg);
 
       if(rd) {
-         printf("%s: cannot make digest", data->import->filename);
+         fprintf(stderr, "%s: cannot make digest\n", data->import->filename);
          rc = ERR;
       }
       else if(sdata->hdr_len < 10){
