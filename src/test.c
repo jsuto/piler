@@ -160,7 +160,9 @@ int main(int argc, char **argv){
 
    printf("sent: %lu, delivered-date: %lu\n", sdata.sent, sdata.delivered);
 
-   make_digests(&sdata, &cfg);
+   if(make_digests(&sdata, &cfg)) {
+      printf("digest calculation error\n");
+   }
 
    printf("hdr len: %d\n", sdata.hdr_len);
 

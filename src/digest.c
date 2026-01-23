@@ -36,7 +36,6 @@ int search_header_end(char *p, int n){
 int make_digests(struct session_data *sdata, struct config *cfg){
    int n, fd, offset=3, hdr_len=0;
    char *body=NULL;
-   unsigned char buf[BIGBUFSIZE];
 
    EVP_MD_CTX *ctx, *ctx2;
    const EVP_MD *md, *md2;
@@ -60,11 +59,22 @@ int make_digests(struct session_data *sdata, struct config *cfg){
    EVP_DigestInit_ex(ctx2, md2, NULL);
 
    fd = open(sdata->filename, O_RDONLY);
-   if(fd == -1) return -1;
+   if(fd == -1) {
+      syslog(LOG_PRIORITY, "ERROR: open() %s:%d", __func__, __LINE__);
+      EVP_MD_CTX_free(ctx);
+      EVP_MD_CTX_free(ctx2);
+      return 1;
+   }
 
-   memset(buf, 0, sizeof(buf));
+   unsigned char *buf = calloc(1, cfg->max_header_size);
+   if(!buf) {
+      syslog(LOG_PRIORITY, "ERROR: calloc() %s:%d", __func__, __LINE__);
+      EVP_MD_CTX_free(ctx);
+      EVP_MD_CTX_free(ctx2);
+      return 1;
+   }
 
-   while((n = read(fd, buf, sizeof(buf))) > 0){
+   while((n = read(fd, buf, cfg->max_header_size)) > 0){
       EVP_DigestUpdate(ctx2, buf, n);
 
       body = (char *)&buf[0];
@@ -86,6 +96,8 @@ int make_digests(struct session_data *sdata, struct config *cfg){
 
       i++;
    }
+
+   free(buf);
 
    close(fd);
 
