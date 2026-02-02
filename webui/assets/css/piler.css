@@ -3,7 +3,7 @@ body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue
 body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 
 #header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase;}
-#menu { background: #2c5fc4; color: #fcfcfc; font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase;}
+#menu { background: #2c5fc4; color: #fcfcfc; font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase; position: fixed; top: 0; z-index: 1000;}
 
 .dropdown-menu {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase;}
 .dropdown-menu li.dropdown-item:hover, a.dropdown-item:hover { background-color: #2c5fc4; color: #fcfcfc; text-decoration:none;}
