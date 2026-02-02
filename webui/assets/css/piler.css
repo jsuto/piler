@@ -14,7 +14,7 @@ a.dropdown-item {font-weight:100; text-decoration:none;}
 
 
 
-.container-panes { height: calc(95vh - 56px); /* Height of the screen minus the navbar */ display: flex; flex-direction: column; }
+.container-panes { height: calc(95vh - 90px); /* Height of the screen minus the navbar */ display: flex; flex-direction: column; }
 .pane { overflow-y: auto; flex-grow: 1; min-height: 300px; position: relative; }
 .resizer { height: 5px; background: #333; cursor: row-resize; }
 .pane-upper-content { height: calc(100% - 40px); /* 40px is the height of the fixed bottom row in the upper pane */ overflow-y: auto; border: 1px solid #ccc;}
