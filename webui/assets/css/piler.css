@@ -2,7 +2,7 @@ html,body{height:auto !important;height:100%;min-height:100%;}
 body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:#333333;background-color:#ffffff;}
 body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 
-#header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase;}
+#header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase; position: absolute;}
 #menu { background: #2c5fc4; color: #fcfcfc; font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase; position: fixed; top: 0; z-index: 1000;}
 
 .dropdown-menu {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase;}
@@ -32,7 +32,7 @@ h2 i{font-size:60px;}
 .btn-search {width: 33%;}
 .btn-options {width: 34%;}
 
-.searchcontainer{padding-top: 20px; margin-left: 12px; margin-right: 12px;}
+.searchcontainer{padding-top: 65px; margin-left: 12px; margin-right: 12px;}
 
 input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 
