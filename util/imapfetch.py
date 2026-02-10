@@ -4,6 +4,7 @@
 import MySQLdb as dbapi
 import argparse
 import configparser
+import fnmatch
 import imaplib
 import os
 import re
@@ -58,7 +59,7 @@ def read_folder_list(conn):
             f = re.split(r' \"[\/\.\\]+\" ', folder)
             result.append(f[1])
 
-    return [x for x in result if x not in opts['skip_folders']]
+    return [x for x in result if not any(fnmatch.fnmatch(x.lower(), p.lower()) for p in opts['skip_folders'])]
 
 
 def process_folder(conn, folder):
