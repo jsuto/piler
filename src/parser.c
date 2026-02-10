@@ -131,8 +131,8 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    // so the workaround is to discard such Received: line
    if(q && strlen(q+1) < 45){
       time_t received_timestamp = parse_date_header(q+1);
-      // The date in the Received: header must be after 2001-SEP-09
-      if(received_timestamp > 1000000000 && received_timestamp < sdata->now + 7200){
+      // The date in the Received: header must be after 1973-MAR-03
+      if(received_timestamp > 100000000 && received_timestamp < sdata->now + 7200){
          sdata->sent = received_timestamp;
       }
    }
