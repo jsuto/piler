@@ -716,7 +716,7 @@ let Piler =
      */
     navigation:function( a )
     {
-        Piler.log("[navigation]");
+        Piler.log("[navigation] going to page: " + a);
 
         Piler.Shared.page = a;
 
@@ -953,6 +953,19 @@ let Piler =
            if(e.keyCode == 40){
               e.preventDefault();
               Piler.show_next_message();
+           }
+
+           // 37: left, 39: right
+           if(e.keyCode == 37){
+              e.preventDefault();
+              //TODO check if navigation function already prevents going negative or max+1
+              //TODO create getCurrentPage()
+              Piler.navigation(getCurrentPage() - 1);
+           }
+
+           if(e.keyCode == 39){
+              e.preventDefault();
+              Piler.navigation(getCurrentPage() + 1);
            }
         });
 
