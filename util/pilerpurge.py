@@ -1,5 +1,29 @@
 #!/usr/bin/python3
 
+# Performance optimizations for large archives (600GB+ DB, 40TB+ storage):
+#
+# 1. SELECT query: NOT IN -> LEFT JOIN ... IS NULL + LIMIT
+#    The old query used nested NOT IN subqueries against rcpt and metadata
+#    for legal_hold exclusion, causing full table scans. Now uses LEFT JOIN
+#    with IS NULL checks, which MySQL can optimize with index lookups.
+#    Added LIMIT (bound to batch_size) so each query returns a bounded result.
+#
+# 2. Main loop: unbounded cursor -> re-query per chunk
+#    Instead of running one huge SELECT and iterating with fetchmany(),
+#    each iteration runs a fresh LIMIT-ed query, processes the batch,
+#    and loops. Since each batch sets deleted=1, the next query's
+#    WHERE deleted=0 naturally excludes already-processed rows.
+#
+# 3. DELETE statements: eliminated 5 redundant subqueries per batch
+#    Each DELETE used to re-resolve piler_ids via
+#    SELECT id FROM metadata WHERE piler_id IN (...). Now passes both
+#    numeric meta_ids and piler_ids, using numeric ids directly.
+#
+# 4. Attachment queries: stopped using v_attachment view
+#    The v_attachment view computes a correlated COUNT(*) subquery for
+#    every row in the attachment table. Now queries attachment directly
+#    with the piler_id filter, so the subquery only runs for matching rows.
+
 import configparser
 import MySQLdb as dbapi
 import argparse
@@ -9,12 +33,18 @@ import sys
 import syslog
 import time
 
-SQL_PURGE_SELECT_QUERY = "SELECT id, piler_id, size FROM " +\
-    "metadata WHERE deleted=0 AND retained < UNIX_TIMESTAMP(NOW()) " +\
-    "AND id NOT IN (SELECT id FROM rcpt WHERE `to` IN " +\
-    "(SELECT email FROM legal_hold)) AND id NOT IN (SELECT " +\
-    "id FROM metadata WHERE `from` IN (SELECT email FROM " +\
-    "legal_hold))"
+# Use LEFT JOIN instead of NOT IN for legal_hold exclusion.
+# NOT IN with subqueries causes full table scans on large tables.
+# Process in bounded chunks via LIMIT to avoid unbounded result sets.
+SQL_PURGE_SELECT_QUERY = (
+    "SELECT m.id, m.piler_id, m.size FROM metadata m "
+    "LEFT JOIN rcpt r_lh ON m.id = r_lh.id "
+    "AND r_lh.`to` IN (SELECT email FROM legal_hold) "
+    "LEFT JOIN legal_hold lh_from ON m.`from` = lh_from.email "
+    "WHERE m.deleted=0 AND m.retained < UNIX_TIMESTAMP(NOW()) "
+    "AND r_lh.id IS NULL AND lh_from.email IS NULL "
+    "LIMIT %s"
+)
 
 opts = {}
 
@@ -52,70 +82,77 @@ def is_purge_enabled(opts={}):
     return False
 
 
-def purge_m_files(ids=[], opts={}):
-    if len(ids) > 0:
-        remove_m_files(ids, opts)
+def purge_m_files(meta_ids=[], piler_ids=[], opts={}):
+    if len(piler_ids) == 0:
+        return
 
-        # Set deleted=1 for aged metadata entries
-        # as well as clean other tables
+    # First, delete files from disk (outside the DB transaction)
+    remove_m_files(piler_ids, opts)
 
-        if opts['dry_run'] is False:
-            cursor = opts['db'].cursor()
-            format = ", ".join(['%s'] * len(ids))
-            cursor.execute("UPDATE metadata SET deleted=1, subject=NULL, `from`=''," +
-                           "fromdomain='', message_id='' WHERE piler_id IN " +
-                           "(%s)" % (format), ids)
+    if opts['dry_run'] is False:
+        cursor = opts['db'].cursor()
 
-            cursor.execute("DELETE FROM rcpt WHERE id IN (SELECT id FROM metadata " +
-                           "WHERE piler_id IN (%s))" % (format), ids)
-            cursor.execute("DELETE FROM note WHERE id IN (SELECT id FROM metadata " +
-                           "WHERE piler_id IN (%s))" % (format), ids)
-            cursor.execute("DELETE FROM tag WHERE id IN (SELECT id FROM metadata " +
-                           "WHERE piler_id IN (%s))" % (format), ids)
-            cursor.execute("DELETE FROM private WHERE id IN (SELECT id FROM metadata " +
-                           "WHERE piler_id IN (%s))" % (format), ids)
-            cursor.execute("DELETE FROM folder_message WHERE id IN (SELECT id FROM " +
-                           "metadata WHERE piler_id IN (%s))" % (format), ids)
+        # Use the already-resolved numeric ids directly instead of
+        # repeating SELECT id FROM metadata WHERE piler_id IN (...)
+        # in every statement.
 
-            opts['db'].commit()
+        id_format = ", ".join(['%s'] * len(meta_ids))
+        piler_id_format = ", ".join(['%s'] * len(piler_ids))
+
+        cursor.execute("UPDATE metadata SET deleted=1, subject=NULL, `from`='',"
+                       "fromdomain='', message_id='' WHERE piler_id IN "
+                       "(%s)" % (piler_id_format), piler_ids)
+
+        cursor.execute("DELETE FROM rcpt WHERE id IN (%s)" % (id_format), meta_ids)
+        cursor.execute("DELETE FROM note WHERE id IN (%s)" % (id_format), meta_ids)
+        cursor.execute("DELETE FROM tag WHERE id IN (%s)" % (id_format), meta_ids)
+        cursor.execute("DELETE FROM private WHERE id IN (%s)" % (id_format), meta_ids)
+        cursor.execute("DELETE FROM folder_message WHERE id IN (%s)" % (id_format), meta_ids)
+
+        opts['db'].commit()
 
 
-def purge_attachments_by_piler_id(ids=[], opts={}):
-    format = ", ".join(['%s'] * len(ids))
+def purge_attachments_by_piler_id(piler_ids=[], opts={}):
+    format = ", ".join(['%s'] * len(piler_ids))
 
     cursor = opts['db'].cursor()
 
-    cursor.execute("SELECT i, piler_id, attachment_id, refcount FROM " +
-                   "v_attachment WHERE piler_id IN (%s)" % (format), ids)
+    # Avoid the v_attachment view which has a correlated subquery
+    # computing refcount for every row. Instead, get the attachment
+    # rows directly and compute refcount only for the rows we need.
+    cursor.execute(
+        "SELECT a.id, a.piler_id, a.attachment_id, "
+        "(SELECT COUNT(*) FROM attachment a2 WHERE a2.ptr = a.id) AS refcount "
+        "FROM attachment a WHERE a.piler_id IN (%s)" % (format), piler_ids)
 
-    while True:
-        rows = cursor.fetchall()
-        if rows == ():
-            break
-        else:
-            remove_attachment_files(rows, opts)
+    rows = cursor.fetchall()
+    if rows:
+        remove_attachment_files(rows, opts)
 
 
 def purge_attachments_by_attachment_id(opts={}):
+    if not opts['referenced_attachments']:
+        return
+
     format = ", ".join(['%s'] * len(opts['referenced_attachments']))
 
     cursor = opts['db'].cursor()
 
-    cursor.execute("SELECT i, piler_id, attachment_id, refcount FROM " +
-                   "v_attachment WHERE refcount=0 AND i IN (%s)" %
-                   (format), opts['referenced_attachments'])
+    cursor.execute(
+        "SELECT a.id, a.piler_id, a.attachment_id, "
+        "(SELECT COUNT(*) FROM attachment a2 WHERE a2.ptr = a.id) AS refcount "
+        "FROM attachment a WHERE "
+        "(SELECT COUNT(*) FROM attachment a2 WHERE a2.ptr = a.id) = 0 "
+        "AND a.id IN (%s)" % (format), opts['referenced_attachments'])
 
-    while True:
-        rows = cursor.fetchall()
-        if rows == ():
-            break
-        else:
-            for (id, piler_id, attachment_id, refcount) in rows:
-                if opts['dry_run'] is False:
-                    unlink(get_attachment_file_path(piler_id, attachment_id,
-                                                    opts), opts)
-                else:
-                    print(get_attachment_file_path(piler_id, attachment_id, opts))
+    rows = cursor.fetchall()
+    if rows:
+        for (id, piler_id, attachment_id, refcount) in rows:
+            if opts['dry_run'] is False:
+                unlink(get_attachment_file_path(piler_id, attachment_id,
+                                                opts), opts)
+            else:
+                print(get_attachment_file_path(piler_id, attachment_id, opts))
 
 
 def remove_attachment_files(rows=(), opts={}):
@@ -194,7 +231,7 @@ def purge_index_data(ids=[], opts={}):
 
     if opts['rtindex'] == 1 and opts['dry_run'] is False:
         cursor = opts['sphx'].cursor()
-        a = "," . join([str(x) for x in ids])
+        a = ",".join([str(x) for x in ids])
         cursor.execute("DELETE FROM %s WHERE id IN (%s)" % (opts['sphxdb'], a))
 
 
@@ -202,7 +239,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, help="piler.conf path",
                         default="/etc/piler/piler.conf")
-    parser.add_argument("-b", "--batch-size", type=int, help="batch size " +
+    parser.add_argument("-b", "--batch-size", type=int, help="batch size "
                         "to delete", default=1000)
     parser.add_argument("-d", "--dry-run", help="dry run", action='store_true')
     parser.add_argument("-v", "--verbose", help="verbose mode",
@@ -238,23 +275,29 @@ def main():
             syslog.syslog("Purging emails is disabled")
             sys.exit(1)
 
-        cursor = opts['db'].cursor()
-        cursor.execute(SQL_PURGE_SELECT_QUERY)
+        # Process in chunks. Each iteration runs a bounded LIMIT query,
+        # processes one batch_size worth of rows, then loops. This avoids
+        # holding a huge unbounded cursor open and keeps lock durations short.
 
         while True:
-            rows = cursor.fetchmany(args.batch_size)
-            if rows == ():
+            cursor = opts['db'].cursor()
+            cursor.execute(SQL_PURGE_SELECT_QUERY, (args.batch_size,))
+
+            rows = cursor.fetchall()
+            cursor.close()
+
+            if not rows:
                 break
 
-            id = [x[0] for x in rows]
-            piler_id = [x[1] for x in rows]
-            size = [x[2] for x in rows]
+            meta_ids = [x[0] for x in rows]
+            piler_ids = [x[1] for x in rows]
+            sizes = [x[2] for x in rows]
 
-            opts['purged_size'] = opts['purged_size'] + sum(size)
+            opts['purged_size'] = opts['purged_size'] + sum(sizes)
 
-            purge_m_files(piler_id, opts)
-            purge_attachments_by_piler_id(piler_id, opts)
-            purge_index_data(id, opts)
+            purge_m_files(meta_ids, piler_ids, opts)
+            purge_attachments_by_piler_id(piler_ids, opts)
+            purge_index_data(meta_ids, opts)
 
             # It's possible that there's attachment duplication, thus
             # refcount > 0, even though after deleting the duplicates
@@ -262,9 +305,12 @@ def main():
             if len(opts['referenced_attachments']) > 0:
                 purge_attachments_by_attachment_id(opts)
 
+            syslog.syslog("Purged batch of %d messages" % len(meta_ids))
+
         # Update the counter table
         if opts['dry_run'] is False:
-            cursor.execute("UPDATE counter SET rcvd=rcvd-%s, size=size-%s, " +
+            cursor = opts['db'].cursor()
+            cursor.execute("UPDATE counter SET rcvd=rcvd-%s, size=size-%s, "
                            "stored_size=stored_size-%s",
                            (str(opts['messages']), str(opts['purged_size']),
                             str(opts['purged_stored_size'])))
