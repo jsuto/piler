@@ -1,0 +1,581 @@
+<?php
+
+ini_set('session.cookie_httponly', true);
+ini_set('session.use_strict_mode', 1);
+ini_set('session.use_only_cookies', 1);
+
+
+define('NORMAL', 1);
+define('DEBUG', 5);
+
+$config = [];
+
+
+/*
+ * you can override any of these values by putting the
+ * variable to be overridden in config-site.php
+ */
+
+
+$config['BRANDING_FAVICON'] = '
+  <!-- Fav and touch icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/ico/apple-touch-icon-144-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/ico/apple-touch-icon-114-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/ico/apple-touch-icon-72-precomposed.png">
+  <link rel="apple-touch-icon-precomposed" href="/assets/ico/apple-touch-icon-57-precomposed.png">
+  <link rel="shortcut icon" href="/assets/ico/favicon.svg" type="image/svg">
+';
+
+$config['SITE_LOGO_LG'] = '/assets/images/piler_logo.svg';
+
+$config['BRANDING_TEXT'] = '';
+$config['BRANDING_URL'] = 'https://www.mailpiler.org';
+$config['BRANDING_LOGO'] = '/assets/images/piler_logo_inv_text.svg';
+
+$config['LOGIN_EXTRA_NOTES'] = '';
+
+$config['PREVIEW_PANE'] = 1; // 0: display message in a fullscreen modal
+$config['FULL_GUI'] = 1;
+
+// use a reduced gui for small screens, see https://getbootstrap.com/docs/5.3/layout/breakpoints/
+if(isset($_COOKIE['SCREEN_X']) && (int)$_COOKIE['SCREEN_X'] < 992) {
+  $config['FULL_GUI'] = 0;
+}
+
+// If you override the default PATH_PREFIX in config-site.php,
+// then fix the following settings as well in config-site.php:
+// - BRANDING_FAVICON
+// - BRANDING_LOGO
+// - SITE_LOGO_LG
+$config['PATH_PREFIX'] = '/';
+
+$config['TITLE_PREFIX'] = '';
+
+$config['CUSTOM_PRE_AUTH_FUNCTION'] = '';
+$config['CUSTOM_EMAIL_QUERY_FUNCTION'] = '';
+
+$config['DOMAIN_REGEX'] = '/^[a-zA-Z0-9]+[a-zA-Z0-9-_\.]{0,}\.[a-zA-Z0-9]{2,20}$/';
+
+$config['DEFAULT_LANG'] = 'en';
+
+$config['THEME'] = 'default';
+
+$config['SITE_NAME'] = 'piler.example.com';
+$config['SITE_URL'] = 'http://piler.example.com/';
+
+$config['EXTERNAL_DASHBOARD_URL'] = '';
+
+// IP of proxy servers that are trusted to set the real IP address
+$config['TRUSTED_PROXIES'] = array();
+
+// HTTP header name that contains the real IP address
+// Has to be upper case and - replaced with _
+$config['REAL_IP_HEADER'] = 'X_REAL_IP';
+
+$config['SESSION_EXPIRY'] = 3600;
+$config['DELTA_INDEXER_PERIOD'] = 1800;
+
+$config['ENABLE_SAAS'] = 0;
+$config['CAPTCHA_FAILED_LOGIN_COUNT'] = 0;
+
+$config['ENABLE_REFERENCES'] = 1;
+$config['ENABLE_DOWNLOADING_ALL_SEARCH_HITS'] = 0;
+$config['EML_NAME_BASED_ON_SUBJECT'] = 1;
+
+$config['DEMO_MODE'] = 0;
+
+$config['SEARCH_QUERY_QUOTING'] = 0;
+
+$config['LOCALIZE_MESSAGE_HEADERS_IN_PREVIEW'] = 1;
+$config['SHOW_HEADERS_FOR_AUDITOR_MESSAGE_PREVIEW'] = 0;
+
+$config['TIMEZONE'] = 'Europe/Budapest';
+
+$config['PROVIDED_BY'] = 'www.mailpiler.org';
+$config['SITE_KEYWORDS'] = 'piler email archiver';
+$config['SITE_DESCRIPTION'] = 'piler email archiver';
+
+$config['INDEXER_BEACON'] = '/var/piler/stat/indexer';
+$config['PURGE_BEACON'] = '/var/piler/stat/purge';
+
+$config['ENABLE_PDF_DOWNLOAD'] = 0;
+// You may need to run "Xvfb :1 -screen 0 1024x768x16"
+// In this case specify WKHTMLTOPDF_COMMAND = "DISPLAY=:1.0 wkhtmltopdf";
+$config['WKHTMLTOPDF_COMMAND'] = "wkhtmltopdf";
+
+// authentication against an ldap directory (disabled by default)
+
+$config['ENABLE_LDAP_AUTH'] = 0;
+$config['LDAP_HOST'] = 'ldap.example.com';
+$config['LDAP_HELPER_DN'] = 'cn=....';
+$config['LDAP_HELPER_PASSWORD'] = 'xxxxxxx';
+$config['LDAP_MAIL_ATTR'] = 'mail';
+$config['LDAP_AUDITOR_MEMBER_DN'] = '';
+$config['LDAP_ADMIN_MEMBER_DN'] = '';
+$config['LDAP_BASE_DN'] = '';
+$config['LDAP_USE_START_TLS'] = 0;
+
+// AD specific settings
+//
+$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'user';
+$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'group';
+$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'member';
+$config['LDAP_MAIL_ATTR'] = 'proxyAddresses';
+
+// zimbra specific settings
+//$config['LDAP_HELPER_DN'] = 'uid=zimbra,cn=admins,cn=zimbra';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'zimbraAccount';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'zimbraDistributionList';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'zimbraMailForwardingAddress';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
+
+// Lotus Notes specific settings for ldap authentication
+//
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'dominoPerson';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'dominoGroup');
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mail';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
+
+// iredmail specific settings
+//$config['LDAP_HELPER_DN'] = 'cn=vmailadmin,dc=example,dc=com';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'mailUser';
+//$config['LDAP_BASE_DN'] = 'o=domains,dc=example,dc=com';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'mailList';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'memberOfGroup';
+//$config['LDAP_MAIL_ATTR'] = 'mail';
+
+// Uninvention specific settings
+//$config['LDAP_MAIL_ATTR'] = 'mailPrimaryAddress';
+//$config['LDAP_ACCOUNT_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_OBJECTCLASS'] = 'person';
+//$config['LDAP_DISTRIBUTIONLIST_ATTR'] = 'mailAlternativeAddress';
+
+
+// enable single sign-on (disabled by default)
+$config['ENABLE_SSO_LOGIN'] = 0;
+
+$config['STRIP_DOMAIN_NAME_FROM_USERNAME'] = 0;
+
+// enable authentication against an imap server (disabled by default)
+
+$config['ENABLE_IMAP_AUTH'] = 0;
+$config['RESTORE_OVER_IMAP'] = 0;
+$config['IMAP_RESTORE_FOLDER_INBOX'] = 'INBOX';
+$config['IMAP_RESTORE_FOLDER_SENT'] = 'Sent';
+$config['IMAP_HOST'] = 'mail.example.com';
+$config['IMAP_PORT'] =  993;
+$config['IMAP_SSL'] = true;
+
+// enable authentication against a pop3 server (disabled by default)
+
+$config['ENABLE_POP3_AUTH'] = 0;
+$config['POP3_HOST'] = 'mail.example.com';
+$config['POP3_PORT'] = 995;
+$config['POP3_SSL'] = true;
+
+$config['ENABLE_GOOGLE_AUTHENTICATOR'] = 1;
+
+// enable authentication against google (disabled by default)
+// see http://www.mailpiler.org/en/google-apps-free.html for details
+
+$config['ENABLE_GOOGLE_LOGIN'] = 0;
+$config['GOOGLE_CLIENT_ID'] = 'xxxxxxxxxxx';
+$config['GOOGLE_CLIENT_SECRET'] = 'xxxxxxxxxxxxx';
+$config['GOOGLE_DEVELOPER_KEY'] = 'xxxxxxxxxxxx';
+$config['GOOGLE_APPLICATION_NAME'] = 'piler enterprise email archiver';
+$config['GOOGLE_ALL_MAIL'] = '[Gmail]/All Mail';
+
+// Mailcow
+
+$config['MAILCOW_API_KEY'] = '';
+$config['MAILCOW_HOST'] = '';
+
+$config['ENABLE_AUDIT'] = 1;
+$config['MEMCACHED_ENABLED'] = 0;
+$config['PASSWORD_CHANGE_ENABLED'] = 1;
+$config['ENABLE_STATISTICS'] = 1;
+$config['ENABLE_HISTORY'] = 1;
+$config['ENABLE_DELETE'] = 0;
+$config['NEED_TO_APPROVE_DELETE'] = 0;
+$config['ENABLE_LDAP_IMPORT_FEATURE'] = 0;
+$config['ENABLE_FOLDER_RESTRICTIONS'] = 0;
+
+// When enabled the search page auto loads the search results
+// ie. as if the user had clicked on the Search button
+$config['ENABLE_INSTANT_SEARCH'] = 0;
+$config['SEARCH_RESULT_CHECKBOX_CHECKED'] = 0;
+$config['HELPER_URL'] = '';
+$config['LOG_LEVEL'] = NORMAL;
+$config['REWRITE_MESSAGE_ID'] = 0;
+$config['RESTORE_EMAILS_AS_ATTACHMENT'] = 0;
+$config['RESTRICTED_AUDITOR'] = 0;
+
+$config['SHOW_ENVELOPE_JOURNAL'] = 0;
+$config['BULK_DOWNLOAD_FOR_USERS'] = 1;
+$config['MAX_DOWNLOAD_PER_HOUR'] = 0;
+$config['MAX_RESTORE_PER_HOUR'] = 0;
+
+$config['MAX_CGI_FROM_SUBJ_LEN'] = 48;
+$config['PAGE_LEN'] = 20;
+$config['MAX_NUMBER_OF_FROM_ITEMS'] = 5;
+$config['MAX_SEARCH_HITS'] = 1000;
+
+$config['SPHINX_MAIN_INDEX_THRESHOLD'] = 2000000000;
+
+$config['DEFAULT_RETENTION'] = 0;
+
+$config['LOCALHOST'] = '127.0.0.1';
+$config['PILER_HOST'] = '0.0.0.0';
+$config['PILER_PORT'] = 25;
+$config['SMARTHOST'] = '';
+$config['SMARTHOST_PORT'] = 25;
+$config['SMARTHOST_USER'] = '';
+$config['SMARTHOST_PASSWORD'] = '';
+$config['SMTP_DOMAIN'] = 'example.com';
+$config['SMTP_FROMADDR'] = 'no-reply@example.com';
+$config['ADMIN_EMAIL'] = 'admin@example.com';
+
+$config['PILER_HEADER_FIELD'] = 'X-piler-id: ';
+
+$config['DEFAULT_POLICY'] = 'default_policy';
+
+$config['DIR_BASE'] = dirname(__FILE__) . '/';
+
+$config['DIR_SPHINX'] = '/var/piler/manticore/';
+$config['DIR_STAT'] = '/var/piler/stat';
+$config['DIR_IMAP'] = '/var/piler/imap';
+$config['DIR_TMP'] = '/var/piler/tmp';
+
+$config['DECRYPT_BINARY'] = '/usr/bin/pilerget';
+$config['DECRYPT_ATTACHMENT_BINARY'] = '/usr/bin/pileraget';
+$config['DECRYPT_BUFFER_LENGTH'] = 65536;
+
+$config['OPENSSL_BINARY'] = '/usr/bin/openssl';
+$config['TSA_URL'] = '';
+$config['TSA_PUBLIC_KEY_FILE'] = '';
+$config['TSA_START_ID'] = 1;
+$config['TSA_STAMP_REQUEST_UNIT_SIZE'] = 10000;
+$config['TSA_VERIFY_CERTIFICATE'] = true;
+$config['TSA_RELAXED_CHECK'] = false;
+$config['TSA_AUTH_USER'] = '';
+$config['TSA_AUTH_PASSWORD'] = '';
+$config['TSA_AUTH_CERT_FILE'] = '';
+$config['TSA_AUTH_KEY_FILE'] = '';
+$config['TSA_AUTH_KEY_PASSWORD'] = '';
+
+$config['DB_DRIVER'] = 'mysql';
+$config['DB_PREFIX'] = '';
+$config['DB_HOSTNAME'] = 'localhost';
+$config['DB_USERNAME'] = 'piler';
+$config['DB_PASSWORD'] = 'piler';
+$config['DB_DATABASE'] = 'piler';
+$config['DB_CHARSET'] = 'utf8mb4';
+
+$config['SPHINX_DRIVER'] = 'sphinx';
+$config['SPHINX_DATABASE'] = '';
+$config['SPHINX_HOSTNAME'] = '127.0.0.1:9306';
+$config['SPHINX_HOSTNAME_READONLY'] = '127.0.0.1:9307';
+$config['SPHINX_MAIN_INDEX'] = 'piler1';
+$config['SPHINX_TAG_INDEX'] = 'tag1';
+$config['SPHINX_NOTE_INDEX'] = 'note1';
+$config['SPHINX_AUDIT_INDEX'] = 'audit1';
+$config['SPHINX_STRICT_SCHEMA'] = 1;
+$config['RT'] = 1;
+$config['MAX_EMAIL_LEN'] = 41;
+
+$config['RELOAD_COMMAND'] = '{ test -f /usr/bin/systemctl && sudo -n /usr/bin/systemctl reload piler; } || { test -f /usr/bin/systemctl || sudo -n /etc/init.d/rc.piler reload; }';
+$config['PILERIMPORT_IMAP_COMMAND'] = '/usr/local/bin/pilerimport -d /var/piler/imap -q -r';
+$config['CPU_USAGE_COMMAND'] = "LC_ALL=C mpstat | tail -1 | rev | awk '{ print $1 }' | rev";
+$config['PILER_BINARY'] = "/usr/sbin/piler";
+
+$config['LDAP_IMPORT_CONFIG_FILE'] = '/usr/local/etc/ldap-import.cfg';
+
+$config['DN_MAX_LEN'] = 255;
+$config['USE_EMAIL_AS_USERNAME'] = 1;
+$config['LDAP_IMPORT_MINIMUM_NUMBER_OF_USERS_TO_HEALTH_OK'] = 100;
+
+$config['HEADER_LINE_TO_HIDE'] = 'X-Envelope-To:';
+
+$config['PILER_LOGIN_HELPER_PLACEHOLDER'] = 'PILER_COMMENT_FOR_PROPER_LOGIN_SO_THIS_CAN_BE_ANYTHING_JUST_BE_IT_SOMETHING_LIKE_A_UNIQUE_VALUE';
+
+
+$config['SIZE_X'] = 430;
+$config['SIZE_Y'] = 250;
+
+$config['DATE_TEMPLATE'] = 'Y.m.d';
+$config['DATE_TEMPLATE_SEARCH_HITS'] = 'Y.m.d'; // This date template is applied to the search results upper window
+$config['DATE_PREVIEW_TEMPLATE'] = 'Y.m.d H:i:s T';
+$config['DATE_FORMAT'] = 'YYYY-MM-DD';
+$config['JQUERY_DATE_FORMAT'] = 'yy-mm-dd';
+$config['DECIMAL_SEPARATOR'] = "."; // See https://www.php.net/manual/en/function.number-format
+$config['THOUSANDS_SEPARATOR'] = ","; // for the format options
+
+$config['ENABLE_GB2312_FIX'] = 1;
+
+$config['FROM_LENGTH_TO_SHOW'] = 28;
+
+$config['HISTORY_REFRESH'] = 60;
+$config['HEALTH_REFRESH'] = 300;
+$config['HEALTH_RATIO'] = 80;
+
+$config['MAX_AUDIT_HITS'] = 1000;
+
+$config['MIN_PASSWORD_LENGTH'] = 6;
+
+$config['MIN_PREFIX_LEN'] = 5;
+
+$config['ADMIN_CAN_POWER_SEARCH'] = 0;
+$config['FOUR_EYES_LOGIN_FOR_AUDITOR'] = 0;
+
+$config['MEMCACHED_PREFIX'] = '_piler:';
+$config['MEMCACHED_TTL'] = 900;
+
+$config['CUSTOM_CSS'] = '';
+
+$SUPPRESS_RECIPIENTS = array();
+
+
+$memcached_server = ['127.0.0.1', 11211];
+
+$partitions_to_monitor = array('/', '/home', '/var', '/var/piler', '/tmp');
+$config['DATA_PARTITION'] = '/var';
+
+$config['DELIMITER'] = "\t";
+
+$config['TRACKING_CODE'] = '';
+
+$mailattrs = ["mail", "mailalternateaddress", "proxyaddresses", "zimbraMailForwardingAddress", "member", "memberOfGroup", "othermailbox", "mailprimaryaddress", "mailalternativeaddress"];
+
+$langs = array(
+                'cz',
+                'de',
+                'en',
+                'es',
+                'fr',
+                'hu',
+                'it',
+                'ja',
+                'nl',
+                'pl',
+                'pt',
+                'ru',
+                'tr',
+                'tw',
+                'uk'
+               );
+
+
+$themes = array(
+                'default',
+               );
+
+
+$paging = array(
+                 10,
+                 20,
+                 30,
+                 50
+               );
+
+$automated_search_recipients = array();
+
+
+$letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+
+
+define('NOW', time());
+
+
+/*
+ * normally you don't have to change anything below
+ */
+
+if(file_exists('/etc/piler/config-site.php')) { require_once '/etc/piler/config-site.php'; }
+
+ini_set('session.cookie_lifetime', $config['SESSION_EXPIRY']);
+
+require($config['DIR_BASE'] . "/system/registry.php");
+require($config['DIR_BASE'] . "/system/request.php");
+
+$session = new Session();
+Registry::set("session", $session);
+
+
+if($session->get("theme") && preg_match("/^([a-zA-Z0-9\-\_]+)$/", $session->get("theme"))) { $config['THEME'] = $session->get("theme"); }
+
+// make sure auditors are restricted in a saas environment
+if($config['ENABLE_SAAS'] == 1) { $config['RESTRICTED_AUDITOR'] = 1; }
+if($session->get("username") == 'auditor@local' || isset($_SERVER['argv'][2]) ) { $config['RESTRICTED_AUDITOR'] = 0; }
+
+$config['JS_CODE'] = '
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="' . $config['PATH_PREFIX'] . 'assets/js/piler.js"></script>
+    <script src="' . $config['PATH_PREFIX'] . 'assets/js/dark-mode.js"></script>
+';
+
+$config['CSS_CODE'] = '
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" integrity="sha256-6MNujrdbV0Z7S927PzUMXOmMLwkKdsdD7XIl/w89HMQ=" crossorigin="anonymous">
+
+   <link rel="stylesheet" href="' . $config['PATH_PREFIX'] . 'assets/css/piler.css" />
+';
+
+
+$config['BRANDING_LOGO_PLACEHOLDER'] = $config['PATH_PREFIX'] . 'assets/images/branding-logo.png';
+
+$config['ICON_DOC'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/doc.png';
+$config['ICON_XLS'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/xls.png';
+$config['ICON_PDF'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/pdf.png';
+$config['ICON_IMAGE'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/image.png';
+$config['ICON_FILE'] = $config['PATH_PREFIX'] . 'assets/images/fileicons/file.png';
+
+foreach ($config as $k => $v) {
+   define($k, $v);
+}
+
+
+define('TABLE_USER', 'user');
+define('TABLE_GROUP', 'usergroup');
+define('TABLE_GROUP_USER', 'group_user');
+define('TABLE_GROUP_EMAIL', 'group_email');
+define('TABLE_FOLDER', 'folder');
+define('TABLE_FOLDER_USER', 'folder_user');
+define('TABLE_FOLDER_MESSAGE', 'folder_message');
+define('TABLE_EMAIL', 'email');
+define('TABLE_META', 'metadata');
+define('TABLE_RCPT', 'rcpt');
+define('TABLE_ATTACHMENT', 'attachment');
+define('TABLE_SEARCH', 'search');
+define('TABLE_EMAIL_LIST', 'email_groups');
+define('TABLE_TAG', 'tag');
+define('TABLE_NOTE', '`note`');
+define('TABLE_USER_SETTINGS', 'user_settings');
+define('TABLE_REMOTE', 'remote');
+define('TABLE_DOMAIN', 'domain');
+define('TABLE_DOMAIN_USER', 'domain_user');
+define('TABLE_COUNTER', 'counter');
+define('TABLE_STAT_COUNTER', 'counter_stats');
+define('TABLE_AUDIT', 'audit');
+define('TABLE_EXCLUSION_RULE', 'archiving_rule');
+define('TABLE_FOLDER_RULE', 'folder_rule');
+define('TABLE_RETENTION_RULE', 'retention_rule');
+define('TABLE_OPTION', 'option');
+define('TABLE_LDAP', 'ldap');
+define('TABLE_CUSTOMER_SETTINGS', 'customer_settings');
+define('TABLE_ONLINE', 'online');
+define('TABLE_IMPORT', 'import');
+define('TABLE_GOOGLE', 'google');
+define('TABLE_GOOGLE_IMAP', 'google_imap');
+define('TABLE_AUTOSEARCH', 'autosearch');
+define('TABLE_LEGAL_HOLD', 'legal_hold');
+define('TABLE_TIMESTAMP', 'timestamp');
+define('TABLE_PRIVATE', 'private');
+define('TABLE_DELETED', 'deleted');
+define('VIEW_MESSAGES', 'v_messages');
+
+define('EOL', "\r\n");
+
+define('DIR_SYSTEM', DIR_BASE . 'system/');
+define('DIR_MODEL', DIR_BASE . 'model/');
+define('DIR_DATABASE', DIR_BASE . 'system/database/');
+define('DIR_IMAGE', DIR_BASE . 'image/');
+define('DIR_LANGUAGE', DIR_BASE . 'language/');
+define('DIR_APPLICATION', DIR_BASE . 'controller/');
+define('DIR_REPORT', DIR_BASE . 'reports/');
+define('DIR_LOG', DIR_BASE . 'log/');
+
+define('QSHAPE_ACTIVE_INCOMING', DIR_STAT . '/active+incoming');
+define('QSHAPE_ACTIVE_INCOMING_SENDER', DIR_STAT . '/active+incoming-sender');
+define('QSHAPE_DEFERRED', DIR_STAT . '/deferred');
+define('QSHAPE_DEFERRED_SENDER', DIR_STAT . '/deferred-sender');
+
+define('CPUSTAT', DIR_STAT . '/cpu.stat');
+define('AD_SYNC_STAT', DIR_STAT . '/adsync.stat');
+define('ARCHIVE_SIZE', DIR_STAT . '/archive.size');
+define('SPHINX_CURRENT_MAIN_INDEX_SIZE', DIR_STAT . '/current_main_index_size');
+define('SPHINX_TOTAL_INDEX_SIZE', DIR_STAT . '/total_index_size');
+define('LOCK_FILE', DIR_LOG . 'lock');
+
+define('SEARCH_HELPER_URL', SITE_URL . 'search-helper.php');
+define('AUDIT_HELPER_URL', SITE_URL . 'audit-helper.php');
+define('BULK_RESTORE_URL', SITE_URL . 'bulkrestore.php');
+define('SAVE_SEARCH_URL', SITE_URL . 'index.php?route=search/save');
+define('LOAD_SAVED_SEARCH_URL', SITE_URL . 'index.php?route=search/load');
+define('SEARCH_TAG_URL', SITE_URL . 'index.php?route=search/tag');
+define('MESSAGE_NOTE_URL', SITE_URL . 'index.php?route=message/note');
+define('GOOGLE_REDIRECT_URL', SITE_URL . 'google.php');
+define('HEALTH_URL', SITE_URL . 'index.php?route=health/health');
+define('HEALTH_WORKER_URL', SITE_URL . 'index.php?route=health/worker');
+
+define('LDAP_TYPE_GENERIC', 'generic_ldap');
+
+define('ATTACHMENT_DUMP_CHECKPOINT', 'attachment_dump_checkpoint');
+
+define('ACTION_ALL', 0);
+define('ACTION_UNKNOWN', 1);
+define('ACTION_LOGIN', 2);
+define('ACTION_LOGIN_FAILED', 3);
+define('ACTION_LOGOUT', 4);
+define('ACTION_VIEW_MESSAGE', 5);
+define('ACTION_VIEW_HEADER', 6);
+define('ACTION_UNAUTHORIZED_VIEW_MESSAGE', 7);
+define('ACTION_RESTORE_MESSAGE', 8);
+define('ACTION_DOWNLOAD_MESSAGE', 9);
+define('ACTION_SEARCH', 10);
+define('ACTION_SAVE_SEARCH', 11);
+define('ACTION_CHANGE_USER_SETTINGS', 12);
+define('ACTION_REMOVE_MESSAGE', 13);
+define('ACTION_UNAUTHORIZED_REMOVE_MESSAGE', 14);
+define('ACTION_DOWNLOAD_ATTACHMENT', 15);
+define('ACTION_UNAUTHORIZED_DOWNLOAD_ATTACHMENT', 16);
+define('ACTION_VIEW_JOURNAL', 17);
+define('ACTION_NOT_SPAM', 18);
+define('ACTION_MARK_AS_PRIVATE', 19);
+define('ACTION_MARK_MESSAGE_FOR_REMOVAL', 20);
+define('ACTION_REJECT_REMOVAL', 21);
+
+$actions = array(
+                  'unknown' => 1,
+                  'login' => 2,
+                  'loginfailed' => 3,
+                  'logout' => 4,
+                  'view' => 5,
+                  'view_header' => 6,
+                  'restore' => 8,
+                  'download' => 9,
+                  'search' => 10,
+                  'save_search' => 11,
+                  'download_attachment' => 15,
+                  'journal' => 17,
+                  'private' => 19,
+                  'marked_for_removal', 20,
+                  'reject_removal', 21
+                );
+
+
+$import_status = array(
+                         0 => 'PENDING',
+                         1 => 'RUNNING',
+                         2 => 'FINISHED',
+                         3 => 'ERROR'
+                 );
+
+
+$counters = array(MEMCACHED_PREFIX . 'rcvd', MEMCACHED_PREFIX . 'virus', MEMCACHED_PREFIX . 'duplicate', MEMCACHED_PREFIX . 'ignore', MEMCACHED_PREFIX . 'counters_last_update');
+
+if(!isset($health_smtp_servers)) {
+   $health_smtp_servers = array( array(PILER_HOST, PILER_PORT, "piler"), array(SMARTHOST, SMARTHOST_PORT, "smarthost") );
+}
+
+if(SPHINX_STRICT_SCHEMA) {
+   define('FROM_TOKEN', '@sender');
+   define('FROMDOMAIN_TOKEN', '@senderdomain');
+   define('TO_TOKEN', '@rcpt');
+   define('TODOMAIN_TOKEN', '@rcptdomain');
+} else {
+   define('FROM_TOKEN', '@from');
+   define('FROMDOMAIN_TOKEN', '@fromdomain');
+   define('TO_TOKEN', '@to');
+   define('TODOMAIN_TOKEN', '@todomain');
+}
