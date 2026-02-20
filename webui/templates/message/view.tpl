@@ -112,7 +112,7 @@
          <strong><?php print $message['from']; ?></strong><br />
          <strong><?php print $message['to']; ?></strong><br />
          <?php if(strlen($message['cc']) > 6) { ?><strong><?php print $message['cc']; ?></strong><br /><?php } ?>
-         <strong>Date: <?php print date(DATE_PREVIEW_TEMPLATE, $meta['sent']); ?></strong><br />
+         <strong><?php print $text_date; ?>: <?php print date(DATE_PREVIEW_TEMPLATE, $meta['sent']); ?></strong><br />
     <?php } ?>
 
     <?php foreach($attachments as $a) { ?>
