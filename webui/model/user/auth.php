@@ -412,7 +412,10 @@ class ModelUserAuth extends Model {
             }
 
             if(CUSTOM_EMAIL_QUERY_FUNCTION && function_exists(CUSTOM_EMAIL_QUERY_FUNCTION)) {
-               $emails = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+               $result = call_user_func(CUSTOM_EMAIL_QUERY_FUNCTION, $username);
+               if(is_array($result) && count($result) > 0) {
+                  $emails = $result;
+               }
             }
 
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
