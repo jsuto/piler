@@ -157,6 +157,12 @@ if [[ $(pgrep -c systemd) -gt 0 && -x /bin/systemctl ]]; then
    systemctl daemon-reload
 fi
 
+for i in piler piler-smtp pilersearch tika; do
+   if [[ -f "/lib/systemd/system/${i}.service" ]]; then
+      /usr/bin/systemctl enable --now "${i}.service"
+   fi
+done
+
 if [[ -f /var/piler/www/config.php ]]; then
    PILER_VERSION="$( piler -v )"
    for f in /var/piler/www/config.php /var/piler/www/vue/Footer.vue; do
