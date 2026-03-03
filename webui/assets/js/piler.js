@@ -955,17 +955,18 @@ let Piler =
               Piler.show_next_message();
            }
 
-           // 37: left, 39: right
+           // 37: left, go to previous page
            if(e.keyCode == 37){
               e.preventDefault();
-              //TODO check if navigation function already prevents going negative or max+1
-              //TODO create getCurrentPage()
-              Piler.navigation(getCurrentPage() - 1);
+              if(Piler.Shared.page > 1) {
+                 Piler.navigation(Piler.Shared.page - 1);
+              }
            }
 
+           // 39: right, go to next page
            if(e.keyCode == 39){
               e.preventDefault();
-              Piler.navigation(getCurrentPage() + 1);
+              Piler.navigation(Piler.Shared.page + 1);
            }
         });
 
