@@ -707,7 +707,10 @@ class ModelUserAuth extends Model {
             continue;
          }
 
-         array_push($emails, strtolower($alias['address']));
+         // Ensure only aliases assigned to the user are added
+         if(isset($alias['goto']) && stripos($alias['goto'], $username) !== false) {
+             array_push($emails, strtolower($alias['address']));
+         }
 
          //syslog(LOG_INFO, 'mailcow alias: ' . $alias['address']);
       }
