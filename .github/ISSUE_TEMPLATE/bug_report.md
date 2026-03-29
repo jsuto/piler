@@ -30,4 +30,4 @@ If applicable, add screenshots to help explain your problem.
 Add any other context about the problem here.
 
 **Notes**
-If sensitive data is required to understand the situation, then don't copy it to the issue, rather send it to my address (see piler -V output)
+If sensitive data is required to understand the situation, then don't copy it to the issue, rather send it to security@mailpiler.com
