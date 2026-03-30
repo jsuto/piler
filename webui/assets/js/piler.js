@@ -716,7 +716,7 @@ let Piler =
      */
     navigation:function( a )
     {
-        Piler.log("[navigation]");
+        Piler.log("[navigation] going to page: " + a);
 
         Piler.Shared.page = a;
 
@@ -953,6 +953,20 @@ let Piler =
            if(e.keyCode == 40){
               e.preventDefault();
               Piler.show_next_message();
+           }
+
+           // 37: left, go to previous page
+           if(e.keyCode == 37){
+              e.preventDefault();
+              if(Piler.Shared.page > 1) {
+                 Piler.navigation(Piler.Shared.page - 1);
+              }
+           }
+
+           // 39: right, go to next page
+           if(e.keyCode == 39){
+              e.preventDefault();
+              Piler.navigation(Piler.Shared.page + 1);
            }
         });
 
