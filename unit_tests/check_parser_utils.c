@@ -160,6 +160,9 @@ static void test_fixupEncodedHeaderLine(){
       {"=?gb2312?B?yc/Gz76pIC0gw7/fTMir0bKy6YjzuOYgKDIwMTcxMDMwLTMxKSBHQlcgUG9k?==?gb2312?Q?ium_&_Basement.docx?=", "上葡京 - 每週全巡查報告 (20171030-31) GBW Podium & Basement.docx"},
       {"Subject: =?UTF-8?Q?=E2=98=85_JubiDu!Versandkost?= =?UTF-8?Q?enfrei-Verl=C3=A4ngerung!=E2=98=85?=", "Subject: ★ JubiDu!Versandkostenfrei-Verlängerung!★"},
       {"Happy New Year! =?utf-8?q?=F0=9F=8E=86?=", "Happy New Year! 🎆"},
+      {"P=?utf-8?B?w6Q=?=chter ohne Augenma=?iso-8859-1?Q?=DF?= sind =?iso-8859-1?Q?=FC?=bel", "Pächter ohne Augenmaß sind übel"},
+      {"=?iso-8859-1?Q?FooBarFoo-AG_=22ABCDEF=22:_Mit_Digitalminister_Hoffmeiser_?=\t=?iso-8859-1?Q?zum_=22EU_Sonder_Gipfel=22_in_Wacken=2C_10._-_22.04.2026_-?=  =?iso-8859-1?Q?_Sitzplatzvergabeverfahren_f=FCr_F=FChrungssta?=\t =?iso-8859-1?Q?b?=", "FooBarFoo-AG \"ABCDEF\": Mit Digitalminister Hoffmeiser zum \"EU Sonder Gipfel\" in Wacken, 10. - 22.04.2026 - Sitzplatzvergabeverfahren für Führungsstab"},
+
    };
 
    TEST_HEADER();
