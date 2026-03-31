@@ -421,16 +421,14 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
                snprintf(encoding, sizeof(encoding)-1, "%s", p);
                *e = '?';
 
-               s = strcasestr(e, "?B?");
-               if(s){
+               if(strncasecmp(e, "?B?", 3) == 0){
                   b64 = 1;
-                  p = s + 3;
+                  p = e + 3;
                }
                else {
-                  s = strcasestr(e, "?Q?");
-                  if(s){
+                  if(strncasecmp(e, "?Q?", 3) == 0){
                      qp = 1;
-                     p = s + 3;
+                     p = e + 3;
                   }
                }
             }
