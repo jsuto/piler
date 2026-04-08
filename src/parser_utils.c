@@ -346,6 +346,17 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
 
    memset(puf, 0, sizeof(puf));
 
+   /*
+    * Replace TAB with SPACE so split_string(q, " ", ...) will also do its
+    * job when header lines are folded with tabs.
+    */
+   q = buf;
+   while(*q){
+      if(*q == '\t')
+         *q = ' ';
+      ++q;
+   }
+
    q = buf;
 
    do {
@@ -361,7 +372,7 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
          r = strstr(q, "=?");
          if(r){
             s = q;
-            while(s < r && (*s == ' ' || *s == '\t'))
+            while(s < r && *s == ' ')
                ++s;
             if(s == r)
                q = r;
@@ -410,16 +421,14 @@ void fixupEncodedHeaderLine(char *buf, int buflen){
                snprintf(encoding, sizeof(encoding)-1, "%s", p);
                *e = '?';
 
-               s = strcasestr(e, "?B?");
-               if(s){
+               if(strncasecmp(e, "?B?", 3) == 0){
                   b64 = 1;
-                  p = s + 3;
+                  p = e + 3;
                }
                else {
-                  s = strcasestr(e, "?Q?");
-                  if(s){
+                  if(strncasecmp(e, "?Q?", 3) == 0){
                      qp = 1;
-                     p = s + 3;
+                     p = e + 3;
                   }
                }
             }
