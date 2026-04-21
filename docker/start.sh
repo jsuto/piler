@@ -92,8 +92,6 @@ fix_configs() {
 
    if [[ ! -f "$PILER_CONF" ]]; then
       cp "${PILER_CONF}.dist" "$PILER_CONF"
-      echo "mysqlhost=${MYSQL_HOSTNAME}" >> "$PILER_CONF"
-      give_it_to_piler "$PILER_CONF"
    fi
 
    log "Updating ${PILER_CONF}"
@@ -108,6 +106,8 @@ fix_configs() {
       -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" \
       -e "s/rtindex=.*/rtindex=${RT}/g" \
       -e "s/mysqlsocket=.*/mysqlsocket=/g" "$PILER_CONF"
+
+   give_it_to_piler "$PILER_CONF"
 
    if [[ ! -f "$CONFIG_SITE_PHP" ]]; then
       log "Writing ${CONFIG_SITE_PHP}"
