@@ -86,6 +86,10 @@ if [[ -d /var/piler/customer ]]; then
    chmod 770 /var/piler/customer
 fi
 
+if [[ -f /etc/piler/piler.conf.dist && ! -f /etc/piler/piler.conf ]]; then
+   cp /etc/piler/piler.conf.dist /etc/piler/piler.conf
+fi
+
 if [[ -f /etc/piler/manticore.conf.dist && ! -f /etc/piler/manticore.conf ]]; then
    cp /etc/piler/manticore.conf.dist /etc/piler/manticore.conf
    chmod +x /etc/piler/manticore.conf

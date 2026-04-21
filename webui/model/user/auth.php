@@ -376,7 +376,7 @@ class ModelUserAuth extends Model {
       $data['uid'] = $uid;
 
       $a = explode("@", $email);
-      $data['domain'] = $a[1];
+      $data['domain'] = isset($a[1]) ? $a[1] : '';
 
       return $data;
    }
@@ -421,11 +421,13 @@ class ModelUserAuth extends Model {
             $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
             $emails = array_merge($emails, $extra_emails);
 
-            $data = $this->fix_user_data($username, $emails[0], $emails, 0);
+            $data = $this->fix_user_data($username, $emails[0] ?? $username, $emails, 0);
 
             $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
             $this->is_ga_code_needed($username);
+
+            $this->apply_user_auth_session($data);
 
             $session->set("auth_data", $data);
 
@@ -462,7 +464,7 @@ class ModelUserAuth extends Model {
                   $extra_emails = $this->model_user_user->get_email_addresses_from_groups($emails);
                   $emails = array_merge($emails, $extra_emails);
 
-                  $data = $this->fix_user_data($username, $emails[0], $emails, 0);
+                  $data = $this->fix_user_data($username, $emails[0] ?? $username, $emails, 0);
 
                   $data['folders'] = $this->model_folder_folder->get_folder_id_array_for_user($data['uid'], 0);
 
