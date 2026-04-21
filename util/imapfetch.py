@@ -192,7 +192,7 @@ def main():
     if opts['verbose']:
         print("Skipped folder list: {}".format(opts['skip_folders']))
 
-    if security == 'no':
+    if security in ('no', 'imap'):
         conn = imaplib.IMAP4(server)
     elif security == 'imap-ssl':
         conn = imaplib.IMAP4_SSL(server)
