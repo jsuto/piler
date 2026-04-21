@@ -91,15 +91,12 @@ fix_configs() {
    fi
 
    if [[ ! -f "$PILER_CONF" ]]; then
-      log "Writing ${PILER_CONF}"
-
       sed \
          -e "s/mysqluser=.*/mysqluser=${MYSQL_USER}/g" \
          -e "s/mysqldb=.*/mysqldb=${MYSQL_DATABASE}/g" \
          -e "s/verystrongpassword/${MYSQL_PASSWORD}/g" \
          -e "s/hostid=.*/hostid=${PILER_HOSTNAME}/g" \
          -e "s/tls_enable=.*/tls_enable=1/g" \
-         -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" \
          -e "s/rtindex=.*/rtindex=${RT}/g" \
          -e "s/mysqlsocket=.*/mysqlsocket=/g" "${PILER_CONF}.dist" > "$PILER_CONF"
 
@@ -109,6 +106,10 @@ fix_configs() {
 
       give_it_to_piler "$PILER_CONF"
    fi
+
+   log "Updating ${PILER_CONF}"
+
+   sed -i "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" "$PILER_CONF"
 
    if [[ ! -f "$CONFIG_SITE_PHP" ]]; then
       log "Writing ${CONFIG_SITE_PHP}"
