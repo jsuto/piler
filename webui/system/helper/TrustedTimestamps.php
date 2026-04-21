@@ -229,7 +229,7 @@ class TrustedTimestamps
         if(TSA_RELAXED_CHECK) {
            $relaxed_check = " -no_check_time ";
         } else {
-           $relaxed_check = "";
+           $relaxed_check = " -attime " . escapeshellarg($response_time);
         }
 
         $cmd = OPENSSL_BINARY . " ts -verify -digest " . escapeshellarg($hash) . $relaxed_check . " -in ".escapeshellarg($responsefile)." -CAfile ".escapeshellarg($tsa_cert_file)." -untrusted ".escapeshellarg($untrustedfile);
