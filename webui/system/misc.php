@@ -621,6 +621,7 @@ function encrypt_password($password = '') {
 
 
 function get_q_string($arr = []) {
+   if (!is_array($arr)) { return ""; }
    $q = str_repeat("?,", count($arr));
    $q = substr($q, 0, strlen($q)-1);
 
