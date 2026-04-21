@@ -99,6 +99,7 @@ fix_configs() {
    log "Updating ${PILER_CONF}"
 
    sed -i \
+      -e "s/mysqlhost=.*/mysqlhost=${MYSQL_HOSTNAME}/g" \
       -e "s/mysqluser=.*/mysqluser=${MYSQL_USER}/g" \
       -e "s/mysqldb=.*/mysqldb=${MYSQL_DATABASE}/g" \
       -e "s/verystrongpassword/${MYSQL_PASSWORD}/g" \
