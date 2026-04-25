@@ -62,7 +62,7 @@ create index metadata_idx10 on metadata(`sent`);
 -- Composite index for purge query: WHERE deleted=0 AND retained < NOW()
 -- Enables a single range scan instead of picking one index and filtering.
 create index metadata_idx_purge on metadata(deleted, retained);
-
+create index metadata_idx_oldest on metadata(deleted, sent);
 
 create table if not exists `rcpt` (
    `id` bigint unsigned not null,
