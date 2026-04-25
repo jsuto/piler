@@ -12,3 +12,5 @@ SELECT Count(*) INTO @exists FROM information_schema.tables WHERE table_schema =
 SET @query = If(@exists>0, 'RENAME TABLE `group` TO usergroup', 'SELECT 1 from dual');
 PREPARE stmt FROM @query;
 EXECUTE stmt;
+
+create index if not exists metadata_idx_oldest on metadata(deleted, sent);
