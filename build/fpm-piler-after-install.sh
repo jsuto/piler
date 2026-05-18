@@ -88,6 +88,8 @@ fi
 
 if [[ -f /etc/piler/piler.conf.dist && ! -f /etc/piler/piler.conf ]]; then
    cp /etc/piler/piler.conf.dist /etc/piler/piler.conf
+   chown root:piler /etc/piler/piler.conf
+   chmod 640 /etc/piler/piler.conf
 fi
 
 if [[ -f /etc/piler/manticore.conf.dist && ! -f /etc/piler/manticore.conf ]]; then
