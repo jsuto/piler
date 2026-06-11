@@ -162,6 +162,7 @@ def main():
     server = ''
     user = ''
     password = ''
+    port = None
 
     if args.import_from_table:
         read_options(args.config, opts)
@@ -176,6 +177,10 @@ def main():
             row = cursor.fetchone()
             if row:
                 (opts['id'], security, server, user, password) = row
+
+                server, _, port = server.partition(":")
+                port = port or None
+
                 security = row[1]
             else:
                 print("Nothing to read from import table")
