@@ -201,7 +201,7 @@ def main():
     if security in ('no', 'imap'):
         conn = imaplib.IMAP4(server, port = port if port is not None else imaplib.IMAP4_PORT)
     elif security == 'imap-ssl':
-        conn = imaplib.IMAP4_SSL(server, port = port if port is not None else imaplib.IMAP4_SSL_PORTL)
+        conn = imaplib.IMAP4_SSL(server, port = port if port is not None else imaplib.IMAP4_SSL_PORT)
     elif security == 'imap-tls':
         conn = imaplib.IMAP4(server, port = port if port is not None else imaplib.IMAP4_PORT)
         conn.starttls()
