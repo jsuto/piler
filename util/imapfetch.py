@@ -117,7 +117,7 @@ def main():
                         default="/etc/piler/piler.conf")
     parser.add_argument("--security", type=str, help="imap security. no, TLS or SSL", default="no")
     parser.add_argument("-s", "--server", type=str, help="imap server")
-    parser.add_argument("-P", "--port", type=int, help="port number", default=143)
+    parser.add_argument("-P", "--port", type=int, help="port number")
     parser.add_argument("-u", "--user", type=str, help="imap user")
     parser.add_argument("-p", "--password", type=str, help="imap password")
     parser.add_argument("--oauth2-token", type=str, help="oauth2 access token file")
@@ -162,6 +162,7 @@ def main():
     server = ''
     user = ''
     password = ''
+    port = None
 
     if args.import_from_table:
         read_options(args.config, opts)
@@ -176,6 +177,10 @@ def main():
             row = cursor.fetchone()
             if row:
                 (opts['id'], security, server, user, password) = row
+
+                server, _, port = server.partition(":")
+                port = port or None
+
                 security = row[1]
             else:
                 print("Nothing to read from import table")
@@ -188,16 +193,17 @@ def main():
         server = args.server
         user = args.user
         password = args.password
+        port = args.port
 
     if opts['verbose']:
         print("Skipped folder list: {}".format(opts['skip_folders']))
 
     if security in ('no', 'imap'):
-        conn = imaplib.IMAP4(server)
+        conn = imaplib.IMAP4(server, port = port if port is not None else imaplib.IMAP4_PORT)
     elif security == 'imap-ssl':
-        conn = imaplib.IMAP4_SSL(server)
+        conn = imaplib.IMAP4_SSL(server, port = port if port is not None else imaplib.IMAP4_SSL_PORT)
     elif security == 'imap-tls':
-        conn = imaplib.IMAP4(server)
+        conn = imaplib.IMAP4(server, port = port if port is not None else imaplib.IMAP4_PORT)
         conn.starttls()
 
     if opts['access_token']:
