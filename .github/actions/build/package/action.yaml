@@ -5,7 +5,7 @@ inputs:
     required: true
   BUILDER_IMAGE:
     required: false
-    default: 'sutoj/builder:noble'
+    default: 'sutoj/builder:resolute'
   COMMIT_ID:
     required: true
   DISTRO:
