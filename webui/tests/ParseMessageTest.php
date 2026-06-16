@@ -10,7 +10,7 @@ require_once DIR_BASE . 'system/helper/mime.php';
 
 final class ParseMessageTest extends TestCase {
 
-   public function providerTestParseMessage() {
+   public static function providerTestParseMessage() {
       return [
          ["1.eml", 1, ["Liebe Gueste,\r\n\r\ndie Einarbeitung der Rechen- und Summenfunktionen ins RK-Formular"]],
          ["2.eml", 1, ["Hallo!\r\nDie seltsamen Zeilenumbr=C3=BCche treten tats=C3=A4chlich auf."]],

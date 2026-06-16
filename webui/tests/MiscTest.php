@@ -12,7 +12,7 @@ require_once dirname(dirname(__FILE__)) . '/system/misc.php';
 final class MiscTest extends TestCase
 {
 
-   public function providerTestValiddomain() {
+   public static function providerTestValiddomain() {
       return [
          ['', 0],
          ['local', 1],

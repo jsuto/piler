@@ -8,7 +8,7 @@ require_once dirname(dirname(__FILE__)) . '/system/helper/mime.php';
 
 final class SplitMessageTest extends TestCase {
 
-   public function providerTestSplitMessage() {
+   public static function providerTestSplitMessage() {
       return [
          ["From: aaa\r\nTo:bbb\r\nSubject: test\r\n\r\nThis is a test",
           array('from' => 'aaa', 'to' => 'bbb', 'cc' => '', 'date' => '', 'subject' => 'test', 'content-type' => array('type' => 'text/plain')),

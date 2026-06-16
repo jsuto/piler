@@ -11,7 +11,7 @@ require_once dirname(dirname(__FILE__)) . '/system/misc.php';
 
 final class EmailTest extends TestCase {
 
-   public function providerTestFixEmailAddressForSphinx() {
+   public static function providerTestFixEmailAddressForSphinx() {
       return [
          ['aaa@aaa.fu', 'aaaXaaaXfu'],
          ['list-507327664@mail.aaa.fu', 'listX507327664XmailXaaaXfu'],
