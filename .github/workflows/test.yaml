@@ -15,7 +15,7 @@ env:
   ARCHIVE_HOST: test1.wadzu.com
   IMAGE_NAME: sutoj/piler
   TEST_TAG: test
-  DISTRO: noble
+  DISTRO: resolute
   PROJECT_ID: piler
   ARCH: arm64
   CONTAINER: piler
@@ -32,7 +32,7 @@ jobs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             VERSION
@@ -55,7 +55,7 @@ jobs:
       PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build package
         id: build-package
@@ -78,7 +78,7 @@ jobs:
       - build-package
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download packages
         uses: actions/download-artifact@v4

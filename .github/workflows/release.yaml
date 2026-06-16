@@ -24,7 +24,7 @@ jobs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           sparse-checkout: |
             VERSION
@@ -43,7 +43,7 @@ jobs:
       - ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build package
         id: build-package
@@ -65,7 +65,7 @@ jobs:
       - ARM64
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build package
         id: build-package
@@ -88,7 +88,7 @@ jobs:
       - ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download packages
         uses: actions/download-artifact@v4
@@ -115,7 +115,7 @@ jobs:
       - ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download packages
         uses: actions/download-artifact@v4

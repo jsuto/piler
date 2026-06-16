@@ -21,7 +21,7 @@ class Language {
          $pref_langs = $this->get_preferred_languages();
 
          foreach($pref_langs as $k => $v) {
-            if(in_array($v, $langs)) {
+            if(is_array($langs) && in_array($v, $langs)) {
                $lang = $v;
                define('LANG', $lang);
                break;
