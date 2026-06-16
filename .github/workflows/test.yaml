@@ -15,7 +15,7 @@ env:
   ARCHIVE_HOST: test1.wadzu.com
   IMAGE_NAME: sutoj/piler
   TEST_TAG: test
-  DISTRO: noble
+  DISTRO: resolute
   PROJECT_ID: piler
   ARCH: arm64
   CONTAINER: piler
