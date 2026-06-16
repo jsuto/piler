@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(__FILE__)) . '/config.php';
@@ -19,10 +20,7 @@ final class FormatTest extends TestCase
       ];
    }
 
-   /**
-    * @dataProvider providerTestTimeFormatValues
-    */
-
+   #[DataProvider('providerTestTimeFormatValues')]
    public function test_format_time_1($timeval, $expected_result) {
       $loader = new Loader();
       Registry::set('load', $loader);
@@ -50,10 +48,7 @@ final class FormatTest extends TestCase
       ];
    }
 
-   /**
-    * @dataProvider providerTestConvertDateStringToYmdByTemplateValues
-    */
-
+   #[DataProvider('providerTestConvertDateStringToYmdByTemplateValues')]
    public function test_convert_date_string_to_ymd_by_template($date, $date_template, $expected_result) {
       $result = convert_date_string_to_ymd_by_template($date, $date_template);
       $this->assertEquals($result, $expected_result);

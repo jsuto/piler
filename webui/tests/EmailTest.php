@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(__FILE__)) . '/config.php';
@@ -8,7 +9,7 @@ require_once dirname(dirname(__FILE__)) . '/system/loader.php';
 require_once dirname(dirname(__FILE__)) . '/system/language.php';
 require_once dirname(dirname(__FILE__)) . '/system/misc.php';
 
-final class SearchSearchTest extends TestCase {
+final class EmailTest extends TestCase {
 
    public function providerTestFixEmailAddressForSphinx() {
       return [
@@ -21,10 +22,7 @@ final class SearchSearchTest extends TestCase {
    }
 
 
-   /**
-    * @dataProvider providerTestFixEmailAddressForSphinx
-    */
-
+   #[DataProvider('providerTestFixEmailAddressForSphinx')]
    public function test_get_boundary($input, $expected_result) {
       $loader = new Loader();
       Registry::set('load', $loader);

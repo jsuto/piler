@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 define('TEST_FILES_DIR', $_ENV['TEST_FILES_DIR']);
@@ -7,7 +8,7 @@ define('TEST_FILES_DIR', $_ENV['TEST_FILES_DIR']);
 require_once DIR_BASE . 'system/helper/mime.php';
 
 
-final class MailParserTest extends TestCase {
+final class ParseMessageTest extends TestCase {
 
    public function providerTestParseMessage() {
       return [
@@ -24,9 +25,7 @@ final class MailParserTest extends TestCase {
    }
 
 
-   /**
-    * @dataProvider providerTestParseMessage
-    */
+   #[DataProvider('providerTestParseMessage')]
    public function test_parse_message($input, $expected_part_count, $expected_body) {
       $message = file_get_contents(TEST_FILES_DIR . $input);
       Piler_Mime_Decode::ParseMessage($message, $parts);

@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(__FILE__)) . '/config.php';
@@ -34,10 +35,7 @@ final class MiscTest extends TestCase
       ];
    }
 
-   /**
-    * @dataProvider providerTestValiddomain
-    */
-
+   #[DataProvider('providerTestValiddomain')]
    public function test_validdomain($data, $expected_result) {
       $result = validdomain($data);
       $this->assertEquals($result, $expected_result);

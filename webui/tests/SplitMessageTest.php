@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once dirname(dirname(__FILE__)) . '/system/helper/mime.php';
@@ -62,9 +63,7 @@ final class SplitMessageTest extends TestCase {
    }
 
 
-   /**
-    * @dataProvider providerTestSplitMessage
-    */
+   #[DataProvider('providerTestSplitMessage')]
    public function test_split_message($input, $expected_headers, $expected_body) {
       Piler_Mime_Decode::splitMessage($input, $headers, $body);
 
