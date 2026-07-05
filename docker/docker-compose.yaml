@@ -36,6 +36,7 @@ services:
   piler:
     image: sutoj/piler:${VERSION:-1.4.9}
     container_name: piler
+    restart: unless-stopped
     init: true
     environment:
       - MANTICORE_HOSTNAME=manticore
@@ -72,6 +73,7 @@ services:
   memcached:
     image: memcached
     container_name: memcached
+    restart: unless-stopped
     command: -m 64
 
 volumes:

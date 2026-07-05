@@ -18,7 +18,7 @@ COPY ${PACKAGE}_${TARGETARCH}.deb /
 RUN userdel -r ubuntu && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-       wget openssl sysstat catdoc unrtf poppler-utils nginx tnef sudo libtre5 cron ca-certificates curl rsyslog gnupg mariadb-client-core python3 python3-mysqldb libzip5 \
+       wget openssl sysstat bsdextrautils catdoc unrtf poppler-utils nginx tnef sudo libtre5 cron ca-certificates curl rsyslog gnupg mariadb-client-core python3 python3-mysqldb libzip5 \
        php-cli php-cgi php-mysql php-fpm php-zip php-ldap php-gd php-curl php-xml php-memcached && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
