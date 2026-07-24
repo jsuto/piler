@@ -39,6 +39,14 @@ int open_sphx(struct session_data *sdata, struct config *cfg){
 
    mysql_init(&(sdata->sphx));
 
+   /*
+    * searchd speaks the MySQL protocol but does not support TLS.
+    * Newer MariaDB Connector/C versions enable server certificate
+    * verification by default, causing mysql_real_connect() to fail.
+    */
+   unsigned int verify = 0;
+   mysql_options(&(sdata->sphx), MYSQL_OPT_SSL_VERIFY_SERVER_CERT, &verify);
+
    mysql_options(&(sdata->sphx), MYSQL_OPT_CONNECT_TIMEOUT, (const char*)&cfg->mysql_connect_timeout);
    mysql_options(&(sdata->sphx), MYSQL_OPT_RECONNECT, (const char*)&rc);
 
