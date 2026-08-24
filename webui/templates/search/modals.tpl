@@ -76,6 +76,11 @@
             </tr>
 
             <tr>
+              <td>Message-ID</td>
+              <td><input type="text" class="form-control" name="xmessage_id" id="xmessage_id" value="<?php if(isset($message_id)) { H($message_id); } ?>" v-model="complex_search.message_id" /></td>
+            </tr>
+
+            <tr>
               <td><?php print $text_body; ?></td>
               <td><input type="text" class="form-control" name="xbody" id="xbody" value="<?php if(isset($body)) { print $body; } ?>" v-model="complex_search.body" /></td>
             </tr>

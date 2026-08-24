@@ -39,6 +39,7 @@
               <input type="hidden" name="sort" id="sort" value="date" />
               <input type="hidden" name="order" id="order" value="0" />
               <input type="hidden" name="ref" id="ref" value="" />
+              <input type="hidden" name="message_id" id="message_id" value="<?php if(isset($message_id)) { H($message_id); } ?>" />
               <input type="hidden" name="prefix" id="prefix" value="" />
               <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
             </div>

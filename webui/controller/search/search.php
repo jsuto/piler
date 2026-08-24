@@ -42,6 +42,7 @@ class ControllerSearchSearch extends Controller {
       if(isset($a['from'])) { $this->data['from'] = $a['from']; }
       if(isset($a['to'])) { $this->data['to'] = $a['to']; }
       if(isset($a['subject'])) { $this->data['subject'] = $a['subject']; }
+      if(isset($a['message_id'])) { $this->data['message_id'] = $a['message_id']; }
 
       if(isset($a['search'])) { $this->data['_search'] = $a['search']; }
 
