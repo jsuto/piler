@@ -52,6 +52,7 @@ struct _parse_rule config_parse_rules[] =
    { "cipher_list", "string", (void*) string_parser, offsetof(struct config, cipher_list), "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS", MAXVAL-1},
    { "debug", "integer", (void*) int_parser, offsetof(struct config, debug), "0", sizeof(int)},
    { "default_retention_days", "integer", (void*) int_parser, offsetof(struct config, default_retention_days), "2557", sizeof(int)},
+   { "deduplicate_messages_by_recipient", "integer", (void*) int_parser, offsetof(struct config, deduplicate_messages_by_recipient), "0", sizeof(int)},
    { "enable_chunking", "integer", (void*) int_parser, offsetof(struct config, enable_chunking), "0", sizeof(int)},
    { "enable_cjk", "integer", (void*) int_parser, offsetof(struct config, enable_cjk), "0", sizeof(int)},
    { "enable_folders", "integer", (void*) int_parser, offsetof(struct config, enable_folders), "0", sizeof(int)},

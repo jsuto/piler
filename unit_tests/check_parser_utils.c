@@ -273,6 +273,27 @@ static void test_degenerateToken(){
 }
 
 
+static void test_collect_dedup_recipients(){
+   char recipients[MAX_RCPT_TO][SMALLBUFSIZE];
+   char to[MAXBUFSIZE];
+   int n;
+
+   TEST_HEADER();
+
+   snprintf(to, sizeof(to)-1, "bob@example.com bob example com alice@example.com alice example com bob@example.com bob example com invalid token ");
+   n = collect_dedup_recipients(to, recipients);
+   ASSERT(n == 2, "recipient count");
+   ASSERT(strcmp(recipients[0], "alice@example.com") == 0, "first recipient");
+   ASSERT(strcmp(recipients[1], "bob@example.com") == 0, "second recipient");
+
+   snprintf(to, sizeof(to)-1, "alice example com no-at-sign ");
+   n = collect_dedup_recipients(to, recipients);
+   ASSERT(n == 0, "no recipient");
+
+   TEST_FOOTER();
+}
+
+
 /*
    other functions to test in the future:
 
@@ -292,7 +313,7 @@ int main(){
    test_translateLine();
    test_fixURL();
    test_degenerateToken();
+   test_collect_dedup_recipients();
 
    return 0;
 }
-

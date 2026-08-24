@@ -90,6 +90,9 @@ struct parser_state parse_message(struct session_data *sdata, int take_into_piec
 
 void post_parse(struct session_data *sdata, struct parser_state *state, struct config *cfg){
    int i;
+   char dedupkey[MAXBUFSIZE+SMALLBUFSIZE];
+   char senders[MAX_RCPT_TO][SMALLBUFSIZE];
+   char recipients[MAX_RCPT_TO][SMALLBUFSIZE];
 
    clearhash(state->boundaries);
    clearhash(state->rcpt);
@@ -172,7 +175,43 @@ void post_parse(struct session_data *sdata, struct parser_state *state, struct c
    }
 
 
-   digest_string("sha256", state->message_id, &(state->message_id_hash[0]));
+   if(cfg->deduplicate_messages_by_recipient == 1){
+      int n_senders = collect_dedup_addresses(state->b_sender_domain[0] ? state->b_sender : state->b_from, senders);
+      int n_recipients = collect_dedup_recipients(state->b_to, recipients);
+
+      if(n_senders > 0 && n_recipients > 0){
+         size_t pos = snprintf(dedupkey, sizeof(dedupkey), "%s", state->message_id);
+         if(pos >= sizeof(dedupkey)) pos = sizeof(dedupkey)-1;
+
+         for(i=0; i<n_senders && pos < sizeof(dedupkey)-1; i++){
+            int written = snprintf(dedupkey + pos, sizeof(dedupkey) - pos, "\nfrom:%s", senders[i]);
+
+            if(written < 0) break;
+            if((size_t)written >= sizeof(dedupkey) - pos){
+               pos = sizeof(dedupkey)-1;
+               break;
+            }
+
+            pos += (size_t)written;
+         }
+
+         for(i=0; i<n_recipients && pos < sizeof(dedupkey)-1; i++){
+            int written = snprintf(dedupkey + pos, sizeof(dedupkey) - pos, "\nto:%s", recipients[i]);
+
+            if(written < 0) break;
+            if((size_t)written >= sizeof(dedupkey) - pos){
+               pos = sizeof(dedupkey)-1;
+               break;
+            }
+
+            pos += (size_t)written;
+         }
+
+         digest_string("sha256", dedupkey, &(state->message_id_hash[0]));
+      }
+      else digest_string("sha256", state->message_id, &(state->message_id_hash[0]));
+   }
+   else digest_string("sha256", state->message_id, &(state->message_id_hash[0]));
 
    if(sdata->sent == 0) sdata->sent = sdata->now;
 }
