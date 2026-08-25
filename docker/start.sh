@@ -16,6 +16,8 @@ RT="${RT:-0}"
 MEMCACHED_HOSTNAME="${MEMCACHED_HOSTNAME:-memcached}"
 MANTICORE_HOSTNAME="${MANTICORE_HOSTNAME:-manticore}"
 TMP_CONF_DIR="/tmp/piler-conf"
+PILER_STOP_DRAIN="${PILER_STOP_DRAIN:-1}"
+PILER_STOP_DRAIN_TIMEOUT="${PILER_STOP_DRAIN_TIMEOUT:-300}"
 
 error() {
    echo "ERROR:" "$*" 1>&2
@@ -222,6 +224,28 @@ start_piler() {
 }
 
 
+stop_piler_container() {
+   log "Received stop signal"
+
+   if [[ "$PILER_STOP_DRAIN" == "1" ]]; then
+      log "Draining piler backlog before stop, timeout=${PILER_STOP_DRAIN_TIMEOUT}s"
+      PILER_STOP_DRAIN_TIMEOUT="$PILER_STOP_DRAIN_TIMEOUT" /etc/init.d/rc.piler drain-stop "$PILER_STOP_DRAIN_TIMEOUT" || true
+   else
+      log "Stopping piler without backlog drain"
+      PILER_STOP_DRAIN=0 /etc/init.d/rc.piler force-stop || true
+   fi
+
+   service nginx stop >/dev/null 2>&1 || true
+   service php8.5-fpm stop >/dev/null 2>&1 || true
+   service cron stop >/dev/null 2>&1 || true
+
+   exit 0
+}
+
+
+trap stop_piler_container TERM INT
+
+
 pre_flight_check
 fix_configs
 create_my_cnf_files
@@ -229,4 +253,4 @@ init_database
 start_services
 start_piler
 
-sleep infinity
+while true; do sleep 86400 & wait $!; done
