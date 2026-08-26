@@ -58,6 +58,9 @@ drain_stop() {
       kill "$PILER_SMTP_PID"
    fi
 
+   initial_count="$(spool_count)"
+   echo "piler backlog drain started: initial_files=${initial_count}, timeout=${timeout}s"
+
    while [ "$(spool_count)" -gt 0 ] && [ "$elapsed" -lt "$timeout" ]; do
       if [ "$PID_NUMBER" = "" ] || [ ! -f "/proc/${PID_NUMBER}/status" ]; then
          break
@@ -68,8 +71,11 @@ drain_stop() {
       elapsed=$((elapsed + STOP_DRAIN_INTERVAL))
    done
 
-   if [ "$(spool_count)" -gt 0 ]; then
-      echo "piler backlog still has $(spool_count) files after ${elapsed}s, stopping anyway"
+   remaining_count="$(spool_count)"
+   echo "piler backlog drain finished: initial_files=${initial_count}, remaining_files=${remaining_count}, elapsed=${elapsed}s"
+
+   if [ "$remaining_count" -gt 0 ]; then
+      echo "piler backlog still has ${remaining_count} files after ${elapsed}s, stopping anyway"
    else
       echo "piler backlog drained"
    fi
