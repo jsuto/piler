@@ -79,8 +79,14 @@ fix_configs() {
    [[ -f "$PILER_PEM" ]] || make_certificate "$PILER_PEM"
 
    [[ -f /etc/piler/MANTICORE ]] || touch /etc/piler/MANTICORE
+
+   # Copy config files and replace *dist*-files if ours is newer
    for f in config-site.dist.php manticore.conf manticore.conf.dist piler-nginx.conf.dist piler.conf.dist; do
-      if [[ ! -f "/etc/piler/${f}" ]]; then cp "${TMP_CONF_DIR}/${f}" /etc/piler; fi
+      if [[ "$f" == *.dist || "$f" == *.dist.php ]]; then
+         cp -f "${TMP_CONF_DIR}/${f}" /etc/piler/
+      elif [[ ! -f "/etc/piler/${f}" ]]; then
+         cp "${TMP_CONF_DIR}/${f}" /etc/piler/
+      fi
    done
 
    if [[ ! -f "$PILER_NGINX_CONF" ]]; then
@@ -88,6 +94,9 @@ fix_configs() {
 
       cp "${PILER_NGINX_CONF}.dist" "$PILER_NGINX_CONF"
       sed -i "s%PILER_HOST%${PILER_HOSTNAME}%" "$PILER_NGINX_CONF"
+
+      # Migrate from PHP 8.3 to PHP 8.5 (issue #473)
+      sed -i 's%fastcgi_pass unix:/run/php/php8.3-fpm.sock;%fastcgi_pass unix:/run/php/php8.5-fpm.sock;%' "$PILER_NGINX_CONF"
    fi
 
    if [[ ! -f "$PILER_CONF" ]]; then
