@@ -472,6 +472,17 @@ webui_install() {
 }
 
 
+restart_services() {
+   echo; echo "Restarting services."; echo
+
+   for i in piler piler-smtp pilersearch tika; do
+      if [[ -f "/lib/systemd/system/${i}.service" ]]; then
+      /usr/bin/systemctl restart "${i}.service"
+      fi
+   done
+}
+
+
 clean_up_temp_stuff() {
    rm -f "$CRON_TMP"
 
@@ -497,5 +508,6 @@ make_new_key
 show_summary
 
 execute_post_install_tasks
+restart_services
 
 clean_up_temp_stuff
