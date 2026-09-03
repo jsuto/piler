@@ -63,8 +63,11 @@ def read_folder_list(conn):
 
 
 def process_folder(conn, folder):
-    # Space in the folder name must be escaped
-    folder = re.sub(r' ', '\\ ', folder)
+    # imaplib sends mailbox names verbatim; quote per RFC 3501 so names with
+    # spaces (e.g. "[Gmail]/All Mail") are one astring. LIST output already
+    # arrives quoted - leave those alone.
+    if not (folder.startswith('"') and folder.endswith('"')):
+        folder = '"' + folder.replace('\\', '\\\\').replace('"', '\\"') + '"'
 
     if opts['verbose']:
         print("Processing {}".format(folder))
