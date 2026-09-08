@@ -8,7 +8,7 @@ insert into archiving_rule (`from`,attachment_type, _attachment_size, attachment
 insert into archiving_rule (`to`) values ("undisclosed-recipients");
 insert into import (`type`, username, password, server) values ("imap-ssl", "sanyi@aaa.fu", "abcde123", "imap.aaa.fu");
 
-update user set password="$6$GKL00T$8jqoFOe3PyAbOCLwKB7JwndwC.IinHrZRkdoQDZUc8vybZ88sA2qomlz5JceNif8fFpkGzZ03ilvQa7tqQx0v1";
+update user set password="$6$GKL00T$Hgu84MvW.dA7d.vXOVnFot3xaOrYR4m0No8KtL87HViOAYyAkzStvm563asoAfEQVJcQP5yOQCQbaDVV0LjmZ/";
 
 insert into user (uid, username, realname, password, domain, dn, isadmin) values(2, "dataofficer", "Data officer", "$6$rX285LfP$ZxhlacbzKuCcqkaizzBu8SAiYb6.f8K4Us08nUHwSpWMQkNhw4o2rmfKXoTfaM4rnBHUYVK1N4IfBsqN8CAtS/", "local", "*", 4);
 insert into email (uid, email) values(2, "do@local");
