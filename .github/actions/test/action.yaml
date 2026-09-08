@@ -55,6 +55,12 @@ runs:
         ./tests/setup.sh
       shell: bash
 
+    - name: Check Web UI JavaScript cache busting
+      run: |
+        page="$( curl --fail --silent --show-error http://127.0.0.1/ )"
+        grep -F 'assets/js/piler.js?v=test' <<< "$page"
+      shell: bash
+
     - name: Run tests
       run: |
         ./tests/run.sh
