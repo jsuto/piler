@@ -28,6 +28,8 @@ RECURSIVE_TARGETS = all-recursive install-recursive clean-recursive distclean-re
 
 MAKE = `which @MAKE@`
 
+PILER_ASSET_VERSION = `cat $(srcdir)/VERSION`
+
 INSTALL = @INSTALL@
 
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -64,7 +66,7 @@ $(RECURSIVE_TARGETS):
 
 
 config-php:
-	sed -e "s%SYSCONFDIR%$(sysconfdir)%g" -e "s%SBINDIR%$(sbindir)%g" config.php.in > webui/config.php
+	sed -e "s%SYSCONFDIR%$(sysconfdir)%g" -e "s%SBINDIR%$(sbindir)%g" -e "s%PILER_ASSET_VERSION%$(PILER_ASSET_VERSION)%g" config.php.in > webui/config.php
 	sed -e "s%BINDIR%$(bindir)%g" -i webui/config.php
 
 
