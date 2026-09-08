@@ -57,21 +57,23 @@ runs:
 
     - name: Check Web UI JavaScript cache busting
       run: |
-        docker run --rm --network docker_default curlimages/curl:8.8.0 sh -eu -c '
-          curl --connect-to archive.example.com:80:piler:80 -fsS \
+        docker run --rm --network docker_default -e ARCHIVE_HOST="$ARCHIVE_HOST" curlimages/curl:8.8.0 sh -eu -c '
+          curl --connect-to "$ARCHIVE_HOST:80:piler:80" -fsS \
             -c /tmp/cookies -b /tmp/cookies \
-            http://archive.example.com/login.php -o /tmp/login
-          curl --connect-to archive.example.com:80:piler:80 -fsS -L \
+            "http://$ARCHIVE_HOST/login.php" -o /tmp/login
+          curl --connect-to "$ARCHIVE_HOST:80:piler:80" -fsS -L \
             -c /tmp/cookies -b /tmp/cookies \
             -d "username=admin%40local" -d "password=pilerrocks" -d "submit=Submit" \
-            http://archive.example.com/login.php -o /tmp/login-result
-          curl --connect-to archive.example.com:80:piler:80 -fsS \
+            "http://$ARCHIVE_HOST/login.php" -o /tmp/login-result
+          curl --connect-to "$ARCHIVE_HOST:80:piler:80" -fsS \
             -c /tmp/cookies -b /tmp/cookies \
-            http://archive.example.com/index.php -o /tmp/page
+            "http://$ARCHIVE_HOST/index.php" -o /tmp/page
           grep -F "assets/js/piler.js?v=" /tmp/page
           ! grep -F "Error: SQLSTATE" /tmp/page
         '
       shell: bash
+      env:
+        ARCHIVE_HOST: ${{ inputs.ARCHIVE_HOST }}
 
     - name: Run tests
       run: |
