@@ -128,7 +128,7 @@ class ControllerLoginLogin extends Controller {
 
    private function validate() {
 
-      if(strlen($this->request->post['username']) < 2){
+      if(strlen($this->request->post['username'] ?? '') < 2){
          $this->error['username'] = $this->data['text_invalid_username'];
       }
 
@@ -137,7 +137,7 @@ class ControllerLoginLogin extends Controller {
          require_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
          $image = new Securimage();
 
-         if($image->check($this->request->post['captcha']) != true) {
+         if($image->check($this->request->post['captcha'] ?? '') != true) {
             $this->error['captcha'] = 'captcha error';
          }
       }
