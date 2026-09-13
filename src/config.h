@@ -111,6 +111,8 @@ typedef unsigned long long uint64;
 
 #define SQL_PREPARED_STMT_GET_DOMAINS                "SELECT `domain` FROM `" SQL_DOMAIN_TABLE "`"
 #define SQL_PREPARED_STMT_GET_META_ID_BY_MESSAGE_ID  "SELECT id, piler_id FROM " SQL_METADATA_TABLE " WHERE message_id=?"
+#define SQL_PREPARED_STMT_GET_META_IDS_BY_MESSAGE_ID_AND_SENDER  "SELECT id, piler_id FROM " SQL_METADATA_TABLE " WHERE message_id=? AND `from`=? ORDER BY id"
+#define SQL_PREPARED_STMT_GET_RCPTS_BY_META_ID       "SELECT `to` FROM " SQL_RECIPIENT_TABLE " WHERE id=? ORDER BY `to`"
 #define SQL_PREPARED_STMT_INSERT_INTO_RCPT_TABLE     "INSERT INTO " SQL_RECIPIENT_TABLE " (`id`,`to`,`todomain`) VALUES(?,?,?)"
 #define SQL_PREPARED_STMT_INSERT_INTO_SPHINX_TABLE   "INSERT INTO " SQL_SPHINX_TABLE " (`id`, `from`, `to`, `fromdomain`, `todomain`, `subject`, `body`, `arrived`, `sent`, `size`, `direction`, `folder`, `attachments`, `attachment_types`) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 #define SQL_PREPARED_STMT_INSERT_INTO_META_TABLE     "INSERT INTO " SQL_METADATA_TABLE " (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"

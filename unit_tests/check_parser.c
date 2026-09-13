@@ -20,6 +20,9 @@ struct parser_test {
 };
 
 
+int is_duplicated_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg);
+
+
 static void test_parser(struct config *cfg){
    unsigned int i;
    int j;
@@ -83,6 +86,105 @@ static void test_parser(struct config *cfg){
 }
 
 
+static void cleanup_dedup_test_data(struct session_data *sdata){
+   p_query(sdata, "DELETE FROM rcpt WHERE id IN (SELECT id FROM metadata WHERE message_id='<dedup-test@example.com>')");
+   p_query(sdata, "DELETE FROM metadata WHERE message_id='<dedup-test@example.com>'");
+}
+
+
+static void test_recipient_aware_duplicate_detection(struct config *cfg){
+   uint64 id;
+   struct session_data sdata;
+   struct parser_state state;
+   struct data data;
+
+   TEST_HEADER();
+
+   if(open_database(&sdata, cfg) == ERR){
+      printf("cannot open database\n");
+      return;
+   }
+
+   memset(&data, 0, sizeof(data));
+   data.dedup = MAP_FAILED;
+   data.child_serial = -1;
+
+   cleanup_dedup_test_data(&sdata);
+
+   p_query(&sdata, "INSERT INTO metadata (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES('sender@example.com','example.com','dedup test',0,1,1,1,1,1,0,0,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa','<dedup-test@example.com>','','','','')");
+   id = mysql_insert_id(&(sdata.mysql));
+   ASSERT(id > 0, "inserted metadata id");
+   p_query(&sdata, "INSERT INTO rcpt (`id`,`to`,`todomain`) VALUES(LAST_INSERT_ID(),'alpha@example.com','example.com')");
+
+   p_query(&sdata, "INSERT INTO metadata (`from`,`fromdomain`,`subject`,`spam`,`arrived`,`sent`,`retained`,`size`,`hlen`,`direction`,`attachments`,`piler_id`,`message_id`,`reference`,`digest`,`bodydigest`,`vcode`) VALUES('multi@example.com','example.com','dedup test multi',0,1,1,1,1,1,0,0,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb','<dedup-test@example.com>','','','','')");
+   id = mysql_insert_id(&(sdata.mysql));
+   ASSERT(id > 0, "inserted multi metadata id");
+   p_query(&sdata, "INSERT INTO rcpt (`id`,`to`,`todomain`) VALUES(LAST_INSERT_ID(),'alpha@example.com','example.com')");
+   p_query(&sdata, "INSERT INTO rcpt (`id`,`to`,`todomain`) VALUES(LAST_INSERT_ID(),'beta@example.com','example.com')");
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "sender@example.com sender example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "beta@example.com beta example com ");
+   cfg->deduplicate_messages_by_recipient = 0;
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == ERR_EXISTS, "message-id only duplicate");
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "sender@example.com sender example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "beta@example.com beta example com ");
+   cfg->deduplicate_messages_by_recipient = 1;
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == OK, "different recipient is not duplicate");
+   unlink(state.message_id_hash);
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "other-sender@example.com other sender example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "alpha@example.com alpha example com ");
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == OK, "different sender is not duplicate");
+   unlink(state.message_id_hash);
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "sender@example.com sender example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "alpha@example.com alpha example com ");
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == ERR_EXISTS, "same sender and recipient is duplicate");
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "multi@example.com multi example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "alpha@example.com alpha example com ");
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == OK, "same sender and subset recipient set is not duplicate");
+   unlink(state.message_id_hash);
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "multi@example.com multi example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "alpha@example.com alpha example com beta@example.com beta example com gamma@example.com gamma example com ");
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == OK, "same sender and superset recipient set is not duplicate");
+   unlink(state.message_id_hash);
+
+   init_state(&state);
+   snprintf(state.message_id, sizeof(state.message_id)-1, "<dedup-test@example.com>");
+   snprintf(state.b_from, sizeof(state.b_from)-1, "multi@example.com multi example com ");
+   snprintf(state.b_to, sizeof(state.b_to)-1, "beta@example.com beta example com alpha@example.com alpha example com ");
+   post_parse(&sdata, &state, cfg);
+   ASSERT(is_duplicated_message(&sdata, &state, &data, cfg) == ERR_EXISTS, "same sender and exact recipient set is duplicate regardless order");
+
+   cfg->deduplicate_messages_by_recipient = 0;
+   cleanup_dedup_test_data(&sdata);
+   close_database(&sdata);
+
+   TEST_FOOTER();
+}
+
+
 int main(){
 
    struct config cfg;
@@ -98,6 +200,7 @@ int main(){
 
 
    test_parser(&cfg);
+   test_recipient_aware_duplicate_detection(&cfg);
 
    return 0;
 }

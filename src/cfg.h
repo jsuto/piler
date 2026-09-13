@@ -84,6 +84,7 @@ struct config {
    int memcached_to_db_interval;
 
    int archive_emails_not_having_message_id;
+   int deduplicate_messages_by_recipient;
 
    int archive_only_mydomains;
 
