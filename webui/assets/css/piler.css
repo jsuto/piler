@@ -1,137 +1,236 @@
-/* Piler colour tokens.
-   Brand/theme values live here so both the light and dark themes can share the
-   rest of the stylesheet. Dark mode is driven by Bootstrap 5.3's native
-   `data-bs-theme="dark"` attribute (set by assets/js/dark-mode.js). */
+/* ==========================================================================
+   Piler UI theme
+   --------------------------------------------------------------------------
+   Colour tokens
+   --------------------------------------------------------------------------
+   Brand values live in custom properties so light and dark share the rest of
+   the stylesheet. Dark mode is driven by Bootstrap 5.3's native
+   `data-bs-theme="dark"` attribute (set by assets/js/dark-mode.js); Bootstrap
+   themes its own components from the --bs-* variables, so we only override
+   brand surfaces and the handful of custom classes below.
+   ========================================================================== */
 :root {
-  --piler-link: #2e8bcc;
-  --piler-link-hover: #20608e;
-  --piler-navbar-bg: #2c5fc4;
-  --piler-navbar-fg: #ffffff;
+  color-scheme: light;
+
+  /* brand */
+  --piler-primary: #3557c8;
+  --piler-primary-hover: #2b46a5;
+  --piler-primary-contrast: #ffffff;
+  --piler-navbar-bg: #3557c8;
+  --piler-navbar-fg: #eef2ff;
+
+  /* links */
+  --piler-link: #2f5fd0;
+  --piler-link-hover: #24499f;
+
+  /* surfaces */
+  --piler-surface: #ffffff;
+  --piler-surface-muted: #f5f7fb;
+  --piler-border: #e3e8f0;
+  --piler-text: #22252b;
+  --piler-text-muted: #5b6472;
+
+  /* shape + rhythm */
+  --piler-radius: 0.5rem;
+  --piler-radius-sm: 0.375rem;
 }
 
 [data-bs-theme="dark"] {
-  --bs-body-bg: #1a1a1a;
-  --bs-body-color: #e0e0e0;
-  --bs-border-color: #404040;
-  --bs-secondary-bg: #2a2a2a;
-  --bs-tertiary-bg: #2a2a2a;
+  --bs-body-bg: #14161c;
+  --bs-body-color: #e6e8ee;
+  --bs-secondary-bg: #1f232b;
+  --bs-tertiary-bg: #262b35;
+  --bs-border-color: #333a46;
   --bs-emphasis-color: #ffffff;
 
-  --piler-link: #5fa3d8;
-  --piler-link-hover: #4a8fc2;
-  --piler-navbar-bg: #1e3a8a;
-  --piler-navbar-fg: #e0e0e0;
+  --piler-primary: #6b8cff;
+  --piler-primary-hover: #8aa4ff;
+  --piler-primary-contrast: #10131a;
+  --piler-navbar-bg: #1e2434;
+  --piler-navbar-fg: #dbe2f0;
+
+  --piler-link: #7fa3ff;
+  --piler-link-hover: #a3bcff;
+
+  --piler-surface: #1a1e26;
+  --piler-surface-muted: #1f232b;
+  --piler-border: #333a46;
+  --piler-text: #e6e8ee;
+  --piler-text-muted: #9aa4b5;
 }
 
 html,body{height:auto !important;height:100%;min-height:100%;}
-body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:var(--bs-body-color);background-color:var(--bs-body-bg);}
-body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
+body{margin:0;padding-top:0;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:1.55;color:var(--bs-body-color);background-color:var(--bs-body-bg);}
+body#loginpage{background-color:var(--piler-surface-muted);padding-top:40px;padding-bottom:40px;}
 
-#header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase; position: absolute;}
-#menu { background: var(--piler-navbar-bg); color: var(--piler-navbar-fg); font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase; position: fixed; top: 0; z-index: 1000;}
+/* --------------------------------------------------------------------------
+   Top navigation
+   -------------------------------------------------------------------------- */
+#header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:var(--piler-surface); position: absolute;}
+#menu {
+  background: var(--piler-navbar-bg);
+  color: var(--piler-navbar-fg);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: .01em;
+  text-transform: lowercase;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  min-height: 60px;
+  align-items: center;
+  border-bottom: 1px solid var(--piler-border);
+  box-shadow: 0 1px 2px rgba(15,23,42,.06);
+}
+#menu .menulink,
+#menu .dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem .9rem;
+  margin: 0 .1rem;
+  border-radius: var(--piler-radius-sm);
+  color: var(--piler-navbar-fg);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color .12s ease, color .12s ease;
+}
+#menu .menulink:hover,
+#menu .menulink:focus-visible,
+#menu .dropdown-toggle:hover,
+#menu .dropdown-toggle:focus-visible {
+  background-color: rgba(255,255,255,.18);
+  color: #fff;
+  text-decoration: none;
+}
+#menu .menulink i { font-size: 1.05em; }
 
-.dropdown-menu {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase;}
-.dropdown-menu li.dropdown-item:hover, a.dropdown-item:hover { background-color: #2c5fc4; color: #fcfcfc; text-decoration:none;}
-a.dropdown-item {font-weight:100; text-decoration:none;}
+/* Dropdown menus (both nav dropdowns and the search Options menu) */
+.dropdown-menu {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: none;
+  padding: .35rem;
+  border: 1px solid var(--piler-border);
+  border-radius: var(--piler-radius-sm);
+  box-shadow: 0 8px 24px rgba(15,23,42,.14);
+}
+.dropdown-menu .dropdown-item,
+a.dropdown-item {
+  border-radius: var(--piler-radius-sm);
+  padding: .45rem .65rem;
+  color: var(--bs-body-color);
+  font-weight: 400;
+  text-decoration: none;
+}
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus,
+a.dropdown-item:hover,
+a.dropdown-item:focus {
+  background-color: var(--piler-primary);
+  color: var(--piler-primary-contrast);
+}
 
-.menulink{text-shadow:0 0px 0 rgba(0, 0, 0, 0);padding-bottom:10px;margin-left:15px;padding-top:10px;color:var(--piler-navbar-fg);font-size:24px;}
-.menulink:hover{color:var(--piler-navbar-fg);text-decoration:none;background: #555;}
-
-
-
-.container-panes { height: calc(95vh - 90px); /* Height of the screen minus the navbar */ display: flex; flex-direction: column; }
-.pane { overflow-y: auto; flex-grow: 1; min-height: 300px; position: relative; }
-.resizer { height: 5px; background: #333; cursor: row-resize; }
-.pane-upper-content { height: calc(100% - 40px); /* 40px is the height of the fixed bottom row in the upper pane */ overflow-y: auto; border: 1px solid #ccc;}
-.pane-upper-fixed { height: 40px; background: #f1f1f1; position: absolute; bottom: 0; width: 100%; border-top: 1px solid #ddd; }
-#preview {height: 500px; border: 1px solid #ccc;}
-.no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
-
-
-.resizer-search-results { display: inline-block; width: 5px; height: 100%; position: absolute; right: 0; top: 0; cursor: col-resize; }
-
-h1,h2,h3,h4 {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-weight:100;text-transform:lowercase;}
-h2 i{font-size:60px;}
-
-.btn {border-radius:0;}
-.btn-search {width: 33%;}
-.btn-options {width: 34%;}
-
-.searchcontainer{padding-top: 65px; margin-left: 12px; margin-right: 12px;}
-
-input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
-
-#pagingrow{overflow:hidden;}
-.functionbox{border-left:1px solid #ccc;height:30px;overflow:hidden;}
-
-.messageheader{background-color:#f6f6f6;padding:8px;border-bottom:1px solid #ccc;}
-.messagecontents{background-color:#fff;padding:8px;}
-
-.resultrow{font-style:italic;cursor:pointer;}
-.resultrow.new{font-style:normal;}
+/* --------------------------------------------------------------------------
+   Type
+   -------------------------------------------------------------------------- */
+h1,h2,h3,h4 {font-family:inherit;font-weight:600;text-transform:lowercase;letter-spacing:-.01em;color:var(--bs-body-color);}
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; }
+h2 i {font-size:1.1em;}
+small, .small { font-size: .85em; }
+.text-muted, .muted { color: var(--piler-text-muted) !important; }
 
 a{color:var(--piler-link);text-decoration:none;}
 a:hover{color:var(--piler-link-hover);text-decoration:underline;}
-a.xxx{color:#aaa;text-decoration:underline;}
-a.xxx:hover{color:#aaa;text-decoration:underline;}
+a.xxx{color:var(--piler-text-muted);text-decoration:underline;}
+a.xxx:hover{color:var(--piler-text-muted);text-decoration:underline;}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+.container-panes { height: calc(95vh - 90px); display: flex; flex-direction: column; }
+.pane { overflow-y: auto; flex: 1 1 0; min-height: 120px; position: relative; }
+.resizer { height: 8px; background: var(--piler-border); cursor: row-resize; margin: .5rem 0; border-radius: 4px; flex: 0 0 auto; }
+.pane-upper-content { height: calc(100% - 40px); overflow-y: auto; border: 1px solid var(--piler-border); border-radius: var(--piler-radius); }
+#preview {height: 500px; border: 1px solid var(--piler-border); border-radius: var(--piler-radius);}
+.no-select { user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
+
+.resizer-search-results { display: inline-block; width: 5px; height: 100%; position: absolute; right: 0; top: 0; cursor: col-resize; }
+
+.btn {border-radius: var(--piler-radius-sm);}
+.searchbuttons { gap: .5rem; }
+.searchbuttons .btn { width: auto; flex: 1 1 0; }
+.searchbuttons .btn-options { flex: 0 0 auto; }
+.btn-search {width: 33%;}
+.btn-options {width: 34%;}
+
+.searchcontainer{padding-top: 72px; margin-left: 12px; margin-right: 12px;}
+
+input[type=text]{-webkit-border-radius:var(--piler-radius-sm);-moz-border-radius:var(--piler-radius-sm);border-radius:var(--piler-radius-sm);}
+.tagtext { width: 9rem; }
+
+#pagingrow{overflow:hidden;}
+.functionbox{border-left:1px solid var(--piler-border);min-height:38px;}
+#messagelistfooter .functionbox.justify-content-end{flex-wrap:nowrap;}
+#messagelistfooter .functionbox.justify-content-end span{white-space:nowrap;}
+
+.messageheader{background-color:var(--piler-surface-muted);padding:8px;border-bottom:1px solid var(--piler-border);}
+.messagecontents{background-color:var(--piler-surface);padding:8px;}
+
+.resultrow{font-style:italic;cursor:pointer;}
+.resultrow.new{font-style:normal;}
+.resultrow:hover { background-color: var(--piler-surface-muted); }
 
 #logo-lg{width:300px;margin:0 auto 20px;}
 #logincontainer{text-transform:lowercase;}
 .compatibility {max-width: 300px;}
 
-.form-signin{max-width:300px;padding:19px 29px 29px;margin:0 auto 20px;background-color:#fff;border:1px solid #e5e5e5;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);-moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);box-shadow:0 1px 2px rgba(0, 0, 0, 0.05);}
-#compatibility{max-width:300px;margin:0 auto;color:#444;text-align:justify;}
+.form-signin{max-width:320px;padding:24px 28px;margin:0 auto 20px;background-color:var(--piler-surface);border:1px solid var(--piler-border);border-radius:var(--piler-radius);box-shadow:0 1px 2px rgba(15,23,42,.06);}
+#compatibility{max-width:320px;margin:0 auto;color:var(--piler-text-muted);text-align:justify;}
 
 .ps10 { padding-left: 10px; }
 .pe10 { padding-right: 10px; }
 
-i.spam{color:#ffc40d;}
-i.attachment{color:#2e8bcc;}
-i.note{color:#00aba9;}
-i.tag{color:#7b4f9d;}
-i.verified{color:#339933;}
-.private{color:red;}
+i.spam{color:#e8a33d;}
+i.attachment{color:var(--piler-link);}
+i.note{color:#12a5a1;}
+i.tag{color:#8b5cf6;}
+i.verified{color:#2f9e44;}
+.private{color:#e5484d;}
 
-.xxx{color:#aaa;}
+.xxx{color:var(--piler-text-muted);}
 
 .myspinner {width: 5rem; height: 5rem;}
 .middleofscreen {position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);}
 .hidden {visibility: hidden;}
 
 table { width: 100%; border-collapse: collapse; }
-th { padding: 10px; border: 1px solid #ccc; position: relative; }
+th { padding: 10px; border: 1px solid var(--piler-border); position: relative; }
 th.centered, td.centered { text-align: center; }
 th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
 
-.tsa {border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;}
+.tsa {border-top: 1px solid var(--piler-border); border-bottom: 1px solid var(--piler-border);}
 
-.branding_logo {max-height:25px;}
+.branding_logo {max-height:24px;}
 
-.health-refresh { height: 40px; background: #d9edf7; color: #3a87ad; }
+.health-refresh { height: 40px; background: #eef2ff; color: #2b46a5; }
 
 /* Highlighted row (selected message) */
-.highlighted {
-  background-color: #d1ecf1 !important;
-}
+.highlighted { background-color: rgba(53,87,200,.14) !important; }
+.highlighted td { background-color: rgba(53,87,200,.14) !important; }
 
-.highlighted td {
-  background-color: #d1ecf1 !important;
-}
-
-/* Dark mode.
-   Bootstrap 5.3 themes its own components from the variables above, so we only
-   need to handle surfaces and custom classes it knows nothing about. */
-[data-bs-theme="dark"] body#loginpage {
-  background-color: #1a1a1a;
-}
-
-[data-bs-theme="dark"] #header {
-  background-color: #1a1a1a;
-}
-
-[data-bs-theme="dark"] .menulink:hover {
-  background: #404040;
-}
+/* Dark mode: surfaces and custom classes Bootstrap knows nothing about. */
+[data-bs-theme="dark"] body#loginpage { background-color: var(--bs-body-bg); }
+[data-bs-theme="dark"] #header { background-color: var(--piler-surface-muted); }
+[data-bs-theme="dark"] .health-refresh { background: #1d2436; color: #a9bcff; }
+[data-bs-theme="dark"] #menu { border-bottom-color: rgba(255,255,255,.09); }
 
 /* Bootstrap does not darken the .table-secondary contextual variant, which
    leaves the search/audit/accounting headers light-on-light in dark mode.
@@ -143,77 +242,23 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
   border-color: var(--bs-border-color);
 }
 
-[data-bs-theme="dark"] .resizer {
-  background: #404040;
-}
-
-[data-bs-theme="dark"] .pane-upper-content {
-  border-color: #404040;
-}
-
-[data-bs-theme="dark"] .pane-upper-fixed {
-  background: #2a2a2a;
-  border-top-color: #404040;
-}
-
-[data-bs-theme="dark"] #preview {
-  border-color: #404040;
-}
-
-[data-bs-theme="dark"] .functionbox {
-  border-left-color: #404040;
-}
-
-[data-bs-theme="dark"] .messageheader {
-  background-color: #2a2a2a;
-  border-bottom-color: #404040;
-}
-
-[data-bs-theme="dark"] .messagecontents {
-  background-color: #1a1a1a;
-}
-
-[data-bs-theme="dark"] .form-signin {
-  background-color: #2a2a2a;
-  border-color: #404040;
-}
-
-[data-bs-theme="dark"] .tagtext {
-  background-color: #2a2a2a;
-  border-color: #404040;
-  color: #e0e0e0;
-}
-
-[data-bs-theme="dark"] table th,
-[data-bs-theme="dark"] table td {
-  border-color: #404040;
-}
-
-[data-bs-theme="dark"] .tsa {
-  border-top-color: #404040;
-  border-bottom-color: #404040;
-}
-
-/* Bootstrap does not provide dark alert variants; map each variant onto its
-   dark "subtle" palette so alerts stop flashing light strips on dark pages. */
+/* Bootstrap does not provide dark alert variants; map each onto its dark
+   subtle palette so alerts stop flashing light strips on dark pages. */
 [data-bs-theme="dark"] .alert {
   --bs-alert-bg: var(--bs-secondary-bg);
   --bs-alert-color: var(--bs-body-color);
   --bs-alert-border-color: var(--bs-border-color);
 }
-
 [data-bs-theme="dark"] .alert-info {
   --bs-alert-bg: var(--bs-info-bg-subtle);
   --bs-alert-color: var(--bs-info-text-emphasis);
   --bs-alert-border-color: var(--bs-info-border-subtle);
 }
-
 [data-bs-theme="dark"] .alert-success {
   --bs-alert-bg: var(--bs-success-bg-subtle);
   --bs-alert-color: var(--bs-success-text-emphasis);
   --bs-alert-border-color: var(--bs-success-border-subtle);
 }
-
 [data-bs-theme="dark"] .alert-danger,
 [data-bs-theme="dark"] .alert-error {
   --bs-alert-bg: var(--bs-danger-bg-subtle);
@@ -221,48 +266,29 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
   --bs-alert-border-color: var(--bs-danger-border-subtle);
 }
 
-[data-bs-theme="dark"] .health-refresh {
-  background: var(--bs-info-bg-subtle);
-  color: var(--bs-info-text-emphasis);
-}
-
-[data-bs-theme="dark"] .text-bg-light {
-  background-color: #2a2a2a !important;
-  color: #e0e0e0 !important;
-}
-
-[data-bs-theme="dark"] .resultrow {
-  color: #c0c0c0;
-}
-
-[data-bs-theme="dark"] .resultrow.new {
-  color: #e0e0e0;
-}
-
-[data-bs-theme="dark"] .resultrow td {
-  color: #c0c0c0;
-}
-
-[data-bs-theme="dark"] .resultrow.new td {
-  color: #e0e0e0;
-}
-
-[data-bs-theme="dark"] .highlighted {
-  background-color: #2c5282 !important;
-}
-
-[data-bs-theme="dark"] .highlighted td {
-  background-color: #2c5282 !important;
-  color: #e0e0e0 !important;
-}
+[data-bs-theme="dark"] .text-bg-light { background-color: var(--bs-secondary-bg) !important; color: var(--bs-body-color) !important; }
+[data-bs-theme="dark"] .pane-upper-content, [data-bs-theme="dark"] #preview { border-color: var(--piler-border); }
+[data-bs-theme="dark"] .form-signin { background-color: var(--piler-surface); border-color: var(--piler-border); }
+[data-bs-theme="dark"] .highlighted { background-color: rgba(107,140,255,.22) !important; }
+[data-bs-theme="dark"] .highlighted td { background-color: rgba(107,140,255,.22) !important; color: var(--bs-body-color) !important; }
 
 /* Dark mode toggle button */
 #theme-toggle {
   cursor: pointer;
-  padding: 10px;
-  margin-left: 10px;
   background: transparent;
   border: none;
   color: inherit;
-  font-size: 20px;
+  font-size: 1.05rem;
+}
+
+/* Small screens: let wide data tables scroll inside their container instead of
+   stretching the page. This is the documented Bootstrap behaviour, applied
+   globally so no table has to opt in. */
+@media (max-width: 767.98px) {
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

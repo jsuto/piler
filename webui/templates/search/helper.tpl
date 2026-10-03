@@ -131,7 +131,7 @@
                 <a href="#" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteModal" title="<?php print $text_remove; ?>"><i class="bi bi-trash text-danger"></i></a>
             <?php } ?>
 
-                <input type="text" id="tag_value" name="tag_value" class="tagtext" aria-label="<?php print $text_tag_selected_messages; ?>" />
+                <input type="text" id="tag_value" name="tag_value" class="tagtext form-control form-control-sm" aria-label="<?php print $text_tag_selected_messages; ?>" />
                 <a href="#" class="btn btn-link" onclick="Piler.tag_search_results('<?php print $text_tagged; ?>');" title="<?php print $text_tag_selected_messages; ?>"><i class="bi bi-tags tag" title="Tag"></i></a>
 
           </div>

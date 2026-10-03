@@ -44,8 +44,8 @@
             </div>
           </div>
           <div class="col<?php if(!FULL_GUI) { ?>-2<?php } ?> me-0 pe-0">
-            <div class="d-flex align-items-center justify-content-start">
-              <button id="button_search" class="btn btn-large btn-danger btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search"></i><?php if(FULL_GUI) { print '&nbsp;' . $text_search; } ?></button>
+            <div class="d-flex align-items-center justify-content-start searchbuttons">
+              <button id="button_search" class="btn btn-large btn-success btn-search" onclick="Piler.expert(this); return false;"><i class="bi bi-search"></i><?php if(FULL_GUI) { print '&nbsp;' . $text_search; } ?></button>
               <?php if(FULL_GUI) { ?>
               <button id="button_expert" class="btn btn-large btn-secondary btn-search" data-bs-toggle="modal" data-bs-target="#advancedSearchModal"><?php print $text_advanced_search; ?></button>
 
