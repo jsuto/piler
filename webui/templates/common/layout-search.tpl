@@ -40,7 +40,7 @@
               <input type="hidden" name="order" id="order" value="0" />
               <input type="hidden" name="ref" id="ref" value="" />
               <input type="hidden" name="prefix" id="prefix" value="" />
-              <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" aria-label="<?php print $text_enter_search_terms; ?>" />
+              <input type="text" class="form-control" id="_search" name="_search" placeholder="<?php print $text_enter_search_terms; ?>" />
             </div>
           </div>
           <div class="col<?php if(!FULL_GUI) { ?>-2<?php } ?> me-0 pe-0">

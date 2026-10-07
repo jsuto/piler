@@ -1,41 +1,16 @@
-/* Piler colour tokens.
-   Brand/theme values live here so both the light and dark themes can share the
-   rest of the stylesheet. Dark mode is driven by Bootstrap 5.3's native
-   `data-bs-theme="dark"` attribute (set by assets/js/dark-mode.js). */
-:root {
-  --piler-link: #2e8bcc;
-  --piler-link-hover: #20608e;
-  --piler-navbar-bg: #2c5fc4;
-  --piler-navbar-fg: #ffffff;
-}
-
-[data-bs-theme="dark"] {
-  --bs-body-bg: #1a1a1a;
-  --bs-body-color: #e0e0e0;
-  --bs-border-color: #404040;
-  --bs-secondary-bg: #2a2a2a;
-  --bs-tertiary-bg: #2a2a2a;
-  --bs-emphasis-color: #ffffff;
-
-  --piler-link: #5fa3d8;
-  --piler-link-hover: #4a8fc2;
-  --piler-navbar-bg: #1e3a8a;
-  --piler-navbar-fg: #e0e0e0;
-}
-
 html,body{height:auto !important;height:100%;min-height:100%;}
-body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:var(--bs-body-color);background-color:var(--bs-body-bg);}
+body{margin:0;padding-top: 0px;font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:14px;line-height:25px;color:#333333;background-color:#ffffff;}
 body#loginpage{background-color:#fcfcfc;padding-top:40px;padding-bottom:40px;}
 
 #header { height: 45px; align-items: center; display: flex; justify-content: center; width: 100%; background-color:#fcfcfc; text-transform:lowercase; position: absolute;}
-#menu { background: var(--piler-navbar-bg); color: var(--piler-navbar-fg); font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase; position: fixed; top: 0; z-index: 1000;}
+#menu { background: #2c5fc4; color: #fcfcfc; font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase; position: fixed; top: 0; z-index: 1000;}
 
 .dropdown-menu {font-family:"Segoe UI","Segoe WP","Helvetica Neue",sans-serif;font-size:25px;font-weight:100; text-transform:lowercase;}
 .dropdown-menu li.dropdown-item:hover, a.dropdown-item:hover { background-color: #2c5fc4; color: #fcfcfc; text-decoration:none;}
 a.dropdown-item {font-weight:100; text-decoration:none;}
 
-.menulink{text-shadow:0 0px 0 rgba(0, 0, 0, 0);padding-bottom:10px;margin-left:15px;padding-top:10px;color:var(--piler-navbar-fg);font-size:24px;}
-.menulink:hover{color:var(--piler-navbar-fg);text-decoration:none;background: #555;}
+.menulink{text-shadow:0 0px 0 rgba(0, 0, 0, 0);padding-bottom:10px;margin-left:15px;padding-top:10px;color:#ffffff;font-size:24px;}
+.menulink:hover{color:#ffffff;text-decoration:none;background: #555;}
 
 
 
@@ -70,8 +45,8 @@ input[type=text]{-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
 .resultrow{font-style:italic;cursor:pointer;}
 .resultrow.new{font-style:normal;}
 
-a{color:var(--piler-link);text-decoration:none;}
-a:hover{color:var(--piler-link-hover);text-decoration:underline;}
+a{color:#2e8bcc;text-decoration:none;}
+a:hover{color:#20608e;text-decoration:underline;}
 a.xxx{color:#aaa;text-decoration:underline;}
 a.xxx:hover{color:#aaa;text-decoration:underline;}
 
@@ -107,8 +82,6 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
 
 .branding_logo {max-height:25px;}
 
-.health-refresh { height: 40px; background: #d9edf7; color: #3a87ad; }
-
 /* Highlighted row (selected message) */
 .highlighted {
   background-color: #d1ecf1 !important;
@@ -118,140 +91,250 @@ th.auto-width, td.auto-width { width: 1%; white-space: nowrap; }
   background-color: #d1ecf1 !important;
 }
 
-/* Dark mode.
-   Bootstrap 5.3 themes its own components from the variables above, so we only
-   need to handle surfaces and custom classes it knows nothing about. */
-[data-bs-theme="dark"] body#loginpage {
+/* Dark mode styles */
+[data-theme="dark"] {
+  --bs-body-bg: #1a1a1a;
+  --bs-body-color: #e0e0e0;
+  --bs-border-color: #404040;
+}
+
+[data-theme="dark"] body {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] body#loginpage {
   background-color: #1a1a1a;
 }
 
-[data-bs-theme="dark"] #header {
+[data-theme="dark"] #header {
   background-color: #1a1a1a;
 }
 
-[data-bs-theme="dark"] .menulink:hover {
-  background: #404040;
+[data-theme="dark"] #menu {
+  background: #1e3a8a;
+  color: #e0e0e0;
 }
 
-/* Bootstrap does not darken the .table-secondary contextual variant, which
-   leaves the search/audit/accounting headers light-on-light in dark mode.
-   Theme the variant's cells directly. */
-[data-bs-theme="dark"] .table-secondary th,
-[data-bs-theme="dark"] .table-secondary td {
-  color: var(--bs-body-color);
-  background-color: var(--bs-tertiary-bg);
-  border-color: var(--bs-border-color);
-}
-
-[data-bs-theme="dark"] .resizer {
-  background: #404040;
-}
-
-[data-bs-theme="dark"] .pane-upper-content {
+[data-theme="dark"] .dropdown-menu {
+  background-color: #2a2a2a;
   border-color: #404040;
 }
 
-[data-bs-theme="dark"] .pane-upper-fixed {
+[data-theme="dark"] .dropdown-menu li.dropdown-item:hover,
+[data-theme="dark"] a.dropdown-item:hover {
+  background-color: #1e3a8a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] a.dropdown-item {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .menulink {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .menulink:hover {
+  color: #e0e0e0;
+  background: #404040;
+}
+
+[data-theme="dark"] .pane {
+  background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .resizer {
+  background: #404040;
+}
+
+[data-theme="dark"] .pane-upper-content {
+  border-color: #404040;
+  background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .pane-upper-fixed {
   background: #2a2a2a;
   border-top-color: #404040;
 }
 
-[data-bs-theme="dark"] #preview {
+[data-theme="dark"] #preview {
   border-color: #404040;
+  background-color: #1a1a1a;
 }
 
-[data-bs-theme="dark"] .functionbox {
+[data-theme="dark"] .functionbox {
   border-left-color: #404040;
 }
 
-[data-bs-theme="dark"] .messageheader {
+[data-theme="dark"] .messageheader {
   background-color: #2a2a2a;
   border-bottom-color: #404040;
 }
 
-[data-bs-theme="dark"] .messagecontents {
+[data-theme="dark"] .messagecontents {
   background-color: #1a1a1a;
 }
 
-[data-bs-theme="dark"] .form-signin {
+[data-theme="dark"] .form-signin {
   background-color: #2a2a2a;
   border-color: #404040;
 }
 
-[data-bs-theme="dark"] .tagtext {
+[data-theme="dark"] a {
+  color: #5fa3d8;
+}
+
+[data-theme="dark"] a:hover {
+  color: #4a8fc2;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+[data-theme="dark"] .form-control {
   background-color: #2a2a2a;
   border-color: #404040;
   color: #e0e0e0;
 }
 
-[data-bs-theme="dark"] table th,
-[data-bs-theme="dark"] table td {
+[data-theme="dark"] .form-control:focus {
+  background-color: #2a2a2a;
+  border-color: #5fa3d8;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #2a2a2a;
+  border-color: #404040;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] input[type="text"]:focus,
+[data-theme="dark"] input[type="email"]:focus,
+[data-theme="dark"] input[type="password"]:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  background-color: #2a2a2a;
+  border-color: #5fa3d8;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .tagtext {
+  background-color: #2a2a2a;
+  border-color: #404040;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] table th,
+[data-theme="dark"] table td {
   border-color: #404040;
 }
 
-[data-bs-theme="dark"] .tsa {
+[data-theme="dark"] .tsa {
   border-top-color: #404040;
   border-bottom-color: #404040;
 }
 
-/* Bootstrap does not provide dark alert variants; map each variant onto its
-   dark "subtle" palette so alerts stop flashing light strips on dark pages. */
-[data-bs-theme="dark"] .alert {
-  --bs-alert-bg: var(--bs-secondary-bg);
-  --bs-alert-color: var(--bs-body-color);
-  --bs-alert-border-color: var(--bs-border-color);
+[data-theme="dark"] .alert {
+  background-color: #2a2a2a;
+  border-color: #404040;
+  color: #e0e0e0;
 }
 
-[data-bs-theme="dark"] .alert-info {
-  --bs-alert-bg: var(--bs-info-bg-subtle);
-  --bs-alert-color: var(--bs-info-text-emphasis);
-  --bs-alert-border-color: var(--bs-info-border-subtle);
+[data-theme="dark"] .modal-content {
+  background-color: #2a2a2a;
+  border-color: #404040;
 }
 
-[data-bs-theme="dark"] .alert-success {
-  --bs-alert-bg: var(--bs-success-bg-subtle);
-  --bs-alert-color: var(--bs-success-text-emphasis);
-  --bs-alert-border-color: var(--bs-success-border-subtle);
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  border-color: #404040;
 }
 
-[data-bs-theme="dark"] .alert-danger,
-[data-bs-theme="dark"] .alert-error {
-  --bs-alert-bg: var(--bs-danger-bg-subtle);
-  --bs-alert-color: var(--bs-danger-text-emphasis);
-  --bs-alert-border-color: var(--bs-danger-border-subtle);
+[data-theme="dark"] .toast {
+  background-color: #2a2a2a;
+  border-color: #404040;
 }
 
-[data-bs-theme="dark"] .health-refresh {
-  background: var(--bs-info-bg-subtle);
-  color: var(--bs-info-text-emphasis);
+[data-theme="dark"] .toast-header {
+  background-color: #333333;
+  border-bottom-color: #404040;
+  color: #e0e0e0;
 }
 
-[data-bs-theme="dark"] .text-bg-light {
+[data-theme="dark"] .toast-body {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .text-body-secondary {
+  color: #a0a0a0 !important;
+}
+
+[data-theme="dark"] .text-bg-light {
   background-color: #2a2a2a !important;
   color: #e0e0e0 !important;
 }
 
-[data-bs-theme="dark"] .resultrow {
+[data-theme="dark"] .resultrow {
   color: #c0c0c0;
 }
 
-[data-bs-theme="dark"] .resultrow.new {
+[data-theme="dark"] .resultrow.new {
   color: #e0e0e0;
 }
 
-[data-bs-theme="dark"] .resultrow td {
+[data-theme="dark"] .resultrow td {
   color: #c0c0c0;
 }
 
-[data-bs-theme="dark"] .resultrow.new td {
+[data-theme="dark"] .resultrow.new td {
   color: #e0e0e0;
 }
 
-[data-bs-theme="dark"] .highlighted {
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(even) {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .table-secondary {
+  background-color: #2a2a2a !important;
+  border-color: #404040;
+}
+
+[data-theme="dark"] .table {
+  color: #e0e0e0;
+  border-color: #404040;
+}
+
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .form-label {
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .highlighted {
   background-color: #2c5282 !important;
 }
 
-[data-bs-theme="dark"] .highlighted td {
+[data-theme="dark"] .highlighted td {
   background-color: #2c5282 !important;
   color: #e0e0e0 !important;
 }

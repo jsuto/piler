@@ -4,8 +4,8 @@
          <div class="col">
           <div class="d-flex align-items-center">
 
-          <?php if(FULL_GUI && ($settings['branding_logo'] || $settings['branding_url'])) { ?>
-            <a class="menulink"<?php if($settings['branding_url']) { ?> target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print ($settings['branding_text'] ? $settings['branding_text'] : SITE_NAME); ?>"<?php } ?>><?php if($settings['branding_logo']) { ?><img class="branding_logo" src="<?php print $settings['branding_logo']; ?>" alt="<?php print ($settings['branding_text'] ? $settings['branding_text'] : SITE_NAME); ?>"/><?php } ?></a>
+          <?php if(FULL_GUI) { ?>
+           <a class="menulink"<?php if($settings['branding_url']) { ?> target="_blank" href="<?php print $settings['branding_url']; ?>" title="<?php print $settings['branding_text']; ?>"<?php } ?>><?php if($settings['branding_logo']) { ?><img class="branding_logo" src="<?php print $settings['branding_logo']; ?>" alt="<?php print $settings['branding_text']; ?>"/><?php } ?></a>
           <?php } ?>
 
         <?php if($admin_user) { ?>
@@ -59,7 +59,7 @@
            <button id="theme-toggle" class="menulink" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
              <i class="bi bi-moon-fill" id="theme-icon"></i>
            </button>
-           <a href="<?php print PATH_PREFIX; ?>logout.php" class="menulink" title="<?php print $text_logout; ?>" aria-label="<?php print $text_logout; ?>"><i class="bi bi-door-open"></i></a>
+           <a href="<?php print PATH_PREFIX; ?>logout.php" class="menulink" title="<?php print $text_logout; ?>"><i class="bi bi-door-open"></i></a>
           </div>
          </div>
        </div>

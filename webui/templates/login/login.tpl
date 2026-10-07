@@ -35,12 +35,12 @@
             <input type="hidden" name="relocation" value="<?php if(isset($_GET['route']) && !preg_match("/^login/", $_GET['route']) ) { if(isset($_SERVER['REDIRECT_URL'])) { print $_SERVER['REDIRECT_URL']; } else { print $_SERVER['QUERY_STRING']; } } ?>" />
 
             <div class="form-floating">
-              <input name="username" type="email" class="form-control" id="username" placeholder="name@example.com" autocomplete="username" required autofocus>
-              <label for="username"><?php print $text_email; ?></label>
+              <input name="username" type="email" class="form-control" id="username" placeholder="name@example.com" required autofocus>
+              <label for="floatingInput"><?php print $text_email; ?></label>
             </div>
             <div class="form-floating">
-              <input name="password" type="password" class="form-control" id="password" placeholder="Password" autocomplete="current-password">
-              <label for="password"><?php print $text_password; ?></label>
+              <input name="password" type="password" class="form-control" id="password" placeholder="Password">
+              <label for="floatingPassword"><?php print $text_password; ?></label>
             </div>
 
         <?php if(CAPTCHA_FAILED_LOGIN_COUNT > 0 && $failed_login_count > CAPTCHA_FAILED_LOGIN_COUNT) { ?>

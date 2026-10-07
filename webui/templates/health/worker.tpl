@@ -1,6 +1,6 @@
 <div class="container text-start">
   <div class="row">
-    <div class="col mb-5 d-flex align-items-center health-refresh">
+    <div class="col mb-5 d-flex align-items-center" style="background: #d9edf7; color: #3a87ad; height: 40px;">
       <strong><?php print $text_refresh_period; ?>:</strong>&nbsp;<?php print HEALTH_REFRESH; ?> sec
     </div>
   </div>
