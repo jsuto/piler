@@ -18,6 +18,14 @@ OPTIONS=""
 PID_FILE="$(SBINDIR/pilerconf $OPTIONS -q pidfile | cut -f2 -d=)"
 PID_NUMBER="$(test -f "$PID_FILE" && cat "$PID_FILE")"
 PILER_SMTP_PID="$(pgrep piler-smtp)"
+WORK_DIR="$(SBINDIR/pilerconf $OPTIONS -q workdir | cut -f2 -d=)"
+STOP_DRAIN_TIMEOUT="${PILER_STOP_DRAIN_TIMEOUT:-300}"
+STOP_DRAIN_INTERVAL="${PILER_STOP_DRAIN_INTERVAL:-2}"
+STOP_DRAIN_ENABLED="${PILER_STOP_DRAIN:-1}"
+
+spool_count() {
+   find "${WORK_DIR:-/var/piler/tmp}" -type f 2>/dev/null | wc -l
+}
 
 start() {
    echo "starting piler-smtp . . . "
@@ -28,9 +36,51 @@ start() {
 }
 
 stop() {
+   if [ "$STOP_DRAIN_ENABLED" = "1" ]; then drain_stop "$STOP_DRAIN_TIMEOUT"; return; fi
+
    if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill "$PID_NUMBER"; fi
 
    if [ "$PILER_SMTP_PID" != "" ]; then echo "stopping piler-smtp"; kill "$PILER_SMTP_PID"; fi
+}
+
+force_stop() {
+   if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill "$PID_NUMBER"; fi
+
+   if [ "$PILER_SMTP_PID" != "" ]; then echo "stopping piler-smtp"; kill "$PILER_SMTP_PID"; fi
+}
+
+drain_stop() {
+   timeout="${1:-$STOP_DRAIN_TIMEOUT}"
+   elapsed=0
+
+   if [ "$PILER_SMTP_PID" != "" ]; then
+      echo "stopping piler-smtp"
+      kill "$PILER_SMTP_PID"
+   fi
+
+   initial_count="$(spool_count)"
+   echo "piler backlog drain started: initial_files=${initial_count}, timeout=${timeout}s"
+
+   while [ "$(spool_count)" -gt 0 ] && [ "$elapsed" -lt "$timeout" ]; do
+      if [ "$PID_NUMBER" = "" ] || [ ! -f "/proc/${PID_NUMBER}/status" ]; then
+         break
+      fi
+
+      echo "waiting for piler backlog to drain: $(spool_count) files remaining"
+      sleep "$STOP_DRAIN_INTERVAL"
+      elapsed=$((elapsed + STOP_DRAIN_INTERVAL))
+   done
+
+   remaining_count="$(spool_count)"
+   echo "piler backlog drain finished: initial_files=${initial_count}, remaining_files=${remaining_count}, elapsed=${elapsed}s"
+
+   if [ "$remaining_count" -gt 0 ]; then
+      echo "piler backlog still has ${remaining_count} files after ${elapsed}s, stopping anyway"
+   else
+      echo "piler backlog drained"
+   fi
+
+   if [ "$PID_NUMBER" != "" ]; then echo "stopping piler"; kill "$PID_NUMBER"; fi
 }
 
 check_status(){
@@ -56,6 +106,14 @@ case "$1" in
                 stop;
         ;;
 
+        force-stop)
+                force_stop;
+        ;;
+
+        drain-stop)
+                drain_stop "${2:-$STOP_DRAIN_TIMEOUT}";
+        ;;
+
         status)
                 if check_status; then
                    exit 0
@@ -76,6 +134,6 @@ case "$1" in
         ;;
 
         *)
-                echo "Usage: $0 start|stop|restart|reload|status"
+                echo "Usage: $0 start|stop|force-stop|drain-stop|restart|reload|status"
         ;;
 esac
