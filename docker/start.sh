@@ -13,6 +13,7 @@ SPHINX_CONF="${CONFIG_DIR}/manticore.conf"
 CONFIG_SITE_PHP="${CONFIG_DIR}/config-site.php"
 PILER_MY_CNF="${CONFIG_DIR}/.my.cnf"
 RT="${RT:-0}"
+DEDUPLICATE_MESSAGES_BY_RECIPIENT="${DEDUPLICATE_MESSAGES_BY_RECIPIENT:-}"
 MEMCACHED_HOSTNAME="${MEMCACHED_HOSTNAME:-memcached}"
 MANTICORE_HOSTNAME="${MANTICORE_HOSTNAME:-manticore}"
 TMP_CONF_DIR="/tmp/piler-conf"
@@ -115,6 +116,14 @@ fix_configs() {
       -e "s/sphxhost=.*/sphxhost=${MANTICORE_HOSTNAME}/g" \
       -e "s/rtindex=.*/rtindex=${RT}/g" \
       -e "s/mysqlsocket=.*/mysqlsocket=/g" "$PILER_CONF"
+
+   if [[ -n "$DEDUPLICATE_MESSAGES_BY_RECIPIENT" ]]; then
+      if grep -q "^deduplicate_messages_by_recipient=" "$PILER_CONF"; then
+         sed -i "s/deduplicate_messages_by_recipient=.*/deduplicate_messages_by_recipient=${DEDUPLICATE_MESSAGES_BY_RECIPIENT}/g" "$PILER_CONF"
+      else
+         echo "deduplicate_messages_by_recipient=${DEDUPLICATE_MESSAGES_BY_RECIPIENT}" >> "$PILER_CONF"
+      fi
+   fi
 
    give_it_to_piler "$PILER_CONF"
 

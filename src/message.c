@@ -160,6 +160,104 @@ uint64 get_metaid_by_messageid(struct session_data *sdata, char *message_id, cha
 }
 
 
+int recipient_sets_are_equal(char expected[MAX_RCPT_TO][SMALLBUFSIZE], int n_expected, char actual[MAX_RCPT_TO][SMALLBUFSIZE], int n_actual){
+   int i;
+
+   if(n_expected != n_actual) return 0;
+
+   for(i=0; i<n_expected; i++){
+      if(strcmp(expected[i], actual[i]) != 0) return 0;
+   }
+
+   return 1;
+}
+
+
+int get_recipients_by_metaid(struct session_data *sdata, uint64 id, char recipients[MAX_RCPT_TO][SMALLBUFSIZE]){
+   int n=0;
+   char recipient[SMALLBUFSIZE];
+   struct sql sql;
+
+   memset(recipients, 0, MAX_RCPT_TO*SMALLBUFSIZE);
+   memset(recipient, 0, sizeof(recipient));
+
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_RCPTS_BY_META_ID) == ERR) return n;
+
+   p_bind_init(&sql);
+   sql.sql[sql.pos] = (char *)&id; sql.type[sql.pos] = TYPE_LONGLONG; sql.pos++;
+
+   if(p_exec_stmt(sdata, &sql) == OK){
+      p_bind_init(&sql);
+
+      sql.sql[sql.pos] = recipient; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = SMALLBUFSIZE-1; sql.pos++;
+
+      p_store_results(&sql);
+
+      while(p_fetch_results(&sql) == OK){
+         if(recipient[0]){
+            if(n == 0 || strcmp(recipients[n-1], recipient) != 0){
+               snprintf(recipients[n], SMALLBUFSIZE-1, "%s", recipient);
+               n++;
+               if(n >= MAX_RCPT_TO) break;
+            }
+         }
+
+         memset(recipient, 0, sizeof(recipient));
+      }
+
+      p_free_results(&sql);
+   }
+
+   close_prepared_statement(&sql);
+
+   return n;
+}
+
+
+uint64 get_metaid_by_messageid_and_sender_and_recipients(struct session_data *sdata, char *message_id, char *sender, char recipients[MAX_RCPT_TO][SMALLBUFSIZE], int n_recipients, char *piler_id){
+   uint64 id=0, candidate_id=0;
+   char candidate_piler_id[SMALLBUFSIZE];
+   char stored_recipients[MAX_RCPT_TO][SMALLBUFSIZE];
+   struct sql sql;
+
+   memset(candidate_piler_id, 0, sizeof(candidate_piler_id));
+
+   if(prepare_sql_statement(sdata, &sql, SQL_PREPARED_STMT_GET_META_IDS_BY_MESSAGE_ID_AND_SENDER) == ERR) return id;
+
+   p_bind_init(&sql);
+   sql.sql[sql.pos] = message_id; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+   sql.sql[sql.pos] = sender; sql.type[sql.pos] = TYPE_STRING; sql.pos++;
+
+   if(p_exec_stmt(sdata, &sql) == OK){
+      p_bind_init(&sql);
+
+      sql.sql[sql.pos] = (char *)&candidate_id; sql.type[sql.pos] = TYPE_LONGLONG; sql.len[sql.pos] = sizeof(uint64); sql.pos++;
+      sql.sql[sql.pos] = candidate_piler_id; sql.type[sql.pos] = TYPE_STRING; sql.len[sql.pos] = RND_STR_LEN; sql.pos++;
+
+      p_store_results(&sql);
+
+      while(p_fetch_results(&sql) == OK){
+         int n_stored_recipients = get_recipients_by_metaid(sdata, candidate_id, stored_recipients);
+
+         if(recipient_sets_are_equal(recipients, n_recipients, stored_recipients, n_stored_recipients) == 1){
+            id = candidate_id;
+            snprintf(piler_id, RND_STR_LEN, "%s", candidate_piler_id);
+            break;
+         }
+
+         candidate_id = 0;
+         memset(candidate_piler_id, 0, sizeof(candidate_piler_id));
+      }
+
+      p_free_results(&sql);
+   }
+
+   close_prepared_statement(&sql);
+
+   return id;
+}
+
+
 int store_recipients(struct session_data *sdata, char *to, uint64 id, struct config *cfg){
    int rc=OK, n=0;
    char *p, *q, puf[SMALLBUFSIZE];
@@ -395,12 +493,32 @@ void remove_stripped_attachments(struct parser_state *state){
 
 
 int is_duplicated_message(struct session_data *sdata, struct parser_state *state, struct data *data, struct config *cfg){
-   int fd;
+   int fd, i, n_recipients=0, n_senders=0;
    char piler_id[SMALLBUFSIZE];
+   char senders[MAX_RCPT_TO][SMALLBUFSIZE];
+   char recipients[MAX_RCPT_TO][SMALLBUFSIZE];
 
    /* discard if existing message_id */
 
-   sdata->duplicate_id = get_metaid_by_messageid(sdata, state->message_id, piler_id);
+   sdata->duplicate_id = 0;
+
+   if(cfg->deduplicate_messages_by_recipient == 1){
+      n_senders = collect_dedup_addresses(state->b_sender_domain[0] ? state->b_sender : state->b_from, senders);
+      n_recipients = collect_dedup_recipients(state->b_to, recipients);
+
+      if(n_senders > 0 && n_recipients > 0){
+         for(i=0; i<n_senders; i++){
+            sdata->duplicate_id = get_metaid_by_messageid_and_sender_and_recipients(sdata, state->message_id, senders[i], recipients, n_recipients, piler_id);
+            if(sdata->duplicate_id > 0) break;
+         }
+      }
+      else {
+         sdata->duplicate_id = get_metaid_by_messageid(sdata, state->message_id, piler_id);
+      }
+   }
+   else {
+      sdata->duplicate_id = get_metaid_by_messageid(sdata, state->message_id, piler_id);
+   }
 
    if(sdata->duplicate_id > 0){
       remove_stripped_attachments(state);

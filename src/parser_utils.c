@@ -19,6 +19,11 @@
 #include "trans.h"
 
 
+static int cmp_dedup_recipient(const void *a, const void *b){
+   return strcmp((const char *)a, (const char *)b);
+}
+
+
 void init_state(struct parser_state *state){
    int i;
 
@@ -734,6 +739,50 @@ int does_it_seem_like_an_email_address(char *email){
    if(!strchr(p+1, '.')) return 0;
 
    return 1;
+}
+
+
+int collect_dedup_addresses(const char *addresses, char results[MAX_RCPT_TO][SMALLBUFSIZE]){
+   int i, n=0;
+   char *p, buf[MAXBUFSIZE], puf[SMALLBUFSIZE];
+
+   if(addresses == NULL || addresses[0] == '\0') return 0;
+
+   memset(results, 0, MAX_RCPT_TO*SMALLBUFSIZE);
+   snprintf(buf, sizeof(buf)-1, "%s", addresses);
+
+   p = buf;
+   do {
+      p = split_str(p, " ", puf, sizeof(puf)-1);
+      trimBuffer(puf);
+
+      if(does_it_seem_like_an_email_address(puf) == 1){
+         int found = 0;
+
+         for(i=0; i<n; i++){
+            if(strcmp(results[i], puf) == 0){
+               found = 1;
+               break;
+            }
+         }
+
+         if(found == 0){
+            snprintf(results[n], SMALLBUFSIZE-1, "%s", puf);
+            n++;
+            if(n >= MAX_RCPT_TO) break;
+         }
+      }
+
+   } while(p);
+
+   qsort(results, n, SMALLBUFSIZE, cmp_dedup_recipient);
+
+   return n;
+}
+
+
+int collect_dedup_recipients(const char *to, char recipients[MAX_RCPT_TO][SMALLBUFSIZE]){
+   return collect_dedup_addresses(to, recipients);
 }
 
 
