@@ -21,7 +21,9 @@
 
 <?php include_once DIR_BASE . 'templates/common/common.tpl'; ?>
 
-<?php print $menu; ?>
+<div id="menu">
+    <?php print $menu; ?>
+</div>
 
 <div class="searchcontainer text-center">
 

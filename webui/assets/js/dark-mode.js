@@ -31,12 +31,10 @@
    * Apply theme to document
    */
   function applyTheme(theme) {
-    // Bootstrap 5.3 native colour mode. Bootstrap themes every component from
-    // this attribute, so piler.css only needs the brand-specific overrides.
     if (theme === THEME_DARK) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
     } else {
-      document.documentElement.removeAttribute('data-bs-theme');
+      document.documentElement.removeAttribute('data-theme');
     }
 
     // Update icon
