@@ -94,6 +94,10 @@ install-piler:
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) reindex $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilertest $(DESTDIR)$(bindir)
 	$(INSTALL) -m 6755 -o $(RUNNING_USER) -g $(RUNNING_GROUP) pilerstats $(DESTDIR)$(bindir)
+	chmod 6755 $(DESTDIR)$(bindir)/pilerget $(DESTDIR)$(bindir)/pileraget \
+	           $(DESTDIR)$(bindir)/pilerimport $(DESTDIR)$(bindir)/pilerexport \
+	           $(DESTDIR)$(bindir)/reindex $(DESTDIR)$(bindir)/pilertest \
+	           $(DESTDIR)$(bindir)/pilerstats
 
 clean:
 	rm -f *.o *.a libpiler.so* piler pilerconf pilerget pileraget pilerimport pilerexport pilertest pilerstats reindex piler-smtp
