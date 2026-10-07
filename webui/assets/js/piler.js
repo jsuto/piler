@@ -651,11 +651,13 @@ let Piler =
         Piler.Searches.Expert = {
             search: $.trim($('input#_search').val()),
             searchtype: 'expert',
+            message_id: $.trim($('#message_id').val()),
             ref: $.trim($('#ref').val()),
             folders: Piler.folders,
             extra_folders: Piler.extra_folders
         }
 
+        $('#message_id').val('');
         $('#ref').val('');
 
         Piler.load_search_results();
@@ -692,6 +694,7 @@ let Piler =
             from : $.trim($('input#xfrom', z).val()),
             to : $.trim($('input#xto', z).val()),
             subject : $.trim($('input#xsubject', z).val()),
+            message_id : $.trim($('input#xmessage_id', z).val()),
             body : $.trim($('input#xbody', z).val()),
             tag : $.trim($('input#xtag', z).val()),
             note : $.trim($('input#xnote', z).val()),
@@ -704,6 +707,7 @@ let Piler =
         }
 
         $('input#_search').val('');
+        $('#message_id').val('');
 
         Piler.modal('advancedSearchModal');
 
@@ -732,6 +736,7 @@ let Piler =
         Piler.log("[cancel]")//, a );
 
         $('#_search').val('');
+        $('#message_id').val('');
         $('#ref').val( '' );
 
         Piler.Searches.Expert = {};
@@ -739,6 +744,7 @@ let Piler =
         $('input#xfrom').val('');
         $('input#xto').val('');
         $('input#xsubject').val('');
+        $('input#xmessage_id').val('');
         $('input#xbody').val('');
         $('input#xtag').val('');
         $('input#xnote').val('');

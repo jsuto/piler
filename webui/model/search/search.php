@@ -37,7 +37,10 @@ class ModelSearchSearch extends Model {
       // TODO: check if data is cached
 
 
-      if(isset($data['ref']) && $data['ref']){
+      if(isset($data['message_id']) && $data['message_id']){
+         list ($total_hits, $ids) = $this->query_all_possible_IDs_by_message_id($data['message_id'], $page);
+      }
+      else if(isset($data['ref']) && $data['ref']){
          list ($total_hits, $ids) = $this->query_all_possible_IDs_by_reference($data['ref'], $page);
       }
       else {
@@ -318,6 +321,69 @@ class ModelSearchSearch extends Model {
    }
 
 
+   private function query_all_possible_IDs_by_message_id($message_id = '', $page = 0) {
+      $ids = array();
+      $offset = 0;
+
+      $message_ids = $this->get_message_id_search_variants($message_id);
+
+      if(count($message_ids) == 0) { return array(0, $ids); }
+
+      $session = Registry::get('session');
+
+      $pagelen = get_page_length();
+      $offset = $page * $pagelen;
+
+      $q = get_q_string($message_ids);
+
+      $query = $this->db->query("SELECT id FROM " . TABLE_META . " WHERE message_id IN ($q) ORDER BY id DESC LIMIT $offset,$pagelen", $message_ids);
+
+      foreach($query->rows as $q) {
+         if($this->check_your_permission_by_id($q['id'])) {
+            array_push($ids, $q['id']);
+         }
+      }
+
+      if(ENABLE_FOLDER_RESTRICTIONS == 1 && count($ids) > 0) {
+         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $ids) . ")");
+         $ids = array();
+         foreach($query->rows as $q) {
+            if(isset($q['folder']) && in_array($q['folder'], $session->get("folders"))) { array_push($ids, $q['id']); }
+         }
+      }
+
+      $total_found = count($ids);
+
+      if($total_found >= $pagelen) {
+         $query = $this->db->query("SELECT count(*) AS num FROM " . TABLE_META . " WHERE message_id IN ($q)", $message_ids);
+         $total_found = $query->row['num'];
+      }
+
+      return array($total_found, $ids);
+   }
+
+
+   public function get_message_id_search_variants($message_id = '') {
+      $variants = array();
+
+      $message_id = trim($message_id);
+
+      if($message_id == '') { return $variants; }
+
+      array_push($variants, $message_id);
+
+      if($message_id[0] == '<' && substr($message_id, -1) == '>') {
+         $unwrapped = substr($message_id, 1, strlen($message_id)-2);
+         if($unwrapped) { array_push($variants, $unwrapped); }
+      }
+      else {
+         array_push($variants, '<' . $message_id . '>');
+      }
+
+      return array_values(array_unique($variants));
+   }
+
+
    public function preprocess_post_expert_request($data = array()) {
       $token = 'match';
       $ndate = 0;
@@ -331,6 +397,7 @@ class ModelSearchSearch extends Model {
                     'attachment_type' => '',
                     'tag'             => '',
                     'note'            => '',
+                    'message_id'      => '',
                     'ref'             => '',
                     'folders'         => '',
                     'extra_folders'   => '',
@@ -362,6 +429,8 @@ class ModelSearchSearch extends Model {
          else if($v == 'direction:' || $v == 'd:') { $token = 'direction'; continue; }
          else if($v == 'attachment:' || $v == 'a:') { $token = 'match'; $a['match'][] = '@attachment_types'; continue; }
 
+         else if($v == 'message-id:' || $v == 'message_id:') { $token = 'message_id'; continue; }
+
          else if(in_array($v, ['size:', 'date1:', 'date2:', 'tag:', 'note:', 'ref:', 'id:', 'raw:'])) {
             $token = substr($v, 0, strlen($v)-1); continue;
          }
@@ -374,7 +443,7 @@ class ModelSearchSearch extends Model {
          }
 
          if($token == 'match') { $a['match'][] = $v; }
-         else if(in_array($token, ['date1', 'date2', 'ref', 'tag', 'note', 'id', 'raw'])) { $a[$token] .= ' ' . $v; }
+         else if(in_array($token, ['date1', 'date2', 'message_id', 'ref', 'tag', 'note', 'id', 'raw'])) { $a[$token] .= ' ' . $v; }
 
          else if($token == 'direction') {
             if($v == 'inbound') { $a['direction'] = "0"; }

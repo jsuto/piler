@@ -11,6 +11,7 @@ class ControllerSearchHelper extends Controller {
                     'attachment_type' => '',
                     'tag'             => '',
                     'note'            => '',
+                    'message_id'      => '',
                     'ref'             => '',
                     'folders'         => '',
                     'extra_folders'   => '',
@@ -46,7 +47,7 @@ class ControllerSearchHelper extends Controller {
 
       if($this->request->post['searchtype'] == 'expert'){
 
-         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|d|size|date1|date2|attachment|a|tag|note|id|raw)\:/", $this->request->post['search'])) {
+         if(isset($this->request->post['search']) && preg_match("/(from|to|subject|body|direction|d|size|date1|date2|attachment|a|tag|note|message-id|message_id|ref|id|raw)\:/", $this->request->post['search'])) {
             $this->a = $this->model_search_search->preprocess_post_expert_request($this->request->post);
          }
          else {
@@ -101,6 +102,7 @@ class ControllerSearchHelper extends Controller {
 
       if(isset($this->request->post['tag'])) { $this->a['tag'] = $this->request->post['tag']; }
       if(isset($this->request->post['note'])) { $this->a['note'] = $this->request->post['note']; }
+      if(isset($this->request->post['message_id']) && $this->request->post['message_id']) { $this->a['message_id'] = $this->request->post['message_id']; }
       if(isset($this->request->post['attachment_type'])) { $this->a['attachment_type'] = $this->request->post['attachment_type']; }
 
       if(isset($this->request->post['date1'])) { $this->a['date1'] = $this->request->post['date1']; }
@@ -117,6 +119,7 @@ class ControllerSearchHelper extends Controller {
 
 
    private function fixup_post_request() {
+      if(isset($this->request->post['message_id']) && $this->request->post['message_id']) { $this->a['message_id'] = $this->request->post['message_id']; }
       if(isset($this->request->post['ref'])) { $this->a['ref'] = $this->request->post['ref']; }
       if(isset($this->request->post['folders'])) { $this->a['folders'] = $this->request->post['folders']; }
       if(isset($this->request->post['extra_folders'])) { $this->a['extra_folders'] = $this->request->post['extra_folders']; }
