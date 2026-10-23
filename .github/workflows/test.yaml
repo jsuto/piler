@@ -48,8 +48,7 @@ jobs:
       - get-version
 
     runs-on:
-      - self-hosted
-      - ARM64
+      - ubuntu-24.04-arm
 
     outputs:
       PACKAGE: ${{ steps.build-package.outputs.PACKAGE }}
@@ -64,14 +63,12 @@ jobs:
           ARCH: ${{ env.ARCH }}
           COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
           DISTRO: ${{ env.DISTRO }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
           PROJECT_ID: ${{ env.PROJECT_ID }}
           VERSION: ${{ needs.get-version.outputs.VERSION }}
 
   build-image:
     runs-on:
-      - self-hosted
-      - ARM64
+      - ubuntu-24.04-arm
 
     needs:
       - get-version
@@ -89,18 +86,20 @@ jobs:
       - name: Build image
         uses: ./.github/actions/build/image
         with:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}
-          LOAD: true
+          TAGS: ${{ env.IMAGE_NAME }}:${{ env.TEST_TAG }}
+          LOAD: 'true'
           PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.get-version.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.get-version.outputs.COMMIT_ID }}
           PLATFORMS: 'linux/arm64'
-          PUSH: false
+          PUSH: 'false'
 
+  # Requires the EML corpus in /opt/tests/eml and /usr/local/bin/smtp-source.py
+  # on the runner; neither is part of this repository. Set the RUN_E2E_TESTS
+  # repo variable to 'true' once a runner provides them.
   run-tests:
+    if: vars.RUN_E2E_TESTS == 'true'
+
     runs-on:
-      - self-hosted
-      - ARM64
+      - ubuntu-24.04-arm
 
     needs:
       - build-image

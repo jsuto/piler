@@ -1,0 +1,114 @@
+name: Build and publish image
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: piler
+  DISTRO: resolute
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  get-version:
+    runs-on:
+      - ubuntu-latest
+
+    outputs:
+      IMAGE_TAG: ${{ steps.get-version.outputs.IMAGE_TAG }}
+      COMMIT_ID: ${{ steps.get-version.outputs.COMMIT_ID }}
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+      IMAGE_NAME: ${{ steps.image-name.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            VERSION
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: Get version
+        id: get-version
+        uses: ./.github/actions/version
+
+      - name: Compute image name
+        id: image-name
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+  build-package-amd64:
+    needs:
+      - get-version
+
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build package
+        id: build-package
+        uses: ./.github/actions/build/package
+        with:
+          ARCH: amd64
+          COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
+          DISTRO: ${{ env.DISTRO }}
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          VERSION: ${{ needs.get-version.outputs.VERSION }}
+
+  build-package-arm64:
+    needs:
+      - get-version
+
+    runs-on:
+      - ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build package
+        id: build-package
+        uses: ./.github/actions/build/package
+        with:
+          ARCH: arm64
+          COMMIT_ID: ${{ needs.get-version.outputs.COMMIT_ID }}
+          DISTRO: ${{ env.DISTRO }}
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+          VERSION: ${{ needs.get-version.outputs.VERSION }}
+
+  build-image:
+    needs:
+      - get-version
+      - build-package-amd64
+      - build-package-arm64
+
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download packages
+        uses: actions/download-artifact@v8
+        with:
+          path: docker
+          merge-multiple: true
+
+      - name: Build image
+        uses: ./.github/actions/build/image
+        with:
+          REGISTRY: ghcr.io
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAGS: |
+            ${{ needs.get-version.outputs.IMAGE_NAME }}:${{ needs.get-version.outputs.IMAGE_TAG }}
+            ${{ needs.get-version.outputs.IMAGE_NAME }}:latest
+          LOAD: 'false'
+          PACKAGE: ${{ env.PROJECT_ID }}_${{ needs.get-version.outputs.VERSION }}-${{ env.DISTRO }}-${{ needs.get-version.outputs.COMMIT_ID }}
+          PLATFORMS: 'linux/amd64,linux/arm64'
+          PUSH: 'true'
