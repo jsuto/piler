@@ -274,7 +274,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
 
    if(take_into_pieces == 1){
-      if(state->message_state == MSG_BODY && state->fd != -1 && (state->has_to_dump_whole_body == 1 || is_substr_in_hash(state->boundaries, buf) == 0) ){
+      if(state->message_state == MSG_BODY && state->fd != -1 && (state->has_to_dump_whole_body == 1 || is_boundary_line(state->boundaries, buf) == 0) ){
          if(len + state->abufpos > abuffersize-1){
             flush_attachment_buffer(state, abuffer, abuffersize);
          }
@@ -623,7 +623,7 @@ int parse_line(char *buf, struct parser_state *state, struct session_data *sdata
 
    /* boundary check, and reset variables */
 
-   boundary_line = is_substr_in_hash(state->boundaries, buf);
+   boundary_line = is_boundary_line(state->boundaries, buf);
 
 
    if(!strstr(buf, "boundary=") && !strstr(buf, "boundary =") && boundary_line == 1){

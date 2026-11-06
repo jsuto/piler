@@ -73,6 +73,7 @@ void init_state(struct parser_state *state){
    state->received_header = 0;
 
    inithash(state->boundaries);
+   state->n_boundaries = 0;
    inithash(state->rcpt);
    inithash(state->rcpt_domain);
    inithash(state->journal_recipient);
@@ -322,11 +323,59 @@ int extract_boundary(char *p, struct parser_state *state){
       q = strrchr(p, '\n');
       if(q) *q = '\0';
 
-      addnode(state->boundaries, p);
+      // RFC 2046 doesn't allow trailing whitespace in a boundary
+      char *end = p + strlen(p);
+      while(end > p && isspace((unsigned char)*(end-1))) end--;
+      char saved = *end;
+      *end = '\0';
+
+      // Real messages have only a handful of nesting levels. Capping the
+      // number of boundaries keeps a maliciously deep message from making
+      // the hash chains (and thus the per line lookups) arbitrarily long.
+      if(*p && state->n_boundaries < MAX_BOUNDARIES){
+         state->n_boundaries += addnode(state->boundaries, p);
+      }
+
+      *end = saved;
 
       if(q2) *q2 = ';';
 
       return 1;
+   }
+
+   return 0;
+}
+
+
+/*
+ * Check if the line is a boundary delimiter, ie. "--" + boundary,
+ * optionally followed by "--" (closing delimiter) and whitespace.
+ * It's a single hash lookup, so the cost doesn't grow with the number
+ * of boundaries seen in the message (unlike is_substr_in_hash()).
+ */
+
+int is_boundary_line(struct node *xhash[], char *s){
+   char token[SMALLBUFSIZE];
+   size_t len;
+
+   if(s[0] != '-' || s[1] != '-') return 0;
+
+   s += 2;
+   len = strlen(s);
+
+   while(len > 0 && isspace((unsigned char)s[len-1])) len--;
+
+   if(len == 0 || len >= sizeof(token)) return 0;
+
+   memcpy(token, s, len);
+   token[len] = '\0';
+
+   if(findnode(xhash, token)) return 1;
+
+   // closing delimiter: "--" + boundary + "--"
+   if(len > 2 && token[len-1] == '-' && token[len-2] == '-'){
+      token[len-2] = '\0';
+      if(findnode(xhash, token)) return 1;
    }
 
    return 0;
