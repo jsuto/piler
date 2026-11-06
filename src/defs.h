@@ -206,6 +206,7 @@ struct parser_state {
    int anamepos;
 
    struct node *boundaries[MAXHASH];
+   int n_boundaries;
    struct node *rcpt[MAXHASH];
    struct node *rcpt_domain[MAXHASH];
    struct node *journal_recipient[MAXHASH];

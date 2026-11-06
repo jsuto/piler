@@ -273,6 +273,49 @@ static void test_degenerateToken(){
 }
 
 
+static void test_is_boundary_line(){
+   unsigned int i;
+   char buf[SMALLBUFSIZE];
+   struct node *boundaries[MAXHASH];
+   struct test_data_s_i lines[] = {
+      {"--abc\r\n", 1},
+      {"--abc--\r\n", 1},
+      {"--abc  \n", 1},
+      {"--abc", 1},
+      {"--b1_52b92b01a943615aff28b7f4d2f2d69d\r\n", 1},
+      {"--b1_52b92b01a943615aff28b7f4d2f2d69d--\r\n", 1},
+      {"--foo--\r\n", 1},
+      {"--foo----\r\n", 1},
+      {"abc\r\n", 0},
+      {"-abc\r\n", 0},
+      {" --abc\r\n", 0},
+      {"--abcd\r\n", 0},
+      {"--ab\r\n", 0},
+      {"--ABC\r\n", 0},
+      {"text --abc\r\n", 0},
+      {"----\r\n", 0},
+      {"--\r\n", 0},
+      {"\r\n", 0},
+   };
+
+   TEST_HEADER();
+
+   inithash(boundaries);
+   addnode(boundaries, "abc");
+   addnode(boundaries, "b1_52b92b01a943615aff28b7f4d2f2d69d");
+   addnode(boundaries, "foo--");
+
+   for(i=0; i<sizeof(lines)/sizeof(struct test_data_s_i); i++){
+      snprintf(buf, sizeof(buf)-1, "%s", lines[i].s);
+      ASSERT(is_boundary_line(boundaries, buf) == lines[i].result, lines[i].s);
+   }
+
+   clearhash(boundaries);
+
+   TEST_FOOTER();
+}
+
+
 /*
    other functions to test in the future:
 
@@ -292,6 +335,7 @@ int main(){
    test_translateLine();
    test_fixURL();
    test_degenerateToken();
+   test_is_boundary_line();
 
    return 0;
 }

@@ -87,6 +87,7 @@ typedef unsigned long long uint64;
 #define DELIMITER ' '
 #define BOUNDARY_LEN 255
 #define MAX_ATTACHMENTS 16
+#define MAX_BOUNDARIES 128
 #define MAX_ZIP_RECURSION_LEVEL 2
 
 /* SQL stuff */
