@@ -98,6 +98,29 @@ static void test_addnode(){
 }
 
 
+static void test_addnode_collision(){
+   struct node *xhash[MAXHASH];
+
+   TEST_HEADER();
+
+   inithash(xhash);
+
+   // "az" and "bY" have the same DJBHash value
+   ASSERT(DJBHash("az", 2) == DJBHash("bY", 2), "az/bY");
+
+   ASSERT(addnode(xhash, "az") == 1, "az");
+   ASSERT(addnode(xhash, "bY") == 1, "bY");
+   ASSERT(addnode(xhash, "az") == 0, "az again");
+
+   ASSERT(findnode(xhash, "az") != NULL, "az");
+   ASSERT(findnode(xhash, "bY") != NULL, "bY");
+
+   clearhash(xhash);
+
+   TEST_FOOTER();
+}
+
+
 static void test_is_substr_in_hash(){
    unsigned int i;
 
@@ -127,6 +150,7 @@ static void test_DJBHash(){
 int main(){
    test_init_hash();
    test_addnode();
+   test_addnode_collision();
    test_is_substr_in_hash();
    test_clear_hash();
    test_DJBHash();
