@@ -91,7 +91,7 @@ int addnode(struct node *xhash[], char *s){
       q = xhash[hash(key)];
       while(q != NULL){
          p = q;
-         if(p->key == key){
+         if(p->key == key && p->str && strcmp(p->str, s) == 0){
             return 0;
          }
          else {
