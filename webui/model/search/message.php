@@ -488,7 +488,7 @@ class ModelSearchMessage extends Model {
       if($id == '' || $uid <= 0) { return ''; }
 
       if(RT) {
-         $query = $this->sphx->query("SELECT tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=$uid AND mid=$id");
+         $query = $this->sphx->query("SELECT tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=? AND mid=?", array((int)$uid, (int)$id));
       } else {
          $query = $this->db->query("SELECT `tag` FROM " . TABLE_TAG . " WHERE uid=? AND id=?", array($uid, $id));
       }
@@ -549,7 +549,7 @@ class ModelSearchMessage extends Model {
       if($id == '' || $uid <= 0) { return ''; }
 
       if(RT) {
-         $query = $this->sphx->query("SELECT note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=$uid AND mid=$id");
+         $query = $this->sphx->query("SELECT note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=? AND mid=?", array((int)$uid, (int)$id));
       } else {
          $query = $this->db->query("SELECT `note` FROM " . TABLE_NOTE . " WHERE uid=? AND id=?", array($uid, $id));
       }

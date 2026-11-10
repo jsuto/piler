@@ -11,7 +11,7 @@ class Sphinx {
 
       try {
          $this->link = new PDO("mysql:host=$host;port=$port;dbname=$database;charset=" . DB_CHARSET, $username, $password,
-                               [PDO::ATTR_PERSISTENT => true]
+                               [PDO::ATTR_PERSISTENT => true, PDO::ATTR_EMULATE_PREPARES => true]
          );
       }
       catch(PDOException $exception) {
@@ -44,8 +44,15 @@ class Sphinx {
       $s = $this->link->prepare($sql);
       if(!$s) { return $query; }
 
+      // Bind integers as PARAM_INT, so they are not quoted, eg. in LIMIT
+      // or when comparing to integer attributes
+      $n = 1;
+      foreach($arr as $v) {
+         $s->bindValue($n++, $v, is_int($v) ? PDO::PARAM_INT : PDO::PARAM_STR);
+      }
+
       try {
-         $s->execute($arr);
+         $s->execute();
       } catch(PDOException $exception) {
          syslog(LOG_INFO, "ERROR: " . $exception->getMessage());
          return $query;

@@ -59,6 +59,31 @@ final class EmailTest extends TestCase {
    }
 
 
+   public static function providerTestFixupMatchGrouping() {
+      return [
+         ['', ''],
+         ['@subject hello | world', '@subject hello | world'],
+         ['( aaa | bbb ) ccc', '( aaa | bbb ) ccc'],
+         ['"hello world"', '"hello world"'],
+         ['aaa ) | ( bbb', 'aaa   | ( bbb)'],
+         ['aaa ) ) | @from x', 'aaa     | @from x'],
+         ['( ( aaa', '( ( aaa))'],
+         ['"aaa ) | bbb', '"aaa   | bbb"'],
+         ['aaa \\) | bbb', 'aaa    | bbb'],
+         ['aaa \\" ) bbb', 'aaa  "   bbb"']
+      ];
+   }
+
+
+   #[DataProvider('providerTestFixupMatchGrouping')]
+   public function test_fixup_match_grouping($input, $expected_result) {
+      $m = $this->getSearchModel();
+
+      $result = $m->fixup_match_grouping($input);
+      $this->assertEquals($expected_result, $result);
+   }
+
+
    public function test_preprocess_message_id_expert_request() {
       $m = $this->getSearchModel();
 

@@ -31,7 +31,8 @@ class ModelAuditAudit extends Model {
       // TODO: validate $data[] fields
 
       if(isset($data['action']) && $data['action'] && $data['action'] != ACTION_ALL) {
-         $where .= ' AND action=' . $data['action'];
+         $where .= ' AND action=?';
+         array_push($arr, (int)$data['action']);
       }
 
       if(isset($data['ipaddr']) && $data['ipaddr']) {
@@ -39,7 +40,7 @@ class ModelAuditAudit extends Model {
       }
 
       if(isset($data['user']) && $data['user']) {
-         $match .= ' @email ' . str_replace('@', '\\\\@', $data['user']);
+         $match .= ' @email ' . str_replace('@', '\\@', $data['user']);
       }
 
       if(isset($data['description']) && $data['description']) {
@@ -47,7 +48,8 @@ class ModelAuditAudit extends Model {
       }
 
       if(isset($data['ref']) && $data['ref']) {
-         $where .= ' AND meta_id=' . $data['ref'];
+         $where .= ' AND meta_id=?';
+         array_push($arr, (int)$data['ref']);
       }
 
       if(Registry::get('admin_user') == 0 && RESTRICTED_AUDITOR == 1) {
@@ -71,7 +73,10 @@ class ModelAuditAudit extends Model {
       $date = fixup_date_condition('ts', $date1, $date2);
 
       if($date) { $where .= " AND $date "; }
-      if($match) { $where .= " AND MATCH(' $match ')"; }
+      if($match) {
+         $where .= " AND MATCH(?)";
+         array_push($arr, " $match ");
+      }
 
       if($where) {
          $where = ' WHERE ' . substr($where, 5, strlen($where));
@@ -79,7 +84,7 @@ class ModelAuditAudit extends Model {
 
       $from = $data['page_len'] * $data['page'];
 
-      $query = $this->sphx->query('SELECT * FROM ' . SPHINX_AUDIT_INDEX . " $where $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS, $arr);
+      $query = $this->sphx->query('SELECT * FROM ' . SPHINX_AUDIT_INDEX . " $where $sortorder LIMIT " . (int)$offset . "," . (int)$pagelen . " OPTION max_matches=" . MAX_SEARCH_HITS, $arr);
 
       $total_found = $query->total_found;
       $current_hits = $query->num_rows;
@@ -130,9 +135,9 @@ class ModelAuditAudit extends Model {
 
       $session = Registry::get('session');
 
-      $email = str_replace('@', '\\\\@', $session->get('email'));
+      $email = str_replace('@', '\\@', $session->get('email'));
 
-      $query = $this->sphx->query('SELECT COUNT(*) AS num FROM ' . SPHINX_AUDIT_INDEX . " WHERE MATCH(' @email $email' ) AND ts > ? AND action=?", array($email, NOW-3600, ACTION_DOWNLOAD_MESSAGE));
+      $query = $this->sphx->query('SELECT COUNT(*) AS num FROM ' . SPHINX_AUDIT_INDEX . " WHERE MATCH(?) AND ts > ? AND action=?", array(' @email ' . $email, NOW-3600, ACTION_DOWNLOAD_MESSAGE));
 
       if($query->row['num'] <= MAX_DOWNLOAD_PER_HOUR) { return 1; }
 
@@ -146,9 +151,9 @@ class ModelAuditAudit extends Model {
 
       $session = Registry::get('session');
 
-      $email = str_replace('@', '\\\\@', $session->get('email'));
+      $email = str_replace('@', '\\@', $session->get('email'));
 
-      $query = $this->sphx->query('SELECT COUNT(*) AS num FROM ' . SPHINX_AUDIT_INDEX . " WHERE MATCH(' @email $email' ) AND ts > ? AND action=?", array($email, NOW-3600, ACTION_RESTORE_MESSAGE));
+      $query = $this->sphx->query('SELECT COUNT(*) AS num FROM ' . SPHINX_AUDIT_INDEX . " WHERE MATCH(?) AND ts > ? AND action=?", array(' @email ' . $email, NOW-3600, ACTION_RESTORE_MESSAGE));
 
       if($query->row['num'] <= MAX_RESTORE_PER_HOUR) { return 1; }
 
