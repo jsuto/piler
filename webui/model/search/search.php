@@ -235,6 +235,12 @@ class ModelSearchSearch extends Model {
       }
       else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && strlen($data['extra_folders']) > 0) {
          $extra_folders_arr = $this->get_int_list($data['extra_folders']);
+
+         // the same folders the folder picker offers, see get_folders_for_user()
+         if(Registry::get('auditor_user') == 0) {
+            $extra_folders_arr = array_values(array_intersect($extra_folders_arr, array_map('intval', $session->get("folders"))));
+         }
+
          if(count($extra_folders_arr) == 0) { $extra_folders_arr = array(-1); }
 
          $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size folder IN (" . get_q_string($extra_folders_arr) . ") AND MATCH(?) $sortorder $limit",
