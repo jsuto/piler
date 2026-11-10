@@ -100,6 +100,7 @@ class ModelSearchSearch extends Model {
       $__folders = array();
       $match = '';
       $direction = $attachment = $size = $folders = '';
+      $direction_arr = $size_arr = $folders_arr = $id_arr = array();
       $tag_id_list = '';
       $a = "";
       $id = "";
@@ -168,6 +169,8 @@ class ModelSearchSearch extends Model {
          $match .= $data['raw'];
       }
 
+      $match = $this->fixup_match_grouping($match);
+
       if($emailfilter) {
          if(strlen($match) > 2) { $match = "( $match ) & $emailfilter"; }
          else { $match = $emailfilter; }
@@ -182,11 +185,17 @@ class ModelSearchSearch extends Model {
 
       if($date) { $date .= " AND "; }
 
-      if(isset($data['direction']) && $data['direction'] != '') { $direction = "direction = " . $data['direction'] . " AND "; }
+      if(isset($data['direction']) && $data['direction'] != '') {
+         $direction = "direction = ? AND ";
+         $direction_arr = array((int)$data['direction']);
+      }
 
       if(isset($data['size']) && $data['size']) {
          $data['size'] = preg_replace("/\s/", "", $data['size']);
-         if(preg_match("/^(\>|\<)\={0,}\d{1,}$/", $data['size'])) { $size = "size " . $data['size'] . " AND "; }
+         if(preg_match("/^(\>|\<)(\={0,1})(\d{1,})$/", $data['size'], $m)) {
+            $size = "size " . $m[1] . $m[2] . " ? AND ";
+            $size_arr = array((int)$m[3]);
+         }
       }
 
       if(isset($data['attachment_type']) && strstr($data['attachment_type'], 'any')) { $a = "attachments > 0 AND "; }
@@ -194,8 +203,9 @@ class ModelSearchSearch extends Model {
 
 
       if(isset($data['id']) && $data['id']) {
-         $data['id'] = preg_replace("/ /", "," , substr($data['id'], 1, strlen($data['id'])));
-         $id = " id IN (" . $data['id'] . ") AND ";
+         $id_arr = $this->get_int_list($data['id']);
+         if(count($id_arr) == 0) { $id_arr = array(-1); }
+         $id = " id IN (" . get_q_string($id_arr) . ") AND ";
       }
 
 
@@ -207,38 +217,36 @@ class ModelSearchSearch extends Model {
             }
          }
 
-         if(count($__folders) > 0) {
-            $folders = "folder IN (" . implode(",", $__folders) . ") AND ";
-         }
-         else {
-            $folders = "folder IN (" . implode(",", $session->get("folders")) . ") AND ";
-         }
+         if(count($__folders) == 0) { $__folders = $session->get("folders"); }
+
+         $folders_arr = array_map('intval', $__folders);
+         $folders = "folder IN (" . get_q_string($folders_arr) . ") AND ";
       }
+
+      $limit = " LIMIT " . (int)$offset . "," . (int)$pagelen . " OPTION max_matches=" . (int)MAX_SEARCH_HITS;
 
       if(isset($data['tag']) && $data['tag']) {
          list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['tag'], SPHINX_TAG_INDEX, 'tag', $page);
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN (" . get_q_string($id_list) . ") $sortorder LIMIT 0," . (int)$pagelen . " OPTION max_matches=" . (int)MAX_SEARCH_HITS, array_merge($folders_arr, $id_list));
       }
       else if(isset($data['note']) && $data['note']) {
          list ($total_found, $num_rows, $id_list) = $this->get_sphinx_id_list($data['note'], SPHINX_NOTE_INDEX, 'note', $page);
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN ($id_list) $sortorder LIMIT 0,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $folders id IN (" . get_q_string($id_list) . ") $sortorder LIMIT 0," . (int)$pagelen . " OPTION max_matches=" . (int)MAX_SEARCH_HITS, array_merge($folders_arr, $id_list));
       }
       else if(ENABLE_FOLDER_RESTRICTIONS == 1 && isset($data['extra_folders']) && strlen($data['extra_folders']) > 0) {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size folder IN (" . preg_replace("/ /", ",", $data['extra_folders']) . ") AND MATCH('$match') $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+         $extra_folders_arr = $this->get_int_list($data['extra_folders']);
+         if(count($extra_folders_arr) == 0) { $extra_folders_arr = array(-1); }
+
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size folder IN (" . get_q_string($extra_folders_arr) . ") AND MATCH(?) $sortorder $limit",
+                                     array_merge($id_arr, $direction_arr, $size_arr, $extra_folders_arr, array($match)));
          $total_found = $query->total_found;
          $num_rows = $query->num_rows;
       }
       else {
-         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH('$match') $sortorder LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+         $query = $this->sphx->query("SELECT id FROM " . SPHINX_MAIN_INDEX . " WHERE $a $id $date $attachment $direction $size $folders MATCH(?) $sortorder $limit",
+                                     array_merge($id_arr, $direction_arr, $size_arr, $folders_arr, array($match)));
          $total_found = $query->total_found;
          $num_rows = $query->num_rows;
-
-         $b = preg_split("/\ ORDER\ /", $query->query);
-         $a = preg_split("/\ WHERE\ /", $b[0]);
-         if(isset($a[1])) {
-            $sphx_query = preg_replace("/\'/", "\'", $a[1]);
-            $session->set("sphx_query", $sphx_query);
-         }
       }
 
       /*
@@ -300,8 +308,8 @@ class ModelSearchSearch extends Model {
          }
       }
 
-      if(ENABLE_FOLDER_RESTRICTIONS == 1) {
-         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $ids) . ")");
+      if(ENABLE_FOLDER_RESTRICTIONS == 1 && count($ids) > 0) {
+         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . get_q_string($ids) . ")", array_map('intval', $ids));
          $ids = array();
          foreach($query->rows as $q) {
             if(isset($q['folder']) && in_array($q['folder'], $session->get("folders"))) { array_push($ids, $q['id']); }
@@ -345,7 +353,7 @@ class ModelSearchSearch extends Model {
       }
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1 && count($ids) > 0) {
-         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $ids) . ")");
+         $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . get_q_string($ids) . ")", array_map('intval', $ids));
          $ids = array();
          foreach($query->rows as $q) {
             if(isset($q['folder']) && in_array($q['folder'], $session->get("folders"))) { array_push($ids, $q['id']); }
@@ -482,7 +490,7 @@ class ModelSearchSearch extends Model {
 
 
    private function get_sphinx_id_list($s = '', $sphx_table = '', $field = '', $page = 0) {
-      $id_list = '';
+      $id_list = array();
 
       $session = Registry::get('session');
 
@@ -497,15 +505,14 @@ class ModelSearchSearch extends Model {
          $idfield = 'iid';
       }
 
-      $q = $this->sphx->query("SELECT $idfield FROM $sphx_table WHERE uid=" . $session->get("uid") . " AND MATCH('@$field $s') LIMIT $offset,$pagelen OPTION max_matches=" . MAX_SEARCH_HITS);
+      $q = $this->sphx->query("SELECT $idfield FROM $sphx_table WHERE uid=? AND MATCH(?) LIMIT " . (int)$offset . "," . (int)$pagelen . " OPTION max_matches=" . (int)MAX_SEARCH_HITS,
+                              array((int)$session->get("uid"), "@$field $s"));
 
       foreach($q->rows as $a) {
-         $id_list .= "," . $a[$idfield];
+         array_push($id_list, (int)$a[$idfield]);
       }
 
-      if($id_list) { $id_list = substr($id_list, 1, strlen($id_list)); }
-
-      if($id_list == '') { $id_list = "-1"; }
+      if(count($id_list) == 0) { $id_list = array(-1); }
       return array($q->total_found, $q->num_rows, $id_list);
    }
 
@@ -596,8 +603,8 @@ class ModelSearchSearch extends Model {
 
          if(RT) {
             $id_field = 'mid';
-            $ids_str = implode(",", $ids);
-            $tags = $this->sphx->query("SELECT mid, tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=" . (int)$session->get("uid") . " AND mid IN ($ids_str)");
+            $sphx_arr = array_merge(array((int)$session->get("uid")), array_map('intval', $ids));
+            $tags = $this->sphx->query("SELECT mid, tag FROM " . SPHINX_TAG_INDEX . " WHERE uid=? AND mid IN ($q)", $sphx_arr);
          } else {
             $id_field = 'id';
             array_unshift($ids, (int)$session->get("uid"));
@@ -609,7 +616,7 @@ class ModelSearchSearch extends Model {
          }
 
          if(RT) {
-            $notes = $this->sphx->query("SELECT mid, note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=" . (int)$session->get("uid") . " AND mid IN ($ids_str)");
+            $notes = $this->sphx->query("SELECT mid, note FROM " . SPHINX_NOTE_INDEX . " WHERE uid=? AND mid IN ($q)", $sphx_arr);
          } else {
             $notes = $this->db->query("SELECT `id`, `note` FROM " . TABLE_NOTE . " WHERE `uid`=? AND `id` IN ($q)", $ids);
          }
@@ -813,7 +820,7 @@ class ModelSearchSearch extends Model {
       $arr = array_merge($arr, $a, $a);
 
       if(ENABLE_FOLDER_RESTRICTIONS == 1) {
-         $query = $this->sphx->query("SELECT folder FROM " . SPHINX_MAIN_INDEX . " WHERE id=" . (int)$id);
+         $query = $this->sphx->query("SELECT folder FROM " . SPHINX_MAIN_INDEX . " WHERE id=?", array((int)$id));
          if(isset($query->row['folder']) && in_array($query->row['folder'], $session->get("folders"))) { return 1; }
       }
       else {
@@ -885,7 +892,7 @@ class ModelSearchSearch extends Model {
       else {
 
          if(ENABLE_FOLDER_RESTRICTIONS == 1) {
-            $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN (" . implode(",", $id) . ")");
+            $query = $this->sphx->query("SELECT id, folder FROM " . SPHINX_MAIN_INDEX . " WHERE id IN ($q2)", array_map('intval', $id));
          }
          else {
             $arr = array_merge($arr, $a, $a);
@@ -917,6 +924,17 @@ class ModelSearchSearch extends Model {
                array_push($result, $q['id']);
             }
          }
+      }
+
+      return $result;
+   }
+
+
+   private function get_int_list($s = '') {
+      $result = array();
+
+      foreach(preg_split("/[\s,]+/", trim($s)) as $v) {
+         if(is_numeric($v)) { array_push($result, (int)$v); }
       }
 
       return $result;
@@ -987,6 +1005,42 @@ class ModelSearchSearch extends Model {
       $s = preg_replace("/\./", ' ', $s);
 
       return $s;
+   }
+
+
+   /*
+    * make sure the user supplied part of the query is self-contained, ie.
+    * it can't escape the ( ... ) group that is AND-ed with the email
+    * address filter: remove escape characters, drop unbalanced closing
+    * parentheses, close any open quote and parentheses
+    */
+
+   public function fixup_match_grouping($s = '') {
+      $result = '';
+      $depth = 0;
+      $in_quote = 0;
+
+      $s = str_replace("\\", " ", $s);
+
+      for($i=0; $i<strlen($s); $i++) {
+         $c = $s[$i];
+
+         if($c == '"') {
+            $in_quote = 1 - $in_quote;
+         }
+         else if($c == '(' || $c == ')') {
+            if($in_quote == 1) { $c = ' '; }
+            else if($c == '(') { $depth++; }
+            else if($depth > 0) { $depth--; }
+            else { $c = ' '; }
+         }
+
+         $result .= $c;
+      }
+
+      if($in_quote == 1) { $result .= '"'; }
+
+      return $result . str_repeat(')', $depth);
    }
 
 
