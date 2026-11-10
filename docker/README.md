@@ -6,6 +6,11 @@ Edit the variables in docker-compose.yaml, then run
 docker compose up -d
 ```
 
+## Logs
+
+nginx and php-fpm error logs are sent to the container's stderr, so PHP errors
+show up in `docker logs piler` (and any Docker log driver) instead of files inside the container.
+
 ## How to build the image for yourself
 
 Pick the latest deb package from Github releases (https://github.com/jsuto/piler/releases)

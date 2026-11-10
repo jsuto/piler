@@ -29,7 +29,9 @@ RUN userdel -r ubuntu && \
     echo "www-data ALL=NOPASSWD: /etc/init.d/rc.piler reload" > /etc/sudoers.d/piler && \
     rm -f ${PACKAGE}_${TARGETARCH}.deb /etc/nginx/sites-enabled/default /etc/piler/piler.key /etc/piler/piler.pem /etc/piler/config-site.php && \
     cp -R /etc/piler /tmp/piler-conf && \
-    crontab -u $PILER_USER /usr/share/piler/piler.cron
+    crontab -u $PILER_USER /usr/share/piler/piler.cron && \
+    ln -sf /proc/1/fd/2 /var/log/nginx/error.log && \
+    ln -sf /proc/1/fd/2 "$(sed -n 's/^error_log *= *//p' /etc/php/*/fpm/php-fpm.conf)"
 
 VOLUME ["/etc/piler"]
 VOLUME ["/var/piler/store"]
