@@ -11,8 +11,6 @@ inputs:
   DISTRO:
     required: false
     default: 'noble'
-  IMAGE_NAME:
-    required: true
   PROJECT_ID:
     required: true
   VERSION:

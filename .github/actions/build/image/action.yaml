@@ -2,33 +2,40 @@ name: 'Build image'
 
 inputs:
   DOCKER_USERNAME:
-    required: true
+    required: false
   DOCKER_TOKEN:
-    required: true
-  IMAGE_NAME:
-    required: true
+    required: false
   LOAD:
     required: false
-    default: true
+    default: 'false'
   PACKAGE:
     required: true
   PLATFORMS:
     required: true
   PUSH:
     required: false
-    default: false
+    default: 'false'
+  REGISTRY:
+    required: false
+    default: ''
+  TAGS:
+    required: true
 
 runs:
   using: 'composite'
 
   steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v4
 
-    - name: Login to Docker Hub
-      if: github.workflow == 'Create release'
+    - name: Login to registry
+      if: inputs.PUSH == 'true'
       uses: docker/login-action@v4
       with:
+        registry: ${{ inputs.REGISTRY }}
         username: ${{ inputs.DOCKER_USERNAME }}
         password: ${{ inputs.DOCKER_TOKEN }}
 
@@ -38,7 +45,7 @@ runs:
         context: docker
         push: ${{ inputs.PUSH }}
         load: ${{ inputs.LOAD }}
-        tags: ${{ inputs.IMAGE_NAME }}
+        tags: ${{ inputs.TAGS }}
         platforms: ${{ inputs.PLATFORMS }}
         build-args: |
           PACKAGE=${{ inputs.PACKAGE }}

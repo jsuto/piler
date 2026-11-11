@@ -18,8 +18,10 @@ COPY ${PACKAGE}_${TARGETARCH}.deb /
 RUN userdel -r ubuntu && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-       wget openssl sysstat bsdextrautils catdoc unrtf poppler-utils nginx tnef sudo libtre5 cron ca-certificates curl rsyslog gnupg mariadb-client-core python3 python3-mysqldb libzip5 \
-       php-cli php-cgi php-mysql php-fpm php-zip php-ldap php-gd php-curl php-xml php-memcached && \
+       wget openssl sysstat bsdextrautils catdoc unrtf poppler-utils nginx tnef sudo libtre5 cron ca-certificates curl rsyslog gnupg mariadb-client-core python3 python3-mysqldb libzip5 php-memcached \
+       php-curl php-fpm php-gd php-ldap php-mysql php-xml php-zip && \
+    apt-get satisfy -y --no-install-recommends \
+       'php8.5-cli (>= 8.5.4-0ubuntu1.5), php8.5-cgi (>= 8.5.4-0ubuntu1.5), php8.5-mysql (>= 8.5.4-0ubuntu1.5), php8.5-fpm (>= 8.5.4-0ubuntu1.5), php8.5-zip (>= 8.5.4-0ubuntu1.5), php8.5-ldap (>= 8.5.4-0ubuntu1.5), php8.5-gd (>= 8.5.4-0ubuntu1.5), php8.5-curl (>= 8.5.4-0ubuntu1.5), php8.5-xml (>= 8.5.4-0ubuntu1.5)' && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     sed -i '/session    required     pam_loginuid.so/c\#session    required     pam_loginuid.so' /etc/pam.d/cron && \
