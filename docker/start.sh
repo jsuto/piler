@@ -16,6 +16,7 @@ RT="${RT:-0}"
 MEMCACHED_HOSTNAME="${MEMCACHED_HOSTNAME:-memcached}"
 MANTICORE_HOSTNAME="${MANTICORE_HOSTNAME:-manticore}"
 TMP_CONF_DIR="/tmp/piler-conf"
+PHP_FPM_VERSION="$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')"
 
 error() {
    echo "ERROR:" "$*" 1>&2
@@ -94,10 +95,11 @@ fix_configs() {
 
       cp "${PILER_NGINX_CONF}.dist" "$PILER_NGINX_CONF"
       sed -i "s%PILER_HOST%${PILER_HOSTNAME}%" "$PILER_NGINX_CONF"
-
-      # Migrate from PHP 8.3 to PHP 8.5 (issue #473)
-      sed -i 's%fastcgi_pass unix:/run/php/php8.3-fpm.sock;%fastcgi_pass unix:/run/php/php8.5-fpm.sock;%' "$PILER_NGINX_CONF"
    fi
+
+   # Migrate the PHP-FPM socket path to the installed PHP version (issue #473).
+   # Runs on every boot: piler-nginx.conf persists on the /etc/piler volume.
+   sed -i -E "s%(fastcgi_pass unix:[^ ]*/)php[0-9]+\.[0-9]+-fpm\.sock%\1php${PHP_FPM_VERSION}-fpm.sock%" "$PILER_NGINX_CONF"
 
    if [[ ! -f "$PILER_CONF" ]]; then
       cp "${PILER_CONF}.dist" "$PILER_CONF"
@@ -217,7 +219,7 @@ create_my_cnf_files() {
 
 start_services() {
    service cron start
-   service php8.5-fpm start
+   service "php${PHP_FPM_VERSION}-fpm" start
    service nginx start
    rsyslogd
 }
