@@ -1,8 +1,5 @@
 <?php
 
-session_start();
-
-
 require_once("config.php");
 
 require(DIR_SYSTEM . "/startup.php");
